@@ -9,10 +9,17 @@
     "ledger's update rule 4 forbids promoting a shell result, so every rule carries its status",
     "and the VM-0 evidence bundle repeats the counts.",
     "",
+    "ONE CRITERION, APPLIED TO EVERY ROW. `status` describes the GRAPH: can anything in the VM-0",
+    "checkout violate this rule? `witness` records a real violating input, and every rule has one",
+    "regardless of status - a Vacuous rule is one nothing in the component can break, not one that",
+    "was never shown working. An earlier revision mixed the two ideas, marking B2 and B4 Vacuous",
+    "with no witness even though both are witnessed, and marking E1-E5 Active on the strength of",
+    "clean-direction assertions alone.",
+    "",
     "Status values, and nothing else: Active, Vacuous, Deferred.",
-    "  Active   - it runs, and a witness shows it rejecting a violation.",
-    "  Vacuous  - it runs, and nothing in the VM-0 graph can violate it. Not a defect: the",
-    "             honest state of a rule whose subject has not been built yet.",
+    "  Active   - something in the checkout could violate it, and a witness shows it rejecting one.",
+    "  Vacuous  - it runs and is witnessed, but nothing in the VM-0 graph can violate it. Not a",
+    "             defect: the honest state of a rule whose subject has not been built yet.",
     "  Deferred - not asserted at VM-0; the activation milestone owns promoting it.",
     "",
     "A Deferred or Vacuous row may never name an activation milestone at or before the current",
@@ -50,8 +57,8 @@
       "statement": "No Compile, None, Content, EmbeddedResource or Import item resolves outside the component root.",
       "evidence": "Project files",
       "activationMilestone": null,
-      "nonVacuousWhen": "Any project file exists; roadmap section 9 forbids a shared source link by name.",
-      "witness": "witnesses/A3-shared-source-link.csproj.witness"
+      "nonVacuousWhen": "Non-vacuous when any project declares one of the five item types; at VM-0 none does, so the sweep is empty and both witnesses carry the rule.",
+      "witness": "witnesses/A3-shared-source-link.csproj.witness, witnesses/A3-property-shared-source-link.csproj.witness"
     },
     {
       "id": "A4",
@@ -151,7 +158,7 @@
       "evidence": "AssemblyRef table",
       "activationMilestone": "VM-1",
       "nonVacuousWhen": "The runtime uses a type from either assembly. A shell emits no assembly reference, so the subset holds trivially; at VM-1 the rule tightens from subset to equality.",
-      "witness": null
+      "witness": "Broiler.VM.Architecture.Tests.dll (references xunit)"
     },
     {
       "id": "B3",
@@ -161,7 +168,7 @@
       "evidence": "AssemblyRef table",
       "activationMilestone": "VM-1",
       "nonVacuousWhen": "A product assembly names any non-framework assembly at all. At VM-0 all three name none.",
-      "witness": null
+      "witness": "none at VM-0 - a witness needs a foreign Broiler assembly, and the component's graph is closed over its own five. The project-file twins A1 and A2 are witnessed."
     },
     {
       "id": "B4",
@@ -171,7 +178,7 @@
       "evidence": "Exported type and member signatures",
       "activationMilestone": "VM-1",
       "nonVacuousWhen": "A product assembly exports a member with a parameter or return type. At VM-0 the only exported members are two integer constants.",
-      "witness": null
+      "witness": "PublicSurfaceLeakWitness in Broiler.VM.Architecture.Tests.dll"
     },
     {
       "id": "B5",
@@ -191,7 +198,7 @@
       "evidence": "CustomAttribute table",
       "activationMilestone": "VM-1",
       "nonVacuousWhen": "A product assembly declares any method that could carry the attribute. At VM-0 the product graph has no method bodies.",
-      "witness": null
+      "witness": "ModuleInitializerWitness in Broiler.VM.Architecture.Tests.dll"
     },
     {
       "id": "B6",
@@ -201,7 +208,7 @@
       "evidence": "AssemblyRef table",
       "activationMilestone": "VM-1",
       "nonVacuousWhen": "A product assembly names any non-framework assembly. The project-file twin A4 is Active at VM-0.",
-      "witness": null
+      "witness": "none at VM-0 - a witness needs a product assembly that references a test assembly, which cannot be built without breaking the graph. The project-file twin A4 is witnessed."
     },
     {
       "id": "B7",
@@ -211,7 +218,7 @@
       "evidence": "TypeDef table, public visibility",
       "activationMilestone": "VM-1",
       "nonVacuousWhen": "The product graph exports a type other than VmCoreContract.",
-      "witness": null
+      "witness": "ProfileCatalogWitness.BuiltInProfiles in Broiler.VM.Architecture.Tests.dll"
     },
     {
       "id": "C1",
@@ -261,7 +268,7 @@
       "evidence": "Documentation and compiled metadata",
       "activationMilestone": null,
       "nonVacuousWhen": "ADR 0003 and VmCoreContract both exist at VM-0.",
-      "witness": "the assertion fails if either value is edited alone"
+      "witness": "witnesses/adr/E1-wrong-contract-version-fields.md.witness"
     },
     {
       "id": "E2",
@@ -271,7 +278,7 @@
       "evidence": "Documentation",
       "activationMilestone": null,
       "nonVacuousWhen": "Twelve ADR files exist at VM-0.",
-      "witness": "the assertion fails if an ADR omits or mistypes the field"
+      "witness": "witnesses/adr/E2-missing-core-contract-header.md.witness"
     },
     {
       "id": "E3",
@@ -281,7 +288,7 @@
       "evidence": "Documentation and compiled metadata",
       "activationMilestone": null,
       "nonVacuousWhen": "Ten contract-bearing ADRs exist at VM-0.",
-      "witness": "the assertion fails if an ADR names a version other than VmCoreContract.Version"
+      "witness": "witnesses/adr/E3-wrong-declared-version.md.witness"
     },
     {
       "id": "E4",
@@ -291,7 +298,7 @@
       "evidence": "Documentation against this file",
       "activationMilestone": null,
       "nonVacuousWhen": "Twelve ADR files and this register exist at VM-0.",
-      "witness": "the assertion fails if an ADR is added without an index row, or names an unregistered rule"
+      "witness": "witnesses/adr/E4-index-links-a-missing-record.md.witness"
     },
     {
       "id": "E5",
@@ -301,7 +308,7 @@
       "evidence": "TypeDef table, public visibility",
       "activationMilestone": null,
       "nonVacuousWhen": "Three product assemblies are built at VM-0.",
-      "witness": "the assertion fails if any product assembly exports a second type"
+      "witness": "PublicSurfaceLeakWitness in Broiler.VM.Architecture.Tests.dll"
     }
   ]
 }

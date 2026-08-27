@@ -31,6 +31,14 @@ public sealed class CoreContractVersionTests
 
         Assert.Equal(VmCoreContract.Version, HeaderInteger(adr, "Core contract version"));
         Assert.Equal(VmCoreContract.MinimumSupportedVersion, HeaderInteger(adr, "Minimum supported version"));
+
+        // The witness: a record whose header fields disagree with the constants.
+        var witness = Witness("E1-wrong-contract-version-fields.md.witness");
+
+        Assert.NotEqual(VmCoreContract.Version, TryHeaderInteger(witness, "Core contract version"));
+        Assert.NotEqual(
+            VmCoreContract.MinimumSupportedVersion,
+            TryHeaderInteger(witness, "Minimum supported version"));
     }
 
     [Fact]
@@ -49,6 +57,9 @@ public sealed class CoreContractVersionTests
             .OrderBy(static number => number, StringComparer.Ordinal);
 
         Assert.Equal(ContractBearing, declared);
+
+        // The witness: a record carrying no Core contract field at all.
+        Assert.Null(Witness("E2-missing-core-contract-header.md.witness").CoreContractField);
     }
 
     [Fact]
@@ -61,6 +72,12 @@ public sealed class CoreContractVersionTests
             .ToArray();
 
         Assert.Empty(wrong);
+
+        // The witness: contract-bearing, but declaring a version the build does not implement.
+        var witness = Witness("E3-wrong-declared-version.md.witness");
+
+        Assert.True(witness.IsContractBearing);
+        Assert.NotEqual(VmCoreContract.Version, ExtractVersion(witness.CoreContractField!));
     }
 
     [Fact]
@@ -102,6 +119,22 @@ public sealed class CoreContractVersionTests
             .ToArray();
 
         Assert.Empty(unregistered);
+
+        // The witness: an index linking a record that does not exist, and naming a rule with no
+        // register row. Both halves of E4 must fire on it.
+        var witnessIndex = Witness("E4-index-links-a-missing-record.md.witness").Text;
+
+        Assert.NotEmpty(Regex
+            .Matches(witnessIndex, @"\((?<file>\d{4}-[a-z0-9-]+\.md)\)")
+            .Select(match => match.Groups["file"].Value)
+            .Where(file => !Adrs.Any(adr => string.Equals(adr.FileName, file, StringComparison.Ordinal)))
+            .ToArray());
+
+        Assert.NotEmpty(Regex
+            .Matches(witnessIndex, @"\bRule (?<id>[A-Z]\d{1,2}b?)\b")
+            .Select(match => match.Groups["id"].Value)
+            .Where(id => !registered.Contains(id))
+            .ToArray());
     }
 
     private static HashSet<string> RegisteredRuleIds()
@@ -117,11 +150,18 @@ public sealed class CoreContractVersionTests
 
     private static int HeaderInteger(AdrFile adr, string field)
     {
+        var value = TryHeaderInteger(adr, field);
+
+        Assert.True(value is not null, $"{adr.FileName} has no **{field}:** header field.");
+
+        return value!.Value;
+    }
+
+    private static int? TryHeaderInteger(AdrFile adr, string field)
+    {
         var match = Regex.Match(adr.Text, $@"\*\*{Regex.Escape(field)}:\*\*\s*(?<value>\d+)");
 
-        Assert.True(match.Success, $"{adr.FileName} has no **{field}:** header field.");
-
-        return int.Parse(match.Groups["value"].Value);
+        return match.Success ? int.Parse(match.Groups["value"].Value) : null;
     }
 
     private static int ExtractVersion(string field)
@@ -129,6 +169,33 @@ public sealed class CoreContractVersionTests
         var match = Regex.Match(field, @"version\s+(?<value>\d+)");
 
         return match.Success ? int.Parse(match.Groups["value"].Value) : -1;
+    }
+
+    /// <summary>
+    /// The witness records under witnesses/adr/, each a fixture a group E rule must reject.
+    /// </summary>
+    private static AdrFile Witness(string fileName)
+    {
+        var path = Path.Combine(
+            ComponentGraph.Root, "src", "tests", "Broiler.VM.Architecture.Tests",
+            "witnesses", "adr", fileName);
+
+        Assert.True(File.Exists(path), $"Missing witness input {path}.");
+
+        return Parse(path);
+    }
+
+    private static AdrFile Parse(string path)
+    {
+        var text = File.ReadAllText(path);
+        var field = Regex.Match(text, @"\*\*Core contract:\*\*\s*(?<value>[^
+]+)");
+
+        return new AdrFile(
+            FileName: Path.GetFileName(path),
+            Number: Path.GetFileName(path)[..4],
+            Text: text,
+            CoreContractField: field.Success ? field.Groups["value"].Value.Trim() : null);
     }
 
     private static IReadOnlyList<AdrFile> LoadAdrs()

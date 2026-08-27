@@ -436,10 +436,12 @@ proposed an architecture test over two composition-root projects, one
 registering a provider and one not. VM-0 creates no composition-root project and
 no provider implementation, the project set is closed at five, and the rule
 register contains no row for such a test - the subject does not exist before
-VM-3. An implementer must not create those projects to satisfy this record:
-Rule A11: No project
-outside the composition-root allow-list references an assembly matching
-Broiler.VM.Profile.*. The allow-list is empty at VM-0. Status: Active; witness
+VM-3. An implementer must not create those projects to satisfy this record. The
+rule that already forbids the shortest route to one is:
+
+Rule A11: No project outside the composition-root allow-list references an
+assembly matching Broiler.VM.Profile.*. The allow-list is empty at VM-0.
+Status: Active; witness
 `src/tests/Broiler.VM.Architecture.Tests/witnesses/A11-profile-reference-outside-composition-root.csproj.witness`.
 
 ## What VM-0 Does Not Prove

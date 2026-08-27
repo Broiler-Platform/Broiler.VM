@@ -263,7 +263,7 @@ hold, evaluated by the core in this frozen order, first failure winning.
 |---|---|---|
 | 0 | `H.Origin` is `Caller`, or `R` is the runtime that produced `H` | `invalid state`, reason `NestedHandleNotShareable` |
 | 1 | `H.State` is `Ready` and a lease is acquired for `R` | `invalid state`, reason `HandleDraining` or `HandleDisposed` |
-| 2 | `R`'s catalog contains an entry for `H`'s ProfileId | `unsupported profile`, reason `ProfileNotInCatalog`, naming the requested ID and the catalog's IDs |
+| 2 | `R`'s catalog contains an entry for `H`'s ProfileId | `unsupported profile`, reason `ProfileNotInCatalog`, naming the requested ID only, never the catalog's contents (ADR 0005's containment rule) |
 | 3 | `CoreContractVersion` is equal | `invalid state`, reason naming clause 3 |
 | 4 | `DescriptorRevision` matches `R`'s catalog entry | `invalid state`, reason naming clause 4 |
 | 5 | `AcceptedProfileFormatVersion` matches | `invalid state`, reason naming clause 5 |
@@ -283,13 +283,15 @@ never widened. No new outcome category is introduced anywhere in the predicate.
 
 **Only clause 2 is `unsupported profile`.** Section 7 keeps that outcome
 distinct because misreporting a composition mistake as a corrupt file is the
-likeliest diagnostic error for a single-profile product, and it requires the
-outcome to name the requested ID against the catalog's contents - which only a
-missing entry can do. A descriptor-revision, manifest, verifier-version, or
-ceiling mismatch is a lifecycle and policy mismatch between two runtimes that
-both have the profile, so it takes `invalid state` with a reason. This narrows
-the incoming ruling that reported every foreign-runtime identity mismatch as
-`unsupported profile`.
+likeliest diagnostic error for a single-profile product, and a missing catalog
+entry is the only clause where the requested identity is by itself the whole
+diagnosis. The result names that requested identity and nothing else. ADR 0005
+owns that containment rule - no result carries a listing of what the catalog
+does contain, which reaches the host only through `VmCatalog`'s listing member.
+A descriptor-revision, manifest, verifier-version, or ceiling mismatch is a
+lifecycle and policy mismatch between two runtimes that both have the profile,
+so it takes `invalid state` with a reason. This narrows the incoming ruling that
+reported every foreign-runtime identity mismatch as `unsupported profile`.
 
 **What is never part of a shared handle**, restated as a frozen exclusion list:
 instances; mutable memories, tables, and globals; realms, modules within a
@@ -353,8 +355,9 @@ fifteen-dimension table together with the exhausted `VmBudgetScope`. This
 replaces the eight ad-hoc reason identifiers the incoming ruling proposed, which
 would have drifted from the dimension table the moment either was edited.
 `cancellation` carries the single reason `Cancelled`. `unsupported profile`
-carries `ProfileNotInCatalog`, whose message names the requested ID and the
-catalog's IDs.
+carries `ProfileNotInCatalog`, whose message names the requested ID only, echoed
+verbatim; ADR 0005's containment rule forbids the result to carry a listing of
+what the catalog does contain.
 
 **Determinism.** For the same descriptor, verification input, effective
 ceilings, registered capability descriptors, and verifier version, the returned
@@ -471,13 +474,13 @@ unrelated composition change does not invalidate every entry.
 **Runtime-identity inputs:** the whole cache-key set, plus the effective budget
 policy recorded in the handle, plus the aggregate-budget parent's identity where
 there is one, plus the identity of a capability instance where the host bound
-the same instance into more than one runtime, plus thread affinity - degenerate
-in version 1, where the calling thread is the only legal value (ADR 0004,
-`0004-lifecycle-and-state-machine.md`), and recorded now so that an amendment
-adding an affinity kind does not change identity's shape and invalidate every
-entry. Cancellation observability at a capability boundary is a runtime-identity
-input and not a cache-key input: it changes what a runtime may do, not what the
-bytes mean.
+the same instance into more than one runtime, plus the profile's declared thread
+affinity - `ThreadAffinity`, closed at `Agile` and `OperationThreadPinned` in
+version 1 (ADR 0004, `0004-lifecycle-and-state-machine.md`) - which enters
+runtime identity at its declared value, because that value governs which thread
+may drive an operation. Cancellation observability at a capability boundary is a
+runtime-identity input and not a cache-key input: it changes what a runtime may
+do, not what the bytes mean.
 
 **Matching is equality, not compatibility,** in both sets, for the reason given
 in section 4.
@@ -587,10 +590,13 @@ these rulings: its own closing sentences already place guest-obtained bytes and
 nested handles in scope, and the absence of a required amendment is itself the
 evidence that the conservative branch was the compatible one.
 
-**For sibling records.** ADR 0002's descriptor table gains
-`VmArtifactRepresentationKind`, `VmArtifactLifetimeKind`, `DescriptorRevision`,
-and `ArtifactSharing` (default `RuntimeScoped`). ADR 0003's public-name table
-gains `VmVerifiedArtifact`, `VmVerifiedArtifactState`, `VmArtifactLifetimeKind`,
+**For sibling records.** ADR 0002's descriptor table is the single authority for
+descriptor field names, and it carries the four fields whose semantics this
+record owns: `DescriptorRevision`, `ArtifactRepresentationKind`,
+`ArtifactLifetimeKind`, and `ArtifactSharing` (`{Shareable, RuntimeScoped}`,
+default `RuntimeScoped`). This record cites that table and restates no row of
+it. ADR 0003's public-name table gains `VmVerifiedArtifact`,
+`VmVerifiedArtifactState`, `VmArtifactLifetimeKind`,
 `VmArtifactRepresentationKind`, and `VmArtifactOrigin`, and records
 `VmArtifactOwnershipKind`, `DisposeRequested`,
 `EffectiveSectionVerificationMode`, `ProducedBy`, and `VmHandle` as struck

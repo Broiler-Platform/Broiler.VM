@@ -298,7 +298,7 @@ builds" is a reviewable fact rather than an assertion.
 | **Environment** | OS, architecture, and configuration of each machine used, and the operating systems actually built on. No RID, no trimming mode, and no Native AOT mode is recorded, because none was exercised |
 | **Procedure** | The exact commands and working directories: `dotnet build Broiler.VM.slnx -c Release`, `dotnet test Broiler.VM.slnx -c Release`, and `dotnet pack Broiler.VM.slnx -c Release`, run from the component root (exists at VM-0: Broiler.VM.slnx) |
 | **Outputs** | The retained build, test and pack logs; the pack log showing exactly three .nupkg and three .snupkg; and the architecture-test result with its per-rule status |
-| **Decision** | The expected gate, quoted from section 13 as the *planned* gate and never as the result; the actual result; and every exclusion, verbatim (below) |
+| **Decision** | The expected gate, quoted from section 13 as the *planned* gate and never as the result; the actual result; and the exclusions by identifier, with the subset that most limits the bundle spelled out (below) |
 | **Validity** | Reproduction instructions, and the recertification triggers that expire this bundle: a change to the SDK, to the core contract version, to the public API, or to the package graph |
 
 The **claim** the Decision field states, and the only claim the bundle makes,
@@ -309,17 +309,22 @@ six Vacuous rows (B2, B3, B4, B5b, B6, B7) and the three Deferred rows (C1,
 C2, C3) of the register; ADR 0001 owns the exclusion that names them and the
 status vocabulary they use.
 
-The Decision field additionally carries, verbatim and in identifier order,
-every exclusion minted by the twelve records - EX-01..EX-09 from ADR 0001,
-EX-10..EX-19 from ADR 0003, EX-20..EX-24 from ADR 0009, EX-25..EX-29 from ADR
-0010, and EX-30..EX-38 from this record - copied from the ADR that mints each
-one rather than paraphrased, and it states in words that no capability is
-proven, no composition is claimed, and no RID is claimed.
+The Decision field additionally carries, by identifier, the exclusions minted
+across the twelve records - EX-01..EX-08 from ADR 0001, EX-10..EX-17 from ADR
+0003, EX-20..EX-24 from ADR 0009, EX-25..EX-28 from ADR 0010, and EX-30..EX-38
+from this record, thirty-four in all. The identifier space is sparse: EX-09,
+EX-18, EX-19 and EX-29 are minted nowhere and must not be cited. The sentence
+that defines each exclusion lives in the record that mints it; the Decision
+field reproduces none of them in full, spelling out in summary form only the
+subset that most limits the bundle. The field also states in words that no
+capability is proven, no composition is claimed, and no RID is claimed.
 
 ## Exclusions
 
-Each sentence below appears identically here, in the VM-0 bundle's Decision
-field, and in the VM-0 ledger row.
+Each exclusion below is defined here and only here; everywhere else it is
+cited by its identifier. The VM-0 bundle's Decision field and the VM-0 ledger
+row carry exclusions by identifier, each spelling out in summary form only the
+subset that bears on it; neither reproduces all thirty-four sentences.
 
 - Exclusion EX-30: VM-0 does not satisfy section 13's VM-0 dependency line;
   all six ownership roles R1 through R6 are vacant, so no one may accept the

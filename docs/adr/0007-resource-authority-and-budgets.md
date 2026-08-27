@@ -44,8 +44,10 @@ below is (VM-0 decision on paper; no file at VM-0); the milestone that builds
 each is named where it is decided. The three product shells export exactly one
 public type between them, `VmCoreContract`, so at VM-0 there is no budget
 surface for an architecture rule to inspect, and the register contains no rule
-owned by this record. The public names below are the frozen ones published by
-ADR 0003 (`0003-core-contract-v1-and-amendments.md`); this record invents none.
+owned by this record. The type names below are the frozen ones published by
+ADR 0003 (`0003-core-contract-v1-and-amendments.md`); the members of the
+profile-facing metering surface are named by no other record, so under that
+table's own rule they are frozen here rather than there.
 
 ## The fifteen budgeted dimensions
 
@@ -197,13 +199,20 @@ prove a bound was enforced.
 dimension, the scope, the consumption and the effective ceiling for that scope -
 disclosing nothing the host did not itself set or cannot read from the verified
 handle. The profile-facing signal is the dimension and the scope alone, with no
-quantities. The profile-facing metering surface is exactly two members,
-`TryCharge(dimension, amount)` returning a boolean and `Poll()`; there is no
-non-consuming remaining-allowance reader on it, so a profile - and through it
-guest code - cannot binary-search a host ceiling without spending it. Remaining
-values are readable on the host-facing budget snapshot only. This narrows the
-earlier proposal of profile-facing remaining readers, which is recorded here as
-amended rather than re-litigated.
+quantities. The profile-facing metering surface is exactly four members:
+`TryCharge(dimension, amount)` returning a boolean, `Poll()`, and the
+retention pair `ReportRetained(dimension, amount)` and
+`ReportReleased(dimension, amount)` by which a profile-charged ceiling measure
+rises and falls - the bytes `LiveBytes` counts as retained and released, the
+frames `CallDepth` counts as entered and left. Those four member names are
+frozen by this record and by no other, which is what ADR 0003's public-name
+table provides for a member only one record names. The pair moves a ceiling
+measure and never an allowance, so allowances still never refund; and no member
+on the surface reads a remaining or effective value, so a profile - and through
+it guest code - learns a limit only by reaching it and being refused, never by
+reading it. Remaining values are readable on the host-facing budget snapshot
+only. This narrows the earlier proposal of profile-facing remaining readers,
+which is recorded here as amended rather than re-litigated.
 
 ## The precedence algorithm
 
@@ -474,13 +483,16 @@ at boundaries it owns. The poll contract is therefore part of contract version
 1: the profile calls `Poll()` - one combined budget and cancellation check - at
 least once per loop back-edge, per call entry, per host-capability return and
 per provider return, and its descriptor declares `MaxUnchargedWork`, the bound
-on work performed between two polls. At every boundary the core owns, it
-compares charged work against attributed elapsed work; a profile exceeding its
-declared `MaxUnchargedWork` is reported as `InvalidState` with reason
-`ProfileContractViolation`, and the runtime is **poisoned** - it accepts no
-further operation and only disposal - because once the metering contract is
-broken the core's isolation assumptions no longer hold. This detection is
-best-effort evidence of a defect and is **not** a security boundary.
+on work performed between two polls, which ADR 0002's frozen descriptor field
+table carries as a mandatory row. At every boundary the core owns, it compares
+charged work against attributed elapsed work; a profile exceeding its declared
+`MaxUnchargedWork` is reported as `ProfileFault` with reason
+`ProfileContractViolation` - the classification ADR 0005 fixes for that reason,
+and not `InvalidState`, whose member set ADR 0004 closes without it. The runtime
+is **poisoned** - it accepts no further operation and only disposal - because
+once the metering contract is broken the core's isolation assumptions no longer
+hold. This detection is best-effort evidence of a defect and is **not** a
+security boundary.
 Cancellation latency is bounded in profile work units, not in wall-clock time,
 through the descriptor's `CancellationPollBound`, which ADR 0004 owns and which
 is enforced at this meter.
@@ -500,7 +512,7 @@ check.
 | CO-2 | Any single charge larger than the declared `MaxUnchargedWork` is charged **before** the work is performed, so exhaustion fails without doing the work. An over-estimate followed by no refund is permitted; an under-estimate with a later top-up is not. | No |
 | CO-3 | Every allocation whose size derives from untrusted data is made through the core's bounded-allocation primitive, which charges `AllocatedBytes` and enforces `DeclaredCount`. | Partially: for allocations that go through it, and not for those that do not |
 | CO-4 | At least one `Poll()` per loop back-edge, per call entry, per host-capability return and per provider return, with work between polls bounded by `MaxUnchargedWork`. | Not in general; detectable at core-owned boundaries |
-| CO-5 | The profile-facing metering surface is exactly `TryCharge` and `Poll`. There is no grant, refund, reset, extend or withdraw, and a negative or zero-with-work charge is rejected. | Yes - structurally, from the member list and the parameter type |
+| CO-5 | The profile-facing metering surface is exactly `TryCharge`, `Poll`, `ReportRetained` and `ReportReleased`. There is no grant, refund, reset, extend or withdraw, and a negative or zero-with-work charge is rejected. | Yes - structurally, from the member list and the parameter type |
 
 Charging proportional to measured elapsed time was rejected outright: it makes
 the same artifact fail differently on two machines and destroys the
@@ -512,15 +524,16 @@ prevent.
 
 Because the core is asking for obligations it cannot check, it owes five things
 in return, all part of contract version 1: publish CO-1 to CO-5 as citable
-clauses; require the descriptor to declare `MaxUnchargedWork`, the charging
-granularity g and the fifteen-row applicability matrix, so the claims are
-reviewable and drift-checked; detect and report `MaxUnchargedWork` violations at
-core-owned boundaries; ship a proportionality fixture in the fixture profile
-(deferred to VM-1) so profile authors are not left to invent the test shape and
-invariant 13 holds; and state in the public support table that **fuel units are
-profile-scoped and carry no cross-profile meaning** - a fuel figure from one
-profile is not comparable with another's, and no core measurement implies a
-language performance claim.
+clauses; carry the parameters on the descriptor, where ADR 0002's frozen field
+table holds `MaxUnchargedWork`, `ChargingGranularity` - the charging
+granularity g of CO-1 - and `BudgetDeclarationMatrix`, the fifteen-row
+applicability matrix, so the claims are reviewable and drift-checked; detect and
+report `MaxUnchargedWork` violations at core-owned boundaries; ship a
+proportionality fixture in the fixture profile (deferred to VM-1) so profile
+authors are not left to invent the test shape and invariant 13 holds; and state
+in the public support table that **fuel units are profile-scoped and carry no
+cross-profile meaning** - a fuel figure from one profile is not comparable with
+another's, and no core measurement implies a language performance claim.
 
 ## Budget accounting across a suspension
 

@@ -33,11 +33,15 @@ public sealed class LegacyBoundaryTests
 
         if (aggregate is null || !File.Exists(Path.Combine(aggregate.FullName, ".gitmodules")))
         {
-            // INCONCLUSIVE. Recorded, not silently passed: the register marks D1's precondition,
-            // and the evidence bundle records which of the two branches actually ran.
-            Assert.True(
-                InconclusiveIsAcceptable,
-                "D1 is inconclusive: no aggregate checkout above the component root.");
+            // INCONCLUSIVE, and it has to be visible. An earlier version asserted a constant
+            // true here, which meant a standalone checkout printed the same "33 passed" line as
+            // a checkout where the rule actually scanned something - the outcome the register
+            // and three documents describe as inconclusive was indistinguishable from a pass.
+            // The branch taken is now written to the evidence bundle, so a reader can tell which
+            // of the two runs produced their logs.
+            RecordOutcome(
+                "INCONCLUSIVE - no aggregate checkout above the component root, so D1 scanned " +
+                "nothing. This is not a pass: see Exclusion EX-01.");
             return;
         }
 
@@ -49,30 +53,82 @@ public sealed class LegacyBoundaryTests
             .Select(path => Path.GetRelativePath(aggregate.FullName, path))
             .ToArray();
 
+        RecordOutcome(
+            $"SCANNED - aggregate checkout at {aggregate.FullName}; " +
+            $"{violations.Length} project file(s) outside the component reference into it.");
+
         Assert.Empty(violations);
     }
 
     [Fact]
     public void D1_Rejects_A_Reference_Into_The_Component()
     {
-        // The same predicate that clears the aggregate checkout must reject the witness, or the
-        // clean result above means nothing. The A1 witness is reused deliberately: an inbound
-        // edge and an outbound edge are the same ProjectReference seen from opposite sides.
-        var witness = Path.Combine(
+        // The witness is materialised OUTSIDE the component root and run through the whole D1
+        // pipeline, including the "not under the component" filter that is the entire substance
+        // of an inbound edge. Evaluating the stored witness in place would exercise only the
+        // reference predicate and would leave that filter - the part that decides whether a
+        // project counts as outside at all - untested.
+        var stored = Path.Combine(
             ComponentGraph.Root,
             "src", "tests", "Broiler.VM.Architecture.Tests", "witnesses",
             "D1-inbound-project-reference.csproj.witness");
 
-        Assert.True(File.Exists(witness), $"Missing witness input {witness}.");
-        Assert.True(ReferencesTheComponent(witness, ComponentGraph.Root));
+        Assert.True(File.Exists(stored), $"Missing witness input {stored}.");
+
+        var staging = Directory.CreateTempSubdirectory("broiler-vm-d1-");
+
+        try
+        {
+            // The stored witness points three levels up, which is where src/ sits relative to
+            // the witnesses directory. From the staging directory the same shape has to be
+            // rewritten to reach the real component, which is what an inbound edge from another
+            // repository in the aggregate checkout would look like.
+            var project = Path.Combine(staging.FullName, "Inbound.csproj");
+            var target = Path.Combine(ComponentGraph.Root, "src", "Broiler.VM.Runtime", "Broiler.VM.Runtime.csproj");
+
+            File.WriteAllText(project, $"""
+                <Project Sdk="Microsoft.NET.Sdk">
+                  <ItemGroup>
+                    <ProjectReference Include="{target}" />
+                  </ItemGroup>
+                </Project>
+                """);
+
+            Assert.False(
+                project.StartsWith(ComponentGraph.Root, StringComparison.OrdinalIgnoreCase),
+                "The witness must live outside the component for this to test anything.");
+
+            Assert.True(ReferencesTheComponent(project, ComponentGraph.Root));
+        }
+        finally
+        {
+            staging.Delete(recursive: true);
+        }
     }
 
     /// <summary>
-    /// The inconclusive branch is a recorded outcome rather than a hidden pass. It is a constant
-    /// so that the branch is visible in the source and cannot be mistaken for an assertion that
-    /// something was checked.
+    /// Writes which branch rule D1 took to the evidence bundle, so that "inconclusive" and
+    /// "scanned and clean" are distinguishable after the fact.
     /// </summary>
-    private const bool InconclusiveIsAcceptable = true;
+    /// <remarks>
+    /// A test run reports only pass or fail, and D1 has a third outcome that must not be
+    /// collapsed into the first. The file is part of the retained bundle rather than console
+    /// output because the bundle is what a reviewer reads.
+    /// </remarks>
+    private static void RecordOutcome(string outcome)
+    {
+        var directory = Path.Combine(ComponentGraph.Root, "docs", "evidence", "vm-0");
+
+        if (!Directory.Exists(directory))
+        {
+            return;
+        }
+
+        File.WriteAllText(
+            Path.Combine(directory, "d1-outcome.txt"),
+            "Rule D1, inbound half of the legacy boundary." + Environment.NewLine +
+            outcome + Environment.NewLine);
+    }
 
     private static bool IsUnderBuildOutput(string path) =>
         path.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase) ||

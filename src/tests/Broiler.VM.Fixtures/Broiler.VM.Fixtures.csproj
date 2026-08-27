@@ -3,7 +3,7 @@
   <PropertyGroup>
     <RootNamespace>Broiler.VM.Fixtures</RootNamespace>
     <AssemblyName>Broiler.VM.Fixtures</AssemblyName>
-    <Description>The fixture profile and application-local consumer profile that prove the Broiler.VM contracts. Test-only: never referenced by a product package. VM-0 project shell.</Description>
+    <Description>The fixture profile and application-local consumer profile that will prove the Broiler.VM contracts from VM-1. Test-only: never referenced by a product package. VM-0 project shell.</Description>
 
     <!-- Test-only. The packaging props default packability on by naming
          convention, and this project's name does not end in .Tests, so the

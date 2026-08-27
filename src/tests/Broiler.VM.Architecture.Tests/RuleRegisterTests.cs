@@ -55,15 +55,61 @@ public sealed class RuleRegisterTests
     }
 
     [Fact]
-    public void Every_Active_Rule_Names_A_Witness()
+    public void Every_Active_Rule_Names_A_Witness_That_Resolves()
     {
-        var missing = Loaded.Rules
+        // Naming a witness is not enough - an earlier revision let a rule pass this check with a
+        // prose prediction in the field. Every witness an Active rule names must resolve to a
+        // file on disk or to a type in the test assembly.
+        var types = typeof(RuleRegisterTests).Assembly
+            .GetTypes()
+            .Select(static type => type.Name)
+            .ToHashSet(StringComparer.Ordinal);
+
+        var unresolved = Loaded.Rules
+            .Where(static rule => rule.Status == "Active")
+            .SelectMany(rule => (rule.Witness ?? string.Empty)
+                .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                .Select(part => (rule.Id, Witness: part)))
+            .Where(named => !Resolves(named.Witness, types))
+            .Select(static named => $"{named.Id} names an unresolvable witness: {named.Witness}")
+            .ToArray();
+
+        var absent = Loaded.Rules
             .Where(static rule => rule.Status == "Active")
             .Where(static rule => string.IsNullOrWhiteSpace(rule.Witness))
             .Select(static rule => $"{rule.Id} is Active with no witness")
             .ToArray();
 
-        Assert.Empty(missing);
+        Assert.Empty(unresolved.Concat(absent));
+
+        static bool Resolves(string witness, IReadOnlySet<string> types)
+        {
+            var path = Path.Combine(
+                ComponentGraph.Root, "src", "tests", "Broiler.VM.Architecture.Tests",
+                witness.Replace('/', Path.DirectorySeparatorChar));
+
+            if (File.Exists(path))
+            {
+                return true;
+            }
+
+            // Otherwise it names a witness type compiled into the test assembly, written as
+            // "TypeName in Broiler.VM.Architecture.Tests.dll" or "Outer.Nested in ...".
+            var head = witness.Split(" in ")[0].Split('.')[^1].Trim();
+
+            if (types.Contains(head))
+            {
+                return true;
+            }
+
+            // Or it names a whole assembly, which is the honest form for a rule whose witness is
+            // what an assembly REFERENCES rather than a type it declares - B1's witness is that
+            // the test assembly references xunit at all.
+            var assembly = witness.Split(' ')[0].Trim();
+
+            return assembly.EndsWith(".dll", StringComparison.OrdinalIgnoreCase) &&
+                File.Exists(Path.Combine(AppContext.BaseDirectory, assembly));
+        }
     }
 
     [Fact]

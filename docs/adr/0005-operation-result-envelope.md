@@ -27,7 +27,7 @@ states and their legal transitions are ADR 0004
 (`0007-resource-authority-and-budgets.md`), guest-load mediation is ADR 0008
 (`0008-guest-initiated-loads.md`), and suspension origin and resume authority
 are ADR 0009 (`0009-external-suspension-and-async-instantiation.md`). This
-record is what those five cite when they say "the result".
+record is what those six cite when they say "the result".
 
 Nothing decided here executes at VM-0. Milestone VM-0 builds five project
 shells and exactly one piece of product code, and roadmap section 13's exit gate
@@ -72,7 +72,7 @@ this section still cannot choose differently on any of them.
    envelope-bearing stage returns its own `readonly struct` by value. No outcome
    is ever observable as a CLR exception at the core's public surface, and the
    exception set that may escape a public member is closed at three types.
-2. **There is exactly one outcome enum**, `VmOutcome`, with nine members at
+2. **There is exactly one outcome enum**, `VmOutcome`, with ten members at
    fixed numeric values, one of which is reserved and never returned.
    Stage-specificity is expressed by which members a stage may return, never by
    a second enum.
@@ -116,7 +116,7 @@ on the affected operation; a later use of a disposed object is observed as
 
 Values 10 and above are reserved for numbered amendments under roadmap section
 2's amendment procedure. Renumbering, renaming, removing or re-scoping any of
-the nine is forbidden outright, because persisted envelopes, evidence bundles,
+the ten is forbidden outright, because persisted envelopes, evidence bundles,
 support tables and malformed-corpus expectations all record numeric outcomes and
 would become silently wrong.
 
@@ -283,8 +283,8 @@ qualifier "on the host-facing surface only"; that amendment is proposed, not
 applied, in ADR 0003's amendment register.
 
 Adding an `InvalidComposition` category for registration failures was rejected:
-ten categories where nine suffice, for a condition already expressible, and each
-added category permanently widens what every caller switch and every
+eleven categories where ten suffice, for a condition already expressible, and
+each added category permanently widens what every caller switch and every
 support-table claim must cover. Distinguishing use-after-dispose with a
 dedicated category or with `ObjectDisposedException` was rejected because
 section 7 assigns it to the one stable invalid-state outcome and an exception
@@ -378,9 +378,13 @@ core-raised exceptions, and are outside that set because the core neither
 produces nor translates them. The core will not misreport an
 `OutOfMemoryException` as `ResourceExhaustion` - that would let a process
 condition masquerade as a budget decision, breaking the honesty of invariant 9's
-accounting and making VM-4's aggregate-budget evidence uninterpretable. A
-`StackOverflowException` is uncatchable by construction, and the call-depth
-ceiling exists to keep it unreachable through guest work.
+accounting and making VM-4's aggregate-budget evidence uninterpretable. That
+rule holds at every boundary, the host-capability catch described below
+included: no budget dimension, no `ResourceExhaustion` reason code and no
+carve-out anywhere in the contract permits a caught `OutOfMemoryException` to be
+reported as a budget outcome. A `StackOverflowException` is uncatchable by
+construction, and the call-depth ceiling exists to keep it unreachable through
+guest work.
 
 **Host boundary.** Deliberate host behaviour is a return value, not an
 exception: a host capability delegate returns `VmHostCallOutcome` of
@@ -390,7 +394,8 @@ placed immediately outside the host delegate, so no host exception unwinds
 through profile or core frames. Section 7's requirement that "host exceptions
 cannot tear down or corrupt another runtime" is only enforceable at that
 placement. Translation is fixed: an `OperationCanceledException` carrying the
-operation's own token becomes `Cancellation`; anything else becomes
+operation's own token becomes `Cancellation`; anything else - an
+`OutOfMemoryException` thrown by the host delegate included - becomes
 `HostFailure` with reason `HostCapabilityFaulted`. The exception object is
 handed to an observer the host registers at runtime creation and is never placed
 in a result.
@@ -704,7 +709,7 @@ artifact-safety row. In every case diagnostics carry `RequestingOperationId` and
 
 Reporting a missing provider as `UnsupportedProfile` was rejected: a missing
 capability is not a missing profile, and `UnsupportedProfile` is defined by
-naming a requested profile ID against catalog contents, which has no meaning
+resolving a requested profile ID against the catalog, which has no meaning
 here. Adding a `NestedLoadFailure` category was rejected: section 7 says a
 guest-initiated load adds no category, and the failure is already expressible.
 

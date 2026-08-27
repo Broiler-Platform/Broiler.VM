@@ -1,10 +1,13 @@
 namespace Broiler.VM.Architecture.Tests;
 
 /// <summary>
-/// Group B: the rules decidable only from compiled metadata. They read the AssemblyRef,
-/// MemberRef, TypeDef and CustomAttribute tables directly, because a package can reintroduce an
-/// edge that no project file spells out, and because loading an assembly to reflect over it
-/// would run the very module initializers rule B5b exists to detect.
+/// Group B: the rules decidable only from compiled metadata. B1, B2, B3, B5, B5b, B6 and B7 read
+/// the AssemblyRef, MemberRef, TypeRef, TypeDef and CustomAttribute tables directly, because a
+/// package can reintroduce an edge that no project file spells out, and because loading an
+/// assembly to reflect over it would run the very module initializers rule B5b exists to detect.
+/// B4 and the member half of E5 are the scoped exception: they reflect over assemblies this test
+/// project already references, because they inspect a public signature that is already loaded
+/// rather than trying to prove the absence of dynamic loading. ADR 0001 records that split.
 /// </summary>
 /// <remarks>
 /// Several of these are registered Vacuous at VM-0 in rules.register.json. That is the honest
@@ -69,6 +72,9 @@ public sealed class AssemblyMetadataRuleTests
         {
             Assert.Empty(ArchitectureRules.B5b(assembly));
         }
+
+        // The witness: ModuleInitializerWitness carries the attribute.
+        Assert.NotEmpty(ArchitectureRules.B5b(AssemblyFacts.TestAssembly));
     }
 
     [Fact]
@@ -87,6 +93,10 @@ public sealed class AssemblyMetadataRuleTests
         {
             Assert.Empty(ArchitectureRules.B7(assembly));
         }
+
+        // The witness: a publicly nested type named BuiltInProfiles. Nested, deliberately - a
+        // visibility test written for top-level types alone would not see it.
+        Assert.NotEmpty(ArchitectureRules.B7(AssemblyFacts.TestAssembly));
     }
 
     [Fact]

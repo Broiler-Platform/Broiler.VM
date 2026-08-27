@@ -357,8 +357,10 @@ asserts no field count: a count authored here could not survive the other
 records adding mandatory declarations, and the amendment rule preserves what a
 count was for - that a descriptor cannot grow silently.
 
-Every field is required and none is defaulted, with one exception noted in the
-table.
+Every field is required and none is defaulted, with two exceptions noted in the
+table: `BuiltAgainstCoreContractVersion` (row 22), defaulted to a core
+constant, and `ArtifactSharing` (row 27), defaulted to the restrictive
+`RuntimeScoped`.
 
 | # | Field | Type, all paper at VM-0 | Semantics fixed by |
 |---|---|---|---|
@@ -383,11 +385,15 @@ table.
 | 19 | `AsynchronousInstantiation` | declared or not declared | ADR 0009 |
 | 20 | `ExternalSuspension` | declared or not declared | ADR 0009 |
 | 21 | `PayloadKindIdRange` | the closed range of profile payload kind IDs | ADR 0005 |
-| 22 | `BuiltAgainstCoreContractVersion` | `int`; the only factory-defaulted field, defaulted to the constant `VmCoreContract.Version` | ADR 0003 |
+| 22 | `BuiltAgainstCoreContractVersion` | `int`; factory-defaulted to the constant `VmCoreContract.Version` | ADR 0003 |
 | 23 | `AuthoredCoreContractVersion` | `int` literal written by the profile author; never derived from a constant | ADR 0003 |
 | 24 | `ConformanceManifestId`, `ConformanceManifestVersion` | opaque identity of the conformance corpus, ordinal; used for support tables and evidence only, never for matching | this record |
 | 25 | `DiagnosticsIdentity` | opaque token under the profile's own ID namespace | this record |
 | 26 | `PackageIdentity` | `PackageId` + `PackageVersion` + `OwnerTag`. `PackageId` participates only in the reserved-namespace self-consistency check; `PackageVersion` participates in nothing | this record |
+| 27 | `ArtifactSharing` | `{Shareable, RuntimeScoped}`; defaulted to `RuntimeScoped` when a profile declares nothing. A verifier may narrow an artifact to `RuntimeScoped` and may never widen it | ADR 0006 |
+| 28 | `FaultRecovery` | `{InstanceRecoverable, InstanceFatal}`; mandatory, no default | ADR 0004 |
+| 29 | `MaxUnchargedWork` | `uint` >= 1; the bound, in the profile's own work units, on work performed between two `Poll()` calls | ADR 0007 |
+| 30 | `ChargingGranularity` | `uint` >= 1; the charging granularity `g` of ADR 0007's obligation CO-1, in the same work units | ADR 0007 |
 
 Empty `HostCapabilityDescriptors` means the profile imports nothing; it is a
 legal and expected state, not an omission.

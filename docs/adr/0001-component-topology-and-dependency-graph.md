@@ -315,9 +315,11 @@ WITNESSES. An Active rule ships a WITNESS: a deliberately violating input the
 rule must reject. Eleven witness project files live at
 `src/tests/Broiler.VM.Architecture.Tests/witnesses/` (exists at VM-0:
 src/tests/Broiler.VM.Architecture.Tests/witnesses/) with the extension
-`.csproj.witness` so MSBuild never globs them into the build; they are not one
-per rule, because Rule A7 and Rule A8 share an input. Two further witnesses are
-types compiled into the test assembly itself (exists at VM-0:
+`.csproj.witness` so MSBuild never globs them into the build; they are neither
+one per rule nor all group A's. Ten of them serve the eleven group A rules,
+because Rule A7 and Rule A8 share an input, and the eleventh is Rule D1's
+inbound input. Two further witnesses are types compiled into the test assembly
+itself (exists at VM-0:
 src/tests/Broiler.VM.Architecture.Tests/DynamicLoadingWitness.cs,
 src/tests/Broiler.VM.Architecture.Tests/PublicSurfaceLeakWitness.cs), because
 the violations they carry are metadata facts rather than project-file facts. A
@@ -328,10 +330,18 @@ TWO ENFORCEMENT LEVELS ARE REQUIRED, not one. A project-file scan cannot see a
 package-shaped reintroduction of a forbidden edge, and a metadata scan cannot
 see an unused ProjectReference or a shared-source `Compile` item that has not
 yet produced a type. Group A reads project files; group B reads compiled
-metadata with `System.Reflection.Metadata` over a `PEReader` and never by
-loading and reflecting, because using runtime reflection to prove the absence of
-runtime reflection would introduce the machinery into the test host and would
-miss every unexecuted call site.
+metadata. The AssemblyRef, MemberRef, TypeDef and CustomAttribute rules - B1,
+B2, B3, B5, B5b, B6 and B7 - read that metadata with
+`System.Reflection.Metadata` over a `PEReader` and never by loading and
+reflecting, because using runtime reflection to prove the absence of runtime
+reflection would introduce the machinery into the test host and would miss every
+unexecuted call site. The exported-member checks do use ordinary reflection, and
+that is a scoped exception rather than an oversight: Rule B4 and the member half
+of Rule E5 call `GetExportedTypes` and `GetMembers` on assemblies this test
+project already references. They inspect a public signature that is already
+loaded, so reflection reads exactly the thing it is asked about; neither is
+trying to prove the absence of dynamic loading, which is Rule B5's job and stays
+on the `PEReader` path, as does Rule E5's exported-type half.
 
 THE COUNTS. 28 rows: 19 Active, 6 Vacuous, 3 Deferred. The Vacuous rules are B2,
 B3, B4, B5b, B6 and B7; the Deferred rules are C1, C2 and C3.

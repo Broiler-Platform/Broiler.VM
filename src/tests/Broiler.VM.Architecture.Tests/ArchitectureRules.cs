@@ -38,10 +38,8 @@ internal static class ArchitectureRules
 
     /// <summary>A1: no ProjectReference resolves outside the component root.</summary>
     internal static IEnumerable<string> A1(ComponentGraph.ProjectFile project) =>
-        project.ProjectReferences
-            .Where(static reference => !reference.Contains('$'))
-            .Where(reference => !reference.StartsWith(ComponentGraph.Root, StringComparison.OrdinalIgnoreCase))
-            .Select(reference => $"{project.RelativePath} -> {reference}");
+        project.ProjectReferences.SelectMany(reference =>
+            Escapes(reference, $"{project.RelativePath} -> "));
 
     /// <summary>A2: no PackageReference names a Broiler package.</summary>
     internal static IEnumerable<string> A2(ComponentGraph.ProjectFile project) =>
@@ -54,10 +52,67 @@ internal static class ArchitectureRules
     /// A1 and A2 while creating exactly the coupling roadmap section 9 forbids by name.
     /// </summary>
     internal static IEnumerable<string> A3(ComponentGraph.ProjectFile project) =>
-        project.SourceItemPaths
-            .Where(static item => !item.Contains('$'))
-            .Where(item => !item.StartsWith(ComponentGraph.Root, StringComparison.OrdinalIgnoreCase))
-            .Select(item => $"{project.RelativePath} includes {item}");
+        project.SourceItemPaths.SelectMany(item =>
+            Escapes(item, $"{project.RelativePath} includes "));
+
+    /// <summary>
+    /// Decides whether one declared path leaves the component, and refuses to answer "no" for a
+    /// path it cannot resolve.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// An earlier version of A1 and A3 skipped any path containing an MSBuild property, on the
+    /// grounds that it could not be resolved to a real location. That is a hole rather than a
+    /// simplification: `&lt;Compile Include="$(MSBuildThisFileDirectory)..\..\..\Broiler.JS\**\*.cs" /&gt;`
+    /// is the shared source link roadmap section 9 forbids by name, and it would have cleared A3
+    /// without being looked at.
+    /// </para>
+    /// <para>
+    /// So an unresolvable path is a violation of its own kind, and a resolvable one is judged on
+    /// where it lands. The strictness costs nothing today - no project in the component declares
+    /// a property-bearing source item - and it means the rule can never clear something it did
+    /// not understand.
+    /// </para>
+    /// </remarks>
+    private static IEnumerable<string> Escapes(string path, string prefix)
+    {
+        if (path.Contains('$'))
+        {
+            // The property cannot be evaluated here, so the literal is judged instead: a path
+            // whose parent-directory hops outrun its rooted segments leaves the component
+            // wherever the property points.
+            var segments = path.Split('/', '\\');
+            var depth = 0;
+            var escapes = false;
+
+            foreach (var segment in segments)
+            {
+                if (segment == "..")
+                {
+                    depth--;
+                    if (depth < 0)
+                    {
+                        escapes = true;
+                    }
+                }
+                else if (segment.Length > 0 && segment != "." && !segment.Contains('$'))
+                {
+                    depth++;
+                }
+            }
+
+            yield return escapes
+                ? $"{prefix}{path} (unresolvable, and its parent-directory hops leave the component)"
+                : $"{prefix}{path} (unresolvable path, cannot be cleared)";
+
+            yield break;
+        }
+
+        if (!path.StartsWith(ComponentGraph.Root, StringComparison.OrdinalIgnoreCase))
+        {
+            yield return prefix + path;
+        }
+    }
 
     /// <summary>A4: no product project references a test-only project.</summary>
     internal static IEnumerable<string> A4(ComponentGraph.ProjectFile project)
@@ -221,7 +276,9 @@ internal static class ArchitectureRules
         assembly.PublicTypeNames
             .Where(static name =>
             {
-                var simpleName = name[(name.LastIndexOf('.') + 1)..];
+                // A nested type is spelled Outer+Inner, so the leaf follows the last separator
+                // of either kind.
+                var simpleName = name[(name.LastIndexOfAny(['.', '+']) + 1)..];
                 return simpleName is "BuiltInProfiles" or "DefaultProfiles"
                     or "AllProfiles" or "KnownProfiles";
             })
@@ -276,7 +333,10 @@ internal static class ArchitectureRules
     /// </summary>
     internal static IEnumerable<string> B5(AssemblyFacts assembly)
     {
-        string[] forbidden =
+        // Matched by exact member name rather than by prefix: a prefix test reads
+        // System.Type.GetTypeFromHandle - which is ordinary typeof - as a call to
+        // System.Type.GetType, and a rule that cries wolf gets suppressed.
+        string[] forbiddenMembers =
         [
             "System.Reflection.Assembly.Load",
             "System.Reflection.Assembly.LoadFrom",
@@ -288,16 +348,30 @@ internal static class ArchitectureRules
             "System.Activator.CreateInstance",
             "System.Activator.CreateInstanceFrom",
             "System.Reflection.MethodBase.Invoke",
-            "System.Runtime.Loader.AssemblyLoadContext",
-            "System.Reflection.Emit.",
             "System.Linq.Expressions.LambdaExpression.Compile",
             "System.Runtime.InteropServices.NativeLibrary.Load",
+            "System.Runtime.InteropServices.NativeLibrary.TryLoad",
         ];
 
-        return assembly.MemberReferences
-            .Where(reference => forbidden.Any(token =>
-                reference.StartsWith(token, StringComparison.Ordinal)))
+        // Whole namespaces and types where naming the thing at all is the violation.
+        string[] forbiddenTypePrefixes =
+        [
+            "System.Reflection.Emit.",
+            "System.Runtime.Loader.",
+        ];
+
+        var byMember = assembly.MemberReferences
+            .Where(reference => forbiddenMembers.Contains(reference, StringComparer.Ordinal))
             .Select(reference => $"{assembly.Name} calls {reference}");
+
+        // A type can be reached without any member reference - held in a field, named in a
+        // signature - so the TypeRef table is swept as well as the MemberRef table.
+        var byType = assembly.TypeReferences
+            .Where(reference => forbiddenTypePrefixes.Any(prefix =>
+                reference.StartsWith(prefix, StringComparison.Ordinal)))
+            .Select(reference => $"{assembly.Name} names {reference}");
+
+        return byMember.Concat(byType);
     }
 
     /// <summary>

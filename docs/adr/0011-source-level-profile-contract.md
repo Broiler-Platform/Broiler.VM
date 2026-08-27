@@ -162,10 +162,6 @@ never worked around inside the core's execution loop, and it is never proven
 against a product profile in place of the fixture and application-local ones
 (invariant 13).
 
-Rule A4: No product project has a ProjectReference resolving under src/tests/.
-Status: Active; witness
-src/tests/Broiler.VM.Architecture.Tests/witnesses/A4-product-references-test.csproj.witness.
-
 **Rejected.** Leaving the checklist as descriptive prose: section 4 says VM-1
 proves each item, and a row without a named demonstration is unfalsifiable, so
 VM-1's gate would be argued rather than checked. Adding rows for what the
@@ -349,10 +345,9 @@ the first match.
 |---|---|---|
 | X1 | The exception is an `OperationCanceledException` carrying the operation's own token, or cancellation was already requested | `Cancellation` |
 | X2 | Any core meter in the operation's chain is exhausted at the moment of the catch | `ResourceExhaustion`, naming the dimension and the exhausted scope |
-| X3 | The exception is an `OutOfMemoryException` | `ResourceExhaustion`, dimension `AllocatedBytes`, reason `HostAllocationFailed` |
-| X4 | Anything else | `HostFailure`, reason `HostCapabilityFaulted`, carrying the capability's `CapabilityId` and `Version` and the opaque host correlation token of ADR 0005's diagnostics field for `HostFailure` |
+| X3 | Anything else | `HostFailure`, reason `HostCapabilityFaulted`, carrying the capability's `CapabilityId` and `Version` and the opaque host correlation token of ADR 0005's diagnostics field for `HostFailure` |
 
-X1 and X2 precede X4 so that a capability which observes cancellation or
+X1 and X2 precede X3 so that a capability which observes cancellation or
 exhaustion and throws is reported as what actually happened rather than as a
 host defect. Misclassifying either would corrupt every cancellation and
 exhaustion metric built on those categories, and section 14 blocks a
@@ -362,13 +357,17 @@ own; it does not replace the stage outcome precedence ADR 0005 owns.
 **One seam to reconcile.** ADR 0005 states the same translation in two rules -
 an `OperationCanceledException` carrying the operation's own token becomes
 `Cancellation`, anything else becomes `HostFailure` / `HostCapabilityFaulted` -
-which are X1 and X4. X2 and X3 are this record's refinement, and they are
-strictly additive: they reclassify only throws where a meter is already
-exhausted or the CLR itself failed an allocation, both of which ADR 0005's
-default would report as a host defect. Read together, the four-rule order
-governs. Reconciling the two sentences is a one-line edit to ADR 0005 that the
-core-contract owner must make before either record is accepted; VM-0 records
-the divergence rather than silently resolving it in one direction.
+which are X1 and X3. X2 is this record's only refinement of them, and it is a
+narrowing of that catch-all rather than an addition to it: it reclassifies the
+single case where a core meter in the operation's chain is already exhausted -
+a case ADR 0005 rules on nowhere by name, and one its catch-all would report as
+a host defect. Read together, the three-rule order governs. Recognising X2 is a
+one-line edit to ADR 0005 that the core-contract owner must make before either
+record is accepted; VM-0 records the divergence rather than silently resolving
+it in one direction. There is deliberately no rule for `OutOfMemoryException`:
+ADR 0005 forbids reporting one as `ResourceExhaustion` by name, because a
+process condition must not masquerade as a budget decision, so a host-boundary
+`OutOfMemoryException` falls through to X3 like any other escaping exception.
 
 What happens to the operation is F7's business: under `TerminateOperation` the
 operation completes with the translated category, does not return to the
@@ -610,10 +609,10 @@ and, where a sibling already owns the matching identifier, cited.
   defensible by a name test rather than by argument.
 - **Reason codes this record contributes to ADR 0005's registry**, which owns
   them: `CapabilityNotRegistered`, `CapabilitySignatureMismatch`,
-  `ForeignOpaqueRef`, `StaleOpaqueRef` and `HostAllocationFailed`.
-  `HostCapabilityFaulted`, `ReentrancyRefused` and `ThreadAffinityViolation`
-  are already in it and are used here unchanged. Adding a code later is an
-  additive amendment; renaming or removing one is not.
+  `ForeignOpaqueRef` and `StaleOpaqueRef`. `HostCapabilityFaulted`,
+  `ReentrancyRefused` and `ThreadAffinityViolation` are already in it and are
+  used here unchanged. Adding a code later is an additive amendment; renaming
+  or removing one is not.
 - **Supersedes an illustrative roadmap snippet.** P1 supersedes section 5's
   target-direction block, whose arrow reads
   `Broiler.VM.Profile.X --> Abstractions + Binary (+ Runtime contracts)`: a

@@ -192,7 +192,7 @@ is refused for the same reason.
 | (none) | `Create` refused: the aggregate parent has no remaining allowance | core | no object; `ResourceExhaustion` naming the dimension at scope `Aggregate` (ADR 0007) |
 | (none) | `Create` refused: a dimension carries neither a value nor an adopt marker, or a mandatory lifecycle bound is missing | core | no object; the reason ADR 0007 or ADR 0009 names for that field |
 | (none) | `Create` refused: the aggregate parent is already disposed | core | no object; `InvalidState` |
-| Ready | a profile breaks the metering contract (ADR 0007) | core | Poisoned |
+| Ready | a profile breaks the metering contract (ADR 0007); the operation completes `ProfileFault`, reason `ProfileContractViolation` (ADR 0005), and never `InvalidState` | core | Poisoned |
 | Ready or Poisoned | `Dispose()` | caller or host | Disposing |
 | Poisoned | any call other than `Dispose` or a diagnostics read | any | unchanged; `InvalidState` |
 | Disposing | the last in-flight operation completes, or the drain budget expires | core | Disposed |
@@ -379,7 +379,7 @@ release blocker, and an owner check is exactly what makes a wedged operation
 unrecoverable by a supervisor.
 
 **Two gates are declaration gates, not principal gates.** External suspension
-requires both the descriptor's `DeclaresExternalSuspension` and the runtime
+requires both the descriptor's `ExternalSuspension` declaration and the runtime
 option `ExternalSuspension = Enabled`; a guest-initiated load requires both the
 descriptor's `GuestInitiatedLoads` declaration and a registered artifact
 provider. A closed declaration gate on a control operation returns
@@ -653,6 +653,17 @@ a `Guest`- or `Instantiation`-origin resumption object is never handed to a
 control handle, and `TryTakeSuspension` answers `Unsupported` rather than
 crossing a resume path that no longer exists.
 
+`ProfileContractViolation` is deliberately not on the list either, and no
+reading of this record puts it there. A profile that breaks the metering
+contract - by charging more than its declared `MaxUnchargedWork` between two
+polls, for instance (ADR 0007) - has already run, so the breach completes the
+operation `ProfileFault` with that reason, which ADR 0005 owns and registers
+under that category, and poisons the runtime. Only the calls that arrive after
+the poisoning are `InvalidState`, with reason `TerminalFault`. Reporting a
+breach the profile committed as `InvalidState` would assert that something
+about the caller's state was wrong when nothing was, which is exactly the
+misreport the closed set above exists to prevent.
+
 **What the result must answer.** An `InvalidState` result must, on its own,
 answer which contract version produced it, which object was rejected and in
 which state, which transition was attempted, and why. ADR 0005's `VmDiagnostics`
@@ -743,12 +754,11 @@ takes exactly one options object, and this record owns its field list.
 
 **Four descriptor fields this record requires.**
 `SupportsConcurrentVerification`, `ThreadAffinity`, and `CancellationPollBound`
-are fields 10, 11, and 12 of ADR 0002's frozen descriptor table. `FaultRecovery`
-is the fourth, and ADR 0002's table does not yet carry it; adding it is an edit
-to that record under its own amendment rule, and until that lands the two
-records disagree by exactly this one field. This record also relies on, and does
-not own, `DeclaresExternalSuspension`, `GuestInitiatedLoads`,
-`AsynchronousInstantiation`, and `AbandonBudget`.
+are fields 10, 11, and 12 of ADR 0002's frozen descriptor table, and
+`FaultRecovery` is the fourth, carried by that same table with its semantics
+fixed here. The table is the single authority for all four, including their
+spelling. This record also relies on, and does not own, `ExternalSuspension`,
+`GuestInitiatedLoads`, `AsynchronousInstantiation`, and `AbandonBudget`.
 
 **VM-0 also freezes what contract version 1 admits and release 1 need not
 implement.** The external-suspension transitions exist even though no release-1
@@ -855,18 +865,17 @@ if (!created.IsSuccess)
   part of that milestone's exit evidence. ADR 0001 owns the register and the
   count and identifiers of every Vacuous and Deferred rule.
 
-- **Three facts this record needs from sibling records are not there yet.** ADR
-  0002's frozen descriptor table does not carry `FaultRecovery`. ADR 0005's
-  frozen `VmDiagnostics` field set has no per-category group for `InvalidState`
-  carrying the object kind, its observed state, and the attempted call. ADR
-  0003's frozen public-name table carries `VmRuntime`,
+- **Two facts this record needs from sibling records are not there yet.** ADR
+  0005's frozen `VmDiagnostics` field set has no per-category group for
+  `InvalidState` carrying the object kind, its observed state, and the
+  attempted call. ADR 0003's frozen public-name table carries `VmRuntime`,
   `VmRuntimeCreationResult`, and `VmControlResult` for this record but not
   `VmInstance`, `VmOperation`, `VmObjectId`, or `VmThreadAffinity`. Each is a
   small edit to the record that owns it, made under that record's own amendment
-  rule; until all three land, this record and those three disagree by exactly
-  one descriptor field, one diagnostics group, and four name-table rows.
-  Recording the gaps is cheaper than assuming them closed, and each is visible
-  to a reader comparing the four records.
+  rule; until both land, this record and those two disagree by exactly one
+  diagnostics group and four name-table rows. Recording the gaps is cheaper
+  than assuming them closed, and each is visible to a reader comparing the
+  three records.
 
 - **VM-1 inherits named implementation obligations from this record**, and they
   are obligations rather than gate changes: budget meters, latches, lease

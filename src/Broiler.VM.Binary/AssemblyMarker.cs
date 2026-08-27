@@ -6,8 +6,9 @@ namespace Broiler.VM.Binary;
 /// arrives, the tests anchor on those types instead and this marker is deleted.
 /// </summary>
 /// <remarks>
-/// Its existence is the honest shape of milestone VM-0. The graph, the package boundaries and
-/// the forbidden edges are frozen and proven; nothing that executes bytecode exists yet.
+/// Its existence is the honest shape of milestone VM-0. The graph and the package boundaries are
+/// frozen, and every forbidden edge in the VM-0 shell graph is expressed and witnessed; nine of
+/// the twenty-eight rules await their subject. Nothing that executes bytecode exists yet.
 /// </remarks>
 internal sealed class AssemblyMarker
 {

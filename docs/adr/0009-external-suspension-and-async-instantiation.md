@@ -173,7 +173,7 @@ the runtime owner throughout, by G1.
 
 | Gate | Declared by | Default | Result when closed |
 |---|---|---|---|
-| `DeclaresExternalSuspension` on `VmProfileDescriptor` (ADR 0002) | the profile author, at composition time | none - the field is mandatory and explicit | `VmControlResult.Unsupported`, core diagnostic reason `ExternalSuspensionNotDeclared` |
+| `ExternalSuspension` on `VmProfileDescriptor` (ADR 0002) | the profile author, at composition time | none - the field is mandatory and explicit | `VmControlResult.Unsupported`, core diagnostic reason `ExternalSuspensionNotDeclared` |
 | `ExternalSuspension` in the runtime-creation options (ADR 0004) | the composition root, per runtime | `Disabled` | `VmControlResult.Unsupported`, core diagnostic reason `ExternalSuspensionNotEnabled` |
 
 Both gates are declaration gates, so a refusal is `Unsupported` and never
@@ -237,7 +237,7 @@ prevent.
 
 Core contract version 1 **admits** asynchronous instantiation. The instantiation
 stage may complete `suspension` only where the selected profile's
-`VmProfileDescriptor` declares `DeclaresAsynchronousInstantiation` (ADR 0002).
+`VmProfileDescriptor` declares `AsynchronousInstantiation` (ADR 0002).
 ADR 0005 owns the stage-outcome matrix; this record fixes the declaration gate,
 the undeclared path, and what a suspended instantiation may hold.
 
@@ -358,12 +358,16 @@ demonstrations belong in VM-1's exit gate, and adding them there is a roadmap
 amendment that VM-0 proposes and does not apply. Closed by: VM-1 discharging the
 two obligations recorded in Consequences below.
 
-Exclusion EX-21: no architecture rule asserts any transition, member, state,
-gate, or bound decided in this record. Reason: the VM-0 product graph exports
-one static class holding two integer constants, so there is no suspension
-surface for a rule to range over; the register's only assertions that reach this
-file check its header fields and its index row. Closed by: VM-1, when the types
-exist and the drift assertions listed in Consequences become writable.
+Exclusion EX-21: no architecture rule asserts any transition, member, state or
+category named in ADRs 0002 through 0011 - this record's transitions, members,
+states, gates and bounds among them - beyond the two core contract version
+constants ADR 0003 owns. Reason: the VM-0 product graph exports one static
+class holding those two integer constants and nothing else, so no other decided
+surface exists for a rule to range over; the register's remaining assertions
+that reach the ADR files check their header fields and their index rows. Closed
+by: the milestone at which each named surface exists and its drift assertions
+become writable, beginning with VM-1 and the four this record lists in
+Consequences.
 
 Exclusion EX-22: `MaxSuspendedResidency` and `MaxLiveSuspendedOperations` are
 mandatory at runtime creation on paper only. VM-0 fixes no value, no unit

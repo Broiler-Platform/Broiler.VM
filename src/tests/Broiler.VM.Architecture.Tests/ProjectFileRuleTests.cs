@@ -33,6 +33,13 @@ public sealed class ProjectFileRuleTests
         Assert.Empty(Sweep(ArchitectureRules.A3));
         Assert.NotEmpty(ArchitectureRules.A3(
             ComponentGraph.Witness("A3-shared-source-link.csproj.witness")));
+
+        // The second witness is the one that matters. An earlier version of this rule skipped
+        // any path containing an MSBuild property, so a shared source link written through
+        // $(MSBuildThisFileDirectory) cleared A3 without being examined - and A7 does not inspect
+        // source items, so nothing else would have caught it.
+        Assert.NotEmpty(ArchitectureRules.A3(
+            ComponentGraph.Witness("A3-property-shared-source-link.csproj.witness")));
     }
 
     [Fact]
@@ -77,14 +84,26 @@ public sealed class ProjectFileRuleTests
             .ThenBy(static edge => edge.To, StringComparer.Ordinal)
             .ToArray();
 
-        // Both directions of the difference are reported: an edge the component grew without
-        // amending ADR 0001, and an edge the manifest promises that the checkout no longer has.
-        var added = actual.Except(ArchitectureRules.DeclaredEdges)
-            .Select(static edge => $"+ {edge.From} -> {edge.To}");
-        var removed = ArchitectureRules.DeclaredEdges.Except(actual)
-            .Select(static edge => $"- {edge.From} -> {edge.To}");
+        // A MULTISET comparison, not a set difference. LINQ's Except deduplicates both operands,
+        // so a project that declares the same ProjectReference twice would compare equal to one
+        // that declares it once - and a duplicate edge is exactly the drift this rule exists to
+        // catch. Both directions are reported: an edge the component grew without amending
+        // ADR 0001, and an edge the manifest promises that the checkout no longer has.
+        var difference = Counted(actual, +1)
+            .Concat(Counted(ArchitectureRules.DeclaredEdges, -1))
+            .GroupBy(static entry => entry.Edge, StringComparer.Ordinal)
+            .Select(static group => (Edge: group.Key, Delta: group.Sum(static entry => entry.Sign)))
+            .Where(static entry => entry.Delta != 0)
+            .Select(static entry => entry.Delta > 0
+                ? $"checkout has {entry.Delta} more: {entry.Edge}"
+                : $"manifest has {-entry.Delta} more: {entry.Edge}")
+            .OrderBy(static message => message, StringComparer.Ordinal);
 
-        Assert.Empty(added.Concat(removed));
+        Assert.Empty(difference);
+
+        static IEnumerable<(string Edge, int Sign)> Counted(
+            IEnumerable<GraphManifest.Edge> edges, int sign) =>
+            edges.Select(edge => ($"{edge.From} -> {edge.To}", sign));
 
         // The witness: an edge that is not in the manifest is seen as added.
         var witness = ComponentGraph.Witness("A8-profile-references-runtime.csproj.witness");
@@ -93,6 +112,55 @@ public sealed class ProjectFileRuleTests
                 .Select(target => new GraphManifest.Edge(witness.AssemblyName, target)));
 
         Assert.NotEmpty(withWitness.Except(ArchitectureRules.DeclaredEdges));
+    }
+
+    [Fact]
+    public void A7_The_Declared_Graph_Is_Acyclic()
+    {
+        // The register says A7 subsumes acyclicity. It does so only because the manifest it
+        // compares against is itself acyclic, and nothing was checking that - so the claim is
+        // made good here rather than assumed. A cycle is also the one graph defect the build
+        // catches on its own, by refusing to restore, which makes it easy to leave untested.
+        var outgoing = ArchitectureRules.DeclaredEdges
+            .GroupBy(static edge => edge.From, StringComparer.Ordinal)
+            .ToDictionary(
+                static group => group.Key,
+                static group => group.Select(static edge => edge.To).ToArray(),
+                StringComparer.Ordinal);
+
+        var settled = new HashSet<string>(StringComparer.Ordinal);
+        var onStack = new HashSet<string>(StringComparer.Ordinal);
+        var cycles = new List<string>();
+
+        foreach (var node in outgoing.Keys)
+        {
+            Walk(node, []);
+        }
+
+        Assert.Empty(cycles);
+
+        void Walk(string node, IReadOnlyList<string> path)
+        {
+            if (onStack.Contains(node))
+            {
+                cycles.Add(string.Join(" -> ", [.. path, node]));
+                return;
+            }
+
+            if (!settled.Add(node))
+            {
+                return;
+            }
+
+            onStack.Add(node);
+
+            foreach (var next in outgoing.TryGetValue(node, out var targets) ? targets : [])
+            {
+                Walk(next, [.. path, node]);
+            }
+
+            onStack.Remove(node);
+        }
     }
 
     [Fact]
@@ -125,6 +193,54 @@ public sealed class ProjectFileRuleTests
         Assert.Empty(Sweep(ArchitectureRules.A11));
         Assert.NotEmpty(ArchitectureRules.A11(
             ComponentGraph.Witness("A11-profile-reference-outside-composition-root.csproj.witness")));
+    }
+
+    [Fact]
+    public void The_Graph_Manifest_Describes_The_Checkout()
+    {
+        // A7 compares only the edge multiset, so the manifest's other columns were description
+        // rather than assertion: ADR 0001 prints them as authority while nothing checked them.
+        var problems = new List<string>();
+
+        foreach (var declared in GraphManifest.Projects)
+        {
+            var actual = ComponentGraph.Projects
+                .SingleOrDefault(project => string.Equals(
+                    project.RelativePath, declared.Path, StringComparison.OrdinalIgnoreCase));
+
+            if (actual is null)
+            {
+                problems.Add($"{declared.Path} is in the manifest but not in the checkout");
+                continue;
+            }
+
+            if (!string.Equals(actual.AssemblyName, declared.AssemblyName, StringComparison.Ordinal))
+            {
+                problems.Add($"{declared.Path}: AssemblyName {actual.AssemblyName} != {declared.AssemblyName}");
+            }
+
+            if (!string.Equals(actual.RootNamespace, declared.RootNamespace, StringComparison.Ordinal))
+            {
+                problems.Add($"{declared.Path}: RootNamespace {actual.RootNamespace} != {declared.RootNamespace}");
+            }
+
+            if (!string.Equals(actual.PackageId, declared.PackageId, StringComparison.Ordinal))
+            {
+                problems.Add($"{declared.Path}: PackageId {actual.PackageId ?? "none"} != {declared.PackageId ?? "none"}");
+            }
+
+            if (actual.IsTestOnly != declared.IsTestProject && declared.IsPackable)
+            {
+                problems.Add($"{declared.Path}: packable but under src/tests/");
+            }
+        }
+
+        var unlisted = ComponentGraph.Projects
+            .Where(project => !GraphManifest.Projects.Any(declared => string.Equals(
+                declared.Path, project.RelativePath, StringComparison.OrdinalIgnoreCase)))
+            .Select(static project => $"{project.RelativePath} is in the checkout but not in the manifest");
+
+        Assert.Empty(problems.Concat(unlisted));
     }
 
     [Fact]

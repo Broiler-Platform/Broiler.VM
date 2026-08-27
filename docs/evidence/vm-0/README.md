@@ -14,7 +14,7 @@ may treat VM-0 as accepted on the strength of it.
 | Field | Value |
 |---|---|
 | Milestone | VM-0 - freeze ownership, terminology, and the build-proven graph |
-| Roadmap revision | `docs/roadmap.md` as of component commit `6235603` |
+| Roadmap revision | `docs/roadmap.md` as of component commit `2fbc7d3`, which is its current content |
 | Core contract version | 1, read from the build output as `VmCoreContract.Version` |
 | Evidence-bundle ID | VM-0-001 |
 | Collection timestamp | 2026-08-27, local time, single session; re-collected against the landed commit |
@@ -32,7 +32,7 @@ each blocks.
 | Field | Value |
 |---|---|
 | Component commit | `2fbc7d3b19f58654d97248ee096eea1b13a60178` |
-| Dirty-tree state | **Clean** for every source, project, record and register file. The only files modified after that commit are the four logs in this directory, which are this collection's own output. |
+| Dirty-tree state | **Clean** for every source, project, record and register file. The only files modified after that commit are the logs in this directory and this file, which are this collection's own output. |
 | Paths under test | `src/Broiler.VM.Abstractions`, `src/Broiler.VM.Binary`, `src/Broiler.VM.Runtime`, `src/tests/Broiler.VM.Fixtures`, `src/tests/Broiler.VM.Architecture.Tests` |
 | Records under test | `docs/adr/0001` through `docs/adr/0012` and `docs/adr/README.md` |
 
@@ -73,7 +73,7 @@ are readable by reviewers who do not share this machine's locale.
 | 1 | `dotnet build Broiler.VM.slnx -c Release` | `build.log` |
 | 2 | `dotnet test Broiler.VM.slnx -c Release` | `test.log` |
 | 3 | `dotnet pack Broiler.VM.slnx -c Release -o <temp>` | `pack.log` |
-| 4 | Negative control: inject `Broiler.VM.Runtime -> Broiler.VM.Fixtures`, re-run step 2, revert, re-run step 2 | `negative-control.log` |
+| 4 | Negative control: inject `Broiler.VM.Runtime -> Broiler.VM.Fixtures`, re-run step 2, revert, re-run step 2. Both runs are in the log, separated by a header. | `negative-control.log` |
 
 Step 4 is the reason the green suite in step 2 means anything. The injected edge is a product
 project referencing a test-only project: forbidden, but acyclic, so the rules have to catch it
@@ -82,20 +82,24 @@ are recorded here because a discarded control is evidence too:
 
 - injecting the edge with `sed` mangled the Windows relative path into one that resolved
   nowhere, so only the catch-all edge rule fired and the containment rule never saw a real
-  violation; and
+  violation;
 - injecting `Broiler.VM.Abstractions -> Broiler.VM.Fixtures` created a genuine cycle, which
   MSBuild rejects at restore, so no test ran at all. That is a stronger result for that
-  particular edge and a useless one for the general rule.
+  particular edge and a useless one for the general rule; and
+- an earlier revision of this bundle described the revert-and-re-run step but retained only the
+  failing run, so the sentence "after revert, all tests pass" was not evidenced by anything in
+  the directory. Both runs are now in the log.
 
 ## Outputs
 
 | Artefact | Result |
 |---|---|
 | `build.log` | 5 projects, Release, **0 warnings, 0 errors** |
-| `test.log` | **33 passed, 0 failed, 0 skipped** |
+| `test.log` | **35 passed, 0 failed, 0 skipped** |
 | `pack.log` | exactly **3 `.nupkg` and 3 `.snupkg`** - Abstractions, Binary, Runtime. `Broiler.VM.Fixtures` did not pack. |
-| `negative-control.log` | injected forbidden edge -> **A4 and A7 fail**; after revert, 33 passed |
-| `hashes.txt` | SHA-256 of the vendored, generated and contract-bearing files |
+| `negative-control.log` | run 1, edge injected: **A4 and A7 fail**, 33 of 35 pass. Run 2, after revert: 35 pass. Both retained. |
+| `d1-outcome.txt` | which branch rule D1 took - `SCANNED` here, because an aggregate checkout is present above the component |
+| `hashes.txt` | SHA-256 of the vendored and generated files, the contract-version source, and all thirteen records under `docs/adr/` |
 | `../../src/tests/Broiler.VM.Architecture.Tests/rules.register.json` | 28 rules: **19 Active, 6 Vacuous, 3 Deferred** |
 
 Observed, not asserted: the produced `Broiler.VM.Runtime.nuspec` declares dependencies only on

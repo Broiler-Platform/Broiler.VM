@@ -137,9 +137,11 @@ internal static class ComponentGraph
 
     private static string SafeFullPath(string basis, string value)
     {
-        // MSBuild properties and wildcards cannot be resolved to a real path here. They are
-        // returned unchanged so a rule can still see the literal, which is what A3 needs: a
-        // shared-source link is recognisable from its "..\..\" prefix alone.
+        // A path carrying an MSBuild property cannot be resolved to a real location here, so it
+        // is returned unchanged and the rule decides what to do with the literal. Rules A1 and
+        // A3 treat an unresolvable path as a violation of its own kind rather than clearing it -
+        // see ArchitectureRules.Escapes, which also judges whether the literal's
+        // parent-directory hops leave the component.
         var normalized = value.Replace('\\', Path.DirectorySeparatorChar);
 
         try
@@ -163,8 +165,34 @@ internal static class ComponentGraph
             .OrderBy(static value => value, StringComparer.Ordinal)
             .ToArray();
 
-    private static string? Property(XDocument document, string name) =>
-        document.Descendants(name).FirstOrDefault()?.Value?.Trim();
+    /// <summary>
+    /// Reads an identity property the way MSBuild would: the last unconditional definition wins.
+    /// </summary>
+    /// <remarks>
+    /// Taking the first would invert MSBuild's own evaluation order, so a second
+    /// <c>&lt;OutputType&gt;Exe&lt;/OutputType&gt;</c> appended after a <c>Library</c> would build an
+    /// executable while rule A9 read the harmless earlier value. A conditional definition is not
+    /// resolvable here at all - the condition depends on properties this reader does not
+    /// evaluate - so it is surfaced as a sentinel that fails the rule loudly instead of being
+    /// silently ignored.
+    /// </remarks>
+    private static string? Property(XDocument document, string name)
+    {
+        var definitions = document.Descendants(name).ToArray();
+
+        if (definitions.Any(static definition => definition.Attribute("Condition") is not null))
+        {
+            return ConditionalProperty;
+        }
+
+        return definitions.LastOrDefault()?.Value?.Trim();
+    }
+
+    /// <summary>
+    /// Stands in for an identity property this reader cannot evaluate. It matches no legal value,
+    /// so any rule comparing against it fails and says why.
+    /// </summary>
+    internal const string ConditionalProperty = "<conditional; not evaluated by the architecture tests>";
 
     internal sealed record ProjectFile(
         string Path,

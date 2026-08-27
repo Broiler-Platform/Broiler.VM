@@ -456,11 +456,9 @@ recertified by the release and recertification owner at VM-6 (Exclusion EX-17).
 | Lazy per-section verification | No; version 1 fixes whole-artifact eager verification | No | (b) a deterministic exclusion in ADR 0010's block | 0010 |
 | In-process producer input (compile straight to a verified handle) | No; version 1 mandates the byte round trip | No | (b) a deterministic exclusion in ADR 0010's block | 0010 |
 
-The table has no "Provided by this composition" column. Exclusion EX-10: no
-advertised composition exists at VM-0, so the column would have no rows and its
-absence must not be read as a claim that every composition provides every
-admitted artefact. Reason: VM-0 creates no composition-root project (ADR 0001).
-Closed by: VM-3.
+The table has no "Provided by this composition" column, and its absence must not
+be read as a claim that every composition provides every admitted artefact; see
+Exclusion EX-10 in section 13.
 
 ### 9. The frozen vocabulary
 
@@ -499,12 +497,25 @@ table's wording a release gate.
 
 ### 10. The frozen public-name table
 
-Every name below is used verbatim by every record that mentions the concept. No
-author invents a public name; introducing one is an edit to this table in the
-same change. **The namespace is recorded once, here, and not per row: every
-exported type in the product graph is declared `namespace Broiler.VM;`, written
-explicitly in its file, in all three product assemblies.** ADR 0001 owns that
-rule and the `RootNamespace` property that follows from it.
+Every name below is used verbatim by every record that mentions the concept, and
+this record fixes it centrally for the whole ADR set. **The table is not the
+whole frozen public surface, though, and absence from it never means a name is
+free.** A public name that exactly one contract-bearing record introduces and
+uses is frozen by that record's own normative text instead, no less firmly for
+having no row here. Names frozen that way include ADR 0005's result vocabulary -
+`VmOutcome`, `VmReason`, `IVmOperationResult`, `VmVerificationResult`,
+`VmInstantiationResult`, `VmInvocationResult`, `VmSourcePosition`,
+`VmCallerIdentity` and `VmHostCallOutcome`; ADR 0004's lifecycle objects
+`VmInstance`, `VmOperation`, `VmObjectId` and `VmThreadAffinity`; and ADR 0002's
+identity types `VmProfileId`, `VmFeatureManifestId` and `VmFormatVersionRange`.
+No author invents a public name in either place: introducing a name a second
+record must repeat is an edit to this table in the same change, and introducing
+a single-record name is an edit to the record that owns it.
+
+**The namespace is recorded once, here, and not per row: every exported type in
+the product graph is declared `namespace Broiler.VM;`, written explicitly in its
+file, in all three product assemblies.** ADR 0001 owns that rule and the
+`RootNamespace` property that follows from it.
 
 Except for `VmCoreContract`, every row is a VM-0 decision on paper; no file at
 VM-0.
@@ -573,7 +584,7 @@ outside ASCII.
 
 | # | Section | Subsection | Old text (verbatim) | Proposed new text | Requiring ADR | Requiring ruling | Status |
 |---|---|---|---|---|---|---|---|
-| 1 | header | document header | `[The evidence ledger](roadmap.status.md) records VM-0 through VM-6 as not started.` | `[The evidence ledger](roadmap.status.md) records VM-0 as in progress and VM-1 through VM-6 as not started.` | 0012 | ledger update rule 1; VM-0 scope ruling item 7 | Applied at VM-0 |
+| 1 | header | document header | `[The evidence ledger](roadmap.status.md) records VM-0 through VM-6 as not started.` | `[The evidence ledger](roadmap.status.md) is the authority for what has been accepted; at the time of writing it records VM-0 as in progress and unaccepted, and VM-1 through VM-6 as not started.` | 0012 | ledger update rule 1; VM-0 scope ruling item 7 | Applied at VM-0 |
 | 2 | 2 | Core contract version and amendment | `It is versioned separately from any profile format, feature manifest, or package version, and every support table, catalog entry, and evidence bundle names it.` | `It is versioned separately from any profile format, feature manifest, package version, and persisted envelope schema version, and every support table, catalog entry, and evidence bundle names it.` | 0003 | core-contract-v1-scope-and-assignment | Proposed |
 | 3 | 3 | registration example | `var vm = VmRuntime.Create(catalog);` | `var created = VmRuntime.Create(catalog, options);` | 0004 | gate-audit gap 4 | Proposed |
 | 4 | 3 | catalog governance paragraph | `Registration rejects duplicate IDs, alias collisions, missing factories, unsupported versions, unsupported core contract versions, and descriptors whose declared identity differs from the produced executor.` | `Registration rejects duplicate IDs, confusable-ID collisions, missing factories, unsupported profile-format versions, unsupported core contract versions, and descriptors whose declared identity differs from the verifier and executor its factory produces; rejection is thrown, not returned.` | 0002 | no-profile-id-aliases; catalog-construction-failures-throw | Proposed |
@@ -602,12 +613,9 @@ already place bytes a profile obtains while executing in scope; the absence of a
 required amendment is itself the evidence that the conservative branch was the
 compatible one.
 
-Two consequences of leaving the register unapplied are recorded as exclusions
-EX-11 and EX-12 in section 13 below: the roadmap and these records disagree in
-the listed places until an owner lands the patch, and nothing checks that a
-register row's quoted old text still occurs verbatim in `docs/roadmap.md`. Each
-exclusion is stated once, in section 13, in the words the evidence bundle and
-the ledger row repeat.
+Two consequences of leaving the register unapplied are recorded in section 13
+below as Exclusion EX-11 and Exclusion EX-12, where each is stated once. This
+section cites those identifiers and does not restate their text.
 
 ### 12. The candidate-amendment register
 
@@ -631,9 +639,11 @@ anticipation.
 
 ### 13. Exclusions
 
-Every exclusion below appears in identical words in `docs/evidence/vm-0/`
-(exists at VM-0: `docs/evidence/vm-0/`) Decision field and in the VM-0 ledger
-row.
+Each exclusion below is defined here, once, and is carried elsewhere by
+identifier: the VM-0 evidence bundle (exists at VM-0: `docs/evidence/vm-0/`) and
+the VM-0 ledger row cite these identifiers, and the bundle's Decision field
+quotes in full only the subset that most limits it. The full sentence lives
+here.
 
 Exclusion EX-10: the admitted-versus-implemented table carries no "Provided by
 this composition" column at VM-0. Reason: the advertised composition set is
