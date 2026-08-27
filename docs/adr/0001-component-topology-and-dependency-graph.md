@@ -581,7 +581,7 @@ section 8's extraction gate forbids, so VM-0 does not.
 | `docs/platform-references.md` | not created (VM-0 decision on paper; no file at VM-0) | The section 17 pinned-revision table. ADR 0012 records why it is absent and what closes it. |
 | `docs/support.md` | deferred to VM-6 | The public support table. ADR 0012 records that none is published at VM-0. |
 | `THIRD_PARTY_NOTICES.md` | deferred to VM-6 | Broiler.VM has zero third-party runtime dependencies at VM-0 - SourceLink is `PrivateAssets=all` and xunit is test-only - and an empty notices file would assert a license pass that has not happened. Required at VM-6 or on the day a runtime dependency first lands, whichever comes first. |
-| `HUMAN_REVIEW.md` | deferred to VM-6 | A scoped attestation of a reviewed revision with build, test, dependency and security evidence. There is nothing to review, and a template with unfilled fields invites a false approval record. Binding rule: no Broiler.VM package is published without a completed review naming the reviewed commit. |
+| `HUMAN_REVIEW.md` | exists at VM-0: `HUMAN_REVIEW.md` | A scoped attestation of a reviewed revision with build, test, dependency and security evidence. Originally deferred to VM-6 because there was nothing to review and a template with unfilled fields invites a false approval record; created at VM-0 once a maintainer was named and the records and shell graph gave a reviewer something to look at. It is unsigned and its decision is `PENDING`, which is what keeps the original concern answered. Binding rule: no Broiler.VM package is published without a completed review naming the reviewed commit. |
 
 Three of these are boundary decisions rather than hygiene.
 

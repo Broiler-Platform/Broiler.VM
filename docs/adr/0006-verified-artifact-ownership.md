@@ -575,7 +575,8 @@ architecture rule are recorded once, by ADR 0001
 no rule to either list. Persistence, including the envelope key frozen in
 section 7, is admitted by contract and absent from the public API baseline,
 which ADR 0010 records as EX-25. And no reviewer has accepted any of it: the
-core-contract role that would approve this record is vacant, which is why its
+core-contract role that would approve this record has recorded no decision,
+which is why its
 status is `Proposed`, and why VM-0 stands as in progress rather than accepted in
 ADR 0012 (`0012-security-ownership-and-support-matrix.md`).
 

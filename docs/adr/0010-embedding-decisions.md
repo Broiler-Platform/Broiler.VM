@@ -502,7 +502,7 @@ persistence gate of EX-25, which owns that drift test.
   Persistence milestone.** It would be entered only when a named consumer
   requires a persisted code cache. Proposed owners: R1, the
   verification-boundary owner, jointly with R6, the release and recertification
-  owner - both roles are vacant at VM-0, and ADR 0012 assigns neither of them to
+  owner - both roles are held by one person at VM-0, and ADR 0012 assigns neither of them to
   this gate, because no such milestone exists. Proposed exit conditions:
   section 14's persistence-ownership row; a published outer envelope schema
   version;

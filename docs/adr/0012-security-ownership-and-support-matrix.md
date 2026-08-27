@@ -30,22 +30,31 @@ contents of the VM-0 evidence bundle. It is not contract-bearing - it names no
 lifecycle transition, no result category, and no public type of the core
 contract, and nothing here can be implemented into a shipping core.
 
-## Decision - ownership is six roles with vetoes, and all six are vacant
+## Decision - ownership is six roles with vetoes
 
 Ownership is defined as roles, each a named responsibility with a defined veto
 and a milestone by which it must be filled. A role is not a person and is not
 a job title; it is the smallest unit that can hold a veto. The role set is
-closed at six. All six are VACANT at VM-0 (VM-0 decision on paper; no file at
-VM-0), and this record names no person for any of them.
+closed at six.
 
-| Role | Owns | Veto | Must be non-vacant before | Holder at VM-0 |
+> **Ownership update: 2026-08-27.** All six roles are held by MaiRat / Maik Ratzmer, the
+> component's sole maintainer. The Holder column below and Exclusion EX-30 are written against
+> that fact; the role structure, the vetoes and the must-be-filled-by milestones are the decision
+> this record makes and are unchanged. One person holding every role means owner and reviewer are
+> not independent, which `HUMAN_REVIEW.md` records as a residual risk rather than resolving.
+
+As originally written this record named no person and recorded all six roles as vacant; the
+update above supersedes that, and the general rules about what a vacant role does and does not
+permit remain in force for any role that falls vacant later.
+
+| Role | Owns | Veto | Must be non-vacant before | Holder |
 |---|---|---|---|---|
-| **R1 Verification-boundary owner** (section 13's core security owner) | Section 7's load-time requirements, the verification failure taxonomy, the rule that verification produces the only executable input, and the rule that verification stays separable from execution | Any change to a verification entry point, to a failure category, or to the one-verifier property of section 10 | VM-2 is accepted | Vacant |
-| **R2 Host-capability allowlist owner** (R1 jointly with section 13's host-integration owner) | The typed capability surface, the artifact-provider capability as a distinct kind, capability versioning and signature matching, exception translation, and the rule that registering value capabilities never implies a provider | Any addition to the capability shape or to the allowlist | VM-4 is accepted | Vacant |
-| **R3 Fuzz-corpus owner** (R1 unless separately named) | Corpus identity and hashes, seed provenance, minimization, permanent retention of minimized regressions, and the budgets and iteration counts every security bundle records | Retiring a corpus entry | VM-2 is accepted | Vacant |
-| **R4 Vulnerability-response owner** (section 13's release owner, escalating to R1) | Intake, embargo, triage, fix, disclosure, and firing the section 15 recertification trigger | Disclosure timing and the content of a security advisory | Any package or preview is published | Vacant |
-| **R5 Core-contract-version owner** (section 13's architecture owner) | Core contract version 1 and section 2's amendment procedure | Any change to a declared transition or result category - such a change is an amendment by definition - and the minting of any version | VM-0 is accepted | Vacant |
-| **R6 Release and recertification owner** | Section 15's gates, the truthfulness of the public support table when one exists, and section 15's recertification triggers | Any release or preview publish, and any change to a claimed support column | VM-6 is accepted, or the first publish, whichever comes first | Vacant |
+| **R1 Verification-boundary owner** (section 13's core security owner) | Section 7's load-time requirements, the verification failure taxonomy, the rule that verification produces the only executable input, and the rule that verification stays separable from execution | Any change to a verification entry point, to a failure category, or to the one-verifier property of section 10 | VM-2 is accepted | MaiRat |
+| **R2 Host-capability allowlist owner** (R1 jointly with section 13's host-integration owner) | The typed capability surface, the artifact-provider capability as a distinct kind, capability versioning and signature matching, exception translation, and the rule that registering value capabilities never implies a provider | Any addition to the capability shape or to the allowlist | VM-4 is accepted | MaiRat |
+| **R3 Fuzz-corpus owner** (R1 unless separately named) | Corpus identity and hashes, seed provenance, minimization, permanent retention of minimized regressions, and the budgets and iteration counts every security bundle records | Retiring a corpus entry | VM-2 is accepted | MaiRat |
+| **R4 Vulnerability-response owner** (section 13's release owner, escalating to R1) | Intake, embargo, triage, fix, disclosure, and firing the section 15 recertification trigger | Disclosure timing and the content of a security advisory | Any package or preview is published | MaiRat |
+| **R5 Core-contract-version owner** (section 13's architecture owner) | Core contract version 1 and section 2's amendment procedure | Any change to a declared transition or result category - such a change is an amendment by definition - and the minting of any version | VM-0 is accepted | MaiRat |
+| **R6 Release and recertification owner** | Section 15's gates, the truthfulness of the public support table when one exists, and section 15's recertification triggers | Any release or preview publish, and any change to a claimed support column | VM-6 is accepted, or the first publish, whichever comes first | MaiRat |
 
 R1 and R2 are separate because the threats differ and are gated at different
 milestones: R1 defends against malformed input and is proved at VM-2; R2
@@ -105,7 +114,9 @@ state.
 ## Decision - VM-0's dependency line is unmet, and nothing downstream may start
 
 Section 13's VM-0 Dependencies line reads "Named ownership for the core
-contract and its amendments". R5 is vacant, so that line is not satisfied.
+contract and its amendments". R5 is held by MaiRat, so that line is satisfied; the
+milestone is still not accepted, because acceptance additionally requires a
+recorded review decision, which no one has made.
 This record states the consequences in terms, because the tempting failure
 here is to redefine "named ownership" downward:
 
@@ -118,7 +129,8 @@ here is to redefine "named ownership" downward:
    `Accepted`. Ledger update rule 3 forbids inferring completion transitively,
    and starting VM-1 against an unaccepted VM-0 is exactly that inference.
 4. No VM-0 result may be cited as evidence in another milestone's row.
-5. The VM-0 ledger row lists, as open gate conditions: the six vacant roles;
+5. The VM-0 ledger row lists, as open gate conditions: the unrecorded review
+   decision and the absence of an independent reviewer;
    the unmet Dependencies line; the count and identifiers of every rule in
    rules.register.json (exists at VM-0:
    src/tests/Broiler.VM.Architecture.Tests/rules.register.json) that is
@@ -292,7 +304,7 @@ builds" is a reviewable fact rather than an assertion.
 
 | Field | What the VM-0 bundle records |
 |---|---|
-| **Identity** | Milestone VM-0; the roadmap revision; core contract version 1; the bundle identifier; the collection timestamp; owner VACANT; reviewer VACANT |
+| **Identity** | Milestone VM-0; the roadmap revision; core contract version 1; the bundle identifier; the collection timestamp; the owner; the reviewer, who at VM-0 is the same person |
 | **Source** | The component commit, the dirty-tree state and patch identity, and the five project paths ADR 0001 prints (exists at VM-0: the three project files under src/ and the two under src/tests/) |
 | **Dependencies and corpus** | The SDK and runtime versions actually used (SDK 10.0.400 at this collection) with the explicit note that no pin enforces them - ADR 0001 owns that exclusion - and the SHA-256 of eng/Broiler.Packaging.props (exists at VM-0: eng/Broiler.Packaging.props) as vendored, `82b186ff0d5c54ca6951eb519344970c53d7b4b880445591852885911261db03`, with its source path. No fixture corpus exists |
 | **Environment** | OS, architecture, and configuration of each machine used, and the operating systems actually built on. No RID, no trimming mode, and no Native AOT mode is recorded, because none was exercised |
@@ -326,11 +338,12 @@ cited by its identifier. The VM-0 bundle's Decision field and the VM-0 ledger
 row carry exclusions by identifier, each spelling out in summary form only the
 subset that bears on it; neither reproduces all thirty-four sentences.
 
-- Exclusion EX-30: VM-0 does not satisfy section 13's VM-0 dependency line;
-  all six ownership roles R1 through R6 are vacant, so no one may accept the
-  milestone. Reason: no person is assigned to Broiler.VM, and ledger update
-  rule 7 requires an owner and a reviewer to confirm every exit condition.
-  Closed by: naming R5 in docs/roadmap.status.md.
+- Exclusion EX-30: VM-0 satisfies section 13's dependency line - all six roles
+  are held - but it is not accepted, and the owner and reviewer required by
+  ledger update rule 7 are the same person, so the confirmation is not
+  independent. Reason: Broiler.VM has a single maintainer. Closed by: a signed
+  decision in HUMAN_REVIEW.md and its ledger row; the independence gap closes
+  only if a second maintainer is named.
 - Exclusion EX-31: no public support table exists at VM-0; section 15 gate 1
   is unmet. Reason: the public table is VM-6's deliverable and VM-0 advertises
   no composition, claims no RID, and implements no capability for it to
@@ -354,7 +367,8 @@ subset that bears on it; neither reproduces all thirty-four sentences.
   collection happens on the machines the author had. Closed by: a second
   collection on the other declared host, recommended at VM-1.
 - Exclusion EX-35: the component publishes no security contact and no
-  vulnerability-intake channel at VM-0. Reason: R4 is vacant, and an intake
+  vulnerability-intake channel at VM-0. Reason: R4 is held but no channel is
+  published, and an intake
   channel with no owner is worse than none. Closed by: naming R4 with a
   reachable contact before the first publish, as section 15 gate 7 requires.
 - Exclusion EX-36: no composition is advertised at VM-0 and no per-composition
@@ -381,7 +395,7 @@ subset that bears on it; neither reproduces all thirty-four sentences.
   bundle, and here.
 - Every security bundle at VM-2 and VM-4 has a pre-identified signer, so the
   sign-off is not invented on acceptance day; and a publish is blocked while
-  R4 is vacant, which is what section 15 gate 7 asks for.
+  R4 is named, which is what section 15 gate 7 asks for.
 - The honest answer to "does Broiler.VM run on Android" is that no Broiler.VM
   package exists for any Android RID and the exclusion is provisional on
   references nobody has pinned. The answer to "is it Native AOT ready" is that

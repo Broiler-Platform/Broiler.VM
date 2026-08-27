@@ -673,7 +673,8 @@ contains types a denylist can inspect.
 
 Exclusion EX-15: the amendment procedure is unexercised and currently
 unexecutable. Reason: no amendment has been minted, and the minting role R5 and
-both co-signing roles are vacant, as ADR 0012 records. Closed by: naming R5.
+both co-signing roles are held by the same person, as ADR 0012 records, so a
+  co-signature is not independent. Closed by: a second named maintainer.
 
 Exclusion EX-16: the accepted authored-version window is the single point `[1,
 1]`, so section 5's N<M acceptance path and section 7's
@@ -732,7 +733,8 @@ carry both facts, and of gate 1 publishing two integers plus the out-of-window
 failure rather than a single number.
 
 **Nothing here is accepted.** Role R5, the only role that may accept this record
-or mint its successor, is vacant, which is why the status above reads
+or mint its successor, is held but has recorded no decision, which is why the
+status above reads
 `Proposed`. VM-0 is `In progress` in the ledger and `In progress` is not
 acceptance for any purpose, including VM-1's "After VM-0 acceptance"
 precondition.

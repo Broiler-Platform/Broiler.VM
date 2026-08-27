@@ -18,14 +18,14 @@ may treat VM-0 as accepted on the strength of it.
 | Core contract version | 1, read from the build output as `VmCoreContract.Version` |
 | Evidence-bundle ID | VM-0-001 |
 | Collection timestamp | 2026-08-27, local time, single session; re-collected against the landed commit |
-| Owner | **VACANT** - no person is assigned to any Broiler.VM role |
-| Reviewer | **VACANT** |
+| Owner | MaiRat / Maik Ratzmer, holding all six roles in ADR 0012 |
+| Reviewer | MaiRat / Maik Ratzmer - the same person, so this bundle carries no independent review |
 
-The vacant owner and reviewer are not an oversight in this bundle; they are the milestone's
-unmet dependency. Roadmap section 13 lists "Named ownership for the core contract and its
-amendments" as VM-0's only dependency, and it is not satisfied.
-[ADR 0012](../adr/0012-security-ownership-and-support-matrix.md) records the six roles and what
-each blocks.
+Roadmap section 13 lists "Named ownership for the core contract and its amendments" as VM-0's
+only dependency, and it is satisfied.
+[ADR 0012](../adr/0012-security-ownership-and-support-matrix.md) records the six roles, what each
+blocks, and that one person holds them all. That last part is why the Reviewer row above is not a
+second name: this bundle has been assembled and checked, but not independently reviewed.
 
 ## Source
 
@@ -138,18 +138,21 @@ stated in full in its owning record. The ones that most limit this bundle:
 - **EX-21** - no architecture rule asserts any transition, member, state or category named in
   ADRs 0002 through 0011. Those are paper decisions; nothing in the shell graph implements or
   checks them. Closed by: VM-1.
-- **EX-30** - the six ownership roles are vacant, so VM-0's dependency is unmet and no one is in
-  a position to accept it.
+- **EX-30** - all six roles are held, so the dependency is met, but owner and reviewer are the
+  same person and no review decision is signed, so ledger update rule 7's confirmation is not
+  independent and VM-0 is not accepted.
 - **EX-31** - no public support table exists; section 15 gate 1 is unmet. Closed by: VM-6.
 - **EX-02** - section 15 gate 2 is not claimed. It is a release gate.
 
 **Unexplained failures:** none. **Deviations:** none beyond the discarded controls recorded under
 Procedure.
 
-**Reviewer verdict:** none. No reviewer is assigned.
+**Reviewer verdict:** none recorded. The reviewer is named in
+[HUMAN_REVIEW.md](../../HUMAN_REVIEW.md), where the decision is `PENDING` and the attestation is
+unsigned.
 
-**Follow-up owner:** unassigned. The next action is not technical: it is naming the six roles in
-[ADR 0012](../adr/0012-security-ownership-and-support-matrix.md).
+**Follow-up owner:** MaiRat. The next action is not technical: it is reading the twelve records
+and signing or rejecting them in [HUMAN_REVIEW.md](../../HUMAN_REVIEW.md).
 
 ## Validity
 
