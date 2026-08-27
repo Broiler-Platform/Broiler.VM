@@ -1,0 +1,46 @@
+﻿Broiler.VM evidence bundle VM-1-001 - environment
+
+OS                : Microsoft Windows 11 Enterprise 10.0.26200.0
+Architecture      : X64
+Process arch      : X64
+Machine           : one developer workstation, not a CI lane
+dotnet --version  : 10.0.400
+
+dotnet --list-sdks:
+5.0.416 [c:\program files\dotnet\sdk]
+9.0.317 [c:\program files\dotnet\sdk]
+10.0.100-rc.1.25451.107 [c:\program files\dotnet\sdk]
+10.0.400 [c:\program files\dotnet\sdk]
+
+dotnet --list-runtimes:
+Microsoft.AspNetCore.App 3.1.32 [c:\program files\dotnet\shared\Microsoft.AspNetCore.App]
+Microsoft.AspNetCore.App 5.0.17 [c:\program files\dotnet\shared\Microsoft.AspNetCore.App]
+Microsoft.AspNetCore.App 8.0.30 [c:\program files\dotnet\shared\Microsoft.AspNetCore.App]
+Microsoft.AspNetCore.App 9.0.19 [c:\program files\dotnet\shared\Microsoft.AspNetCore.App]
+Microsoft.AspNetCore.App 10.0.11 [c:\program files\dotnet\shared\Microsoft.AspNetCore.App]
+Microsoft.NETCore.App 3.1.32 [c:\program files\dotnet\shared\Microsoft.NETCore.App]
+Microsoft.NETCore.App 5.0.17 [c:\program files\dotnet\shared\Microsoft.NETCore.App]
+Microsoft.NETCore.App 8.0.30 [c:\program files\dotnet\shared\Microsoft.NETCore.App]
+Microsoft.NETCore.App 9.0.19 [c:\program files\dotnet\shared\Microsoft.NETCore.App]
+Microsoft.NETCore.App 10.0.11 [c:\program files\dotnet\shared\Microsoft.NETCore.App]
+Microsoft.WindowsDesktop.App 3.1.32 [c:\program files\dotnet\shared\Microsoft.WindowsDesktop.App]
+Microsoft.WindowsDesktop.App 5.0.17 [c:\program files\dotnet\shared\Microsoft.WindowsDesktop.App]
+Microsoft.WindowsDesktop.App 8.0.30 [c:\program files\dotnet\shared\Microsoft.WindowsDesktop.App]
+Microsoft.WindowsDesktop.App 9.0.19 [c:\program files\dotnet\shared\Microsoft.WindowsDesktop.App]
+Microsoft.WindowsDesktop.App 10.0.11 [c:\program files\dotnet\shared\Microsoft.WindowsDesktop.App]
+
+Native AOT toolchain:
+  Visual Studio C++ build tools were located through vswhere at:
+    C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvars64.bat
+  The ILCompiler package's own findvcvarsall.bat fails on this machine: it cannot
+  locate vswhere.exe and emits its error text into the property that becomes the
+  linker path, so a plain 'dotnet publish -p:PublishAot=true' fails with MSB3073.
+  The publish is therefore run inside a vcvars64 environment with
+  IlcUseEnvironmentalTools=true, which is recorded as Exclusion EX-42.
+
+Runtime mode      : JIT for the test suites; trimmed and Native AOT for the host
+Configuration     : Release
+RID claimed       : win-x64 only. No other RID was built, published or run.
+Trimming          : PublishTrimmed=true, TrimMode=full on the fixtures host only
+GC / env vars     : machine defaults; DOTNET_CLI_UI_LANGUAGE=en so the logs are
+                    readable by a reviewer who does not share this locale.

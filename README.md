@@ -19,15 +19,21 @@ reference.
 
 ## Status
 
-This directory contains the component plan and milestone VM-0's frozen decisions, not an
-implementation. [The status ledger](docs/roadmap.status.md) is the authority for accepted
-evidence; it records VM-0 as in progress and unaccepted, and VM-1 through VM-6 as not started.
+[The status ledger](docs/roadmap.status.md) is the authority for accepted evidence. It records
+**VM-0 and VM-1 as in progress and unaccepted, and VM-2 through VM-6 as not started.**
 
-What exists is [twelve boundary records](docs/adr/README.md), a five-project shell graph that
-builds, and the architecture tests that hold its forbidden edges. What does not exist is anything
-that executes bytecode: there is no runtime, catalog, verifier, budget, or profile. No capability
-should be inferred from planning text, from a project that compiles, or from a passing
-architecture test.
+What exists is [twelve boundary records](docs/adr/README.md) and an implementation of core
+contract version 1: the profile-neutral contracts, the bounded binary primitives, the immutable
+catalog, the runtime and its lifecycle, resource authority including shared aggregate budgets,
+guest-initiated-load mediation, external suspension, and two test-only fixture profiles that prove
+the contract. A composition-root host publishes and runs under JIT, trimming and Native AOT on
+`win-x64`.
+
+What does not exist is a language. There is no product profile, no persisted envelope, no
+malformed-input corpus, no fuzz target, no concurrency evidence, no second RID, and no performance
+measurement. And **nothing here is accepted**: no human has reviewed the records or the code, so
+no capability should be inferred from a passing test suite, a green publish, or this paragraph.
+`HUMAN_REVIEW.md` is unsigned.
 
 ## Component boundary
 

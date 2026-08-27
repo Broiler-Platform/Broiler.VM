@@ -2,32 +2,38 @@
   "$comment": [
     "Every architecture rule Broiler.VM names, with how much it currently proves.",
     "",
-    "Milestone VM-0's exit gate asks that architecture tests express every forbidden edge. A",
-    "shell graph can express a rule long before it contains anything able to violate one, and a",
-    "register that did not say so would let a passing suite read as stronger evidence than it",
-    "is. Roadmap section 16 makes an untruthful support claim a stop condition and the status",
-    "ledger's update rule 4 forbids promoting a shell result, so every rule carries its status",
-    "and the VM-0 evidence bundle repeats the counts.",
+    "Milestone VM-1's exit gate asks that the contract be implemented and proven against the",
+    "fixture profile. A rule can be expressed long before the checkout contains anything able to",
+    "violate it, and a register that did not say so would let a passing suite read as stronger",
+    "evidence than it is. Roadmap section 16 makes an untruthful support claim a stop condition and",
+    "the status ledger's update rule 4 forbids promoting a shell result, so every rule carries its",
+    "status and the evidence bundle repeats the counts.",
     "",
-    "ONE CRITERION, APPLIED TO EVERY ROW. `status` describes the GRAPH: can anything in the VM-0",
+    "ONE CRITERION, APPLIED TO EVERY ROW. `status` describes the GRAPH: can anything in the current",
     "checkout violate this rule? `witness` records a real violating input, and every rule has one",
     "regardless of status - a Vacuous rule is one nothing in the component can break, not one that",
-    "was never shown working. An earlier revision mixed the two ideas, marking B2 and B4 Vacuous",
-    "with no witness even though both are witnessed, and marking E1-E5 Active on the strength of",
-    "clean-direction assertions alone.",
+    "was never shown working.",
     "",
     "Status values, and nothing else: Active, Vacuous, Deferred.",
     "  Active   - something in the checkout could violate it, and a witness shows it rejecting one.",
-    "  Vacuous  - it runs and is witnessed, but nothing in the VM-0 graph can violate it. Not a",
-    "             defect: the honest state of a rule whose subject has not been built yet.",
-    "  Deferred - not asserted at VM-0; the activation milestone owns promoting it.",
+    "  Vacuous  - it runs and is witnessed, but nothing in the graph can violate it. Not a defect:",
+    "             the honest state of a rule whose subject cannot yet be broken.",
+    "  Deferred - not asserted; the activation milestone owns promoting it.",
     "",
     "A Deferred or Vacuous row may never name an activation milestone at or before the current",
-    "milestone, and a rule whose activation milestone IS the current milestone must be Active",
-    "with a passing witness. RuleRegisterTests enforces the register against the test methods",
-    "and the witness inputs in both directions."
+    "milestone, and a rule whose activation milestone IS the current milestone must be Active with a",
+    "passing witness. RuleRegisterTests enforces the register against the test methods and the",
+    "witness inputs in both directions.",
+    "",
+    "WHAT VM-1 CHANGED. Five of the six rows that named VM-1 as their activation milestone are",
+    "promoted: the product graph now has method bodies, assembly references and an exported surface,",
+    "so B2, B4, B5b, B6 and B7 each have something that could break them. B3 is the one row where",
+    "the honest answer is different, and it is recorded rather than papered over - see its own row.",
+    "Rule E5 is superseded: it fused a cardinality claim about the graph with a member claim about",
+    "one type, and only the first is falsified by VM-1. V1 replaces the first; V2 preserves the",
+    "second verbatim."
   ],
-  "milestone": "VM-0",
+  "milestone": "VM-1",
   "coreContractVersion": 1,
   "rules": [
     {
@@ -153,11 +159,11 @@
     {
       "id": "B2",
       "owningAdr": "0001",
-      "status": "Vacuous",
+      "status": "Active",
       "statement": "Broiler.VM.Runtime references nothing outside Broiler.VM.Abstractions and Broiler.VM.Binary.",
       "evidence": "AssemblyRef table",
-      "activationMilestone": "VM-1",
-      "nonVacuousWhen": "The runtime uses a type from either assembly. A shell emits no assembly reference, so the subset holds trivially; at VM-1 the rule tightens from subset to equality.",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Broiler.VM.Runtime now uses types from both Abstractions and Binary - its meter implements Broiler.VM.IVmBoundedAllocationMeter and its verification path drives VmBoundedReader - so its AssemblyRef table names both and the rule is equality rather than subset.",
       "witness": "Broiler.VM.Architecture.Tests.dll (references xunit)"
     },
     {
@@ -166,18 +172,18 @@
       "status": "Vacuous",
       "statement": "No assembly in the product graph names a Broiler.* assembly outside the component's own set. The assembly-level twin of A1 and A2.",
       "evidence": "AssemblyRef table",
-      "activationMilestone": "VM-1",
-      "nonVacuousWhen": "A product assembly names any non-framework assembly at all. At VM-0 all three name none.",
-      "witness": "none at VM-0 - a witness needs a foreign Broiler assembly, and the component's graph is closed over its own five. The project-file twins A1 and A2 are witnessed."
+      "activationMilestone": "VM-3",
+      "nonVacuousWhen": "A product assembly could name a foreign Broiler.* assembly. The subject now exists - the product graph names non-framework assemblies for the first time - but a VIOLATION is still unreachable: A1 forbids the outbound ProjectReference, A2 forbids the Broiler.* PackageReference, and the single-source NuGet.config makes such a package unresolvable, so no project in the checkout can acquire one. It becomes reachable at VM-3, when composition roots and profile packages exist. Exclusion EX-40 records the reasoning and the alternative that was rejected.",
+      "witness": "none - a witness needs a foreign Broiler assembly, and the graph is closed over its own seven. The project-file twins A1 and A2 are witnessed."
     },
     {
       "id": "B4",
       "owningAdr": "0001",
-      "status": "Vacuous",
+      "status": "Active",
       "statement": "No exported member of a product assembly names a type outside System.* and Broiler.VM.",
       "evidence": "Exported type and member signatures",
-      "activationMilestone": "VM-1",
-      "nonVacuousWhen": "A product assembly exports a member with a parameter or return type. At VM-0 the only exported members are two integer constants.",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The product graph exports a contract surface whose members carry parameter and return types, so a foreign type on the public surface is now expressible.",
       "witness": "PublicSurfaceLeakWitness in Broiler.VM.Architecture.Tests.dll"
     },
     {
@@ -193,31 +199,31 @@
     {
       "id": "B5b",
       "owningAdr": "0001",
-      "status": "Vacuous",
+      "status": "Active",
       "statement": "No assembly in the product graph applies ModuleInitializerAttribute. Invariant 2 forbids a module-initializer ordering dependency by name.",
       "evidence": "CustomAttribute table",
-      "activationMilestone": "VM-1",
-      "nonVacuousWhen": "A product assembly declares any method that could carry the attribute. At VM-0 the product graph has no method bodies.",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The product graph now declares method bodies, so a method could carry the attribute.",
       "witness": "ModuleInitializerWitness in Broiler.VM.Architecture.Tests.dll"
     },
     {
       "id": "B6",
       "owningAdr": "0001",
-      "status": "Vacuous",
+      "status": "Active",
       "statement": "No product assembly references an assembly built from src/tests/.",
       "evidence": "AssemblyRef table",
-      "activationMilestone": "VM-1",
-      "nonVacuousWhen": "A product assembly names any non-framework assembly. The project-file twin A4 is Active at VM-0.",
-      "witness": "none at VM-0 - a witness needs a product assembly that references a test assembly, which cannot be built without breaking the graph. The project-file twin A4 is witnessed."
+      "activationMilestone": null,
+      "nonVacuousWhen": "ApiBaselineWitnesses.FixtureReferenceWitness names a type from Broiler.VM.Fixtures - which is built from src/tests/ - so the test assembly emits the AssemblyRef the rule scans for. A project reference alone emits nothing: the compiler records only what is used, so without a real use the scanner would be pointed at an assembly that does not in fact hold the forbidden edge.",
+      "witness": "ApiBaselineWitnesses in Broiler.VM.Architecture.Tests.dll"
     },
     {
       "id": "B7",
       "owningAdr": "0001",
-      "status": "Vacuous",
+      "status": "Active",
       "statement": "No product assembly exports a type named BuiltInProfiles, DefaultProfiles, AllProfiles or KnownProfiles. Roadmap section 3 rejects an aggregate profile type by name.",
       "evidence": "TypeDef table, public visibility",
-      "activationMilestone": "VM-1",
-      "nonVacuousWhen": "The product graph exports a type other than VmCoreContract.",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The product graph exports types other than VmCoreContract, so an aggregate profile type is now expressible.",
       "witness": "ProfileCatalogWitness.BuiltInProfiles in Broiler.VM.Architecture.Tests.dll"
     },
     {
@@ -303,12 +309,112 @@
     {
       "id": "E5",
       "owningAdr": "0001",
-      "status": "Active",
-      "statement": "The product graph exports exactly one public type, Broiler.VM.VmCoreContract, whose only members are the two contract-version constants.",
+      "status": "Deferred",
+      "statement": "SUPERSEDED AT VM-1 by V1 and V2. As written it fused a cardinality claim about the graph (exactly one public type) with a member claim about one type (whose only members are the two contract-version constants). VM-1 necessarily falsifies the first and preserves the second. V1 replaces the cardinality half with an API baseline; V2 preserves the member half verbatim. The row is retained rather than removed so the supersession is auditable, and it asserts nothing.",
       "evidence": "TypeDef table, public visibility",
+      "activationMilestone": "VM-6",
+      "nonVacuousWhen": "Never again in this form; VM-6 owns removing the row when it freezes the public API.",
+      "witness": null
+    },
+    {
+      "id": "V1",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "The product graph exports every name the frozen public-name table fixes, and every exported type is declared in namespace Broiler.VM.",
+      "evidence": "Exported types against the frozen name baseline",
       "activationMilestone": null,
-      "nonVacuousWhen": "Three product assemblies are built at VM-0.",
-      "witness": "PublicSurfaceLeakWitness in Broiler.VM.Architecture.Tests.dll"
+      "nonVacuousWhen": "The product graph exports a contract surface. Replaces the cardinality half of E5. The witness points the rule at a graph exporting only the bounded-reading primitives which contains none of the frozen names.",
+      "witness": "ApiBaselineRuleTests in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
+      "id": "V2",
+      "owningAdr": "0003",
+      "status": "Active",
+      "statement": "VmCoreContract exports exactly Version and MinimumSupportedVersion, and both are literals.",
+      "evidence": "Compiled metadata",
+      "activationMilestone": null,
+      "nonVacuousWhen": "VmCoreContract exists. Preserves the member half of E5 verbatim.",
+      "witness": "ApiBaselineWitnesses.WrongContractVersionType in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
+      "id": "V3",
+      "owningAdr": "0003",
+      "status": "Active",
+      "statement": "No exported type or member uses a retired name, a struck bound name, or one of the six unqualified names the terminology rule bans.",
+      "evidence": "Exported types and members",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The product graph exports a surface on which a retired name could appear.",
+      "witness": "ApiBaselineWitnesses.RetiredNameWitness in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
+      "id": "V4",
+      "owningAdr": "0002",
+      "status": "Active",
+      "statement": "VmProfileDescriptor declares exactly the thirty rows of the frozen table and none of the names excluded by construction.",
+      "evidence": "Compiled metadata",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The descriptor exists as a type with properties.",
+      "witness": "ApiBaselineWitnesses.DescriptorWithExcludedRows in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
+      "id": "V5",
+      "owningAdr": "0005",
+      "status": "Active",
+      "statement": "Every reason in the registry maps to exactly one outcome category, derivably from its own value.",
+      "evidence": "Compiled metadata",
+      "activationMilestone": null,
+      "nonVacuousWhen": "VmReason and VmReasonRegistry exist. The witness is a reason value filed outside every category block which the derived mapping must reject.",
+      "witness": "ApiBaselineRuleTests in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
+      "id": "V6",
+      "owningAdr": "0007",
+      "status": "Active",
+      "statement": "The profile-facing metering surface declares exactly TryCharge, Poll, ReportRetained and ReportReleased, the charge amount is unsigned, and no member reads a remaining or effective value.",
+      "evidence": "Compiled metadata",
+      "activationMilestone": null,
+      "nonVacuousWhen": "IVmMeter exists.",
+      "witness": "ApiBaselineWitnesses.IMeterThatReadsRemaining in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
+      "id": "V7",
+      "owningAdr": "0007",
+      "status": "Active",
+      "statement": "No member on any exported type is named Grant, Refund, Reset, Extend, Increase, Raise, TopUp, Widen, Reopen, WithLimits, Withdraw or Credit.",
+      "evidence": "Exported members",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The product graph exports members on which such a name could appear.",
+      "witness": "ApiBaselineWitnesses.BudgetThatCanBeRaised in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
+      "id": "V8",
+      "owningAdr": "0009",
+      "status": "Active",
+      "statement": "No public member returns Task, ValueTask or IAsyncEnumerable, and no product assembly calls a timer, delay or thread-abort API.",
+      "evidence": "Compiled metadata and MemberRef table",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The product graph exports members with return types and declares method bodies.",
+      "witness": "ApiBaselineWitnesses.AwaitableSurface in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
+      "id": "V9",
+      "owningAdr": "0006",
+      "status": "Active",
+      "statement": "Exactly one public member of the product graph constructs a verified artifact, and the verification member takes exactly the descriptor, the byte span and a cancellation token.",
+      "evidence": "Compiled metadata",
+      "activationMilestone": null,
+      "nonVacuousWhen": "VmVerifiedArtifact and VmRuntime.Verify exist.",
+      "witness": "ApiBaselineWitnesses.SecondConstructionSite in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
+      "id": "V10",
+      "owningAdr": "0010",
+      "status": "Active",
+      "statement": "No public member can express a persisted envelope, streaming or incremental verification, lazy per-section verification, or in-process producer input.",
+      "evidence": "Compiled metadata",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The product graph exports a surface on which such a member could appear.",
+      "witness": "ApiBaselineWitnesses.VmEnvelopeReaderWitness in Broiler.VM.Architecture.Tests.dll"
     }
   ]
 }

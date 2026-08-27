@@ -1,0 +1,13 @@
+﻿Rule D1 - the inbound half of the legacy boundary.
+
+D1 asks whether any project file OUTSIDE the component declares a reference INTO it. That
+question can only be answered where an aggregate checkout is present above the component,
+so the rule reports INCONCLUSIVE rather than passing when there is none. Exclusion EX-01
+records the conditionality.
+
+component root   : D:\Broiler.Browser\Broiler.VM
+parent directory : D:\Broiler.Browser
+outcome          : SCANNED
+project files outside the component that were examined: 401
+result           : no project outside Broiler.VM declares a ProjectReference or
+                   PackageReference resolving into it.

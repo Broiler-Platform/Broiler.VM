@@ -6,6 +6,8 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="src/tests/Broiler.VM.Architecture.Tests/Broiler.VM.Architecture.Tests.csproj" />
+    <Project Path="src/tests/Broiler.VM.Contract.Tests/Broiler.VM.Contract.Tests.csproj" />
     <Project Path="src/tests/Broiler.VM.Fixtures/Broiler.VM.Fixtures.csproj" />
+    <Project Path="src/tests/Broiler.VM.Fixtures.Host/Broiler.VM.Fixtures.Host.csproj" />
   </Folder>
 </Solution>

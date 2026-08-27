@@ -1,0 +1,174 @@
+namespace Broiler.VM;
+
+/// <summary>
+/// Resolves a runtime's fifteen ceilings from the host's specification, the profiles in the
+/// catalog, and the parent budget.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Resource authority is trusted and monotonic: at runtime creation the host supplies explicit
+/// ceilings or explicitly adopts bounded profile defaults, and <strong>omission never means
+/// unbounded</strong>. A dimension with no entry fails runtime creation rather than acquiring a
+/// value nobody chose.
+/// </para>
+/// <para>
+/// A per-runtime ceiling may never exceed the parent's remaining allowance, which is what stops
+/// creating more runtimes from multiplying a host maximum. The live-runtime dimension is the one
+/// exception in the other direction: it is meaningful only against a parent, so its only legal
+/// runtime-scope entry is to adopt the parent's remaining, and with no parent that resolves to TOP.
+/// </para>
+/// </remarks>
+internal static class VmCeilingResolution
+{
+    internal static bool TryResolve(
+        VmCatalog catalog,
+        VmRuntimeCreationOptions options,
+        out ulong[] ceilings,
+        out VmReason failure)
+    {
+        ceilings = new ulong[VmBudgetDimensions.Count];
+        failure = VmReason.None;
+
+        var seen = new bool[VmBudgetDimensions.Count];
+        var specs = options.Ceilings.IsDefault
+            ? System.Collections.Immutable.ImmutableArray<VmCeilingSpec>.Empty
+            : options.Ceilings;
+
+        foreach (var spec in specs)
+        {
+            if (!VmBudgetDimensions.IsDefined(spec.Dimension) || seen[(int)spec.Dimension])
+            {
+                failure = VmReason.BudgetDimensionUnresolved;
+                return false;
+            }
+
+            if (spec.Dimension is VmBudgetDimension.LiveRuntimes &&
+                spec.Source is not VmCeilingSource.AdoptParentRemaining)
+            {
+                failure = VmReason.BudgetDimensionNotRuntimeScoped;
+                return false;
+            }
+
+            if (!TryResolveOne(catalog, options, spec, out var value, out failure))
+            {
+                return false;
+            }
+
+            ceilings[(int)spec.Dimension] = value;
+            seen[(int)spec.Dimension] = true;
+        }
+
+        foreach (var dimension in VmBudgetDimensions.All)
+        {
+            if (!seen[(int)dimension])
+            {
+                failure = VmReason.BudgetDimensionUnresolved;
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static bool TryResolveOne(
+        VmCatalog catalog,
+        VmRuntimeCreationOptions options,
+        VmCeilingSpec spec,
+        out ulong value,
+        out VmReason failure)
+    {
+        failure = VmReason.None;
+
+        switch (spec.Source)
+        {
+            case VmCeilingSource.Explicit:
+                value = spec.ExplicitValue;
+                break;
+
+            case VmCeilingSource.AdoptProfileDefault:
+                value = TightestProfileDefault(catalog, spec.Dimension);
+                break;
+
+            default:
+                // With no parent there is nothing to adopt. TOP is the only honest answer for the
+                // live-runtime dimension - an unparented runtime has no sibling to count against -
+                // and every other dimension must have been given a number.
+                if (options.AggregateBudget is null)
+                {
+                    if (spec.Dimension is VmBudgetDimension.LiveRuntimes)
+                    {
+                        value = ulong.MaxValue;
+                        break;
+                    }
+
+                    failure = VmReason.BudgetDimensionUnresolved;
+                    value = 0;
+                    return false;
+                }
+
+                value = options.AggregateBudget.RemainingFor(spec.Dimension);
+                break;
+        }
+
+        // A profile hard maximum tightens whatever the host asked for. The profile may impose a
+        // stricter maximum than the host; it may never relax one.
+        var profileMaximum = TightestProfileMaximum(catalog, spec.Dimension);
+
+        if (value > profileMaximum)
+        {
+            value = profileMaximum;
+        }
+
+        if (options.AggregateBudget is not null &&
+            VmBudgetDimensions.CarriesAggregateScope(spec.Dimension) &&
+            spec.Dimension is not VmBudgetDimension.LiveRuntimes)
+        {
+            var remaining = options.AggregateBudget.RemainingFor(spec.Dimension);
+
+            if (value > remaining)
+            {
+                failure = VmReason.ExceedsParentRemaining;
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static ulong TightestProfileDefault(VmCatalog catalog, VmBudgetDimension dimension)
+    {
+        var tightest = ulong.MaxValue;
+
+        foreach (var descriptor in catalog.Descriptors)
+        {
+            var declared = descriptor.LimitDefaults[dimension];
+
+            if (declared < tightest)
+            {
+                tightest = declared;
+            }
+        }
+
+        // An empty catalog has no default to adopt. Zero is the safe answer: a runtime over a
+        // catalog that hosts nothing can run nothing, and every verification against it is an
+        // unsupported profile anyway.
+        return catalog.Count == 0 ? 0 : tightest;
+    }
+
+    private static ulong TightestProfileMaximum(VmCatalog catalog, VmBudgetDimension dimension)
+    {
+        var tightest = ulong.MaxValue;
+
+        foreach (var descriptor in catalog.Descriptors)
+        {
+            var declared = descriptor.ProfileHardMaxima[dimension];
+
+            if (declared < tightest)
+            {
+                tightest = declared;
+            }
+        }
+
+        return tightest;
+    }
+}

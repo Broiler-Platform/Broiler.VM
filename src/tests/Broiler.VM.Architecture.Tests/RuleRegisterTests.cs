@@ -38,10 +38,18 @@ public sealed class RuleRegisterTests
         // A Deferred or Vacuous row may not name an activation milestone at or before the
         // current one, and a rule whose activation milestone IS the current milestone must be
         // Active with a passing witness. ADR 0001 states this once; the register obeys it here.
+        //
+        // The current milestone is read from the register rather than written into this test.
+        // Hardcoding it made the predicate silently weaker the moment the register advanced: a
+        // row naming the NEW current milestone would have passed a check still looking for the
+        // old one.
+        var current = Loaded.Milestone;
+
         var violations = Loaded.Rules
             .Where(static rule => rule.Status is "Deferred" or "Vacuous")
-            .Where(static rule => rule.ActivationMilestone is null or "VM-0")
-            .Select(static rule => $"{rule.Id} is {rule.Status} but names activation milestone {rule.ActivationMilestone ?? "none"}")
+            .Where(rule => rule.ActivationMilestone is null ||
+                string.CompareOrdinal(rule.ActivationMilestone, current) <= 0)
+            .Select(rule => $"{rule.Id} is {rule.Status} but names activation milestone {rule.ActivationMilestone ?? "none"}, which is not later than {current}")
             .ToArray();
 
         Assert.Empty(violations);
@@ -147,10 +155,10 @@ public sealed class RuleRegisterTests
             .GroupBy(static rule => rule.Status, StringComparer.Ordinal)
             .ToDictionary(static group => group.Key, static group => group.Count(), StringComparer.Ordinal);
 
-        Assert.Equal(19, byStatus["Active"]);
-        Assert.Equal(6, byStatus["Vacuous"]);
-        Assert.Equal(3, byStatus["Deferred"]);
-        Assert.Equal(28, Loaded.Rules.Count);
+        Assert.Equal(33, byStatus["Active"]);
+        Assert.Equal(1, byStatus["Vacuous"]);
+        Assert.Equal(4, byStatus["Deferred"]);
+        Assert.Equal(38, Loaded.Rules.Count);
     }
 
     private static Register Load()
