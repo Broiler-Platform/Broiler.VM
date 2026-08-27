@@ -31,7 +31,7 @@ each blocks.
 
 | Field | Value |
 |---|---|
-| Component commit | `2fbc7d3b19f58654d97248ee096eea1b13a60178` |
+| Component commit | `1bba027c6c1b52cb0a5691f56d9faa5050b72f09` |
 | Dirty-tree state | **Clean** for every source, project, record and register file. The only files modified after that commit are the logs in this directory and this file, which are this collection's own output. |
 | Paths under test | `src/Broiler.VM.Abstractions`, `src/Broiler.VM.Binary`, `src/Broiler.VM.Runtime`, `src/tests/Broiler.VM.Fixtures`, `src/tests/Broiler.VM.Architecture.Tests` |
 | Records under test | `docs/adr/0001` through `docs/adr/0012` and `docs/adr/README.md` |
@@ -153,7 +153,7 @@ Procedure.
 
 ## Validity
 
-**Reproduction.** Check out commit `2fbc7d3`, then run steps 1 to 4 above from the component
+**Reproduction.** Check out commit `1bba027`, then run steps 1 to 4 above from the component
 root. Step 4 needs the injection script; it is not retained in the repository, and
 the edge it adds is described precisely enough above to recreate by hand in one line of XML.
 
