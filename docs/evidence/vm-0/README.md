@@ -17,7 +17,7 @@ may treat VM-0 as accepted on the strength of it.
 | Roadmap revision | `docs/roadmap.md` as of component commit `6235603` |
 | Core contract version | 1, read from the build output as `VmCoreContract.Version` |
 | Evidence-bundle ID | VM-0-001 |
-| Collection timestamp | 2026-08-27, local time, single session |
+| Collection timestamp | 2026-08-27, local time, single session; re-collected against the landed commit |
 | Owner | **VACANT** - no person is assigned to any Broiler.VM role |
 | Reviewer | **VACANT** |
 
@@ -31,14 +31,15 @@ each blocks.
 
 | Field | Value |
 |---|---|
-| Component commit | `6235603ede34bc30089b366c16db10831e72e807` |
-| Dirty-tree state | **Dirty.** Every artefact this bundle describes is uncommitted at collection time. |
+| Component commit | `2fbc7d3b19f58654d97248ee096eea1b13a60178` |
+| Dirty-tree state | **Clean** for every source, project, record and register file. The only files modified after that commit are the four logs in this directory, which are this collection's own output. |
 | Paths under test | `src/Broiler.VM.Abstractions`, `src/Broiler.VM.Binary`, `src/Broiler.VM.Runtime`, `src/tests/Broiler.VM.Fixtures`, `src/tests/Broiler.VM.Architecture.Tests` |
 | Records under test | `docs/adr/0001` through `docs/adr/0012` and `docs/adr/README.md` |
 
-A dirty tree is recorded rather than hidden. The results below were produced from the working
-tree, so the bundle is reproducible only against the commit that lands these files, and it must
-be re-collected against that commit before anyone relies on it.
+An earlier collection of this bundle ran against an uncommitted tree and said so. It was
+re-collected against the commit above once the work landed, which is why the logs in this
+directory are newer than the commit they describe: they are the output of running the procedure
+below against it. Nothing else in the component differs from that commit.
 
 ## Dependencies and corpus
 
@@ -148,8 +149,8 @@ Procedure.
 
 ## Validity
 
-**Reproduction.** Check out the commit that lands these files, then run steps 1 to 4 above from
-the component root. Step 4 needs the injection script; it is not retained in the repository, and
+**Reproduction.** Check out commit `2fbc7d3`, then run steps 1 to 4 above from the component
+root. Step 4 needs the injection script; it is not retained in the repository, and
 the edge it adds is described precisely enough above to recreate by hand in one line of XML.
 
 **Expiry.** This bundle ages against its own environment. Re-collect on any change to: the
