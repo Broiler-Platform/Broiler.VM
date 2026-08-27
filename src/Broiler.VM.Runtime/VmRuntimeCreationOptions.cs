@@ -172,10 +172,28 @@ public readonly struct VmCapabilityRegistration
         new(descriptor, null, handler, null);
 
     /// <summary>Registers the artifact provider. At most one per runtime.</summary>
+    /// <remarks>
+    /// The descriptor must declare the provider kind. Without that check a registration whose
+    /// descriptor says <see cref="VmCapabilityKind.Value"/> would still hand a live provider to the
+    /// mediator, while the at-most-one-provider guard - which counts by kind - would not see it: a
+    /// composition that registered no artifact-provider capability would answer guest-initiated
+    /// loads anyway, which is the exact opposite of the content policy the absence expresses.
+    /// </remarks>
+    /// <exception cref="System.ArgumentException">The descriptor does not declare the provider kind.</exception>
     public static VmCapabilityRegistration ArtifactProvider(
         VmHostCapabilityDescriptor descriptor,
-        IVmArtifactProvider provider) =>
-        new(descriptor, null, null, provider);
+        IVmArtifactProvider provider)
+    {
+        if (descriptor.Kind is not VmCapabilityKind.ArtifactProvider)
+        {
+            throw new System.ArgumentException(
+                "An artifact provider must be registered under a descriptor that declares " +
+                "VmCapabilityKind.ArtifactProvider; this descriptor declares " + descriptor.Kind + ".",
+                nameof(descriptor));
+        }
+
+        return new VmCapabilityRegistration(descriptor, null, null, provider);
+    }
 
     /// <summary>The capability shape being registered.</summary>
     public VmHostCapabilityDescriptor Descriptor { get; }

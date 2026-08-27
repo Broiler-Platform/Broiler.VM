@@ -106,6 +106,16 @@ internal static class VmCeilingResolution
                     return false;
                 }
 
+                // A dimension the parent does not meter has no remainder to adopt. Resolving it to
+                // zero silently would give the runtime a ceiling of nothing and make every later
+                // charge fail for a reason that names the wrong thing.
+                if (!VmBudgetDimensions.CarriesAggregateScope(spec.Dimension))
+                {
+                    failure = VmReason.BudgetDimensionUnresolved;
+                    value = 0;
+                    return false;
+                }
+
                 value = options.AggregateBudget.RemainingFor(spec.Dimension);
                 break;
         }

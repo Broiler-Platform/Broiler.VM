@@ -36,7 +36,14 @@ a substitute for one.
 
 - **Build and tests:** `dotnet build Broiler.VM.slnx -c Release` completes with 0
   warnings and 0 errors across seven projects; `dotnet test Broiler.VM.slnx -c Release`
-  reports 150 passed, 0 failed, 0 skipped - 44 architecture and 106 behavioural.
+  reports 175 passed, 0 failed, 0 skipped - 44 architecture and 131 behavioural.
+- **An adversarial review has been run, and it found a great deal.** Six reviewers
+  against the frozen records, every finding put to two independent refuters: 45
+  findings survived, sixteen of them blockers, several confirmed by executing the
+  code. All sixteen are corrected and regression-tested; twenty-nine majors and
+  minors are recorded and unaddressed (EX-52). The first evidence bundle is
+  superseded because it reported a green suite over a tree that contained all
+  sixteen.
 - **Negative controls:** four, each injected, run, reverted and re-run. A forbidden
   project edge fails A4 and A7; a deleted manifest edge fails A7; a struck name on the
   public surface fails V3; and removing the mediator's no-provider refusal fails the
@@ -82,6 +89,12 @@ are known defects.
   code to read them against. In particular, whether `TryTakeSuspension` gives the party
   entitled to resume a path to resume in every origin case, without reintroducing the
   second admission check it was designed to remove.
+- **A passing suite proved much less than it looked like it proved.** The first
+  implementation passed 150 tests with no warnings and published a working Native
+  AOT binary while an aggregate budget could be driven to zero with memory still
+  live, an operation resumed under a spent parent, and a capability declaring that
+  a fault terminates the operation terminated nothing. If a reviewer reads one
+  thing besides the records, it should be the review section of the VM-1 bundle.
 - **One negative control initially failed to fail.** Removing the mediator's
   no-provider refusal did not break the suite, because a null provider then threw and
   was translated, and the fixture still reported a profile fault - so tests asserting

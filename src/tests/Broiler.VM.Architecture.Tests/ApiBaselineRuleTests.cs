@@ -46,9 +46,15 @@ public sealed class ApiBaselineRuleTests
         Assert.Empty(ApiBaselineRules.V4(typeof(VmProfileDescriptor)));
 
         // The witness: a descriptor-shaped type carrying an alias set, a priority and a type name,
-        // each excluded by construction at core contract version 1.
-        Assert.NotEmpty(ApiBaselineRules.V4(
-            typeof(ApiBaselineWitnesses.DescriptorWithExcludedRows), expectedProperties: 3));
+        // each excluded by construction at core contract version 1. It is checked against the same
+        // frozen row list the real descriptor is, so the rule flags both the missing rows and the
+        // excluded ones.
+        Assert.NotEmpty(ApiBaselineRules.V4(typeof(ApiBaselineWitnesses.DescriptorWithExcludedRows)));
+
+        // And a descriptor missing one frozen row is caught by name rather than by arithmetic: a
+        // count would be satisfied by any substitution that kept the total.
+        var oneShort = ApiBaselineRules.FrozenDescriptorRows.Take(30).ToArray();
+        Assert.NotEmpty(ApiBaselineRules.V4(typeof(VmProfileDescriptor), oneShort));
     }
 
     [Fact]
@@ -93,11 +99,15 @@ public sealed class ApiBaselineRuleTests
     [Fact]
     public void V9_There_Is_One_Construction_Site_And_One_Closed_Verification_Signature()
     {
-        Assert.Empty(ApiBaselineRules.V9(ApiBaselineRules.ProductTypes));
+        Assert.Empty(ApiBaselineRules.V9(ApiBaselineRules.ProductTypes, AssemblyFacts.Product));
         Assert.Empty(ApiBaselineRules.V9Signature(typeof(VmRuntime).GetMethod(nameof(VmRuntime.Verify))));
 
         // The witness: a type with two further members that mint a handle.
         Assert.NotEmpty(ApiBaselineRules.V9([typeof(ApiBaselineWitnesses.SecondConstructionSite)]));
+
+        // And the reachability half: a graph in which the contracts assembly alone is examined
+        // cannot show the factory reachable from the runtime.
+        Assert.NotEmpty(ApiBaselineRules.V9(ApiBaselineRules.ProductTypes, [AssemblyFacts.Abstractions]));
 
         // And a verification signature widened to take a stream, which is how an incremental form
         // would arrive if it arrived quietly.

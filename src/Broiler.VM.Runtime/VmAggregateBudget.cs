@@ -294,7 +294,65 @@ public sealed class VmAggregateBudget : System.IDisposable
                 return false;
             }
 
+            // A parent with no remaining allowance admits nothing. Without this the only guard is
+            // the per-dimension ceiling comparison at resolution, which passes trivially whenever
+            // the host asks for zero or adopts the remainder - so a spent parent would keep handing
+            // out runtimes that can do no work.
+            if (IsSpent())
+            {
+                reason = VmReason.ParentExhausted;
+                return false;
+            }
+
             liveRuntimes++;
+            reason = VmReason.None;
+            return true;
+        }
+    }
+
+    /// <summary>
+    /// Whether any allowance-class aggregate dimension has been fully consumed.
+    /// </summary>
+    /// <remarks>
+    /// Only allowances count. A ceiling-class dimension at its limit means the parent is currently
+    /// full, not that it is finished, and a live measure can fall again as instances are disposed.
+    /// </remarks>
+    internal bool IsSpent()
+    {
+        foreach (var dimension in VmBudgetDimensions.All)
+        {
+            if (!VmBudgetDimensions.CarriesAggregateScope(dimension) ||
+                VmBudgetDimensions.ClassOf(dimension) is not VmBudgetClass.Allowance)
+            {
+                continue;
+            }
+
+            if (consumed[(int)dimension] >= ceilings[(int)dimension])
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>Whether the parent still admits work, for the resume admission check.</summary>
+    internal bool AdmitsResumption(out VmReason reason)
+    {
+        lock (gate)
+        {
+            if (disposed)
+            {
+                reason = VmReason.AggregateBudgetDisposed;
+                return false;
+            }
+
+            if (IsSpent())
+            {
+                reason = VmReason.ParentExhausted;
+                return false;
+            }
+
             reason = VmReason.None;
             return true;
         }

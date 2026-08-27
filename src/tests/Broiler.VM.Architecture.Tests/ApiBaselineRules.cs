@@ -200,15 +200,32 @@ internal static class ApiBaselineRules
     }
 
     /// <summary>
-    /// V4: the descriptor declares the frozen rows and none of the names excluded by construction.
+    /// The thirty rows of the frozen descriptor table, by name.
     /// </summary>
     /// <remarks>
-    /// Thirty-one properties for thirty rows, because row 24 of the frozen table carries two fields
-    /// - the conformance manifest identity and its version. The count is stated as properties
-    /// rather than as rows so it can be checked mechanically without the checker having to know
-    /// which row is the double.
+    /// Row 24 carries two fields - the conformance manifest identity and its version - so thirty
+    /// rows are thirty-one properties. The names are written out rather than counted: a count is
+    /// satisfied by any thirty-one properties at all, including thirty-one wrong ones, which is
+    /// exactly the drift a table this long exists to catch.
     /// </remarks>
-    internal static IEnumerable<string> V4(Type descriptorType, int expectedProperties = 31)
+    internal static readonly string[] FrozenDescriptorRows =
+    [
+        "ProfileId", "DisplayName", "DescriptorRevision", "SupportedFormatVersions",
+        "AcceptedFeatureManifests", "Verifier", "ExecutorFactory", "ArtifactRepresentationKind",
+        "ArtifactLifetimeKind", "SupportsConcurrentVerification", "ThreadAffinity",
+        "CancellationPollBound", "AbandonBudget", "LimitDefaults", "ProfileHardMaxima",
+        "BudgetDeclarationMatrix", "HostCapabilityDescriptors", "GuestInitiatedLoads",
+        "AsynchronousInstantiation", "ExternalSuspension", "PayloadKindIdRange",
+        "BuiltAgainstCoreContractVersion", "AuthoredCoreContractVersion", "ConformanceManifestId",
+        "ConformanceManifestVersion", "DiagnosticsIdentity", "PackageIdentity", "ArtifactSharing",
+        "FaultRecovery", "MaxUnchargedWork", "ChargingGranularity",
+    ];
+
+    /// <summary>
+    /// V4: the descriptor declares exactly the frozen rows, by name, and none of the names excluded
+    /// by construction.
+    /// </summary>
+    internal static IEnumerable<string> V4(Type descriptorType, IReadOnlyList<string>? expectedRows = null)
     {
         string[] excluded =
         [
@@ -217,14 +234,21 @@ internal static class ApiBaselineRules
             "AssemblyName", "TypeName",
         ];
 
+        var rows = expectedRows ?? FrozenDescriptorRows;
+
         var properties = descriptorType
             .GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
             .Select(static property => property.Name)
-            .ToArray();
+            .ToHashSet(StringComparer.Ordinal);
 
-        if (properties.Length != expectedProperties)
+        foreach (var row in rows.Where(row => !properties.Contains(row)))
         {
-            yield return $"{descriptorType.Name} declares {properties.Length} properties, not {expectedProperties}";
+            yield return $"{descriptorType.Name} is missing the frozen row {row}";
+        }
+
+        foreach (var name in properties.Where(name => !rows.Contains(name, StringComparer.Ordinal)))
+        {
+            yield return $"{descriptorType.Name} declares {name}, which the frozen table does not";
         }
 
         foreach (var name in properties.Where(name => excluded.Contains(name, StringComparer.Ordinal)))
@@ -337,8 +361,18 @@ internal static class ApiBaselineRules
             .Select(reference => $"{assembly.Name} calls {reference}"));
     }
 
-    /// <summary>V9: exactly one public member constructs a verified artifact.</summary>
-    internal static IEnumerable<string> V9(IEnumerable<Type> types)
+    /// <summary>
+    /// V9: exactly one public member of the product graph mints a verified artifact, and exactly
+    /// one product assembly reaches it.
+    /// </summary>
+    /// <remarks>
+    /// Two halves, because either alone is weaker than the claim. Counting members that return the
+    /// handle would pass a graph with one factory and any number of assemblies calling it; reading
+    /// the member-reference tables says which assemblies can reach the factory at all. Together
+    /// they assert that the handle is minted in one place and reachable from one place, which is
+    /// what the one-construction-site rule is for.
+    /// </remarks>
+    internal static IEnumerable<string> V9(IEnumerable<Type> types, IReadOnlyList<AssemblyFacts>? product = null)
     {
         var producers = types
             .SelectMany(static type => type.GetMethods(
@@ -351,6 +385,26 @@ internal static class ApiBaselineRules
         if (producers.Length != 1 || producers[0].Name != nameof(VmVerifiedArtifact.Create))
         {
             yield return $"the surface has {producers.Length} verified-artifact construction sites";
+        }
+
+        if (product is null)
+        {
+            yield break;
+        }
+
+        const string Factory = "Broiler.VM.VmVerifiedArtifact.Create";
+
+        var callers = product
+            .Where(assembly => assembly.MemberReferences.Contains(Factory, StringComparer.Ordinal))
+            .Select(static assembly => assembly.Name)
+            .ToArray();
+
+        if (callers.Length != 1 || callers[0] != "Broiler.VM.Runtime")
+        {
+            yield return
+                "the verified-artifact factory is reachable from " +
+                (callers.Length == 0 ? "no product assembly" : string.Join(", ", callers)) +
+                ", not from Broiler.VM.Runtime alone";
         }
     }
 

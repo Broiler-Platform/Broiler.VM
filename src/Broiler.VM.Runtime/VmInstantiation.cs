@@ -46,6 +46,17 @@ internal static class VmInstantiation
         var identified = baseline.WithArtifact(
             artifact.ObjectId, artifact.ByteLength, artifact.DiagnosticsBase.CallerIdentity);
 
+        // The clauses run in the frozen order, and the order is load-bearing: a disposed handle
+        // offered to a runtime that also lacks its profile must report the disposal, not the
+        // absence. Hoisting the catalog lookup ahead of the handle state made the answer depend on
+        // which of two true things the code happened to look at first.
+        if (!TryAdmitHandleState(artifact, out var stateFailure))
+        {
+            return VmInstantiationResult.InvalidState(
+                stateFailure,
+                VmRuntime.Invalid(identified, VmStage.Instantiation, stateFailure, VmObjectKind.VerifiedArtifact, VmAttemptedCall.Instantiate));
+        }
+
         if (!runtime.TryGetDescriptor(artifact.Identity.ProfileId, out var profile))
         {
             return VmInstantiationResult.UnsupportedProfile(
@@ -53,20 +64,46 @@ internal static class VmInstantiation
                 identified.WithOutcome(VmStage.Instantiation, VmOutcome.UnsupportedProfile, VmReason.ProfileNotInCatalog, VmInitiator.Caller));
         }
 
-        if (!TryAdmitHandle(runtime, artifact, out var handleFailure))
+        if (!TryAdmitSharing(runtime, artifact, profile, out var handleFailure))
         {
             return VmInstantiationResult.InvalidState(
                 handleFailure,
                 VmRuntime.Invalid(identified, VmStage.Instantiation, handleFailure, VmObjectKind.VerifiedArtifact, VmAttemptedCall.Instantiate));
         }
 
-        if (!artifact.TryGetState(out _))
+        // The instance pins the handle for as long as it lives, so a concurrent disposal drains
+        // rather than cutting the ground from under a live instance.
+        if (artifact.TryAcquireLease(out var lease).Kind is not VmControlOutcome.Accepted)
         {
             return VmInstantiationResult.InvalidState(
-                VmReason.HandleDisposed,
-                VmRuntime.Invalid(identified, VmStage.Instantiation, VmReason.HandleDisposed, VmObjectKind.VerifiedArtifact, VmAttemptedCall.Instantiate));
+                VmReason.HandleDraining,
+                VmRuntime.Invalid(identified, VmStage.Instantiation, VmReason.HandleDraining, VmObjectKind.VerifiedArtifact, VmAttemptedCall.Instantiate));
         }
 
+        var succeeded = false;
+
+        try
+        {
+            return Instantiate(runtime, artifact, lease, profile, cancellationToken, identified, ref succeeded);
+        }
+        finally
+        {
+            if (!succeeded)
+            {
+                lease.Release();
+            }
+        }
+    }
+
+    private static VmInstantiationResult Instantiate(
+        VmRuntime runtime,
+        VmVerifiedArtifact artifact,
+        VmArtifactLease lease,
+        VmProfileDescriptor profile,
+        System.Threading.CancellationToken cancellationToken,
+        VmDiagnostics identified,
+        ref bool succeeded)
+    {
         var profileState = runtime.GetProfileState(profile);
 
         var instanceLevel = new VmBudgetLevel(
@@ -155,9 +192,10 @@ internal static class VmInstantiation
             {
                 var instance = new VmInstanceImplementation(
                     runtime, profile, executor, step.State, instanceLevel, identified,
-                    profileState.Scope, mediator);
+                    profileState.Scope, mediator, lease);
 
                 runtime.RegisterInstance(instance);
+                succeeded = true;
 
                 return VmInstantiationResult.Normal(
                     instance,
@@ -166,6 +204,7 @@ internal static class VmInstantiation
             }
 
             case VmExecutionStepKind.Suspended:
+            {
                 // Asynchronous instantiation exists as a transition in contract version 1 and is
                 // gated on the descriptor declaring it. A profile that parks here without having
                 // declared it is refused after a bounded abandon, not silently accommodated.
@@ -183,9 +222,45 @@ internal static class VmInstantiation
                             VmObjectKind.Operation, VmAttemptedCall.Instantiate));
                 }
 
-                return VmInstantiationResult.ProfileFault(
-                    VmReason.ProfileContractViolation, null,
-                    identified.WithOutcome(VmStage.Instantiation, VmOutcome.ProfileFault, VmReason.ProfileContractViolation, VmInitiator.Guest));
+                if (step.Continuation is null)
+                {
+                    return VmInstantiationResult.ProfileFault(
+                        VmReason.ProfileContractViolation, null,
+                        identified.WithOutcome(VmStage.Instantiation, VmOutcome.ProfileFault, VmReason.ProfileContractViolation, VmInitiator.Guest));
+                }
+
+                // The declared case parks. The instance is NOT published - an instance exists only
+                // when instantiation completes normally - so what the caller receives is the
+                // resumption object and nothing else.
+                var pending = new VmInstanceImplementation(
+                    runtime, profile, executor, PlaceholderState.Instance, instanceLevel, identified,
+                    profileState.Scope, mediator, lease);
+
+                var operation = new VmOperation(
+                    runtime, pending, profile, VmOperationKind.Instantiate, meter, linked,
+                    VmStage.Instantiation, identified);
+
+                if (!operation.TryPark(
+                        VmSuspensionOrigin.Instantiation, step.Continuation, step.Payload,
+                        out var suspension, out var parkFailure))
+                {
+                    Abandon(profile, runtime, executor, step.Continuation);
+
+                    return VmInstantiationResult.InvalidState(
+                        parkFailure,
+                        VmRuntime.Invalid(
+                            identified, VmStage.Instantiation, parkFailure,
+                            VmObjectKind.Operation, VmAttemptedCall.Instantiate));
+                }
+
+                runtime.RegisterInstance(pending);
+                succeeded = true;
+
+                return VmInstantiationResult.Suspension(
+                    suspension,
+                    step.Payload,
+                    identified.WithOutcome(VmStage.Instantiation, VmOutcome.Suspension, VmReason.InstantiationSuspended, VmInitiator.Guest));
+            }
 
             case VmExecutionStepKind.Faulted:
                 return VmInstantiationResult.ProfileFault(
@@ -212,7 +287,10 @@ internal static class VmInstantiation
     /// the same one. Ceilings are compared by exact equality rather than by subsumption: relaxing
     /// that would turn a refusal into a success, which is a breaking amendment.
     /// </remarks>
-    private static bool TryAdmitHandle(VmRuntime runtime, VmVerifiedArtifact artifact, out VmReason failure)
+    /// <summary>
+    /// Clauses 0 and 1: the handle's own state, checked before anything about the composition.
+    /// </summary>
+    private static bool TryAdmitHandleState(VmVerifiedArtifact artifact, out VmReason failure)
     {
         failure = VmReason.None;
 
@@ -228,6 +306,26 @@ internal static class VmInstantiation
             return false;
         }
 
+        return true;
+    }
+
+    /// <summary>
+    /// Clauses 3 to 11: the cross-runtime sharing predicate, in the frozen clause order.
+    /// </summary>
+    /// <remarks>
+    /// The identity clauses are evaluated before the sharing declaration, so a handle that fails
+    /// several of them always reports the same one - the first in the frozen order. Evaluating the
+    /// declaration first made every mismatch report as "not shareable", which is true of the
+    /// profile but says nothing about why this handle was refused.
+    /// </remarks>
+    private static bool TryAdmitSharing(
+        VmRuntime runtime,
+        VmVerifiedArtifact artifact,
+        VmProfileDescriptor profile,
+        out VmReason failure)
+    {
+        failure = VmReason.None;
+
         if (artifact.OwningRuntimeId.Equals(runtime.ObjectId))
         {
             return true;
@@ -238,18 +336,6 @@ internal static class VmInstantiation
         if (artifact.Origin is VmArtifactOrigin.GuestInitiated)
         {
             failure = VmReason.NestedHandleNotShareable;
-            return false;
-        }
-
-        if (artifact.Sharing is not VmArtifactSharing.Shareable)
-        {
-            failure = VmReason.SharedHandleNotShareable;
-            return false;
-        }
-
-        if (!runtime.TryGetDescriptor(artifact.Identity.ProfileId, out var profile))
-        {
-            failure = VmReason.ProfileNotInCatalog;
             return false;
         }
 
@@ -277,6 +363,14 @@ internal static class VmInstantiation
             return false;
         }
 
+        // Clause 10 last among the identity clauses: the declaration is a property of the profile,
+        // and reporting it ahead of a genuine identity difference would hide which one applied.
+        if (artifact.Sharing is not VmArtifactSharing.Shareable)
+        {
+            failure = VmReason.SharedHandleNotShareable;
+            return false;
+        }
+
         var parentId = runtime.Parent?.Id.ObjectId ?? default;
 
         if (!artifact.AggregateBudgetId.Equals(parentId))
@@ -286,6 +380,19 @@ internal static class VmInstantiation
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Stands in for instance state while an asynchronous instantiation is still parked.
+    /// </summary>
+    /// <remarks>
+    /// The instance is not published to the caller until instantiation completes normally, so this
+    /// is never handed to anyone: it exists so the parked operation has an instance to be resumed
+    /// against. The profile supplies its real state when it completes.
+    /// </remarks>
+    private sealed class PlaceholderState : IVmInstanceState
+    {
+        internal static PlaceholderState Instance { get; } = new();
     }
 
     private static void Abandon(

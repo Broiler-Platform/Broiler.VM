@@ -8,11 +8,11 @@ broiler-vm-fixtures-host: 5 checks passed, core contract version 1
 
 === TRIMMED: dotnet publish -c Release -r win-x64 --self-contained true -p:PublishAot=false ===
   Determining projects to restore...
-  Restored D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj (in 277 ms).
-  Restored D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Binary\Broiler.VM.Binary.csproj (in 277 ms).
-  Restored D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj (in 277 ms).
-  Restored D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Fixtures\Broiler.VM.Fixtures.csproj (in 277 ms).
-  Restored D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Fixtures.Host\Broiler.VM.Fixtures.Host.csproj (in 277 ms).
+  Restored D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj (in 243 ms).
+  Restored D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj (in 243 ms).
+  Restored D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Binary\Broiler.VM.Binary.csproj (in 243 ms).
+  Restored D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Fixtures\Broiler.VM.Fixtures.csproj (in 243 ms).
+  Restored D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Fixtures.Host\Broiler.VM.Fixtures.Host.csproj (in 243 ms).
   Broiler.VM.Binary -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
   Broiler.VM.Abstractions -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
   Broiler.VM.Runtime -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll

@@ -280,6 +280,25 @@ public sealed partial class VmRuntime : System.IDisposable
                     Invalid(baseline, VmStage.Resume, VmReason.ResumeTokenConsumed, VmObjectKind.Suspension, VmAttemptedCall.Resume));
             }
 
+            // The parent is asked before the operation is resumed, not after. Once a shared parent
+            // has no remaining allowance no operation may be resumed under it, and a resumption
+            // that ran first and reported exhaustion afterwards would already have spent work the
+            // parent had no allowance for.
+            if (Parent is not null && !Parent.AdmitsResumption(out var parentRefusal))
+            {
+                var outcome = parentRefusal is VmReason.AggregateBudgetDisposed
+                    ? VmOutcome.InvalidState
+                    : VmOutcome.ResourceExhaustion;
+
+                var diagnostics = baseline
+                    .WithOutcome(VmStage.Resume, outcome, parentRefusal, VmInitiator.Core)
+                    .WithExhaustion(VmBudgetDimension.Fuel, VmBudgetScope.Aggregate);
+
+                return outcome is VmOutcome.InvalidState
+                    ? VmResumeResult.InvalidState(suspension.SuspendedStage, parentRefusal, diagnostics)
+                    : VmResumeResult.ResourceExhaustion(suspension.SuspendedStage, parentRefusal, diagnostics);
+            }
+
             if (!suspension.TryConsume())
             {
                 return VmResumeResult.InvalidState(
@@ -440,6 +459,18 @@ public sealed partial class VmRuntime : System.IDisposable
 
     internal VmRuntimeCreationOptions Options => options;
 
+    /// <summary>Enters the capability boundary for a provider call.</summary>
+    /// <remarks>
+    /// A provider is a capability, and it is the one kind for which non-reentrancy is mandatory:
+    /// the descriptor is refused at catalog construction if it declares otherwise. Calling it
+    /// outside the boundary left that declaration enforced nowhere, so a provider could re-enter
+    /// the very runtime whose load it was answering.
+    /// </remarks>
+    internal void EnterProviderCall() => EnterCapability(VmCapabilityReentrancy.NonReentrant);
+
+    /// <summary>Leaves the capability boundary for a provider call.</summary>
+    internal void LeaveProviderCall() => LeaveCapability(VmCapabilityReentrancy.NonReentrant);
+
     internal VmAggregateBudget? Parent => parent;
 
     internal VmBudgetLevel RuntimeLevel => runtimeLevel;
@@ -518,11 +549,11 @@ public sealed partial class VmRuntime : System.IDisposable
         }
     }
 
-    internal bool TryEnterVerification()
+    internal bool TryEnterVerification(int slots)
     {
         lock (gate)
         {
-            if (activeVerifications >= options.MaxConcurrentVerifications)
+            if (activeVerifications >= slots)
             {
                 return false;
             }

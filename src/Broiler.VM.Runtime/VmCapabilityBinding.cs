@@ -66,6 +66,15 @@ internal sealed class VmCapabilityInvoker : IVmHostCapabilityInvoker
     /// <summary>The capability the last failing call named.</summary>
     internal VmCapabilityId LastFailureCapability { get; private set; }
 
+    /// <summary>
+    /// Whether the last failure was one the capability declared should end the operation.
+    /// </summary>
+    /// <remarks>
+    /// This is what makes the declared translation mode mean something. Without it both modes reach
+    /// the profile identically and the declaration is documentation.
+    /// </remarks>
+    internal bool TerminatesOperation { get; private set; }
+
     /// <inheritdoc/>
     public int BindingCount => bindings.Length;
 
@@ -171,6 +180,7 @@ internal sealed class VmCapabilityInvoker : IVmHostCapabilityInvoker
         {
             LastFailure = VmReason.CapabilityNotRegistered;
             LastFailureCapability = binding.Import.Descriptor.CapabilityId;
+            TerminatesOperation = true;
             return false;
         }
 
@@ -193,8 +203,13 @@ internal sealed class VmCapabilityInvoker : IVmHostCapabilityInvoker
         LastFailure = VmReason.HostCapabilityFaulted;
         LastFailureCapability = binding.Import.Descriptor.CapabilityId;
 
-        return binding.Import.Descriptor.ExceptionTranslation is VmExceptionTranslation.ObservableFault
-            ? VmHostCallOutcome.Refused
-            : VmHostCallOutcome.Unavailable;
+        var observable = binding.Import.Descriptor.ExceptionTranslation is VmExceptionTranslation.ObservableFault;
+
+        // TerminateOperation means the operation ends with the host failure, whatever the profile
+        // does next. ObservableFault hands the refusal to the profile and lets it decide, and a
+        // converted outcome is the profile's own.
+        TerminatesOperation = !observable;
+
+        return observable ? VmHostCallOutcome.Refused : VmHostCallOutcome.Unavailable;
     }
 }

@@ -481,8 +481,13 @@ public sealed class ContractSurfaceTests
     }
 
     [Fact]
-    public void An_Unbound_Optional_Import_Is_Reported_As_Unbound_Rather_Than_Faulting()
+    public void Calling_An_Unbound_Optional_Import_Is_A_Host_Failure_Naming_The_Capability()
     {
+        // Registration is the permission, so a capability the composition did not register is not
+        // reachable at all. A profile that declared an import optional is expected to ask whether
+        // slot k is bound; one that calls anyway gets the same answer a required missing import
+        // would have given at binding, and the result names which capability it was rather than
+        // billing the guest for a wiring decision the host made.
         using var runtime = FixtureComposition.Runtime(FixtureComposition.AlphaCatalog());
 
         var artifact = FixtureComposition.Verify(
@@ -491,7 +496,12 @@ public sealed class ContractSurfaceTests
         using var instance = FixtureComposition.Instantiate(runtime, artifact);
         var result = FixtureComposition.Invoke(instance);
 
-        Assert.Equal(VmOutcome.ProfileFault, result.Outcome);
+        Assert.Equal(VmOutcome.HostFailure, result.Outcome);
+        Assert.Equal(VmReason.CapabilityNotRegistered, result.Reason);
+        Assert.Equal(FixtureHostCapabilities.OptionalId, result.Diagnostics.CapabilityId);
+
+        // A host failure faults the instance and leaves the runtime usable.
+        Assert.Equal(VmInstanceState.Faulted, instance.State);
         Assert.Equal(VmRuntimeState.Ready, runtime.State);
     }
 

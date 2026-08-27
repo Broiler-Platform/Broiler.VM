@@ -65,6 +65,13 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     internal bool ExhaustionObserved { get; private set; }
 
     /// <summary>
+    /// Records a refusal detected outside the meter - a nested-load bound the mediator enforces
+    /// itself - so the requesting operation reports it even if the profile ignores the result.
+    /// </summary>
+    internal void LatchNestedRefusal(VmBudgetDimension dimension, VmBudgetScope scope) =>
+        Refuse(dimension, scope);
+
+    /// <summary>
     /// Whether the profile exceeded its declared uncharged-work bound between two polls. That is a
     /// profile contract violation, not a resource exhaustion: the profile promised a cancellation
     /// latency and did not keep it.
@@ -209,10 +216,33 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     }
 
     /// <inheritdoc/>
+    /// <remarks>
+    /// <para>
+    /// The parent is charged <strong>first</strong>, and the local levels commit only what the
+    /// parent accepted. Committing locally and then offering the parent a charge it may refuse
+    /// makes the pair asymmetric: the retention would later be released from the parent in full,
+    /// driving the parent's live sum below the true sum across its children and eventually to
+    /// zero, at which point it would admit a retention it should refuse.
+    /// </para>
+    /// <para>
+    /// The member returns <c>void</c> because the frozen metering surface has exactly four members
+    /// and none of them reports a remaining value, so a refusal cannot be handed back here. It is
+    /// latched instead, and the operation's next charge or poll reports the exhaustion at aggregate
+    /// scope.
+    /// </para>
+    /// </remarks>
     public void ReportRetained(VmBudgetDimension dimension, ulong amount)
     {
         if (amount == 0)
         {
+            return;
+        }
+
+        if (parent is not null &&
+            VmBudgetDimensions.CarriesAggregateScope(dimension) &&
+            !parent.TryCharge(dimension, amount))
+        {
+            Refuse(dimension, VmBudgetScope.Aggregate);
             return;
         }
 
@@ -222,14 +252,14 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
             instance?.Commit(dimension, amount);
             invocation.Commit(dimension, amount);
         }
-
-        if (parent is not null && VmBudgetDimensions.CarriesAggregateScope(dimension))
-        {
-            parent.TryCharge(dimension, amount);
-        }
     }
 
     /// <inheritdoc/>
+    /// <remarks>
+    /// The parent is credited exactly what it was debited, which the ordering in
+    /// <see cref="ReportRetained"/> guarantees: a retention the parent refused was never committed
+    /// locally, so it can never be released from the parent either.
+    /// </remarks>
     public void ReportReleased(VmBudgetDimension dimension, ulong amount)
     {
         if (amount == 0)
@@ -237,14 +267,25 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
             return;
         }
 
+        ulong releasable;
+
         lock (gate)
         {
-            runtime.Release(dimension, amount);
-            instance?.Release(dimension, amount);
-            invocation.Release(dimension, amount);
+            // Never release more than this level actually holds. A profile that over-reports a
+            // release would otherwise credit the parent for bytes it was never debited.
+            releasable = System.Math.Min(amount, invocation.Consumed(dimension));
+
+            if (releasable == 0)
+            {
+                return;
+            }
+
+            runtime.Release(dimension, releasable);
+            instance?.Release(dimension, releasable);
+            invocation.Release(dimension, releasable);
         }
 
-        parent?.Release(dimension, amount);
+        parent?.Release(dimension, releasable);
     }
 
     /// <inheritdoc/>
@@ -303,6 +344,16 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
         }
     }
 
+    /// <summary>
+    /// Attributes elapsed time since the last accrual to every level.
+    /// </summary>
+    /// <remarks>
+    /// The parent is charged before the local levels commit, for the same reason retention is: a
+    /// delta the parent refuses must not be recorded locally, or the parent permanently under-sums
+    /// attributed time across its children and its wall-clock ceiling stops meaning anything. A
+    /// refusal is latched so the next poll reports it at aggregate scope rather than the parent
+    /// silently stalling below its own ceiling.
+    /// </remarks>
     private void AccrueWallClock()
     {
         ulong elapsed;
@@ -324,15 +375,21 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
             }
 
             elapsed = attributed - already;
+        }
 
+        if (parent is not null && !parent.TryCharge(VmBudgetDimension.WallClock, elapsed))
+        {
+            // Not committed locally either, so the delta is re-offered on the next accrual rather
+            // than lost. The latch is what turns the refusal into a reported outcome.
+            Refuse(VmBudgetDimension.WallClock, VmBudgetScope.Aggregate);
+            return;
+        }
+
+        lock (gate)
+        {
             runtime.Commit(VmBudgetDimension.WallClock, elapsed);
             instance?.Commit(VmBudgetDimension.WallClock, elapsed);
             invocation.Commit(VmBudgetDimension.WallClock, elapsed);
-        }
-
-        if (parent is not null)
-        {
-            parent.TryCharge(VmBudgetDimension.WallClock, elapsed);
         }
     }
 

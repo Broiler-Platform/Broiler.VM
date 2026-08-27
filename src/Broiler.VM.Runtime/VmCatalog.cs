@@ -16,7 +16,11 @@ public readonly struct VmProfileCatalogEntry
         ProfileId = descriptor.ProfileId;
         DisplayName = descriptor.DisplayName;
         SupportedFormatVersions = descriptor.SupportedFormatVersions;
-        AcceptedFeatureManifests = descriptor.AcceptedFeatureManifests;
+
+        // Normalized to ascending ordinal order here, not trusted to arrive sorted. Declaration
+        // order is not retained and has no observable effect anywhere, and the host-facing listing
+        // is somewhere it would otherwise have been observable.
+        AcceptedFeatureManifests = Normalize(descriptor.AcceptedFeatureManifests);
         BuiltAgainstCoreContractVersion = descriptor.BuiltAgainstCoreContractVersion;
         AuthoredCoreContractVersion = descriptor.AuthoredCoreContractVersion;
         GuestInitiatedLoads = descriptor.GuestInitiatedLoads.Kind;
@@ -66,6 +70,26 @@ public readonly struct VmProfileCatalogEntry
 
     /// <summary>The package it ships in.</summary>
     public string PackageId { get; }
+
+    private static System.Collections.Immutable.ImmutableArray<VmFeatureManifestId> Normalize(
+        System.Collections.Immutable.ImmutableArray<VmFeatureManifestId> declared)
+    {
+        if (declared.IsDefaultOrEmpty)
+        {
+            return System.Collections.Immutable.ImmutableArray<VmFeatureManifestId>.Empty;
+        }
+
+        var sorted = new VmFeatureManifestId[declared.Length];
+
+        for (var index = 0; index < declared.Length; index++)
+        {
+            sorted[index] = declared[index];
+        }
+
+        System.Array.Sort(sorted, static (left, right) => left.CompareTo(right));
+
+        return System.Collections.Immutable.ImmutableArray.Create(sorted);
+    }
 }
 
 /// <summary>The host-facing enumeration of a catalog's contents, always in normalized order.</summary>

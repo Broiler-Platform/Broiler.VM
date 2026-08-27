@@ -48,6 +48,15 @@ public enum FixtureVmProfileVariant
 
     /// <summary>Produces an executor that reports a different profile identity.</summary>
     IdentityMismatchedExecutor = 12,
+
+    /// <summary>Its verifier throws instead of answering.</summary>
+    ThrowingVerifier = 13,
+
+    /// <summary>Its verifier answers Normal without producing verified state.</summary>
+    StatelessVerifier = 14,
+
+    /// <summary>It accepts several feature manifests, declared out of order.</summary>
+    MultiManifest = 15,
 }
 
 /// <summary>
@@ -157,13 +166,22 @@ public static class FixtureDescriptorFactory
             ? VmProfileId.Parse("Broiler.VM.Fixture.Impostor")
             : profileId;
 
+        // Declared deliberately out of ascending order, so that normalization is demonstrable
+        // rather than accidental.
+        var manifests = variant is FixtureVmProfileVariant.MultiManifest
+            ? System.Collections.Immutable.ImmutableArray.Create(
+                VmFeatureManifestId.Parse(profileId + ".Zulu"),
+                VmFeatureManifestId.Parse(profileId + ".Alfa"),
+                manifest)
+            : System.Collections.Immutable.ImmutableArray.Create(manifest);
+
         return new VmProfileDescriptor(
             profileId: profileId,
             displayName: displayName,
             descriptorRevision: 1,
             supportedFormatVersions: new VmFormatVersionRange(1, 1),
-            acceptedFeatureManifests: [manifest],
-            verifier: new FixtureVmVerifier(profileId, semanticVersion: 1),
+            acceptedFeatureManifests: manifests,
+            verifier: new FixtureVmVerifier(profileId, semanticVersion: 1, variant: variant),
             executorFactory: environment => new FixtureVmExecutor(
                 executorIdentity, environment, variant, chargingGranularity: 1),
             artifactRepresentationKind: VmArtifactRepresentationKind.Decoded,

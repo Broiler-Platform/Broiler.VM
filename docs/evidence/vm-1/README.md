@@ -1,4 +1,16 @@
-# Evidence bundle VM-1-001
+# Evidence bundle VM-1-002
+
+> **VM-1-001 is superseded and its result is retained here rather than deleted.** It was collected
+> against component commit `350a7ba`, and an adversarial review of that commit returned 45 findings
+> that survived independent refutation, sixteen of them blockers. Several were confirmed by running
+> the code: the aggregate live measure could be driven to zero while memory was still live; an
+> operation resumed normally under a spent parent; a declared asynchronous instantiation was
+> reported as a profile fault; abandonment leaked a live-suspended slot for the life of the runtime;
+> a capability declaring `TerminateOperation` never terminated anything; and a guest could swallow a
+> terminal nested exhaustion and report success. VM-1-001 therefore demonstrated that the suite
+> passed, not that the contract was implemented. This bundle is collected against the corrected
+> tree, and section *What the review found* below lists what changed and what is still open.
+
 
 The retained evidence for milestone VM-1's working claim. It is filed against the eight fields
 [the status ledger](../../roadmap.status.md) requires of any status beyond `Not started`, and it is
@@ -23,8 +35,8 @@ should take this bundle as evidence that the precondition was met.
 | Roadmap revision | `docs/roadmap.md` as of component commit `a46d6c8`, unchanged by this work |
 | Core contract version | 1, read from the build output as `VmCoreContract.Version` |
 | Reason-registry revision | 1, read as `VmReasonRegistry.Revision` |
-| Evidence-bundle ID | VM-1-001 |
-| Collection timestamp | 2026-08-27, local time, single session |
+| Evidence-bundle ID | VM-1-002, superseding VM-1-001 |
+| Collection timestamp | 2026-08-28, local time; VM-1-001 was collected 2026-08-27 |
 | Owner | MaiRat / Maik Ratzmer, holding all six roles in ADR 0012 |
 | Reviewer | **None.** No reviewer has read this work. |
 
@@ -92,14 +104,50 @@ expresses nothing, so each control injects one violation and both runs are retai
 | Artefact | Result |
 |---|---|
 | `build.log` | 7 projects, Release, **0 warnings, 0 errors** |
-| `test.log` | **150 passed, 0 failed, 0 skipped** - 44 architecture and 106 behavioural |
+| `test.log` | **175 passed, 0 failed, 0 skipped** - 44 architecture and 131 behavioural |
 | `pack.log` | exactly **3 `.nupkg` and 3 `.snupkg`** - Abstractions, Binary, Runtime. Neither new test-only project packs |
 | `publish-jit-and-trimmed.log` | the fixtures host runs under JIT and as a trimmed self-contained binary of 162,816 bytes; **5 checks passed**, exit code 0, both times |
-| `publish-aot.log` | the fixtures host publishes and runs as a Native AOT binary of 1,270,784 bytes; **5 checks passed**, exit code 0. No trim or AOT warnings; the host builds with `TreatWarningsAsErrors` |
+| `publish-aot.log` | the fixtures host publishes and runs as a Native AOT binary of 1,279,488 bytes; **5 checks passed**, exit code 0. No trim or AOT warnings; the host builds with `TreatWarningsAsErrors` |
 | `negative-control.log` | four controls, each failing when injected and green after revert |
 | `d1-outcome.txt` | `SCANNED` - an aggregate checkout is present, and 401 project files outside the component were examined |
 | `hashes.txt` | SHA-256 of the vendored file, the manifests, every product source file and all thirteen records under `docs/adr/` |
 | `rules.register.json` | 38 rules: **33 Active, 1 Vacuous, 4 Deferred** |
+
+### What the review found
+
+The implementation was reviewed adversarially against the frozen records before this bundle was
+collected: six reviewers, one per contract dimension, and every finding then put to two independent
+refuters with instructions to default to refuting. Forty-eight findings were raised, three were
+refuted, and forty-five survived - sixteen of them blockers.
+
+They are not listed exhaustively here; the corrections are in the commit and each has a regression
+test in `ReviewRegressionTests`. What the reader needs is the shape of them, because it says
+something about what a passing suite was worth:
+
+| Class | Examples |
+|---|---|
+| **Asymmetric accounting** | A retention the parent refused was still released from the parent, so the aggregate live sum could be driven below the true sum across children and then to zero - after which the parent admitted a retention it should have refused. A refused wall-clock charge was silently dropped, permanently under-summing attributed time. |
+| **Missing admission checks** | No resume admission check existed at all: an operation resumed normally under a parent with no remaining allowance. A parent whose allowance was fully spent still admitted new runtimes. |
+| **Mandatory mappings not implemented** | The outcome-to-instance-state mapping collapsed cancellation, exhaustion and host failure to `Live`, leaving an instance re-invocable after its stack had been abandoned mid-step. |
+| **Inverted precedence** | A poll-bound breach was reported ahead of cancellation and exhaustion, blaming the profile for a condition it did not cause and dropping the exhaustion dimension from the diagnostics. |
+| **Declarations enforced nowhere** | A capability declaring `TerminateOperation` never terminated: both translation modes reached the profile identically, so a host defect was billed to the guest. The artifact provider ran outside the capability boundary, so its mandatory non-reentrancy was unenforced and its calls were uncharged. A `Value`-kind descriptor could carry a provider, because the registration and the duplicate guard keyed on different fields. |
+| **Refusals that left no trace** | The mediator's own nested-load bounds refused without touching the meter, so a profile that ignored the result completed `Normal` - a guest could swallow a terminal exhaustion. |
+| **Leaks** | Abandonment never unparked, so a dead operation consumed a live-suspended slot for the life of the runtime. Instantiation took no lease, so a handle backing a live instance went straight to `Disposed` instead of draining. |
+| **Rules weaker than their statements** | V4 checked a property count rather than the frozen rows it claimed to check; V9 asserted return types rather than the construction site. Both are corrected, and the register rows now say what the rules do. |
+| **Translation that hid a bug** | An escaping verifier exception was translated into `InvalidArtifact`, so a verifier that dereferenced null was indistinguishable from a malicious artifact. It now propagates, and a core-detected verifier breach throws and poisons the runtime. |
+
+**What this says about the first bundle.** VM-1-001 reported a green suite, a clean build, and a
+Native AOT binary that ran - and every one of those statements was true while the sixteen blockers
+above were present. A passing suite is evidence that the tests pass. It is evidence about the
+contract only to the extent that the tests were written to catch the contract being broken, and on
+the first pass a great many of them were not.
+
+**Still open after the review.** Twenty-nine findings were majors and minors that this pass did not
+address: among them the runtime is still never poisoned by a broken metering contract, the
+non-reentrancy gate is absent on the control operations, `VmArtifactLifetimeKind.Disposable`
+releases nothing, `Snapshot` never causes the core to copy, and several diagnostics groups are not
+populated where the records require. They are recorded as Exclusion EX-52 rather than fixed, and a
+reviewer should treat the list as the next piece of work rather than as noise.
 
 ### The negative controls, in detail
 
@@ -134,7 +182,7 @@ observed, and the two that are not fully discharged say so.
 | per-runtime state isolation | Shown. Two runtimes over one catalog produce independent instances and identities; a handle whose ceilings differ from the receiving runtime is refused with the clause-8 reason |
 | legal and illegal lifecycle transitions | Shown. Use-after-dispose on the runtime, the instance and the handle each answer `InvalidState` with the right reason; a second invocation while one is suspended is refused; disposal is idempotent |
 | cancellation and disposal behaviour | Shown. Cancellation is observed at a polling point and reported as `Cancellation` rather than as a profile fault; the request latch is monotonic; a handle with a live lease drains rather than being seized |
-| declared thread affinity and reentrancy | **Partly.** Reentrancy is enforced and witnessed: a runtime call from inside a non-reentrant capability answers `InvalidState`/`ReentrantRuntimeCallFromCapability`. Thread affinity is declared and carried but not exercised across threads - see Exclusions |
+| declared thread affinity and reentrancy | **Partly.** Reentrancy is enforced on the execution path and witnessed, and the artifact provider now runs inside the same boundary. It is still absent on the control operations (EX-52), and thread affinity is declared and carried but never exercised across threads (EX-44) |
 | typed profile-payload preservation | Shown. A fixture value and a fixture fault both round-trip through the neutral envelope; a payload outside its profile's declared kind range is dropped rather than handed on |
 | the explicit absence of reflection or name-based discovery | Shown. Rule B5 over compiled metadata, plus a surface check that no public member takes a `Type` or an `Assembly` |
 | a guest-initiated load through a fixture provider | Shown. A declaring profile loads through a registered provider, and the provider is asked exactly once |
@@ -165,10 +213,13 @@ observed, and the two that are not fully discharged say so.
    public. Exclusion EX-41.
 
 **The claim this bundle justifies, stated narrowly:** *the profile-neutral contract of core
-contract version 1 is implemented, and every clause of VM-1's exit gate except thread affinity
-across threads is demonstrated against two fixture profiles, in JIT, trimmed and Native AOT hosts
-on `win-x64`.* It justifies no claim about any other RID, about concurrency, about performance,
-about any language, or about acceptance.
+contract version 1 is implemented; fifteen of the exit gate's sixteen clauses are demonstrated
+against two fixture profiles in JIT, trimmed and Native AOT hosts on `win-x64`; and the
+implementation has been adversarially reviewed once against the frozen records, with every
+surviving blocker corrected and regression-tested.* It justifies no claim about any other RID,
+about concurrency, about performance, about any language, or about acceptance - and, given that a
+single review pass found sixteen blockers behind a green suite, no claim that a second pass would
+find none.
 
 **Reviewer verdict:** none recorded. **Follow-up owner:** MaiRat.
 
@@ -207,3 +258,5 @@ identifiers.
 | EX-48 | **The malformed-input corpus is a subset.** Seven deliberate corruptions, generated rather than stored, and no fuzzing. The corpus, the fuzz targets and the minimized regressions are VM-2's. |
 | EX-49 | **The catalog identity is not a hash.** It is the canonical encoding itself, compared by bytes. That is enough for order-independence and drift detection and is not a content-addressing scheme. |
 | EX-50 | **The application-local consumer profile does not exist.** Both fixture profiles live in the same test-only assembly and use the reserved `Broiler.*` namespace. Proving the public contract from a separate consumer package under a reverse-domain namespace is VM-3's, and this bundle establishes nothing about it. |
+| EX-51 | **Rule V9 does not count call sites.** It asserts that one public member mints a verified artifact and that one product assembly reaches it, both from metadata. Counting individual call sites would need an IL decoder, and a hand-written one that got an operand length wrong would make the rule worse than the proxy it replaced. The register row says what the rule does. |
+| EX-52 | **Twenty-nine review findings are unaddressed.** The sixteen blockers and a handful of majors were fixed; the rest were not. They include: the runtime is never poisoned by a broken metering contract, so `VmRuntimeState.Poisoned` is reachable only through a verifier contract breach; the non-reentrancy gate is absent on `Dispose`, `RequestCancel` and `PollDeadlines`; `VmArtifactLifetimeKind.Disposable` releases nothing; `VmArtifactRepresentationKind.Snapshot` never causes the core to retain bytes; `TryTakeSuspension` never answers `Unsupported` or `NoOp`; binding-failure diagnostics do not name the full triple; the four core-contract admission rules report reasons that do not distinguish all four cases; and a diagnostics token under another profile's namespace is accepted. None is a silent-wrong-answer defect of the kind fixed above, but each is a place where the implementation is thinner than the record it implements. |

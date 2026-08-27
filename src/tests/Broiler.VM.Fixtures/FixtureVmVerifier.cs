@@ -21,13 +21,19 @@ namespace Broiler.VM.Fixtures;
 public sealed class FixtureVmVerifier : IVmProfileVerifier
 {
     private readonly bool chargesWork;
+    private readonly FixtureVmProfileVariant variant;
 
     /// <summary>Creates a verifier for <paramref name="profileId"/>.</summary>
-    public FixtureVmVerifier(VmProfileId profileId, int semanticVersion, bool chargesWork = true)
+    public FixtureVmVerifier(
+        VmProfileId profileId,
+        int semanticVersion,
+        bool chargesWork = true,
+        FixtureVmProfileVariant variant = FixtureVmProfileVariant.Conforming)
     {
         ProfileId = profileId;
         VerifierSemanticVersion = semanticVersion;
         this.chargesWork = chargesWork;
+        this.variant = variant;
     }
 
     /// <inheritdoc/>
@@ -49,6 +55,19 @@ public sealed class FixtureVmVerifier : IVmProfileVerifier
         IVmVerificationContext context,
         System.Threading.CancellationToken cancellationToken)
     {
+        if (variant is FixtureVmProfileVariant.ThrowingVerifier)
+        {
+            // Deliberately escaping. The core must let it propagate rather than translating it into
+            // a category, which is what stops a verifier bug from hiding in a malformed corpus.
+            throw new System.InvalidOperationException("The fixture throwing verifier always throws.");
+        }
+
+        if (variant is FixtureVmProfileVariant.StatelessVerifier)
+        {
+            // A contract breach the core detects: Normal with nothing verified.
+            return VmVerifierOutcome.Verified(null!, VmArtifactSharing.RuntimeScoped);
+        }
+
         var adapter = new FixtureBoundedReadAdapter(context.Meter);
         var bounds = FixtureBoundedReadAdapter.ToReadBounds(context.Ceilings.VerificationCeilings);
         var reader = new VmBoundedReader(payload, in bounds, adapter);

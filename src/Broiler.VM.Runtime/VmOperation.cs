@@ -66,6 +66,42 @@ internal sealed class VmOperation
 
     internal VmDiagnostics Baseline { get; private set; }
 
+    /// <summary>
+    /// The host failure a capability produced that the profile did not convert, or
+    /// <see cref="VmReason.None"/>.
+    /// </summary>
+    /// <remarks>
+    /// A capability that declares <see cref="VmExceptionTranslation.TerminateOperation"/> means
+    /// exactly that: the operation ends with the host failure, and the profile's own answer is
+    /// discarded. Reporting it as a profile fault instead would bill a host defect to the guest and
+    /// send a support case to the wrong owner. Where a capability declares an observable fault the
+    /// profile is expected to convert it, and a converted outcome is a profile fault - that is a
+    /// control-flow fact rather than a precedence question.
+    /// </remarks>
+    internal VmReason HostFailure { get; private set; } = VmReason.None;
+
+    /// <summary>The capability the unconverted host failure came from.</summary>
+    internal VmCapabilityId HostFailureCapability { get; private set; }
+
+    /// <summary>Its declared version.</summary>
+    internal int HostFailureCapabilityVersion { get; private set; }
+
+    /// <summary>Latches an unconverted host failure. The first one wins; a later one is its echo.</summary>
+    internal void LatchHostFailure(VmReason reason, VmCapabilityId capability, int version)
+    {
+        lock (gate)
+        {
+            if (HostFailure is not VmReason.None)
+            {
+                return;
+            }
+
+            HostFailure = reason;
+            HostFailureCapability = capability;
+            HostFailureCapabilityVersion = version;
+        }
+    }
+
     internal VmMeter Meter => meter;
 
     internal System.Threading.CancellationToken Token => cancellation.Token;
@@ -263,6 +299,16 @@ internal sealed class VmOperation
                         .WithObject(VmObjectKind.Operation, (int)state, VmAttemptedCall.Resume));
             }
 
+            // The cancellation latch is monotonic, so an operation cancelled while parked stays
+            // cancelled. Resuming it would re-enter profile state that has already been abandoned.
+            if (cancellationRequested)
+            {
+                return VmResumeResult.Cancellation(
+                    Stage,
+                    VmReason.Cancelled,
+                    baseline.WithOutcome(VmStage.Resume, VmOutcome.Cancellation, VmReason.Cancelled, VmInitiator.Host));
+            }
+
             resumed = continuation;
             continuation = null;
             pending = null;
@@ -318,6 +364,12 @@ internal sealed class VmOperation
         }
 
         cancellation.Cancel();
+
+        // Unpark, always. An abandoned operation is terminal, and leaving it in the runtime's
+        // suspended set would consume a live-suspended slot for the life of the runtime while
+        // pinning its meter and its instance - a leak invisible to any test that never disposes
+        // a suspended instance.
+        runtime.Unpark(this);
 
         if (dropped is not null)
         {

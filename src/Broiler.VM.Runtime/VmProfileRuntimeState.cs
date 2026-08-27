@@ -104,7 +104,9 @@ internal sealed class VmProfileRuntimeState
             bindings[index] = new VmCapabilityBinding(
                 import, registration.Handler, registration.BytesHandler, registration.Provider);
 
-            if (registration.Provider is not null)
+            // Keyed on the declared kind, which is the same field the at-most-one-provider guard
+            // counts by. Keying on the presence of a provider object instead let the two disagree.
+            if (registration.Kind is VmCapabilityKind.ArtifactProvider && registration.Provider is not null)
             {
                 provider = registration.Provider;
             }

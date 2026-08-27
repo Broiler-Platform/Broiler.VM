@@ -63,6 +63,16 @@ public sealed partial class VmRuntime
         VmArtifactOrigin origin,
         VmMeter? requestingMeter)
     {
+        // Cancellation ranks second in the frozen precedence, above unsupported profile and
+        // invalid artifact, and the latch is observed before any input is examined - which is what
+        // makes a cancelled request deterministic rather than a function of thread timing.
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return VmVerificationResult.Cancellation(
+                VmReason.Cancelled,
+                baseline.WithOutcome(VmStage.Verification, VmOutcome.Cancellation, VmReason.Cancelled, VmInitiator.Host));
+        }
+
         if (!descriptor.IsWellFormed)
         {
             return VmVerificationResult.InvalidArtifact(
@@ -102,7 +112,13 @@ public sealed partial class VmRuntime
                 identified.WithOutcome(VmStage.Verification, VmOutcome.InvalidArtifact, VmReason.UnsupportedFeatureManifest, VmInitiator.Caller));
         }
 
-        if (!profile.SupportsConcurrentVerification && !TryEnterVerification())
+        // The slot is taken whatever the profile declares. A profile that declares it supports
+        // concurrent verification is still bounded by the runtime's own configured maximum, and one
+        // that does not is held to a single verification at a time - the declaration narrows the
+        // bound, it does not remove it.
+        var slots = profile.SupportsConcurrentVerification ? Options.MaxConcurrentVerifications : 1;
+
+        if (!TryEnterVerification(slots))
         {
             return VmVerificationResult.InvalidState(
                 VmReason.WrongState,
@@ -115,10 +131,7 @@ public sealed partial class VmRuntime
         }
         finally
         {
-            if (!profile.SupportsConcurrentVerification)
-            {
-                ExitVerification();
-            }
+            ExitVerification();
         }
     }
 
@@ -161,27 +174,15 @@ public sealed partial class VmRuntime
         }
 
         var context = new VmVerificationContext(ceilings, meter, profileState.BoundShapes);
-        VmVerifierOutcome outcome;
 
-        try
-        {
-            outcome = profile.Verifier.Verify(in descriptor, payload, context, cancellationToken);
-        }
-        catch (System.OperationCanceledException)
-        {
-            return VmVerificationResult.Cancellation(
-                VmReason.Cancelled,
-                identified.WithOutcome(VmStage.Verification, VmOutcome.Cancellation, VmReason.Cancelled, VmInitiator.Host));
-        }
-        catch (System.Exception)
-        {
-            // A verifier that throws instead of answering has violated the contract it declared.
-            // The core does not let that escape to the caller as an exception, because the whole
-            // point of a verification result is that malformed input is data, not control flow.
-            return VmVerificationResult.InvalidArtifact(
-                VmReason.SemanticValidationFailed,
-                identified.WithOutcome(VmStage.Verification, VmOutcome.InvalidArtifact, VmReason.SemanticValidationFailed, VmInitiator.Guest));
-        }
+        // An escaping verifier exception is NOT translated into a category, and is deliberately not
+        // caught here. Translating it would let a verifier bug masquerade as a malicious artifact
+        // and hide from a malformed corpus: the same result would be reported for a verifier that
+        // dereferenced null and for bytes that were genuinely invalid, and a corpus labelled by
+        // category and reason could not tell them apart. The budget already charged stays charged -
+        // the work was genuinely done, so there is no refund by throwing - and the runtime stays
+        // usable.
+        var outcome = profile.Verifier.Verify(in descriptor, payload, context, cancellationToken);
 
         switch (outcome.Category)
         {
@@ -212,9 +213,16 @@ public sealed partial class VmRuntime
 
         if (outcome.State is null)
         {
-            return VmVerificationResult.InvalidArtifact(
-                VmReason.SemanticValidationFailed,
-                identified.WithOutcome(VmStage.Verification, VmOutcome.InvalidArtifact, VmReason.SemanticValidationFailed, VmInitiator.Guest));
+            // The core itself detected a verifier contract breach: an answer of Normal with no
+            // verified state. That is not something an artifact can cause, so it cannot be reported
+            // as one - it is thrown, and the runtime is poisoned so no later call computes anything
+            // from a state the core no longer trusts.
+            Poison();
+
+            throw new VmCoreDefectException(
+                "The verifier for " + profile.ProfileId + " answered Normal without producing " +
+                "verified state, which the profile contract does not permit.",
+                ObjectId);
         }
 
         // A verifier may narrow sharing and may never widen it. Taking the tighter of the two is

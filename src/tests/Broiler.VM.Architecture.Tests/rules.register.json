@@ -31,7 +31,9 @@
     "the honest answer is different, and it is recorded rather than papered over - see its own row.",
     "Rule E5 is superseded: it fused a cardinality claim about the graph with a member claim about",
     "one type, and only the first is falsified by VM-1. V1 replaces the first; V2 preserves the",
-    "second verbatim."
+    "second verbatim.",
+    "",
+    "REVIEW PASS. An adversarial review after the first implementation returned 45 findings that survived refutation, 16 of them blockers. Two register rows were among them: V4 checked a property count rather than the frozen rows it claimed to check, and V9 asserted static return types rather than the construction site. Both statements and both rules were corrected here. A rule weaker than its own statement is the defect this register exists to prevent, so those two are recorded rather than quietly tightened."
   ],
   "milestone": "VM-1",
   "coreContractVersion": 1,
@@ -350,10 +352,10 @@
       "id": "V4",
       "owningAdr": "0002",
       "status": "Active",
-      "statement": "VmProfileDescriptor declares exactly the thirty rows of the frozen table and none of the names excluded by construction.",
-      "evidence": "Compiled metadata",
+      "statement": "VmProfileDescriptor declares exactly the thirty rows of the frozen table, by name, and none of the names excluded by construction.",
+      "evidence": "Compiled metadata against the frozen row list",
       "activationMilestone": null,
-      "nonVacuousWhen": "The descriptor exists as a type with properties.",
+      "nonVacuousWhen": "The descriptor exists as a type with properties. The rule compares row NAMES, not a count: a count is satisfied by any thirty-one properties at all, including thirty-one wrong ones, which is exactly the drift a table this long exists to catch.",
       "witness": "ApiBaselineWitnesses.DescriptorWithExcludedRows in Broiler.VM.Architecture.Tests.dll"
     },
     {
@@ -400,10 +402,10 @@
       "id": "V9",
       "owningAdr": "0006",
       "status": "Active",
-      "statement": "Exactly one public member of the product graph constructs a verified artifact, and the verification member takes exactly the descriptor, the byte span and a cancellation token.",
-      "evidence": "Compiled metadata",
+      "statement": "Exactly one public member of the product graph mints a verified artifact, exactly one product assembly reaches that member, and the verification member takes exactly the descriptor, the byte span and a cancellation token.",
+      "evidence": "Compiled metadata: exported members, MemberRef tables, and the verification signature",
       "activationMilestone": null,
-      "nonVacuousWhen": "VmVerifiedArtifact and VmRuntime.Verify exist.",
+      "nonVacuousWhen": "VmVerifiedArtifact and VmRuntime.Verify exist. Two halves, because either alone is weaker than the claim: counting members that return the handle would pass a graph with one factory and any number of assemblies calling it, and reading the member-reference tables says which assemblies can reach the factory at all. Neither half counts individual call sites, which would need an IL decoder; Exclusion EX-51 records that limit rather than letting the statement overreach.",
       "witness": "ApiBaselineWitnesses.SecondConstructionSite in Broiler.VM.Architecture.Tests.dll"
     },
     {

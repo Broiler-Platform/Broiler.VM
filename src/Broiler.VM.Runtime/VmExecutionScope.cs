@@ -22,12 +22,27 @@ namespace Broiler.VM;
 internal sealed class VmExecutionScope
 {
     private readonly System.Threading.AsyncLocal<VmMeter?> current = new();
+    private readonly System.Threading.AsyncLocal<VmOperation?> operation = new();
 
     internal VmMeter? Current => current.Value;
 
-    internal void Enter(VmMeter meter) => current.Value = meter;
+    /// <summary>
+    /// The operation the current step belongs to, so a host failure a capability produced can be
+    /// latched onto the thing that will report it.
+    /// </summary>
+    internal VmOperation? CurrentOperation => operation.Value;
 
-    internal void Leave() => current.Value = null;
+    internal void Enter(VmMeter meter, VmOperation? owner = null)
+    {
+        current.Value = meter;
+        operation.Value = owner;
+    }
+
+    internal void Leave()
+    {
+        current.Value = null;
+        operation.Value = null;
+    }
 }
 
 /// <summary>
@@ -109,8 +124,7 @@ internal sealed class VmAmbientCapabilityInvoker : IVmHostCapabilityInvoker
         var invoker = new VmCapabilityInvoker(bindings, owner, meter);
         var outcome = invoker.Invoke(bindingIndex, arguments, out result);
 
-        LastFailure = invoker.LastFailure;
-        LastFailureCapability = invoker.LastFailureCapability;
+        Latch(invoker, bindingIndex);
         return outcome;
     }
 
@@ -129,8 +143,32 @@ internal sealed class VmAmbientCapabilityInvoker : IVmHostCapabilityInvoker
         var invoker = new VmCapabilityInvoker(bindings, owner, meter);
         var outcome = invoker.InvokeBytes(bindingIndex, argument, out result);
 
+        Latch(invoker, bindingIndex);
+        return outcome;
+    }
+
+    /// <summary>
+    /// Records an unconverted host failure on the operation that will report it.
+    /// </summary>
+    /// <remarks>
+    /// Only where the capability declared that a fault terminates the operation. Where it declared
+    /// an observable fault, the profile is handed the refusal and is expected to convert it, and
+    /// whatever it produces is the answer.
+    /// </remarks>
+    private void Latch(VmCapabilityInvoker invoker, int bindingIndex)
+    {
         LastFailure = invoker.LastFailure;
         LastFailureCapability = invoker.LastFailureCapability;
-        return outcome;
+
+        if (invoker.LastFailure is VmReason.None || !invoker.TerminatesOperation)
+        {
+            return;
+        }
+
+        var version = bindingIndex >= 0 && bindingIndex < bindings.Length
+            ? bindings[bindingIndex].Import.Descriptor.Version
+            : 0;
+
+        scope.CurrentOperation?.LatchHostFailure(invoker.LastFailure, invoker.LastFailureCapability, version);
     }
 }

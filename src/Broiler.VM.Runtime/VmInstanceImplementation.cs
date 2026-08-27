@@ -22,6 +22,7 @@ internal sealed class VmInstanceImplementation : VmInstance
     private readonly VmDiagnostics baseline;
     private readonly VmExecutionScope scope;
     private readonly VmArtifactLoadMediator? mediator;
+    private readonly VmArtifactLease lease;
 
     private VmInstanceState currentState = VmInstanceState.Live;
     private VmOperation? active;
@@ -34,7 +35,8 @@ internal sealed class VmInstanceImplementation : VmInstance
         VmBudgetLevel instanceLevel,
         VmDiagnostics baseline,
         VmExecutionScope scope,
-        VmArtifactLoadMediator? mediator)
+        VmArtifactLoadMediator? mediator,
+        VmArtifactLease lease)
     {
         this.runtime = runtime;
         this.profile = profile;
@@ -44,6 +46,7 @@ internal sealed class VmInstanceImplementation : VmInstance
         this.baseline = baseline;
         this.scope = scope;
         this.mediator = mediator;
+        this.lease = lease;
         Identity = VmObjectId.Mint();
     }
 
@@ -167,13 +170,18 @@ internal sealed class VmInstanceImplementation : VmInstance
 
         operation?.Abandon(VmReason.Cancelled);
 
+        ReleaseRetained();
+
         lock (gate)
         {
             currentState = VmInstanceState.Disposed;
         }
 
-        // Live bytes the profile reported retained are given back on dispose, so repeated
-        // load-run-evict cycles reach a plateau instead of climbing.
+        // The handle is pinned for as long as the instance lives, so releasing the lease is the
+        // last thing disposal does. A handle whose last lease goes with its last instance completes
+        // its drain here rather than being left half-disposed.
+        lease.Release();
+
         runtime.ForgetInstance(this);
         return VmControlResult.Accepted;
     }
@@ -199,7 +207,7 @@ internal sealed class VmInstanceImplementation : VmInstance
         // The scope answers only inside the dynamic extent of this step. A profile that stashed its
         // meter or its mediator during an earlier step and uses it now is refused rather than
         // charged against whatever operation happens to be running.
-        scope.Enter(operation.Meter);
+        scope.Enter(operation.Meter, operation);
         mediator?.EnterScope(operation.Baseline);
 
         try
@@ -226,6 +234,48 @@ internal sealed class VmInstanceImplementation : VmInstance
         return Finish(operation, MapResume(operation, step));
     }
 
+    /// <summary>
+    /// Gives back the live bytes this instance still holds, at every scope that recorded them.
+    /// </summary>
+    /// <remarks>
+    /// A retained-bytes report commits at the instance, runtime and aggregate levels alike. Dropping
+    /// the instance level on dispose therefore reclaims nothing outside it, and a host running
+    /// repeated load-run-evict cycles would watch the runtime and its parent climb toward their
+    /// ceilings while nothing was actually retained. The memory plateau the lifecycle promises is
+    /// this method: the ceiling-class dimensions are released, and the allowance-class ones are
+    /// deliberately not, because an allowance never refunds.
+    /// </remarks>
+    private void ReleaseRetained()
+    {
+        foreach (var dimension in VmBudgetDimensions.All)
+        {
+            if (VmBudgetDimensions.ClassOf(dimension) is not VmBudgetClass.Ceiling)
+            {
+                continue;
+            }
+
+            ulong retained;
+
+            lock (runtime.Gate)
+            {
+                // What this level holds is exactly what the parent accepted: a retention the
+                // parent refused was never committed here, so releasing this amount credits the
+                // parent precisely what it was debited.
+                retained = instanceLevel.Consumed(dimension);
+
+                if (retained == 0)
+                {
+                    continue;
+                }
+
+                instanceLevel.Release(dimension, retained);
+                runtime.RuntimeLevel.Release(dimension, retained);
+            }
+
+            runtime.Parent?.Release(dimension, retained);
+        }
+    }
+
     internal void Unwind(IVmProfileContinuation continuation)
     {
         // The tighter of the profile's declared abandon budget and the runtime's unwind budget. A
@@ -249,7 +299,7 @@ internal sealed class VmInstanceImplementation : VmInstance
     {
         VmExecutionStep step;
 
-        scope.Enter(operation.Meter);
+        scope.Enter(operation.Meter, operation);
         mediator?.EnterScope(operation.Baseline);
 
         try
@@ -278,19 +328,17 @@ internal sealed class VmInstanceImplementation : VmInstance
 
     private VmInvocationResult MapInvocation(VmOperation operation, VmExecutionStep step)
     {
-        // Precedence, outermost cause first. A profile that exceeded its declared poll bound broke
-        // its own promise about cancellation latency, so that is reported before anything else. A
-        // profile that stopped because Poll said stop obeyed cancellation. A profile that stopped
-        // because a charge was refused ran out of budget. Only what is left is the profile's own
-        // answer.
-        if (operation.Meter.PollBoundExceeded || operation.Meter.UnpolledWorkExceedsBound)
-        {
-            return VmInvocationResult.ProfileFault(
-                VmReason.CancellationPollBoundExceeded, step.Payload,
-                operation.Baseline.WithOutcome(VmStage.Invocation, VmOutcome.ProfileFault, VmReason.CancellationPollBoundExceeded, VmInitiator.Guest));
-        }
-
-        if (operation.Meter.CancellationObserved)
+        // The frozen precedence order, which is one order for every stage: invalid state,
+        // cancellation, unsupported profile, invalid artifact, resource exhaustion, host failure,
+        // profile fault, suspension, normal. Cancellation ranks above exhaustion and both rank
+        // above a profile fault, so a profile that also overran its declared poll bound is still
+        // reported as cancelled or exhausted - reporting the poll-bound breach first would blame
+        // the profile for a condition it did not cause and would drop the exhaustion dimension and
+        // scope from the diagnostics entirely.
+        // The token as well as the meter: a profile that never polled did not observe the
+        // cancellation, but the operation was cancelled all the same, and the caller is owed that
+        // answer rather than a complaint about the profile's polling.
+        if (operation.Meter.CancellationObserved || operation.Token.IsCancellationRequested)
         {
             return VmInvocationResult.Cancellation(
                 VmReason.Cancelled,
@@ -306,6 +354,25 @@ internal sealed class VmInstanceImplementation : VmInstance
                     .WithExhaustion(operation.Meter.FailedDimension, operation.Meter.FailedScope));
         }
 
+        if (operation.HostFailure is not VmReason.None)
+        {
+            // A host capability the profile did not convert. Ranked above a profile fault because
+            // it is a host defect, and billing it to the guest would send a support case to the
+            // wrong owner.
+            return VmInvocationResult.HostFailure(
+                operation.HostFailure,
+                operation.Baseline
+                    .WithOutcome(VmStage.Invocation, VmOutcome.HostFailure, operation.HostFailure, VmInitiator.Host)
+                    .WithCapability(operation.HostFailureCapability, operation.HostFailureCapabilityVersion, default));
+        }
+
+        if (operation.Meter.PollBoundExceeded || operation.Meter.UnpolledWorkExceedsBound)
+        {
+            return VmInvocationResult.ProfileFault(
+                VmReason.CancellationPollBoundExceeded, ValidatePayload(step.Payload),
+                operation.Baseline.WithOutcome(VmStage.Invocation, VmOutcome.ProfileFault, VmReason.CancellationPollBoundExceeded, VmInitiator.Guest));
+        }
+
         switch (step.Kind)
         {
             case VmExecutionStepKind.Suspended when step.Continuation is not null:
@@ -314,7 +381,7 @@ internal sealed class VmInstanceImplementation : VmInstance
                     ? VmSuspensionOrigin.External
                     : VmSuspensionOrigin.Guest;
 
-                if (!operation.TryPark(origin, step.Continuation, step.Payload, out var suspension, out var parkFailure))
+                if (!operation.TryPark(origin, step.Continuation, ValidatePayload(step.Payload), out var suspension, out var parkFailure))
                 {
                     return VmInvocationResult.InvalidState(
                         parkFailure,
@@ -328,7 +395,10 @@ internal sealed class VmInstanceImplementation : VmInstance
 
                 return VmInvocationResult.Suspension(
                     origin is VmSuspensionOrigin.External ? null : suspension,
-                    step.Payload,
+                    // An external suspension carries origin and identity only. What a paused
+                    // profile exposes is the profile's own surface, and a host that paused an
+                    // operation from outside did not ask the guest for a projection.
+                    origin is VmSuspensionOrigin.External ? null : ValidatePayload(step.Payload),
                     origin is VmSuspensionOrigin.External ? VmReason.ExternallySuspended : VmReason.GuestSuspended,
                     operation.Baseline.WithOutcome(
                         VmStage.Invocation, VmOutcome.Suspension,
@@ -360,14 +430,8 @@ internal sealed class VmInstanceImplementation : VmInstance
 
     private VmResumeResult MapResume(VmOperation operation, VmExecutionStep step)
     {
-        if (operation.Meter.PollBoundExceeded || operation.Meter.UnpolledWorkExceedsBound)
-        {
-            return VmResumeResult.ProfileFault(
-                operation.Stage, VmReason.CancellationPollBoundExceeded, step.Payload,
-                operation.Baseline.WithOutcome(VmStage.Resume, VmOutcome.ProfileFault, VmReason.CancellationPollBoundExceeded, VmInitiator.Guest));
-        }
-
-        if (operation.Meter.CancellationObserved)
+        // The same frozen precedence as the invocation stage; it is one order for every stage.
+        if (operation.Meter.CancellationObserved || operation.Token.IsCancellationRequested)
         {
             return VmResumeResult.Cancellation(
                 operation.Stage, VmReason.Cancelled,
@@ -383,6 +447,22 @@ internal sealed class VmInstanceImplementation : VmInstance
                     .WithExhaustion(operation.Meter.FailedDimension, operation.Meter.FailedScope));
         }
 
+        if (operation.HostFailure is not VmReason.None)
+        {
+            return VmResumeResult.HostFailure(
+                operation.Stage, operation.HostFailure,
+                operation.Baseline
+                    .WithOutcome(VmStage.Resume, VmOutcome.HostFailure, operation.HostFailure, VmInitiator.Host)
+                    .WithCapability(operation.HostFailureCapability, operation.HostFailureCapabilityVersion, default));
+        }
+
+        if (operation.Meter.PollBoundExceeded || operation.Meter.UnpolledWorkExceedsBound)
+        {
+            return VmResumeResult.ProfileFault(
+                operation.Stage, VmReason.CancellationPollBoundExceeded, ValidatePayload(step.Payload),
+                operation.Baseline.WithOutcome(VmStage.Resume, VmOutcome.ProfileFault, VmReason.CancellationPollBoundExceeded, VmInitiator.Guest));
+        }
+
         switch (step.Kind)
         {
             case VmExecutionStepKind.Suspended when step.Continuation is not null:
@@ -391,7 +471,7 @@ internal sealed class VmInstanceImplementation : VmInstance
                     ? VmSuspensionOrigin.External
                     : VmSuspensionOrigin.Guest;
 
-                if (!operation.TryPark(origin, step.Continuation, step.Payload, out var suspension, out var parkFailure))
+                if (!operation.TryPark(origin, step.Continuation, ValidatePayload(step.Payload), out var suspension, out var parkFailure))
                 {
                     return VmResumeResult.InvalidState(
                         operation.Stage, parkFailure,
@@ -401,9 +481,12 @@ internal sealed class VmInstanceImplementation : VmInstance
                 return VmResumeResult.Suspension(
                     operation.Stage,
                     origin is VmSuspensionOrigin.External ? null : suspension,
-                    step.Payload,
+                    origin is VmSuspensionOrigin.External ? null : ValidatePayload(step.Payload),
                     origin is VmSuspensionOrigin.External ? VmReason.ExternallySuspended : VmReason.GuestSuspended,
-                    operation.Baseline.WithOutcome(VmStage.Resume, VmOutcome.Suspension, VmReason.GuestSuspended, VmInitiator.Guest));
+                    operation.Baseline.WithOutcome(
+                        VmStage.Resume, VmOutcome.Suspension,
+                        origin is VmSuspensionOrigin.External ? VmReason.ExternallySuspended : VmReason.GuestSuspended,
+                        origin is VmSuspensionOrigin.External ? VmInitiator.Host : VmInitiator.Guest));
             }
 
             case VmExecutionStepKind.Faulted:
@@ -415,6 +498,14 @@ internal sealed class VmInstanceImplementation : VmInstance
                 return VmResumeResult.ProfileFault(
                     operation.Stage, step.Reason, null,
                     operation.Baseline.WithOutcome(VmStage.Resume, VmOutcome.ProfileFault, step.Reason, VmInitiator.Guest));
+
+            case VmExecutionStepKind.Suspended:
+                // Suspended with no continuation. There is nothing to resume from, so reporting
+                // success would hand the caller a completed operation whose profile state was
+                // abandoned mid-step.
+                return VmResumeResult.ProfileFault(
+                    operation.Stage, VmReason.ProfileContractViolation, null,
+                    operation.Baseline.WithOutcome(VmStage.Resume, VmOutcome.ProfileFault, VmReason.ProfileContractViolation, VmInitiator.Guest));
 
             default:
                 return VmResumeResult.Normal(
@@ -465,6 +556,23 @@ internal sealed class VmInstanceImplementation : VmInstance
         return result;
     }
 
+    /// <summary>
+    /// Applies the mandatory outcome-to-instance-state mapping.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The mapping is frozen and admits no implementation freedom. Exhaustion, cancellation and
+    /// host failure all move the instance to <see cref="VmInstanceState.Faulted"/>, <em>always</em>:
+    /// the profile stack was abandoned at an arbitrary point, so it has no owner-visible state, and
+    /// declaring it usable would make every later isolation and use-after-dispose claim
+    /// meaningless. Only a language fault consults the profile, because recoverability is a
+    /// language property - a trap and a caught exception differ - and a core-wide answer would
+    /// silently pick one language's.
+    /// </para>
+    /// <para>
+    /// An invalid state leaves the instance unchanged, because the call never entered the profile.
+    /// </para>
+    /// </remarks>
     private void Settle(VmOperation operation, VmOutcome outcome)
     {
         if (outcome is VmOutcome.Suspension)
@@ -483,11 +591,27 @@ internal sealed class VmInstanceImplementation : VmInstance
 
             active = null;
 
-            // The outcome-to-instance-state mapping. Whether a language fault kills the instance is
-            // the profile's declaration, and it is the only thing that changes this mapping.
-            currentState = outcome is VmOutcome.ProfileFault && profile.FaultRecovery is VmFaultRecovery.InstanceFatal
-                ? VmInstanceState.Faulted
-                : VmInstanceState.Live;
+            switch (outcome)
+            {
+                case VmOutcome.InvalidState or VmOutcome.UnsupportedProfile:
+                    // Unchanged. The call never reached the profile, so nothing about the instance
+                    // has become untrue.
+                    return;
+
+                case VmOutcome.ResourceExhaustion or VmOutcome.Cancellation or VmOutcome.HostFailure:
+                    currentState = VmInstanceState.Faulted;
+                    return;
+
+                case VmOutcome.ProfileFault:
+                    currentState = profile.FaultRecovery is VmFaultRecovery.InstanceFatal
+                        ? VmInstanceState.Faulted
+                        : VmInstanceState.Live;
+                    return;
+
+                default:
+                    currentState = VmInstanceState.Live;
+                    return;
+            }
         }
     }
 

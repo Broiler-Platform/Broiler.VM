@@ -36,6 +36,7 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
     private readonly object gate = new();
 
     private VmDiagnostics scopeBaseline;
+    private VmObjectId currentOperation;
     private int depth;
     private ulong fanOut;
     private ulong bytes;
@@ -51,16 +52,25 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
     /// Opens the mediator for one executor step, binding it to that step's meter so nested work is
     /// charged to the operation that will actually request it.
     /// </summary>
-    internal void EnterScope(VmDiagnostics baseline)
+    internal void EnterScope(VmDiagnostics baseline) => EnterScope(baseline, default);
+
+    /// <summary>Opens the mediator for one step of the named operation.</summary>
+    internal void EnterScope(VmDiagnostics baseline, VmObjectId operationId)
     {
         lock (gate)
         {
             scopeBaseline = baseline;
 
-            // Fan-out and cumulative bytes are per operation, so they reset with the scope. Depth
-            // is not reset: it is a live nesting measure and is unwound as each request returns.
-            fanOut = 0;
-            bytes = 0;
+            // Deliberately NOT reset here. Fan-out and cumulative bytes are per operation, and a
+            // resumed operation is the same operation - it keeps its identity, its budget remainder
+            // and its nested-load counters. Resetting on every step would let a profile that yields
+            // between loads have as many as it liked.
+            if (!operationId.Equals(currentOperation))
+            {
+                currentOperation = operationId;
+                fanOut = 0;
+                bytes = 0;
+            }
         }
     }
 
@@ -107,12 +117,12 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
         {
             if ((ulong)(depth + 1) > bounds.NestedLoadDepth)
             {
-                return Exhausted(identified, VmBudgetDimension.NestedLoadDepth);
+                return Exhausted(meter, identified, VmBudgetDimension.NestedLoadDepth);
             }
 
             if (fanOut + 1 > bounds.NestedLoadFanOut)
             {
-                return Exhausted(identified, VmBudgetDimension.NestedLoadFanOut);
+                return Exhausted(meter, identified, VmBudgetDimension.NestedLoadFanOut);
             }
         }
 
@@ -120,12 +130,12 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
         // the host at all.
         if (!meter.TryCharge(VmBudgetDimension.NestedLoadFanOut, 1))
         {
-            return Exhausted(identified, meter.FailedDimension, meter.FailedScope);
+            return Exhausted(meter, identified, meter.FailedDimension, meter.FailedScope);
         }
 
         if (!meter.TryCharge(VmBudgetDimension.NestedLoadDepth, 1))
         {
-            return Exhausted(identified, meter.FailedDimension, meter.FailedScope);
+            return Exhausted(meter, identified, meter.FailedDimension, meter.FailedScope);
         }
 
         lock (gate)
@@ -156,7 +166,18 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
         VmDiagnostics identified,
         VmGuestLoadBounds bounds)
     {
+        // A provider call is a host call: it is charged like one and it runs inside the capability
+        // boundary like one. Without the charge a guest could drive an unbounded number of provider
+        // requests against a runtime whose host-call allowance was exhausted; without the boundary
+        // the mandatory non-reentrancy of a provider was enforced nowhere.
+        if (!meter.TryCharge(VmBudgetDimension.HostCalls, 1))
+        {
+            return Exhausted(meter, identified, meter.FailedDimension, meter.FailedScope);
+        }
+
         VmArtifactProviderAnswer answer;
+
+        runtime.EnterProviderCall();
 
         try
         {
@@ -176,6 +197,10 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
                 VmReason.HostCapabilityFaulted,
                 identified.WithOutcome(VmStage.GuestInitiatedLoad, VmOutcome.HostFailure, VmReason.HostCapabilityFaulted, VmInitiator.Host));
         }
+        finally
+        {
+            runtime.LeaveProviderCall();
+        }
 
         switch (answer.Kind)
         {
@@ -191,7 +216,10 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
         }
 
         // A provider may only answer with an artifact of the profile that asked. Answering with
-        // another profile's artifact would let one profile reach another through the host.
+        // another profile's artifact would let one profile reach another through the host. This is
+        // a provider contract breach rather than a composition gap, so it stays a host failure -
+        // an identity the catalog simply lacks is reported by the ordinary verification path below,
+        // which answers unsupported profile.
         if (!answer.Descriptor.ProfileId.Equals(request.RequestingProfileId))
         {
             return VmGuestLoadResult.HostFailure(
@@ -205,7 +233,7 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
         {
             if (bytes + length > bounds.NestedLoadBytes)
             {
-                return Exhausted(identified, VmBudgetDimension.NestedLoadBytes);
+                return Exhausted(meter, identified, VmBudgetDimension.NestedLoadBytes);
             }
 
             bytes += length;
@@ -213,7 +241,7 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
 
         if (!meter.TryCharge(VmBudgetDimension.NestedLoadBytes, length))
         {
-            return Exhausted(identified, meter.FailedDimension, meter.FailedScope);
+            return Exhausted(meter, identified, meter.FailedDimension, meter.FailedScope);
         }
 
         // The nested bytes take the ordinary verification path, under the requesting operation's
@@ -259,13 +287,29 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
         }
     }
 
+    /// <summary>
+    /// Refuses a nested load for want of allowance, and latches the refusal onto the requesting
+    /// operation.
+    /// </summary>
+    /// <remarks>
+    /// The latch is the point. A nested exhaustion is terminal for the operation that caused it, and
+    /// the profile is obliged to convert it rather than swallow it - but a profile that ignores the
+    /// returned result and keeps running would otherwise complete normally, because the mediator's
+    /// own bound checks fire before any meter charge and so leave no trace for the caller's result
+    /// to pick up. Latching makes the conversion obligation enforced rather than trusted.
+    /// </remarks>
     private static VmGuestLoadResult Exhausted(
+        VmMeter meter,
         VmDiagnostics identified,
         VmBudgetDimension dimension,
-        VmBudgetScope scope = VmBudgetScope.Invocation) =>
-        VmGuestLoadResult.ResourceExhaustion(
+        VmBudgetScope scope = VmBudgetScope.Invocation)
+    {
+        meter.LatchNestedRefusal(dimension, scope);
+
+        return VmGuestLoadResult.ResourceExhaustion(
             VmReason.CeilingReached,
             identified
                 .WithOutcome(VmStage.GuestInitiatedLoad, VmOutcome.ResourceExhaustion, VmReason.CeilingReached, VmInitiator.Core)
                 .WithExhaustion(dimension, scope));
+    }
 }
