@@ -1,0 +1,37 @@
+<Project>
+
+  <!-- Broiler NuGet packaging metadata (vendored; do not edit by hand).
+       This copy is byte-identical to Broiler.DOM/eng/Broiler.Packaging.props,
+       which is the newest of the vendored copies in the aggregate checkout.
+       ADR 0001 records the hash and the drift risk. -->
+  <Import Project="$(MSBuildThisFileDirectory)eng\Broiler.Packaging.props" />
+
+  <!--
+    This file deliberately does NOT chain to a parent Directory.Build.props.
+
+    MSBuild stops at the first Directory.Build.props it finds walking up from a
+    project, so a standalone checkout and a checkout nested inside
+    Broiler.Browser evaluate exactly the same properties. Broiler.Input takes
+    the same position. Chaining would pull in the aggregate repository's
+    suppression list, which silences the nullable-reference diagnostics that
+    this component - being new - has no legacy reason to suppress.
+  -->
+  <PropertyGroup>
+    <!-- Component-level overrides. Authors, Company, Copyright, license,
+         documentation and warning policy come from Broiler.Packaging.props
+         above and are deliberately not restated here. -->
+    <PackageProjectUrl>https://github.com/Broiler-Platform/Broiler.VM</PackageProjectUrl>
+    <PackageTags>broiler;vm;bytecode;execution;native-aot</PackageTags>
+
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <!-- MaiRat's house rule, matching Broiler.Dom: implicit usings stay off so
+         every used type is traceable from the source alone. -->
+    <ImplicitUsings>disable</ImplicitUsings>
+
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+  </PropertyGroup>
+
+</Project>

@@ -1,0 +1,11 @@
+<!-- Violates A8: a profile reaching the runtime. Roadmap section 5 gives a profile edges to
+     Abstractions and Binary; a profile that links the runtime inverts the direction the core
+     depends on. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Fixtures</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+  </ItemGroup>
+</Project>

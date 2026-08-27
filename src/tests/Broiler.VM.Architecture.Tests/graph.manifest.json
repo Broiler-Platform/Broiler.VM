@@ -1,0 +1,68 @@
+{
+  "$comment": [
+    "The frozen VM-0 project graph. ADR 0001 prints this table; rule A7 asserts multiset",
+    "equality between the resolved checkout and this file, so an edge added without amending",
+    "ADR 0001 fails, and so does an edge the ADR promises that the checkout no longer has.",
+    "Generated at VM-0 and hand-maintained thereafter; the docs test asserting that the",
+    "printed table matches this file is deferred to VM-6."
+  ],
+  "coreContractVersion": 1,
+  "projects": [
+    {
+      "path": "src/tests/Broiler.VM.Architecture.Tests/Broiler.VM.Architecture.Tests.csproj",
+      "assemblyName": "Broiler.VM.Architecture.Tests",
+      "rootNamespace": "Broiler.VM.Architecture.Tests",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": true,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Fixtures",
+        "Broiler.VM.Runtime"
+      ]
+    },
+    {
+      "path": "src/tests/Broiler.VM.Fixtures/Broiler.VM.Fixtures.csproj",
+      "assemblyName": "Broiler.VM.Fixtures",
+      "rootNamespace": "Broiler.VM.Fixtures",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary"
+      ]
+    },
+    {
+      "path": "src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj",
+      "assemblyName": "Broiler.VM.Abstractions",
+      "rootNamespace": "Broiler.VM.Abstractions",
+      "packageId": "Broiler.VM.Abstractions",
+      "isPackable": true,
+      "isTestProject": false,
+      "projectReferences": []
+    },
+    {
+      "path": "src/Broiler.VM.Binary/Broiler.VM.Binary.csproj",
+      "assemblyName": "Broiler.VM.Binary",
+      "rootNamespace": "Broiler.VM.Binary",
+      "packageId": "Broiler.VM.Binary",
+      "isPackable": true,
+      "isTestProject": false,
+      "projectReferences": []
+    },
+    {
+      "path": "src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj",
+      "assemblyName": "Broiler.VM.Runtime",
+      "rootNamespace": "Broiler.VM.Runtime",
+      "packageId": "Broiler.VM.Runtime",
+      "isPackable": true,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary"
+      ]
+    }
+  ]
+}

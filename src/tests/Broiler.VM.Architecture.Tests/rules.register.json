@@ -1,0 +1,314 @@
+{
+  "$comment": [
+    "Every architecture rule Broiler.VM names, with how much it currently proves.",
+    "",
+    "Milestone VM-0's exit gate asks that architecture tests express every forbidden edge. A",
+    "shell graph can express a rule long before it contains anything able to violate one, and a",
+    "register that did not say so would let a passing suite read as stronger evidence than it",
+    "is. Roadmap section 16 makes an untruthful support claim a stop condition and the status",
+    "ledger's update rule 4 forbids promoting a shell result, so every rule carries its status",
+    "and the VM-0 evidence bundle repeats the counts.",
+    "",
+    "ONE CRITERION, APPLIED TO EVERY ROW. `status` describes the GRAPH: can anything in the VM-0",
+    "checkout violate this rule? `witness` records a real violating input, and every rule has one",
+    "regardless of status - a Vacuous rule is one nothing in the component can break, not one that",
+    "was never shown working. An earlier revision mixed the two ideas, marking B2 and B4 Vacuous",
+    "with no witness even though both are witnessed, and marking E1-E5 Active on the strength of",
+    "clean-direction assertions alone.",
+    "",
+    "Status values, and nothing else: Active, Vacuous, Deferred.",
+    "  Active   - something in the checkout could violate it, and a witness shows it rejecting one.",
+    "  Vacuous  - it runs and is witnessed, but nothing in the VM-0 graph can violate it. Not a",
+    "             defect: the honest state of a rule whose subject has not been built yet.",
+    "  Deferred - not asserted at VM-0; the activation milestone owns promoting it.",
+    "",
+    "A Deferred or Vacuous row may never name an activation milestone at or before the current",
+    "milestone, and a rule whose activation milestone IS the current milestone must be Active",
+    "with a passing witness. RuleRegisterTests enforces the register against the test methods",
+    "and the witness inputs in both directions."
+  ],
+  "milestone": "VM-0",
+  "coreContractVersion": 1,
+  "rules": [
+    {
+      "id": "A1",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "No ProjectReference, resolved to a full path, lies outside the component root.",
+      "evidence": "Project files",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Any project file exists; the outbound half of the legacy boundary.",
+      "witness": "witnesses/A1-outbound-project-reference.csproj.witness"
+    },
+    {
+      "id": "A2",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "No PackageReference names a Broiler.* package.",
+      "evidence": "Project files",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Any project file exists; closes the feed-shaped reintroduction A1 cannot see.",
+      "witness": "witnesses/A2-broiler-package-reference.csproj.witness"
+    },
+    {
+      "id": "A3",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "No Compile, None, Content, EmbeddedResource or Import item resolves outside the component root.",
+      "evidence": "Project files",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Non-vacuous when any project declares one of the five item types; at VM-0 none does, so the sweep is empty and both witnesses carry the rule.",
+      "witness": "witnesses/A3-shared-source-link.csproj.witness, witnesses/A3-property-shared-source-link.csproj.witness"
+    },
+    {
+      "id": "A4",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "No product project has a ProjectReference resolving under src/tests/.",
+      "evidence": "Project files",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Broiler.VM.Fixtures exists at VM-0, so the forbidden target is present.",
+      "witness": "witnesses/A4-product-references-test.csproj.witness"
+    },
+    {
+      "id": "A5",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "Every project under src/tests/ contains the literal element IsPackable false.",
+      "evidence": "Project file text, not the evaluated property",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Broiler.VM.Fixtures matches no name-suffix rule in the vendored packaging props and would otherwise default to packable.",
+      "witness": "witnesses/A5-test-project-omits-ispackable.csproj.witness"
+    },
+    {
+      "id": "A6",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "Exactly three projects declare a PackageId, and for each PackageId equals AssemblyName equals RootNamespace equals the project file base name.",
+      "evidence": "Project files",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Three packable projects exist at VM-0.",
+      "witness": "witnesses/A6-fourth-package-id.csproj.witness"
+    },
+    {
+      "id": "A7",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "The resolved ProjectReference edge multiset equals graph.manifest.json exactly; extra and missing edges both fail. Subsumes acyclicity.",
+      "evidence": "Project files against graph.manifest.json",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Eight edges exist at VM-0.",
+      "witness": "witnesses/A8-profile-references-runtime.csproj.witness"
+    },
+    {
+      "id": "A8",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "No profile project references Broiler.VM.Runtime.",
+      "evidence": "Project files",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Broiler.VM.Fixtures is profile-shaped and exists at VM-0.",
+      "witness": "witnesses/A8-profile-references-runtime.csproj.witness"
+    },
+    {
+      "id": "A9",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "Broiler.VM.Runtime declares OutputType Library or omits it, and declares no composition root.",
+      "evidence": "Project files",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Broiler.VM.Runtime exists at VM-0.",
+      "witness": "witnesses/A9-runtime-is-an-executable.csproj.witness"
+    },
+    {
+      "id": "A10",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "No product project declares InternalsVisibleTo. VM-3 must prove a profile is writable through the public source contract alone.",
+      "evidence": "Project files",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Three product projects exist at VM-0.",
+      "witness": "witnesses/A10-product-internals-visible-to.csproj.witness"
+    },
+    {
+      "id": "A11",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "No project outside the composition-root allow-list references an assembly matching Broiler.VM.Profile.*. The allow-list is empty at VM-0.",
+      "evidence": "Project files",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The allow-list is empty at VM-0, so any profile reference violates it.",
+      "witness": "witnesses/A11-profile-reference-outside-composition-root.csproj.witness"
+    },
+    {
+      "id": "B1",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "Broiler.VM.Abstractions and Broiler.VM.Binary reference nothing outside the framework. The mechanical form of roadmap section 5's arrow to nothing.",
+      "evidence": "AssemblyRef table",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Both assemblies are built at VM-0; the test assembly is the witness input.",
+      "witness": "Broiler.VM.Architecture.Tests.dll (references xunit)"
+    },
+    {
+      "id": "B2",
+      "owningAdr": "0001",
+      "status": "Vacuous",
+      "statement": "Broiler.VM.Runtime references nothing outside Broiler.VM.Abstractions and Broiler.VM.Binary.",
+      "evidence": "AssemblyRef table",
+      "activationMilestone": "VM-1",
+      "nonVacuousWhen": "The runtime uses a type from either assembly. A shell emits no assembly reference, so the subset holds trivially; at VM-1 the rule tightens from subset to equality.",
+      "witness": "Broiler.VM.Architecture.Tests.dll (references xunit)"
+    },
+    {
+      "id": "B3",
+      "owningAdr": "0001",
+      "status": "Vacuous",
+      "statement": "No assembly in the product graph names a Broiler.* assembly outside the component's own set. The assembly-level twin of A1 and A2.",
+      "evidence": "AssemblyRef table",
+      "activationMilestone": "VM-1",
+      "nonVacuousWhen": "A product assembly names any non-framework assembly at all. At VM-0 all three name none.",
+      "witness": "none at VM-0 - a witness needs a foreign Broiler assembly, and the component's graph is closed over its own five. The project-file twins A1 and A2 are witnessed."
+    },
+    {
+      "id": "B4",
+      "owningAdr": "0001",
+      "status": "Vacuous",
+      "statement": "No exported member of a product assembly names a type outside System.* and Broiler.VM.",
+      "evidence": "Exported type and member signatures",
+      "activationMilestone": "VM-1",
+      "nonVacuousWhen": "A product assembly exports a member with a parameter or return type. At VM-0 the only exported members are two integer constants.",
+      "witness": "PublicSurfaceLeakWitness in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
+      "id": "B5",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "No assembly in the product graph references a dynamic-loading, reflection-invocation or IL-emit API. Invariant 2 requires registration to be static and typed.",
+      "evidence": "MemberRef and TypeRef tables",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The witness is compiled into the test assembly, which the same scanner flags when pointed at it.",
+      "witness": "DynamicLoadingWitness in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
+      "id": "B5b",
+      "owningAdr": "0001",
+      "status": "Vacuous",
+      "statement": "No assembly in the product graph applies ModuleInitializerAttribute. Invariant 2 forbids a module-initializer ordering dependency by name.",
+      "evidence": "CustomAttribute table",
+      "activationMilestone": "VM-1",
+      "nonVacuousWhen": "A product assembly declares any method that could carry the attribute. At VM-0 the product graph has no method bodies.",
+      "witness": "ModuleInitializerWitness in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
+      "id": "B6",
+      "owningAdr": "0001",
+      "status": "Vacuous",
+      "statement": "No product assembly references an assembly built from src/tests/.",
+      "evidence": "AssemblyRef table",
+      "activationMilestone": "VM-1",
+      "nonVacuousWhen": "A product assembly names any non-framework assembly. The project-file twin A4 is Active at VM-0.",
+      "witness": "none at VM-0 - a witness needs a product assembly that references a test assembly, which cannot be built without breaking the graph. The project-file twin A4 is witnessed."
+    },
+    {
+      "id": "B7",
+      "owningAdr": "0001",
+      "status": "Vacuous",
+      "statement": "No product assembly exports a type named BuiltInProfiles, DefaultProfiles, AllProfiles or KnownProfiles. Roadmap section 3 rejects an aggregate profile type by name.",
+      "evidence": "TypeDef table, public visibility",
+      "activationMilestone": "VM-1",
+      "nonVacuousWhen": "The product graph exports a type other than VmCoreContract.",
+      "witness": "ProfileCatalogWitness.BuiltInProfiles in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
+      "id": "C1",
+      "owningAdr": "0001",
+      "status": "Deferred",
+      "statement": "dotnet pack over Broiler.VM.slnx produces exactly three .nupkg and three .snupkg, named for the three product assemblies.",
+      "evidence": "Pack output",
+      "activationMilestone": "VM-6",
+      "nonVacuousWhen": "A component CI pack step exists. VM-0 creates no CI workflow; a manually executed pack log is retained in the evidence bundle as observed state, not as a rule assertion.",
+      "witness": null
+    },
+    {
+      "id": "C2",
+      "owningAdr": "0001",
+      "status": "Deferred",
+      "statement": "No produced .nuspec declares a dependency on a Broiler.* package outside the declared three.",
+      "evidence": "Pack output",
+      "activationMilestone": "VM-6",
+      "nonVacuousWhen": "A component CI pack step exists.",
+      "witness": null
+    },
+    {
+      "id": "C3",
+      "owningAdr": "0001",
+      "status": "Deferred",
+      "statement": "No produced .nuspec's id, title, description, tags or release notes names a language. Implements roadmap section 14's packaging failure 'a language capability implied by package or API'.",
+      "evidence": "Pack output",
+      "activationMilestone": "VM-6",
+      "nonVacuousWhen": "A component CI pack step exists.",
+      "witness": null
+    },
+    {
+      "id": "D1",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "No project file outside the component declares a ProjectReference or PackageReference resolving into Broiler.VM. The inbound half of the legacy boundary.",
+      "evidence": "Project files in an aggregate checkout above the component",
+      "activationMilestone": null,
+      "nonVacuousWhen": "An aggregate checkout is present above the component root. Where none is, the rule reports INCONCLUSIVE rather than passing. Exclusion EX-01 records the conditionality.",
+      "witness": "witnesses/D1-inbound-project-reference.csproj.witness"
+    },
+    {
+      "id": "E1",
+      "owningAdr": "0003",
+      "status": "Active",
+      "statement": "VmCoreContract.Version and VmCoreContract.MinimumSupportedVersion equal the values in ADR 0003's header fields.",
+      "evidence": "Documentation and compiled metadata",
+      "activationMilestone": null,
+      "nonVacuousWhen": "ADR 0003 and VmCoreContract both exist at VM-0.",
+      "witness": "witnesses/adr/E1-wrong-contract-version-fields.md.witness"
+    },
+    {
+      "id": "E2",
+      "owningAdr": "0003",
+      "status": "Active",
+      "statement": "Every ADR file declares a Core contract header field, and the contract-bearing set is exactly 0002 through 0011.",
+      "evidence": "Documentation",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Twelve ADR files exist at VM-0.",
+      "witness": "witnesses/adr/E2-missing-core-contract-header.md.witness"
+    },
+    {
+      "id": "E3",
+      "owningAdr": "0003",
+      "status": "Active",
+      "statement": "Every contract-bearing ADR declares the current core contract version.",
+      "evidence": "Documentation and compiled metadata",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Ten contract-bearing ADRs exist at VM-0.",
+      "witness": "witnesses/adr/E3-wrong-declared-version.md.witness"
+    },
+    {
+      "id": "E4",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "The ADR index lists exactly the ADR files present, and every rule identifier named in an ADR has exactly one row in this register.",
+      "evidence": "Documentation against this file",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Twelve ADR files and this register exist at VM-0.",
+      "witness": "witnesses/adr/E4-index-links-a-missing-record.md.witness"
+    },
+    {
+      "id": "E5",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "The product graph exports exactly one public type, Broiler.VM.VmCoreContract, whose only members are the two contract-version constants.",
+      "evidence": "TypeDef table, public visibility",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Three product assemblies are built at VM-0.",
+      "witness": "PublicSurfaceLeakWitness in Broiler.VM.Architecture.Tests.dll"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+# ADR 0099 - A Record That Never Says Whether It Is Contract-Bearing
+
+**Status:** Proposed
+
+**Date:** 2026-08-27
+
+Violates E2: the header field that declares whether a record is contract-bearing is absent, so
+nothing decides whether this record's content is part of core contract version 1.
+
+The marker itself is deliberately not spelled out anywhere in this file. Quoting it, even inside
+backticks as prose, made an earlier version of this witness satisfy the very rule it exists to
+violate.

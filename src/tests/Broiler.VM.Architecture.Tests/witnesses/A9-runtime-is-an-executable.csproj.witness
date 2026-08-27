@@ -1,0 +1,8 @@
+<!-- Violates A9: the runtime declaring itself an executable, which is what a composition root
+     is. Only a composition root knows which profiles it includes. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Runtime</AssemblyName>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+</Project>

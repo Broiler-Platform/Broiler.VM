@@ -1,0 +1,7 @@
+<!-- Violates A2: a PackageReference on a Broiler package. A1 alone would not catch a legacy
+     edge reintroduced through a feed. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Broiler.JS" Version="0.1.0-preview.1" />
+  </ItemGroup>
+</Project>

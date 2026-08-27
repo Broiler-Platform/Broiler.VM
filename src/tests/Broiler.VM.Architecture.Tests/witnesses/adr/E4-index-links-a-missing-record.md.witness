@@ -1,0 +1,10 @@
+# Broiler.VM ADR Index
+
+Violates E4 twice: it links a record that does not exist, and it names an architecture rule with
+no row in `rules.register.json`.
+
+| ADR | Topic |
+|---|---|
+| [0013](0013-a-record-that-does-not-exist.md) | A record that does not exist |
+
+Rule Z9: a rule identifier that was never registered.

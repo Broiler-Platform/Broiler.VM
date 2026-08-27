@@ -1,0 +1,49 @@
+=== 1. with the forbidden edge injected: Broiler.VM.Runtime -> Broiler.VM.Fixtures ===
+injected: Broiler.VM.Runtime -> Broiler.VM.Fixtures
+  Determining projects to restore...
+  Restored D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\Broiler.VM.Architecture.Tests.csproj (in 223 ms).
+  Restored D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj (in 223 ms).
+  3 of 5 projects are up-to-date for restore.
+  Broiler.VM.Abstractions -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Fixtures -> D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Fixtures\bin\Release\net10.0\Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Architecture.Tests -> D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\bin\Release\net10.0\Broiler.VM.Architecture.Tests.dll
+Test run for D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\bin\Release\net10.0\Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.23]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A4_No_Product_Project_References_A_Test_Only_Project [FAIL]
+  Failed Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A4_No_Product_Project_References_A_Test_Only_Project [2 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj -"···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A4_No_Product_Project_References_A_Test_Only_Project() in D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\ProjectFileRuleTests.cs:line 48
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.24]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A7_Declared_Edges_Match_The_Graph_Manifest_Exactly [FAIL]
+  Failed Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A7_Declared_Edges_Match_The_Graph_Manifest_Exactly [8 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["checkout has 1 more: Broiler.VM.Runtime -> Broiler"···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A7_Declared_Edges_Match_The_Graph_Manifest_Exactly() in D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\ProjectFileRuleTests.cs:line 102
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     2, Passed:    33, Skipped:     0, Total:    35, Duration: 242 ms - Broiler.VM.Architecture.Tests.dll (net10.0)
+
+=== 2. after reverting the edge ===
+reverted
+  Determining projects to restore...
+  Restored D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj (in 250 ms).
+  Restored D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\Broiler.VM.Architecture.Tests.csproj (in 250 ms).
+  3 of 5 projects are up-to-date for restore.
+  Broiler.VM.Abstractions -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Fixtures -> D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Fixtures\bin\Release\net10.0\Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Architecture.Tests -> D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\bin\Release\net10.0\Broiler.VM.Architecture.Tests.dll
+Test run for D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\bin\Release\net10.0\Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    35, Skipped:     0, Total:    35, Duration: 253 ms - Broiler.VM.Architecture.Tests.dll (net10.0)

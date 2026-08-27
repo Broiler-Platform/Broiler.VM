@@ -1,0 +1,7 @@
+<!-- Violates A3: a shared source link. It satisfies A1 and A2 while creating exactly the
+     coupling roadmap section 9's seeding conditions forbid by name. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <Compile Include="..\..\..\Broiler.JS\Broiler.JS\Interpreter\*.cs" />
+  </ItemGroup>
+</Project>

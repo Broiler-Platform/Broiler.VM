@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Binary</RootNamespace>
+    <AssemblyName>Broiler.VM.Binary</AssemblyName>
+    <PackageId>Broiler.VM.Binary</PackageId>
+    <Description>Bounded binary-reading and bounded-allocation primitives shared by the Broiler.VM core envelope and by every profile verifier. VM-0 project shell: no primitive is implemented yet.</Description>
+  </PropertyGroup>
+
+  <!-- ADR 0001: this project has no ProjectReference. It is a sink of the
+       dependency graph. It deliberately does not reference Abstractions:
+       bounded reading is mechanism and must not acquire contract vocabulary. -->
+
+
+</Project>

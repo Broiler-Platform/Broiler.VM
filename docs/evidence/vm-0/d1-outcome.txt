@@ -1,0 +1,2 @@
+Rule D1, inbound half of the legacy boundary.
+SCANNED - aggregate checkout at D:\Broiler.Browser; 0 project file(s) outside the component reference into it.

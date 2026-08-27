@@ -1,0 +1,10 @@
+<!-- Violates A11: a project that is not a declared composition root linking a profile. The
+     composition-root allow-list is empty at VM-0, so every profile reference violates it. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Runtime</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" />
+  </ItemGroup>
+</Project>

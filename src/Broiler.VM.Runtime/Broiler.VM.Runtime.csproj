@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Runtime</RootNamespace>
+    <AssemblyName>Broiler.VM.Runtime</AssemblyName>
+    <PackageId>Broiler.VM.Runtime</PackageId>
+    <Description>Broiler.VM builder, immutable profile catalog, bounded load and execute lifecycle, resource authority and diagnostics. VM-0 project shell: no runtime behaviour is implemented yet.</Description>
+  </PropertyGroup>
+
+  <!-- ADR 0001: exactly these two edges, and no others. -->
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+  </ItemGroup>
+
+</Project>

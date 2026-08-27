@@ -1,0 +1,14 @@
+# ADR 0003 - Core Contract Version 1 And The Amendment Procedure
+
+**Status:** Proposed
+
+**Date:** 2026-08-27
+
+**Core contract:** version 1 (contract-bearing)
+
+**Core contract version:** 7
+
+**Minimum supported version:** 4
+
+Violates E1: the header fields disagree with the VmCoreContract constants, which is exactly the
+drift between documentation and code that E1 exists to stop.

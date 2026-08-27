@@ -1,0 +1,9 @@
+# ADR 0099 - A Contract-Bearing Record Declaring The Wrong Version
+
+**Status:** Proposed
+
+**Date:** 2026-08-27
+
+**Core contract:** version 42 (contract-bearing)
+
+Violates E3: contract-bearing, but declares a version the build does not implement.

@@ -1,0 +1,10 @@
+<!-- Violates A3 through an MSBuild property. This is the witness for the hole an earlier
+     version of the rule had: A3 skipped any path containing '$' because it could not resolve
+     one, so this file - the shared source link roadmap section 9 forbids by name - cleared the
+     rule without ever being looked at. An unresolvable path is now a violation of its own kind,
+     and the literal's parent-directory hops are counted besides. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\Broiler.JS\Broiler.JS\Interpreter\*.cs" />
+  </ItemGroup>
+</Project>
