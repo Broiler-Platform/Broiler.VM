@@ -1,8 +1,9 @@
 # Broiler.VM roadmap
 
 **Status:** Proposed component roadmap for the generic execution core. [The evidence
-ledger](roadmap.status.md) records VM-0 through VM-6 as not started. No milestone is complete
-merely because this document exists.
+ledger](roadmap.status.md) is the authority for what has been accepted; at the time of writing it
+records VM-0 as in progress and unaccepted, and VM-1 through VM-6 as not started. No milestone is
+complete merely because this document exists.
 
 Broiler.VM is a new, statically composed, NativeAOT-compatible component that executes verified
 bytecode artifacts. It is a **host for language profiles, not a language.** It owns profile

@@ -19,9 +19,15 @@ reference.
 
 ## Status
 
-This directory contains the component plan, not an implementation.
-[The status ledger](docs/roadmap.status.md) is the authority for accepted evidence and records
-VM-0 through VM-6 as not started. No capability should be inferred from planning text alone.
+This directory contains the component plan and milestone VM-0's frozen decisions, not an
+implementation. [The status ledger](docs/roadmap.status.md) is the authority for accepted
+evidence; it records VM-0 as in progress and unaccepted, and VM-1 through VM-6 as not started.
+
+What exists is [twelve boundary records](docs/adr/README.md), a five-project shell graph that
+builds, and the architecture tests that hold its forbidden edges. What does not exist is anything
+that executes bytecode: there is no runtime, catalog, verifier, budget, or profile. No capability
+should be inferred from planning text, from a project that compiles, or from a passing
+architecture test.
 
 ## Component boundary
 

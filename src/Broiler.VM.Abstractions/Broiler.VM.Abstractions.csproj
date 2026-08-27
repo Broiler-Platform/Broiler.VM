@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Abstractions</RootNamespace>
+    <AssemblyName>Broiler.VM.Abstractions</AssemblyName>
+    <PackageId>Broiler.VM.Abstractions</PackageId>
+    <Description>Profile-neutral Broiler.VM contracts and the core contract version. VM-0 project shell: this assembly exports the core contract version and nothing else.</Description>
+  </PropertyGroup>
+
+  <!-- ADR 0001: this project has no ProjectReference. It is a sink of the
+       dependency graph, which is what makes the graph acyclic by construction. -->
+
+</Project>

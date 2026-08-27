@@ -1,0 +1,11 @@
+<!-- Violates A10: a product project opening its internals to a test. VM-3 has to prove a
+     profile is writable through the public source contract alone, and a test reaching internals
+     is how that proof quietly stops being possible. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Abstractions</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Broiler.VM.Architecture.Tests" />
+  </ItemGroup>
+</Project>

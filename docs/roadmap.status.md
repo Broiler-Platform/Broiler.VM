@@ -1,16 +1,18 @@
 # Broiler.VM roadmap status
 
-**Last updated:** 2026-08-26
+**Last updated:** 2026-08-27
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [Broiler.VM roadmap](roadmap.md). The roadmap defines planned work and objective exit gates; this
 ledger records whether those gates have accepted evidence.
 
 No Broiler.VM milestone is complete merely because its design appears in the roadmap. At this
-snapshot, **VM-0 through VM-6 are not started**. The repository contains the Broiler.VM
-[component overview](../README.md) and roadmap documents, and no Broiler.VM implementation,
-project or package definitions, tests, samples, build-proven dependency graph, profile catalog,
-fixture profile, or core contract ADR.
+snapshot, **VM-0 is in progress and VM-1 through VM-6 are not started.** The repository contains
+the Broiler.VM [component overview](../README.md), the roadmap documents, the twelve boundary
+records in [docs/adr](adr/README.md), and a five-project shell graph with its architecture tests.
+It contains no Broiler.VM runtime, catalog, verifier, budget, profile, sample, or Native AOT
+result, and VM-0 itself is **not accepted**: its dependency on named ownership is unmet, so no
+milestone that waits on VM-0 acceptance may begin.
 
 ---
 
@@ -49,7 +51,7 @@ none of its milestones wait for it.
 
 | Milestone | State | Current evidence | Immediate evidence-producing action |
 |---|---|---|---|
-| **VM-0 — ownership, terminology, core contract version, and graph** | **Not started** | No approved boundary ADR, assigned core contract version, minimum lifecycle contract, resource-policy precedence, ID policy, profile-facing checklist, project shell, architecture test, or build-proven graph exists. | Freeze the semantics-neutral graph and minimum contract. Record the lifecycle state machine, immutable verified-artifact ownership, trusted resource-limit precedence, static composition roots, dependency rules including the forbidden edge to every legacy component, and the profile-facing checklist; assign core contract version 1 and publish its amendment procedure; record an explicit decision on guest-initiated loads, asynchronous instantiation, external suspension, and aggregate budgets rather than leaving them silent; record that verification is separable from execution and must stay so; settle whether locally produced bytecode must round-trip through bytes, whether verification may be lazy per section, and whether an artifact may be verified incrementally; then prove the shell graph and forbidden edges. |
+| **VM-0 — ownership, terminology, core contract version, and graph** | **In progress** | [Evidence bundle VM-0-001](evidence/vm-0/README.md), collected 2026-08-27 against component commit `6235603` with a dirty tree. Twelve boundary records in [docs/adr](adr/README.md) freeze the graph, ID policy, lifecycle, result envelope, verified-artifact ownership, resource authority and precedence, the guest-initiated-load, asynchronous-instantiation, external-suspension and aggregate-budget decisions, the three embedding decisions, the profile-facing checklist and sharing rule, and core contract version 1 with its amendment procedure. A five-project acyclic shell graph builds Release with 0 warnings; 33 architecture tests pass; a negative control shows the containment and edge rules rejecting an injected forbidden edge; pack produces exactly three packages and does not pack the fixture profile. Every forbidden edge in the VM-0 shell graph is expressed and witnessed; nine rules await their subject and are registered in [rules.register.json](../src/tests/Broiler.VM.Architecture.Tests/rules.register.json). **Not shown:** any runtime behaviour, any RID, trimming or Native AOT result, any platform other than Windows x64, and any transition, member or category named in ADRs 0002-0011 — those are paper decisions (EX-21). | **Open gate conditions.** (1) VM-0's dependency is unmet: all six ownership roles in ADR 0012 are vacant, so no owner or reviewer can accept the records, and the ledger's update rule 7 therefore blocks `Accepted` (EX-30). (2) The twelve records are `Proposed`, not approved. (3) The inbound half of the legacy-boundary rule is environment-conditional (EX-01). (4) Six rules are Vacuous and three Deferred (EX-05). (5) The evidence was collected from a dirty tree and must be re-collected against the commit that lands it. (6) No SDK pin exists (EX-03). (7) Seventeen roadmap amendments are proposed and unapplied (EX-11). Next: name the six roles, then review and approve the twelve records. |
 | **VM-1 — semantics-neutral runtime, catalog, and fixture profile** | **Not started** | No Broiler.VM contracts, binary primitives, runtime, catalog, composition root, fixture profile, or Native AOT construction host exists. | After VM-0 acceptance, implement and test the neutral contracts, bounded binary primitives, and catalog with a fixture profile, including whichever of guest-initiated-load mediation, artifact-provider registration, external suspension, and aggregate budget metering VM-0 assigned to the core, and their refusal paths. Shape the fixture adapter after a non-trivial existing runtime so the contract is not fitted to a toy. |
 | **VM-2 — bounded artifacts, verification, and resources** | **Not started** | No common descriptor, opaque verified-artifact handle, bounded loader, trusted-limit intersection, verifier result contract, malformed corpus, or fuzz target exists. | After VM-1 acceptance, prove the common boundary with immutable copied or decoded fixture artifacts, caller-mutation tests, bounded failures, explicit default and omission cases, host/profile/artifact intersection, invocation-only tightening, and bounded guest-initiated loads charged to the requesting operation. |
 | **VM-3 — public profile contract and exact closures** | **Not started** | The static catalog is documented only. No application-local consumer profile, ID-governance test, catalog drift check, or exact closure report exists. | After VM-2, implement an application-local profile through the public source contract alone and compose it by direct typed registration. Prove that a second profile requires no core change, and report the exact closure of each named composition under trimming and Native AOT. |
@@ -57,9 +59,11 @@ none of its milestones wait for it.
 | **VM-5 — core overhead baselines** | **Not started** | No accepted uninstrumented baseline of core overhead exists. | After VM-2 and VM-4, take decision-grade baselines of verification throughput, catalog and runtime lifecycle cost, budget metering overhead, guest-load mediation, envelope handling, startup, image size, and resident-set plateau on JIT and Native AOT with the fixture profile. |
 | **VM-6 — package, release, and recertification** | **Not started** | No Broiler.VM package, API baseline, pristine feed consumer, support table, release bundle, rollback result, or recertification record exists. | After VM-0 through VM-4, finalize package boundaries, create pristine feed consumers and public-API samples, freeze the public API, the source-level profile contract and the core contract version, and wire graph, catalog, AOT, and drift checks into required CI and this ledger. |
 
-The immediate programme action is therefore **VM-0: establish and prove the semantics-neutral
-graph, the profile-facing checklist, and core contract version 1**. It has no external dependency
-other than named ownership.
+The immediate programme action is therefore **naming the six Broiler.VM ownership roles recorded
+in [ADR 0012](adr/0012-security-ownership-and-support-matrix.md)**, and then reviewing the twelve
+boundary records. VM-0's technical work is done and its evidence is retained; what remains is the
+one thing the roadmap listed as its dependency and the one thing this ledger cannot manufacture,
+which is a named owner and a named reviewer.
 
 ### Profiles
 
@@ -123,4 +127,5 @@ claimed RID; analyzer success alone is not a publish-and-run result.
    the affected row.
 
 Until such updates are recorded, the table in section 2 remains the complete Broiler.VM status:
-all seven milestones are not started, and no implementation or release capability is claimed.
+VM-0 is in progress and unaccepted, VM-1 through VM-6 are not started, and no implementation or
+release capability is claimed.

@@ -1,0 +1,8 @@
+<!-- Violates A5: a test-only project that does not literally declare IsPackable false. The
+     vendored packaging props default packability ON by name suffix, and Broiler.VM.Fixtures
+     matches no suffix rule, so the omission ships the fixture profile to a feed. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Fixtures</AssemblyName>
+  </PropertyGroup>
+</Project>

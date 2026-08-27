@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj" />
+    <Project Path="src/Broiler.VM.Binary/Broiler.VM.Binary.csproj" />
+    <Project Path="src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="src/tests/Broiler.VM.Architecture.Tests/Broiler.VM.Architecture.Tests.csproj" />
+    <Project Path="src/tests/Broiler.VM.Fixtures/Broiler.VM.Fixtures.csproj" />
+  </Folder>
+</Solution>

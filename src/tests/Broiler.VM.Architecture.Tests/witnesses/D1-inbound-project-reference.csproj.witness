@@ -1,0 +1,9 @@
+<!-- Violates D1: a project outside Broiler.VM reaching into it. Evaluated from this file's own
+     directory, the reference resolves inside the component root, which is exactly the shape an
+     inbound edge from a legacy component would have. An inbound edge and an outbound edge are
+     the same ProjectReference seen from opposite sides, so D1 and A1 share a predicate shape. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+  </ItemGroup>
+</Project>

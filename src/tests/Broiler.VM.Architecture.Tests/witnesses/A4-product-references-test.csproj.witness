@@ -1,0 +1,6 @@
+<!-- Violates A4: a product project reaching a test-only project. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\tests\Broiler.VM.Fixtures\Broiler.VM.Fixtures.csproj" />
+  </ItemGroup>
+</Project>

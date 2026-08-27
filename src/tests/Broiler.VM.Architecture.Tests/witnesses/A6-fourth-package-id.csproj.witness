@@ -1,0 +1,8 @@
+<!-- Violates A6: a fourth PackageId, and one whose identity fields disagree. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Extras</AssemblyName>
+    <RootNamespace>Broiler.VM.Extras</RootNamespace>
+    <PackageId>Broiler.VM.Extras.Package</PackageId>
+  </PropertyGroup>
+</Project>

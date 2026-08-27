@@ -1,0 +1,7 @@
+<!-- Violates A1: a ProjectReference resolving outside the component root. This is the exact
+     shape of the legacy edge roadmap section 12 forbids. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Broiler.JS\Broiler.JS\Broiler.JS.csproj" />
+  </ItemGroup>
+</Project>
