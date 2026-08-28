@@ -18,12 +18,15 @@ deliberately explicit about what it does **not** show: ledger update rule 4 forb
 result beyond what it proves, and roadmap section 16 makes an untruthful support claim a stop
 condition.
 
-**This bundle supports `In progress`. It does not support `Accepted`.** VM-1's stated dependency is
-"VM-0 graph and ADR", and roadmap section 13 sequences VM-1 after VM-0's acceptance. VM-0 is not
-accepted: `HUMAN_REVIEW.md` is unsigned and `PENDING`. The work below was done anyway, on the
-reading that a dependency on an unsigned review blocks *acceptance* rather than *implementation* -
-but that reading is recorded as Exclusion EX-43 rather than treated as settled, and no reader
-should take this bundle as evidence that the precondition was met.
+**This bundle supports `In progress`. It does not support `Accepted`.** `HUMAN_REVIEW.md` is
+unsigned and `PENDING`, so no milestone here may be accepted, no package published and no RID
+claimed.
+
+VM-1 was built against VM-0's frozen-but-unapproved records, and that is now settled rather than
+assumed: the owner ruled on 2026-08-28 that **human review gates a release, not a development
+step**, recorded as update rule 8 in the status ledger. Exclusion EX-43 below is closed by that
+ruling. What the ruling does not do is make this bundle acceptance evidence - it is not, and the
+last clause of VM-1's own exit gate remains unmet for exactly that reason.
 
 ---
 
@@ -250,7 +253,7 @@ identifiers.
 | EX-40 | Rule B3 stays `Vacuous`, with its activation milestone moved to VM-3. Its subject now exists, but a violation remains unreachable by construction rather than merely absent: A1 forbids the outbound project reference, A2 the package-shaped one, and the single-source `NuGet.config` makes a foreign `Broiler.*` package unresolvable. Marking it `Active` would claim the suite had rejected something it cannot construct. |
 | EX-41 | `VmOperation` is a frozen public name that VM-1 does not export. See Deviations. |
 | EX-42 | The Native AOT publish requires a `vcvars64` environment and `IlcUseEnvironmentalTools=true`, because the ILCompiler package's own toolchain discovery fails on this machine. No CI job performs that step, so this result is not currently reproducible by automation. |
-| EX-43 | VM-0 is unaccepted and `HUMAN_REVIEW.md` is unsigned. VM-1's dependency line is therefore not satisfied. The work proceeded on the reading that the dependency blocks acceptance rather than implementation; that reading is recorded, not ratified. |
+| EX-43 | **Closed 2026-08-28.** VM-0 is unaccepted and `HUMAN_REVIEW.md` is unsigned, and VM-1 was built anyway. The owner has since ruled that human review gates a release rather than a development step (ledger update rule 8), which makes that legitimate rather than merely recorded. The exclusion is retained as dated history: what it flagged was real until the ruling was made, and a reader comparing this bundle against the VM-1 gate should still see that no review has happened. |
 | EX-44 | **Concurrency is not tested.** Declared thread affinity is carried in the descriptor and in runtime identity but no test runs two threads. Reentrancy is enforced and witnessed; affinity is not. Stress, soak and concurrency evidence is VM-4's, and nothing here anticipates it. |
 | EX-45 | **One RID, one machine, one lane.** `win-x64` only, on a developer workstation. No arm64, no Linux, no macOS, no second machine, and no CI. |
 | EX-46 | **No performance claim.** Nothing here is a measurement. Image sizes are recorded as facts about two binaries, not as baselines; VM-5 owns decision-grade measurement and none of its rules were followed. |

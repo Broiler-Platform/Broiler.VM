@@ -4,6 +4,25 @@
 > the attestation below is completed and signed, Broiler.VM must not be described as
 > human-approved, and no package may be published from it.
 
+## When This Review Is Required
+
+Ruled 2026-08-28 by the architecture and release owner, and recorded as update rule 8
+in [the status ledger](docs/roadmap.status.md):
+
+| Activity | Review |
+|---|---|
+| Implementing a milestone, landing it, collecting its evidence | **Optional.** Development proceeds against frozen records whether or not they are approved. |
+| Publishing a package, claiming a RID, issuing a support table, moving a milestone to `Accepted` | **Mandatory.** None of them happens without a signature below for the revision in question. |
+
+The split is deliberate and it is not a relaxation: it moves the gate to where the
+irreversible act is. Nothing published, nothing claimed, and no milestone marked
+complete without a human having read the revision. What it permits is building.
+
+It also has a cost the owner should keep in view. Unreviewed work accumulates, and
+review effort does not scale linearly with it: the VM-1 adversarial pass found
+sixteen blocking contract violations in a single milestone, behind a suite that was
+entirely green. Deferring review to the release makes that pile larger, not smaller.
+
 This file exists so the review decision has somewhere to live and cannot be inferred
 from anything else. It is deliberately unsigned:
 [ADR 0001](docs/adr/0001-component-topology-and-dependency-graph.md) originally

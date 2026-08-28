@@ -31,9 +31,14 @@ the contract. A composition-root host publishes and runs under JIT, trimming and
 
 What does not exist is a language. There is no product profile, no persisted envelope, no
 malformed-input corpus, no fuzz target, no concurrency evidence, no second RID, and no performance
-measurement. And **nothing here is accepted**: no human has reviewed the records or the code, so
-no capability should be inferred from a passing test suite, a green publish, or this paragraph.
-`HUMAN_REVIEW.md` is unsigned.
+measurement.
+
+And **nothing here is accepted**: no human has reviewed the records or the code, so no capability
+should be inferred from a passing test suite, a green publish, or this paragraph. `HUMAN_REVIEW.md`
+is unsigned. Human review gates a **release** rather than a development step - so this work is
+allowed to exist and to be built on, and none of it may be published, claimed for a RID, or marked
+accepted until someone signs. The rule and its cost are recorded as update rule 8 in
+[the status ledger](docs/roadmap.status.md).
 
 ## Component boundary
 

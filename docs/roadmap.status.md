@@ -18,14 +18,19 @@ aggregate budgets, guest-initiated-load mediation, external suspension, two fixt
 composition-root host that publishes and runs under trimming and Native AOT, and 150 passing
 tests.
 
-**Neither milestone is accepted, and the second one's dependency is not satisfied.** VM-0 remains
-unaccepted because `HUMAN_REVIEW.md` is unsigned and `PENDING`. VM-1's dependency line reads
-"VM-0 graph and ADR", and roadmap section 13 sequences VM-1 after VM-0 acceptance; that
-precondition was not met when the VM-1 work was done. It proceeded on the reading that an unsigned
-review blocks *acceptance* rather than *implementation*. That reading is recorded as Exclusion
-EX-43 rather than ratified, and it is the first thing a reviewer should agree or disagree with.
-What has not changed is that no milestone here may move to `Accepted` until a human reads the work
-and signs.
+**Neither milestone is accepted, and neither can be until a human signs.** VM-0 and VM-1 are both
+unaccepted because `HUMAN_REVIEW.md` is unsigned and `PENDING`.
+
+VM-1 was nonetheless built against VM-0's frozen-but-unapproved records, and update rule 8 now
+records why that was legitimate: **human review gates a release, not a development step.** The
+owner ruled on 2026-08-28 that implementing, landing and evidencing a milestone may proceed without
+a review decision, and that publishing a package, claiming a RID, issuing a support table or moving
+any milestone to `Accepted` may not. That resolves what Exclusion EX-43 previously recorded as an
+open reading.
+
+Nothing about the component's actual state changes with it. No release capability is claimed, and
+the work that has accumulated unreviewed is not paper: it is a parser over untrusted bytes and a
+budget enforcer.
 
 ---
 
@@ -152,6 +157,26 @@ claimed RID; analyzer success alone is not a publish-and-run result.
 7. A milestone moves to `Accepted` only after its owner and reviewer confirm that every objective
    exit condition for that record is covered. Record the decision date and evidence-bundle ID in
    the affected row.
+8. **Human review gates a release, not a development step.** Ruled 2026-08-28 by the architecture
+   and release owner. Development work - implementing a milestone, landing it, and collecting its
+   evidence - may proceed and merge without a review decision. A **release** may not: no package is
+   published, no RID is claimed, no support table is issued, and no milestone moves to `Accepted`
+   until a named human has read the work and signed
+   [HUMAN_REVIEW.md](../HUMAN_REVIEW.md) for the revision under review.
+
+   This settles the question Exclusion EX-43 recorded rather than answering. Roadmap section 13
+   sequences each milestone "after VM-*n* acceptance"; under this ruling that sequencing binds the
+   release train, and a milestone may be *built* against records that are frozen but unapproved. It
+   does not weaken anything else in this file: rule 7 is unchanged, an unreviewed milestone stays
+   `In progress` however complete its evidence is, and the roadmap is not re-authored - the
+   divergence is recorded here, as ADR 0003's amendment register records the others.
+
+   Two consequences worth stating plainly, because the alternative is discovering them at release
+   time. Unreviewed work accumulates: the longer a release is deferred, the more there is to read
+   in one sitting, and the VM-1 review found sixteen blockers in one milestone's worth. And a
+   development step that lands unreviewed carries its risk forward rather than dissolving it - the
+   component currently holds an unreviewed parser and an unreviewed budget enforcer, and that is
+   true no matter how many green suites are collected over them.
 
 Until such updates are recorded, the table in section 2 remains the complete Broiler.VM status:
 VM-0 and VM-1 are in progress and unaccepted, VM-2 through VM-6 are not started, and no release
