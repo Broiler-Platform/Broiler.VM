@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   6
+// Annotated:        6/6
+// Exempt:           0
+// Human-reviewed:   0/6
+// IP risk:          Low
+// Security risk:    Low
+// Resource impact:  2/10 max
+// Unverified:       6
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>
@@ -338,12 +354,16 @@ public static class VmReasonRegistry
     /// The reason-registry revision. It increases when a reason is added inside an existing
     /// category; it is not the core contract version and must never be wired to it.
     /// </summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0005; IP=None; Security=Low; Resources=0; Fingerprint=51281C
+    // Broiler-Human: PENDING
     public const int Revision = 1;
 
     /// <summary>
     /// The outcome category <paramref name="reason"/> belongs to, or <see cref="VmOutcome.None"/>
     /// for <see cref="VmReason.None"/> and for the control-only block.
     /// </summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=E5A24B
+    // Broiler-Human: PENDING
     public static VmOutcome CategoryOf(VmReason reason)
     {
         var block = (int)reason / 100;
@@ -355,13 +375,19 @@ public static class VmReasonRegistry
     /// Whether <paramref name="reason"/> is carried by <see cref="VmControlResult"/> rather than by
     /// a stage outcome.
     /// </summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C6C347
+    // Broiler-Human: PENDING
     public static bool IsControlOnly(VmReason reason) => (int)reason >= 1000;
 
     /// <summary>Whether <paramref name="reason"/> may accompany <paramref name="outcome"/>.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=2B95DD
+    // Broiler-Human: PENDING
     public static bool IsLegal(VmOutcome outcome, VmReason reason) =>
         outcome is not VmOutcome.None && CategoryOf(reason) == outcome;
 
     /// <summary>The generic reason for <paramref name="outcome"/>. Every category has one.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=3E31A4
+    // Broiler-Human: PENDING
     public static VmReason GenericFor(VmOutcome outcome) =>
         outcome is VmOutcome.None ? VmReason.None : (VmReason)((int)outcome * 100);
 
@@ -373,5 +399,7 @@ public static class VmReasonRegistry
     /// <c>Enum.GetValues(Type)</c> is a reflection call that trimming and Native AOT cannot see
     /// through, and rule B5 exists to keep that shape out of the product graph.
     /// </remarks>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=BBA912
+    // Broiler-Human: PENDING
     public static VmReason[] All() => System.Enum.GetValues<VmReason>();
 }

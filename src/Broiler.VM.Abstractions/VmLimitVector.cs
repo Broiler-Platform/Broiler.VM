@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   19
+// Annotated:        19/19
+// Exempt:           26
+// Human-reviewed:   0/19
+// IP risk:          Low
+// Security risk:    Medium
+// Resource impact:  1/10 max
+// Unverified:       19
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>
@@ -27,6 +43,8 @@ public readonly struct VmLimitVector : System.IEquatable<VmLimitVector>
     /// The vector with every dimension at TOP. Only a profile hard maximum and the
     /// <c>LiveRuntimes</c> slot of an unparented runtime may legitimately be this.
     /// </summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A9FFF9
+    // Broiler-Human: PENDING
     public static VmLimitVector Unconstrained
     {
         get
@@ -38,19 +56,27 @@ public readonly struct VmLimitVector : System.IEquatable<VmLimitVector>
     }
 
     /// <summary>True when this is <see langword="default"/>, which is not a usable vector.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=D83984
+    // Broiler-Human: PENDING
     public bool IsEmpty => values is null;
 
     /// <summary>The value declared for <paramref name="dimension"/>.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=CBB5AC
+    // Broiler-Human: PENDING
     public ulong this[VmBudgetDimension dimension] =>
         values is null
             ? 0
             : values[(int)dimension];
 
     /// <summary>Whether <paramref name="dimension"/> is at TOP.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=F1F79B
+    // Broiler-Human: PENDING
     public bool IsUnconstrained(VmBudgetDimension dimension) =>
         this[dimension] == ulong.MaxValue;
 
     /// <summary>Whether any dimension is at TOP.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=04A197
+    // Broiler-Human: PENDING
     public bool HasAnyUnconstrained()
     {
         if (values is null)
@@ -73,6 +99,8 @@ public readonly struct VmLimitVector : System.IEquatable<VmLimitVector>
     /// Creates a vector from exactly fifteen values, in the frozen dimension order. A span of any
     /// other length is refused rather than padded.
     /// </summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=02727D
+    // Broiler-Human: PENDING
     public static bool TryCreate(System.ReadOnlySpan<ulong> perDimension, out VmLimitVector vector)
     {
         vector = default;
@@ -90,6 +118,8 @@ public readonly struct VmLimitVector : System.IEquatable<VmLimitVector>
     /// The element-wise minimum of two vectors. This is the intersection operation the precedence
     /// algorithm uses: a limit can only ever be tightened by combining, never loosened.
     /// </summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3B66E9
+    // Broiler-Human: PENDING
     public static VmLimitVector Intersect(VmLimitVector left, VmLimitVector right)
     {
         var result = new ulong[VmBudgetDimensions.Count];
@@ -108,6 +138,8 @@ public readonly struct VmLimitVector : System.IEquatable<VmLimitVector>
     /// Whether every dimension of <paramref name="candidate"/> is no looser than the corresponding
     /// dimension of <paramref name="bound"/>.
     /// </summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=BADFC1
+    // Broiler-Human: PENDING
     public static bool IsNoLooserThan(VmLimitVector candidate, VmLimitVector bound)
     {
         for (var index = 0; index < VmBudgetDimensions.Count; index++)
@@ -125,6 +157,8 @@ public readonly struct VmLimitVector : System.IEquatable<VmLimitVector>
     }
 
     /// <summary>Copies the vector into <paramref name="destination"/>, which must hold fifteen values.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=3B39D8
+    // Broiler-Human: PENDING
     public void CopyTo(System.Span<ulong> destination)
     {
         if (destination.Length != VmBudgetDimensions.Count)
@@ -141,6 +175,8 @@ public readonly struct VmLimitVector : System.IEquatable<VmLimitVector>
     }
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C759BA
+    // Broiler-Human: PENDING
     public bool Equals(VmLimitVector other)
     {
         if (values is null || other.values is null)
@@ -163,6 +199,8 @@ public readonly struct VmLimitVector : System.IEquatable<VmLimitVector>
     public override bool Equals(object? obj) => obj is VmLimitVector other && Equals(other);
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=66B94B
+    // Broiler-Human: PENDING
     public override int GetHashCode()
     {
         if (values is null)
@@ -204,9 +242,13 @@ public readonly struct VmBudgetDeclarationMatrix : System.IEquatable<VmBudgetDec
     private VmBudgetDeclarationMatrix(VmBudgetApplicability[] rows) => this.rows = rows;
 
     /// <summary>True when every one of the fifteen rows is present.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=65E2CC
+    // Broiler-Human: PENDING
     public bool IsComplete => rows is not null;
 
     /// <summary>The declaration for <paramref name="dimension"/>.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=F4760A
+    // Broiler-Human: PENDING
     public VmBudgetApplicability this[VmBudgetDimension dimension] =>
         rows is null ? VmBudgetApplicability.NotApplicable : rows[(int)dimension];
 
@@ -215,6 +257,8 @@ public readonly struct VmBudgetDeclarationMatrix : System.IEquatable<VmBudgetDec
     /// other length is refused rather than padded with a default, because a defaulted row is
     /// silence in code form.
     /// </summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=965C46
+    // Broiler-Human: PENDING
     public static bool TryCreate(
         System.ReadOnlySpan<VmBudgetApplicability> perDimension,
         out VmBudgetDeclarationMatrix matrix)
@@ -239,6 +283,8 @@ public readonly struct VmBudgetDeclarationMatrix : System.IEquatable<VmBudgetDec
     }
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=CD356A
+    // Broiler-Human: PENDING
     public bool Equals(VmBudgetDeclarationMatrix other)
     {
         if (rows is null || other.rows is null)
@@ -261,6 +307,8 @@ public readonly struct VmBudgetDeclarationMatrix : System.IEquatable<VmBudgetDec
     public override bool Equals(object? obj) => obj is VmBudgetDeclarationMatrix other && Equals(other);
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=D5E5EF
+    // Broiler-Human: PENDING
     public override int GetHashCode()
     {
         if (rows is null)
@@ -375,6 +423,8 @@ public readonly struct VmGuestLoadBounds : System.IEquatable<VmGuestLoadBounds>
     public ulong VerifierWork { get; }
 
     /// <summary>True when every bound is finite; TOP in any slot is refused at catalog construction.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=B06362
+    // Broiler-Human: PENDING
     public bool IsFinite =>
         NestedLoadDepth != ulong.MaxValue &&
         NestedLoadFanOut != ulong.MaxValue &&
@@ -382,10 +432,14 @@ public readonly struct VmGuestLoadBounds : System.IEquatable<VmGuestLoadBounds>
         VerifierWork != ulong.MaxValue;
 
     /// <summary>True when every bound is greater than zero.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=75C968
+    // Broiler-Human: PENDING
     public bool IsPositive =>
         NestedLoadDepth > 0 && NestedLoadFanOut > 0 && NestedLoadBytes > 0 && VerifierWork > 0;
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=92B243
+    // Broiler-Human: PENDING
     public bool Equals(VmGuestLoadBounds other) =>
         NestedLoadDepth == other.NestedLoadDepth &&
         NestedLoadFanOut == other.NestedLoadFanOut &&

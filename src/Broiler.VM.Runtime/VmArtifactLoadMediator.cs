@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   6
+// Annotated:        6/6
+// Exempt:           1
+// Human-reviewed:   0/6
+// IP risk:          Low
+// Security risk:    Medium
+// Resource impact:  7/10 max
+// Unverified:       6
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>
@@ -52,9 +68,13 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
     /// Opens the mediator for one executor step, binding it to that step's meter so nested work is
     /// charged to the operation that will actually request it.
     /// </summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=1; Fingerprint=C5DB65
+    // Broiler-Human: PENDING
     internal void EnterScope(VmDiagnostics baseline) => EnterScope(baseline, default);
 
     /// <summary>Opens the mediator for one step of the named operation.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=1; Fingerprint=550E12
+    // Broiler-Human: PENDING
     internal void EnterScope(VmDiagnostics baseline, VmObjectId operationId)
     {
         lock (gate)
@@ -75,6 +95,8 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
     }
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=7; Fingerprint=1C2A09
+    // Broiler-Human: PENDING
     public VmGuestLoadResult RequestLoad(scoped in VmArtifactRequest request)
     {
         VmMeter meter;
@@ -159,6 +181,8 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
         }
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=7; Fingerprint=37279E
+    // Broiler-Human: PENDING
     private VmGuestLoadResult Answer(
         IVmArtifactProvider provider,
         VmMeter meter,
@@ -257,6 +281,8 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
         return Project(verification, identified);
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0008; IP=Low; Security=Low; Resources=1; Fingerprint=6DF904
+    // Broiler-Human: PENDING
     private static VmGuestLoadResult Project(VmVerificationResult verification, VmDiagnostics identified)
     {
         var diagnostics = verification.Diagnostics.WithOutcome(
@@ -298,6 +324,8 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
     /// own bound checks fire before any meter charge and so leave no trace for the caller's result
     /// to pick up. Latching makes the conversion obligation enforced rather than trusted.
     /// </remarks>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=0; Fingerprint=8961AA
+    // Broiler-Human: PENDING
     private static VmGuestLoadResult Exhausted(
         VmMeter meter,
         VmDiagnostics identified,

@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   3
+// Annotated:        3/3
+// Exempt:           15
+// Human-reviewed:   0/3
+// IP risk:          Low
+// Security risk:    Low
+// Resource impact:  1/10 max
+// Unverified:       3
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>
@@ -14,6 +30,8 @@ public readonly ref struct VmBytes
     private readonly System.ReadOnlySpan<byte> span;
 
     /// <summary>Wraps a span for the duration of one call.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C880D9
+    // Broiler-Human: PENDING
     public VmBytes(System.ReadOnlySpan<byte> bytes) => span = bytes;
 
     /// <summary>The bytes.</summary>
@@ -39,6 +57,8 @@ public readonly ref struct VmUtf8Text
     private readonly System.ReadOnlySpan<byte> utf8;
 
     /// <summary>Wraps UTF-8 bytes for the duration of one call.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=3F6F22
+    // Broiler-Human: PENDING
     public VmUtf8Text(System.ReadOnlySpan<byte> bytes) => utf8 = bytes;
 
     /// <summary>The UTF-8 bytes.</summary>
@@ -81,6 +101,8 @@ public readonly struct VmPayloadIdentity : System.IEquatable<VmPayloadIdentity>
     public int PayloadSchemaVersion { get; }
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1D965E
+    // Broiler-Human: PENDING
     public bool Equals(VmPayloadIdentity other) =>
         ProfileId.Equals(other.ProfileId) &&
         PayloadKindId == other.PayloadKindId &&

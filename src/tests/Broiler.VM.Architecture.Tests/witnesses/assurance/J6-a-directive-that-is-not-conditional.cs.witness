@@ -1,0 +1,32 @@
+// Witness for rule J6: a preprocessor directive that compiles no region away.
+//
+// The rule is about every directive and not only about `#if`. A `#pragma warning disable` silences
+// the analyser that would have objected to the code under it - it hides no declaration from the
+// scanner, and it appears in no fingerprint, because a directive is trivia. Recognising only the
+// conditional directives would leave a covered file able to carry the rest.
+
+#pragma warning disable CA1822
+
+namespace Probe;
+
+public sealed class Silenced
+{
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=44EBF3
+    // Broiler-Human: PENDING
+    public int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}
+
+#pragma warning restore CA1822

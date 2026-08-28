@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   10
+// Annotated:        10/10
+// Exempt:           7
+// Human-reviewed:   0/10
+// IP risk:          Low
+// Security risk:    Medium
+// Resource impact:  2/10 max
+// Unverified:       10
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>
@@ -32,12 +48,16 @@ internal sealed class VmExecutionScope
     /// </summary>
     internal VmOperation? CurrentOperation => operation.Value;
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=F0C37E
+    // Broiler-Human: PENDING
     internal void Enter(VmMeter meter, VmOperation? owner = null)
     {
         current.Value = meter;
         operation.Value = owner;
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=58FA1F
+    // Broiler-Human: PENDING
     internal void Leave()
     {
         current.Value = null;
@@ -62,17 +82,25 @@ internal sealed class VmAmbientMeter : IVmMeter
     internal VmAmbientMeter(VmExecutionScope scope) => this.scope = scope;
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=88CA2E
+    // Broiler-Human: PENDING
     public bool TryCharge(VmBudgetDimension dimension, ulong amount) =>
         scope.Current?.TryCharge(dimension, amount) ?? false;
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=630A13
+    // Broiler-Human: PENDING
     public bool Poll() => scope.Current?.Poll() ?? false;
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=ADA564
+    // Broiler-Human: PENDING
     public void ReportRetained(VmBudgetDimension dimension, ulong amount) =>
         scope.Current?.ReportRetained(dimension, amount);
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=B47DE7
+    // Broiler-Human: PENDING
     public void ReportReleased(VmBudgetDimension dimension, ulong amount) =>
         scope.Current?.ReportReleased(dimension, amount);
 }
@@ -106,10 +134,14 @@ internal sealed class VmAmbientCapabilityInvoker : IVmHostCapabilityInvoker
     public int BindingCount => bindings.Length;
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0011; IP=Low; Security=Low; Resources=0; Fingerprint=B14302
+    // Broiler-Human: PENDING
     public bool IsBound(int bindingIndex) =>
         bindingIndex >= 0 && bindingIndex < bindings.Length && bindings[bindingIndex].IsBound;
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=2; Fingerprint=C3C1A1
+    // Broiler-Human: PENDING
     public VmHostCallOutcome Invoke(int bindingIndex, System.ReadOnlySpan<long> arguments, out long result)
     {
         result = 0;
@@ -129,6 +161,8 @@ internal sealed class VmAmbientCapabilityInvoker : IVmHostCapabilityInvoker
     }
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=2; Fingerprint=DF28EB
+    // Broiler-Human: PENDING
     public VmHostCallOutcome InvokeBytes(int bindingIndex, VmBytes argument, out VmOpaqueRef result)
     {
         result = default;
@@ -155,6 +189,8 @@ internal sealed class VmAmbientCapabilityInvoker : IVmHostCapabilityInvoker
     /// an observable fault, the profile is handed the refusal and is expected to convert it, and
     /// whatever it produces is the answer.
     /// </remarks>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=1615F4
+    // Broiler-Human: PENDING
     private void Latch(VmCapabilityInvoker invoker, int bindingIndex)
     {
         LastFailure = invoker.LastFailure;

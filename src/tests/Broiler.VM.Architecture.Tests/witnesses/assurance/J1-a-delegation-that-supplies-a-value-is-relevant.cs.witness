@@ -1,0 +1,43 @@
+// Witness for rule J1: a delegation whose arguments are not its own parameters.
+//
+// TryReadWide chooses the width the reader will accept and TryReserve chooses the meter the
+// charge lands in. Both are one-line delegations to a member of the same type, which the earlier
+// exemption predicate answered "trivial" - but the value each one SUPPLIES is the policy, and an
+// exempt unit carries no annotation and therefore no fingerprint, so changing 64 to 32 or
+// AllocatedBytes to VerifierWork moved nothing any rule could see.
+//
+// TryChargeAt is the accepting direction in the same file: it forwards its own parameters
+// unchanged, decides nothing, and stays exempt.
+
+namespace Probe;
+
+public sealed class Routed
+{
+    public bool TryReadWide(out ulong value) => TryReadCore(64, out value);
+
+    public bool TryReserve(ulong byteCount) => TryCharge(ProbeDimension.AllocatedBytes, byteCount);
+
+    public bool TryChargeAt(ProbeDimension dimension, ulong amount) => TryCharge(dimension, amount);
+
+    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-Human: PENDING
+    private bool TryReadCore(int maxBits, out ulong value)
+    {
+        value = (ulong)maxBits;
+
+        return value > 0;
+    }
+
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=TBF
+    // Broiler-Human: PENDING
+    private bool TryCharge(ProbeDimension dimension, ulong amount)
+    {
+        return dimension == ProbeDimension.AllocatedBytes && amount > 0;
+    }
+}
+
+public enum ProbeDimension
+{
+    AllocatedBytes,
+    VerifierWork,
+}

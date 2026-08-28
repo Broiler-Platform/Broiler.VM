@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   2
+// Annotated:        2/2
+// Exempt:           32
+// Human-reviewed:   0/2
+// IP risk:          None
+// Security risk:    Medium
+// Resource impact:  0/10 max
+// Unverified:       2
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>
@@ -37,9 +53,13 @@ namespace Broiler.VM;
 public sealed class VmProfileDescriptor
 {
     /// <summary>The most feature manifests one descriptor may accept.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s7; IP=None; Security=Medium; Resources=0; Fingerprint=EDA3BD
+    // Broiler-Human: PENDING
     public const int MaximumAcceptedFeatureManifests = 64;
 
     /// <summary>The most characters a display name may have.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s7; IP=None; Security=Medium; Resources=0; Fingerprint=948C28
+    // Broiler-Human: PENDING
     public const int MaximumDisplayNameLength = 64;
 
     /// <summary>Creates a descriptor. Every row of the frozen table is supplied.</summary>

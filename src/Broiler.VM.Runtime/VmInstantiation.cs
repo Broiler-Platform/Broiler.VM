@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   6
+// Annotated:        6/6
+// Exempt:           5
+// Human-reviewed:   0/6
+// IP risk:          Low
+// Security risk:    Medium
+// Resource impact:  5/10 max
+// Unverified:       6
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>What the runtime hands an executor when it creates one.</summary>
@@ -27,6 +43,8 @@ internal sealed class VmExecutionEnvironment : IVmExecutionEnvironment
     public IVmHostCapabilityInvoker Capabilities { get; }
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=0; Fingerprint=AE529C
+    // Broiler-Human: PENDING
     public bool TryGetArtifactLoadMediator(out IVmArtifactLoadMediator loadMediator)
     {
         loadMediator = mediator!;
@@ -37,6 +55,8 @@ internal sealed class VmExecutionEnvironment : IVmExecutionEnvironment
 /// <summary>The instantiation stage.</summary>
 internal static class VmInstantiation
 {
+    // Broiler-AI:    Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=34BDC0
+    // Broiler-Human: PENDING
     internal static VmInstantiationResult Run(
         VmRuntime runtime,
         VmVerifiedArtifact artifact,
@@ -95,6 +115,8 @@ internal static class VmInstantiation
         }
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=4D0672
+    // Broiler-Human: PENDING
     private static VmInstantiationResult Instantiate(
         VmRuntime runtime,
         VmVerifiedArtifact artifact,
@@ -290,6 +312,8 @@ internal static class VmInstantiation
     /// <summary>
     /// Clauses 0 and 1: the handle's own state, checked before anything about the composition.
     /// </summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Medium; Resources=0; Fingerprint=87809B
+    // Broiler-Human: PENDING
     private static bool TryAdmitHandleState(VmVerifiedArtifact artifact, out VmReason failure)
     {
         failure = VmReason.None;
@@ -318,6 +342,8 @@ internal static class VmInstantiation
     /// declaration first made every mismatch report as "not shareable", which is true of the
     /// profile but says nothing about why this handle was refused.
     /// </remarks>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s4; IP=Low; Security=Medium; Resources=1; Fingerprint=078B3F
+    // Broiler-Human: PENDING
     private static bool TryAdmitSharing(
         VmRuntime runtime,
         VmVerifiedArtifact artifact,
@@ -395,6 +421,8 @@ internal static class VmInstantiation
         internal static PlaceholderState Instance { get; } = new();
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=4; Fingerprint=ED427A
+    // Broiler-Human: PENDING
     private static void Abandon(
         VmProfileDescriptor profile,
         VmRuntime runtime,

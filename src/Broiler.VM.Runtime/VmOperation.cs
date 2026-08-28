@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   22
+// Annotated:        22/22
+// Exempt:           12
+// Human-reviewed:   0/22
+// IP risk:          Low
+// Security risk:    Medium
+// Resource impact:  5/10 max
+// Unverified:       22
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>
@@ -34,6 +50,8 @@ internal sealed class VmOperation
     private bool cancellationRequested;
     private bool externalSuspendRequested;
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0004; IP=Low; Security=Low; Resources=1; Fingerprint=023894
+    // Broiler-Human: PENDING
     internal VmOperation(
         VmRuntime runtime,
         VmInstanceImplementation? instance,
@@ -87,6 +105,8 @@ internal sealed class VmOperation
     internal int HostFailureCapabilityVersion { get; private set; }
 
     /// <summary>Latches an unconverted host failure. The first one wins; a later one is its echo.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=7CD2FB
+    // Broiler-Human: PENDING
     internal void LatchHostFailure(VmReason reason, VmCapabilityId capability, int version)
     {
         lock (gate)
@@ -106,6 +126,8 @@ internal sealed class VmOperation
 
     internal System.Threading.CancellationToken Token => cancellation.Token;
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0004; IP=Low; Security=Low; Resources=0; Fingerprint=98DE3D
+    // Broiler-Human: PENDING
     internal VmOperationState State
     {
         get
@@ -117,6 +139,8 @@ internal sealed class VmOperation
         }
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0004; IP=Low; Security=Low; Resources=0; Fingerprint=265216
+    // Broiler-Human: PENDING
     internal VmOperationStateSnapshot Snapshot()
     {
         lock (gate)
@@ -127,6 +151,8 @@ internal sealed class VmOperation
     }
 
     /// <summary>Requests cancellation. Monotonic and idempotent.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=0; Fingerprint=C0C8CA
+    // Broiler-Human: PENDING
     internal VmControlResult RequestCancel()
     {
         lock (gate)
@@ -152,6 +178,8 @@ internal sealed class VmOperation
     /// Requests an external suspension, subject to the double gate: the profile must declare it and
     /// the runtime must enable it.
     /// </summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=0; Fingerprint=D31D3F
+    // Broiler-Human: PENDING
     internal VmControlResult RequestSuspend()
     {
         if (profile.ExternalSuspension is not VmDeclaration.Declared)
@@ -181,6 +209,8 @@ internal sealed class VmOperation
         }
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0009; IP=Low; Security=Low; Resources=0; Fingerprint=217587
+    // Broiler-Human: PENDING
     internal bool ExternalSuspendRequested
     {
         get
@@ -193,6 +223,8 @@ internal sealed class VmOperation
     }
 
     /// <summary>Parks the operation, minting the single-use resumption object.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=1; Fingerprint=3EC334
+    // Broiler-Human: PENDING
     internal bool TryPark(
         VmSuspensionOrigin suspensionOrigin,
         IVmProfileContinuation profileContinuation,
@@ -240,6 +272,8 @@ internal sealed class VmOperation
     }
 
     /// <summary>Hands the resumption object to whoever holds the control handle, once.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=0; Fingerprint=26BDC0
+    // Broiler-Human: PENDING
     internal VmControlResult TryTakeSuspension(out VmSuspension suspension)
     {
         lock (gate)
@@ -258,6 +292,8 @@ internal sealed class VmOperation
         }
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0009; IP=Low; Security=Low; Resources=0; Fingerprint=E11B85
+    // Broiler-Human: PENDING
     internal bool HasUntakenExternalSuspension
     {
         get
@@ -269,6 +305,8 @@ internal sealed class VmOperation
         }
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=0; Fingerprint=E633A2
+    // Broiler-Human: PENDING
     internal bool HasOutstayed(System.TimeSpan residency)
     {
         lock (gate)
@@ -283,6 +321,8 @@ internal sealed class VmOperation
     }
 
     /// <summary>Resumes the parked operation through the profile's own continuation.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=5; Fingerprint=E19972
+    // Broiler-Human: PENDING
     internal VmResumeResult Resume(VmDiagnostics baseline)
     {
         IVmProfileContinuation? resumed;
@@ -336,14 +376,20 @@ internal sealed class VmOperation
     /// Latches an expired suspension as cancelled. A parked operation that outstayed its residency
     /// is not left parked: the bound exists so that disposal is never blocked indefinitely.
     /// </summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=4; Fingerprint=30512D
+    // Broiler-Human: PENDING
     internal void Expire()
     {
         Abandon(VmReason.SuspendedResidencyExpired);
     }
 
     /// <summary>Latches an abandoned suspension as cancelled and unwinds the profile.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=4; Fingerprint=5E87C7
+    // Broiler-Human: PENDING
     internal void Abandon() => Abandon(VmReason.ExternalSuspensionAbandoned);
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=4; Fingerprint=DC2471
+    // Broiler-Human: PENDING
     internal void Abandon(VmReason reason)
     {
         IVmProfileContinuation? dropped;
@@ -379,6 +425,8 @@ internal sealed class VmOperation
 
     internal VmReason AbandonReason { get; private set; } = VmReason.None;
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=0; Fingerprint=59C6B6
+    // Broiler-Human: PENDING
     internal void Complete()
     {
         lock (gate)
@@ -409,17 +457,25 @@ internal sealed class VmOperationControlHandleImplementation : VmOperationContro
     internal VmOperationControlHandleImplementation(VmOperation operation) => this.operation = operation;
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=0; Fingerprint=8A3059
+    // Broiler-Human: PENDING
     public override VmControlResult RequestSuspend() =>
         IsDisposed ? VmControlResult.InvalidState(VmReason.ObjectDisposed) : operation.RequestSuspend();
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=0; Fingerprint=632AD6
+    // Broiler-Human: PENDING
     public override VmControlResult RequestCancel() =>
         IsDisposed ? VmControlResult.InvalidState(VmReason.ObjectDisposed) : operation.RequestCancel();
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0004; IP=Low; Security=Low; Resources=0; Fingerprint=DF5CA0
+    // Broiler-Human: PENDING
     public override VmOperationStateSnapshot QueryState() => operation.Snapshot();
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=0; Fingerprint=E451EF
+    // Broiler-Human: PENDING
     public override VmControlResult TryTakeSuspension(out VmSuspension suspension)
     {
         if (IsDisposed)
@@ -432,6 +488,8 @@ internal sealed class VmOperationControlHandleImplementation : VmOperationContro
     }
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=4; Fingerprint=E180CA
+    // Broiler-Human: PENDING
     public override VmControlResult Dispose()
     {
         if (System.Threading.Interlocked.Exchange(ref disposed, 1) != 0)
@@ -452,5 +510,7 @@ internal sealed class VmOperationControlHandleImplementation : VmOperationContro
         return VmControlResult.Accepted;
     }
 
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=8B7302
+    // Broiler-Human: PENDING
     private bool IsDisposed => System.Threading.Volatile.Read(ref disposed) != 0;
 }

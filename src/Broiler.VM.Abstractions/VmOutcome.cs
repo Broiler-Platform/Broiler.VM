@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   4
+// Annotated:        4/4
+// Exempt:           0
+// Human-reviewed:   0/4
+// IP risk:          Low
+// Security risk:    Medium
+// Resource impact:  1/10 max
+// Unverified:       4
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>
@@ -129,9 +145,13 @@ public enum VmStage
 /// </remarks>
 public static class VmStageMatrix
 {
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F24C4F
+    // Broiler-Human: PENDING
     private static readonly bool[,] Legal = BuildMatrix();
 
     /// <summary>Whether <paramref name="outcome"/> is a legal category at <paramref name="stage"/>.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=1A33CC
+    // Broiler-Human: PENDING
     public static bool IsLegal(VmStage stage, VmOutcome outcome)
     {
         if (stage is VmStage.None || outcome is VmOutcome.None)
@@ -143,6 +163,8 @@ public static class VmStageMatrix
     }
 
     /// <summary>Every legal category at <paramref name="stage"/>, in ascending numeric order.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F4303C
+    // Broiler-Human: PENDING
     public static VmOutcome[] LegalCategoriesAt(VmStage stage)
     {
         var legal = new System.Collections.Generic.List<VmOutcome>(9);
@@ -158,6 +180,8 @@ public static class VmStageMatrix
         return legal.ToArray();
     }
 
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3FAAA8
+    // Broiler-Human: PENDING
     private static bool[,] BuildMatrix()
     {
         var matrix = new bool[8, 10];

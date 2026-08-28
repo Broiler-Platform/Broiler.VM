@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   20
+// Annotated:        20/20
+// Exempt:           5
+// Human-reviewed:   0/20
+// IP risk:          Low
+// Security risk:    High
+// Resource impact:  2/10 max
+// Unverified:       20
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>
@@ -46,6 +62,8 @@ public ref struct VmBoundedReader
     /// <see cref="VmBoundedReadStatus.ArtifactBytesExceeded"/>, so the caller learns it on the
     /// first read exactly as it learns every other bound.
     /// </remarks>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=97DF17
+    // Broiler-Human: PENDING
     public VmBoundedReader(
         System.ReadOnlySpan<byte> source,
         in VmReadBounds readBounds,
@@ -66,6 +84,8 @@ public ref struct VmBoundedReader
     public readonly ulong Position => position;
 
     /// <summary>How many bytes remain unconsumed.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=D3559E
+    // Broiler-Human: PENDING
     public readonly ulong Remaining => (ulong)bytes.Length - position;
 
     /// <summary>The current section nesting depth.</summary>
@@ -78,12 +98,16 @@ public ref struct VmBoundedReader
     public readonly VmBoundedReadStatus Status => status;
 
     /// <summary>True while no bound has been reached.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=A98E73
+    // Broiler-Human: PENDING
     public readonly bool IsOk => status == VmBoundedReadStatus.Ok;
 
     /// <summary>The bounds this reader was constructed with.</summary>
     public readonly VmReadBounds Bounds => bounds;
 
     /// <summary>Reads one byte.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=EADE4A
+    // Broiler-Human: PENDING
     public bool TryReadByte(out byte value)
     {
         value = 0;
@@ -98,6 +122,8 @@ public ref struct VmBoundedReader
     }
 
     /// <summary>Reads a little-endian 32-bit unsigned integer.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=E8E77F
+    // Broiler-Human: PENDING
     public bool TryReadUInt32LittleEndian(out uint value)
     {
         value = 0;
@@ -116,6 +142,8 @@ public ref struct VmBoundedReader
     }
 
     /// <summary>Reads a little-endian 64-bit unsigned integer.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=BF1BC9
+    // Broiler-Human: PENDING
     public bool TryReadUInt64LittleEndian(out ulong value)
     {
         value = 0;
@@ -145,6 +173,8 @@ public ref struct VmBoundedReader
     /// a value past a length check that read it differently, so the canonical form is the only
     /// accepted form.
     /// </remarks>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=A13073
+    // Broiler-Human: PENDING
     public bool TryReadVarUInt32(out uint value)
     {
         value = 0;
@@ -159,6 +189,8 @@ public ref struct VmBoundedReader
     }
 
     /// <summary>Reads an LEB128 variable-length unsigned 64-bit integer.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=69F550
+    // Broiler-Human: PENDING
     public bool TryReadVarUInt64(out ulong value) => TryReadVarUInt64Core(maxBits: 64, out value);
 
     /// <summary>
@@ -169,6 +201,8 @@ public ref struct VmBoundedReader
     /// It refuses before the count is returned, so a caller cannot loop, size a buffer, or reserve
     /// capacity from a number that never passed its bound.
     /// </remarks>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=D8A056
+    // Broiler-Human: PENDING
     public bool TryReadDeclaredCount(out uint count)
     {
         count = 0;
@@ -188,6 +222,8 @@ public ref struct VmBoundedReader
     }
 
     /// <summary>Takes a bounded window of <paramref name="length"/> bytes without copying it.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=58DE6E
+    // Broiler-Human: PENDING
     public bool TryReadBytes(ulong length, out System.ReadOnlySpan<byte> window)
     {
         window = default;
@@ -205,6 +241,8 @@ public ref struct VmBoundedReader
     /// Enters a section of <paramref name="declaredLength"/> bytes, charging the section count and
     /// the structural-depth bounds.
     /// </summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=2E1BF5
+    // Broiler-Human: PENDING
     public bool TryEnterSection(ulong declaredLength, out VmSectionFrame frame)
     {
         frame = default;
@@ -243,6 +281,8 @@ public ref struct VmBoundedReader
     /// artifact and the verifier disagree about where the next section starts, which is precisely
     /// the confusion framing exists to prevent.
     /// </remarks>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=D4F2B9
+    // Broiler-Human: PENDING
     public bool TryExitSection(in VmSectionFrame frame)
     {
         if (!Check())
@@ -267,6 +307,8 @@ public ref struct VmBoundedReader
     }
 
     /// <summary>Skips to the end of a section without reading its body.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=E174C9
+    // Broiler-Human: PENDING
     public bool TrySkipSectionBody(in VmSectionFrame frame)
     {
         if (!Check())
@@ -294,6 +336,8 @@ public ref struct VmBoundedReader
     /// Charges the verifier-work allowance and polls for cancellation. A verifier calls this at
     /// the granularity its descriptor declares.
     /// </summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=D3A8E1
+    // Broiler-Human: PENDING
     public bool TryChargeWork(ulong workUnits)
     {
         if (!Check())
@@ -304,6 +348,8 @@ public ref struct VmBoundedReader
         return ChargeWork(workUnits);
     }
 
+    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=6D9975
+    // Broiler-Human: PENDING
     private bool TryTake(ulong length, out System.ReadOnlySpan<byte> window)
     {
         window = default;
@@ -317,6 +363,8 @@ public ref struct VmBoundedReader
         return true;
     }
 
+    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=7DE9F2
+    // Broiler-Human: PENDING
     private bool TryConsume(ulong length)
     {
         if (!Check())
@@ -344,6 +392,8 @@ public ref struct VmBoundedReader
         return true;
     }
 
+    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=DE9CB5
+    // Broiler-Human: PENDING
     private bool TryReadVarUInt64Core(int maxBits, out ulong value)
     {
         value = 0;
@@ -396,6 +446,8 @@ public ref struct VmBoundedReader
         }
     }
 
+    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=183D6C
+    // Broiler-Human: PENDING
     private bool ChargeWork(ulong workUnits)
     {
         if (!meter.TryChargeWork(workUnits) || !meter.Poll())
@@ -406,8 +458,12 @@ public ref struct VmBoundedReader
         return true;
     }
 
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=452009
+    // Broiler-Human: PENDING
     private readonly bool Check() => status == VmBoundedReadStatus.Ok;
 
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=057954
+    // Broiler-Human: PENDING
     private bool Fail(VmBoundedReadStatus reason)
     {
         // The first failure is the one retained. A later call that also fails describes a reader

@@ -1,0 +1,30 @@
+// Witness for rule J1: six units the exemption predicate covers, and no annotation.
+//
+// The coverage clause must report nothing here. A rule that named every unannotated
+// unit regardless of the predicate would be a rule about comments rather than about
+// review, and it would make several hundred trivial members unreviewable noise.
+
+namespace Probe;
+
+public sealed class Trivial
+{
+    private readonly int stored;
+
+    public Trivial(int stored)
+    {
+        this.stored = stored;
+    }
+
+    public int Stored => this.stored;
+
+    public int Doubled { get; }
+
+    public int Copy
+    {
+        get { return this.stored; }
+    }
+
+    public override string ToString() => Describe(this.stored);
+
+    private static string Describe(int value) => "trivial";
+}

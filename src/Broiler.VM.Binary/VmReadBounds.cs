@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   1
+// Annotated:        1/1
+// Exempt:           9
+// Human-reviewed:   0/1
+// IP risk:          Low
+// Security risk:    Low
+// Resource impact:  0/10 max
+// Unverified:       1
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>
@@ -52,6 +68,8 @@ public readonly struct VmReadBounds : System.IEquatable<VmReadBounds>
     public ulong MaxStructuralDepth { get; }
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007 s6; IP=Low; Security=Low; Resources=0; Fingerprint=1548E0
+    // Broiler-Human: PENDING
     public bool Equals(VmReadBounds other) =>
         MaxArtifactBytes == other.MaxArtifactBytes &&
         MaxSectionCount == other.MaxSectionCount &&

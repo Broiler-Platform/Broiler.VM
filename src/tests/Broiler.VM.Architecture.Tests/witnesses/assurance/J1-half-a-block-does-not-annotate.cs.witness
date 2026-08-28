@@ -1,0 +1,26 @@
+// Witness for rule J1: an AI line with no human line under it.
+//
+// The block is two lines or it is nothing. Half of one records an assessment and no
+// human decision, and reading it as an annotation would report the unit as covered
+// when the half that carries the review state is missing.
+
+namespace Probe;
+
+public static class Halved
+{
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=TBF
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

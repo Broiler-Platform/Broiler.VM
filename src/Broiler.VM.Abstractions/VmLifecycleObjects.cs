@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   13
+// Annotated:        13/13
+// Exempt:           21
+// Human-reviewed:   0/13
+// IP risk:          Low
+// Security risk:    Medium
+// Resource impact:  7/10 max
+// Unverified:       13
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>The seven states of an instance.</summary>
@@ -115,6 +131,8 @@ public sealed class VmSuspension
 
     /// <summary>The single construction site for a suspension object.</summary>
     /// <remarks>Hidden, and asserted by an architecture rule to have one call site in the runtime.</remarks>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1BF435
+    // Broiler-Human: PENDING
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmSuspension Create(
         VmObjectId objectId,
@@ -157,9 +175,13 @@ public sealed class VmSuspension
     public VmStage SuspendedStage { get; }
 
     /// <summary>Whether this object has already been used to resume.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=880609
+    // Broiler-Human: PENDING
     public bool IsConsumed => System.Threading.Volatile.Read(ref consumed) != 0;
 
     /// <summary>The profile's opaque projection of what it exposes while parked, where it offered one.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=B0B0D3
+    // Broiler-Human: PENDING
     public bool TryGetProjection(out IVmProfilePayload payload)
     {
         payload = projection!;
@@ -171,6 +193,8 @@ public sealed class VmSuspension
     /// is refused rather than admitted, which is what makes double-resume a contract error instead
     /// of a race.
     /// </summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=E01BAA
+    // Broiler-Human: PENDING
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public bool TryConsume() => System.Threading.Interlocked.Exchange(ref consumed, 1) == 0;
 }
@@ -253,12 +277,18 @@ public abstract class VmOperationControlHandle : System.IDisposable
     /// Asks the operation to park at its next polling point. Answers unsupported where the profile
     /// did not declare external suspension or the runtime did not enable it - the double gate.
     /// </summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=70CC98
+    // Broiler-Human: PENDING
     public abstract VmControlResult RequestSuspend();
 
     /// <summary>Asks the operation to cancel at its next polling point. Monotonic.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=874C89
+    // Broiler-Human: PENDING
     public abstract VmControlResult RequestCancel();
 
     /// <summary>Reads the operation's state without blocking or mutating anything.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=195DFE
+    // Broiler-Human: PENDING
     public abstract VmOperationStateSnapshot QueryState();
 
     /// <summary>
@@ -269,9 +299,13 @@ public abstract class VmOperationControlHandle : System.IDisposable
     /// without a second admission check. A guest suspension delivers its object on the caller's
     /// result; an external one has no such result to ride, so it is taken from here.
     /// </remarks>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D1E5F0
+    // Broiler-Human: PENDING
     public abstract VmControlResult TryTakeSuspension(out VmSuspension suspension);
 
     /// <summary>Releases the handle, latching an untaken external suspension as cancelled.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=01735B
+    // Broiler-Human: PENDING
     public abstract VmControlResult Dispose();
 
     /// <inheritdoc/>
@@ -304,20 +338,28 @@ public abstract class VmInstance : System.IDisposable
     public abstract VmInstanceState State { get; }
 
     /// <summary>Invokes an entry point.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=7; Fingerprint=63AEA3
+    // Broiler-Human: PENDING
     public abstract VmInvocationResult Invoke(
         in VmInvocationRequest request,
         System.Threading.CancellationToken cancellationToken);
 
     /// <summary>Invokes an entry point, also returning the control handle for the operation.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=7; Fingerprint=72201A
+    // Broiler-Human: PENDING
     public abstract VmInvocationResult Invoke(
         in VmInvocationRequest request,
         System.Threading.CancellationToken cancellationToken,
         out VmOperationControlHandle controlHandle);
 
     /// <summary>Requests cancellation of whatever this instance is running.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=874C89
+    // Broiler-Human: PENDING
     public abstract VmControlResult RequestCancel();
 
     /// <summary>Disposes the instance. Idempotent.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=01735B
+    // Broiler-Human: PENDING
     public abstract VmControlResult Dispose();
 
     /// <inheritdoc/>

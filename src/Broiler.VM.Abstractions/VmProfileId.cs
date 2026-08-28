@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   21
+// Annotated:        21/21
+// Exempt:           6
+// Human-reviewed:   0/21
+// IP risk:          Low
+// Security risk:    High
+// Resource impact:  2/10 max
+// Unverified:       21
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>
@@ -35,18 +51,28 @@ namespace Broiler.VM;
 public readonly struct VmProfileId : System.IEquatable<VmProfileId>, System.IComparable<VmProfileId>
 {
     /// <summary>The fewest labels a well-formed ID may have.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s1; IP=None; Security=Medium; Resources=0; Fingerprint=A29732
+    // Broiler-Human: PENDING
     public const int MinimumLabelCount = 2;
 
     /// <summary>The most labels a well-formed ID may have.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s1; IP=None; Security=Medium; Resources=0; Fingerprint=C2441C
+    // Broiler-Human: PENDING
     public const int MaximumLabelCount = 8;
 
     /// <summary>The most characters one label may have.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s1; IP=None; Security=Medium; Resources=0; Fingerprint=30B94C
+    // Broiler-Human: PENDING
     public const int MaximumLabelLength = 64;
 
     /// <summary>The fewest characters a well-formed ID may have.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s1; IP=None; Security=Medium; Resources=0; Fingerprint=A1971C
+    // Broiler-Human: PENDING
     public const int MinimumLength = 3;
 
     /// <summary>The most characters a well-formed ID may have.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s1; IP=None; Security=Medium; Resources=0; Fingerprint=C4D2A4
+    // Broiler-Human: PENDING
     public const int MaximumLength = 128;
 
     private readonly string? text;
@@ -62,9 +88,13 @@ public readonly struct VmProfileId : System.IEquatable<VmProfileId>, System.ICom
     /// True when this is <see langword="default"/>. Every core API rejects an empty ID as
     /// malformed, which is what stops an unvalidated value reaching a catalog entry or a lookup.
     /// </summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=Low; Resources=0; Fingerprint=173B23
+    // Broiler-Human: PENDING
     public bool IsEmpty => text is null;
 
     /// <summary>The number of characters in the ID, or zero when empty.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=0CF2CC
+    // Broiler-Human: PENDING
     public int Length => text?.Length ?? 0;
 
     /// <summary>The number of dot-separated labels, or zero when empty.</summary>
@@ -75,6 +105,8 @@ public readonly struct VmProfileId : System.IEquatable<VmProfileId>, System.ICom
     /// Broiler-owned profiles; an application-local profile uses a documented reverse-domain
     /// namespace of its own.
     /// </summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s2; IP=Low; Security=Low; Resources=1; Fingerprint=BF6977
+    // Broiler-Human: PENDING
     public bool IsReservedNamespace
     {
         get
@@ -94,12 +126,16 @@ public readonly struct VmProfileId : System.IEquatable<VmProfileId>, System.ICom
     }
 
     /// <summary>The ID as a span, without allocating.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=864836
+    // Broiler-Human: PENDING
     public System.ReadOnlySpan<char> AsSpan() => System.MemoryExtensions.AsSpan(text);
 
     /// <summary>
     /// Parses <paramref name="candidate"/>, returning <see langword="false"/> rather than throwing
     /// when it does not satisfy the frozen grammar.
     /// </summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=High; Resources=2; Fingerprint=745304
+    // Broiler-Human: PENDING
     public static bool TryParse(System.ReadOnlySpan<char> candidate, out VmProfileId id)
     {
         id = default;
@@ -118,6 +154,8 @@ public readonly struct VmProfileId : System.IEquatable<VmProfileId>, System.ICom
     /// where a malformed ID is a programming error rather than untrusted input.
     /// </summary>
     /// <exception cref="System.ArgumentException">The candidate does not satisfy the grammar.</exception>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=High; Resources=2; Fingerprint=AA7040
+    // Broiler-Human: PENDING
     public static VmProfileId Parse(System.ReadOnlySpan<char> candidate)
     {
         if (!TryParse(candidate, out var id))
@@ -145,6 +183,8 @@ public readonly struct VmProfileId : System.IEquatable<VmProfileId>, System.ICom
     /// registration. It is deliberately a separate, named operation rather than an overload, so
     /// that no matching path can reach it by accident.
     /// </summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=Medium; Resources=1; Fingerprint=5DED8A
+    // Broiler-Human: PENDING
     public static bool EqualsUnderAsciiFold(VmProfileId left, VmProfileId right)
     {
         if (left.text is null || right.text is null)
@@ -172,16 +212,22 @@ public readonly struct VmProfileId : System.IEquatable<VmProfileId>, System.ICom
     /// Ordinal ordering, used to normalize catalog entries into a canonical order so that
     /// declaration order has no observable effect anywhere.
     /// </summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=EA157F
+    // Broiler-Human: PENDING
     public int CompareTo(VmProfileId other) =>
         string.CompareOrdinal(text ?? string.Empty, other.text ?? string.Empty);
 
     /// <summary>The ID verbatim. It is never trimmed, re-cased or otherwise rewritten.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=Low; Resources=0; Fingerprint=57BC75
+    // Broiler-Human: PENDING
     public override string ToString() => text ?? string.Empty;
 
     /// <inheritdoc/>
     public override bool Equals(object? obj) => obj is VmProfileId other && Equals(other);
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=Low; Resources=1; Fingerprint=6C9B84
+    // Broiler-Human: PENDING
     public override int GetHashCode() =>
         text is null ? 0 : string.GetHashCode(text, System.StringComparison.Ordinal);
 
@@ -201,6 +247,8 @@ public readonly struct VmProfileId : System.IEquatable<VmProfileId>, System.ICom
     /// detect confusable pairs, and the reserved-namespace check folds a package ID the same way. A
     /// second, private copy of a one-line rule is how two callers come to disagree about it.
     /// </remarks>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=Medium; Resources=0; Fingerprint=89F121
+    // Broiler-Human: PENDING
     public static char FoldAscii(char value) =>
         value is >= 'A' and <= 'Z' ? (char)(value | 0x20) : value;
 
@@ -208,6 +256,8 @@ public readonly struct VmProfileId : System.IEquatable<VmProfileId>, System.ICom
     /// Validates the frozen grammar. Shared with <see cref="VmFeatureManifestId"/> and
     /// <see cref="VmCapabilityId"/>, whose own records say their policy mirrors this one exactly.
     /// </summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=High; Resources=2; Fingerprint=A4118A
+    // Broiler-Human: PENDING
     internal static bool TryValidateGrammar(
         System.ReadOnlySpan<char> candidate,
         int minimumLabels,
@@ -301,6 +351,8 @@ public readonly struct VmProfileId : System.IEquatable<VmProfileId>, System.ICom
         return true;
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=High; Resources=2; Fingerprint=7D6A16
+    // Broiler-Human: PENDING
     private static bool TryValidate(System.ReadOnlySpan<char> candidate, out byte labelCount) =>
         TryValidateGrammar(
             candidate,
@@ -310,12 +362,18 @@ public readonly struct VmProfileId : System.IEquatable<VmProfileId>, System.ICom
             MaximumLength,
             out labelCount);
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=High; Resources=0; Fingerprint=C1992B
+    // Broiler-Human: PENDING
     private static bool IsAsciiLetter(char value) =>
         value is (>= 'A' and <= 'Z') or (>= 'a' and <= 'z');
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=High; Resources=0; Fingerprint=204317
+    // Broiler-Human: PENDING
     private static bool IsAsciiAlphanumeric(char value) =>
         IsAsciiLetter(value) || value is >= '0' and <= '9';
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s2; IP=Low; Security=Low; Resources=1; Fingerprint=129175
+    // Broiler-Human: PENDING
     private static System.ReadOnlySpan<char> FirstLabel(string value)
     {
         var dot = value.IndexOf('.');

@@ -1,0 +1,27 @@
+// Witness for rule J3: an AI line recording a fingerprint the code does not produce.
+//
+// This is the shape a hand-edited fingerprint leaves, and the shape a unit is in
+// after it changes and before the generator runs over it again.
+
+
+namespace Probe;
+
+public static class Assessed
+{
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=ABCDEF
+    // Broiler-Human: PENDING
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

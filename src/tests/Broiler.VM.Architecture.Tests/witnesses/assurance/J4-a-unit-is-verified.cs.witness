@@ -1,0 +1,28 @@
+// Witness for rule J4: a unit in the VERIFIED state.
+//
+// The human fingerprint equals the current one, so the state machine answers
+// VERIFIED and this unit would be eligible for release. Three clauses fire: the
+// name, the state, and the human line reading as something other than PENDING.
+
+
+namespace Probe;
+
+public static class Assessed
+{
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=44EBF3
+    // Broiler-Human: WITNESS-ONLY; Fingerprint=44EBF3
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   15
+// Annotated:        15/15
+// Exempt:           22
+// Human-reviewed:   0/15
+// IP risk:          Low
+// Security risk:    Medium
+// Resource impact:  4/10 max
+// Unverified:       15
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>
@@ -11,6 +27,8 @@ namespace Broiler.VM;
 /// </remarks>
 public readonly struct VmProfileCatalogEntry
 {
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s11; IP=Low; Security=Low; Resources=3; Fingerprint=793BDA
+    // Broiler-Human: PENDING
     internal VmProfileCatalogEntry(VmProfileDescriptor descriptor)
     {
         ProfileId = descriptor.ProfileId;
@@ -71,6 +89,8 @@ public readonly struct VmProfileCatalogEntry
     /// <summary>The package it ships in.</summary>
     public string PackageId { get; }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s11; IP=Low; Security=Low; Resources=3; Fingerprint=79C3C0
+    // Broiler-Human: PENDING
     private static System.Collections.Immutable.ImmutableArray<VmFeatureManifestId> Normalize(
         System.Collections.Immutable.ImmutableArray<VmFeatureManifestId> declared)
     {
@@ -105,12 +125,16 @@ public readonly struct VmProfileCatalogListing
         Entries = entries;
 
     /// <summary>How many entries the catalog holds.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s11; IP=Low; Security=Low; Resources=0; Fingerprint=E00160
+    // Broiler-Human: PENDING
     public int Count => Entries.IsDefault ? 0 : Entries.Length;
 
     /// <summary>The entries, in ascending ordinal identity order.</summary>
     public System.Collections.Immutable.ImmutableArray<VmProfileCatalogEntry> Entries { get; }
 
     /// <summary>One entry, by position in the normalized order.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s11; IP=Low; Security=Low; Resources=0; Fingerprint=ADEA0F
+    // Broiler-Human: PENDING
     public VmProfileCatalogEntry this[int index] => Entries[index];
 }
 
@@ -141,10 +165,14 @@ public sealed class VmCatalogIdentity : System.IEquatable<VmCatalogIdentity>
     public int EncodedLength => encoding.Length;
 
     /// <summary>Copies the canonical encoding out.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s11; IP=Low; Security=Low; Resources=3; Fingerprint=994BA9
+    // Broiler-Human: PENDING
     public void CopyEncodingTo(System.Span<byte> destination) =>
         System.MemoryExtensions.AsSpan(encoding).CopyTo(destination);
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s11; IP=Low; Security=Low; Resources=3; Fingerprint=FA92B8
+    // Broiler-Human: PENDING
     public bool Equals(VmCatalogIdentity? other) =>
         other is not null &&
         System.MemoryExtensions.SequenceEqual(
@@ -152,9 +180,13 @@ public sealed class VmCatalogIdentity : System.IEquatable<VmCatalogIdentity>
             System.MemoryExtensions.AsSpan(other.encoding));
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s11; IP=Low; Security=Low; Resources=3; Fingerprint=7E4E3F
+    // Broiler-Human: PENDING
     public override bool Equals(object? obj) => Equals(obj as VmCatalogIdentity);
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s11; IP=Low; Security=Low; Resources=3; Fingerprint=AB1D47
+    // Broiler-Human: PENDING
     public override int GetHashCode()
     {
         // FNV-1a over the canonical bytes. It is a bucketing hash, not an authentication tag, and
@@ -189,6 +221,8 @@ public sealed class VmCatalogIdentity : System.IEquatable<VmCatalogIdentity>
 public sealed class VmCatalogBuilder
 {
     /// <summary>The most entries one catalog may hold.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s8; IP=None; Security=Medium; Resources=0; Fingerprint=71475F
+    // Broiler-Human: PENDING
     public const int MaximumEntries = 64;
 
     private readonly System.Collections.Generic.List<VmProfileDescriptor> entries = new();
@@ -203,6 +237,8 @@ public sealed class VmCatalogBuilder
     /// composition root reads as the list of profiles it contains.
     /// </summary>
     /// <exception cref="VmCatalogValidationException">The descriptor is not admissible.</exception>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s8; IP=Low; Security=Low; Resources=3; Fingerprint=2E826D
+    // Broiler-Human: PENDING
     public VmCatalogBuilder Add(VmProfileDescriptor descriptor)
     {
         if (consumed)
@@ -232,6 +268,8 @@ public sealed class VmCatalogBuilder
 
     /// <summary>Builds the immutable catalog and consumes the builder.</summary>
     /// <exception cref="VmCatalogValidationException">A set-level rule is violated.</exception>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s8; IP=Low; Security=Low; Resources=4; Fingerprint=0206FF
+    // Broiler-Human: PENDING
     public VmCatalog Build()
     {
         if (consumed)
@@ -288,6 +326,8 @@ public sealed class VmCatalog
     private readonly VmProfileDescriptor[] entries;
     private readonly VmProfileCatalogListing listing;
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s11; IP=Low; Security=Low; Resources=4; Fingerprint=0C5078
+    // Broiler-Human: PENDING
     internal VmCatalog(VmProfileDescriptor[] orderedEntries)
     {
         entries = orderedEntries;
@@ -304,6 +344,8 @@ public sealed class VmCatalog
     }
 
     /// <summary>Starts a new builder.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C51251
+    // Broiler-Human: PENDING
     public static VmCatalogBuilder CreateBuilder() => new();
 
     /// <summary>How many profiles this catalog contains.</summary>
@@ -316,6 +358,8 @@ public sealed class VmCatalog
     /// Looks up one profile by exact ordinal identity. There is no folded lookup: folding is the
     /// uniqueness rule, and applying it here would let two spellings select one entry.
     /// </summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=Low; Resources=3; Fingerprint=DF4A94
+    // Broiler-Human: PENDING
     public bool TryGetEntry(VmProfileId profileId, out VmProfileCatalogEntry entry)
     {
         for (var index = 0; index < entries.Length; index++)
@@ -337,6 +381,8 @@ public sealed class VmCatalog
     /// </summary>
     public VmProfileCatalogListing GetListing() => listing;
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=Medium; Resources=3; Fingerprint=9DCDE6
+    // Broiler-Human: PENDING
     internal bool TryGetDescriptor(VmProfileId profileId, out VmProfileDescriptor descriptor)
     {
         for (var index = 0; index < entries.Length; index++)

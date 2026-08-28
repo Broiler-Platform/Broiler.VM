@@ -10,13 +10,14 @@ witnesses are types compiled into the test assembly rather than files - `Dynamic
 for B5, `PublicSurfaceLeakWitness` for B4, `ModuleInitializerWitness` for B5b and
 `ProfileCatalogWitness.BuiltInProfiles` for B7 - because those rules read compiled metadata and a
 project file cannot express what they look for. The fixture records under `adr/` are the group E
-witnesses, and the fixture review documents under `review/` are the group H ones - those are one
-per CLAUSE rather than one per rule, and `review/README.md` says why.
+witnesses, the fixture review documents under `review/` are the group H ones, and the fixture
+sources and report fragments under `assurance/` are the group J ones - the last two are one per
+CLAUSE rather than one per rule, and `review/README.md` and `assurance/README.md` say why.
 
 `RuleRegisterTests` holds the register and this directory to each other: every Active rule must
 name a witness that resolves to a file here or to a type in the test assembly, and no witness
 file may sit unnamed by a rule anywhere under this directory - the orphan check recurses over
-`*.witness`, so `adr/` and `review/` are covered as well as this level. That check compares
+`*.witness`, so `adr/`, `review/` and `assurance/` are covered as well as this level. That check compares
 whole paths. Asking instead whether some row's witness field *contained* the file name made
 every orphan whose name is a suffix of a named witness invisible, and the realistic orphan is
 exactly that: a witness renamed to carry its rule prefix, the register updated, and the old file

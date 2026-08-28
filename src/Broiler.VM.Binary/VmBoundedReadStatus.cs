@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   0
+// Annotated:        0/0
+// Exempt:           0
+// Human-reviewed:   0/0
+// IP risk:          not assessed
+// Security risk:    not assessed
+// Resource impact:  not assessed
+// Unverified:       0
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>

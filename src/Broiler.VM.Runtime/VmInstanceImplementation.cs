@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   17
+// Annotated:        17/17
+// Exempt:           3
+// Human-reviewed:   0/17
+// IP risk:          Low
+// Security risk:    Medium
+// Resource impact:  5/10 max
+// Unverified:       17
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>The runtime's implementation of an instance.</summary>
@@ -27,6 +43,8 @@ internal sealed class VmInstanceImplementation : VmInstance
     private VmInstanceState currentState = VmInstanceState.Live;
     private VmOperation? active;
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0004; IP=Low; Security=Low; Resources=1; Fingerprint=17A728
+    // Broiler-Human: PENDING
     internal VmInstanceImplementation(
         VmRuntime runtime,
         VmProfileDescriptor profile,
@@ -59,6 +77,8 @@ internal sealed class VmInstanceImplementation : VmInstance
     public override VmProfileId ProfileId => profile.ProfileId;
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0004; IP=Low; Security=Low; Resources=0; Fingerprint=D103C9
+    // Broiler-Human: PENDING
     public override VmInstanceState State
     {
         get
@@ -71,12 +91,16 @@ internal sealed class VmInstanceImplementation : VmInstance
     }
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=F1A56E
+    // Broiler-Human: PENDING
     public override VmInvocationResult Invoke(
         in VmInvocationRequest request,
         System.Threading.CancellationToken cancellationToken) =>
         Invoke(in request, cancellationToken, out _);
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=250702
+    // Broiler-Human: PENDING
     public override VmInvocationResult Invoke(
         in VmInvocationRequest request,
         System.Threading.CancellationToken cancellationToken,
@@ -134,6 +158,8 @@ internal sealed class VmInstanceImplementation : VmInstance
     }
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=0; Fingerprint=C860A4
+    // Broiler-Human: PENDING
     public override VmControlResult RequestCancel()
     {
         VmOperation? operation;
@@ -147,6 +173,8 @@ internal sealed class VmInstanceImplementation : VmInstance
     }
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=2; Fingerprint=7E9A92
+    // Broiler-Human: PENDING
     public override VmControlResult Dispose()
     {
         VmOperation? operation;
@@ -186,6 +214,8 @@ internal sealed class VmInstanceImplementation : VmInstance
         return VmControlResult.Accepted;
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=5; Fingerprint=41155D
+    // Broiler-Human: PENDING
     internal VmResumeResult ResumeOperation(VmOperation operation, IVmProfileContinuation continuation)
     {
         lock (gate)
@@ -245,6 +275,8 @@ internal sealed class VmInstanceImplementation : VmInstance
     /// this method: the ceiling-class dimensions are released, and the allowance-class ones are
     /// deliberately not, because an allowance never refunds.
     /// </remarks>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=F871C8
+    // Broiler-Human: PENDING
     private void ReleaseRetained()
     {
         foreach (var dimension in VmBudgetDimensions.All)
@@ -276,6 +308,8 @@ internal sealed class VmInstanceImplementation : VmInstance
         }
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=4; Fingerprint=1103B7
+    // Broiler-Human: PENDING
     internal void Unwind(IVmProfileContinuation continuation)
     {
         // The tighter of the profile's declared abandon budget and the runtime's unwind budget. A
@@ -295,6 +329,8 @@ internal sealed class VmInstanceImplementation : VmInstance
         }
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=D5B463
+    // Broiler-Human: PENDING
     private VmInvocationResult RunInvocation(VmOperation operation, in VmInvocationRequest request)
     {
         VmExecutionStep step;
@@ -326,6 +362,8 @@ internal sealed class VmInstanceImplementation : VmInstance
         return Finish(operation, MapInvocation(operation, step));
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0005; IP=Low; Security=Medium; Resources=1; Fingerprint=BA495C
+    // Broiler-Human: PENDING
     private VmInvocationResult MapInvocation(VmOperation operation, VmExecutionStep step)
     {
         // The frozen precedence order, which is one order for every stage: invalid state,
@@ -428,6 +466,8 @@ internal sealed class VmInstanceImplementation : VmInstance
         }
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0005; IP=Low; Security=Medium; Resources=1; Fingerprint=E51974
+    // Broiler-Human: PENDING
     private VmResumeResult MapResume(VmOperation operation, VmExecutionStep step)
     {
         // The same frozen precedence as the invocation stage; it is one order for every stage.
@@ -526,6 +566,8 @@ internal sealed class VmInstanceImplementation : VmInstance
     /// foreign payload is dropped rather than passed on, so a profile cannot smuggle one profile's
     /// value out through another profile's result.
     /// </remarks>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0005; IP=Low; Security=Medium; Resources=0; Fingerprint=833B3C
+    // Broiler-Human: PENDING
     private IVmProfilePayload? ValidatePayload(IVmProfilePayload? payload)
     {
         if (payload is null)
@@ -544,12 +586,16 @@ internal sealed class VmInstanceImplementation : VmInstance
         return payload;
     }
 
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=124DB5
+    // Broiler-Human: PENDING
     private VmInvocationResult Finish(VmOperation operation, VmInvocationResult result)
     {
         Settle(operation, result.Outcome);
         return result;
     }
 
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=FDD7DE
+    // Broiler-Human: PENDING
     private VmResumeResult Finish(VmOperation operation, VmResumeResult result)
     {
         Settle(operation, result.Outcome);
@@ -573,6 +619,8 @@ internal sealed class VmInstanceImplementation : VmInstance
     /// An invalid state leaves the instance unchanged, because the call never entered the profile.
     /// </para>
     /// </remarks>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=0; Fingerprint=4158B6
+    // Broiler-Human: PENDING
     private void Settle(VmOperation operation, VmOutcome outcome)
     {
         if (outcome is VmOutcome.Suspension)
@@ -615,6 +663,8 @@ internal sealed class VmInstanceImplementation : VmInstance
         }
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=0; Fingerprint=D4AF06
+    // Broiler-Human: PENDING
     private bool TryAdmit(out VmReason failure)
     {
         switch (currentState)

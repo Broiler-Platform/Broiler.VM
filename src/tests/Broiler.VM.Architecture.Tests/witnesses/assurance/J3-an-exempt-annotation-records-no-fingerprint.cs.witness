@@ -1,0 +1,27 @@
+// Witness for rule J3: the per-unit escape hatch records no fingerprint, and must not be
+// required to.
+//
+// The specification documents `// Broiler-AI: EXEMPT=<reason>` for what the predicate cannot see,
+// J1 witnesses it being accepted, and J3's fingerprint comparison deliberately tolerates the
+// missing value. The well-formedness assertion beside that comparison used to apply to every
+// annotated unit unconditionally and rejected exactly this shape, which made the documented hatch
+// unusable anywhere in the product tree. The two are held consistent here.
+
+namespace Probe;
+
+public sealed class Hatched
+{
+    // Broiler-AI:    EXEMPT=Generated marshalling shim - reviewed at the generator
+    // Broiler-Human: PENDING
+    public int Shim(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            total += value;
+        }
+
+        return total;
+    }
+}

@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   4
+// Annotated:        4/4
+// Exempt:           0
+// Human-reviewed:   0/4
+// IP risk:          Low
+// Security risk:    Medium
+// Resource impact:  3/10 max
+// Unverified:       4
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>
@@ -20,6 +36,8 @@ namespace Broiler.VM;
 /// </remarks>
 internal static class VmCeilingResolution
 {
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=3; Fingerprint=21E56B
+    // Broiler-Human: PENDING
     internal static bool TryResolve(
         VmCatalog catalog,
         VmRuntimeCreationOptions options,
@@ -70,6 +88,8 @@ internal static class VmCeilingResolution
         return true;
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=3; Fingerprint=2C6D3D
+    // Broiler-Human: PENDING
     private static bool TryResolveOne(
         VmCatalog catalog,
         VmRuntimeCreationOptions options,
@@ -145,6 +165,8 @@ internal static class VmCeilingResolution
         return true;
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=3; Fingerprint=64F4F2
+    // Broiler-Human: PENDING
     private static ulong TightestProfileDefault(VmCatalog catalog, VmBudgetDimension dimension)
     {
         var tightest = ulong.MaxValue;
@@ -165,6 +187,8 @@ internal static class VmCeilingResolution
         return catalog.Count == 0 ? 0 : tightest;
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=3; Fingerprint=B31B66
+    // Broiler-Human: PENDING
     private static ulong TightestProfileMaximum(VmCatalog catalog, VmBudgetDimension dimension)
     {
         var tightest = ulong.MaxValue;

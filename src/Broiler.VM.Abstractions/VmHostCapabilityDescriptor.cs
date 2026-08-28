@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   7
+// Annotated:        7/7
+// Exempt:           28
+// Human-reviewed:   0/7
+// IP risk:          Low
+// Security risk:    Medium
+// Resource impact:  3/10 max
+// Unverified:       7
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>What a host capability answers with.</summary>
@@ -154,6 +170,8 @@ public readonly struct VmHostCapabilityDescriptor : System.IEquatable<VmHostCapa
     public VmExceptionTranslation ExceptionTranslation { get; }
 
     /// <summary>Whether every field is present and internally consistent.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=5CE517
+    // Broiler-Human: PENDING
     public bool IsWellFormed =>
         !CapabilityId.IsEmpty &&
         Version >= 1 &&
@@ -166,6 +184,8 @@ public readonly struct VmHostCapabilityDescriptor : System.IEquatable<VmHostCapa
           Reentrancy is VmCapabilityReentrancy.ReentrantIntoInvokingRuntime);
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=7AE32A
+    // Broiler-Human: PENDING
     public bool Equals(VmHostCapabilityDescriptor other) =>
         CapabilityId.Equals(other.CapabilityId) &&
         Version == other.Version &&
@@ -179,6 +199,8 @@ public readonly struct VmHostCapabilityDescriptor : System.IEquatable<VmHostCapa
     public override bool Equals(object? obj) => obj is VmHostCapabilityDescriptor other && Equals(other);
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=850367
+    // Broiler-Human: PENDING
     public override int GetHashCode() =>
         System.HashCode.Combine(
             CapabilityId, Version, SignatureId, (int)Kind, (int)Reentrancy,
@@ -215,6 +237,8 @@ public readonly struct VmCapabilityImport : System.IEquatable<VmCapabilityImport
     public VmCapabilityImportKind ImportKind { get; }
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=05324A
+    // Broiler-Human: PENDING
     public bool Equals(VmCapabilityImport other) =>
         Descriptor.Equals(other.Descriptor) && ImportKind == other.ImportKind;
 
@@ -222,6 +246,8 @@ public readonly struct VmCapabilityImport : System.IEquatable<VmCapabilityImport
     public override bool Equals(object? obj) => obj is VmCapabilityImport other && Equals(other);
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=3F2523
+    // Broiler-Human: PENDING
     public override int GetHashCode() => System.HashCode.Combine(Descriptor, (int)ImportKind);
 
     /// <summary>Value equality.</summary>
@@ -288,6 +314,8 @@ public readonly struct VmHostSignatureAssumption : System.IEquatable<VmHostSigna
     public bool OptionalImportBound { get; }
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=141740
+    // Broiler-Human: PENDING
     public bool Equals(VmHostSignatureAssumption other) =>
         CapabilityId.Equals(other.CapabilityId) &&
         Version == other.Version &&
@@ -301,6 +329,8 @@ public readonly struct VmHostSignatureAssumption : System.IEquatable<VmHostSigna
     public override bool Equals(object? obj) => obj is VmHostSignatureAssumption other && Equals(other);
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=A24466
+    // Broiler-Human: PENDING
     public override int GetHashCode() =>
         System.HashCode.Combine(
             CapabilityId, Version, SignatureId, (int)Kind, (int)Reentrancy,

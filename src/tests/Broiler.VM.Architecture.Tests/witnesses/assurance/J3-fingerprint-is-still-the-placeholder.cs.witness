@@ -1,0 +1,27 @@
+// Witness for rule J3: the placeholder, still unresolved.
+//
+// TBF is what a developer writes and what the generator replaces. Left in the tree
+// it means the generator has not run, so no recorded fingerprint binds anything.
+
+
+namespace Probe;
+
+public static class Assessed
+{
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=TBF
+    // Broiler-Human: PENDING
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

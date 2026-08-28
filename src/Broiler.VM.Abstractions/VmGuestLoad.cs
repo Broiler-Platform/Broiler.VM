@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   5
+// Annotated:        5/5
+// Exempt:           15
+// Human-reviewed:   0/5
+// IP risk:          Low
+// Security risk:    Medium
+// Resource impact:  7/10 max
+// Unverified:       5
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>Where a verified artifact came from.</summary>
@@ -111,16 +127,22 @@ public readonly ref struct VmArtifactProviderAnswer
     }
 
     /// <summary>The provider supplied an artifact, exactly as a caller would.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1E33DD
+    // Broiler-Human: PENDING
     public static VmArtifactProviderAnswer Provided(
         scoped in VmArtifactDescriptor descriptor,
         System.ReadOnlySpan<byte> payload) =>
         new(VmArtifactProviderAnswerKind.Provided, descriptor, payload, VmReason.None);
 
     /// <summary>The provider declined.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=DC6F85
+    // Broiler-Human: PENDING
     public static VmArtifactProviderAnswer Refused(VmReason reason) =>
         new(VmArtifactProviderAnswerKind.Refused, default, default, reason);
 
     /// <summary>The provider has nothing matching.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1977AB
+    // Broiler-Human: PENDING
     public static VmArtifactProviderAnswer NotFound(VmReason reason) =>
         new(VmArtifactProviderAnswerKind.NotFound, default, default, reason);
 
@@ -163,6 +185,8 @@ public interface IVmArtifactProvider
     int Version { get; }
 
     /// <summary>Answers one request.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=731666
+    // Broiler-Human: PENDING
     VmArtifactProviderAnswer Answer(scoped in VmArtifactRequest request);
 }
 
@@ -182,5 +206,7 @@ public interface IVmArtifactLoadMediator
     /// own immutable verified handle before anything in them runs, nesting relaxes no bound, and
     /// the work is charged to the operation that asked.
     /// </summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=7; Fingerprint=572045
+    // Broiler-Human: PENDING
     VmGuestLoadResult RequestLoad(scoped in VmArtifactRequest request);
 }

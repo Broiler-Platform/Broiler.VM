@@ -107,11 +107,17 @@ public sealed class CoreContractVersionTests
 
         // Every architecture rule an ADR names as "Rule <ID>" must have a register row, or the
         // register has stopped being the authority the evidence bundle quotes.
+        //
+        // The character class is the set of group letters the register uses, and it is widened
+        // whenever a group is added - J for the code-assurance rules here. No record names a J
+        // rule today, so the class does not need J to keep the suite green; it needs J so that
+        // the first record that DOES name one is checked rather than silently skipped, which is
+        // the failure mode a character class has.
         var registered = RegisteredRuleIds();
 
         var unregistered = Adrs
             .SelectMany(static adr => Regex
-                .Matches(adr.Text, @"\bRule (?<id>[A-EHV]\d{1,2}b?)\b")
+                .Matches(adr.Text, @"\bRule (?<id>[A-EHJV]\d{1,2}b?)\b")
                 .Select(match => (adr.FileName, Id: match.Groups["id"].Value)))
             .Where(named => !registered.Contains(named.Id))
             .Select(named => $"{named.FileName} names unregistered {named.Id}")

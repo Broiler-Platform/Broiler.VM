@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   7
+// Annotated:        7/7
+// Exempt:           10
+// Human-reviewed:   0/7
+// IP risk:          Low
+// Security risk:    Medium
+// Resource impact:  2/10 max
+// Unverified:       7
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>
@@ -30,6 +46,8 @@ internal sealed class VmCapabilityBinding
 
     internal IVmArtifactProvider? Provider { get; }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=337303
+    // Broiler-Human: PENDING
     internal bool IsBound => Handler is not null || BytesHandler is not null || Provider is not null;
 }
 
@@ -79,10 +97,14 @@ internal sealed class VmCapabilityInvoker : IVmHostCapabilityInvoker
     public int BindingCount => bindings.Length;
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=B14302
+    // Broiler-Human: PENDING
     public bool IsBound(int bindingIndex) =>
         bindingIndex >= 0 && bindingIndex < bindings.Length && bindings[bindingIndex].IsBound;
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=2; Fingerprint=ECEF69
+    // Broiler-Human: PENDING
     public VmHostCallOutcome Invoke(int bindingIndex, System.ReadOnlySpan<long> arguments, out long result)
     {
         result = 0;
@@ -125,6 +147,8 @@ internal sealed class VmCapabilityInvoker : IVmHostCapabilityInvoker
     }
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=2; Fingerprint=048344
+    // Broiler-Human: PENDING
     public VmHostCallOutcome InvokeBytes(int bindingIndex, VmBytes argument, out VmOpaqueRef result)
     {
         result = default;
@@ -164,6 +188,8 @@ internal sealed class VmCapabilityInvoker : IVmHostCapabilityInvoker
         }
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=C0F568
+    // Broiler-Human: PENDING
     private bool TryEnter(int bindingIndex, out VmCapabilityBinding binding)
     {
         binding = null!;
@@ -195,9 +221,13 @@ internal sealed class VmCapabilityInvoker : IVmHostCapabilityInvoker
         return true;
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=FDBEE7
+    // Broiler-Human: PENDING
     private void Leave(VmCapabilityBinding binding) =>
         owner.LeaveCapability(binding.Import.Descriptor.Reentrancy);
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=FBCA55
+    // Broiler-Human: PENDING
     private VmHostCallOutcome Translate(VmCapabilityBinding binding)
     {
         LastFailure = VmReason.HostCapabilityFaulted;

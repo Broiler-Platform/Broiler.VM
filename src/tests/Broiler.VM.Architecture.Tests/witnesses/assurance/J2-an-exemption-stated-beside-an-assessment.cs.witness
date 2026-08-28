@@ -1,0 +1,27 @@
+// Witness for rule J2: EXEMPT written next to an assessment.
+//
+// A unit is exempt from being assessed or it is assessed. A line claiming both
+// leaves it ambiguous which of the two the reader is being told.
+
+
+namespace Probe;
+
+public static class Assessed
+{
+    // Broiler-AI:    EXEMPT=a generated marshalling shim; IP=Low
+    // Broiler-Human: PENDING
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

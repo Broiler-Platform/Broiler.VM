@@ -1,0 +1,24 @@
+// Witness for rule J2: The resource field is a number, not a word from the risk vocabularies.
+
+
+namespace Probe;
+
+public static class Assessed
+{
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=high; Fingerprint=TBF
+    // Broiler-Human: PENDING
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   16
+// Annotated:        16/16
+// Exempt:           7
+// Human-reviewed:   0/16
+// IP risk:          Low
+// Security risk:    Medium
+// Resource impact:  1/10 max
+// Unverified:       16
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>
@@ -33,6 +49,8 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     private ulong pausedTicks;
     private long pauseStartedAt = -1;
 
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=A6A2A6
+    // Broiler-Human: PENDING
     internal VmMeter(
         object gate,
         VmBudgetLevel invocation,
@@ -83,6 +101,8 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     /// profile that never polled at all, which is the limiting case of breaking the bound rather
     /// than an exemption from it.
     /// </summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=9422B7
+    // Broiler-Human: PENDING
     internal bool UnpolledWorkExceedsBound
     {
         get
@@ -95,6 +115,8 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     }
 
     /// <summary>The invocation level's remaining allowance, for a nested load's request snapshot.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=1; Fingerprint=E3117F
+    // Broiler-Human: PENDING
     internal VmLimitVector RemainingSnapshot
     {
         get
@@ -107,6 +129,8 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     }
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=A8AE14
+    // Broiler-Human: PENDING
     public bool TryCharge(VmBudgetDimension dimension, ulong amount)
     {
         if (!VmBudgetDimensions.IsDefined(dimension))
@@ -166,6 +190,8 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     }
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=86CFE4
+    // Broiler-Human: PENDING
     public bool Poll()
     {
         AccrueWallClock();
@@ -231,6 +257,8 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     /// scope.
     /// </para>
     /// </remarks>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=411C57
+    // Broiler-Human: PENDING
     public void ReportRetained(VmBudgetDimension dimension, ulong amount)
     {
         if (amount == 0)
@@ -260,6 +288,8 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     /// <see cref="ReportRetained"/> guarantees: a retention the parent refused was never committed
     /// locally, so it can never be released from the parent either.
     /// </remarks>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=8030AD
+    // Broiler-Human: PENDING
     public void ReportReleased(VmBudgetDimension dimension, ulong amount)
     {
         if (amount == 0)
@@ -289,20 +319,28 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     }
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=5C88D9
+    // Broiler-Human: PENDING
     bool IVmBoundedAllocationMeter.TryReserve(ulong byteCount) =>
         TryCharge(VmBudgetDimension.AllocatedBytes, byteCount);
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=939F9E
+    // Broiler-Human: PENDING
     void IVmBoundedAllocationMeter.Release(ulong byteCount) =>
         ReportReleased(VmBudgetDimension.AllocatedBytes, byteCount);
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=31B54B
+    // Broiler-Human: PENDING
     bool IVmBoundedAllocationMeter.TryChargeWork(ulong workUnits) =>
         TryCharge(VmBudgetDimension.VerifierWork, workUnits);
 
     /// <inheritdoc/>
     bool IVmBoundedAllocationMeter.Poll() => Poll();
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=1; Fingerprint=536CA8
+    // Broiler-Human: PENDING
     internal VmBudgetSnapshot Snapshot()
     {
         lock (gate)
@@ -311,6 +349,8 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
         }
     }
 
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=7C7769
+    // Broiler-Human: PENDING
     internal void ReplaceCancellation(System.Threading.CancellationToken token) => cancellation = token;
 
     /// <summary>
@@ -321,6 +361,8 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     /// kept accruing would drain a shared parent while doing no work at all, which is the opposite
     /// of what a wall-clock allowance is for.
     /// </remarks>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=076A86
+    // Broiler-Human: PENDING
     internal void PauseWallClock()
     {
         lock (gate)
@@ -332,6 +374,8 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
         }
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=602915
+    // Broiler-Human: PENDING
     internal void ResumeWallClock()
     {
         lock (gate)
@@ -354,6 +398,8 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     /// refusal is latched so the next poll reports it at aggregate scope rather than the parent
     /// silently stalling below its own ceiling.
     /// </remarks>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=956ADA
+    // Broiler-Human: PENDING
     private void AccrueWallClock()
     {
         ulong elapsed;
@@ -393,6 +439,8 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
         }
     }
 
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=335330
+    // Broiler-Human: PENDING
     private bool Refuse(VmBudgetDimension dimension, VmBudgetScope scope)
     {
         FailedDimension = dimension;

@@ -1,0 +1,30 @@
+// Witness for rule J1: a const and a static readonly field with an initializer are code units.
+//
+// Both of these are budgets. Neither was a unit under the earlier scanner, which enumerated only
+// the members that can carry a body, so either could be multiplied by sixteen with no annotation
+// to move and no fingerprint to invalidate - while the method that READS the constant went on
+// asserting the fingerprint of the version that was assessed.
+//
+// The two fields at the bottom are the other half: a plain instance field declares storage and
+// decides nothing, so it is not a unit at all, and this is not a rule about every field.
+
+namespace Probe;
+
+public sealed class Budgeted
+{
+    public const int MaximumEntries = 64;
+
+    public static readonly int[] Widths = [1, 2, 4];
+
+    private readonly int used;
+
+    private int mutable;
+
+    public int Used => used;
+
+    public int Mutable
+    {
+        get { return mutable; }
+        set { mutable = value; }
+    }
+}

@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   2
+// Annotated:        2/2
+// Exempt:           0
+// Human-reviewed:   0/2
+// IP risk:          Low
+// Security risk:    High
+// Resource impact:  8/10 max
+// Unverified:       2
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>
@@ -31,6 +47,8 @@ public static class VmBoundedAllocator
     /// Allocates an array of <paramref name="declaredCount"/> elements, refusing if the count
     /// exceeds its bound or the meter will not reserve the bytes.
     /// </summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007 s6; IP=Low; Security=High; Resources=7; Fingerprint=630EF7
+    // Broiler-Human: PENDING
     public static bool TryAllocate<T>(
         in VmReadBounds bounds,
         IVmBoundedAllocationMeter meter,
@@ -77,6 +95,8 @@ public static class VmBoundedAllocator
     /// enforcing that here means a profile cannot reach the meter with a number the read bounds
     /// already exclude.
     /// </remarks>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007 s6; IP=Low; Security=High; Resources=8; Fingerprint=5185F6
+    // Broiler-Human: PENDING
     public static bool TryAllocateExact<T>(
         in VmReadBounds bounds,
         IVmBoundedAllocationMeter meter,

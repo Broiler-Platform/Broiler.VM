@@ -1,0 +1,131 @@
+# Broiler.VM Code Assurance
+
+GENERATED - DO NOT EDIT MANUALLY. Regenerate with
+`BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release`, which rewrites this file
+and every generated source header from the annotations in the product tree.
+
+**Nothing in this component has been reviewed by a human.** This report records that
+absence precisely. It is not a claim that the code is reviewed, assured or safe, and the
+figures below are the measurement of how far from that claim the component is.
+
+## Summary
+
+| Metric | Value |
+|---|---:|
+| Files scanned | 45 |
+| Files carrying an annotation | 44 |
+| Code units | 1034 |
+| Relevant | 496 |
+| Exempt by predicate | 538 |
+| Annotated | 496 of 496 (100%) |
+| Human reviewed | 0 of 496 (0%) |
+| Unverified | 496 |
+
+## Review states
+
+| State | Count |
+|---|---:|
+| NEW | 0 |
+| AI_ASSESSED | 0 |
+| HUMAN_PENDING | 496 |
+| HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
+| VERIFIED | 0 |
+| STALE | 0 |
+| EXEMPT | 538 |
+
+## IP risk
+
+| Value | Units |
+|---|---:|
+| None | 19 |
+| Low | 477 |
+| Medium | 0 |
+| High | 0 |
+| Unknown | 0 |
+| *not annotated* | 0 |
+
+## Security risk
+
+| Value | Units |
+|---|---:|
+| None | 2 |
+| Low | 279 |
+| Medium | 184 |
+| High | 31 |
+| Critical | 0 |
+| *not annotated* | 0 |
+
+## Resource impact
+
+| Metric | Value |
+|---|---:|
+| Maximum | 8 / 10 |
+| Average over annotated units | 1.0 / 10 |
+| Units scored | 496 |
+
+## High-security review areas
+
+- `Broiler.VM.IVmProfileVerifier.Verify(in VmArtifactDescriptor, System.ReadOnlySpan<byte>, IVmVerificationContext, System.Threading.CancellationToken)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmProfileId.TryParse(System.ReadOnlySpan<char>, out VmProfileId)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmProfileId.Parse(System.ReadOnlySpan<char>)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmProfileId.TryValidateGrammar(System.ReadOnlySpan<char>, int, int, int, int, out byte)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmProfileId.TryValidate(System.ReadOnlySpan<char>, out byte)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmProfileId.IsAsciiLetter(char)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmProfileId.IsAsciiAlphanumeric(char)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.IVmBoundedAllocationMeter.TryReserve(ulong)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.IVmBoundedAllocationMeter.TryChargeWork(ulong)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedAllocator.TryAllocate<T>(in VmReadBounds, IVmBoundedAllocationMeter, uint, out T[])` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedAllocator.TryAllocateExact<T>(in VmReadBounds, IVmBoundedAllocationMeter, ulong, out T[])` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.VmBoundedReader(System.ReadOnlySpan<byte>, in VmReadBounds, IVmBoundedAllocationMeter)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.Remaining` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryReadByte(out byte)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryReadUInt32LittleEndian(out uint)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryReadUInt64LittleEndian(out ulong)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryReadVarUInt32(out uint)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryReadVarUInt64(out ulong)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryReadDeclaredCount(out uint)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryReadBytes(ulong, out System.ReadOnlySpan<byte>)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryEnterSection(ulong, out VmSectionFrame)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryExitSection(in VmSectionFrame)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TrySkipSectionBody(in VmSectionFrame)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryChargeWork(ulong)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryTake(ulong, out System.ReadOnlySpan<byte>)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryConsume(ulong)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryReadVarUInt64Core(int, out ulong)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.ChargeWork(ulong)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmRuntime.Verify(in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmRuntime.VerifyCore(in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken, VmDiagnostics, VmArtifactOrigin, VmMeter?)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmRuntime.RunVerifier(VmProfileDescriptor, in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken, VmDiagnostics, VmArtifactOrigin, VmMeter?)` - Security=High, state HUMAN_PENDING
+
+## Exemption
+
+Exemption is decided by one predicate in `AssuranceScanner.ExemptionFor`, not per unit, so
+that the rule is reviewable in one place rather than in several hundred.
+
+| Case | Units |
+|---|---:|
+| TrivialPropertyOrAccessor | 339 |
+| ParameterAssigningConstructor | 63 |
+| TrivialExpressionBodiedMember | 17 |
+| CompilerSuppliedRecordOrEnumMember | 0 |
+| DelegatingOverrideOrOperator | 119 |
+| InsideAssemblyMarker | 0 |
+| DeclaredInSource | 0 |
+
+## Verification
+
+There is no CI lane in this component - exclusion EX-45 records one RID, one machine and no
+CI - so no external process compels this check. The generator and the gate are the same
+code, run as a test in the architecture suite:
+
+| Mode | Command | Effect |
+|---|---|---|
+| Generate | `BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release` | Fills every `Fingerprint=TBF`, refreshes a review the code has outrun into `STALE; Previous=...`, rewrites the generated headers and this file. |
+| Gate | `dotnet test Broiler.VM.slnx -c Release` | Asserts every generated artefact is byte-identical to what the generator would produce. This is the mode a reviewer and a release run. |
+
+The fingerprint is six hex characters - 24 bits - of SHA-256 over the declaration's token
+texts, joined by single spaces. Trivia is excluded because a token's text is its own
+characters and never the comments or whitespace around it, so `dotnet format` moves no
+fingerprint and an annotation is never part of what it describes. The value answers whether a
+unit changed since it was reviewed. It is not a collision-free identifier across units and it
+is not a cryptographic commitment.

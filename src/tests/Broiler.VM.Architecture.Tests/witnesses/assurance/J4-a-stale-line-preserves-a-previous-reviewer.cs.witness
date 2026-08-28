@@ -1,0 +1,28 @@
+// Witness for rule J4: a reviewer preserved as history rather than as an approval.
+//
+// Previous= is not a live approval and J3 accepts it. J4 reports it anyway, because
+// its clause is about this component: a Previous here would say a human once
+// reviewed this code, and none ever has.
+
+
+namespace Probe;
+
+public static class Assessed
+{
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=TBF
+    // Broiler-Human: STALE; Previous=WITNESS-ONLY@112233
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

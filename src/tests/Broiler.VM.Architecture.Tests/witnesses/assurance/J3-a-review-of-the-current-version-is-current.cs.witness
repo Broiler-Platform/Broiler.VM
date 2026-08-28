@@ -1,0 +1,28 @@
+// Witness for rule J3: the accepted direction - a human fingerprint that is current.
+//
+// Nothing in Broiler.VM is in this state and nothing may be put into it by anything
+// but a human, which is rule J4's subject. J3's subject is narrower: given a line
+// that names a version, is it this version. Here it is, and J3 must say nothing.
+
+
+namespace Probe;
+
+public static class Assessed
+{
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=44EBF3
+    // Broiler-Human: WITNESS-ONLY; Fingerprint=44EBF3
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

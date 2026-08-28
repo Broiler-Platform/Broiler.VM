@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   1
+// Annotated:        1/1
+// Exempt:           8
+// Human-reviewed:   0/1
+// IP risk:          Low
+// Security risk:    Low
+// Resource impact:  0/10 max
+// Unverified:       1
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>
@@ -29,6 +45,8 @@ public readonly struct VmSectionFrame : System.IEquatable<VmSectionFrame>
     public uint Depth { get; }
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=9B82EE
+    // Broiler-Human: PENDING
     public bool Equals(VmSectionFrame other) =>
         Start == other.Start && DeclaredLength == other.DeclaredLength && Depth == other.Depth;
 

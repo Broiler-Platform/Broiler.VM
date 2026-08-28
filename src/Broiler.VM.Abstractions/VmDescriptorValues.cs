@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   5
+// Annotated:        5/5
+// Exempt:           13
+// Human-reviewed:   0/5
+// IP risk:          Low
+// Security risk:    Low
+// Resource impact:  1/10 max
+// Unverified:       5
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>
@@ -121,6 +137,8 @@ public sealed class VmGuestLoadDeclaration
         new(VmDeclaration.NotDeclared, 0, VmGuestLoadBounds.None, 0);
 
     /// <summary>The declaration of a profile that may request code while executing.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1E6369
+    // Broiler-Human: PENDING
     public static VmGuestLoadDeclaration Declared(
         int minimumProviderCapabilityVersion,
         VmGuestLoadBounds profileHardMaxima,
@@ -144,6 +162,8 @@ public sealed class VmGuestLoadDeclaration
     public uint VerifierWorkToFuelRate { get; }
 
     /// <summary>Whether a declared declaration carries every part it must.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=AADA84
+    // Broiler-Human: PENDING
     public bool IsWellFormed =>
         Kind is VmDeclaration.NotDeclared
             ? MinimumProviderCapabilityVersion == 0 &&
@@ -179,13 +199,19 @@ public readonly struct VmPayloadKindIdRange : System.IEquatable<VmPayloadKindIdR
     public int MaxInclusive { get; }
 
     /// <summary>True when the range is non-empty and does not start below zero.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=4DED19
+    // Broiler-Human: PENDING
     public bool IsWellFormed => MinInclusive >= 0 && MinInclusive <= MaxInclusive;
 
     /// <summary>Whether <paramref name="payloadKindId"/> lies in the range.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=FF4A8F
+    // Broiler-Human: PENDING
     public bool Contains(int payloadKindId) =>
         payloadKindId >= MinInclusive && payloadKindId <= MaxInclusive;
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=3F9751
+    // Broiler-Human: PENDING
     public bool Equals(VmPayloadKindIdRange other) =>
         MinInclusive == other.MinInclusive && MaxInclusive == other.MaxInclusive;
 

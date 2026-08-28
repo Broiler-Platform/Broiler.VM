@@ -1,0 +1,22 @@
+// Witness for rule J1: a constructor that assigns its parameters to the WRONG members.
+//
+// Every assignment has a parameter of the constructor on its right, which is all the earlier
+// exemption predicate asked for, so the whole constructor read as a trivial parameter-assigning
+// one. The two ceilings are exchanged: MaxSectionCount ends up holding the declared-count bound
+// and every bounded read performed under this vector is bounded by the wrong number. That is a
+// decision, exemption case 2 must not reach it, and the coverage clause must name it.
+
+namespace Probe;
+
+public readonly struct Permuted
+{
+    public Permuted(ulong maxSectionCount, ulong maxDeclaredCount)
+    {
+        MaxSectionCount = maxDeclaredCount;
+        MaxDeclaredCount = maxSectionCount;
+    }
+
+    public ulong MaxSectionCount { get; }
+
+    public ulong MaxDeclaredCount { get; }
+}

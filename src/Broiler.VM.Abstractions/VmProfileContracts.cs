@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   25
+// Annotated:        25/25
+// Exempt:           28
+// Human-reviewed:   0/25
+// IP risk:          Low
+// Security risk:    High
+// Resource impact:  0/10 max
+// Unverified:       25
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>
@@ -21,18 +37,26 @@ public interface IVmMeter
     /// Charges <paramref name="amount"/> against <paramref name="dimension"/>. Returns
     /// <see langword="false"/> when the allowance or ceiling will not admit it.
     /// </summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=76973E
+    // Broiler-Human: PENDING
     bool TryCharge(VmBudgetDimension dimension, ulong amount);
 
     /// <summary>
     /// One combined budget and cancellation check. <see langword="false"/> means stop. A profile
     /// calls it at least as often as its declared uncharged-work bound requires.
     /// </summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=84FB1F
+    // Broiler-Human: PENDING
     bool Poll();
 
     /// <summary>Reports that the profile is now retaining <paramref name="amount"/> more.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=49758B
+    // Broiler-Human: PENDING
     void ReportRetained(VmBudgetDimension dimension, ulong amount);
 
     /// <summary>Reports that the profile has released <paramref name="amount"/>.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F76A84
+    // Broiler-Human: PENDING
     void ReportReleased(VmBudgetDimension dimension, ulong amount);
 }
 
@@ -99,6 +123,8 @@ public interface IVmVerificationContext
     System.Collections.Immutable.ImmutableArray<VmHostCapabilityDescriptor> RegisteredCapabilities { get; }
 
     /// <summary>Looks up one registered capability shape by identity and exact version.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s6; IP=Low; Security=Medium; Resources=0; Fingerprint=7EDEF8
+    // Broiler-Human: PENDING
     bool TryGetCapabilityDescriptor(
         VmCapabilityId capabilityId,
         int version,
@@ -118,6 +144,8 @@ public interface IVmVerificationContext
 /// </remarks>
 public readonly struct VmVerifierOutcome
 {
+    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s5; IP=Low; Security=Medium; Resources=0; Fingerprint=487D97
+    // Broiler-Human: PENDING
     private VmVerifierOutcome(
         VmOutcome category,
         VmReason reason,
@@ -142,6 +170,8 @@ public readonly struct VmVerifierOutcome
     /// The artifact verified. <paramref name="narrowedSharing"/> may narrow the descriptor's
     /// declared sharing and may never widen it, which the core checks rather than trusts.
     /// </summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s5; IP=Low; Security=Medium; Resources=0; Fingerprint=D95005
+    // Broiler-Human: PENDING
     public static VmVerifierOutcome Verified(IVmVerifiedState state, VmArtifactSharing narrowedSharing) =>
         new(VmOutcome.Normal, VmReason.NormalCompleted, state, narrowedSharing, 0, default,
             VmBudgetDimension.Fuel, VmBudgetScope.Artifact);
@@ -150,11 +180,15 @@ public readonly struct VmVerifierOutcome
     /// The verifier does not host the identity it was handed. It is a distinct answer from a
     /// malformed payload.
     /// </summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s5; IP=Low; Security=Low; Resources=0; Fingerprint=11657D
+    // Broiler-Human: PENDING
     public static VmVerifierOutcome UnsupportedProfile() =>
         new(VmOutcome.UnsupportedProfile, VmReason.ProfileNotInCatalog, null,
             VmArtifactSharing.RuntimeScoped, 0, default, VmBudgetDimension.Fuel, VmBudgetScope.Artifact);
 
     /// <summary>The bytes are not a well-formed artifact of this profile and format version.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s5; IP=Low; Security=Low; Resources=0; Fingerprint=C7F217
+    // Broiler-Human: PENDING
     public static VmVerifierOutcome InvalidArtifact(
         VmReason reason,
         int profileDiagnosticCode,
@@ -163,11 +197,15 @@ public readonly struct VmVerifierOutcome
             profileDiagnosticCode, position, VmBudgetDimension.Fuel, VmBudgetScope.Artifact);
 
     /// <summary>Verification ran out of a named allowance in a named scope.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s5; IP=Low; Security=Low; Resources=0; Fingerprint=161DFE
+    // Broiler-Human: PENDING
     public static VmVerifierOutcome ResourceExhaustion(VmBudgetDimension dimension, VmBudgetScope scope) =>
         new(VmOutcome.ResourceExhaustion, VmReason.AllowanceExhausted, null,
             VmArtifactSharing.RuntimeScoped, 0, default, dimension, scope);
 
     /// <summary>A cancellation request was observed at a polling point.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s5; IP=Low; Security=Low; Resources=0; Fingerprint=F6446E
+    // Broiler-Human: PENDING
     public static VmVerifierOutcome Cancellation() =>
         new(VmOutcome.Cancellation, VmReason.Cancelled, null, VmArtifactSharing.RuntimeScoped,
             0, default, VmBudgetDimension.Fuel, VmBudgetScope.Artifact);
@@ -232,6 +270,8 @@ public interface IVmProfileVerifier
     int VerifierSemanticVersion { get; }
 
     /// <summary>Verifies <paramref name="payload"/> against <paramref name="descriptor"/>.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s6; IP=Low; Security=High; Resources=0; Fingerprint=ED6BA8
+    // Broiler-Human: PENDING
     VmVerifierOutcome Verify(
         in VmArtifactDescriptor descriptor,
         System.ReadOnlySpan<byte> payload,
@@ -261,6 +301,8 @@ public interface IVmExecutionEnvironment
     /// The mediator, for a declaring profile in a composition that registered a provider. False
     /// means there is no path to further code from here, and that is the whole of the refusal.
     /// </summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=647389
+    // Broiler-Human: PENDING
     bool TryGetArtifactLoadMediator(out IVmArtifactLoadMediator mediator);
 }
 
@@ -279,12 +321,18 @@ public interface IVmHostCapabilityInvoker
     int BindingCount { get; }
 
     /// <summary>Whether slot <paramref name="bindingIndex"/> is bound.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=3130A9
+    // Broiler-Human: PENDING
     bool IsBound(int bindingIndex);
 
     /// <summary>Invokes a value capability with integer arguments.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=9A9BBB
+    // Broiler-Human: PENDING
     VmHostCallOutcome Invoke(int bindingIndex, System.ReadOnlySpan<long> arguments, out long result);
 
     /// <summary>Invokes a value capability with a byte argument, receiving an opaque reference.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=CB9CEE
+    // Broiler-Human: PENDING
     VmHostCallOutcome InvokeBytes(int bindingIndex, VmBytes argument, out VmOpaqueRef result);
 }
 
@@ -312,18 +360,26 @@ public readonly struct VmExecutionStep
     }
 
     /// <summary>The step completed, optionally producing a typed payload.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=6AA8B9
+    // Broiler-Human: PENDING
     public static VmExecutionStep Completed(IVmProfilePayload? payload) =>
         new(VmExecutionStepKind.Completed, null, null, payload, VmReason.None);
 
     /// <summary>Instantiation completed and produced the instance's profile-owned state.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=5EFEAD
+    // Broiler-Human: PENDING
     public static VmExecutionStep Instantiated(IVmInstanceState state, IVmProfilePayload? payload) =>
         new(VmExecutionStepKind.Instantiated, state, null, payload, VmReason.None);
 
     /// <summary>The step parked, handing the core a continuation to resume from.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1BD1D2
+    // Broiler-Human: PENDING
     public static VmExecutionStep Suspended(IVmProfileContinuation continuation, IVmProfilePayload? projection) =>
         new(VmExecutionStepKind.Suspended, null, continuation, projection, VmReason.None);
 
     /// <summary>The step ended in a language-defined fault, carried as a typed payload.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=89FCD9
+    // Broiler-Human: PENDING
     public static VmExecutionStep Faulted(IVmProfilePayload? payload) =>
         new(VmExecutionStepKind.Faulted, null, null, payload, VmReason.None);
 
@@ -331,6 +387,8 @@ public readonly struct VmExecutionStep
     /// The profile violated its own declared contract. It is a separate answer from a language
     /// fault so that a defect in the profile is never reported as a defect in the guest program.
     /// </summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=CF0528
+    // Broiler-Human: PENDING
     public static VmExecutionStep ContractViolation(VmReason reason) =>
         new(VmExecutionStepKind.ContractViolation, null, null, null, reason);
 
@@ -384,17 +442,23 @@ public interface IVmProfileExecutor
     VmProfileId ProfileId { get; }
 
     /// <summary>Instantiates profile-owned mutable state from a verified artifact.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=B853C0
+    // Broiler-Human: PENDING
     VmExecutionStep Instantiate(
         VmVerifiedArtifact artifact,
         System.Threading.CancellationToken cancellationToken);
 
     /// <summary>Invokes an entry point against instance state.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=6A0CE6
+    // Broiler-Human: PENDING
     VmExecutionStep Invoke(
         IVmInstanceState state,
         in VmInvocationRequest request,
         System.Threading.CancellationToken cancellationToken);
 
     /// <summary>Resumes a parked step from its continuation.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F0E5BB
+    // Broiler-Human: PENDING
     VmExecutionStep Resume(
         IVmInstanceState state,
         IVmProfileContinuation continuation,
@@ -405,6 +469,8 @@ public interface IVmProfileExecutor
     /// profile's declared abandon budget and the runtime's unwind budget. A profile that needs no
     /// unwinding leaves it empty and its continuation is dropped deterministically.
     /// </summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F78E9B
+    // Broiler-Human: PENDING
     void Unwind(IVmProfileContinuation continuation, ulong effectiveUnwindAllowance);
 }
 

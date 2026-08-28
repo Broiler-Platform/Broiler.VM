@@ -1,0 +1,27 @@
+// Witness for rule J2: an escape hatch with nothing written in it.
+//
+// EXEMPT with no reason is an exemption nobody can review, which is the one thing
+// the per-unit hatch may not become.
+
+
+namespace Probe;
+
+public static class Assessed
+{
+    // Broiler-AI:    EXEMPT=
+    // Broiler-Human: PENDING
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

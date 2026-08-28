@@ -1,0 +1,24 @@
+// Witness for rule J6: a region the build compiles and a default parse does not.
+//
+// CSharpParseOptions.Default defines no conditional symbol, so this region used to parse as
+// disabled text - which is trivia, which the fingerprint excludes by construction. A declaration
+// inside it shipped in the assembly and was scanned by nothing, and a body could be replaced by a
+// different one that ships while the fingerprint binding the review sat still.
+//
+// Two independent defences answer that. The scanner now parses with the build's symbols, so the
+// method below IS a unit; and this rule forbids the directive outright, so the region cannot be
+// in a covered file in the first place.
+
+namespace Probe;
+
+public static class Conditioned
+{
+#if NET10_0_OR_GREATER
+    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-Human: PENDING
+    public static bool Admit(uint declared)
+    {
+        return declared == 4242u;
+    }
+#endif
+}

@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   18
+// Annotated:        18/18
+// Exempt:           12
+// Human-reviewed:   0/18
+// IP risk:          Low
+// Security risk:    Medium
+// Resource impact:  3/10 max
+// Unverified:       18
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>The identity of one aggregate budget.</summary>
@@ -55,14 +71,20 @@ public readonly struct VmBudgetSnapshot
     public VmBudgetScope Scope { get; }
 
     /// <summary>How much of <paramref name="dimension"/> has been consumed.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=0; Fingerprint=6D7677
+    // Broiler-Human: PENDING
     public ulong Consumed(VmBudgetDimension dimension) =>
         consumed is null ? 0 : consumed[(int)dimension];
 
     /// <summary>The effective ceiling for <paramref name="dimension"/>.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=0; Fingerprint=26CE4B
+    // Broiler-Human: PENDING
     public ulong EffectiveCeiling(VmBudgetDimension dimension) =>
         ceilings is null ? 0 : ceilings[(int)dimension];
 
     /// <summary>How much of <paramref name="dimension"/> remains.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=0; Fingerprint=C6108A
+    // Broiler-Human: PENDING
     public ulong Remaining(VmBudgetDimension dimension)
     {
         var ceiling = EffectiveCeiling(dimension);
@@ -104,6 +126,8 @@ public sealed class VmAggregateBudget : System.IDisposable
     private bool sealedOff;
     private bool disposed;
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=1; Fingerprint=8CF01A
+    // Broiler-Human: PENDING
     private VmAggregateBudget(VmObjectId objectId, ulong[] ceilings)
     {
         Id = new VmAggregateBudgetId(objectId);
@@ -115,6 +139,8 @@ public sealed class VmAggregateBudget : System.IDisposable
     /// be specified; anything else is refused rather than quietly ignored.
     /// </summary>
     /// <exception cref="System.ArgumentException">A non-aggregate dimension was specified, or one was omitted.</exception>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=3; Fingerprint=D42CF2
+    // Broiler-Human: PENDING
     public static VmAggregateBudget Create(
         System.Collections.Immutable.ImmutableArray<VmCeilingSpec> aggregateCeilings)
     {
@@ -170,6 +196,8 @@ public sealed class VmAggregateBudget : System.IDisposable
     /// Spelled with the <c>Value</c> suffix because <c>LiveRuntimeCount</c> is a struck name from an
     /// earlier spelling of the dimension set, and a struck name must appear nowhere.
     /// </remarks>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=0; Fingerprint=031FA5
+    // Broiler-Human: PENDING
     public int LiveRuntimeCountValue
     {
         get
@@ -182,6 +210,8 @@ public sealed class VmAggregateBudget : System.IDisposable
     }
 
     /// <summary>Whether the budget has been sealed against new runtimes.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=0; Fingerprint=E12312
+    // Broiler-Human: PENDING
     public bool IsSealed
     {
         get
@@ -194,6 +224,8 @@ public sealed class VmAggregateBudget : System.IDisposable
     }
 
     /// <summary>Reads consumption and remaining allowance across every aggregate dimension.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=1; Fingerprint=A21258
+    // Broiler-Human: PENDING
     public VmBudgetSnapshot GetSnapshot()
     {
         lock (gate)
@@ -209,6 +241,8 @@ public sealed class VmAggregateBudget : System.IDisposable
     /// Refuses further runtime creation without waiting for anything. Explicit and non-blocking: a
     /// seal that waited would be the queue this type does not have.
     /// </summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=6EC9F5
+    // Broiler-Human: PENDING
     public VmControlResult Seal()
     {
         lock (gate)
@@ -232,6 +266,8 @@ public sealed class VmAggregateBudget : System.IDisposable
     /// Disposes the budget. Refused while child runtimes are live: disposing a parent out from
     /// under its children would leave them metering against a budget that no longer answers.
     /// </summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=F09672
+    // Broiler-Human: PENDING
     public VmControlResult Dispose()
     {
         lock (gate)
@@ -254,6 +290,8 @@ public sealed class VmAggregateBudget : System.IDisposable
     /// <inheritdoc/>
     void System.IDisposable.Dispose() => Dispose();
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=0; Fingerprint=1F59C1
+    // Broiler-Human: PENDING
     internal ulong CeilingFor(VmBudgetDimension dimension)
     {
         lock (gate)
@@ -262,6 +300,8 @@ public sealed class VmAggregateBudget : System.IDisposable
         }
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=A65A69
+    // Broiler-Human: PENDING
     internal ulong RemainingFor(VmBudgetDimension dimension)
     {
         lock (gate)
@@ -272,6 +312,8 @@ public sealed class VmAggregateBudget : System.IDisposable
         }
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=88A3FA
+    // Broiler-Human: PENDING
     internal bool TryAdmitRuntime(out VmReason reason)
     {
         lock (gate)
@@ -317,6 +359,8 @@ public sealed class VmAggregateBudget : System.IDisposable
     /// Only allowances count. A ceiling-class dimension at its limit means the parent is currently
     /// full, not that it is finished, and a live measure can fall again as instances are disposed.
     /// </remarks>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=4C4F14
+    // Broiler-Human: PENDING
     internal bool IsSpent()
     {
         foreach (var dimension in VmBudgetDimensions.All)
@@ -337,6 +381,8 @@ public sealed class VmAggregateBudget : System.IDisposable
     }
 
     /// <summary>Whether the parent still admits work, for the resume admission check.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=A68ABC
+    // Broiler-Human: PENDING
     internal bool AdmitsResumption(out VmReason reason)
     {
         lock (gate)
@@ -358,6 +404,8 @@ public sealed class VmAggregateBudget : System.IDisposable
         }
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=020E98
+    // Broiler-Human: PENDING
     internal void ReleaseRuntime()
     {
         lock (gate)
@@ -373,6 +421,8 @@ public sealed class VmAggregateBudget : System.IDisposable
     /// Charges the parent, or reports which dimension refused. Allowances accumulate and never
     /// refund; ceilings track a live measure and are released through <see cref="Release"/>.
     /// </summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=8D0EF6
+    // Broiler-Human: PENDING
     internal bool TryCharge(VmBudgetDimension dimension, ulong amount)
     {
         if (!VmBudgetDimensions.CarriesAggregateScope(dimension))
@@ -400,6 +450,8 @@ public sealed class VmAggregateBudget : System.IDisposable
         }
     }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=30F5CF
+    // Broiler-Human: PENDING
     internal void Release(VmBudgetDimension dimension, ulong amount)
     {
         if (!VmBudgetDimensions.CarriesAggregateScope(dimension) ||

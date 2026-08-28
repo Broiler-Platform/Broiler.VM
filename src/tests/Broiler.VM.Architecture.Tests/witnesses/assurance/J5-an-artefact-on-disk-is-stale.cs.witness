@@ -1,0 +1,43 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   1
+// Annotated:        1/1
+// Exempt:           0
+// Human-reviewed:   1/1
+// IP risk:          Low
+// Security risk:    Low
+// Resource impact:  3/10 max
+// Unverified:       0
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
+// Witness for rule J5's primary clause: an artefact whose content ON DISK is not what the
+// generator would write there. Every other J5 witness compares a string the test is holding
+// against its own regeneration; this one is written to a real file and read back, so the clause
+// that gates the checkout - desired against what is actually on disk - is exercised rather than
+// described. The header above claims a human review; the annotation below says PENDING.
+
+namespace Probe;
+
+public static class Staled
+{
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=44EBF3
+    // Broiler-Human: PENDING
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

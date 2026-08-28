@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   5
+// Annotated:        5/5
+// Exempt:           4
+// Human-reviewed:   0/5
+// IP risk:          Low
+// Security risk:    High
+// Resource impact:  8/10 max
+// Unverified:       5
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>What a verification is a total function of, and nothing else.</summary>
@@ -25,6 +41,8 @@ internal sealed class VmVerificationContext : IVmVerificationContext
     public System.Collections.Immutable.ImmutableArray<VmHostCapabilityDescriptor> RegisteredCapabilities => shapes;
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=9DE8C1
+    // Broiler-Human: PENDING
     public bool TryGetCapabilityDescriptor(
         VmCapabilityId capabilityId,
         int version,
@@ -55,6 +73,8 @@ internal sealed class VmVerificationContext : IVmVerificationContext
 /// </remarks>
 public sealed partial class VmRuntime
 {
+    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=8; Fingerprint=4166AF
+    // Broiler-Human: PENDING
     internal VmVerificationResult VerifyCore(
         in VmArtifactDescriptor descriptor,
         System.ReadOnlySpan<byte> payload,
@@ -135,6 +155,8 @@ public sealed partial class VmRuntime
         }
     }
 
+    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=8; Fingerprint=543091
+    // Broiler-Human: PENDING
     private VmVerificationResult RunVerifier(
         VmProfileDescriptor profile,
         in VmArtifactDescriptor descriptor,
@@ -272,6 +294,8 @@ public sealed partial class VmRuntime
                 .WithArtifact(artifactId, (ulong)payload.Length, descriptor.CallerIdentity));
     }
 
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=830489
+    // Broiler-Human: PENDING
     private static bool Accepts(VmProfileDescriptor profile, VmFeatureManifestId manifest)
     {
         if (profile.AcceptedFeatureManifests.IsDefault)
@@ -290,6 +314,8 @@ public sealed partial class VmRuntime
         return false;
     }
 
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=63A61D
+    // Broiler-Human: PENDING
     internal static ulong[] ToArray(VmLimitVector vector)
     {
         var values = new ulong[VmBudgetDimensions.Count];

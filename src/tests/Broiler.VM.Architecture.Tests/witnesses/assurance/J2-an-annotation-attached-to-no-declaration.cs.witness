@@ -1,0 +1,15 @@
+// Witness for rule J2: a well-formed block that annotates nothing.
+//
+// The only member here is an auto-property, which the predicate exempts, so the
+// coverage clause has nothing to say. What is left is a block describing a unit that
+// is not there - which is how an annotation survives the deletion of its subject.
+
+namespace Probe;
+
+public sealed class Stranded
+{
+    public int Value { get; }
+
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=TBF
+    // Broiler-Human: PENDING
+}

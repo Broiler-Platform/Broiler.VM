@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   2
+// Annotated:        2/2
+// Exempt:           10
+// Human-reviewed:   0/2
+// IP risk:          Low
+// Security risk:    Low
+// Resource impact:  3/10 max
+// Unverified:       2
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>
@@ -60,6 +76,8 @@ public readonly struct VmArtifactDescriptor : System.IEquatable<VmArtifactDescri
     /// Whether the descriptor is structurally usable: a present identity and manifest, a non-zero
     /// format version, and a manifest under the named profile's namespace.
     /// </summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4A3BFD
+    // Broiler-Human: PENDING
     public bool IsWellFormed =>
         !ProfileId.IsEmpty &&
         FormatVersion >= 1 &&
@@ -67,6 +85,8 @@ public readonly struct VmArtifactDescriptor : System.IEquatable<VmArtifactDescri
         FeatureManifestId.StartsWithProfileNamespace(ProfileId);
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=90F94D
+    // Broiler-Human: PENDING
     public bool Equals(VmArtifactDescriptor other) =>
         ProfileId.Equals(other.ProfileId) &&
         FormatVersion == other.FormatVersion &&

@@ -1,0 +1,28 @@
+// Witness for rule J4: a human line naming a reviewer.
+//
+// Nothing in this component has been reviewed by a human, so a name here would be a
+// false record - the precise thing the assurance system exists to prevent. The rule
+// reports the name and the line it read it from.
+
+
+namespace Probe;
+
+public static class Assessed
+{
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=TBF
+    // Broiler-Human: WITNESS-ONLY; Fingerprint=TBF
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

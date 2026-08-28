@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   8
+// Annotated:        8/8
+// Exempt:           9
+// Human-reviewed:   0/8
+// IP risk:          Low
+// Security risk:    Low
+// Resource impact:  1/10 max
+// Unverified:       8
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>The four kinds a control operation can answer with.</summary>
@@ -59,6 +75,8 @@ public readonly struct VmControlResult : System.IEquatable<VmControlResult>
     public static VmControlResult NoOp { get; } = new(VmControlOutcome.NoOp, VmReason.None);
 
     /// <summary>The request is not legal from the current state, for the given lifecycle reason.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=738825
+    // Broiler-Human: PENDING
     public static VmControlResult InvalidState(VmReason reason) =>
         new(VmControlOutcome.InvalidState, reason);
 
@@ -66,6 +84,8 @@ public readonly struct VmControlResult : System.IEquatable<VmControlResult>
     /// The capability was not declared or not enabled. The reason names which of the two, so a
     /// host can tell "this profile cannot" from "this composition did not".
     /// </summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=DF3206
+    // Broiler-Human: PENDING
     public static VmControlResult Unsupported(VmReason missingDeclaration) =>
         new(VmControlOutcome.Unsupported, missingDeclaration);
 
@@ -76,18 +96,26 @@ public readonly struct VmControlResult : System.IEquatable<VmControlResult>
     public VmReason Reason { get; }
 
     /// <summary>True for <see cref="VmControlOutcome.Accepted"/> and <see cref="VmControlOutcome.NoOp"/>.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=F848E2
+    // Broiler-Human: PENDING
     public bool IsSuccess => Kind is VmControlOutcome.Accepted or VmControlOutcome.NoOp;
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=EBA962
+    // Broiler-Human: PENDING
     public bool Equals(VmControlResult other) => Kind == other.Kind && Reason == other.Reason;
 
     /// <inheritdoc/>
     public override bool Equals(object? obj) => obj is VmControlResult other && Equals(other);
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=9DE490
+    // Broiler-Human: PENDING
     public override int GetHashCode() => System.HashCode.Combine((int)Kind, (int)Reason);
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=8B436E
+    // Broiler-Human: PENDING
     public override string ToString() =>
         Reason is VmReason.None ? Kind.ToString() : Kind + "/" + Reason;
 
@@ -118,10 +146,14 @@ public readonly struct VmControlResult : System.IEquatable<VmControlResult>
 public sealed class VmCoreDefectException : System.Exception
 {
     /// <summary>Creates a defect report naming the runtime that was poisoned.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6AF01B
+    // Broiler-Human: PENDING
     public VmCoreDefectException(string message, VmObjectId runtimeId)
         : base(message) => RuntimeId = runtimeId;
 
     /// <summary>Creates a defect report with no runtime attributed.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AB41C2
+    // Broiler-Human: PENDING
     public VmCoreDefectException(string message)
         : base(message)
     {

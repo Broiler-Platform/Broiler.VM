@@ -1,3 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   3
+// Annotated:        3/3
+// Exempt:           5
+// Human-reviewed:   0/3
+// IP risk:          Low
+// Security risk:    Low
+// Resource impact:  1/10 max
+// Unverified:       3
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
 namespace Broiler.VM;
 
 /// <summary>
@@ -152,6 +168,8 @@ public enum VmCatalogValidationReason
 public sealed class VmCatalogValidationException : System.Exception
 {
     /// <summary>Creates a failure naming the offending profile ID.</summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s8; IP=Low; Security=Low; Resources=1; Fingerprint=F47996
+    // Broiler-Human: PENDING
     public VmCatalogValidationException(VmCatalogValidationReason reason, VmProfileId offendingProfileId, string offendingField)
         : base(Describe(reason, offendingProfileId.ToString(), offendingField))
     {
@@ -166,6 +184,8 @@ public sealed class VmCatalogValidationException : System.Exception
     /// Creates a failure naming the offending registration by position, for the case where the ID
     /// itself is what is malformed and so cannot identify anything.
     /// </summary>
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s8; IP=Low; Security=Low; Resources=1; Fingerprint=64A960
+    // Broiler-Human: PENDING
     public VmCatalogValidationException(VmCatalogValidationReason reason, int offendingOrdinalPosition, string offendingField)
         : base(Describe(reason, "entry #" + offendingOrdinalPosition, offendingField))
     {
@@ -193,6 +213,8 @@ public sealed class VmCatalogValidationException : System.Exception
     /// <summary>The descriptor field at fault.</summary>
     public string OffendingField { get; }
 
+    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s8; IP=Low; Security=Low; Resources=1; Fingerprint=9BED92
+    // Broiler-Human: PENDING
     private static string Describe(VmCatalogValidationReason reason, string subject, string field) =>
         "Broiler.VM catalog validation failed for " + subject + ": " + reason + " (field " + field + ").";
 }

@@ -1,0 +1,28 @@
+// Witness for rule J4: STALE straight to VERIFIED, which the policy forbids.
+//
+// The generator recomputes the fingerprint and writes it to the AI line. It must
+// not conclude from the recomputation that the stale review now applies: only a
+// human replacing the line clears staleness.
+
+
+namespace Probe;
+
+public static class Assessed
+{
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=TBF
+    // Broiler-Human: STALE; Previous=WITNESS-ONLY@112233
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}
