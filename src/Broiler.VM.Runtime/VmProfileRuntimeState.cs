@@ -9,6 +9,7 @@
 // Human-reviewed:   0/6
 // IP risk:          Low
 // Security risk:    Medium
+// Criteria:         0/0
 // Resource impact:  4/10 max
 // Unverified:       6
 //
@@ -26,15 +27,15 @@ namespace Broiler.VM;
 /// is still rooted by a direct reference, which is what trimming and Native AOT need; laziness
 /// changes when it runs, not whether it is reachable.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=272B95
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=272B95
+// Broiler-Human:        PENDING
 internal sealed class VmProfileRuntimeState
 {
     private readonly object gate = new();
     private IVmProfileExecutor? executor;
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=872A8E
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=872A8E
+    // Broiler-Human:        PENDING
     internal VmProfileRuntimeState(VmProfileDescriptor descriptor)
     {
         Descriptor = descriptor;
@@ -71,8 +72,8 @@ internal sealed class VmProfileRuntimeState
     /// fails runtime creation, and no capability is bound at all - a runtime half-wired to its host
     /// is a runtime whose first failure happens somewhere unrelated to the mistake.
     /// </remarks>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=87304F
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=87304F
+    // Broiler-Human:        PENDING
     internal bool TryBind(
         System.Collections.Immutable.ImmutableArray<VmCapabilityRegistration> registrations,
         out VmReason failure,
@@ -144,8 +145,8 @@ internal sealed class VmProfileRuntimeState
         return true;
     }
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BE7B04
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BE7B04
+    // Broiler-Human:        PENDING
     internal bool TryGetExecutor(IVmExecutionEnvironment environment, out IVmProfileExecutor created, out VmReason failure)
     {
         failure = VmReason.None;
@@ -187,8 +188,8 @@ internal sealed class VmProfileRuntimeState
         return true;
     }
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AE8C9A
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=AE8C9A
+    // Broiler-Human:        PENDING
     private VmHostSignatureAssumption Assume(VmCapabilityImport import, bool optionalBound) =>
         new(
             import.Descriptor.CapabilityId,
@@ -199,8 +200,8 @@ internal sealed class VmProfileRuntimeState
             import.Descriptor.ExceptionTranslation,
             import.ImportKind is VmCapabilityImportKind.Optional && optionalBound);
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=DFEACC
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=DFEACC
+    // Broiler-Human:        PENDING
     private static VmCapabilityRegistration? Find(
         System.Collections.Immutable.ImmutableArray<VmCapabilityRegistration> registrations,
         VmCapabilityId capabilityId,

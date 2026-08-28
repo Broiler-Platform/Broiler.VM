@@ -18,15 +18,15 @@ namespace Probe;
 
 public readonly record struct Bounds(ulong MaxSectionCount, ulong MaxDeclaredCount);
 
-// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=23BF24
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=23BF24
+// Broiler-Human:        PENDING
 public readonly record struct Permuted(ulong MaxDeclaredCount, ulong MaxSectionCount);
 
-// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=0BC208
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=0BC208
+// Broiler-Human:        PENDING
 public sealed class Ceiling(ulong maxSectionCount) : System.IComparable
 {
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=16CEF9
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=16CEF9
+    // Broiler-Human:        PENDING
     public int CompareTo(object? other) => maxSectionCount.CompareTo(other);
 }

@@ -110,6 +110,31 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.VmRuntime.VerifyCore(in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken, VmDiagnostics, VmArtifactOrigin, VmMeter?)` in `src/Broiler.VM.Runtime/VmVerification.cs` - Security=High, state HUMAN_PENDING
 - `Broiler.VM.VmRuntime.RunVerifier(VmProfileDescriptor, in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken, VmDiagnostics, VmArtifactOrigin, VmMeter?)` in `src/Broiler.VM.Runtime/VmVerification.cs` - Security=High, state HUMAN_PENDING
 
+## Falsification criteria
+
+| Metric | Value |
+|---|---:|
+| Units carrying a criterion | 69 |
+| Units required to carry one | 44 |
+| Required and missing | 0 |
+
+A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
+the unit wrong. `Security=High` says a unit is risky, which is a set and not a test; the
+criterion is the test. It is required where `Security` is `High` or `Critical`, permitted
+elsewhere, and rule J10 names every unit that owes one and carries none.
+
+The line is a comment, so it is outside every fingerprint by construction: rewording a
+criterion moves no recorded value here, in a file header or in
+`assurance.manifest.json`, and invalidates nothing. That is the intended reading - a
+criterion is an instruction to whoever reads the unit, not part of what a review is bound to.
+
+This third line is a local extension. The owner's policy defines two lines and not three,
+and it is added here because the two cannot carry a falsification criterion at all, and
+because the line numbers a separate worksheet cited rotted the moment the annotations moved
+the code: an annotation travels with its declaration and a citation does not. Exclusion
+EX-74 records that this is an extension to the policy rather than an implementation of it,
+and that the owner may reject it.
+
 ## Exemption
 
 Exemption is decided by one predicate in `AssuranceScanner.ExemptionFor`, not per unit, so

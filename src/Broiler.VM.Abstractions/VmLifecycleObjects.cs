@@ -9,6 +9,7 @@
 // Human-reviewed:   0/21
 // IP risk:          Low
 // Security risk:    Medium
+// Criteria:         0/0
 // Resource impact:  7/10 max
 // Unverified:       21
 //
@@ -22,8 +23,8 @@ namespace Broiler.VM;
 /// operation, which has two. An instance does not care who parked its operation; the operation
 /// does, because who parked it decides who may resume it.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=240C21
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=240C21
+// Broiler-Human:        PENDING
 public enum VmInstanceState
 {
     /// <summary>Being instantiated.</summary>
@@ -55,8 +56,8 @@ public enum VmInstanceState
 /// on the profile's own terms and rides the caller's result, while a host suspension is delivered
 /// once through the control handle and can be abandoned.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=D86AF1
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=D86AF1
+// Broiler-Human:        PENDING
 public enum VmOperationState
 {
     /// <summary>Executing.</summary>
@@ -87,8 +88,8 @@ public enum VmOperationState
 /// keeping its identity, its budget remainder and its nested-load counters - a fourth kind would
 /// imply a new operation and therefore a fresh allowance.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=549B18
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=549B18
+// Broiler-Human:        PENDING
 public enum VmOperationKind
 {
     /// <summary>A verification.</summary>
@@ -102,8 +103,8 @@ public enum VmOperationKind
 }
 
 /// <summary>Who caused an operation to park.</summary>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=E8954C
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=E8954C
+// Broiler-Human:        PENDING
 public enum VmSuspensionOrigin
 {
     /// <summary>The guest suspended on its own terms.</summary>
@@ -132,8 +133,8 @@ public enum VmSuspensionOrigin
 /// handle was struck in favour of taking the object and resuming through the runtime.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=8E1BC7
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=8E1BC7
+// Broiler-Human:        PENDING
 public sealed class VmSuspension
 {
     private readonly IVmProfilePayload? projection;
@@ -141,8 +142,8 @@ public sealed class VmSuspension
 
     /// <summary>The single construction site for a suspension object.</summary>
     /// <remarks>Hidden, and asserted by an architecture rule to have one call site in the runtime.</remarks>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1BF435
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1BF435
+    // Broiler-Human:        PENDING
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmSuspension Create(
         VmObjectId objectId,
@@ -185,13 +186,13 @@ public sealed class VmSuspension
     public VmStage SuspendedStage { get; }
 
     /// <summary>Whether this object has already been used to resume.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=880609
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=880609
+    // Broiler-Human:        PENDING
     public bool IsConsumed => System.Threading.Volatile.Read(ref consumed) != 0;
 
     /// <summary>The profile's opaque projection of what it exposes while parked, where it offered one.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=B0B0D3
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=B0B0D3
+    // Broiler-Human:        PENDING
     public bool TryGetProjection(out IVmProfilePayload payload)
     {
         payload = projection!;
@@ -203,8 +204,8 @@ public sealed class VmSuspension
     /// is refused rather than admitted, which is what makes double-resume a contract error instead
     /// of a race.
     /// </summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=E01BAA
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=E01BAA
+    // Broiler-Human:        PENDING
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public bool TryConsume() => System.Threading.Interlocked.Exchange(ref consumed, 1) == 0;
 }
@@ -215,8 +216,8 @@ public sealed class VmSuspension
 /// through the public surface - rule A10 leaves no internal route - and because "the latch is
 /// monotonic and is never cleared" is a contract property rather than an implementation detail.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=91BF26
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=91BF26
+// Broiler-Human:        PENDING
 public readonly struct VmOperationStateSnapshot
 {
     /// <summary>Creates a snapshot.</summary>
@@ -278,8 +279,8 @@ public readonly struct VmOperationStateSnapshot
 /// hole would make disposal timing depend on the garbage collector.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=4F6C59
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=4F6C59
+// Broiler-Human:        PENDING
 public abstract class VmOperationControlHandle : System.IDisposable
 {
     /// <summary>For the runtime's implementation.</summary>
@@ -291,18 +292,18 @@ public abstract class VmOperationControlHandle : System.IDisposable
     /// Asks the operation to park at its next polling point. Answers unsupported where the profile
     /// did not declare external suspension or the runtime did not enable it - the double gate.
     /// </summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=70CC98
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=70CC98
+    // Broiler-Human:        PENDING
     public abstract VmControlResult RequestSuspend();
 
     /// <summary>Asks the operation to cancel at its next polling point. Monotonic.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=874C89
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=874C89
+    // Broiler-Human:        PENDING
     public abstract VmControlResult RequestCancel();
 
     /// <summary>Reads the operation's state without blocking or mutating anything.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=195DFE
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=195DFE
+    // Broiler-Human:        PENDING
     public abstract VmOperationStateSnapshot QueryState();
 
     /// <summary>
@@ -313,13 +314,13 @@ public abstract class VmOperationControlHandle : System.IDisposable
     /// without a second admission check. A guest suspension delivers its object on the caller's
     /// result; an external one has no such result to ride, so it is taken from here.
     /// </remarks>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D1E5F0
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D1E5F0
+    // Broiler-Human:        PENDING
     public abstract VmControlResult TryTakeSuspension(out VmSuspension suspension);
 
     /// <summary>Releases the handle, latching an untaken external suspension as cancelled.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=01735B
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=01735B
+    // Broiler-Human:        PENDING
     public abstract VmControlResult Dispose();
 
     /// <inheritdoc/>
@@ -335,8 +336,8 @@ public abstract class VmOperationControlHandle : System.IDisposable
 /// only when instantiation completes normally: there is no half-instantiated instance a caller can
 /// obtain and then wonder about.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=66AFF3
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=66AFF3
+// Broiler-Human:        PENDING
 public abstract class VmInstance : System.IDisposable
 {
     /// <summary>For the runtime's implementation.</summary>
@@ -354,28 +355,28 @@ public abstract class VmInstance : System.IDisposable
     public abstract VmInstanceState State { get; }
 
     /// <summary>Invokes an entry point.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=7; Fingerprint=63AEA3
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=7; Fingerprint=63AEA3
+    // Broiler-Human:        PENDING
     public abstract VmInvocationResult Invoke(
         in VmInvocationRequest request,
         System.Threading.CancellationToken cancellationToken);
 
     /// <summary>Invokes an entry point, also returning the control handle for the operation.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=7; Fingerprint=72201A
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=7; Fingerprint=72201A
+    // Broiler-Human:        PENDING
     public abstract VmInvocationResult Invoke(
         in VmInvocationRequest request,
         System.Threading.CancellationToken cancellationToken,
         out VmOperationControlHandle controlHandle);
 
     /// <summary>Requests cancellation of whatever this instance is running.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=874C89
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=874C89
+    // Broiler-Human:        PENDING
     public abstract VmControlResult RequestCancel();
 
     /// <summary>Disposes the instance. Idempotent.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=01735B
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=01735B
+    // Broiler-Human:        PENDING
     public abstract VmControlResult Dispose();
 
     /// <inheritdoc/>

@@ -1,0 +1,31 @@
+// Witness for rule J2: a falsification criterion wrapped onto two lines.
+//
+// A criterion that does not fit on a line is too vague to be one: the line names an
+// observation, and an observation that needs a paragraph is a concern. The block does not
+// parse, so the unit carries no annotation at all and the wrap is reported rather than read.
+
+namespace Probe;
+
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=TBF
+// Broiler-Human:        PENDING
+public static class Wrapped
+{
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-Falsified-If: any path sizes a buffer before its bound comparison, or reserves bytes it
+    // Broiler-Falsified-If: does not release when the allocation that follows them throws
+    // Broiler-Human:        PENDING
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

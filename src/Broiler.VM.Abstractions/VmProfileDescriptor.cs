@@ -9,6 +9,7 @@
 // Human-reviewed:   0/3
 // IP risk:          None
 // Security risk:    Medium
+// Criteria:         0/0
 // Resource impact:  0/10 max
 // Unverified:       3
 //
@@ -50,18 +51,18 @@ namespace Broiler.VM;
 /// the compiler saw.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=6BF23B
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=6BF23B
+// Broiler-Human:        PENDING
 public sealed class VmProfileDescriptor
 {
     /// <summary>The most feature manifests one descriptor may accept.</summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s7; IP=None; Security=Medium; Resources=0; Fingerprint=EDA3BD
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s7; IP=None; Security=Medium; Resources=0; Fingerprint=EDA3BD
+    // Broiler-Human:        PENDING
     public const int MaximumAcceptedFeatureManifests = 64;
 
     /// <summary>The most characters a display name may have.</summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s7; IP=None; Security=Medium; Resources=0; Fingerprint=948C28
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s7; IP=None; Security=Medium; Resources=0; Fingerprint=948C28
+    // Broiler-Human:        PENDING
     public const int MaximumDisplayNameLength = 64;
 
     /// <summary>Creates a descriptor. Every row of the frozen table is supplied.</summary>

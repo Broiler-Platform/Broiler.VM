@@ -9,6 +9,7 @@
 // Human-reviewed:   0/39
 // IP risk:          Low
 // Security risk:    High
+// Criteria:         9/8
 // Resource impact:  0/10 max
 // Unverified:       39
 //
@@ -31,34 +32,34 @@ namespace Broiler.VM;
 /// <c>amount</c> is unsigned, so a negative charge - a refund by another name - is not expressible.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=7FA11B
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=7FA11B
+// Broiler-Human:        PENDING
 public interface IVmMeter
 {
     /// <summary>
     /// Charges <paramref name="amount"/> against <paramref name="dimension"/>. Returns
     /// <see langword="false"/> when the allowance or ceiling will not admit it.
     /// </summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=76973E
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=76973E
+    // Broiler-Human:        PENDING
     bool TryCharge(VmBudgetDimension dimension, ulong amount);
 
     /// <summary>
     /// One combined budget and cancellation check. <see langword="false"/> means stop. A profile
     /// calls it at least as often as its declared uncharged-work bound requires.
     /// </summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=84FB1F
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=84FB1F
+    // Broiler-Human:        PENDING
     bool Poll();
 
     /// <summary>Reports that the profile is now retaining <paramref name="amount"/> more.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=49758B
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=49758B
+    // Broiler-Human:        PENDING
     void ReportRetained(VmBudgetDimension dimension, ulong amount);
 
     /// <summary>Reports that the profile has released <paramref name="amount"/>.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F76A84
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F76A84
+    // Broiler-Human:        PENDING
     void ReportReleased(VmBudgetDimension dimension, ulong amount);
 }
 
@@ -70,15 +71,17 @@ public interface IVmMeter
 /// immutable once verification returns and safe for unsynchronised concurrent readers, because a
 /// shareable handle is read by several runtimes at once with no lock between them.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=9B3EE1
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=9B3EE1
+// Broiler-Falsified-If: the core calls anything on a stored state, or a state reachable from a shared handle can be mutated
+// Broiler-Human:        PENDING
 public interface IVmVerifiedState
 {
 }
 
 /// <summary>The profile-owned mutable state of one instance. The core never inspects it.</summary>
-// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=FC8DAD
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=FC8DAD
+// Broiler-Falsified-If: the core reads an instance state, or one reaches an executor other than the profile that made it
+// Broiler-Human:        PENDING
 public interface IVmInstanceState
 {
 }
@@ -89,8 +92,9 @@ public interface IVmInstanceState
 /// point on abandonment. It never inspects it: what a paused profile exposes is the profile's own
 /// surface.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=9DB83C
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=9DB83C
+// Broiler-Falsified-If: the core inspects a continuation, or one is handed back to an operation it was not captured from
+// Broiler-Human:        PENDING
 public interface IVmProfileContinuation
 {
 }
@@ -100,8 +104,9 @@ public interface IVmProfileContinuation
 /// The entry point is UTF-8 text rather than a string or a symbol table index, because naming is a
 /// language concept: the core carries the bytes and the profile decides what they mean.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=B2651B
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=B2651B
+// Broiler-Falsified-If: the core decodes, re-encodes or trims the entry-point bytes rather than carrying them verbatim
+// Broiler-Human:        PENDING
 public readonly ref struct VmInvocationRequest
 {
     /// <summary>Creates a request naming an entry point.</summary>
@@ -121,8 +126,9 @@ public readonly ref struct VmInvocationRequest
 /// capability implementations that are absent or that throw, and it is what keeps verification
 /// separable from execution.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=A43F7C
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=A43F7C
+// Broiler-Falsified-If: the context reaches anything a verifier could invoke rather than capability descriptors alone
+// Broiler-Human:        PENDING
 public interface IVmVerificationContext
 {
     /// <summary>The materialized ceilings this verification runs under.</summary>
@@ -135,8 +141,8 @@ public interface IVmVerificationContext
     System.Collections.Immutable.ImmutableArray<VmHostCapabilityDescriptor> RegisteredCapabilities { get; }
 
     /// <summary>Looks up one registered capability shape by identity and exact version.</summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s6; IP=Low; Security=Medium; Resources=0; Fingerprint=7EDEF8
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s6; IP=Low; Security=Medium; Resources=0; Fingerprint=7EDEF8
+    // Broiler-Human:        PENDING
     bool TryGetCapabilityDescriptor(
         VmCapabilityId capabilityId,
         int version,
@@ -154,12 +160,12 @@ public interface IVmVerificationContext
 /// declare. Keeping the two lists apart by <em>type</em> rather than by review is why a profile
 /// author cannot end up believing the core will accept an outcome it cannot represent.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=8DC8E5
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=8DC8E5
+// Broiler-Human:        PENDING
 public readonly struct VmVerifierOutcome
 {
-    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s5; IP=Low; Security=Medium; Resources=0; Fingerprint=487D97
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s5; IP=Low; Security=Medium; Resources=0; Fingerprint=487D97
+    // Broiler-Human:        PENDING
     private VmVerifierOutcome(
         VmOutcome category,
         VmReason reason,
@@ -184,8 +190,8 @@ public readonly struct VmVerifierOutcome
     /// The artifact verified. <paramref name="narrowedSharing"/> may narrow the descriptor's
     /// declared sharing and may never widen it, which the core checks rather than trusts.
     /// </summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s5; IP=Low; Security=Medium; Resources=0; Fingerprint=D95005
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s5; IP=Low; Security=Medium; Resources=0; Fingerprint=D95005
+    // Broiler-Human:        PENDING
     public static VmVerifierOutcome Verified(IVmVerifiedState state, VmArtifactSharing narrowedSharing) =>
         new(VmOutcome.Normal, VmReason.NormalCompleted, state, narrowedSharing, 0, default,
             VmBudgetDimension.Fuel, VmBudgetScope.Artifact);
@@ -194,15 +200,15 @@ public readonly struct VmVerifierOutcome
     /// The verifier does not host the identity it was handed. It is a distinct answer from a
     /// malformed payload.
     /// </summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s5; IP=Low; Security=Low; Resources=0; Fingerprint=11657D
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s5; IP=Low; Security=Low; Resources=0; Fingerprint=11657D
+    // Broiler-Human:        PENDING
     public static VmVerifierOutcome UnsupportedProfile() =>
         new(VmOutcome.UnsupportedProfile, VmReason.ProfileNotInCatalog, null,
             VmArtifactSharing.RuntimeScoped, 0, default, VmBudgetDimension.Fuel, VmBudgetScope.Artifact);
 
     /// <summary>The bytes are not a well-formed artifact of this profile and format version.</summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s5; IP=Low; Security=Low; Resources=0; Fingerprint=C7F217
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s5; IP=Low; Security=Low; Resources=0; Fingerprint=C7F217
+    // Broiler-Human:        PENDING
     public static VmVerifierOutcome InvalidArtifact(
         VmReason reason,
         int profileDiagnosticCode,
@@ -211,15 +217,15 @@ public readonly struct VmVerifierOutcome
             profileDiagnosticCode, position, VmBudgetDimension.Fuel, VmBudgetScope.Artifact);
 
     /// <summary>Verification ran out of a named allowance in a named scope.</summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s5; IP=Low; Security=Low; Resources=0; Fingerprint=161DFE
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s5; IP=Low; Security=Low; Resources=0; Fingerprint=161DFE
+    // Broiler-Human:        PENDING
     public static VmVerifierOutcome ResourceExhaustion(VmBudgetDimension dimension, VmBudgetScope scope) =>
         new(VmOutcome.ResourceExhaustion, VmReason.AllowanceExhausted, null,
             VmArtifactSharing.RuntimeScoped, 0, default, dimension, scope);
 
     /// <summary>A cancellation request was observed at a polling point.</summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s5; IP=Low; Security=Low; Resources=0; Fingerprint=F6446E
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s5; IP=Low; Security=Low; Resources=0; Fingerprint=F6446E
+    // Broiler-Human:        PENDING
     public static VmVerifierOutcome Cancellation() =>
         new(VmOutcome.Cancellation, VmReason.Cancelled, null, VmArtifactSharing.RuntimeScoped,
             0, default, VmBudgetDimension.Fuel, VmBudgetScope.Artifact);
@@ -266,8 +272,9 @@ public readonly struct VmVerifierOutcome
 /// and hand the core another profile's verifier.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=8ED829
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=8ED829
+// Broiler-Falsified-If: a verifier whose declared identity differs from the descriptor naming it is admitted to a catalog
+// Broiler-Human:        PENDING
 public interface IVmProfileVerifier
 {
     /// <summary>The profile this verifier belongs to.</summary>
@@ -286,8 +293,9 @@ public interface IVmProfileVerifier
     int VerifierSemanticVersion { get; }
 
     /// <summary>Verifies <paramref name="payload"/> against <paramref name="descriptor"/>.</summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s6; IP=Low; Security=High; Resources=0; Fingerprint=ED6BA8
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s6; IP=Low; Security=High; Resources=0; Fingerprint=ED6BA8
+    // Broiler-Falsified-If: the payload arrives as anything but a span, or a second member here can answer a verification
+    // Broiler-Human:        PENDING
     VmVerifierOutcome Verify(
         in VmArtifactDescriptor descriptor,
         System.ReadOnlySpan<byte> payload,
@@ -302,8 +310,8 @@ public interface IVmProfileVerifier
 /// request is structurally unrepresentable rather than a runtime check that could be reported,
 /// logged, or forgotten.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F33F5D
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F33F5D
+// Broiler-Human:        PENDING
 public interface IVmExecutionEnvironment
 {
     /// <summary>The profile this executor serves.</summary>
@@ -319,8 +327,8 @@ public interface IVmExecutionEnvironment
     /// The mediator, for a declaring profile in a composition that registered a provider. False
     /// means there is no path to further code from here, and that is the whole of the refusal.
     /// </summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=647389
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=647389
+    // Broiler-Human:        PENDING
     bool TryGetArtifactLoadMediator(out IVmArtifactLoadMediator mediator);
 }
 
@@ -333,26 +341,26 @@ public interface IVmExecutionEnvironment
 /// profile may ask only whether index <em>k</em> is bound. That is what stops a capability registry
 /// becoming an ambient platform surface.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=E5E867
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=E5E867
+// Broiler-Human:        PENDING
 public interface IVmHostCapabilityInvoker
 {
     /// <summary>How many binding slots the profile declared.</summary>
     int BindingCount { get; }
 
     /// <summary>Whether slot <paramref name="bindingIndex"/> is bound.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=3130A9
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=3130A9
+    // Broiler-Human:        PENDING
     bool IsBound(int bindingIndex);
 
     /// <summary>Invokes a value capability with integer arguments.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=9A9BBB
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=9A9BBB
+    // Broiler-Human:        PENDING
     VmHostCallOutcome Invoke(int bindingIndex, System.ReadOnlySpan<long> arguments, out long result);
 
     /// <summary>Invokes a value capability with a byte argument, receiving an opaque reference.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=CB9CEE
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=CB9CEE
+    // Broiler-Human:        PENDING
     VmHostCallOutcome InvokeBytes(int bindingIndex, VmBytes argument, out VmOpaqueRef result);
 }
 
@@ -363,8 +371,8 @@ public interface IVmHostCapabilityInvoker
 /// profile failed to convert. Letting a profile name a core category would be letting it write the
 /// core's result enum one language at a time.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=6F3649
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=6F3649
+// Broiler-Human:        PENDING
 public readonly struct VmExecutionStep
 {
     private VmExecutionStep(
@@ -382,26 +390,26 @@ public readonly struct VmExecutionStep
     }
 
     /// <summary>The step completed, optionally producing a typed payload.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=6AA8B9
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=6AA8B9
+    // Broiler-Human:        PENDING
     public static VmExecutionStep Completed(IVmProfilePayload? payload) =>
         new(VmExecutionStepKind.Completed, null, null, payload, VmReason.None);
 
     /// <summary>Instantiation completed and produced the instance's profile-owned state.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=5EFEAD
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=5EFEAD
+    // Broiler-Human:        PENDING
     public static VmExecutionStep Instantiated(IVmInstanceState state, IVmProfilePayload? payload) =>
         new(VmExecutionStepKind.Instantiated, state, null, payload, VmReason.None);
 
     /// <summary>The step parked, handing the core a continuation to resume from.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1BD1D2
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1BD1D2
+    // Broiler-Human:        PENDING
     public static VmExecutionStep Suspended(IVmProfileContinuation continuation, IVmProfilePayload? projection) =>
         new(VmExecutionStepKind.Suspended, null, continuation, projection, VmReason.None);
 
     /// <summary>The step ended in a language-defined fault, carried as a typed payload.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=89FCD9
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=89FCD9
+    // Broiler-Human:        PENDING
     public static VmExecutionStep Faulted(IVmProfilePayload? payload) =>
         new(VmExecutionStepKind.Faulted, null, null, payload, VmReason.None);
 
@@ -409,8 +417,8 @@ public readonly struct VmExecutionStep
     /// The profile violated its own declared contract. It is a separate answer from a language
     /// fault so that a defect in the profile is never reported as a defect in the guest program.
     /// </summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=CF0528
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=CF0528
+    // Broiler-Human:        PENDING
     public static VmExecutionStep ContractViolation(VmReason reason) =>
         new(VmExecutionStepKind.ContractViolation, null, null, null, reason);
 
@@ -431,8 +439,9 @@ public readonly struct VmExecutionStep
 }
 
 /// <summary>The five answers a profile executor may give for one step.</summary>
-// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=15A717
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=15A717
+// Broiler-Falsified-If: a member's numeric value changes, or a kind exists the core's step-to-stage mapping has no arm for
+// Broiler-Human:        PENDING
 public enum VmExecutionStepKind
 {
     /// <summary>The step completed.</summary>
@@ -460,31 +469,31 @@ public enum VmExecutionStepKind
 /// identity is checked when it is created, and a mismatch is <em>returned</em> as a profile fault
 /// rather than thrown: it is a defect in a profile, observed at run time, not a composition error.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=4CE117
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=4CE117
+// Broiler-Human:        PENDING
 public interface IVmProfileExecutor
 {
     /// <summary>The profile this executor claims to be.</summary>
     VmProfileId ProfileId { get; }
 
     /// <summary>Instantiates profile-owned mutable state from a verified artifact.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=B853C0
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=B853C0
+    // Broiler-Human:        PENDING
     VmExecutionStep Instantiate(
         VmVerifiedArtifact artifact,
         System.Threading.CancellationToken cancellationToken);
 
     /// <summary>Invokes an entry point against instance state.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=6A0CE6
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=6A0CE6
+    // Broiler-Human:        PENDING
     VmExecutionStep Invoke(
         IVmInstanceState state,
         in VmInvocationRequest request,
         System.Threading.CancellationToken cancellationToken);
 
     /// <summary>Resumes a parked step from its continuation.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F0E5BB
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F0E5BB
+    // Broiler-Human:        PENDING
     VmExecutionStep Resume(
         IVmInstanceState state,
         IVmProfileContinuation continuation,
@@ -495,8 +504,8 @@ public interface IVmProfileExecutor
     /// profile's declared abandon budget and the runtime's unwind budget. A profile that needs no
     /// unwinding leaves it empty and its continuation is dropped deterministically.
     /// </summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F78E9B
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F78E9B
+    // Broiler-Human:        PENDING
     void Unwind(IVmProfileContinuation continuation, ulong effectiveUnwindAllowance);
 }
 
@@ -507,6 +516,7 @@ public interface IVmProfileExecutor
 /// A delegate named directly by a descriptor, so the executor type is rooted for trimming and
 /// Native AOT by an ordinary reference rather than by a rooting descriptor or a linker annotation.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=CC8727
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=CC8727
+// Broiler-Falsified-If: an executor is created on a path that does not instantiate, or its type is rooted by reflection
+// Broiler-Human:        PENDING
 public delegate IVmProfileExecutor VmExecutorFactory(IVmExecutionEnvironment environment);

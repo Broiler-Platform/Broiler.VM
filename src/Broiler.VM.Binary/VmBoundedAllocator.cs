@@ -9,6 +9,7 @@
 // Human-reviewed:   0/3
 // IP risk:          Low
 // Security risk:    High
+// Criteria:         3/3
 // Resource impact:  8/10 max
 // Unverified:       3
 //
@@ -41,16 +42,18 @@ namespace Broiler.VM;
 /// so this assembly needs no <c>AllowUnsafeBlocks</c>.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=30CDFD
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=30CDFD
+// Broiler-Falsified-If: a member here allocates without taking both a bounds value and a meter
+// Broiler-Human:        PENDING
 public static class VmBoundedAllocator
 {
     /// <summary>
     /// Allocates an array of <paramref name="declaredCount"/> elements, refusing if the count
     /// exceeds its bound or the meter will not reserve the bytes.
     /// </summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0007 s6; IP=Low; Security=High; Resources=7; Fingerprint=630EF7
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007 s6; IP=Low; Security=High; Resources=7; Fingerprint=630EF7
+    // Broiler-Falsified-If: the count is sized before its bound comparison, or the element-size product is not checked
+    // Broiler-Human:        PENDING
     public static bool TryAllocate<T>(
         in VmReadBounds bounds,
         IVmBoundedAllocationMeter meter,
@@ -97,8 +100,9 @@ public static class VmBoundedAllocator
     /// enforcing that here means a profile cannot reach the meter with a number the read bounds
     /// already exclude.
     /// </remarks>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0007 s6; IP=Low; Security=High; Resources=8; Fingerprint=5185F6
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007 s6; IP=Low; Security=High; Resources=8; Fingerprint=5185F6
+    // Broiler-Falsified-If: new T[] is reached before TryReserve returns true, or a failed allocation keeps its reservation
+    // Broiler-Human:        PENDING
     public static bool TryAllocateExact<T>(
         in VmReadBounds bounds,
         IVmBoundedAllocationMeter meter,

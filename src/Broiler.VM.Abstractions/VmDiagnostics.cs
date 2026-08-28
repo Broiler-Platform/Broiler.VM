@@ -9,6 +9,7 @@
 // Human-reviewed:   0/36
 // IP risk:          Low
 // Security risk:    Medium
+// Criteria:         0/0
 // Resource impact:  3/10 max
 // Unverified:       36
 //
@@ -22,8 +23,8 @@ namespace Broiler.VM;
 /// correlates a core result with its own request without the core learning anything about the
 /// host's identifiers.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=CFBEE1
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=CFBEE1
+// Broiler-Human:        PENDING
 public readonly struct VmHostCorrelationToken : System.IEquatable<VmHostCorrelationToken>
 {
     private readonly ulong high;
@@ -37,13 +38,13 @@ public readonly struct VmHostCorrelationToken : System.IEquatable<VmHostCorrelat
     }
 
     /// <summary>True when this is <see langword="default"/>.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=055DED
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=055DED
+    // Broiler-Human:        PENDING
     public bool IsEmpty => high == 0 && low == 0;
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=E1336B
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=E1336B
+    // Broiler-Human:        PENDING
     public bool Equals(VmHostCorrelationToken other) => high == other.high && low == other.low;
 
     /// <inheritdoc/>
@@ -56,14 +57,14 @@ public readonly struct VmHostCorrelationToken : System.IEquatable<VmHostCorrelat
     public static bool operator ==(VmHostCorrelationToken left, VmHostCorrelationToken right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=F864F6
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=F864F6
+    // Broiler-Human:        PENDING
     public static bool operator !=(VmHostCorrelationToken left, VmHostCorrelationToken right) => !left.Equals(right);
 }
 
 /// <summary>The kind of lifecycle object a diagnostics record refers to.</summary>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=B8FE7C
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=B8FE7C
+// Broiler-Human:        PENDING
 public enum VmObjectKind
 {
     /// <summary>No object.</summary>
@@ -106,8 +107,8 @@ public enum VmObjectKind
 /// together: state 2 of a runtime and state 2 of an instance are different facts, and a
 /// diagnostics consumer that saw only the number would have to guess which table to read.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=A6A8FD
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=A6A8FD
+// Broiler-Human:        PENDING
 public readonly struct VmObjectState : System.IEquatable<VmObjectState>
 {
     /// <summary>Creates a state observation.</summary>
@@ -124,30 +125,30 @@ public readonly struct VmObjectState : System.IEquatable<VmObjectState>
     public int Value { get; }
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=693E4F
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=693E4F
+    // Broiler-Human:        PENDING
     public bool Equals(VmObjectState other) => Kind == other.Kind && Value == other.Value;
 
     /// <inheritdoc/>
     public override bool Equals(object? obj) => obj is VmObjectState other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=4861A5
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=4861A5
+    // Broiler-Human:        PENDING
     public override int GetHashCode() => System.HashCode.Combine((int)Kind, Value);
 
     /// <summary>Value equality.</summary>
     public static bool operator ==(VmObjectState left, VmObjectState right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=ACBD2D
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=ACBD2D
+    // Broiler-Human:        PENDING
     public static bool operator !=(VmObjectState left, VmObjectState right) => !left.Equals(right);
 }
 
 /// <summary>The public call an invalid-state result was produced for.</summary>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=B50319
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=B50319
+// Broiler-Human:        PENDING
 public enum VmAttemptedCall
 {
     /// <summary>No call.</summary>
@@ -211,8 +212,8 @@ public enum VmAttemptedCall
 /// different legal successors, and a result that did not distinguish them would make the state
 /// tables untestable.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=140C0D
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=140C0D
+// Broiler-Human:        PENDING
 public enum VmInitiator
 {
     /// <summary>The caller that entered the public surface.</summary>
@@ -237,8 +238,8 @@ public enum VmInitiator
 /// column, a function and offset, or anything else, without the core acquiring a notion of what
 /// any of them mean.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=69E733
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=69E733
+// Broiler-Human:        PENDING
 public readonly struct VmSourcePosition : System.IEquatable<VmSourcePosition>
 {
     /// <summary>Creates a position.</summary>
@@ -263,8 +264,8 @@ public readonly struct VmSourcePosition : System.IEquatable<VmSourcePosition>
     public int ProfileCoordinate1 { get; }
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=595AC0
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=595AC0
+    // Broiler-Human:        PENDING
     public bool Equals(VmSourcePosition other) =>
         SectionIndex == other.SectionIndex &&
         ByteOffset == other.ByteOffset &&
@@ -282,8 +283,8 @@ public readonly struct VmSourcePosition : System.IEquatable<VmSourcePosition>
     public static bool operator ==(VmSourcePosition left, VmSourcePosition right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=7601B2
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=7601B2
+    // Broiler-Human:        PENDING
     public static bool operator !=(VmSourcePosition left, VmSourcePosition right) => !left.Equals(right);
 }
 
@@ -295,8 +296,8 @@ public readonly struct VmSourcePosition : System.IEquatable<VmSourcePosition>
 /// caller-supplied so a diagnostics sink can redact it without having to guess which fields might
 /// carry a URL, a file path or a user identifier.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=8C6D88
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=8C6D88
+// Broiler-Human:        PENDING
 public readonly struct VmCallerIdentity : System.IEquatable<VmCallerIdentity>
 {
     private readonly string? text;
@@ -307,22 +308,22 @@ public readonly struct VmCallerIdentity : System.IEquatable<VmCallerIdentity>
     public static VmCallerIdentity None => default;
 
     /// <summary>Creates an identity from a caller-supplied canonical string.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=A051B8
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=A051B8
+    // Broiler-Human:        PENDING
     public static VmCallerIdentity FromCanonicalIdentity(System.ReadOnlySpan<char> identity) =>
         identity.IsEmpty ? default : new VmCallerIdentity(identity.ToString());
 
     /// <summary>True when no identity was supplied.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=173B23
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=173B23
+    // Broiler-Human:        PENDING
     public bool IsEmpty => text is null;
 
     /// <summary>
     /// True when this value came from the caller, which is every non-empty value. It is the
     /// redaction flag a diagnostics sink keys on.
     /// </summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C4403F
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C4403F
+    // Broiler-Human:        PENDING
     public bool IsCallerSupplied => text is not null;
 
     /// <inheritdoc/>
@@ -330,16 +331,16 @@ public readonly struct VmCallerIdentity : System.IEquatable<VmCallerIdentity>
         string.Equals(text, other.text, System.StringComparison.Ordinal);
 
     /// <summary>The identity verbatim.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=57BC75
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=57BC75
+    // Broiler-Human:        PENDING
     public override string ToString() => text ?? string.Empty;
 
     /// <inheritdoc/>
     public override bool Equals(object? obj) => obj is VmCallerIdentity other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=6C9B84
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=6C9B84
+    // Broiler-Human:        PENDING
     public override int GetHashCode() =>
         text is null ? 0 : string.GetHashCode(text, System.StringComparison.Ordinal);
 
@@ -347,8 +348,8 @@ public readonly struct VmCallerIdentity : System.IEquatable<VmCallerIdentity>
     public static bool operator ==(VmCallerIdentity left, VmCallerIdentity right) => left.Equals(right);
 
     /// <summary>Ordinal inequality.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=33A459
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=33A459
+    // Broiler-Human:        PENDING
     public static bool operator !=(VmCallerIdentity left, VmCallerIdentity right) => !left.Equals(right);
 }
 
@@ -370,8 +371,8 @@ public readonly struct VmCallerIdentity : System.IEquatable<VmCallerIdentity>
 /// could turn it back on.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=18A7D4
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=18A7D4
+// Broiler-Human:        PENDING
 public readonly struct VmDiagnostics : System.IEquatable<VmDiagnostics>
 {
     /// <summary>Creates a diagnostics record. Every field is supplied; there is no partial form.</summary>
@@ -439,8 +440,8 @@ public readonly struct VmDiagnostics : System.IEquatable<VmDiagnostics>
     /// parameter constructor at every call site would be a place for two adjacent identities to
     /// be transposed without the compiler noticing.
     /// </remarks>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E37CC2
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E37CC2
+    // Broiler-Human:        PENDING
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmDiagnostics Create(
         VmStage stage,
@@ -455,8 +456,8 @@ public readonly struct VmDiagnostics : System.IEquatable<VmDiagnostics>
             VmObjectKind.None, default, attemptedCall, initiator);
 
     /// <summary>Adds the operation and nesting group.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9F1DCA
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9F1DCA
+    // Broiler-Human:        PENDING
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public VmDiagnostics WithOperation(
         VmObjectId operationId,
@@ -469,8 +470,8 @@ public readonly struct VmDiagnostics : System.IEquatable<VmDiagnostics>
             ProfileDiagnosticCode, ObjectKind, ObjectState, AttemptedCall, Initiator);
 
     /// <summary>Adds the profile identity group.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=EBDDB1
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=EBDDB1
+    // Broiler-Human:        PENDING
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public VmDiagnostics WithProfile(
         VmProfileId profileId,
@@ -484,8 +485,8 @@ public readonly struct VmDiagnostics : System.IEquatable<VmDiagnostics>
             ProfileDiagnosticCode, ObjectKind, ObjectState, AttemptedCall, Initiator);
 
     /// <summary>Adds the artifact group.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=511B71
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=511B71
+    // Broiler-Human:        PENDING
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public VmDiagnostics WithArtifact(
         VmObjectId artifactId,
@@ -498,8 +499,8 @@ public readonly struct VmDiagnostics : System.IEquatable<VmDiagnostics>
             ProfileDiagnosticCode, ObjectKind, ObjectState, AttemptedCall, Initiator);
 
     /// <summary>Adds the profile-owned position and diagnostic code.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=467AF2
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=467AF2
+    // Broiler-Human:        PENDING
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public VmDiagnostics WithPosition(VmSourcePosition position, int profileDiagnosticCode) =>
         new(Stage, Outcome, Reason, RuntimeId, OperationId, RequestingOperationId, NestingDepth,
@@ -509,8 +510,8 @@ public readonly struct VmDiagnostics : System.IEquatable<VmDiagnostics>
             profileDiagnosticCode, ObjectKind, ObjectState, AttemptedCall, Initiator);
 
     /// <summary>Adds the exhausted dimension and scope.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6DE21D
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6DE21D
+    // Broiler-Human:        PENDING
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public VmDiagnostics WithExhaustion(VmBudgetDimension dimension, VmBudgetScope scope) =>
         new(Stage, Outcome, Reason, RuntimeId, OperationId, RequestingOperationId, NestingDepth,
@@ -520,8 +521,8 @@ public readonly struct VmDiagnostics : System.IEquatable<VmDiagnostics>
             ProfileDiagnosticCode, ObjectKind, ObjectState, AttemptedCall, Initiator);
 
     /// <summary>Adds the capability group.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=89F987
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=89F987
+    // Broiler-Human:        PENDING
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public VmDiagnostics WithCapability(
         VmCapabilityId capabilityId,
@@ -534,8 +535,8 @@ public readonly struct VmDiagnostics : System.IEquatable<VmDiagnostics>
             ProfileDiagnosticCode, ObjectKind, ObjectState, AttemptedCall, Initiator);
 
     /// <summary>Adds the three facts an invalid-state result must carry.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BE2B1B
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BE2B1B
+    // Broiler-Human:        PENDING
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public VmDiagnostics WithObject(VmObjectKind kind, int observedState, VmAttemptedCall attemptedCall) =>
         new(Stage, Outcome, Reason, RuntimeId, OperationId, RequestingOperationId, NestingDepth,
@@ -545,8 +546,8 @@ public readonly struct VmDiagnostics : System.IEquatable<VmDiagnostics>
             ProfileDiagnosticCode, kind, new VmObjectState(kind, observedState), attemptedCall, Initiator);
 
     /// <summary>Restates the outcome and reason, keeping every identity group.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1E49B8
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1E49B8
+    // Broiler-Human:        PENDING
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public VmDiagnostics WithOutcome(VmStage stage, VmOutcome outcome, VmReason reason, VmInitiator initiator) =>
         new(stage, outcome, reason, RuntimeId, OperationId, RequestingOperationId, NestingDepth,
@@ -556,13 +557,13 @@ public readonly struct VmDiagnostics : System.IEquatable<VmDiagnostics>
             ProfileDiagnosticCode, ObjectKind, ObjectState, AttemptedCall, initiator);
 
     /// <summary>Group 1: the core contract version this build implements.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=7C60B3
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=7C60B3
+    // Broiler-Human:        PENDING
     public int CoreContractVersion => VmCoreContract.Version;
 
     /// <summary>Group 1: the reason-registry revision the reason is drawn from.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=345DB5
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=345DB5
+    // Broiler-Human:        PENDING
     public int ReasonRegistryRevision => VmReasonRegistry.Revision;
 
     /// <summary>Group 2: which stage produced the result.</summary>
@@ -641,8 +642,8 @@ public readonly struct VmDiagnostics : System.IEquatable<VmDiagnostics>
     public VmInitiator Initiator { get; }
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=F4B6C3
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=F4B6C3
+    // Broiler-Human:        PENDING
     public bool Equals(VmDiagnostics other) =>
         Stage == other.Stage && Outcome == other.Outcome && Reason == other.Reason &&
         RuntimeId.Equals(other.RuntimeId) && OperationId.Equals(other.OperationId) &&
@@ -664,8 +665,8 @@ public readonly struct VmDiagnostics : System.IEquatable<VmDiagnostics>
     public override bool Equals(object? obj) => obj is VmDiagnostics other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C423B7
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=C423B7
+    // Broiler-Human:        PENDING
     public override int GetHashCode()
     {
         var hash = new System.HashCode();
@@ -685,7 +686,7 @@ public readonly struct VmDiagnostics : System.IEquatable<VmDiagnostics>
     public static bool operator ==(VmDiagnostics left, VmDiagnostics right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=DCF31E
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=DCF31E
+    // Broiler-Human:        PENDING
     public static bool operator !=(VmDiagnostics left, VmDiagnostics right) => !left.Equals(right);
 }

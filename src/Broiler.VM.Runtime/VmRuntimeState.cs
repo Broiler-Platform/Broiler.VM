@@ -9,6 +9,7 @@
 // Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    Low
+// Criteria:         0/0
 // Resource impact:  0/10 max
 // Unverified:       8
 //
@@ -23,8 +24,8 @@ namespace Broiler.VM;
 /// accept only disposal, because every later answer it gave would be computed from state the core
 /// no longer trusts.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=DE38F0
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=DE38F0
+// Broiler-Human:        PENDING
 public enum VmRuntimeState
 {
     /// <summary>Usable.</summary>
@@ -47,8 +48,8 @@ public enum VmRuntimeState
 /// expressible if creation can return a resource exhaustion. Two error mechanisms at one surface
 /// guarantee that one of them is untested.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=E97B00
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=E97B00
+// Broiler-Human:        PENDING
 public readonly struct VmRuntimeCreationResult : IVmOperationResult
 {
     private readonly VmRuntime? runtime;
@@ -61,23 +62,23 @@ public readonly struct VmRuntimeCreationResult : IVmOperationResult
         this.runtime = runtime;
     }
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=346BAF
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=346BAF
+    // Broiler-Human:        PENDING
     internal static VmRuntimeCreationResult Normal(VmRuntime runtime, VmDiagnostics diagnostics) =>
         new(VmOutcome.Normal, VmReason.NormalCompleted, diagnostics, runtime);
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=367631
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=367631
+    // Broiler-Human:        PENDING
     internal static VmRuntimeCreationResult InvalidState(VmReason reason, VmDiagnostics diagnostics) =>
         new(VmOutcome.InvalidState, reason, diagnostics, null);
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=51E508
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=51E508
+    // Broiler-Human:        PENDING
     internal static VmRuntimeCreationResult ResourceExhaustion(VmReason reason, VmDiagnostics diagnostics) =>
         new(VmOutcome.ResourceExhaustion, reason, diagnostics, null);
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=53F693
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=53F693
+    // Broiler-Human:        PENDING
     internal static VmRuntimeCreationResult HostFailure(VmReason reason, VmDiagnostics diagnostics) =>
         new(VmOutcome.HostFailure, reason, diagnostics, null);
 
@@ -91,16 +92,16 @@ public readonly struct VmRuntimeCreationResult : IVmOperationResult
     public VmDiagnostics Diagnostics { get; }
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=B03FEA
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=B03FEA
+    // Broiler-Human:        PENDING
     public bool IsSuccess => Outcome is VmOutcome.Normal;
 
     /// <inheritdoc/>
     public bool IsSuspended => false;
 
     /// <summary>The runtime, available only on success.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=2E7312
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=2E7312
+    // Broiler-Human:        PENDING
     public bool TryGetRuntime(out VmRuntime created)
     {
         created = runtime!;

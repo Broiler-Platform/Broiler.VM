@@ -508,6 +508,11 @@ public sealed class AssuranceRuleTests
             unit.Annotation?.Field("Spec") is { } spec &&
             spec.StartsWith("ADR-", StringComparison.Ordinal)));
 
+        // ...and for the criterion clauses: the tree carries falsification criteria, so they are
+        // parsed and held to their shape rather than never encountered.
+        Assert.NotEmpty(ProductUnits.Where(static unit =>
+            unit.Annotation?.HasFalsificationCriterion == true));
+
         // Clause, one per closed vocabulary and one per required field.
         AssertOneVocabularyProblem(
             "J2-origin-outside-its-vocabulary.cs.witness",
@@ -577,6 +582,55 @@ public sealed class AssuranceRuleTests
             "cites Spec=ADR-9999 s42, and docs/adr/ holds no record 9999",
             uncited,
             StringComparison.Ordinal);
+
+        // ---- The falsification criterion, held to its shape ----
+        //
+        // Four clauses with a witness each, because they are four different ways the line stops
+        // being an instruction a reviewer can act on: it does not parse, it says nothing, it says
+        // it over two lines, or it says it as data. One witness carrying all four would be
+        // satisfied by a check that reported the first.
+
+        // Clause: the line says something. An empty criterion satisfies the clause that requires
+        // one on a High unit while instructing nobody, which is the worst of the two states.
+        AssertOneVocabularyProblem(
+            "J2-a-criterion-that-says-nothing.cs.witness",
+            $"{AssuranceAnnotation.FalsifiedIfMarker} carries no criterion");
+
+        // Clause: it is prose, not data. A Key=Value pair here is a claim this system does not
+        // define, does not check and does not summarize, sitting where a reader will take it for
+        // one that is checked. The AI line is where data goes and its field set is closed.
+        AssertOneVocabularyProblem(
+            "J2-a-criterion-that-states-a-field.cs.witness",
+            "states the field Security=Low, and a falsification criterion is prose, not data");
+
+        // Clause: it is one line. A criterion that does not fit on a line is too vague to be one,
+        // and the block does not parse at all, so the unit carries no annotation rather than half
+        // of one - which is J1's problem as well and reported here as the wrap it is.
+        var wrapped = ParseViolations([Witness("J2-a-criterion-wrapped-onto-a-second-line.cs.witness")]);
+
+        Assert.Single(wrapped.Where(static problem => problem.Contains(
+            "carries a second '// Broiler-Falsified-If:' line, and a falsification criterion is one line",
+            StringComparison.Ordinal)));
+        Assert.Null(WitnessUnit(
+            "J2-a-criterion-wrapped-onto-a-second-line.cs.witness", "Probe.Wrapped.Fold(int[])").Annotation);
+
+        // Clause: it parses where the block is. A criterion below the human line leaves a block
+        // that parses, so J1 has nothing to say about the unit and this is the only rule that sees
+        // the line - an instruction attached to nothing, which is what a reader will act on.
+        var strandedCriterion = Assert.Single(ParseViolations(
+            [Witness("J2-a-criterion-outside-its-block.cs.witness")]));
+
+        Assert.Contains(
+            "carries a '// Broiler-Falsified-If:' line that stands between no '// Broiler-AI:' " +
+            "line and '// Broiler-Human:' line",
+            strandedCriterion,
+            StringComparison.Ordinal);
+        Assert.Empty(CoverageViolations(WitnessUnits("J2-a-criterion-outside-its-block.cs.witness")));
+
+        // ...and the accepting direction: a criterion in its place, saying one thing on one line,
+        // is not a problem of any kind.
+        Assert.Empty(VocabularyViolations(WitnessUnits("J10-a-high-unit-carries-a-criterion.cs.witness")));
+        Assert.Empty(ParseViolations([Witness("J10-a-high-unit-carries-a-criterion.cs.witness")]));
     }
 
     /// <summary>
@@ -951,26 +1005,26 @@ public sealed class AssuranceRuleTests
 
         // Clause: a generation over a PENDING unit fills the fingerprint and touches nothing else.
         Assert.Equal(
-            "// Broiler-Human: PENDING",
+            "// Broiler-Human:        PENDING",
             RewrittenLine("J4-the-generator-leaves-pending-alone.cs.witness", AssuranceAnnotation.HumanMarker));
         Assert.Equal(
-            $"// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint={WitnessFingerprint}",
+            $"// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint={WitnessFingerprint}",
             RewrittenLine("J4-the-generator-leaves-pending-alone.cs.witness", AssuranceAnnotation.AiMarker));
 
         // Clause: STALE is not cleared by a recomputation. The AI fingerprint is refreshed and the
         // human line is left exactly as it was - the forbidden edge is unreachable.
         Assert.Equal(
-            "// Broiler-Human: STALE; Previous=WITNESS-ONLY@112233",
+            "// Broiler-Human:        STALE; Previous=WITNESS-ONLY@112233",
             RewrittenLine("J4-the-generator-does-not-promote-a-stale-review.cs.witness", AssuranceAnnotation.HumanMarker));
         Assert.Equal(
-            $"// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint={WitnessFingerprint}",
+            $"// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint={WitnessFingerprint}",
             RewrittenLine("J4-the-generator-does-not-promote-a-stale-review.cs.witness", AssuranceAnnotation.AiMarker));
 
         // Clause: a review the code has outrun becomes STALE, and who approved what is preserved
         // rather than deleted. The generator writes a reviewer's name here and is allowed to,
         // because it is copying one the source already carried.
         Assert.Equal(
-            "// Broiler-Human: STALE; Previous=WITNESS-ONLY@112233",
+            "// Broiler-Human:        STALE; Previous=WITNESS-ONLY@112233",
             RewrittenLine(
                 "J4-the-generator-refreshes-a-review-the-code-has-outrun.cs.witness",
                 AssuranceAnnotation.HumanMarker));
@@ -992,7 +1046,7 @@ public sealed class AssuranceRuleTests
 
         Assert.Contains(
             "J4-an-artefact-carries-a-reviewer.cs.witness carries " +
-            $"'// Broiler-Human: WITNESS-ONLY; Fingerprint={WitnessFingerprint}'",
+            $"'// Broiler-Human:        WITNESS-ONLY; Fingerprint={WitnessFingerprint}'",
             rendered,
             StringComparison.Ordinal);
 
@@ -1060,12 +1114,19 @@ public sealed class AssuranceRuleTests
     /// what it is given and cannot be told apart from one that reports nothing at all.
     /// </para>
     /// </remarks>
+    /// <remarks>
+    /// The comparison is on what the line SAYS and not on its exact spelling: the three labels are
+    /// padded to one column, so the padding is the generator's business and a rule that compared
+    /// the whole line against one literal would report every human line in the tree the day the
+    /// column moved. What it must not do is loosen further - the body is compared for equality
+    /// with <c>PENDING</c>, so <c>PENDING; Fingerprint=TBF</c> is still a violation here.
+    /// </remarks>
     private static List<string> ArtefactReviewerViolations(IEnumerable<AssuranceArtefact> artefacts) => artefacts
         .SelectMany(static artefact => new AssuranceTextLines(artefact.Desired)
             .Where(static line => line.Trim().StartsWith(AssuranceAnnotation.HumanMarker, StringComparison.Ordinal))
             .Where(static line => !string.Equals(
-                line.Trim(),
-                $"{AssuranceAnnotation.HumanMarker} {AssuranceAnnotation.Pending}",
+                line.Trim()[AssuranceAnnotation.HumanMarker.Length..].Trim(),
+                AssuranceAnnotation.Pending,
                 StringComparison.Ordinal))
             .Select(line => $"{artefact.RelativePath} carries '{line.Trim()}'"))
         .ToList();
@@ -1169,7 +1230,7 @@ public sealed class AssuranceRuleTests
         var forged = RegenerationDifference("J5-a-second-assurance-block-below-the-header.cs.witness");
         Assert.NotNull(forged);
         Assert.Contains(
-            "J5-a-second-assurance-block-below-the-header.cs.witness(17) is not what the generator would write",
+            "J5-a-second-assurance-block-below-the-header.cs.witness(18) is not what the generator would write",
             forged,
             StringComparison.Ordinal);
         Assert.Contains("on disk: '// Broiler Code Assurance'", forged, StringComparison.Ordinal);
@@ -1393,6 +1454,47 @@ public sealed class AssuranceRuleTests
             "No unit in this component states a per-unit exemption.",
             ComponentReport,
             StringComparison.Ordinal);
+
+        // Clause: the criteria figures. A report that overstates how much of its high-risk surface
+        // carries a falsification criterion, and understates how much of it carries none, is a
+        // report telling a reviewer they have less to write than they have. The witness states
+        // both, over a unit set whose four units include a High and a Critical carrying neither.
+        var uncovered = WitnessUnits("J10-a-high-unit-carries-no-criterion.cs.witness");
+
+        Assert.Equal(0, AssuranceScanner.FalsificationCriteria(uncovered));
+        Assert.Equal(2, AssuranceScanner.UnitsRequiringACriterion(uncovered));
+
+        var criteriaFigures = ReportViolations(
+            WitnessText("J5-report-overstates-the-criteria-count.md.witness"), uncovered);
+
+        Assert.Equal(2, criteriaFigures.Count);
+        Assert.Single(criteriaFigures.Where(static claim => claim.Contains(
+            "states Units carrying a criterion 2 where the annotations give 0",
+            StringComparison.Ordinal)));
+        Assert.Single(criteriaFigures.Where(static claim => claim.Contains(
+            "states Required and missing 0 where the annotations give 2", StringComparison.Ordinal)));
+
+        // ...and the real report's own three figures, which the clean direction at the top of this
+        // rule already compares against the annotations. They are asserted to be THERE rather than
+        // to be particular numbers, because the numbers are the milestone's and will move as the
+        // criteria are written; freezing them here would make this rule fail on the day the work
+        // it measures gets done.
+        Assert.All(
+            new[] { "| Units carrying a criterion |", "| Units required to carry one |", "| Required and missing |" },
+            row => Assert.Contains(row, ComponentReport, StringComparison.Ordinal));
+
+        // ...and every generated file header carries its own file's criteria row beside its
+        // security risk, which is where a reader of one file sees it.
+        Assert.All(
+            GeneratedSources,
+            static file => Assert.Contains(
+                AssuranceGenerator.GeneratedHeaderLines(file.Text),
+                static line => line.StartsWith("// Criteria:", StringComparison.Ordinal)));
+        Assert.Contains(
+            "// Criteria:         3/3",
+            AssuranceGenerator.GeneratedHeaderLines(
+                AssuranceSources.File("src/Broiler.VM.Binary/VmBoundedAllocator.cs").Text),
+            StringComparer.Ordinal);
     }
 
     /// <summary>The first line at which a witness and its own regeneration part company.</summary>
@@ -1474,6 +1576,26 @@ public sealed class AssuranceRuleTests
             "Per-unit exemptions",
             @"\|\s*Per-unit exemptions\s*\|\s*(?<n>\d+)\s*\|",
             declared.Count);
+
+        // The three criteria figures, for the same reason the review figures are here: a byte
+        // comparison catches a report that has gone stale and cannot catch a generator that would
+        // compute the wrong number and write it consistently. The one that matters is the last -
+        // a report understating how much of its high-risk surface carries no criterion is a report
+        // saying the reviewer has less to write than they have.
+        Count(
+            "Units carrying a criterion",
+            @"\|\s*Units carrying a criterion\s*\|\s*(?<n>\d+)\s*\|",
+            AssuranceScanner.FalsificationCriteria(units));
+
+        Count(
+            "Units required to carry one",
+            @"\|\s*Units required to carry one\s*\|\s*(?<n>\d+)\s*\|",
+            AssuranceScanner.UnitsRequiringACriterion(units));
+
+        Count(
+            "Required and missing",
+            @"\|\s*Required and missing\s*\|\s*(?<n>\d+)\s*\|",
+            AssuranceScanner.MissingFalsificationCriteria(units).Count);
 
         foreach (var unit in declared.Where(unit =>
                      !report.Contains($"`{unit.Name}`", StringComparison.Ordinal)))
@@ -1924,10 +2046,10 @@ public sealed class AssuranceRuleTests
             AssuranceGenerator.GeneratedHeaderLines(file.Text),
             AssuranceScanner.Scan(file))));
 
-        // Non-vacuous: 45 headers are read, and each is fifteen lines rather than nothing.
+        // Non-vacuous: 45 headers are read, and each is sixteen lines rather than nothing.
         Assert.NotEmpty(GeneratedSources);
         Assert.All(GeneratedSources, static file => Assert.Equal(
-            15, AssuranceGenerator.GeneratedHeaderLines(file.Text).Count));
+            16, AssuranceGenerator.GeneratedHeaderLines(file.Text).Count));
 
         // Clause: a header carrying a row the shape does not declare. One inserted line shifts
         // every line under it, so the violation set names the invention and then the shift; the
@@ -2136,6 +2258,187 @@ public sealed class AssuranceRuleTests
                 .Where(static text => text.Where.EndsWith(".cs", StringComparison.Ordinal))
                 .SelectMany(static text => text.Lines),
             static line => line.Contains("VmVerifiedArtifact", StringComparison.Ordinal));
+
+        // Clause: a falsification criterion is not a review claim, whatever words it uses. The
+        // criterion in the witness says `a verified artifact is returned before the declared count
+        // is compared` - which is an observation about the code, and asserts nothing at all about
+        // whether anybody has looked at it. It is outside this rule's corpus by construction,
+        // because the corpus of a source artefact is its generated header and a criterion is a
+        // comment below it, and that is asserted in BOTH directions: the same line read as a
+        // whole-file corpus is reported, so the exclusion is the corpus and not a blind spot.
+        var criterion = AssuranceReviewClaims.GeneratedText(
+        [
+            AssuranceProbe.ArtefactOnDisk(
+                WitnessText("J9-a-criterion-is-not-a-review-claim.cs.witness"),
+                "J9-a-criterion-is-not-a-review-claim.cs"),
+        ]);
+
+        Assert.Empty(AssuranceReviewClaims.Violations(criterion, ProductUnits));
+        Assert.DoesNotContain(
+            criterion.SelectMany(static text => text.Lines),
+            static line => line.Contains(
+                AssuranceAnnotation.FalsifiedIfMarker, StringComparison.Ordinal));
+
+        var readAsProse = Assert.Single(AssuranceReviewClaims.Violations(
+            [WitnessGeneratedText("J9-a-criterion-is-not-a-review-claim.cs.witness")], ProductUnits));
+
+        Assert.Contains(
+            "a verified artifact is returned before the declared count is compared",
+            readAsProse,
+            StringComparison.Ordinal);
+
+        // ...and the report's own section ABOUT the criteria is inside the corpus and is read,
+        // which is where the one real collision was. The sentence that section wanted to carry
+        // said a criterion is an instruction to the REVIEWER, and `reviewer` is a term the
+        // annotations define no count for, so the honest sentence would have been reported by
+        // this rule. It says `whoever reads the unit` instead, and the term is asserted here to
+        // be one this rule genuinely refuses rather than one it happens not to have met.
+        Assert.Contains(
+            generated,
+            text => string.Equals(text.Where, AssuranceGenerator.ReportPath, StringComparison.Ordinal) &&
+                text.Lines.Any(static line =>
+                    line.Contains("## Falsification criteria", StringComparison.Ordinal)));
+
+        var wouldHaveBeen = Assert.Single(AssuranceReviewClaims.Violations(
+            [
+                new AssuranceGeneratedText(
+                    AssuranceGenerator.ReportPath,
+                    ["a criterion is an instruction to the reviewer, not part of what they certify."]),
+            ],
+            ProductUnits));
+
+        Assert.Contains(
+            "the term 'reviewer' is stated with neither the count the annotations give " +
+            "(none is defined for it) nor a negation before it",
+            wouldHaveBeen,
+            StringComparison.Ordinal);
+    }
+
+    // =====================================================================================
+    // J10 - every high-risk unit says what would falsify it
+    // =====================================================================================
+
+    /// <summary>
+    /// J10. Every unit assessed <c>Security=High</c> or <c>Security=Critical</c> carries a
+    /// <c>Broiler-Falsified-If</c> line, and changing one moves no fingerprint.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>What the assessment cannot say.</b> <c>Security=High</c> says a unit is risky. It does
+    /// not say <em>any path that sizes a buffer before <c>TryReserve</c> returns true falsifies
+    /// this</em>. Forty-four units in this component are High, which is a set and not a test, and
+    /// the test is the thing a reviewer standing at the declaration needs. The worksheet used to
+    /// hold it, in a document whose citations rotted the moment the annotations moved the code -
+    /// <c>RC-01</c> cited a checked multiplication at <c>VmBoundedAllocator.cs:57</c>, which is now
+    /// a parameter declaration, and nothing caught it. An annotation moves with its declaration.
+    /// </para>
+    /// <para>
+    /// <b>Required above a line and permitted below it.</b> Under High the criterion is optional,
+    /// deliberately: a criterion written to fill a slot restates the assessment, and a line that
+    /// restates the assessment is worse than an absent one because it looks like a line that says
+    /// something. The rejecting witness carries a Medium unit beside its High and Critical ones
+    /// for exactly that reason.
+    /// </para>
+    /// <para>
+    /// <b>The criterion is a comment, so it is outside every fingerprint by construction.</b>
+    /// That is asserted rather than asserted-in-prose: the criteria on the three real units of
+    /// <c>VmBoundedAllocator.cs</c> are reworded and every unit fingerprint, and the file
+    /// fingerprint over the whole token stream, are compared before and after. Rewording a
+    /// criterion therefore invalidates no review, which is the intended reading - a criterion is an
+    /// instruction to whoever reviews the unit, and not part of what they certify.
+    /// </para>
+    /// <para>
+    /// <b>This rule is RED at this milestone, and the register row says so.</b> Three of the 44
+    /// units carry a criterion; 41 do not, and the rule names each of them. That is the clause
+    /// working: it is the list of work, and it is asserted last here so that a reader who runs the
+    /// suite sees the clause's own witnesses pass before they see what it names.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void J10_Every_High_Risk_Unit_Says_What_Would_Falsify_It()
+    {
+        AssertTheRegisterRowIsWhatTheRulesImplement("J10");
+
+        // Non-vacuous: the requirement answers both ways over the checkout, so a clean result
+        // would be a classification and not a predicate that requires nothing of anything.
+        Assert.NotEmpty(ProductUnits.Where(AssuranceScanner.RequiresAFalsificationCriterion));
+        Assert.NotEmpty(ProductUnits.Where(static unit =>
+            unit.Annotation is not null && !AssuranceScanner.RequiresAFalsificationCriterion(unit)));
+        Assert.NotEmpty(ProductUnits.Where(static unit =>
+            unit.Annotation?.HasFalsificationCriterion == true));
+
+        // Clause: a High unit and a Critical unit that carry none are each named, and the Medium
+        // unit beside them is not - below High the line is permitted rather than required.
+        var missingInWitness = AssuranceScanner.MissingFalsificationCriteria(
+            WitnessUnits("J10-a-high-unit-carries-no-criterion.cs.witness"));
+
+        Assert.Equal(2, missingInWitness.Count);
+        Assert.Single(missingInWitness.Where(static named => named.Contains(
+            "Probe.Unfalsifiable.Fold(int[]) is assessed Security=High", StringComparison.Ordinal)));
+        Assert.Single(missingInWitness.Where(static named => named.Contains(
+            "Probe.Unfalsifiable.Reduce(int[]) is assessed Security=Critical", StringComparison.Ordinal)));
+        Assert.All(missingInWitness, static named => Assert.Contains(
+            "carries no '// Broiler-Falsified-If:' line, so nothing at the declaration says what " +
+            "would make it wrong",
+            named,
+            StringComparison.Ordinal));
+        Assert.DoesNotContain(
+            missingInWitness, static named => named.Contains("Gather", StringComparison.Ordinal));
+
+        // Clause: the accepting direction, through the same function, over units at both of the
+        // two risks the requirement names.
+        var covered = WitnessUnits("J10-a-high-unit-carries-a-criterion.cs.witness");
+
+        Assert.Empty(AssuranceScanner.MissingFalsificationCriteria(covered));
+        Assert.Equal(2, AssuranceScanner.UnitsRequiringACriterion(covered));
+        Assert.Equal(2, AssuranceScanner.FalsificationCriteria(covered));
+
+        // Clause: the criterion is a comment, so it is outside every fingerprint. Asserted on the
+        // real file rather than on a probe, because the claim is about this component's tree: the
+        // three criteria are reworded, and every unit fingerprint and the file fingerprint over
+        // the whole token stream are the same values afterwards.
+        var allocator = AssuranceSources.File("src/Broiler.VM.Binary/VmBoundedAllocator.cs");
+        var reworded = AssuranceSources.WithText(
+            allocator,
+            allocator.Text.Replace(
+                AssuranceAnnotation.FalsifiedIfMarker + " ",
+                AssuranceAnnotation.FalsifiedIfMarker + " something else entirely, namely that ",
+                StringComparison.Ordinal));
+
+        var before = AssuranceScanner.Scan(allocator);
+        var after = AssuranceScanner.Scan(reworded);
+
+        // The rewording happened, and it happened to all three: a test that changed nothing would
+        // pass the comparison below without saying anything.
+        Assert.NotEqual(allocator.Text, reworded.Text);
+        Assert.Equal(3, AssuranceScanner.FalsificationCriteria(before));
+        Assert.Equal(3, AssuranceScanner.FalsificationCriteria(after));
+        Assert.All(
+            after.Where(static unit => unit.Annotation?.FalsifiedIf is not null),
+            static unit => Assert.StartsWith(
+                "something else entirely", unit.Annotation!.FalsifiedIf!, StringComparison.Ordinal));
+
+        Assert.Equal(
+            before.Select(static unit => $"{unit.Name} {unit.Fingerprint}").ToArray(),
+            after.Select(static unit => $"{unit.Name} {unit.Fingerprint}").ToArray());
+        Assert.Equal(
+            AssuranceFingerprint.OfFile(allocator.Tree), AssuranceFingerprint.OfFile(reworded.Tree));
+
+        // ...and the same for the manifest, which is where those values are recorded: the entries
+        // for this file are byte-identical across the rewording.
+        Assert.Equal(
+            AssuranceManifest.Render([allocator], before),
+            AssuranceManifest.Render([reworded], after));
+
+        // The clean direction, LAST and currently red. Three units of the 44 the component assesses
+        // High carry a criterion and 41 do not; each is named, because the count is a number a
+        // reader can do nothing with and the name is the declaration they have to write it on.
+        var missing = AssuranceScanner.MissingFalsificationCriteria(ProductUnits);
+
+        Assert.True(
+            missing.Count == 0,
+            $"{missing.Count} unit(s) must carry a falsification criterion and carry none:" +
+            Environment.NewLine + "  " + string.Join(Environment.NewLine + "  ", missing));
     }
 
     /// <summary>One line of the report's high-security list, as the generator writes it.</summary>

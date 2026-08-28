@@ -9,6 +9,7 @@
 // Human-reviewed:   0/3
 // IP risk:          None
 // Security risk:    Medium
+// Criteria:         0/0
 // Resource impact:  0/10 max
 // Unverified:       3
 //
@@ -34,20 +35,20 @@ namespace Broiler.VM;
 /// verifier, or budget exists.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=E91C39
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=E91C39
+// Broiler-Human:        PENDING
 public static class VmCoreContract
 {
     /// <summary>The core contract version this build implements.</summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0003 s1; IP=None; Security=Low; Resources=0; Fingerprint=A5EC68
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0003 s1; IP=None; Security=Low; Resources=0; Fingerprint=A5EC68
+    // Broiler-Human:        PENDING
     public const int Version = 1;
 
     /// <summary>
     /// The oldest core contract version this build admits from a profile descriptor or a
     /// persisted envelope header.
     /// </summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0003 s5; IP=None; Security=Medium; Resources=0; Fingerprint=4EDE3F
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0003 s5; IP=None; Security=Medium; Resources=0; Fingerprint=4EDE3F
+    // Broiler-Human:        PENDING
     public const int MinimumSupportedVersion = 1;
 }

@@ -9,6 +9,7 @@
 // Human-reviewed:   0/22
 // IP risk:          Low
 // Security risk:    Medium
+// Criteria:         0/0
 // Resource impact:  1/10 max
 // Unverified:       22
 //
@@ -17,8 +18,8 @@
 namespace Broiler.VM;
 
 /// <summary>Where a runtime ceiling's value comes from.</summary>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F4502B
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F4502B
+// Broiler-Human:        PENDING
 public enum VmCeilingSource
 {
     /// <summary>The host stated a number.</summary>
@@ -35,8 +36,8 @@ public enum VmCeilingSource
 }
 
 /// <summary>Whether an allowance is shared across a scope or refreshed per operation.</summary>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=D220A9
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=D220A9
+// Broiler-Human:        PENDING
 public enum VmAllowanceMode
 {
     /// <summary>One monotonically decreasing counter shared by every operation in the scope.</summary>
@@ -52,8 +53,8 @@ public enum VmAllowanceMode
 /// suspension <em>and</em> the composition must enable it. Either alone answers unsupported, and the
 /// reason says which, so a host can tell "this profile cannot" from "I did not turn it on".
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C8D932
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C8D932
+// Broiler-Human:        PENDING
 public enum VmExternalSuspensionMode
 {
     /// <summary>The host may not suspend an operation from outside.</summary>
@@ -64,8 +65,8 @@ public enum VmExternalSuspensionMode
 }
 
 /// <summary>One runtime ceiling entry: a dimension and where its value comes from.</summary>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C6121D
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C6121D
+// Broiler-Human:        PENDING
 public readonly struct VmCeilingSpec : System.IEquatable<VmCeilingSpec>
 {
     private VmCeilingSpec(
@@ -81,8 +82,8 @@ public readonly struct VmCeilingSpec : System.IEquatable<VmCeilingSpec>
     }
 
     /// <summary>An explicit ceiling.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1632B6
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1632B6
+    // Broiler-Human:        PENDING
     public static VmCeilingSpec Value(
         VmBudgetDimension dimension,
         ulong value,
@@ -90,16 +91,16 @@ public readonly struct VmCeilingSpec : System.IEquatable<VmCeilingSpec>
         new(dimension, VmCeilingSource.Explicit, value, mode);
 
     /// <summary>Adopt the profile's declared default for this dimension.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=64CE9D
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=64CE9D
+    // Broiler-Human:        PENDING
     public static VmCeilingSpec AdoptProfileDefault(
         VmBudgetDimension dimension,
         VmAllowanceMode mode = VmAllowanceMode.Pooled) =>
         new(dimension, VmCeilingSource.AdoptProfileDefault, 0, mode);
 
     /// <summary>Adopt whatever the parent aggregate budget still has for this dimension.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=29124E
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=29124E
+    // Broiler-Human:        PENDING
     public static VmCeilingSpec AdoptParentRemaining(
         VmBudgetDimension dimension,
         VmAllowanceMode mode = VmAllowanceMode.Pooled) =>
@@ -118,8 +119,8 @@ public readonly struct VmCeilingSpec : System.IEquatable<VmCeilingSpec>
     public VmAllowanceMode AllowanceMode { get; }
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=850C62
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=850C62
+    // Broiler-Human:        PENDING
     public bool Equals(VmCeilingSpec other) =>
         Dimension == other.Dimension && Source == other.Source &&
         ExplicitValue == other.ExplicitValue && AllowanceMode == other.AllowanceMode;
@@ -128,8 +129,8 @@ public readonly struct VmCeilingSpec : System.IEquatable<VmCeilingSpec>
     public override bool Equals(object? obj) => obj is VmCeilingSpec other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=EFDCEC
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=EFDCEC
+    // Broiler-Human:        PENDING
     public override int GetHashCode() =>
         System.HashCode.Combine((int)Dimension, (int)Source, ExplicitValue, (int)AllowanceMode);
 
@@ -137,8 +138,8 @@ public readonly struct VmCeilingSpec : System.IEquatable<VmCeilingSpec>
     public static bool operator ==(VmCeilingSpec left, VmCeilingSpec right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=DA9B18
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=DA9B18
+    // Broiler-Human:        PENDING
     public static bool operator !=(VmCeilingSpec left, VmCeilingSpec right) => !left.Equals(right);
 }
 
@@ -147,12 +148,12 @@ public readonly struct VmCeilingSpec : System.IEquatable<VmCeilingSpec>
 /// All-four-or-none by construction, so a half-configured quadruple is unrepresentable rather than
 /// caught by a check that could be forgotten.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=611462
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=611462
+// Broiler-Human:        PENDING
 public readonly struct VmGuestLoadBoundsSpec
 {
-    // Broiler-AI:    Origin=AI; Spec=ADR-0008; IP=Low; Security=Low; Resources=0; Fingerprint=950977
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0008; IP=Low; Security=Low; Resources=0; Fingerprint=950977
+    // Broiler-Human:        PENDING
     private VmGuestLoadBoundsSpec(bool adopts, VmGuestLoadBounds bounds)
     {
         AdoptsProfileMaxima = adopts;
@@ -163,8 +164,8 @@ public readonly struct VmGuestLoadBoundsSpec
     public static VmGuestLoadBoundsSpec AdoptProfileMaxima { get; } = new(true, VmGuestLoadBounds.None);
 
     /// <summary>State all four bounds. They may only tighten the profile's maxima.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=635F24
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=635F24
+    // Broiler-Human:        PENDING
     public static VmGuestLoadBoundsSpec Explicit(VmGuestLoadBounds bounds) => new(false, bounds);
 
     /// <summary>Whether the profile's maxima are adopted.</summary>
@@ -175,13 +176,13 @@ public readonly struct VmGuestLoadBoundsSpec
 }
 
 /// <summary>A host capability delegate that takes integers and returns one.</summary>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=559AF2
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=559AF2
+// Broiler-Human:        PENDING
 public delegate VmHostCallOutcome VmHostCapabilityHandler(System.ReadOnlySpan<long> arguments, out long result);
 
 /// <summary>A host capability delegate that takes bytes and returns an opaque reference.</summary>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=17B32F
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=17B32F
+// Broiler-Human:        PENDING
 public delegate VmHostCallOutcome VmHostBytesCapabilityHandler(VmBytes argument, out VmOpaqueRef result);
 
 /// <summary>What a composition root registers into one runtime.</summary>
@@ -191,8 +192,8 @@ public delegate VmHostCallOutcome VmHostBytesCapabilityHandler(VmBytes argument,
 /// resolution: a capability the composition did not register is not reachable from the runtime at
 /// all, which is what makes registration the permission.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=EE9647
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=EE9647
+// Broiler-Human:        PENDING
 public readonly struct VmCapabilityRegistration
 {
     private VmCapabilityRegistration(
@@ -208,16 +209,16 @@ public readonly struct VmCapabilityRegistration
     }
 
     /// <summary>Registers a value capability.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=2CC1F4
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=2CC1F4
+    // Broiler-Human:        PENDING
     public static VmCapabilityRegistration Value(
         VmHostCapabilityDescriptor descriptor,
         VmHostCapabilityHandler handler) =>
         new(descriptor, handler, null, null);
 
     /// <summary>Registers a value capability that answers with an opaque reference.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=BDA746
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=BDA746
+    // Broiler-Human:        PENDING
     public static VmCapabilityRegistration Value(
         VmHostCapabilityDescriptor descriptor,
         VmHostBytesCapabilityHandler handler) =>
@@ -232,8 +233,8 @@ public readonly struct VmCapabilityRegistration
     /// loads anyway, which is the exact opposite of the content policy the absence expresses.
     /// </remarks>
     /// <exception cref="System.ArgumentException">The descriptor does not declare the provider kind.</exception>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=74DA46
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=74DA46
+    // Broiler-Human:        PENDING
     public static VmCapabilityRegistration ArtifactProvider(
         VmHostCapabilityDescriptor descriptor,
         IVmArtifactProvider provider)
@@ -278,13 +279,13 @@ public readonly struct VmCapabilityRegistration
 /// residency is an unbounded retention with a debugger attached to it.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=B93A2B
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=B93A2B
+// Broiler-Human:        PENDING
 public sealed class VmRuntimeCreationOptions
 {
     /// <summary>Creates an options object.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=240EDE
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=240EDE
+    // Broiler-Human:        PENDING
     public VmRuntimeCreationOptions(
         VmAggregateBudget? aggregateBudget,
         System.Collections.Immutable.ImmutableArray<VmCeilingSpec> ceilings,
@@ -310,8 +311,8 @@ public sealed class VmRuntimeCreationOptions
     }
 
     /// <summary>The bounded default unwind allowance a host may tighten or raise but never unbound.</summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0004; IP=None; Security=Medium; Resources=0; Fingerprint=246800
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=None; Security=Medium; Resources=0; Fingerprint=246800
+    // Broiler-Human:        PENDING
     public const ulong DefaultUnwindBudget = 1_000_000;
 
     /// <summary>The shared parent, or null for an unparented runtime.</summary>

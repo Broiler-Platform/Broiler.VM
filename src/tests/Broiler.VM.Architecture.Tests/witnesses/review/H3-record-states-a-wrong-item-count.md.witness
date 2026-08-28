@@ -3,11 +3,11 @@
 The number of worksheet items is not an enumeration and cannot be - the worksheet grows. It is
 held by agreement between two documents instead, so that deleting an item and correcting the
 worksheet's own two number cells no longer leaves everything true. This fragment is read
-against the real worksheet, which carries fifty-three.
+against the real worksheet, which carries thirty-five.
 
 ## 4. Review Route
 
-The worksheet carries 52 items, contiguous from `RC-01`, one or more for each of the eight
+The worksheet carries 34 items, contiguous from `RC-01`, one or more for each of the eight
 areas below.
 
 | ID | Area | What a defect here would cost | Suggested time |

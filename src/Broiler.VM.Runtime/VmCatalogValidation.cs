@@ -9,6 +9,7 @@
 // Human-reviewed:   0/5
 // IP risk:          Low
 // Security risk:    Low
+// Criteria:         0/0
 // Resource impact:  1/10 max
 // Unverified:       5
 //
@@ -32,8 +33,8 @@ namespace Broiler.VM;
 /// persisted artifact, no support table and no evidence bundle that records these numerically.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=2E8A43
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=2E8A43
+// Broiler-Human:        PENDING
 public enum VmCatalogValidationReason
 {
     /// <summary>The profile ID does not satisfy the frozen grammar.</summary>
@@ -167,13 +168,13 @@ public enum VmCatalogValidationReason
 /// admission failure.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=EE7E00
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=EE7E00
+// Broiler-Human:        PENDING
 public sealed class VmCatalogValidationException : System.Exception
 {
     /// <summary>Creates a failure naming the offending profile ID.</summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s8; IP=Low; Security=Low; Resources=1; Fingerprint=F47996
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s8; IP=Low; Security=Low; Resources=1; Fingerprint=F47996
+    // Broiler-Human:        PENDING
     public VmCatalogValidationException(VmCatalogValidationReason reason, VmProfileId offendingProfileId, string offendingField)
         : base(Describe(reason, offendingProfileId.ToString(), offendingField))
     {
@@ -188,8 +189,8 @@ public sealed class VmCatalogValidationException : System.Exception
     /// Creates a failure naming the offending registration by position, for the case where the ID
     /// itself is what is malformed and so cannot identify anything.
     /// </summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s8; IP=Low; Security=Low; Resources=1; Fingerprint=64A960
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s8; IP=Low; Security=Low; Resources=1; Fingerprint=64A960
+    // Broiler-Human:        PENDING
     public VmCatalogValidationException(VmCatalogValidationReason reason, int offendingOrdinalPosition, string offendingField)
         : base(Describe(reason, "entry #" + offendingOrdinalPosition, offendingField))
     {
@@ -217,8 +218,8 @@ public sealed class VmCatalogValidationException : System.Exception
     /// <summary>The descriptor field at fault.</summary>
     public string OffendingField { get; }
 
-    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s8; IP=Low; Security=Low; Resources=1; Fingerprint=9BED92
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s8; IP=Low; Security=Low; Resources=1; Fingerprint=9BED92
+    // Broiler-Human:        PENDING
     private static string Describe(VmCatalogValidationReason reason, string subject, string field) =>
         "Broiler.VM catalog validation failed for " + subject + ": " + reason + " (field " + field + ").";
 }

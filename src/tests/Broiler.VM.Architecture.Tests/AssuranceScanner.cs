@@ -397,6 +397,49 @@ internal static class AssuranceScanner
                 "assessed or it is not shipped")
             .ToList();
 
+    // ---- The falsification criterion, and where it is required -----------------------------------
+
+    /// <summary>
+    /// The security risks at which a unit must carry a <c>Broiler-Falsified-If</c> line.
+    /// </summary>
+    /// <remarks>
+    /// <c>Security=High</c> says <em>this is risky</em>. It does not say <em>any path that sizes a
+    /// buffer before <c>TryReserve</c> returns true falsifies this</em>. Forty-four units in this
+    /// component are High; that is a set, not a test, and a reviewer standing at the declaration
+    /// needs the test. Below High the line is permitted and not required: a criterion nobody had a
+    /// specific observation for would restate the assessment, and a line that restates the
+    /// assessment is worse than no line because it looks like one that says something.
+    /// </remarks>
+    internal static readonly string[] SecurityRisksRequiringACriterion = ["High", "Critical"];
+
+    /// <summary>True when this unit's own assessment obliges it to carry a criterion.</summary>
+    internal static bool RequiresAFalsificationCriterion(AssuranceUnit unit) =>
+        unit.Annotation is { ExemptReason: null } annotation &&
+        annotation.Field("Security") is { } security &&
+        SecurityRisksRequiringACriterion.Contains(security, StringComparer.Ordinal);
+
+    /// <summary>Every unit that must carry a criterion and does not, named one by one.</summary>
+    /// <remarks>
+    /// By name rather than by count, because the count is a number a reader can do nothing with and
+    /// the name is the declaration they have to go and write the criterion on.
+    /// </remarks>
+    internal static List<string> MissingFalsificationCriteria(IEnumerable<AssuranceUnit> units) => units
+        .Where(static unit =>
+            RequiresAFalsificationCriterion(unit) && !unit.Annotation!.HasFalsificationCriterion)
+        .Select(static unit =>
+            $"{unit.Where} is assessed Security={unit.Annotation!.Field("Security")} and carries no " +
+            $"'{AssuranceAnnotation.FalsifiedIfMarker}' line, so nothing at the declaration says what " +
+            "would make it wrong")
+        .ToList();
+
+    /// <summary>How many units carry a criterion, at any assessed risk.</summary>
+    internal static int FalsificationCriteria(IEnumerable<AssuranceUnit> units) =>
+        units.Count(static unit => unit.Annotation?.HasFalsificationCriterion == true);
+
+    /// <summary>How many units are obliged to carry one.</summary>
+    internal static int UnitsRequiringACriterion(IEnumerable<AssuranceUnit> units) =>
+        units.Count(RequiresAFalsificationCriterion);
+
     // ---- Case 1 ---------------------------------------------------------------------------------
 
     /// <summary>
@@ -967,19 +1010,38 @@ internal static class AssuranceScanner
 
         var attached = units
             .Where(static unit => unit.Annotation is not null)
-            .SelectMany(static unit => new[] { unit.Annotation!.AiLine, unit.Annotation!.HumanLine })
+            .SelectMany(static unit => unit.Annotation!.FalsifiedIfLine is { } criterion
+                ? [unit.Annotation!.AiLine, criterion, unit.Annotation!.HumanLine]
+                : new[] { unit.Annotation!.AiLine, unit.Annotation!.HumanLine })
             .ToHashSet();
 
         for (var line = 0; line < text.Count; line++)
         {
             var trimmed = text[line].TrimStart();
 
+            // The criterion marker is here as well as the other two, so a criterion written
+            // anywhere but between them - below the human line, or above a declaration that has no
+            // block at all - is reported as stranded rather than read by nobody. A criterion is
+            // the line a reviewer is meant to act on, and one attached to nothing is the shape that
+            // looks like an instruction and is not one.
             var isAssuranceLine =
                 trimmed.StartsWith(AssuranceAnnotation.AiMarker, StringComparison.Ordinal) ||
+                trimmed.StartsWith(AssuranceAnnotation.FalsifiedIfMarker, StringComparison.Ordinal) ||
                 trimmed.StartsWith(AssuranceAnnotation.HumanMarker, StringComparison.Ordinal);
 
             if (!isAssuranceLine || attached.Contains(line))
             {
+                continue;
+            }
+
+            // A stranded criterion says what it is, rather than being reported as a line that does
+            // not open with the AI marker - which is true of it and tells the reader nothing.
+            if (trimmed.StartsWith(AssuranceAnnotation.FalsifiedIfMarker, StringComparison.Ordinal))
+            {
+                yield return $"{file.RelativePath}({line + 1}): carries a " +
+                    $"'{AssuranceAnnotation.FalsifiedIfMarker}' line that stands between no " +
+                    $"'{AssuranceAnnotation.AiMarker}' line and '{AssuranceAnnotation.HumanMarker}' line";
+
                 continue;
             }
 

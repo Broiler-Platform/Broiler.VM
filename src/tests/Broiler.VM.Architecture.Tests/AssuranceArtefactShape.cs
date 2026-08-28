@@ -193,6 +193,7 @@ internal static class AssuranceArtefactShape
             AssuranceGenerator.Row("Human-reviewed:", $"{verified}/{relevant.Length}"),
             AssuranceGenerator.Row("IP risk:", Weakest(assessed, "IP", AssuranceAnnotation.IpRiskValues) ?? "not assessed"),
             AssuranceGenerator.Row("Security risk:", Weakest(assessed, "Security", AssuranceAnnotation.SecurityRiskValues) ?? "not assessed"),
+            AssuranceGenerator.Row("Criteria:", $"{Criteria(units)}/{RequiringACriterion(units)}"),
             AssuranceGenerator.Row("Resource impact:", scores.Length == 0 ? "not assessed" : $"{scores.Max()}/10 max"),
             AssuranceGenerator.Row(
                 "Unverified:",
@@ -209,6 +210,29 @@ internal static class AssuranceArtefactShape
         IReadOnlyList<string> header,
         IReadOnlyList<AssuranceUnit> units) =>
         Compare(where, ExpectedFileHeader(units), header);
+
+    /// <summary>
+    /// How many units carry a falsification criterion, counted from the LINE the block records
+    /// rather than through the scanner's predicate: two expressions of one rule, so a defect in
+    /// either is a disagreement rather than a shared answer.
+    /// </summary>
+    private static int Criteria(IEnumerable<AssuranceUnit> units) =>
+        units.Count(static unit => unit.Annotation?.FalsifiedIfLine is not null);
+
+    /// <summary>
+    /// How many units owe one: the assessed units whose Security row is the top of its vocabulary,
+    /// written out here rather than read from the scanner's list.
+    /// </summary>
+    private static int RequiringACriterion(IEnumerable<AssuranceUnit> units) => units.Count(static unit =>
+        unit.Annotation is { ExemptReason: null } annotation &&
+        (string.Equals(annotation.Field("Security"), "High", StringComparison.Ordinal) ||
+         string.Equals(annotation.Field("Security"), "Critical", StringComparison.Ordinal)));
+
+    /// <summary>How many of those carry none. The number rule J10 reports unit by unit.</summary>
+    private static int MissingCriteria(IEnumerable<AssuranceUnit> units) => units.Count(static unit =>
+        unit.Annotation is { ExemptReason: null, FalsifiedIfLine: null } annotation &&
+        (string.Equals(annotation.Field("Security"), "High", StringComparison.Ordinal) ||
+         string.Equals(annotation.Field("Security"), "Critical", StringComparison.Ordinal)));
 
     /// <summary>
     /// The weakest claim any assessed annotation makes for a field, or null when none makes one.
@@ -358,6 +382,41 @@ internal static class AssuranceArtefactShape
 
             Line(report, string.Empty);
         }
+
+        Fixed(report,
+            "## Falsification criteria",
+            "",
+            "| Metric | Value |",
+            "|---|---:|");
+
+        Line(report, $"| Units carrying a criterion | {Criteria(units)} |");
+        Line(report, $"| Units required to carry one | {RequiringACriterion(units)} |");
+        Line(report, $"| Required and missing | {MissingCriteria(units)} |");
+
+        Fixed(report,
+            "",
+            "A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make",
+            "the unit wrong. `Security=High` says a unit is risky, which is a set and not a test; the",
+            "criterion is the test. It is required where `Security` is `High` or `Critical`, permitted",
+            "elsewhere, and rule J10 names every unit that owes one and carries none.",
+            "",
+            "The line is a comment, so it is outside every fingerprint by construction: rewording a",
+            "criterion moves no recorded value here, in a file header or in");
+
+        Line(
+            report,
+            $"`{AssuranceManifest.RelativePath}`, and invalidates nothing. That is the intended reading - a");
+
+        Fixed(report,
+            "criterion is an instruction to whoever reads the unit, not part of what a review is bound to.",
+            "",
+            "This third line is a local extension. The owner's policy defines two lines and not three,",
+            "and it is added here because the two cannot carry a falsification criterion at all, and",
+            "because the line numbers a separate worksheet cited rotted the moment the annotations moved",
+            "the code: an annotation travels with its declaration and a citation does not. Exclusion",
+            "EX-74 records that this is an extension to the policy rather than an implementation of it,",
+            "and that the owner may reject it.",
+            "");
 
         Fixed(report,
             "## Exemption",

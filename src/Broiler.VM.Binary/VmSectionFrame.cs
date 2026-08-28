@@ -9,6 +9,7 @@
 // Human-reviewed:   0/3
 // IP risk:          Low
 // Security risk:    Low
+// Criteria:         0/0
 // Resource impact:  0/10 max
 // Unverified:       3
 //
@@ -26,8 +27,8 @@ namespace Broiler.VM;
 /// over-reads a section is a structural error the frame catches, rather than one the profile has
 /// to remember to look for.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=623BF6
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=623BF6
+// Broiler-Human:        PENDING
 public readonly struct VmSectionFrame : System.IEquatable<VmSectionFrame>
 {
     internal VmSectionFrame(ulong start, ulong declaredLength, uint depth)
@@ -47,8 +48,8 @@ public readonly struct VmSectionFrame : System.IEquatable<VmSectionFrame>
     public uint Depth { get; }
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=9B82EE
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=9B82EE
+    // Broiler-Human:        PENDING
     public bool Equals(VmSectionFrame other) =>
         Start == other.Start && DeclaredLength == other.DeclaredLength && Depth == other.Depth;
 
@@ -62,7 +63,7 @@ public readonly struct VmSectionFrame : System.IEquatable<VmSectionFrame>
     public static bool operator ==(VmSectionFrame left, VmSectionFrame right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=D9A2CA
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=D9A2CA
+    // Broiler-Human:        PENDING
     public static bool operator !=(VmSectionFrame left, VmSectionFrame right) => !left.Equals(right);
 }

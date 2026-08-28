@@ -9,6 +9,7 @@
 // Human-reviewed:   0/3
 // IP risk:          Low
 // Security risk:    Low
+// Criteria:         0/0
 // Resource impact:  0/10 max
 // Unverified:       3
 //
@@ -36,8 +37,8 @@ namespace Broiler.VM;
 /// still a required constructor parameter - while ADR 0001's graph rule stays mechanically true.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=6E72B0
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=6E72B0
+// Broiler-Human:        PENDING
 public readonly struct VmReadBounds : System.IEquatable<VmReadBounds>
 {
     /// <summary>
@@ -70,8 +71,8 @@ public readonly struct VmReadBounds : System.IEquatable<VmReadBounds>
     public ulong MaxStructuralDepth { get; }
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0007 s6; IP=Low; Security=Low; Resources=0; Fingerprint=1548E0
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007 s6; IP=Low; Security=Low; Resources=0; Fingerprint=1548E0
+    // Broiler-Human:        PENDING
     public bool Equals(VmReadBounds other) =>
         MaxArtifactBytes == other.MaxArtifactBytes &&
         MaxSectionCount == other.MaxSectionCount &&
@@ -89,7 +90,7 @@ public readonly struct VmReadBounds : System.IEquatable<VmReadBounds>
     public static bool operator ==(VmReadBounds left, VmReadBounds right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=9F3CE7
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=9F3CE7
+    // Broiler-Human:        PENDING
     public static bool operator !=(VmReadBounds left, VmReadBounds right) => !left.Equals(right);
 }

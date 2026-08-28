@@ -9,6 +9,7 @@
 // Human-reviewed:   0/7
 // IP risk:          Low
 // Security risk:    Medium
+// Criteria:         0/0
 // Resource impact:  7/10 max
 // Unverified:       7
 //
@@ -44,8 +45,8 @@ namespace Broiler.VM;
 /// running. Handing out a fresh object per step would leave the stale one able to answer.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C62B33
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C62B33
+// Broiler-Human:        PENDING
 internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
 {
     private readonly VmRuntime runtime;
@@ -70,13 +71,13 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
     /// Opens the mediator for one executor step, binding it to that step's meter so nested work is
     /// charged to the operation that will actually request it.
     /// </summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=1; Fingerprint=C5DB65
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=1; Fingerprint=C5DB65
+    // Broiler-Human:        PENDING
     internal void EnterScope(VmDiagnostics baseline) => EnterScope(baseline, default);
 
     /// <summary>Opens the mediator for one step of the named operation.</summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=1; Fingerprint=550E12
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=1; Fingerprint=550E12
+    // Broiler-Human:        PENDING
     internal void EnterScope(VmDiagnostics baseline, VmObjectId operationId)
     {
         lock (gate)
@@ -97,8 +98,8 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=7; Fingerprint=1C2A09
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=7; Fingerprint=1C2A09
+    // Broiler-Human:        PENDING
     public VmGuestLoadResult RequestLoad(scoped in VmArtifactRequest request)
     {
         VmMeter meter;
@@ -183,8 +184,8 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
         }
     }
 
-    // Broiler-AI:    Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=7; Fingerprint=37279E
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=7; Fingerprint=37279E
+    // Broiler-Human:        PENDING
     private VmGuestLoadResult Answer(
         IVmArtifactProvider provider,
         VmMeter meter,
@@ -283,8 +284,8 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
         return Project(verification, identified);
     }
 
-    // Broiler-AI:    Origin=AI; Spec=ADR-0008; IP=Low; Security=Low; Resources=1; Fingerprint=6DF904
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0008; IP=Low; Security=Low; Resources=1; Fingerprint=6DF904
+    // Broiler-Human:        PENDING
     private static VmGuestLoadResult Project(VmVerificationResult verification, VmDiagnostics identified)
     {
         var diagnostics = verification.Diagnostics.WithOutcome(
@@ -326,8 +327,8 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
     /// own bound checks fire before any meter charge and so leave no trace for the caller's result
     /// to pick up. Latching makes the conversion obligation enforced rather than trusted.
     /// </remarks>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=0; Fingerprint=8961AA
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=0; Fingerprint=8961AA
+    // Broiler-Human:        PENDING
     private static VmGuestLoadResult Exhausted(
         VmMeter meter,
         VmDiagnostics identified,

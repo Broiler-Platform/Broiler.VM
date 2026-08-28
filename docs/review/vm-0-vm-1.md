@@ -4,6 +4,35 @@ This is a worksheet, not a record. It is where a reviewer reads item by item and
 notes what they found. The review itself - the area verdicts, the decision, and any
 conditions - is recorded in [HUMAN_REVIEW.md](../../HUMAN_REVIEW.md), not here.
 
+**The code-facing criteria have moved into the source.** Twenty-two items here were about a
+code unit and nothing else, and what each of them was really worth was its *Falsified if*
+row - the observation that would show the unit wrong. That row now sits on the declaration
+itself, as the third line of the assurance annotation, between the AI assessment and the
+human line:
+
+```csharp
+// Broiler-AI:           Origin=AI; Spec=ADR-0007 s6; IP=Low; Security=High; Resources=7; Fingerprint=630EF7
+// Broiler-Falsified-If: new T[] is reached before TryReserve returns true, or a failed allocation keeps its reservation
+// Broiler-Human:        PENDING
+```
+
+They moved because an annotation sits on the declaration and travels with it, and a line
+number in a separate document does not. This document's had already rotted: its first item
+cited *"the checked multiplication at `VmBoundedAllocator.cs:57`"*, which the annotations
+themselves turned into a parameter declaration. Nothing caught it, because rule H3 checks
+identifiers, areas and counts and never whether a cited line means anything. A criterion is
+required on every unit assessed `Security=High` or `Critical`, permitted below that, and
+counted in [CODE-ASSURANCE.md](../../CODE-ASSURANCE.md); rule J10 names every unit that owes
+one and carries none. The line is a comment, so it is outside every fingerprint: rewording a
+criterion invalidates no review, which is correct, because a criterion is an instruction to
+the reviewer and not part of what the reviewer certifies.
+
+What is left here is what the assurance system scans no source for: the records, the errata,
+the invariant resolutions, the bundles, the register and the negative controls. Each of the
+four code areas keeps one item, and it asks for the thing no rule can do - a judgement of
+the criteria themselves, and of whether any is already unmet. That is the bridge between
+this route and the source, and `EX-75` records why it is needed.
+
 The verdict cells below take the review vocabulary `[ ]`, `[A]`, `[C]`, `[R]` and `[?]`,
 whose canonical legend is
 [section 1 of HUMAN_REVIEW.md](../../HUMAN_REVIEW.md#1-how-to-use-this-file); this file
@@ -22,302 +51,115 @@ not recorded here; they belong in
 
 | Area | Name | Items | Finished (date, initials) |
 |---|---|---|---|
-| [RA-1](#ra-1---bounded-reading-of-untrusted-bytes) | Bounded reading of untrusted bytes | 6 | |
-| [RA-2](#ra-2---resource-authority-and-budgets) | Resource authority and budgets | 7 | |
-| [RA-3](#ra-3---lifecycle-and-state-machine) | Lifecycle and state machine | 7 | |
-| [RA-4](#ra-4---verified-artifact-ownership) | Verified-artifact ownership | 6 | |
+| [RA-1](#ra-1---bounded-reading-of-untrusted-bytes) | Bounded reading of untrusted bytes | 1 | |
+| [RA-2](#ra-2---resource-authority-and-budgets) | Resource authority and budgets | 2 | |
+| [RA-3](#ra-3---lifecycle-and-state-machine) | Lifecycle and state machine | 2 | |
+| [RA-4](#ra-4---verified-artifact-ownership) | Verified-artifact ownership | 3 | |
 | [RA-5](#ra-5---guest-initiated-loads-and-external-suspension) | Guest-initiated loads and external suspension | 7 | |
 | [RA-6](#ra-6---the-public-contract-surface) | The public contract surface | 7 | |
 | [RA-7](#ra-7---the-records-themselves) | The records themselves | 7 | |
 | [RA-8](#ra-8---the-evidence-and-the-rule-register) | The evidence and the rule register | 6 | |
-| | **Total** | **53** | |
+| | **Total** | **35** | |
 
 ## RA-1 - Bounded reading of untrusted bytes
 
-### RC-01 - Confirm every bound is compared before the value it bounds is used
+### RC-01 - Judge the criteria the bounded-reading units now carry
 
 | | |
 |---|---|
 | Area | RA-1 |
 | Verdict | [ ] |
-| Read | `src/Broiler.VM.Binary/VmBoundedReader.cs` 164-188 (`TryReadDeclaredCount`), `src/Broiler.VM.Binary/VmBoundedAllocator.cs` 34-68 and 80-137; ADR 0007 section *The precedence algorithm*, steps P2 and P5 |
-| Check | Decide whether the order in each primitive is bound-check, then checked size arithmetic, then meter reservation, then allocation - so a hostile declared count costs nothing proportional to itself. |
-| Falsified if | Any path returns a count, sizes a buffer, or reaches `new T[...]` before its bound comparison or before `meter.TryReserve` has returned true; or the `checked` multiplication at `VmBoundedAllocator.cs:57` can be bypassed for some `T`. |
-
-### RC-02 - Confirm a spent reader stays spent and retains its first cause
-
-| | |
-|---|---|
-| Area | RA-1 |
-| Verdict | [ ] |
-| Read | `src/Broiler.VM.Binary/VmBoundedReader.cs` 21-27 (the claim), 409-421 (`Check`, `Fail`), and every public member that calls them; `src/tests/Broiler.VM.Contract.Tests/VerificationAndReaderTests.cs` 189-204; ADR 0006 section *5. The verification failure taxonomy* |
-| Check | Decide whether one failure can be stepped past by a caller that ignored a return value, and whether the retained status is the first cause rather than its echo. |
-| Falsified if | A public member on `VmBoundedReader` examines `bytes` or advances `position` when `Status` is not `Ok`, or a later `Fail` overwrites an earlier non-`Ok` status. |
-
-### RC-03 - Confirm the framing arithmetic cannot wrap and no foreign frame can enter it
-
-| | |
-|---|---|
-| Area | RA-1 |
-| Verdict | [ ] |
-| Read | `src/Broiler.VM.Binary/VmBoundedReader.cs` 204-291 (`TryEnterSection`, `TryExitSection`, `TrySkipSectionBody`) and 307-345 (`TryTake`, `TryConsume`); `src/Broiler.VM.Binary/VmSectionFrame.cs` 13-20; ADR 0007 section *The fifteen budgeted dimensions*, rows 11-14 |
-| Check | Decide whether `frame.Start + frame.DeclaredLength` at lines 258 and 277 is safe, given that the additions are unchecked while the additions in `TryConsume` are checked, and whether every frame reaching those members was minted by this reader. |
-| Falsified if | A `VmSectionFrame` with values the reader never produced can reach `TryExitSection` or `TrySkipSectionBody` - for example a default frame, or one kept across two readers - and the sum wraps or the `(int)` casts at lines 96, 316 and 366 index outside the span. |
-
-### RC-04 - Confirm the canonical variable-length encoding is the only accepted one
-
-| | |
-|---|---|
-| Area | RA-1 |
-| Verdict | [ ] |
-| Read | `src/Broiler.VM.Binary/VmBoundedReader.cs` 139-162 and 347-397 (`TryReadVarUInt64Core`); `src/tests/Broiler.VM.Contract.Tests/VerificationAndReaderTests.cs` 175-187; ADR 0006 section *5. The verification failure taxonomy* |
-| Check | Decide whether the three guards - shift past `maxBits`, an overflowing final group, and a redundant zero continuation - together admit exactly one encoding per value at both 32 and 64 bits. |
-| Falsified if | Two distinct byte sequences both return true from `TryReadVarUInt32` (or `TryReadVarUInt64`) with the same `value`; the 64-bit case at `shift = 63` is the one to try, since `1UL << (maxBits - shift)` is evaluated there. |
-
-### RC-05 - Confirm every member of the read-status set is producible and says one thing
-
-| | |
-|---|---|
-| Area | RA-1 |
-| Verdict | [ ] |
-| Read | `src/Broiler.VM.Binary/VmBoundedReadStatus.cs` 16-44; `src/Broiler.VM.Binary/VmBoundedReader.cs` 399-407 (`ChargeWork`); `src/Broiler.VM.Binary/IVmBoundedAllocationMeter.cs` 36-46; `src/tests/Broiler.VM.Fixtures/FixtureVmVerifier.cs` around line 353; ADR 0007 section *Scope, and what a resource-exhaustion result names*, the paragraph ruling that a configured limit and an expressed intent are different facts |
-| Check | Decide whether a status a reader can never latch belongs in a closed enum that profile verifiers map arm by arm, and whether a caller of the reader alone can tell a work exhaustion apart from a cancellation. |
-| Falsified if | `VmBoundedReadStatus.AllocationRefused` is assigned nowhere in `src/Broiler.VM.Binary`, so the fixture's mapping arm for it is unreachable; or `ChargeWork` latches `WorkBudgetExhausted` for both a refused `TryChargeWork` and a `Poll` that returned false because cancellation was requested. |
-
-### RC-06 - Decide whether the "refuses before allocating" test can fail at all
-
-| | |
-|---|---|
-| Area | RA-1 |
-| Verdict | [ ] |
-| Read | `src/tests/Broiler.VM.Contract.Tests/VerificationAndReaderTests.cs` 147-173 (`The_Bounded_Reader_Refuses_A_Declared_Count_Before_Allocating`, `The_Bounded_Allocator_Refuses_Before_Allocating`) and 248-263 (`CountingMeter`); `src/Broiler.VM.Binary/VmBoundedReader.cs` 399-407 |
-| Check | Decide whether `Assert.Equal(0ul, meter.Reserved)` in the reader test discriminates between an implementation that refuses before reserving and one that does not. |
-| Falsified if | `VmBoundedReader` never calls `IVmBoundedAllocationMeter.TryReserve` on any path, so `meter.Reserved` is zero for every input the reader is given and the assertion holds independently of the behaviour it names. |
-| Prior finding | Negative control 4 - four assertions were one level too shallow, asserting a reaction rather than the thing under test. |
+| Read | Every `// Broiler-Falsified-If:` line in `src/Broiler.VM.Binary/VmBoundedReader.cs`, `src/Broiler.VM.Binary/VmBoundedAllocator.cs` and `src/Broiler.VM.Binary/IVmBoundedAllocationMeter.cs` - twenty-five of them - each read against the declaration it sits on and against the `Security` value on the line above it, and the four annotated units in those files that carry none; `CODE-ASSURANCE.md`, *Falsification criteria*; ADR 0007 section *The precedence algorithm*, steps P2 and P5; ADR 0006 section *5. The verification failure taxonomy* |
+| Check | Decide whether each line names an observation somebody could go and make about that unit - the bound compared before the value it bounds, the reservation before the allocation, one encoding per value, the first cause retained - rather than a concern, a summary of the method, or a restatement of `Security=High`; and whether the four units here that carry none should. |
+| Falsified if | A criterion in these files names no observation that can be made about the unit it sits on, or restates the assessment above it; or the code beneath a criterion already fails it, so the line records a defect rather than guarding against one; or the ordering these criteria name is not the ordering the reader and the allocator actually implement. |
+| Prior finding | `EX-75` in `docs/evidence/vm-1/README.md`: rules J2 and J10 hold a criterion to being present, single-line and prose, and neither can read it. This item is the reading. |
 
 ## RA-2 - Resource authority and budgets
 
-### RC-07 - Confirm a charge is all-or-none and names the outermost refusing scope
+### RC-02 - Judge the criteria the budget units carry, and the units that carry none
 
 | | |
 |---|---|
 | Area | RA-2 |
 | Verdict | [ ] |
-| Read | `src/Broiler.VM.Runtime/VmMeter.cs` 14-19 (the stated tie-break) and 110-166 (`TryCharge`); `src/Broiler.VM.Runtime/VmBudgetLevel.cs` 29-57; ADR 0007 sections *The precedence algorithm* (step P5) and *Scope, and what a resource-exhaustion result names* |
-| Check | Decide whether every link is checked before any link is applied, and whether the reported `FailedScope` is the outermost link that would have refused rather than the first one examined. |
-| Falsified if | Any level commits while another refuses - including the window between the parent's `RemainingFor` read at line 130 and the parent's `TryCharge` at line 152 - or a refusal reports `Invocation` where the runtime or the parent would also have refused. |
+| Read | The `// Broiler-Falsified-If:` lines in `src/Broiler.VM.Runtime/VmMeter.cs` - on the class, `TryCharge`, `ReportRetained`, `ReportReleased`, `PauseWallClock`, `AccrueWallClock` and `RemainingSnapshot` - and the line on `Resume` in `src/Broiler.VM.Runtime/VmRuntime.cs`; then `src/Broiler.VM.Runtime/VmAggregateBudget.cs`, `VmBudgetLevel.cs` and `VmCeilingResolution.cs`, none of whose units carries one; ADR 0007 sections *The precedence algorithm*, *Monotonicity, and what raising a ceiling costs* and *The shared aggregate budget is a core object* |
+| Check | Decide whether the criteria on the meter name the observations that would show a budget failing to bound - a level committing while another refuses, a credit larger than the debit, a delta dropped rather than re-offered - and whether the aggregate budget and the ceiling resolution should carry criteria of their own, given that nothing in them is assessed above `Security=Medium` and so nothing requires one. |
+| Falsified if | A criterion here names no observation that can be made about the unit it sits on, or restates the assessment above it; or the code beneath one already fails it; or the asymmetry that drove the aggregate live sum below the true sum would satisfy every criterion in this area, so none of them would have caught the blocker they were written from. |
+| Prior finding | Asymmetric accounting - a retention the parent refused was still released from the parent. The criteria on `ReportRetained` and `ReportReleased` are that finding reduced to two observations; `EX-75` records that nothing judges whether the reduction is faithful. |
 
-### RC-08 - Confirm the parent is charged before the local commit and credited only what it took
-
-| | |
-|---|---|
-| Area | RA-2 |
-| Verdict | [ ] |
-| Read | `src/Broiler.VM.Runtime/VmMeter.cs` 218-289 (`ReportRetained`, `ReportReleased`); `src/Broiler.VM.Runtime/VmAggregateBudget.cs` 372-418 (`TryCharge`, `Release`); `src/Broiler.VM.Runtime/VmBudgetLevel.cs` 44-57; ADR 0007 sections *The shared aggregate budget is a core object* and *Monotonicity, and what raising a ceiling costs* |
-| Check | Decide whether the retain and release pair is symmetric at the parent - that a retention the parent refused can never afterwards be released from it, and that an allowance-class dimension never refunds at any level. |
-| Falsified if | `ReportRetained` commits at the runtime, instance or invocation level on a path where `parent.TryCharge` returned false; or `ReportReleased` credits the parent an amount larger than the parent accepted; or the clamp at line 276 uses a level whose consumed value can diverge from the parent's debit. |
-| Prior finding | Asymmetric accounting - a retention the parent refused was still released from the parent, driving the aggregate live sum below the true sum and then to zero. |
-
-### RC-09 - Confirm wall-clock attribution survives a refusal and stops under a suspension
+### RC-03 - Decide whether the budget regressions assert bounds tight enough to fail
 
 | | |
 |---|---|
 | Area | RA-2 |
 | Verdict | [ ] |
-| Read | `src/Broiler.VM.Runtime/VmMeter.cs` 316-394 (`PauseWallClock`, `ResumeWallClock`, `AccrueWallClock`) and 169-216 (`Poll`); `src/Broiler.VM.Runtime/VmOperation.cs` 195-240 and 285-333; ADR 0007 sections *The fifteen budgeted dimensions* (the `WallClock` ruling) and *Budget accounting across a suspension* |
-| Check | Decide whether a delta the parent refuses is re-offered rather than dropped, whether the clock is paused under all three suspension origins, and whether one elapsed delta can be attributed twice. |
-| Falsified if | A refused delta is committed at the runtime, instance or invocation level; or the clock accrues while `pauseStartedAt >= 0` is not held for the whole parked interval; or two threads entering `AccrueWallClock` can both read the same `attributed - already` outside the lock at lines 357-386 and both commit it. |
-| Prior finding | Asymmetric accounting - a refused wall-clock charge was silently dropped, permanently under-summing attributed time. |
-
-### RC-10 - Confirm a spent parent admits neither a new runtime nor a resumption
-
-| | |
-|---|---|
-| Area | RA-2 |
-| Verdict | [ ] |
-| Read | `src/Broiler.VM.Runtime/VmAggregateBudget.cs` 275-359 (`TryAdmitRuntime`, `IsSpent`, `AdmitsResumption`); `src/Broiler.VM.Runtime/VmRuntime.cs` 126-141 and 282-315; ADR 0007 sections *The shared aggregate budget is a core object* and *The precedence algorithm* (step P4, `ParentExhausted`) |
-| Check | Decide whether `IsSpent` covers exactly the allowance-class aggregate dimensions it claims, and whether the resume admission check runs before the operation is resumed rather than after. |
-| Falsified if | The resume check at `VmRuntime.cs:287` runs after `operation.Resume`, or after `suspension.TryConsume` has already spent the token in a way that cannot be undone; or `IsSpent` returns false for a parent whose `Fuel`, `WallClock`, `AllocatedBytes`, `HostCalls`, `NestedLoadFanOut`, `NestedLoadBytes` or `VerifierWork` is fully consumed. |
-| Prior finding | Missing admission checks - no resume admission check existed at all, and a parent whose allowance was fully spent still admitted new runtimes. |
-
-### RC-11 - Confirm a nested verification inherits a remainder for allowances and a ceiling for ceilings
-
-| | |
-|---|---|
-| Area | RA-2 |
-| Verdict | [ ] |
-| Read | `src/Broiler.VM.Runtime/VmVerification.cs` 147-166; `src/Broiler.VM.Runtime/VmMeter.cs` 97-107 (`RemainingSnapshot`); `src/Broiler.VM.Runtime/VmBudgetLevel.cs` 64-77 (`AsRemainingVector`, `AsCeilingVector`); ADR 0007 section *The precedence algorithm*, the paragraph beginning "For a nested (guest-initiated) verification" |
-| Check | Decide whether the substitution the record requires at P2 is performed per dimension class, so that a nested load can exhaust an invocation and can never enlarge one, without also shrinking a ceiling that is not an allowance. |
-| Falsified if | `RemainingSnapshot` returns `AsRemainingVector()` for all fifteen dimensions, so a ceiling-class dimension such as `LiveBytes`, `CallDepth`, `NestedLoadDepth`, `ArtifactBytes`, `SectionCount`, `DeclaredCount` or `StructuralDepth` is supplied as `ceiling - consumed` rather than as the effective ceiling. |
-
-### RC-12 - Confirm the `Artifact` scope is reachable in a resource-exhaustion result
-
-| | |
-|---|---|
-| Area | RA-2 |
-| Verdict | [ ] |
-| Read | `src/Broiler.VM.Runtime/VmMeter.cs` 14-19 (the documented five-level tie-break) and 22-34 (the four fields the chain actually holds); `src/Broiler.VM.Runtime/VmVerification.cs` 167-174; `src/Broiler.VM.Abstractions/VmBudgetVocabulary.cs` 78-104 and 217-238 (`IsDeclarableAt`); ADR 0007 section *Scope, and what a resource-exhaustion result names* |
-| Check | Decide whether the five-member scope set is enforced or partly decorative - `VerifierWork` is declarable at `Runtime`, `Artifact` and `Aggregate` only, and `ArtifactBytes`, `SectionCount`, `DeclaredCount` and `StructuralDepth` at `Runtime` and `Artifact` only. |
-| Falsified if | The meter chain contains no level whose `Scope` is `VmBudgetScope.Artifact`, so `VmBudgetScope.Artifact` reaches a result only from the single hard-coded site at `VmVerification.cs:173` and an artifact-scoped dimension charged through `TryCharge` is reported at `Invocation`, `Instance`, `Runtime` or `Aggregate`. |
-
-### RC-13 - Decide whether the budget regressions assert bounds tight enough to fail
-
-| | |
-|---|---|
-| Area | RA-2 |
-| Verdict | [ ] |
-| Read | `src/tests/Broiler.VM.Contract.Tests/ReviewRegressionTests.cs` 177-214 (`afterRelease >= 900`), 396-442 (`RequestCount <= 8`) and 522-545 (`Assert.NotEqual(VmOutcome.Normal, ...)`); `src/tests/Broiler.VM.Contract.Tests/ReclamationTests.cs` 18-48 (`after < held`); `docs/evidence/vm-1/README.md`, section *The negative controls, in detail* |
+| Read | `src/tests/Broiler.VM.Contract.Tests/ReviewRegressionTests.cs` (`afterRelease >= 900`), 396-442 (`RequestCount <= 8`) and 522-545 (`Assert.NotEqual(VmOutcome.Normal, ...)`); `src/tests/Broiler.VM.Contract.Tests/ReclamationTests.cs` (`after < held`); `docs/evidence/vm-1/README.md`, section *The negative controls, in detail* |
 | Check | Decide, for each of these four assertions, whether it excludes the wrong behaviour it is named for or merely a subset of it. |
 | Falsified if | An implementation that never calls the provider at all still satisfies `RequestCount <= 8`; or one that reclaims a single byte still satisfies `after < held`; or one that over-charges the parent still satisfies `afterRelease >= 900`; or one that fails a provider call for a reason unrelated to `HostCalls` still satisfies `Assert.NotEqual(VmOutcome.Normal, ...)`. |
 | Prior finding | Negative control 4 - the tests asserted the profile's reaction rather than the core's reason, and four assertions were one level too shallow. |
 
 ## RA-3 - Lifecycle and state machine
 
-### RC-14 - Confirm all eight rows of the outcome-to-instance-state mapping
+### RC-04 - Judge the criteria the lifecycle units carry
 
 | | |
 |---|---|
 | Area | RA-3 |
 | Verdict | [ ] |
-| Read | `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` 559-616 (`Settle`) and 618-646 (`TryAdmit`); `src/Broiler.VM.Abstractions/VmLifecycleObjects.cs` 9-31; ADR 0004 section *The Instance And The Outcome Mapping*, the table headed "Outcome to instance state. Mandatory; no implementation freedom." |
-| Check | Decide whether each of the eight outcomes moves the instance exactly where the record says, and whether `Faulted` afterwards admits only disposal and a diagnostics read. |
-| Falsified if | `Suspension` reaches the switch and changes the state; or `ResourceExhaustion`, `Cancellation` or `HostFailure` leaves the instance anything other than `Faulted`; or `ProfileFault` does not consult `profile.FaultRecovery`; or `InvalidState` or `UnsupportedProfile` mutates the state. |
-| Prior finding | Mandatory mappings not implemented - the mapping collapsed cancellation, exhaustion and host failure to `Live`, leaving an instance re-invocable after its stack was abandoned mid-step. |
+| Read | The `// Broiler-Falsified-If:` lines on `State`, `Settle` and `TryAdmit` in `src/Broiler.VM.Runtime/VmInstanceImplementation.cs`; on `Instantiate` and `PlaceholderState` in `src/Broiler.VM.Runtime/VmInstantiation.cs`; and on `Verify`, `Dispose`, `TryBeginCall` and `OperationKey` in `src/Broiler.VM.Runtime/VmRuntime.cs`; ADR 0004 section *The Instance And The Outcome Mapping*, the table headed "Outcome to instance state. Mandatory; no implementation freedom.", and section *Reentrancy*; ADR 0005 section *Precedence and observation order* |
+| Check | Decide whether these lines reproduce the mandatory mapping and the frozen precedence order as things a reader can check at the declaration, and whether the units that can break those rules are the units carrying the criteria - `Settle` holds the mapping, but the stages that reach it are in three other files. |
+| Falsified if | A criterion here names no observation that can be made about the unit it sits on, or restates the assessment above it; or the code beneath one already fails it; or `Settle`'s criterion is satisfied by a mapping the record's eight mandatory rows forbid, because it names four outcomes by class and the table names eight by row. |
+| Prior finding | Mandatory mappings not implemented; inverted precedence; and `EX-75`, which records that no rule can tell a criterion that covers its unit from one that covers half of it. |
 
-### RC-15 - Confirm the frozen precedence order is applied at every stage, not only at invoke
-
-| | |
-|---|---|
-| Area | RA-3 |
-| Verdict | [ ] |
-| Read | `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` 329-374 and 431-464 (the two precedence heads); `src/Broiler.VM.Runtime/VmInstantiation.cs` 145-188 (the instantiation stage's checks) and 149 (`profileState.Scope.Enter(meter)`); `src/Broiler.VM.Runtime/VmExecutionScope.cs` 29-45 and 150-173 (`Latch`); ADR 0005 section *Precedence and observation order* |
-| Check | Decide whether the instantiation stage applies the same nine-step order the invocation and resume stages do, given that the record states it is one order for every stage. |
-| Falsified if | `VmInstantiation.Instantiate` enters the execution scope with no owning operation, so `VmAmbientCapabilityInvoker.Latch` has nothing to latch a terminating host failure onto; and the stage's result switch tests neither `HostFailure` nor `PollBoundExceeded`, so a capability declaring `TerminateOperation` that throws during instantiation is reported as the profile's own answer. |
-| Prior finding | Inverted precedence, and *Declarations enforced nowhere* - a capability declaring `TerminateOperation` never terminated anything, so a host defect was billed to the guest. |
-
-### RC-16 - Confirm the capability reentrancy gate covers the calls the record names and no others
+### RC-05 - Decide whether the lifecycle regressions exercise more than the invoke stage
 
 | | |
 |---|---|
 | Area | RA-3 |
 | Verdict | [ ] |
-| Read | `src/Broiler.VM.Runtime/VmRuntime.cs` 462-472, 491-505 and 507-539 (`TryBeginCall`), plus `Dispose` 409-451, `RequestCancel` 373-390 and `PollDeadlines` 332-371; `src/Broiler.VM.Runtime/VmCapabilityBinding.cs` 167-199; ADR 0004 section *Reentrancy*, rules 2 and 4, and section *Disposal, Draining, And Orphaning*, the reentrant-self-disposal paragraph |
-| Check | Decide whether the gate matches the record's permitted set - a cancellation request, an external-suspension request, a diagnostics read, `PollDeadlines`, and `Verify` where `MaxConcurrentVerifications` allows it - and its forbidden set. |
-| Falsified if | `Verify` called from inside a bound non-reentrant capability returns `InvalidState` even though rule 2 permits it, or the reason returned is not the `ReentrancyRefused` the record names; or `Dispose`, `RequestCancel` and `PollDeadlines` reach their bodies from inside one, since none of them calls `TryBeginCall`. |
-| Prior finding | EX-52 - the non-reentrancy gate is absent on `Dispose`, `RequestCancel` and `PollDeadlines`. |
-
-### RC-17 - Confirm disposal drains boundedly and records what expiry produces
-
-| | |
-|---|---|
-| Area | RA-3 |
-| Verdict | [ ] |
-| Read | `src/Broiler.VM.Runtime/VmRuntime.cs` 401-451; `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` 150-187 and 279-296 (`Unwind`); `src/Broiler.VM.Runtime/VmInstantiation.cs` 398-414; `src/Broiler.VM.Runtime/VmRuntimeCreationOptions.cs` 239-276; ADR 0004 section *Disposal, Draining, And Orphaning*, the paragraphs *Racing an in-flight operation* and *Racing a suspended operation* |
-| Check | Decide whether the two bounds the record names are enforced: the wall-clock drain wait for an in-flight operation, and the unwind allowance whose expiry completes the operation `Cancellation` with reason `UnwindTimedOut` and faults the instance. |
-| Falsified if | `VmRuntimeCreationOptions.DisposeDrainBudget` is read nowhere outside its own declaration, so `Dispose` never waits, never orphans an in-flight operation and never records a drain-expiry diagnostic; or `VmReason.UnwindTimedOut` is produced nowhere in the product graph while `Unwind` swallows every exception and enforces no time bound of its own. |
-
-### RC-18 - Confirm the suspended set is keyed by identity and always released on abandonment
-
-| | |
-|---|---|
-| Area | RA-3 |
-| Verdict | [ ] |
-| Read | `src/Broiler.VM.Runtime/VmRuntime.cs` 593-615 (`TryPark`, `Unpark`), 642-643 (`OperationKey`) and 262-315 (the resume lookup); `src/Broiler.VM.Runtime/VmOperation.cs` 56 (`Key`) and 339-395 (`Abandon`, `Complete`); ADR 0004 sections *The Operation* and *Disposal, Draining, And Orphaning* |
-| Check | Decide whether a terminal operation always gives back its live-suspended slot, and whether the key the runtime files a parked operation under actually identifies it. |
-| Falsified if | `OperationKey` reduces a `VmObjectId` to `unchecked((ulong)operationId.GetHashCode())`, so two live operations whose identities hash equal occupy one entry in `suspended`: parking the second evicts the first, and `Resume` can dispatch a suspension to an operation it does not belong to. |
-| Prior finding | Leaks - abandonment never unparked, so a dead operation consumed a live-suspended slot for the life of the runtime. |
-
-### RC-19 - Confirm no half-instantiated instance is published or misreports its state
-
-| | |
-|---|---|
-| Area | RA-3 |
-| Verdict | [ ] |
-| Read | `src/Broiler.VM.Runtime/VmInstantiation.cs` 189-263 (the suspended arm, including `PlaceholderState` and `runtime.RegisterInstance(pending)` at line 256); `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` 27 (`currentState = VmInstanceState.Live`) and 189-235 (`ResumeOperation`); `src/Broiler.VM.Abstractions/VmLifecycleObjects.cs` 9-31; ADR 0004 section *The Instance And The Outcome Mapping*, the transition table rows for `Instantiating` |
-| Check | Decide whether the record's `Instantiating` state exists in practice, and whether an undeclared asynchronous instantiation is answered as the record requires after a bounded abandon. |
-| Falsified if | The placeholder instance registered while its instantiation is still parked reports `VmInstanceState.Live` rather than `Instantiating` or `Suspended`; or a runtime disposal that walks `instances` disposes a placeholder the caller was never given and the record says is never published. |
-| Prior finding | A declared asynchronous instantiation was reported as a profile fault. |
-
-### RC-20 - Decide whether the lifecycle regressions exercise more than the invoke stage
-
-| | |
-|---|---|
-| Area | RA-3 |
-| Verdict | [ ] |
-| Read | `src/tests/Broiler.VM.Contract.Tests/ReviewRegressionTests.cs` 19-74 (the mapping cases) and 122-155 (`A_Terminate_Operation_Capability_Ends_The_Operation_As_A_Host_Failure`); `src/tests/Broiler.VM.Contract.Tests/LifecycleTests.cs` 148-200; ADR 0004 section *The Instance And The Outcome Mapping*; ADR 0005 section *The seven envelope-bearing stages* |
+| Read | `src/tests/Broiler.VM.Contract.Tests/ReviewRegressionTests.cs` (the mapping cases) and 122-155 (`A_Terminate_Operation_Capability_Ends_The_Operation_As_A_Host_Failure`); `src/tests/Broiler.VM.Contract.Tests/LifecycleTests.cs` ; ADR 0004 section *The Instance And The Outcome Mapping*; ADR 0005 section *The seven envelope-bearing stages* |
 | Check | Decide whether the mapping and the precedence order are tested at each stage that can produce them, or only where the fixture happens to make them easy to produce. |
 | Falsified if | No test drives a terminating host failure, a poll-bound breach or an unconverted capability fault through the instantiation stage or through `Resume`, so a stage that omits those precedence steps entirely still passes every behavioural test. |
 | Prior finding | Negative control 4 - a green suite is evidence about the contract only to the extent that the tests were written to catch the contract being broken. |
 
 ## RA-4 - Verified-artifact ownership
 
-### RC-21 - Confirm the single construction site is asserted at the granularity claimed
+### RC-06 - Judge the criteria the verified-artifact units carry
 
 | | |
 |---|---|
 | Area | RA-4 |
 | Verdict | [ ] |
-| Read | `src/Broiler.VM.Abstractions/VmVerifiedArtifact.cs` 252-280 (the hidden factory and its remark); `src/Broiler.VM.Runtime/VmVerification.cs` 253-266 (the one call); `src/tests/Broiler.VM.Architecture.Tests/ApiBaselineRules.cs` 365-408 (rule V9); ADR 0006 sections *2. What a successful verification binds* and *6. Requirement V-SEP*; `docs/evidence/vm-1/README.md` exclusion EX-51 |
+| Read | The `// Broiler-Falsified-If:` lines on `Create`, `TryAcquireLease`, `Dispose` and `ReleaseLease` in `src/Broiler.VM.Abstractions/VmVerifiedArtifact.cs`; on the partial class, `VerifyCore` and `RunVerifier` in `src/Broiler.VM.Runtime/VmVerification.cs`; on the `VmRuntime` declaration in `src/Broiler.VM.Runtime/VmRuntime.cs`, which carries the one-entry-point criterion; and on `IVmVerifiedState`, `IVmVerificationContext`, `IVmProfileVerifier.Verify` and `VmExecutorFactory` in `src/Broiler.VM.Abstractions/VmProfileContracts.cs`; ADR 0006 sections *1. The input boundary and the representation choice*, *2. What a successful verification binds*, *3. States, lifetime kinds, and the lease contract* and *6. Requirement V-SEP*, the property table |
+| Check | Decide whether the six V-SEP properties and the ownership rules are each named by a criterion on a unit that could break them. No single unit holds V-SEP, so the question is whether the split across these files leaves a property named nowhere. |
+| Falsified if | A criterion here names no observation that can be made about the unit it sits on, or restates the assessment above it; or the code beneath one already fails it; or a property in the V-SEP table is named by no criterion on any unit, so it rests on the prose of ADR 0006 alone. |
+| Prior finding | `EX-51`, which records what rule V9 does not assert about the single construction site, and `EX-75`. |
+
+### RC-07 - Confirm the single construction site is asserted at the granularity claimed
+
+| | |
+|---|---|
+| Area | RA-4 |
+| Verdict | [ ] |
+| Read | `src/Broiler.VM.Abstractions/VmVerifiedArtifact.cs` (the hidden factory and its remark); `src/Broiler.VM.Runtime/VmVerification.cs` (the one call); `src/tests/Broiler.VM.Architecture.Tests/ApiBaselineRules.cs` (rule V9); ADR 0006 sections *2. What a successful verification binds* and *6. Requirement V-SEP*; `docs/evidence/vm-1/README.md` exclusion EX-51 |
 | Check | Decide whether V9 asserts what the one-construction-site rule claims, now that the exclusion states plainly that it does not count call sites. |
 | Falsified if | V9's producer scan is restricted to public static declared-only methods, so a public *instance* member returning a `VmVerifiedArtifact` is not counted; or its caller check is per-assembly, so a second call to `VmVerifiedArtifact.Create` added anywhere inside `Broiler.VM.Runtime` leaves the rule green. |
 | Prior finding | Rules weaker than their statements - V9 asserted return types rather than the construction site. |
 
-### RC-22 - Confirm who makes the copy for a `Snapshot` profile
+### RC-08 - Decide whether the caller-buffer test proves anything about the core
 
 | | |
 |---|---|
 | Area | RA-4 |
 | Verdict | [ ] |
-| Read | `src/Broiler.VM.Runtime/VmVerification.cs` 138-186 (the payload span handed to `profile.Verifier.Verify`) and 253-266 (what the handle is built from); `src/Broiler.VM.Abstractions/VmVerifiedArtifact.cs` 225-247 (the handle's stated ownership) and 281-307; `src/Broiler.VM.Abstractions/VmProfileDescriptor.cs` 138-141; ADR 0006 section *1. The input boundary and the representation choice*, the bullet *The core makes the copy* |
-| Check | Decide whether the record's rule is implemented or delegated: the core is required to allocate a core-owned buffer for a `Snapshot` profile and hand the verifier a span over the core's copy, with that buffer becoming the handle's byte store. |
-| Falsified if | `RunVerifier` passes the caller's `payload` span directly to the verifier for every representation kind, and the handle retains only `outcome.State`, so a profile declaring `Snapshot` produces a handle holding no core-owned bytes and invariant 3 rests on the verifier's own discipline. |
-| Prior finding | EX-52 - `VmArtifactRepresentationKind.Snapshot` never causes the core to retain bytes. |
-
-### RC-23 - Confirm the lease contract, the drain, and what disposal releases
-
-| | |
-|---|---|
-| Area | RA-4 |
-| Verdict | [ ] |
-| Read | `src/Broiler.VM.Abstractions/VmVerifiedArtifact.cs` 186-223 (`VmArtifactLease`), 370-389 (`TryGetState`) and 391-461 (`TryAcquireLease`, `Dispose`, `ReleaseLease`); `src/Broiler.VM.Runtime/VmInstantiation.cs` 74-96; `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` 150-187; ADR 0006 section *3. States, lifetime kinds, and the lease contract*, including the paragraph *What the kind changes* |
-| Check | Decide whether every transition in the record's state table is implemented, whether the core's implicit instance lease is taken and released exactly once, and whether the `Disposable` kind does what the record says it does. |
-| Falsified if | `VmVerifiedArtifact.Dispose` and `ReleaseLease` run no profile release at the transition to `Disposed`, so `VmArtifactLifetimeKind.Disposable` and `Managed` are indistinguishable; or an instantiation that fails after `TryAcquireLease` leaves the lease held; or a lease is created anywhere other than `TryAcquireLease`. |
-| Prior finding | Leaks - instantiation took no lease, so a handle backing a live instance went straight to `Disposed` instead of draining. EX-52 - `VmArtifactLifetimeKind.Disposable` releases nothing. |
-
-### RC-24 - Confirm V-SEP holds structurally, not by convention
-
-| | |
-|---|---|
-| Area | RA-4 |
-| Verdict | [ ] |
-| Read | `src/Broiler.VM.Runtime/VmRuntime.cs` 167-198 (`Verify`, and the remark on its closed parameter set); `src/Broiler.VM.Runtime/VmVerification.cs` 1-45 (`VmVerificationContext`) and 176-186; `src/Broiler.VM.Runtime/VmProfileRuntimeState.cs` 125-164 (the lazy executor); `src/tests/Broiler.VM.Architecture.Tests/ApiBaselineRules.cs` 411-434 (V9b); ADR 0006 section *6. Requirement V-SEP*, the property table |
-| Check | Decide whether each of the six properties - one entry point, sufficiency, totality, capability isolation, provider isolation, lazy executor - is enforced by structure rather than asserted. |
-| Falsified if | The verification context reaches anything a verifier could invoke rather than capability *descriptors* alone; or an executor is created on a path that does not instantiate; or a second member can produce a handle; or a guest-initiated load can be admitted while a profile verifier frame is on the stack. |
-
-### RC-25 - Confirm identity component 6 carries two distinct ceiling vectors
-
-| | |
-|---|---|
-| Area | RA-4 |
-| Verdict | [ ] |
-| Read | `src/Broiler.VM.Runtime/VmVerification.cs` 155-163 (`new VmEffectiveCeilings(effective, effective)`); `src/Broiler.VM.Abstractions/VmLimitVector.cs` 300-332 (`VmEffectiveCeilings`); `src/Broiler.VM.Runtime/VmInstantiation.cs` 107-115 (the instance level built from `InstantiationCeilings`) and 312-383 (`TryAdmitSharing`); `src/Broiler.VM.Abstractions/VmVerifiedArtifact.cs` 122-166 (`FirstMismatch`); ADR 0006 sections *2. What a successful verification binds* (component 6) and *4. The cross-runtime sharing predicate*; ADR 0007 section *The precedence algorithm*, step P3 |
-| Check | Decide whether the verification and instantiation halves of component 6 can ever differ, and what clause 8's exact-equality comparison is therefore comparing. |
-| Falsified if | Verification constructs the pair from one vector used twice, so `InstantiationCeilings` is never distinct from `VerificationCeilings` and P3's instance-override layer has no input to tighten; or `TryAdmitSharing` builds the receiving identity from a single vector at `VmInstantiation.cs:344-355` for the same reason. |
-
-### RC-26 - Decide whether the caller-buffer test proves anything about the core
-
-| | |
-|---|---|
-| Area | RA-4 |
-| Verdict | [ ] |
-| Read | `src/tests/Broiler.VM.Contract.Tests/VerificationAndReaderTests.cs` 111-129 (`Mutating_The_Callers_Buffer_After_Verification_Changes_Nothing`); `src/tests/Broiler.VM.Fixtures/FixtureVmProfile.cs` 187-188; `src/tests/Broiler.VM.Contract.Tests/ContractSurfaceTests.cs` 62-63 and `src/tests/Broiler.VM.Contract.Tests/CatalogRegistrationTests.cs` 178-179; ADR 0006 section *1. The input boundary and the representation choice*, the bullets *The core makes the copy* and *Truthfulness* |
+| Read | `src/tests/Broiler.VM.Contract.Tests/VerificationAndReaderTests.cs` (`Mutating_The_Callers_Buffer_After_Verification_Changes_Nothing`); `src/tests/Broiler.VM.Fixtures/FixtureVmProfile.cs` ; `src/tests/Broiler.VM.Contract.Tests/ContractSurfaceTests.cs` and `src/tests/Broiler.VM.Contract.Tests/CatalogRegistrationTests.cs` ; ADR 0006 section *1. The input boundary and the representation choice*, the bullets *The core makes the copy* and *Truthfulness* |
 | Check | Decide whether clearing the caller's array and re-reading the result discriminates between a core that owns the bytes and a fixture verifier that happened to decode eagerly. |
 | Falsified if | Every descriptor in the test tree declares `VmArtifactRepresentationKind.Decoded`, so the test exercises the branch in which the record requires no copy at all and no test declares `Snapshot`; the ownership rule the test is named for is then unexercised, and the record itself defers detection to VM-2's mutating corpus. |
 | Prior finding | Negative control 4 - four assertions were one level too shallow; and EX-52's `Snapshot` row, which this test does not reach. |
 
 ## RA-5 - Guest-initiated loads and external suspension
 
-### RC-27 - Decide whether the no-provider refusal is taken before every bound
+### RC-09 - Decide whether the no-provider refusal is taken before every bound
 
 | | |
 |---|---|
@@ -328,7 +170,7 @@ not recorded here; they belong in
 | Falsified if | Any bound check, meter charge, or read of the request payload runs before `runtime.ProviderFor(profile)` is consulted, so a provider-less composition can return two different refusals for two different guest inputs |
 | Prior finding | Negative control 4 in `docs/evidence/vm-1/negative-control.log` and `docs/evidence/vm-1/README.md`, "The negative controls, in detail": removing this refusal did not fail the suite on its first run |
 
-### RC-28 - Decide whether the mediator observes cancellation at its ordered position
+### RC-10 - Decide whether the mediator observes cancellation at its ordered position
 
 | | |
 |---|---|
@@ -338,7 +180,7 @@ not recorded here; they belong in
 | Check | Whether the requesting operation's cancellation latch is an observation point of its own at position 2, or is only reachable through the `OperationCanceledException` catch around the provider call - and, if the latter, whether the reviewer accepts that as satisfying the record |
 | Falsified if | With the cancellation latch armed and no provider registered, the nested load reports `HostFailure` / `ProviderNotRegistered` rather than `Cancellation`, because no cancellation check runs before the registration check |
 
-### RC-29 - Decide whether nested fan-out and byte counters are scoped to one operation
+### RC-11 - Decide whether nested fan-out and byte counters are scoped to one operation
 
 | | |
 |---|---|
@@ -348,7 +190,7 @@ not recorded here; they belong in
 | Check | Whether the counters reset when a new operation begins and persist across a resume of the same operation, which is the distinction the record and the mediator's own comment both rest on |
 | Falsified if | Every call site uses the one-argument `EnterScope(baseline)`, which passes a default operation id, so `currentOperation` never changes, `fanOut` and `bytes` accumulate for the life of the profile state, and a second invocation on one instance begins with the first invocation's fan-out already spent - and no test invokes twice and asserts the reset |
 
-### RC-30 - Decide whether a provider may be registered where no profile declares loads
+### RC-12 - Decide whether a provider may be registered where no profile declares loads
 
 | | |
 |---|---|
@@ -358,7 +200,7 @@ not recorded here; they belong in
 | Check | Whether that ruling is enforced at runtime creation, or is a paper rule a later milestone owns - and if the latter, whether the reviewer requires it to be named as an exclusion rather than left as unreached code |
 | Falsified if | Runtime creation succeeds for a catalog in which no descriptor declares guest-initiated loads while the options register an `ArtifactProvider` capability, because `registersProvider` is computed and then discarded |
 
-### RC-31 - Decide whether the double gate on external suspension is closed in both halves
+### RC-13 - Decide whether the double gate on external suspension is closed in both halves
 
 | | |
 |---|---|
@@ -368,7 +210,7 @@ not recorded here; they belong in
 | Check | Whether both halves refuse with `Unsupported` under distinct reasons that name distinct owners, and whether the descriptor field is mandatory and explicit as the record requires |
 | Falsified if | Either half answers `InvalidState`, the two reasons collapse into one, or an omitted descriptor field is indistinguishable from a deliberate refusal because `VmDeclaration.NotDeclared` is the zero value and nothing forces the author to state it |
 
-### RC-32 - Decide whether every party entitled to resume has a path to resume
+### RC-14 - Decide whether every party entitled to resume has a path to resume
 
 | | |
 |---|---|
@@ -379,7 +221,7 @@ not recorded here; they belong in
 | Falsified if | A `Guest`- or `Instantiation`-origin suspension queried through the handle answers `InvalidState` rather than `Unsupported`, and a pending suspend not yet observed answers `InvalidState` rather than `NoOp`, so a caller cannot tell "not yet" from "never" |
 | Prior finding | EX-52 in `docs/evidence/vm-1/README.md`: `TryTakeSuspension` never answers `Unsupported` or `NoOp`. Named in `HUMAN_REVIEW.md` under the four invariant resolutions |
 
-### RC-33 - Decide whether resume admission under a spent parent is checked before any guest work
+### RC-15 - Decide whether resume admission under a spent parent is checked before any guest work
 
 | | |
 |---|---|
@@ -392,7 +234,7 @@ not recorded here; they belong in
 
 ## RA-6 - The public contract surface
 
-### RC-34 - Accept or reverse erratum 1: `VmControlResult` is a struct, not an enum
+### RC-16 - Accept or reverse erratum 1: `VmControlResult` is a struct, not an enum
 
 | | |
 |---|---|
@@ -403,7 +245,7 @@ not recorded here; they belong in
 | Falsified if | The frozen four members are not preserved by name in `VmControlOutcome`, or a control result can be constructed carrying more than one reason or none where a reason is required |
 | Prior finding | EX-41 and the Deviations section of `docs/evidence/vm-1/README.md` |
 
-### RC-35 - Accept or reverse erratum 2: stage results are built by hidden public factories
+### RC-17 - Accept or reverse erratum 2: stage results are built by hidden public factories
 
 | | |
 |---|---|
@@ -414,7 +256,7 @@ not recorded here; they belong in
 | Falsified if | A factory exists for a cell the stage matrix marks illegal, or a profile-facing result type cannot be named from a package that references only Abstractions and Binary |
 | Prior finding | EX-41; `docs/evidence/vm-1/README.md`, Deviations 2 |
 
-### RC-36 - Accept or reverse erratum 3: `VmOperation` is a frozen name that is not exported
+### RC-18 - Accept or reverse erratum 3: `VmOperation` is a frozen name that is not exported
 
 | | |
 |---|---|
@@ -425,7 +267,7 @@ not recorded here; they belong in
 | Falsified if | The name is absent from V1's baseline with only a source comment recording why, so V1 cannot fail for the deviation it documents |
 | Prior finding | EX-41 |
 
-### RC-37 - Decide whether the exported surface matches the frozen public-name table
+### RC-19 - Decide whether the exported surface matches the frozen public-name table
 
 | | |
 |---|---|
@@ -435,7 +277,7 @@ not recorded here; they belong in
 | Check | Whether every frozen name is exported under the frozen kind, whether every exported type is declared in namespace `Broiler.VM`, and whether the names a single record freezes in its own text are held as firmly as the table's rows |
 | Falsified if | A struck name reappears on the exported surface, a frozen name is exported under a different kind without an erratum, or a name frozen by a record's own text is absent from both the baseline list and the errata |
 
-### RC-38 - Decide whether the stage matrix is a compile-time fact
+### RC-20 - Decide whether the stage matrix is a compile-time fact
 
 | | |
 |---|---|
@@ -445,7 +287,7 @@ not recorded here; they belong in
 | Check | Whether the seven rows and every negative rule in the record are reproduced exactly, including S7 being the suspending stage's row plus `InvalidState` minus `UnsupportedProfile`, and whether an illegal cell is unrepresentable rather than merely unasserted |
 | Falsified if | A cell legal in `VmStageMatrix` is illegal in the record's table or the reverse, or a factory exists that can mint a result for a cell the matrix denies |
 
-### RC-39 - Decide whether a profile package can name everything it needs, and nothing more
+### RC-21 - Decide whether a profile package can name everything it needs, and nothing more
 
 | | |
 |---|---|
@@ -456,7 +298,7 @@ not recorded here; they belong in
 | Falsified if | A profile-facing interface, delegate or result type is declared in Broiler.VM.Runtime, or a capability signature can name a type outside the closed set |
 | Prior finding | EX-50: the application-local consumer profile does not exist, so P1 and P2 are read against two fixture profiles in one test-only assembly |
 
-### RC-40 - Decide whether the frozen member sets survive on the exported surface
+### RC-22 - Decide whether the frozen member sets survive on the exported surface
 
 | | |
 |---|---|
@@ -469,7 +311,7 @@ not recorded here; they belong in
 
 ## RA-7 - The records themselves
 
-### RC-41 - Decide what happens to the seventeen proposed and unapplied roadmap amendments
+### RC-23 - Decide what happens to the seventeen proposed and unapplied roadmap amendments
 
 | | |
 |---|---|
@@ -480,7 +322,7 @@ not recorded here; they belong in
 | Falsified if | A row's old text does not match `docs/roadmap.md` character for character under the record's own quoting convention, a row marked `Proposed` has in fact been applied, or a row changes an invariant or a gate while claiming not to |
 | Prior finding | EX-11, carried in both bundles and in `docs/roadmap.status.md` as an open VM-0 gate condition |
 
-### RC-42 - Decide whether ADR 0007's monotonicity rules resolve invariant 9's arithmetic
+### RC-24 - Decide whether ADR 0007's monotonicity rules resolve invariant 9's arithmetic
 
 | | |
 |---|---|
@@ -490,7 +332,7 @@ not recorded here; they belong in
 | Check | Whether M1 and M2 plus the clamp-or-refuse asymmetry are a faithful reading of the invariant rather than a new policy, and whether `BudgetRaiseRefused` staying outside `ResourceExhaustion` is right |
 | Falsified if | Two implementers can still derive two effective policies from the record's own text, a core operation increases a live meter, or a refused host override is reported as exhaustion |
 
-### RC-43 - Decide whether the aggregate budget resolves invariant 9's composition clause
+### RC-25 - Decide whether the aggregate budget resolves invariant 9's composition clause
 
 | | |
 |---|---|
@@ -501,7 +343,7 @@ not recorded here; they belong in
 | Falsified if | The record's four guarantees are not jointly deliverable by a pay-as-you-go counter, or the resolution requires a scheduler property the record elsewhere forbids |
 | Prior finding | The VM-1 blocker recorded in `docs/evidence/vm-1/README.md`, "Asymmetric accounting": the aggregate live sum could be driven to zero while memory was still live |
 
-### RC-44 - Decide whether parking by unwinding resolves invariant 12
+### RC-26 - Decide whether parking by unwinding resolves invariant 12
 
 | | |
 |---|---|
@@ -511,7 +353,7 @@ not recorded here; they belong in
 | Check | Whether "external control is a lifecycle state, not a side channel" is genuinely discharged by parking as heap data behind a single-use object, and whether disposal is provably free of any wait on a resume, a host reply or an event loop |
 | Falsified if | Any path holds a thread for the duration of a pause, disposal can block on a resume that never comes, or the core resumes, cancels or terminates a suspended operation on a timer of its own |
 
-### RC-45 - Decide whether the suspension gates resolve invariant 8 without a shape-only stub
+### RC-27 - Decide whether the suspension gates resolve invariant 8 without a shape-only stub
 
 | | |
 |---|---|
@@ -521,7 +363,7 @@ not recorded here; they belong in
 | Check | Whether a declaration gate answering `Unsupported` with a naming reason is discharge form (a) rather than a type that exists and refuses everything, and whether "the core authenticates nobody" is an acceptable resolution of who may pause an operation |
 | Falsified if | An admitted artefact discharges the invariant by neither form, or a gate returns a truthful-looking refusal from a path no composition can reach |
 
-### RC-46 - Decide each of the twelve records, which are all still `Proposed`
+### RC-28 - Decide each of the twelve records, which are all still `Proposed`
 
 | | |
 |---|---|
@@ -532,7 +374,7 @@ not recorded here; they belong in
 | Falsified if | The index lists a record that does not exist or omits one that does, a contract-bearing record declares a version other than the one `VmCoreContract` carries, or a record's status is changed anywhere without a signature in `HUMAN_REVIEW.md` |
 | Prior finding | EX-30: all six ownership roles are held by one person, so owner and reviewer confirmation is not independent |
 
-### RC-47 - Decide the one seam ADR 0011 leaves open against ADR 0005
+### RC-29 - Decide the one seam ADR 0011 leaves open against ADR 0005
 
 | | |
 |---|---|
@@ -544,18 +386,18 @@ not recorded here; they belong in
 
 ## RA-8 - The evidence and the rule register
 
-### RC-48 - Decide whether the figures in the bundles match the retained logs
+### RC-30 - Decide whether the figures in the bundles match the retained logs
 
 | | |
 |---|---|
 | Area | RA-8 |
 | Verdict | [ ] |
 | Read | `docs/evidence/vm-1/README.md`, Outputs; `docs/evidence/vm-1/build.log`, `docs/evidence/vm-1/test.log`, `docs/evidence/vm-1/pack.log`, `docs/evidence/vm-1/publish-jit-and-trimmed.log`, `docs/evidence/vm-1/publish-aot.log`, `docs/evidence/vm-1/negative-control.log`, `docs/evidence/vm-1/d1-outcome.txt`, `docs/evidence/vm-1/hashes.txt`; `docs/evidence/vm-0/README.md` and the logs beside it; `HUMAN_REVIEW.md`, "Evidence Available To The Reviewer"; `docs/roadmap.status.md` section 2 |
-| Check | Whether every figure quoted in a bundle, in the ledger and in the review file is the figure its log records: 7 projects Release with 0 warnings and 0 errors; 220 tests passing, 89 architecture and 131 behavioural; exactly 3 `.nupkg` and 3 `.snupkg`; a Native AOT binary of 1,279,488 bytes, recorded in the collecting machine's locale as `1.279.488`; a trimmed self-contained binary of 162,816 bytes; 5 checks passed and exit code 0 in each of the three modes; 4 negative controls |
-| Falsified if | A document states a figure the log does not, in particular an AOT size other than 1,279,488 bytes or a suite total other than 220, or the SHA-256 list in `docs/evidence/vm-1/hashes.txt` does not recompute against the checkout the bundle claims to describe |
+| Check | Whether every figure quoted in a bundle, in the ledger and in the review file is the figure its log records: 7 projects Release with 0 warnings and 0 errors; 221 tests passing, 90 architecture and 131 behavioural; exactly 3 `.nupkg` and 3 `.snupkg`; a Native AOT binary of 1,279,488 bytes, recorded in the collecting machine's locale as `1.279.488`; a trimmed self-contained binary of 162,816 bytes; 5 checks passed and exit code 0 in each of the three modes; 4 negative controls |
+| Falsified if | A document states a figure the log does not, in particular an AOT size other than 1,279,488 bytes or a suite total other than 221, or the SHA-256 list in `docs/evidence/vm-1/hashes.txt` does not recompute against the checkout the bundle claims to describe |
 | Prior finding | Ledger update rule 4 forbids promoting a result beyond what it proves; `docs/evidence/vm-1/README.md` records that VM-1-001's figures were all true while sixteen blockers were present |
 
-### RC-49 - Decide whether rule B3 is honestly `Vacuous`
+### RC-31 - Decide whether rule B3 is honestly `Vacuous`
 
 | | |
 |---|---|
@@ -565,7 +407,7 @@ not recorded here; they belong in
 | Check | Whether a violation of B3 is genuinely unreachable by construction - A1 forbids the outbound project reference, A2 the package-shaped one, and the single-source `NuGet.config` makes a foreign `Broiler.*` package unresolvable - so that `Vacuous` with an activation milestone of VM-3 is the honest status rather than a rule quietly retired |
 | Falsified if | A path exists by which a product assembly could name a foreign `Broiler.*` assembly in this checkout, which would make B3 `Active` and unwitnessed; or the register's own criterion that every rule carries a witness is not met by a row whose witness field is `none` or null |
 
-### RC-50 - Decide whether the negative controls falsify anything
+### RC-32 - Decide whether the negative controls falsify anything
 
 | | |
 |---|---|
@@ -576,7 +418,7 @@ not recorded here; they belong in
 | Falsified if | A control fails for a reason other than the rule it targets, a revert run is absent from a log, or a control's injected edit does not correspond to the code path the bundle says it removes |
 | Prior finding | Control 4 did not fail on its first run; four assertions were one level too shallow, testing the fixture's reaction rather than the core's reason |
 
-### RC-51 - Decide whether each register row's witness falsifies that row's statement
+### RC-33 - Decide whether each register row's witness falsifies that row's statement
 
 | | |
 |---|---|
@@ -587,7 +429,7 @@ not recorded here; they belong in
 | Falsified if | A row's statement is broader than what its rule executes, as V4 and V9 were before the review pass, or a witness is accepted by the rule it is filed under |
 | Prior finding | Two register rows were among the surviving review findings: V4 checked a property count rather than the frozen rows, and V9 asserted return types rather than the construction site. EX-51 records what V9 still does not do |
 
-### RC-52 - Decide whether the two bundles cover the eight required fields truthfully
+### RC-34 - Decide whether the two bundles cover the eight required fields truthfully
 
 | | |
 |---|---|
@@ -598,7 +440,7 @@ not recorded here; they belong in
 | Falsified if | A field is empty without an exclusion naming why, a bundle claims a state the retained logs do not show, or a superseded result has been removed rather than kept as history |
 | Prior finding | EX-01, EX-03, EX-42, EX-45: the D1 branch is environment-conditional, no SDK pin exists, the AOT publish is not reproducible by automation, and everything is one RID on one machine with no CI |
 
-### RC-53 - Decide whether the claim each bundle justifies is as narrow as its evidence
+### RC-35 - Decide whether the claim each bundle justifies is as narrow as its evidence
 
 | | |
 |---|---|

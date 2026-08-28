@@ -9,6 +9,7 @@
 // Human-reviewed:   0/10
 // IP risk:          Low
 // Security risk:    Low
+// Criteria:         0/0
 // Resource impact:  3/10 max
 // Unverified:       10
 //
@@ -32,12 +33,12 @@ namespace Broiler.VM;
 /// implementation happened to reach first would make the failure depend on the implementation.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=E84F78
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=E84F78
+// Broiler-Human:        PENDING
 internal static class VmDescriptorValidation
 {
-    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s7; IP=Low; Security=Low; Resources=3; Fingerprint=682D94
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s7; IP=Low; Security=Low; Resources=3; Fingerprint=682D94
+    // Broiler-Human:        PENDING
     internal static void ValidateSingle(VmProfileDescriptor descriptor, int ordinalPosition)
     {
         if (descriptor.ProfileId.IsEmpty)
@@ -140,8 +141,8 @@ internal static class VmDescriptorValidation
         }
     }
 
-    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=Low; Resources=3; Fingerprint=AEBA3A
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=Low; Resources=3; Fingerprint=AEBA3A
+    // Broiler-Human:        PENDING
     internal static void ValidateAgainstAccepted(
         VmProfileDescriptor descriptor,
         System.Collections.Generic.IReadOnlyList<VmProfileDescriptor> accepted)
@@ -165,8 +166,8 @@ internal static class VmDescriptorValidation
         }
     }
 
-    // Broiler-AI:    Origin=AI; Spec=ADR-0003 s5; IP=Low; Security=Low; Resources=0; Fingerprint=599948
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0003 s5; IP=Low; Security=Low; Resources=0; Fingerprint=599948
+    // Broiler-Human:        PENDING
     private static void ValidateCoreContractAdmission(VmProfileDescriptor descriptor)
     {
         if (descriptor.BuiltAgainstCoreContractVersion < VmCoreContract.MinimumSupportedVersion)
@@ -204,8 +205,8 @@ internal static class VmDescriptorValidation
         }
     }
 
-    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s6; IP=Low; Security=Low; Resources=2; Fingerprint=4514AD
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s6; IP=Low; Security=Low; Resources=2; Fingerprint=4514AD
+    // Broiler-Human:        PENDING
     private static void ValidateFeatureManifests(VmProfileDescriptor descriptor)
     {
         var manifests = descriptor.AcceptedFeatureManifests;
@@ -247,8 +248,8 @@ internal static class VmDescriptorValidation
         }
     }
 
-    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=1; Fingerprint=276D1C
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=1; Fingerprint=276D1C
+    // Broiler-Human:        PENDING
     private static void ValidateBudgets(VmProfileDescriptor descriptor)
     {
         if (!descriptor.BudgetDeclarationMatrix.IsComplete)
@@ -286,8 +287,8 @@ internal static class VmDescriptorValidation
         }
     }
 
-    // Broiler-AI:    Origin=AI; Spec=ADR-0008; IP=Low; Security=Low; Resources=1; Fingerprint=309375
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0008; IP=Low; Security=Low; Resources=1; Fingerprint=309375
+    // Broiler-Human:        PENDING
     private static void ValidateGuestLoads(VmProfileDescriptor descriptor)
     {
         var declaration = descriptor.GuestInitiatedLoads;
@@ -339,8 +340,8 @@ internal static class VmDescriptorValidation
         }
     }
 
-    // Broiler-AI:    Origin=AI; Spec=ADR-0011; IP=Low; Security=Low; Resources=3; Fingerprint=4FD2A4
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Low; Resources=3; Fingerprint=4FD2A4
+    // Broiler-Human:        PENDING
     private static void ValidateCapabilities(VmProfileDescriptor descriptor)
     {
         var imports = descriptor.HostCapabilityDescriptors;
@@ -378,8 +379,8 @@ internal static class VmDescriptorValidation
         }
     }
 
-    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s2; IP=Low; Security=Low; Resources=0; Fingerprint=41CD4A
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s2; IP=Low; Security=Low; Resources=0; Fingerprint=41CD4A
+    // Broiler-Human:        PENDING
     private static bool StartsWithBroiler(string packageId)
     {
         const string Prefix = "broiler.";
@@ -406,8 +407,8 @@ internal static class VmDescriptorValidation
     /// collation is performed - the field is never compared, so normalizing it would buy nothing and
     /// would introduce a globalization dependency into a component that needs none.
     /// </summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s4; IP=Low; Security=Low; Resources=1; Fingerprint=3A2211
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s4; IP=Low; Security=Low; Resources=1; Fingerprint=3A2211
+    // Broiler-Human:        PENDING
     private static bool IsWellFormedDisplayName(string displayName)
     {
         if (string.IsNullOrEmpty(displayName) ||

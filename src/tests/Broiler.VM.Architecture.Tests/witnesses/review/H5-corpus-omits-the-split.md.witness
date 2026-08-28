@@ -1,5 +1,5 @@
 # Witness: a corpus that has stopped quoting the architecture/behavioural split
 
-The suite reported 220 tests passed, the fixtures host publishes and runs as a Native AOT
+The suite reported 221 tests passed, the fixtures host publishes and runs as a Native AOT
 binary of 1,279,488 bytes, and it also runs as a 162,816-byte trimmed binary. The split is the
 figure that has gone.

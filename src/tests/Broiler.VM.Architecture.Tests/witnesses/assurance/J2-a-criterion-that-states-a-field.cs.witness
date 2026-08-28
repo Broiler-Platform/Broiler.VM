@@ -1,0 +1,30 @@
+// Witness for rule J2: a falsification criterion that carries a Key=Value field.
+//
+// A field on this line is a claim the system does not define, does not check and does not
+// summarize, sitting where a reader will read it as though it were checked. Data goes on the
+// AI line, whose field set is closed; this line is prose.
+
+namespace Probe;
+
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=TBF
+// Broiler-Human:        PENDING
+public static class Fielded
+{
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-Falsified-If: the unit is Security=Low and a buffer is sized before its bound comparison
+    // Broiler-Human:        PENDING
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

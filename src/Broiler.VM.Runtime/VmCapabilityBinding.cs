@@ -9,6 +9,7 @@
 // Human-reviewed:   0/10
 // IP risk:          Low
 // Security risk:    Medium
+// Criteria:         0/0
 // Resource impact:  2/10 max
 // Unverified:       10
 //
@@ -24,8 +25,8 @@ namespace Broiler.VM;
 /// slot <em>k</em> and can ask only whether it is bound; it can never enumerate the table, resolve
 /// by name, or reach a CLR type or member through it.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C634B7
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C634B7
+// Broiler-Human:        PENDING
 internal sealed class VmCapabilityBinding
 {
     internal VmCapabilityBinding(
@@ -48,8 +49,8 @@ internal sealed class VmCapabilityBinding
 
     internal IVmArtifactProvider? Provider { get; }
 
-    // Broiler-AI:    Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=337303
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=337303
+    // Broiler-Human:        PENDING
     internal bool IsBound => Handler is not null || BytesHandler is not null || Provider is not null;
 }
 
@@ -67,8 +68,8 @@ internal sealed class VmCapabilityBinding
 /// from inside a non-reentrant capability is refused rather than deadlocking or recursing.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C2C91D
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C2C91D
+// Broiler-Human:        PENDING
 internal sealed class VmCapabilityInvoker : IVmHostCapabilityInvoker
 {
     private readonly VmCapabilityBinding[] bindings;
@@ -98,19 +99,19 @@ internal sealed class VmCapabilityInvoker : IVmHostCapabilityInvoker
     internal bool TerminatesOperation { get; private set; }
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=08A7E3
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=08A7E3
+    // Broiler-Human:        PENDING
     public int BindingCount => bindings.Length;
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=B14302
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=B14302
+    // Broiler-Human:        PENDING
     public bool IsBound(int bindingIndex) =>
         bindingIndex >= 0 && bindingIndex < bindings.Length && bindings[bindingIndex].IsBound;
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=2; Fingerprint=ECEF69
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=2; Fingerprint=ECEF69
+    // Broiler-Human:        PENDING
     public VmHostCallOutcome Invoke(int bindingIndex, System.ReadOnlySpan<long> arguments, out long result)
     {
         result = 0;
@@ -153,8 +154,8 @@ internal sealed class VmCapabilityInvoker : IVmHostCapabilityInvoker
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=2; Fingerprint=048344
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=2; Fingerprint=048344
+    // Broiler-Human:        PENDING
     public VmHostCallOutcome InvokeBytes(int bindingIndex, VmBytes argument, out VmOpaqueRef result)
     {
         result = default;
@@ -194,8 +195,8 @@ internal sealed class VmCapabilityInvoker : IVmHostCapabilityInvoker
         }
     }
 
-    // Broiler-AI:    Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=C0F568
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=C0F568
+    // Broiler-Human:        PENDING
     private bool TryEnter(int bindingIndex, out VmCapabilityBinding binding)
     {
         binding = null!;
@@ -227,13 +228,13 @@ internal sealed class VmCapabilityInvoker : IVmHostCapabilityInvoker
         return true;
     }
 
-    // Broiler-AI:    Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=FDBEE7
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=FDBEE7
+    // Broiler-Human:        PENDING
     private void Leave(VmCapabilityBinding binding) =>
         owner.LeaveCapability(binding.Import.Descriptor.Reentrancy);
 
-    // Broiler-AI:    Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=FBCA55
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=FBCA55
+    // Broiler-Human:        PENDING
     private VmHostCallOutcome Translate(VmCapabilityBinding binding)
     {
         LastFailure = VmReason.HostCapabilityFaulted;

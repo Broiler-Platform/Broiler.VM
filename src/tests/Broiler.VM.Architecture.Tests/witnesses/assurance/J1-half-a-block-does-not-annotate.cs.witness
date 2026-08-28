@@ -6,11 +6,11 @@
 
 namespace Probe;
 
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=8FCF48
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=8FCF48
+// Broiler-Human:        PENDING
 public static class Halved
 {
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=TBF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=TBF
     public static int Fold(int[] values)
     {
         var total = 0;

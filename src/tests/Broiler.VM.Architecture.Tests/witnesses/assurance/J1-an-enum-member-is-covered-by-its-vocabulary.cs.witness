@@ -14,8 +14,8 @@
 
 namespace Probe;
 
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=043DBE
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=043DBE
+// Broiler-Human:        PENDING
 public enum ProbeDimension
 {
     AllocatedBytes = 2,

@@ -9,6 +9,7 @@
 // Human-reviewed:   0/5
 // IP risk:          Low
 // Security risk:    Medium
+// Criteria:         0/0
 // Resource impact:  4/10 max
 // Unverified:       5
 //
@@ -39,12 +40,12 @@ namespace Broiler.VM;
 /// noisy enough to be ignored.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=8F3F8B
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=8F3F8B
+// Broiler-Human:        PENDING
 internal static class VmCanonicalCatalogEncoding
 {
-    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s11; IP=Low; Security=Medium; Resources=4; Fingerprint=DD5B38
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s11; IP=Low; Security=Medium; Resources=4; Fingerprint=DD5B38
+    // Broiler-Human:        PENDING
     internal static byte[] Encode(System.Collections.Generic.IReadOnlyList<VmProfileDescriptor> orderedEntries)
     {
         var buffer = new System.Collections.Generic.List<byte>(256);
@@ -105,8 +106,8 @@ internal static class VmCanonicalCatalogEncoding
         return buffer.ToArray();
     }
 
-    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s11; IP=Low; Security=Medium; Resources=3; Fingerprint=B3768E
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s11; IP=Low; Security=Medium; Resources=3; Fingerprint=B3768E
+    // Broiler-Human:        PENDING
     private static void WriteString(System.Collections.Generic.List<byte> buffer, string value)
     {
         var bytes = System.Text.Encoding.UTF8.GetBytes(value ?? string.Empty);
@@ -114,13 +115,13 @@ internal static class VmCanonicalCatalogEncoding
         buffer.AddRange(bytes);
     }
 
-    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s11; IP=Low; Security=Medium; Resources=0; Fingerprint=DD77D0
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s11; IP=Low; Security=Medium; Resources=0; Fingerprint=DD77D0
+    // Broiler-Human:        PENDING
     private static void WriteInt32(System.Collections.Generic.List<byte> buffer, int value) =>
         WriteUInt32(buffer, unchecked((uint)value));
 
-    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s11; IP=Low; Security=Medium; Resources=0; Fingerprint=C03F9B
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s11; IP=Low; Security=Medium; Resources=0; Fingerprint=C03F9B
+    // Broiler-Human:        PENDING
     private static void WriteUInt32(System.Collections.Generic.List<byte> buffer, uint value)
     {
         buffer.Add((byte)(value & 0xFF));

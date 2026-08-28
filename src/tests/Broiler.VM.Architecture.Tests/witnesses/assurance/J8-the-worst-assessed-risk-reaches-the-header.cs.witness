@@ -10,15 +10,15 @@
 
 namespace Probe;
 
-// Broiler-AI:    Origin=AI; IP=Unknown; Security=Low; Resources=1; Fingerprint=99572A
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Unknown; Security=Low; Resources=1; Fingerprint=99572A
+// Broiler-Human:        PENDING
 public static class Weakest
 {
-    // Broiler-AI:    Origin=AI; IP=None; Security=High; Resources=4; Fingerprint=DB5936
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=4; Fingerprint=DB5936
+    // Broiler-Human:        PENDING
     public static int Widest(int[] values) => values.Length;
 
-    // Broiler-AI:    Origin=AI; IP=High; Security=Medium; Resources=2; Fingerprint=D8D790
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=High; Security=Medium; Resources=2; Fingerprint=D8D790
+    // Broiler-Human:        PENDING
     public static int Narrowest(int[] values) => values.Length + 1;
 }

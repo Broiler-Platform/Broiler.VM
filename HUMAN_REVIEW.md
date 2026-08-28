@@ -98,9 +98,12 @@ and stops when the time runs out has still spent that time where a defect would 
 the most; the ordering exists so that stopping early is a defensible outcome rather than
 a gap. The per-item checklist for each area is the worksheet at
 [docs/review/vm-0-vm-1.md](docs/review/vm-0-vm-1.md); the times below are suggestions,
-not budgets anyone is held to. The worksheet carries 53 items, numbered contiguously from
+not budgets anyone is held to. The worksheet carries 35 items, numbered contiguously from
 `RC-01`, with at least one for each of the eight areas; that count is stated here as well as
-there so that neither document can shed an item on its own.
+there so that neither document can shed an item on its own. It carried fifty-three until the
+code-facing falsification criteria moved onto the declarations themselves, as a third
+annotation line; the worksheet header records what moved and why, and each of the four code
+areas keeps one item asking the reviewer to judge those criteria.
 
 | ID | Area | What a defect here would cost | Suggested time | Where to start |
 |---|---|---|---|---|
@@ -123,7 +126,7 @@ these are the author's marks about evidence, not review verdicts.
 
 - `[MET]` **Build and tests:** `dotnet build Broiler.VM.slnx -c Release` completes with 0
   warnings and 0 errors across seven projects; `dotnet test Broiler.VM.slnx -c Release`
-  reports 220 passed, 0 failed, 0 skipped - 89 architecture and 131 behavioural.
+  reports 221 passed, 0 failed, 0 skipped - 90 architecture and 131 behavioural.
 - `[PART]` **An adversarial review has been run, and it found a great deal.** Six reviewers
   against the frozen records, every finding put to two independent refuters: 45
   findings survived, sixteen of them blockers, several confirmed by executing the

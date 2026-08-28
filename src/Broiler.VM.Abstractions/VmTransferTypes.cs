@@ -9,6 +9,7 @@
 // Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    Low
+// Criteria:         0/0
 // Resource impact:  1/10 max
 // Unverified:       8
 //
@@ -25,15 +26,15 @@ namespace Broiler.VM;
 /// one across an await - the last of which is also why an asynchronous host capability is not
 /// representable.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=AB5195
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=AB5195
+// Broiler-Human:        PENDING
 public readonly ref struct VmBytes
 {
     private readonly System.ReadOnlySpan<byte> span;
 
     /// <summary>Wraps a span for the duration of one call.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C880D9
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C880D9
+    // Broiler-Human:        PENDING
     public VmBytes(System.ReadOnlySpan<byte> bytes) => span = bytes;
 
     /// <summary>The bytes.</summary>
@@ -54,15 +55,15 @@ public readonly ref struct VmBytes
 /// encoding, normalization or culture decision is made by the core on behalf of a profile whose
 /// language may have its own rules for all three.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=5C3E2F
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=5C3E2F
+// Broiler-Human:        PENDING
 public readonly ref struct VmUtf8Text
 {
     private readonly System.ReadOnlySpan<byte> utf8;
 
     /// <summary>Wraps UTF-8 bytes for the duration of one call.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=3F6F22
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=3F6F22
+    // Broiler-Human:        PENDING
     public VmUtf8Text(System.ReadOnlySpan<byte> bytes) => utf8 = bytes;
 
     /// <summary>The UTF-8 bytes.</summary>
@@ -85,8 +86,8 @@ public readonly ref struct VmUtf8Text
 /// <c>Equals</c> on the payload itself, never pattern-matches on its concrete type, and never
 /// stores, clones, pools or serialises it.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=F24020
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=F24020
+// Broiler-Human:        PENDING
 public readonly struct VmPayloadIdentity : System.IEquatable<VmPayloadIdentity>
 {
     /// <summary>Creates a payload identity.</summary>
@@ -107,8 +108,8 @@ public readonly struct VmPayloadIdentity : System.IEquatable<VmPayloadIdentity>
     public int PayloadSchemaVersion { get; }
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1D965E
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=1D965E
+    // Broiler-Human:        PENDING
     public bool Equals(VmPayloadIdentity other) =>
         ProfileId.Equals(other.ProfileId) &&
         PayloadKindId == other.PayloadKindId &&
@@ -125,8 +126,8 @@ public readonly struct VmPayloadIdentity : System.IEquatable<VmPayloadIdentity>
     public static bool operator ==(VmPayloadIdentity left, VmPayloadIdentity right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=5D3E69
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=5D3E69
+    // Broiler-Human:        PENDING
     public static bool operator !=(VmPayloadIdentity left, VmPayloadIdentity right) => !left.Equals(right);
 }
 
@@ -138,8 +139,8 @@ public readonly struct VmPayloadIdentity : System.IEquatable<VmPayloadIdentity>
 /// acquiring a case for it: the core routes the payload and never interprets it, and the profile
 /// ships a static accessor its own consumers use to get the concrete type back out.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=EBD3C7
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=EBD3C7
+// Broiler-Human:        PENDING
 public interface IVmProfilePayload
 {
     /// <summary>Which profile minted this payload, of what kind, at what schema version.</summary>

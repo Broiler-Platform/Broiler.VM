@@ -1,0 +1,48 @@
+// Witness for rule J10: units assessed High and Critical that carry one.
+//
+// The accepting direction, so that the clean result over the product tree is a comparison and
+// not a function that reports nothing. Each criterion names an observation a reader can make
+// at the declaration, which is the standard the line exists to hold.
+
+namespace Probe;
+
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=TBF
+// Broiler-Human:        PENDING
+public static class Falsified
+{
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-Falsified-If: a negative value reaches the running total, or the total is returned unbounded
+    // Broiler-Human:        PENDING
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Critical; Resources=3; Fingerprint=TBF
+    // Broiler-Falsified-If: the loop reads past the end of the span it was given
+    // Broiler-Human:        PENDING
+    public static int Reduce(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

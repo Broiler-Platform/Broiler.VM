@@ -1,0 +1,30 @@
+// Witness for rule J2: a falsification criterion below the human line instead of above it.
+//
+// The two-line block still parses, so the unit is annotated and rule J1 has nothing to say.
+// The criterion is attached to nothing: it reads as an instruction and is not one, which is
+// exactly the shape a coverage rule cannot see.
+
+namespace Probe;
+
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=TBF
+// Broiler-Human:        PENDING
+public static class Stranded
+{
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    // Broiler-Falsified-If: any path sizes a buffer before its bound comparison
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

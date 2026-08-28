@@ -9,6 +9,7 @@
 // Human-reviewed:   0/2
 // IP risk:          Low
 // Security risk:    Low
+// Criteria:         0/0
 // Resource impact:  3/10 max
 // Unverified:       2
 //
@@ -29,8 +30,8 @@
 
 namespace Probe;
 
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=506E94
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=506E94
+// Broiler-Human:        PENDING
 public static class Worded
 {
     // ASSURANCE SUMMARY
@@ -38,8 +39,8 @@ public static class Worded
     // HUMAN-REVIEWED:   47/47
     // Reviewer:         WITNESS-ONLY
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=44EBF3
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=44EBF3
+    // Broiler-Human:        PENDING
     public static int Fold(int[] values)
     {
         var total = 0;

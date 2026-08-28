@@ -6,8 +6,8 @@
 
 namespace Probe;
 
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=178FC2
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=178FC2
+// Broiler-Human:        PENDING
 public static class Drifted
 {
     public static int Fold(int[] values)
@@ -25,6 +25,6 @@ public static class Drifted
         return total;
     }
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=TBF
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
 }

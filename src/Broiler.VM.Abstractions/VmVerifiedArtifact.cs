@@ -9,6 +9,7 @@
 // Human-reviewed:   0/17
 // IP risk:          Low
 // Security risk:    Medium
+// Criteria:         4/0
 // Resource impact:  3/10 max
 // Unverified:       17
 //
@@ -22,8 +23,8 @@ namespace Broiler.VM;
 /// force-dispose and no lease revocation: a handle with live leases drains, it is not seized, so one
 /// runtime can never invalidate another's input.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=8B4AA0
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=8B4AA0
+// Broiler-Human:        PENDING
 public enum VmVerifiedArtifactState
 {
     /// <summary>Usable: leases may be taken and instantiation may proceed.</summary>
@@ -46,8 +47,8 @@ public enum VmVerifiedArtifactState
 /// capability instance is reachable from here: component 7 records the <em>shape</em> the verifier
 /// assumed, never a binding.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=4C239B
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=4C239B
+// Broiler-Human:        PENDING
 public readonly struct VmVerifiedArtifactIdentity : System.IEquatable<VmVerifiedArtifactIdentity>
 {
     /// <summary>Creates an identity.</summary>
@@ -101,8 +102,8 @@ public readonly struct VmVerifiedArtifactIdentity : System.IEquatable<VmVerified
     public System.Collections.Immutable.ImmutableArray<VmHostSignatureAssumption> HostSignatureAssumptions { get; }
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s4; IP=Low; Security=Medium; Resources=3; Fingerprint=A41232
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s4; IP=Low; Security=Medium; Resources=3; Fingerprint=A41232
+    // Broiler-Human:        PENDING
     public bool Equals(VmVerifiedArtifactIdentity other)
     {
         if (!ProfileId.Equals(other.ProfileId) ||
@@ -146,8 +147,8 @@ public readonly struct VmVerifiedArtifactIdentity : System.IEquatable<VmVerified
     /// refusal names. Clause order is the frozen order, so a handle failing two clauses always
     /// reports the same one.
     /// </summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s4; IP=Low; Security=Low; Resources=3; Fingerprint=29234F
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s4; IP=Low; Security=Low; Resources=3; Fingerprint=29234F
+    // Broiler-Human:        PENDING
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public VmReason FirstMismatch(VmVerifiedArtifactIdentity other)
     {
@@ -203,8 +204,8 @@ public readonly struct VmVerifiedArtifactIdentity : System.IEquatable<VmVerified
         left.Equals(right);
 
     /// <summary>Value inequality.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=D15F6D
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=D15F6D
+    // Broiler-Human:        PENDING
     public static bool operator !=(VmVerifiedArtifactIdentity left, VmVerifiedArtifactIdentity right) =>
         !left.Equals(right);
 }
@@ -218,8 +219,8 @@ public readonly struct VmVerifiedArtifactIdentity : System.IEquatable<VmVerified
 /// exhaustion, and appear in no stage row. Releasing twice is a no-op rather than an error, because
 /// the alternative is a host that has to track whether its own <c>using</c> already ran.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=BB8BC2
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=BB8BC2
+// Broiler-Human:        PENDING
 public sealed class VmArtifactLease : System.IDisposable
 {
     private readonly VmVerifiedArtifact artifact;
@@ -232,13 +233,13 @@ public sealed class VmArtifactLease : System.IDisposable
     public VmVerifiedArtifact Artifact => artifact;
 
     /// <summary>Whether the lease has been released.</summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Low; Resources=0; Fingerprint=D5129D
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Low; Resources=0; Fingerprint=D5129D
+    // Broiler-Human:        PENDING
     public bool IsReleased => System.Threading.Volatile.Read(ref released) != 0;
 
     /// <summary>Releases the lease. Idempotent.</summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Medium; Resources=1; Fingerprint=67CDDE
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Medium; Resources=1; Fingerprint=67CDDE
+    // Broiler-Human:        PENDING
     public VmControlResult Release()
     {
         if (System.Threading.Interlocked.Exchange(ref released, 1) != 0)
@@ -274,8 +275,8 @@ public sealed class VmArtifactLease : System.IDisposable
 /// handle would be useless exactly when it is needed.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=111D5F
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=111D5F
+// Broiler-Human:        PENDING
 public sealed class VmVerifiedArtifact : System.IDisposable
 {
     private readonly IVmVerifiedState state;
@@ -296,8 +297,9 @@ public sealed class VmVerifiedArtifact : System.IDisposable
     /// could in principle mint one; what is kept is that the one-construction-site property stays
     /// mechanically testable.
     /// </remarks>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s2; IP=Low; Security=Medium; Resources=1; Fingerprint=69AA1B
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s2; IP=Low; Security=Medium; Resources=1; Fingerprint=69AA1B
+    // Broiler-Falsified-If: a handle for a Snapshot profile is built over the caller's bytes rather than a core-owned copy
+    // Broiler-Human:        PENDING
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static VmVerifiedArtifact Create(
         VmObjectId objectId,
@@ -314,8 +316,8 @@ public sealed class VmVerifiedArtifact : System.IDisposable
         new(objectId, identity, representationKind, lifetimeKind, sharing, origin,
             owningRuntimeId, aggregateBudgetId, byteLength, state, diagnosticsBase);
 
-    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s2; IP=Low; Security=Low; Resources=1; Fingerprint=AE38A6
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s2; IP=Low; Security=Low; Resources=1; Fingerprint=AE38A6
+    // Broiler-Human:        PENDING
     private VmVerifiedArtifact(
         VmObjectId objectId,
         VmVerifiedArtifactIdentity identity,
@@ -382,8 +384,8 @@ public sealed class VmVerifiedArtifact : System.IDisposable
     public VmDiagnostics DiagnosticsBase { get; }
 
     /// <summary>The handle's current state.</summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Low; Resources=1; Fingerprint=7ADEBB
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Low; Resources=1; Fingerprint=7ADEBB
+    // Broiler-Human:        PENDING
     public VmVerifiedArtifactState State
     {
         get
@@ -396,8 +398,8 @@ public sealed class VmVerifiedArtifact : System.IDisposable
     }
 
     /// <summary>How many leases are currently held.</summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Low; Resources=1; Fingerprint=8E9141
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Low; Resources=1; Fingerprint=8E9141
+    // Broiler-Human:        PENDING
     public int LeaseCount
     {
         get
@@ -414,8 +416,8 @@ public sealed class VmVerifiedArtifact : System.IDisposable
     /// draining or disposed, which is how use-after-dispose becomes a refusal rather than a
     /// half-valid read.
     /// </summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Medium; Resources=1; Fingerprint=DC43FB
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Medium; Resources=1; Fingerprint=DC43FB
+    // Broiler-Human:        PENDING
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public bool TryGetState(out IVmVerifiedState verifiedState)
     {
@@ -433,8 +435,9 @@ public sealed class VmVerifiedArtifact : System.IDisposable
     }
 
     /// <summary>Takes an explicit lease, pinning the handle against disposal.</summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Medium; Resources=1; Fingerprint=B4CB03
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Medium; Resources=1; Fingerprint=B4CB03
+    // Broiler-Falsified-If: a lease is minted anywhere but here, or a caller that fails after taking one leaves it held
+    // Broiler-Human:        PENDING
     public VmControlResult TryAcquireLease(out VmArtifactLease lease)
     {
         lock (gate)
@@ -462,8 +465,9 @@ public sealed class VmVerifiedArtifact : System.IDisposable
     /// with live leases enters <see cref="VmVerifiedArtifactState.Draining"/> and completes when
     /// the last lease is released - it is never seized.
     /// </summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Medium; Resources=1; Fingerprint=9D7C26
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Medium; Resources=1; Fingerprint=9D7C26
+    // Broiler-Falsified-If: the transition to Disposed runs no profile release, so Disposable and Managed are indistinguishable
+    // Broiler-Human:        PENDING
     public VmControlResult Dispose()
     {
         lock (gate)
@@ -492,8 +496,9 @@ public sealed class VmVerifiedArtifact : System.IDisposable
     /// <inheritdoc/>
     void System.IDisposable.Dispose() => Dispose();
 
-    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Medium; Resources=1; Fingerprint=BEB421
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Medium; Resources=1; Fingerprint=BEB421
+    // Broiler-Falsified-If: a draining handle whose last lease is released stays anywhere but Disposed, or one releases twice
+    // Broiler-Human:        PENDING
     internal void ReleaseLease()
     {
         lock (gate)

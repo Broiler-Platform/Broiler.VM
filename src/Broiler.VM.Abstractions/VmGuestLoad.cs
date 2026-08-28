@@ -9,6 +9,7 @@
 // Human-reviewed:   0/11
 // IP risk:          Low
 // Security risk:    Medium
+// Criteria:         0/0
 // Resource impact:  7/10 max
 // Unverified:       11
 //
@@ -22,8 +23,8 @@ namespace Broiler.VM;
 /// the requesting operation's remaining allowance rather than under a runtime ceiling. There is no
 /// separate flag for that, because origin already is it.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=AD1A5C
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=AD1A5C
+// Broiler-Human:        PENDING
 public enum VmArtifactOrigin
 {
     /// <summary>The caller presented the bytes.</summary>
@@ -40,8 +41,8 @@ public enum VmArtifactOrigin
 /// everything else on this type - the depth, the remaining allowance, and the identity of the
 /// operation being charged.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=3DECDC
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=3DECDC
+// Broiler-Human:        PENDING
 public readonly ref struct VmArtifactRequest
 {
     /// <summary>Creates a request.</summary>
@@ -91,8 +92,8 @@ public readonly ref struct VmArtifactRequest
 /// A closed set of exactly three. Adding a fourth is a core contract amendment, because a fourth
 /// answer is a fourth thing the charging and refusal rules would have to cover.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=80106D
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=80106D
+// Broiler-Human:        PENDING
 public enum VmArtifactProviderAnswerKind
 {
     /// <summary>The provider supplied a descriptor and bytes.</summary>
@@ -118,8 +119,8 @@ public enum VmArtifactProviderAnswerKind
 /// merely discouraged.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=AA1A58
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=AA1A58
+// Broiler-Human:        PENDING
 public readonly ref struct VmArtifactProviderAnswer
 {
     private VmArtifactProviderAnswer(
@@ -135,22 +136,22 @@ public readonly ref struct VmArtifactProviderAnswer
     }
 
     /// <summary>The provider supplied an artifact, exactly as a caller would.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1E33DD
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1E33DD
+    // Broiler-Human:        PENDING
     public static VmArtifactProviderAnswer Provided(
         scoped in VmArtifactDescriptor descriptor,
         System.ReadOnlySpan<byte> payload) =>
         new(VmArtifactProviderAnswerKind.Provided, descriptor, payload, VmReason.None);
 
     /// <summary>The provider declined.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=DC6F85
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=DC6F85
+    // Broiler-Human:        PENDING
     public static VmArtifactProviderAnswer Refused(VmReason reason) =>
         new(VmArtifactProviderAnswerKind.Refused, default, default, reason);
 
     /// <summary>The provider has nothing matching.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1977AB
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1977AB
+    // Broiler-Human:        PENDING
     public static VmArtifactProviderAnswer NotFound(VmReason reason) =>
         new(VmArtifactProviderAnswerKind.NotFound, default, default, reason);
 
@@ -184,8 +185,8 @@ public readonly ref struct VmArtifactProviderAnswer
 /// a socket or a compiler on its own.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=261597
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=261597
+// Broiler-Human:        PENDING
 public interface IVmArtifactProvider
 {
     /// <summary>The capability identity this provider is registered under.</summary>
@@ -195,8 +196,8 @@ public interface IVmArtifactProvider
     int Version { get; }
 
     /// <summary>Answers one request.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=731666
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=731666
+    // Broiler-Human:        PENDING
     VmArtifactProviderAnswer Answer(scoped in VmArtifactRequest request);
 }
 
@@ -209,8 +210,8 @@ public interface IVmArtifactProvider
 /// mediator as out of scope. After a suspend and resume cycle the profile must request through the
 /// freshly supplied mediator, because the old one belonged to an operation step that has ended.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=620FE6
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=620FE6
+// Broiler-Human:        PENDING
 public interface IVmArtifactLoadMediator
 {
     /// <summary>
@@ -218,7 +219,7 @@ public interface IVmArtifactLoadMediator
     /// own immutable verified handle before anything in them runs, nesting relaxes no bound, and
     /// the work is charged to the operation that asked.
     /// </summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=7; Fingerprint=572045
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=7; Fingerprint=572045
+    // Broiler-Human:        PENDING
     VmGuestLoadResult RequestLoad(scoped in VmArtifactRequest request);
 }

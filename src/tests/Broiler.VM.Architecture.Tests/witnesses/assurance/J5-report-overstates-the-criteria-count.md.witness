@@ -1,0 +1,33 @@
+# Probe Code Assurance
+
+GENERATED - DO NOT EDIT MANUALLY.
+
+**Nothing in this component has been reviewed by a human.** This report records that
+absence precisely.
+
+## Summary
+
+| Metric | Value |
+|---|---:|
+| Human reviewed | 0 of 4 (0%) |
+| Unverified | 4 |
+
+## Review states
+
+| State | Count |
+|---|---:|
+| VERIFIED | 0 |
+
+## Falsification criteria
+
+| Metric | Value |
+|---|---:|
+| Units carrying a criterion | 2 |
+| Units required to carry one | 2 |
+| Required and missing | 0 |
+
+## Per-unit exemptions
+
+| Metric | Value |
+|---|---:|
+| Per-unit exemptions | 0 |

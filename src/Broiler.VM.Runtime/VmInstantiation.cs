@@ -9,6 +9,7 @@
 // Human-reviewed:   0/9
 // IP risk:          Low
 // Security risk:    Medium
+// Criteria:         2/0
 // Resource impact:  5/10 max
 // Unverified:       9
 //
@@ -17,8 +18,8 @@
 namespace Broiler.VM;
 
 /// <summary>What the runtime hands an executor when it creates one.</summary>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C06550
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C06550
+// Broiler-Human:        PENDING
 internal sealed class VmExecutionEnvironment : IVmExecutionEnvironment
 {
     private readonly VmArtifactLoadMediator? mediator;
@@ -45,8 +46,8 @@ internal sealed class VmExecutionEnvironment : IVmExecutionEnvironment
     public IVmHostCapabilityInvoker Capabilities { get; }
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=0; Fingerprint=AE529C
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=0; Fingerprint=AE529C
+    // Broiler-Human:        PENDING
     public bool TryGetArtifactLoadMediator(out IVmArtifactLoadMediator loadMediator)
     {
         loadMediator = mediator!;
@@ -55,12 +56,12 @@ internal sealed class VmExecutionEnvironment : IVmExecutionEnvironment
 }
 
 /// <summary>The instantiation stage.</summary>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C8EFA1
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C8EFA1
+// Broiler-Human:        PENDING
 internal static class VmInstantiation
 {
-    // Broiler-AI:    Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=34BDC0
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=34BDC0
+    // Broiler-Human:        PENDING
     internal static VmInstantiationResult Run(
         VmRuntime runtime,
         VmVerifiedArtifact artifact,
@@ -119,8 +120,9 @@ internal static class VmInstantiation
         }
     }
 
-    // Broiler-AI:    Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=4D0672
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=4D0672
+    // Broiler-Falsified-If: the scope is entered with no owning operation, or the switch tests no host failure or poll bound
+    // Broiler-Human:        PENDING
     private static VmInstantiationResult Instantiate(
         VmRuntime runtime,
         VmVerifiedArtifact artifact,
@@ -316,8 +318,8 @@ internal static class VmInstantiation
     /// <summary>
     /// Clauses 0 and 1: the handle's own state, checked before anything about the composition.
     /// </summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Medium; Resources=0; Fingerprint=87809B
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s3; IP=Low; Security=Medium; Resources=0; Fingerprint=87809B
+    // Broiler-Human:        PENDING
     private static bool TryAdmitHandleState(VmVerifiedArtifact artifact, out VmReason failure)
     {
         failure = VmReason.None;
@@ -346,8 +348,8 @@ internal static class VmInstantiation
     /// declaration first made every mismatch report as "not shareable", which is true of the
     /// profile but says nothing about why this handle was refused.
     /// </remarks>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0006 s4; IP=Low; Security=Medium; Resources=1; Fingerprint=078B3F
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s4; IP=Low; Security=Medium; Resources=1; Fingerprint=078B3F
+    // Broiler-Human:        PENDING
     private static bool TryAdmitSharing(
         VmRuntime runtime,
         VmVerifiedArtifact artifact,
@@ -420,15 +422,16 @@ internal static class VmInstantiation
     /// is never handed to anyone: it exists so the parked operation has an instance to be resumed
     /// against. The profile supplies its real state when it completes.
     /// </remarks>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=5323E5
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=5323E5
+    // Broiler-Falsified-If: a placeholder the caller was never given is reachable as an instance disposal will dispose
+    // Broiler-Human:        PENDING
     private sealed class PlaceholderState : IVmInstanceState
     {
         internal static PlaceholderState Instance { get; } = new();
     }
 
-    // Broiler-AI:    Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=4; Fingerprint=ED427A
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=4; Fingerprint=ED427A
+    // Broiler-Human:        PENDING
     private static void Abandon(
         VmProfileDescriptor profile,
         VmRuntime runtime,

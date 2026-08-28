@@ -629,6 +629,19 @@ public sealed class ReviewRecordRuleTests
 
         Assert.Empty(RouteViolations(HumanReview));
         Assert.Empty(WorksheetViolations(Worksheet));
+
+        // Clause: no worksheet item cites a source line number. This is the defect that justified
+        // moving the criteria into the source in the first place - RC-01 cited the checked
+        // multiplication at VmBoundedAllocator.cs:57, which the annotations turned into a
+        // parameter declaration, and nothing noticed. A member name survives an edit; a line
+        // number does not. The rationale paragraph in the worksheet header quotes the rotted
+        // citation deliberately, so only Read rows are scanned.
+        Assert.Empty(SourceLineCitations(Worksheet));
+
+        var cited = Assert.Single(SourceLineCitations(
+            Witness("H3-an-item-cites-a-source-line-number.md.witness")));
+
+        Assert.Contains("VmBoundedAllocator.cs` 34-68", cited, StringComparison.Ordinal);
         Assert.Empty(ItemCountViolations(HumanReview, Worksheet));
 
         // Clause: section 4 declares exactly the eight.
@@ -722,8 +735,8 @@ public sealed class ReviewRecordRuleTests
         // so deleting an item and correcting the worksheet's own two number cells is not enough.
         var wrongCount = Assert.Single(ItemCountViolations(
             Witness("H3-record-states-a-wrong-item-count.md.witness"), Worksheet));
-        Assert.Contains("states that the worksheet carries 52 items", wrongCount, StringComparison.Ordinal);
-        Assert.Contains("docs/review/vm-0-vm-1.md declares 53", wrongCount, StringComparison.Ordinal);
+        Assert.Contains("states that the worksheet carries 34 items", wrongCount, StringComparison.Ordinal);
+        Assert.Contains("docs/review/vm-0-vm-1.md declares 35", wrongCount, StringComparison.Ordinal);
 
         // Clause: the anti-deletion half. Removing the sentence must not be a way past the check.
         var noCount = Assert.Single(ItemCountViolations(
@@ -801,6 +814,36 @@ public sealed class ReviewRecordRuleTests
 
         return declared;
     }
+
+    /// <summary>
+    /// Every Read row that pins a source file to a line number. The worksheet's whole remaining
+    /// job is to point a reviewer at things the assurance annotations cannot carry, and a line
+    /// number is the one form of pointer this repository has already watched rot unnoticed.
+    /// </summary>
+    private static List<string> SourceLineCitations(ReviewDocument document)
+    {
+        var violations = new List<string>();
+
+        foreach (var line in document.Lines)
+        {
+            if (!line.Text.TrimStart().StartsWith("| Read |", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            foreach (Match match in SourceLineCitation.Matches(line.Text))
+            {
+                violations.Add(
+                    $"{document.Name} line {line.Number} cites {match.Value.Trim()}, and a line " +
+                    "number does not survive an edit - name the member instead");
+            }
+        }
+
+        return violations;
+    }
+
+    private static readonly Regex SourceLineCitation =
+        new(@"`[^`]+\.cs`[ ]\d+(?:-\d+)?|`[^`]+\.cs:\d+`", RegexOptions.Compiled);
 
     private static List<string> WorksheetViolations(ReviewDocument document)
     {
@@ -1391,7 +1434,7 @@ public sealed class ReviewRecordRuleTests
         // Clause: a quoted suite total is compared against the per-assembly totals and their sum.
         var total = Assert.Single(FigureViolations(
             Witness("H5-suite-total-does-not-match-the-log.md.witness"), current));
-        Assert.Contains("quotes a suite total of 221", total, StringComparison.Ordinal);
+        Assert.Contains("quotes a suite total of 222", total, StringComparison.Ordinal);
 
         // Clause, one per recognised suite-total phrasing. Each sentence is matched by exactly one
         // entry and carries its own number, so deleting any entry drops its violation. The first
@@ -1406,7 +1449,7 @@ public sealed class ReviewRecordRuleTests
         // halves cannot be exchanged for each other either.
         var split = Assert.Single(FigureViolations(
             Witness("H5-split-does-not-match-the-log.md.witness"), current));
-        Assert.Contains("quotes a split of 89 architecture and 130 behavioural", split, StringComparison.Ordinal);
+        Assert.Contains("quotes a split of 90 architecture and 130 behavioural", split, StringComparison.Ordinal);
 
         // Clause: each half of the split is bound to the assembly its own Passed: line names, so
         // exchanging the two halves fails even though both numbers are in the log.
@@ -1443,12 +1486,12 @@ public sealed class ReviewRecordRuleTests
         // Clause: the corpus must still quote the suite total, comparing the value.
         var noTotal = Assert.Single(RetainedFigureGuard(
             [Witness("H5-corpus-omits-the-suite-total.md.witness")], current));
-        Assert.Contains("no review document quotes the current suite total 220", noTotal, StringComparison.Ordinal);
+        Assert.Contains("no review document quotes the current suite total 221", noTotal, StringComparison.Ordinal);
 
         // Clause: the corpus must still quote the split, comparing the values.
         var noSplit = Assert.Single(RetainedFigureGuard(
             [Witness("H5-corpus-omits-the-split.md.witness")], current));
-        Assert.Contains("split of 89 architecture and 131 behavioural", noSplit, StringComparison.Ordinal);
+        Assert.Contains("split of 90 architecture and 131 behavioural", noSplit, StringComparison.Ordinal);
 
         // Clause: the corpus must still quote the Native AOT image size, comparing the value.
         var noNative = Assert.Single(RetainedFigureGuard(

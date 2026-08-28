@@ -1,0 +1,49 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   2
+// Annotated:        2/2
+// Exempt:           0
+// Human-reviewed:   0/2
+// IP risk:          Low
+// Security risk:    High
+// Criteria:         1/1
+// Resource impact:  3/10 max
+// Unverified:       2
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
+// Witness for rule J9: a falsification criterion carrying the review vocabulary.
+//
+// The criterion below says the word this rule forbids in generated text. It is not generated
+// text: it is a comment a human wrote, below the generated header, and it asserts nothing
+// about whether anyone has looked at the unit - it says what would make the unit wrong. The
+// corpus of a source artefact is its generated header alone, which is what keeps the two
+// apart, and the same sentence read as a whole-file corpus is reported.
+
+namespace Probe;
+
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=TBF
+// Broiler-Human:        PENDING
+public static class Falsifiable
+{
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-Falsified-If: a verified artifact is returned before the declared count is compared
+    // Broiler-Human:        PENDING
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

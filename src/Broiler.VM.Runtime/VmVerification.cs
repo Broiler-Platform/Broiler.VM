@@ -9,6 +9,7 @@
 // Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    High
+// Criteria:         3/3
 // Resource impact:  8/10 max
 // Unverified:       8
 //
@@ -17,8 +18,8 @@
 namespace Broiler.VM;
 
 /// <summary>What a verification is a total function of, and nothing else.</summary>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=300BB3
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=300BB3
+// Broiler-Human:        PENDING
 internal sealed class VmVerificationContext : IVmVerificationContext
 {
     private readonly System.Collections.Immutable.ImmutableArray<VmHostCapabilityDescriptor> shapes;
@@ -40,13 +41,13 @@ internal sealed class VmVerificationContext : IVmVerificationContext
     public IVmMeter Meter { get; }
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=9D33CA
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=9D33CA
+    // Broiler-Human:        PENDING
     public System.Collections.Immutable.ImmutableArray<VmHostCapabilityDescriptor> RegisteredCapabilities => shapes;
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=9DE8C1
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=9DE8C1
+    // Broiler-Human:        PENDING
     public bool TryGetCapabilityDescriptor(
         VmCapabilityId capabilityId,
         int version,
@@ -75,12 +76,14 @@ internal sealed class VmVerificationContext : IVmVerificationContext
 /// is what makes "nesting relaxes no bound and skips no descriptor match" true by construction
 /// rather than by review.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=910045
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=910045
+// Broiler-Falsified-If: a guest-initiated load is admitted while a profile verifier frame is on the stack
+// Broiler-Human:        PENDING
 public sealed partial class VmRuntime
 {
-    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=8; Fingerprint=4166AF
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=8; Fingerprint=4166AF
+    // Broiler-Falsified-If: cancellation is decided after an input is examined, or an unknown profile answers InvalidArtifact
+    // Broiler-Human:        PENDING
     internal VmVerificationResult VerifyCore(
         in VmArtifactDescriptor descriptor,
         System.ReadOnlySpan<byte> payload,
@@ -161,8 +164,9 @@ public sealed partial class VmRuntime
         }
     }
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=8; Fingerprint=543091
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=8; Fingerprint=543091
+    // Broiler-Falsified-If: an escaping verifier exception is answered as a category, or both effective ceilings are one vector
+    // Broiler-Human:        PENDING
     private VmVerificationResult RunVerifier(
         VmProfileDescriptor profile,
         in VmArtifactDescriptor descriptor,
@@ -300,8 +304,8 @@ public sealed partial class VmRuntime
                 .WithArtifact(artifactId, (ulong)payload.Length, descriptor.CallerIdentity));
     }
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=830489
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=830489
+    // Broiler-Human:        PENDING
     private static bool Accepts(VmProfileDescriptor profile, VmFeatureManifestId manifest)
     {
         if (profile.AcceptedFeatureManifests.IsDefault)
@@ -320,8 +324,8 @@ public sealed partial class VmRuntime
         return false;
     }
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=63A61D
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=63A61D
+    // Broiler-Human:        PENDING
     internal static ulong[] ToArray(VmLimitVector vector)
     {
         var values = new ulong[VmBudgetDimensions.Count];

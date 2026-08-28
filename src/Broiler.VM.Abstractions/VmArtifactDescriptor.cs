@@ -9,6 +9,7 @@
 // Human-reviewed:   0/4
 // IP risk:          Low
 // Security risk:    Low
+// Criteria:         0/0
 // Resource impact:  3/10 max
 // Unverified:       4
 //
@@ -37,8 +38,8 @@ namespace Broiler.VM;
 /// afterwards cannot change what a verified handle is bound to.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=06FA02
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=06FA02
+// Broiler-Human:        PENDING
 public readonly struct VmArtifactDescriptor : System.IEquatable<VmArtifactDescriptor>
 {
     /// <summary>Creates an artifact descriptor.</summary>
@@ -78,8 +79,8 @@ public readonly struct VmArtifactDescriptor : System.IEquatable<VmArtifactDescri
     /// Whether the descriptor is structurally usable: a present identity and manifest, a non-zero
     /// format version, and a manifest under the named profile's namespace.
     /// </summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4A3BFD
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=4A3BFD
+    // Broiler-Human:        PENDING
     public bool IsWellFormed =>
         !ProfileId.IsEmpty &&
         FormatVersion >= 1 &&
@@ -87,8 +88,8 @@ public readonly struct VmArtifactDescriptor : System.IEquatable<VmArtifactDescri
         FeatureManifestId.StartsWithProfileNamespace(ProfileId);
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=90F94D
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=90F94D
+    // Broiler-Human:        PENDING
     public bool Equals(VmArtifactDescriptor other) =>
         ProfileId.Equals(other.ProfileId) &&
         FormatVersion == other.FormatVersion &&
@@ -107,7 +108,7 @@ public readonly struct VmArtifactDescriptor : System.IEquatable<VmArtifactDescri
     public static bool operator ==(VmArtifactDescriptor left, VmArtifactDescriptor right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=A85631
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=A85631
+    // Broiler-Human:        PENDING
     public static bool operator !=(VmArtifactDescriptor left, VmArtifactDescriptor right) => !left.Equals(right);
 }

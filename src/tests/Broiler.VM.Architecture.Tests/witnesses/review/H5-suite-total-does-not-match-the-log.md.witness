@@ -1,6 +1,6 @@
 # Witness: a suite total the retained log does not record
 
-The suite reported 221 tests passed, and the split below is the one the log does record, so the
+The suite reported 222 tests passed, and the split below is the one the log does record, so the
 total is the only figure at odds with `docs/evidence/vm-1/test.log`.
 
-The run was 89 architecture tests and 131 behavioural tests.
+The run was 90 architecture tests and 131 behavioural tests.

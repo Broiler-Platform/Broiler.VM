@@ -9,6 +9,7 @@
 // Human-reviewed:   0/7
 // IP risk:          Low
 // Security risk:    Medium
+// Criteria:         0/0
 // Resource impact:  1/10 max
 // Unverified:       7
 //
@@ -32,8 +33,8 @@ namespace Broiler.VM;
 /// categories; it never adds a category. Reason codes, not categories, are the pressure valve.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=250CF6
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=250CF6
+// Broiler-Human:        PENDING
 public enum VmOutcome
 {
     /// <summary>
@@ -94,8 +95,8 @@ public enum VmOutcome
 /// unrecoverable: the builder throws. That is why the matrix names seven stages and not eight, and
 /// why <see cref="VmOutcome.UnsupportedProfile"/> keeps one meaning instead of two.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=230795
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=230795
+// Broiler-Human:        PENDING
 public enum VmStage
 {
     /// <summary>Not a stage; the value a diagnostics record carries before a stage is entered.</summary>
@@ -147,17 +148,17 @@ public enum VmStage
 /// assertion.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=7F54A9
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=7F54A9
+// Broiler-Human:        PENDING
 public static class VmStageMatrix
 {
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F24C4F
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F24C4F
+    // Broiler-Human:        PENDING
     private static readonly bool[,] Legal = BuildMatrix();
 
     /// <summary>Whether <paramref name="outcome"/> is a legal category at <paramref name="stage"/>.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=1A33CC
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=1A33CC
+    // Broiler-Human:        PENDING
     public static bool IsLegal(VmStage stage, VmOutcome outcome)
     {
         if (stage is VmStage.None || outcome is VmOutcome.None)
@@ -169,8 +170,8 @@ public static class VmStageMatrix
     }
 
     /// <summary>Every legal category at <paramref name="stage"/>, in ascending numeric order.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F4303C
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F4303C
+    // Broiler-Human:        PENDING
     public static VmOutcome[] LegalCategoriesAt(VmStage stage)
     {
         var legal = new System.Collections.Generic.List<VmOutcome>(9);
@@ -186,8 +187,8 @@ public static class VmStageMatrix
         return legal.ToArray();
     }
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3FAAA8
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3FAAA8
+    // Broiler-Human:        PENDING
     private static bool[,] BuildMatrix()
     {
         var matrix = new bool[8, 10];

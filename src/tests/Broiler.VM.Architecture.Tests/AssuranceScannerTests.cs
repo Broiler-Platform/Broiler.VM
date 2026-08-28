@@ -423,8 +423,8 @@ public sealed class AssuranceScannerTests
             {
                 // A reason carries no semicolon: `;` separates fields on the AI line, so a reason
                 // containing one is a parse failure rather than a longer reason.
-                // Broiler-AI:    EXEMPT=Generated marshalling shim - reviewed at the generator
-                // Broiler-Human: PENDING
+                // Broiler-AI:           EXEMPT=Generated marshalling shim - reviewed at the generator
+                // Broiler-Human:        PENDING
                 public int Shim(int[] values)
                 {
                     var total = 0;
@@ -450,8 +450,8 @@ public sealed class AssuranceScannerTests
 
             public sealed class Hatched
             {
-                // Broiler-AI:    EXEMPT=
-                // Broiler-Human: PENDING
+                // Broiler-AI:           EXEMPT=
+                // Broiler-Human:        PENDING
                 public int Shim(int value) { return value + 1; }
             }
             """;

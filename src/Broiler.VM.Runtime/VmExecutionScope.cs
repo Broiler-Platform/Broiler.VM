@@ -9,6 +9,7 @@
 // Human-reviewed:   0/16
 // IP risk:          Low
 // Security risk:    Medium
+// Criteria:         0/0
 // Resource impact:  2/10 max
 // Unverified:       16
 //
@@ -35,35 +36,35 @@ namespace Broiler.VM;
 /// may execute on two threads at once.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=51852E
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=51852E
+// Broiler-Human:        PENDING
 internal sealed class VmExecutionScope
 {
     private readonly System.Threading.AsyncLocal<VmMeter?> current = new();
     private readonly System.Threading.AsyncLocal<VmOperation?> operation = new();
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=033A8F
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=033A8F
+    // Broiler-Human:        PENDING
     internal VmMeter? Current => current.Value;
 
     /// <summary>
     /// The operation the current step belongs to, so a host failure a capability produced can be
     /// latched onto the thing that will report it.
     /// </summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=BD09F0
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=BD09F0
+    // Broiler-Human:        PENDING
     internal VmOperation? CurrentOperation => operation.Value;
 
-    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=F0C37E
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=F0C37E
+    // Broiler-Human:        PENDING
     internal void Enter(VmMeter meter, VmOperation? owner = null)
     {
         current.Value = meter;
         operation.Value = owner;
     }
 
-    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=58FA1F
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=58FA1F
+    // Broiler-Human:        PENDING
     internal void Leave()
     {
         current.Value = null;
@@ -81,8 +82,8 @@ internal sealed class VmExecutionScope
 /// operation - which would be worse than either failing or succeeding, because the bill would land
 /// somewhere nobody was looking.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=593128
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=593128
+// Broiler-Human:        PENDING
 internal sealed class VmAmbientMeter : IVmMeter
 {
     private readonly VmExecutionScope scope;
@@ -90,25 +91,25 @@ internal sealed class VmAmbientMeter : IVmMeter
     internal VmAmbientMeter(VmExecutionScope scope) => this.scope = scope;
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=88CA2E
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=88CA2E
+    // Broiler-Human:        PENDING
     public bool TryCharge(VmBudgetDimension dimension, ulong amount) =>
         scope.Current?.TryCharge(dimension, amount) ?? false;
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=630A13
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=630A13
+    // Broiler-Human:        PENDING
     public bool Poll() => scope.Current?.Poll() ?? false;
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=ADA564
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=ADA564
+    // Broiler-Human:        PENDING
     public void ReportRetained(VmBudgetDimension dimension, ulong amount) =>
         scope.Current?.ReportRetained(dimension, amount);
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=B47DE7
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=B47DE7
+    // Broiler-Human:        PENDING
     public void ReportReleased(VmBudgetDimension dimension, ulong amount) =>
         scope.Current?.ReportReleased(dimension, amount);
 }
@@ -119,8 +120,8 @@ internal sealed class VmAmbientMeter : IVmMeter
 /// is charged against changes per operation. Outside a step there is nothing to charge, so a call
 /// made there is unavailable rather than silently free.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=78B1C2
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=78B1C2
+// Broiler-Human:        PENDING
 internal sealed class VmAmbientCapabilityInvoker : IVmHostCapabilityInvoker
 {
     private readonly VmCapabilityBinding[] bindings;
@@ -141,19 +142,19 @@ internal sealed class VmAmbientCapabilityInvoker : IVmHostCapabilityInvoker
     internal VmCapabilityId LastFailureCapability { get; private set; }
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=08A7E3
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=08A7E3
+    // Broiler-Human:        PENDING
     public int BindingCount => bindings.Length;
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0011; IP=Low; Security=Low; Resources=0; Fingerprint=B14302
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Low; Resources=0; Fingerprint=B14302
+    // Broiler-Human:        PENDING
     public bool IsBound(int bindingIndex) =>
         bindingIndex >= 0 && bindingIndex < bindings.Length && bindings[bindingIndex].IsBound;
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=2; Fingerprint=C3C1A1
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=2; Fingerprint=C3C1A1
+    // Broiler-Human:        PENDING
     public VmHostCallOutcome Invoke(int bindingIndex, System.ReadOnlySpan<long> arguments, out long result)
     {
         result = 0;
@@ -173,8 +174,8 @@ internal sealed class VmAmbientCapabilityInvoker : IVmHostCapabilityInvoker
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=2; Fingerprint=DF28EB
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=2; Fingerprint=DF28EB
+    // Broiler-Human:        PENDING
     public VmHostCallOutcome InvokeBytes(int bindingIndex, VmBytes argument, out VmOpaqueRef result)
     {
         result = default;
@@ -201,8 +202,8 @@ internal sealed class VmAmbientCapabilityInvoker : IVmHostCapabilityInvoker
     /// an observable fault, the profile is handed the refusal and is expected to convert it, and
     /// whatever it produces is the answer.
     /// </remarks>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=1615F4
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=1615F4
+    // Broiler-Human:        PENDING
     private void Latch(VmCapabilityInvoker invoker, int bindingIndex)
     {
         LastFailure = invoker.LastFailure;

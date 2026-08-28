@@ -9,6 +9,7 @@
 // Human-reviewed:   0/1
 // IP risk:          Low
 // Security risk:    Low
+// Criteria:         0/0
 // Resource impact:  0/10 max
 // Unverified:       1
 //
@@ -29,8 +30,8 @@ namespace Broiler.VM;
 /// conditions naming a dimension and a scope. Encoding that mapping here would put contract
 /// vocabulary into a mechanism assembly, which ADR 0001 forbids.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=F5396D
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=F5396D
+// Broiler-Human:        PENDING
 public enum VmBoundedReadStatus
 {
     /// <summary>No bound has been reached; the reader is usable.</summary>

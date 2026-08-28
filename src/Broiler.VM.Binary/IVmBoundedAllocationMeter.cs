@@ -9,6 +9,7 @@
 // Human-reviewed:   0/5
 // IP risk:          Low
 // Security risk:    High
+// Criteria:         3/3
 // Resource impact:  1/10 max
 // Unverified:       5
 //
@@ -34,8 +35,9 @@ namespace Broiler.VM;
 /// input depend on how hostile it was.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=A95709
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=A95709
+// Broiler-Falsified-If: a member that can refuse has no way to say so in its return value, so refusal must be thrown
+// Broiler-Human:        PENDING
 public interface IVmBoundedAllocationMeter
 {
     /// <summary>
@@ -43,31 +45,33 @@ public interface IVmBoundedAllocationMeter
     /// <see langword="false"/> when the allowance cannot cover it, in which case the caller must
     /// not allocate.
     /// </summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=612753
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=612753
+    // Broiler-Falsified-If: a false return has already charged the allowance, or a true one reserves nothing
+    // Broiler-Human:        PENDING
     bool TryReserve(ulong byteCount);
 
     /// <summary>
     /// Returns a previously reserved allocation. It cannot fail and it cannot raise an allowance:
     /// only what <see cref="TryReserve"/> took may come back.
     /// </summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5F50C5
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5F50C5
+    // Broiler-Human:        PENDING
     void Release(ulong byteCount);
 
     /// <summary>
     /// Charges <paramref name="workUnits"/> against the verifier-work allowance. Returns
     /// <see langword="false"/> when the allowance is spent.
     /// </summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=E14B16
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=E14B16
+    // Broiler-Falsified-If: false is returned here for a cancellation, which the caller latches as a spent work allowance
+    // Broiler-Human:        PENDING
     bool TryChargeWork(ulong workUnits);
 
     /// <summary>
     /// One combined budget and cancellation check. <see langword="false"/> means stop; it does not
     /// say which of the two applies, because a reader has the same obligation either way.
     /// </summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=84FB1F
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=84FB1F
+    // Broiler-Human:        PENDING
     bool Poll();
 }

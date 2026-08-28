@@ -9,6 +9,7 @@
 // Human-reviewed:   0/14
 // IP risk:          Low
 // Security risk:    Low
+// Criteria:         0/0
 // Resource impact:  1/10 max
 // Unverified:       14
 //
@@ -37,8 +38,8 @@ namespace Broiler.VM;
 /// earlier eleven-member spelling of this set and appear nowhere.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1FCDD8
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1FCDD8
+// Broiler-Human:        PENDING
 public enum VmBudgetDimension
 {
     /// <summary>Profile-charged abstract execution work units. Allowance.</summary>
@@ -103,8 +104,8 @@ public enum VmBudgetDimension
 /// result learns which ceiling actually stopped it rather than the innermost one that happened to
 /// notice.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=945A7B
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=945A7B
+// Broiler-Human:        PENDING
 public enum VmBudgetScope
 {
     /// <summary>One invoke or resume of one operation.</summary>
@@ -132,8 +133,8 @@ public enum VmBudgetScope
 /// eight ceilings without a hard-coded table living in test code, where it could drift from the
 /// contract it is supposed to check.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=3FDFEC
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=3FDFEC
+// Broiler-Human:        PENDING
 public enum VmBudgetClass
 {
     /// <summary>Consumed monotonically and never refunded.</summary>
@@ -150,8 +151,8 @@ public enum VmBudgetClass
 /// There is no third value and no default. A descriptor that omits a row is rejected at catalog
 /// construction, because an omitted row is a claim nobody made.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C7D069
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C7D069
+// Broiler-Human:        PENDING
 public enum VmBudgetApplicability
 {
     /// <summary>The profile charges this dimension.</summary>
@@ -170,17 +171,17 @@ public enum VmBudgetApplicability
 /// algorithm, the aggregate budget, the drift tests - reads it here rather than restating it,
 /// because a table restated is a table that can disagree with itself.
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C44CFF
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C44CFF
+// Broiler-Human:        PENDING
 public static class VmBudgetDimensions
 {
     /// <summary>The number of dimensions. The set is closed; growing it is an amendment.</summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=None; Security=None; Resources=0; Fingerprint=74C7BA
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=None; Security=None; Resources=0; Fingerprint=74C7BA
+    // Broiler-Human:        PENDING
     public const int Count = 15;
 
-    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=None; Security=Low; Resources=1; Fingerprint=B2B751
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=None; Security=Low; Resources=1; Fingerprint=B2B751
+    // Broiler-Human:        PENDING
     private static readonly VmBudgetClass[] Classes =
     [
         VmBudgetClass.Allowance, // Fuel
@@ -204,8 +205,8 @@ public static class VmBudgetDimensions
     // CallDepth, NestedLoadDepth and LiveRuntimes. The four artifact-shaped ceilings do not,
     // because summing "the largest declared count any one artifact may hold" across concurrent
     // runtimes measures nothing.
-    // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=None; Security=Low; Resources=1; Fingerprint=24C557
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=None; Security=Low; Resources=1; Fingerprint=24C557
+    // Broiler-Human:        PENDING
     private static readonly bool[] Aggregate =
     [
         true, true, true, true, true, true, true,
@@ -215,8 +216,8 @@ public static class VmBudgetDimensions
     ];
 
     /// <summary>Every dimension, in the frozen order.</summary>
-    // Broiler-AI:    Origin=AI; IP=None; Security=None; Resources=1; Fingerprint=D927EC
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=None; Security=None; Resources=1; Fingerprint=D927EC
+    // Broiler-Human:        PENDING
     public static System.ReadOnlySpan<VmBudgetDimension> All =>
     [
         VmBudgetDimension.Fuel,
@@ -237,28 +238,28 @@ public static class VmBudgetDimensions
     ];
 
     /// <summary>Whether <paramref name="dimension"/> is one of the fifteen.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=A37BD7
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=A37BD7
+    // Broiler-Human:        PENDING
     public static bool IsDefined(VmBudgetDimension dimension) =>
         (int)dimension is >= 0 and < Count;
 
     /// <summary>The arithmetic <paramref name="dimension"/> obeys.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=B20A36
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=B20A36
+    // Broiler-Human:        PENDING
     public static VmBudgetClass ClassOf(VmBudgetDimension dimension) =>
         Classes[Index(dimension)];
 
     /// <summary>Whether <paramref name="dimension"/> carries aggregate scope.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C85EB6
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C85EB6
+    // Broiler-Human:        PENDING
     public static bool CarriesAggregateScope(VmBudgetDimension dimension) =>
         Aggregate[Index(dimension)];
 
     /// <summary>
     /// Whether <paramref name="dimension"/> may be declared at <paramref name="scope"/>.
     /// </summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C20C01
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C20C01
+    // Broiler-Human:        PENDING
     public static bool IsDeclarableAt(VmBudgetDimension dimension, VmBudgetScope scope) => dimension switch
     {
         VmBudgetDimension.VerifierWork =>
@@ -279,8 +280,8 @@ public static class VmBudgetDimensions
             or VmBudgetScope.Invocation or VmBudgetScope.Aggregate,
     };
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=4EEA2C
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=4EEA2C
+    // Broiler-Human:        PENDING
     private static int Index(VmBudgetDimension dimension)
     {
         if (!IsDefined(dimension))

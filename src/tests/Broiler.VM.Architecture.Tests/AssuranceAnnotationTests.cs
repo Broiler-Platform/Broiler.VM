@@ -34,8 +34,8 @@ public sealed class AssuranceAnnotationTests
         AssuranceProbe.Named(Probe(ai, human), Member);
 
     private static string Current => Unit(
-        "Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=TBF",
-        "Broiler-Human: PENDING").Fingerprint;
+        "Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=TBF",
+        "Broiler-Human:        PENDING").Fingerprint;
 
     // ---- Parsing --------------------------------------------------------------------------------
 
@@ -43,8 +43,8 @@ public sealed class AssuranceAnnotationTests
     public void The_Block_Parses_Into_Fields_And_A_Human_Body()
     {
         var annotation = Unit(
-            "Broiler-AI:    Origin=AI; Spec=ADR-0007 s6; IP=Low; Security=High; Resources=7; Fingerprint=TBF",
-            "Broiler-Human: PENDING").Annotation;
+            "Broiler-AI:           Origin=AI; Spec=ADR-0007 s6; IP=Low; Security=High; Resources=7; Fingerprint=TBF",
+            "Broiler-Human:        PENDING").Annotation;
 
         Assert.NotNull(annotation);
         Assert.Equal("AI", annotation!.Field("Origin"));
@@ -75,7 +75,7 @@ public sealed class AssuranceAnnotationTests
                      ("Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=TBF; Mood=Calm", "Mood=Calm"),
                  })
         {
-            var problems = Unit("Broiler-AI:    " + line, "Broiler-Human: PENDING")
+            var problems = Unit("Broiler-AI:           " + line, "Broiler-Human:        PENDING")
                 .Annotation!
                 .VocabularyProblems()
                 .ToArray();
@@ -87,7 +87,7 @@ public sealed class AssuranceAnnotationTests
         // saying less.
         Assert.Contains(
             "no Security field",
-            Unit("Broiler-AI:    Origin=AI; IP=Low; Resources=1; Fingerprint=TBF", "Broiler-Human: PENDING")
+            Unit("Broiler-AI:           Origin=AI; IP=Low; Resources=1; Fingerprint=TBF", "Broiler-Human:        PENDING")
                 .Annotation!
                 .VocabularyProblems());
     }
@@ -100,9 +100,9 @@ public sealed class AssuranceAnnotationTests
 
             public sealed class Subject
             {
-                // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=TBF
+                // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=TBF
 
-                // Broiler-Human: PENDING
+                // Broiler-Human:        PENDING
                 public int Measure(int declared) { return declared + 1; }
             }
             """;
@@ -125,28 +125,28 @@ public sealed class AssuranceAnnotationTests
         var current = Current;
 
         Assert.Equal(AssuranceReviewState.AiAssessed, State(
-            "Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=TBF",
-            "Broiler-Human: PENDING"));
+            "Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=TBF",
+            "Broiler-Human:        PENDING"));
 
         Assert.Equal(AssuranceReviewState.HumanPending, State(
-            $"Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint={current}",
-            "Broiler-Human: PENDING"));
+            $"Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint={current}",
+            "Broiler-Human:        PENDING"));
 
         Assert.Equal(AssuranceReviewState.HumanApprovedPendingFingerprint, State(
-            $"Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint={current}",
-            "Broiler-Human: RV; Fingerprint=TBF"));
+            $"Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint={current}",
+            "Broiler-Human:        RV; Fingerprint=TBF"));
 
         Assert.Equal(AssuranceReviewState.Verified, State(
-            $"Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint={current}",
-            $"Broiler-Human: RV; Fingerprint={current}"));
+            $"Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint={current}",
+            $"Broiler-Human:        RV; Fingerprint={current}"));
 
         Assert.Equal(AssuranceReviewState.Stale, State(
-            $"Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint={current}",
-            "Broiler-Human: RV; Fingerprint=000000"));
+            $"Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint={current}",
+            "Broiler-Human:        RV; Fingerprint=000000"));
 
         Assert.Equal(AssuranceReviewState.Stale, State(
-            $"Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint={current}",
-            "Broiler-Human: STALE; Previous=RV@000000"));
+            $"Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint={current}",
+            "Broiler-Human:        STALE; Previous=RV@000000"));
 
         // NEW is the shape with no AI line at all, which no probe with a block can produce.
         Assert.Equal(
@@ -181,11 +181,11 @@ public sealed class AssuranceAnnotationTests
     public void The_Generator_Fills_TBF_With_The_Current_Fingerprint()
     {
         var source = Probe(
-            "Broiler-AI:    Origin=AI; Spec=ADR-0007 s6; IP=Low; Security=High; Resources=7; Fingerprint=TBF",
-            "Broiler-Human: PENDING");
+            "Broiler-AI:           Origin=AI; Spec=ADR-0007 s6; IP=Low; Security=High; Resources=7; Fingerprint=TBF",
+            "Broiler-Human:        PENDING");
 
         Assert.Equal(
-            "// Broiler-AI:    Origin=AI; Spec=ADR-0007 s6; IP=Low; Security=High; Resources=7; " +
+            "// Broiler-AI:           Origin=AI; Spec=ADR-0007 s6; IP=Low; Security=High; Resources=7; " +
             $"Fingerprint={Current}",
             AssuranceProbe.AnnotationLine(source, ".Measure(int)", AssuranceAnnotation.AiMarker));
     }
@@ -194,23 +194,23 @@ public sealed class AssuranceAnnotationTests
     public void The_Generator_Refreshes_A_Review_The_Code_Has_Outrun_Into_Stale_With_Its_History()
     {
         var source = Probe(
-            $"Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint={Current}",
-            "Broiler-Human: RV; Fingerprint=7A91C2");
+            $"Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint={Current}",
+            "Broiler-Human:        RV; Fingerprint=7A91C2");
 
         // The reviewer and the version they approved are preserved rather than deleted: "this was
         // reviewed, and the current code is not that" is the useful sentence.
         Assert.Equal(
-            "// Broiler-Human: STALE; Previous=RV@7A91C2",
+            "// Broiler-Human:        STALE; Previous=RV@7A91C2",
             AssuranceProbe.AnnotationLine(source, ".Measure(int)", AssuranceAnnotation.HumanMarker));
 
         // And a line the generator already made stale is left exactly as it is: STALE never
         // becomes VERIFIED by anything automated.
         var already = Probe(
-            $"Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint={Current}",
-            "Broiler-Human: STALE; Previous=RV@7A91C2");
+            $"Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint={Current}",
+            "Broiler-Human:        STALE; Previous=RV@7A91C2");
 
         Assert.Equal(
-            "// Broiler-Human: STALE; Previous=RV@7A91C2",
+            "// Broiler-Human:        STALE; Previous=RV@7A91C2",
             AssuranceProbe.AnnotationLine(already, ".Measure(int)", AssuranceAnnotation.HumanMarker));
     }
 
@@ -218,11 +218,11 @@ public sealed class AssuranceAnnotationTests
     public void The_Generator_Fills_A_Human_Approval_That_A_Human_Already_Made()
     {
         var source = Probe(
-            $"Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint={Current}",
-            "Broiler-Human: RV; Fingerprint=TBF");
+            $"Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint={Current}",
+            "Broiler-Human:        RV; Fingerprint=TBF");
 
         Assert.Equal(
-            $"// Broiler-Human: RV; Fingerprint={Current}",
+            $"// Broiler-Human:        RV; Fingerprint={Current}",
             AssuranceProbe.AnnotationLine(source, ".Measure(int)", AssuranceAnnotation.HumanMarker));
     }
 
@@ -233,14 +233,14 @@ public sealed class AssuranceAnnotationTests
         // PENDING out, whatever the fingerprint says.
         foreach (var ai in new[]
                  {
-                     "Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=TBF",
-                     $"Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint={Current}",
-                     "Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=000000",
+                     "Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=TBF",
+                     $"Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint={Current}",
+                     "Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=000000",
                  })
         {
             Assert.Equal(
-                "// Broiler-Human: PENDING",
-                AssuranceProbe.AnnotationLine(Probe(ai, "Broiler-Human: PENDING"), ".Measure(int)", AssuranceAnnotation.HumanMarker));
+                "// Broiler-Human:        PENDING",
+                AssuranceProbe.AnnotationLine(Probe(ai, "Broiler-Human:        PENDING"), ".Measure(int)", AssuranceAnnotation.HumanMarker));
         }
     }
 
@@ -250,8 +250,8 @@ public sealed class AssuranceAnnotationTests
         // The guard is the enforcement, not the four branches above: a future edit that reached
         // for a name has to get past this, and it throws rather than writing.
         var unit = Unit(
-            "Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=TBF",
-            "Broiler-Human: PENDING");
+            "Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=TBF",
+            "Broiler-Human:        PENDING");
 
         var refused = Assert.Throws<InvalidOperationException>(() =>
             AssuranceGenerator.RefuseInventedApproval(unit, "PENDING", "EB; Fingerprint=7A91C2"));

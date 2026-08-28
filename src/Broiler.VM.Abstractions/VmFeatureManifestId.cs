@@ -9,6 +9,7 @@
 // Human-reviewed:   0/14
 // IP risk:          Low
 // Security risk:    Medium
+// Criteria:         0/0
 // Resource impact:  2/10 max
 // Unverified:       14
 //
@@ -44,27 +45,27 @@ namespace Broiler.VM;
 /// surfaces is a language claim the core cannot evaluate.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=3F15DD
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=3F15DD
+// Broiler-Human:        PENDING
 public readonly struct VmFeatureManifestId
     : System.IEquatable<VmFeatureManifestId>, System.IComparable<VmFeatureManifestId>
 {
     /// <summary>The most labels a well-formed manifest ID may have.</summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s6; IP=None; Security=Medium; Resources=0; Fingerprint=5E036E
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s6; IP=None; Security=Medium; Resources=0; Fingerprint=5E036E
+    // Broiler-Human:        PENDING
     public const int MaximumLabelCount = 12;
 
     /// <summary>The most characters a well-formed manifest ID may have.</summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s6; IP=None; Security=Medium; Resources=0; Fingerprint=4DA2E6
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s6; IP=None; Security=Medium; Resources=0; Fingerprint=4DA2E6
+    // Broiler-Human:        PENDING
     public const int MaximumLength = 256;
 
     /// <summary>
     /// The fewest labels a well-formed manifest ID may have. A manifest ID carries its profile's
     /// two-label minimum plus at least one further label of its own.
     /// </summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s6; IP=None; Security=Medium; Resources=0; Fingerprint=37B57A
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s6; IP=None; Security=Medium; Resources=0; Fingerprint=37B57A
+    // Broiler-Human:        PENDING
     public const int MinimumLabelCount = 3;
 
     private readonly string? text;
@@ -72,23 +73,23 @@ public readonly struct VmFeatureManifestId
     private VmFeatureManifestId(string text) => this.text = text;
 
     /// <summary>True when this is <see langword="default"/>.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=173B23
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=173B23
+    // Broiler-Human:        PENDING
     public bool IsEmpty => text is null;
 
     /// <summary>The number of characters in the ID, or zero when empty.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=0CF2CC
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=0CF2CC
+    // Broiler-Human:        PENDING
     public int Length => text?.Length ?? 0;
 
     /// <summary>The ID as a span, without allocating.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=864836
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=864836
+    // Broiler-Human:        PENDING
     public System.ReadOnlySpan<char> AsSpan() => System.MemoryExtensions.AsSpan(text);
 
     /// <summary>Parses <paramref name="candidate"/>, returning <see langword="false"/> when it does not satisfy the grammar.</summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s6; IP=Low; Security=Low; Resources=2; Fingerprint=081976
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s6; IP=Low; Security=Low; Resources=2; Fingerprint=081976
+    // Broiler-Human:        PENDING
     public static bool TryParse(System.ReadOnlySpan<char> candidate, out VmFeatureManifestId id)
     {
         id = default;
@@ -110,8 +111,8 @@ public readonly struct VmFeatureManifestId
 
     /// <summary>Parses <paramref name="candidate"/> or throws.</summary>
     /// <exception cref="System.ArgumentException">The candidate does not satisfy the grammar.</exception>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s6; IP=Low; Security=Low; Resources=2; Fingerprint=54EDDE
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s6; IP=Low; Security=Low; Resources=2; Fingerprint=54EDDE
+    // Broiler-Human:        PENDING
     public static VmFeatureManifestId Parse(System.ReadOnlySpan<char> candidate)
     {
         if (!TryParse(candidate, out var id))
@@ -135,8 +136,8 @@ public readonly struct VmFeatureManifestId
     /// a manifest declared under <c>Broiler.VM.Fixture.Alpha</c> does not belong to a profile
     /// spelled <c>broiler.vm.fixture.alpha</c>.
     /// </remarks>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s6; IP=Low; Security=Medium; Resources=1; Fingerprint=BC1C8F
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s6; IP=Low; Security=Medium; Resources=1; Fingerprint=BC1C8F
+    // Broiler-Human:        PENDING
     public bool StartsWithProfileNamespace(VmProfileId profileId)
     {
         if (text is null || profileId.IsEmpty)
@@ -166,22 +167,22 @@ public readonly struct VmFeatureManifestId
     /// Ordinal ordering, used to normalize a declared manifest set into ascending order at catalog
     /// construction so that declaration order is not retained and has no observable effect.
     /// </summary>
-    // Broiler-AI:    Origin=AI; Spec=ADR-0002 s6; IP=Low; Security=Low; Resources=1; Fingerprint=0F49BF
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002 s6; IP=Low; Security=Low; Resources=1; Fingerprint=0F49BF
+    // Broiler-Human:        PENDING
     public int CompareTo(VmFeatureManifestId other) =>
         string.CompareOrdinal(text ?? string.Empty, other.text ?? string.Empty);
 
     /// <summary>The ID verbatim.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=57BC75
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=57BC75
+    // Broiler-Human:        PENDING
     public override string ToString() => text ?? string.Empty;
 
     /// <inheritdoc/>
     public override bool Equals(object? obj) => obj is VmFeatureManifestId other && Equals(other);
 
     /// <inheritdoc/>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6C9B84
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=6C9B84
+    // Broiler-Human:        PENDING
     public override int GetHashCode() =>
         text is null ? 0 : string.GetHashCode(text, System.StringComparison.Ordinal);
 
@@ -189,7 +190,7 @@ public readonly struct VmFeatureManifestId
     public static bool operator ==(VmFeatureManifestId left, VmFeatureManifestId right) => left.Equals(right);
 
     /// <summary>Ordinal inequality.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=EF7130
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=EF7130
+    // Broiler-Human:        PENDING
     public static bool operator !=(VmFeatureManifestId left, VmFeatureManifestId right) => !left.Equals(right);
 }

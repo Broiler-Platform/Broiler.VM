@@ -9,6 +9,7 @@
 // Human-reviewed:   0/32
 // IP risk:          Low
 // Security risk:    High
+// Criteria:         7/2
 // Resource impact:  8/10 max
 // Unverified:       32
 //
@@ -34,8 +35,9 @@ namespace Broiler.VM;
 /// invocation: a profile that must wait suspends, and the host resumes it.
 /// </para>
 /// </remarks>
-// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=C1CA36
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=C1CA36
+// Broiler-Falsified-If: a second member verifies bytes into a handle, or a member here returns a task or awaitable
+// Broiler-Human:        PENDING
 public sealed partial class VmRuntime : System.IDisposable
 {
     private readonly object gate = new();
@@ -73,8 +75,8 @@ public sealed partial class VmRuntime : System.IDisposable
     public VmObjectId ObjectId { get; }
 
     /// <summary>Its current state.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=ED336E
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=ED336E
+    // Broiler-Human:        PENDING
     public VmRuntimeState State
     {
         get
@@ -96,8 +98,8 @@ public sealed partial class VmRuntime : System.IDisposable
     /// Creates a runtime. It never throws: every failure a host or a composition can cause is a
     /// returned result.
     /// </summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=793921
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=793921
+    // Broiler-Human:        PENDING
     public static VmRuntimeCreationResult Create(VmCatalog catalog, VmRuntimeCreationOptions options)
     {
         if (catalog is null)
@@ -193,8 +195,9 @@ public sealed partial class VmRuntime : System.IDisposable
     /// The handle owns a snapshot or a fully decoded form of the payload, so mutating, disposing or
     /// concurrently overwriting the caller's buffer afterwards cannot change what was verified.
     /// </remarks>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=8; Fingerprint=D50EA5
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=8; Fingerprint=D50EA5
+    // Broiler-Falsified-If: a call from inside a bound non-reentrant capability is refused, though the record permits it
+    // Broiler-Human:        PENDING
     public VmVerificationResult Verify(
         in VmArtifactDescriptor descriptor,
         System.ReadOnlySpan<byte> payload,
@@ -222,8 +225,8 @@ public sealed partial class VmRuntime : System.IDisposable
     }
 
     /// <summary>Instantiates a verified artifact into profile-owned mutable state.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=7; Fingerprint=370EDD
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=7; Fingerprint=370EDD
+    // Broiler-Human:        PENDING
     public VmInstantiationResult Instantiate(
         VmVerifiedArtifact artifact,
         System.Threading.CancellationToken cancellationToken)
@@ -258,8 +261,9 @@ public sealed partial class VmRuntime : System.IDisposable
     /// Resumes a suspended operation. The single resume entry point: there is no second path, so
     /// there is no second admission check and no race between two of them.
     /// </summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=7; Fingerprint=4EBED8
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=7; Fingerprint=4EBED8
+    // Broiler-Falsified-If: the parent admits the resumption after the operation resumed or after the token was spent
+    // Broiler-Human:        PENDING
     public VmResumeResult Resume(VmSuspension suspension)
     {
         if (suspension is null)
@@ -357,8 +361,8 @@ public sealed partial class VmRuntime : System.IDisposable
     /// and a policy the host did not choose. Instead the host polls, and the bound is enforced when
     /// it does.
     /// </remarks>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=98521F
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=98521F
+    // Broiler-Human:        PENDING
     public VmControlResult PollDeadlines()
     {
         System.Collections.Generic.List<VmOperation>? expired = null;
@@ -401,8 +405,8 @@ public sealed partial class VmRuntime : System.IDisposable
     }
 
     /// <summary>Requests cancellation of every operation in this runtime.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=7F7D9F
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=7F7D9F
+    // Broiler-Human:        PENDING
     public VmControlResult RequestCancel()
     {
         lock (gate)
@@ -422,8 +426,8 @@ public sealed partial class VmRuntime : System.IDisposable
     }
 
     /// <summary>Reads this runtime's consumption and remaining allowance.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FE90E6
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=FE90E6
+    // Broiler-Human:        PENDING
     public VmBudgetSnapshot GetBudgetSnapshot()
     {
         lock (gate)
@@ -440,8 +444,9 @@ public sealed partial class VmRuntime : System.IDisposable
     /// the tighter of its declared abandon budget and the runtime's unwind budget, so a parked
     /// operation can never block disposal indefinitely.
     /// </remarks>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=5C4C40
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=5C4C40
+    // Broiler-Falsified-If: the configured drain budget is read nowhere here, so disposal never waits for an operation
+    // Broiler-Human:        PENDING
     public VmControlResult Dispose()
     {
         System.Collections.Generic.List<VmOperation> parked;
@@ -502,13 +507,14 @@ public sealed partial class VmRuntime : System.IDisposable
     /// outside the boundary left that declaration enforced nowhere, so a provider could re-enter
     /// the very runtime whose load it was answering.
     /// </remarks>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=9EDB19
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=9EDB19
+    // Broiler-Falsified-If: a provider is invoked on a path that never enters this boundary
+    // Broiler-Human:        PENDING
     internal void EnterProviderCall() => EnterCapability(VmCapabilityReentrancy.NonReentrant);
 
     /// <summary>Leaves the capability boundary for a provider call.</summary>
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=FE5889
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=FE5889
+    // Broiler-Human:        PENDING
     internal void LeaveProviderCall() => LeaveCapability(VmCapabilityReentrancy.NonReentrant);
 
     internal VmAggregateBudget? Parent => parent;
@@ -517,8 +523,8 @@ public sealed partial class VmRuntime : System.IDisposable
 
     internal VmGuestLoadBounds GuestLoadBounds => guestLoadBounds;
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=BC21D0
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=BC21D0
+    // Broiler-Human:        PENDING
     internal void Poison()
     {
         lock (gate)
@@ -530,8 +536,8 @@ public sealed partial class VmRuntime : System.IDisposable
         }
     }
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=E2FF9B
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=E2FF9B
+    // Broiler-Human:        PENDING
     internal void EnterCapability(VmCapabilityReentrancy reentrancy)
     {
         if (reentrancy is VmCapabilityReentrancy.NonReentrant)
@@ -540,8 +546,8 @@ public sealed partial class VmRuntime : System.IDisposable
         }
     }
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=399E57
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=399E57
+    // Broiler-Human:        PENDING
     internal void LeaveCapability(VmCapabilityReentrancy reentrancy)
     {
         if (reentrancy is VmCapabilityReentrancy.NonReentrant)
@@ -550,8 +556,9 @@ public sealed partial class VmRuntime : System.IDisposable
         }
     }
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=465575
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=465575
+    // Broiler-Falsified-If: Dispose, RequestCancel or PollDeadlines reaches its body without passing this gate
+    // Broiler-Human:        PENDING
     internal bool TryBeginCall(out VmReason failure)
     {
         lock (gate)
@@ -586,8 +593,8 @@ public sealed partial class VmRuntime : System.IDisposable
         }
     }
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=4F8277
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=4F8277
+    // Broiler-Human:        PENDING
     internal void EndCall()
     {
         lock (gate)
@@ -599,8 +606,8 @@ public sealed partial class VmRuntime : System.IDisposable
         }
     }
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=CEE37D
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=CEE37D
+    // Broiler-Human:        PENDING
     internal bool TryEnterVerification(int slots)
     {
         lock (gate)
@@ -615,8 +622,8 @@ public sealed partial class VmRuntime : System.IDisposable
         }
     }
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=1F9B17
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=1F9B17
+    // Broiler-Human:        PENDING
     internal void ExitVerification()
     {
         lock (gate)
@@ -628,8 +635,8 @@ public sealed partial class VmRuntime : System.IDisposable
         }
     }
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7DEDC2
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7DEDC2
+    // Broiler-Human:        PENDING
     internal void RegisterInstance(VmInstanceImplementation instance)
     {
         lock (gate)
@@ -638,8 +645,8 @@ public sealed partial class VmRuntime : System.IDisposable
         }
     }
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=E42A60
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=E42A60
+    // Broiler-Human:        PENDING
     internal void ForgetInstance(VmInstanceImplementation instance)
     {
         lock (gate)
@@ -648,8 +655,8 @@ public sealed partial class VmRuntime : System.IDisposable
         }
     }
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5C49BB
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5C49BB
+    // Broiler-Human:        PENDING
     internal bool TryPark(VmOperation operation, out VmReason failure)
     {
         lock (gate)
@@ -666,8 +673,8 @@ public sealed partial class VmRuntime : System.IDisposable
         }
     }
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=580E00
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=580E00
+    // Broiler-Human:        PENDING
     internal void Unpark(VmOperation operation)
     {
         lock (gate)
@@ -676,8 +683,8 @@ public sealed partial class VmRuntime : System.IDisposable
         }
     }
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9CAE61
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9CAE61
+    // Broiler-Human:        PENDING
     internal VmProfileRuntimeState GetProfileState(VmProfileDescriptor descriptor)
     {
         lock (gate)
@@ -694,28 +701,29 @@ public sealed partial class VmRuntime : System.IDisposable
         }
     }
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=FD5A52
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=FD5A52
+    // Broiler-Human:        PENDING
     internal bool TryGetDescriptor(VmProfileId profileId, out VmProfileDescriptor descriptor) =>
         catalog.TryGetDescriptor(profileId, out descriptor);
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=288E23
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=288E23
+    // Broiler-Human:        PENDING
     internal VmCapabilityBinding[] BindingsFor(VmProfileDescriptor descriptor) =>
         GetProfileState(descriptor).Bindings;
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=404CBC
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=404CBC
+    // Broiler-Human:        PENDING
     internal IVmArtifactProvider? ProviderFor(VmProfileDescriptor descriptor) =>
         GetProfileState(descriptor).Provider;
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=DD94B2
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=DD94B2
+    // Broiler-Falsified-If: two live operation identities reduce to one key, so parking the second evicts the first
+    // Broiler-Human:        PENDING
     internal static ulong OperationKey(VmObjectId operationId) =>
         unchecked((ulong)operationId.GetHashCode());
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E6E74A
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=E6E74A
+    // Broiler-Human:        PENDING
     internal static VmDiagnostics Invalid(
         VmDiagnostics baseline,
         VmStage stage,
@@ -726,8 +734,8 @@ public sealed partial class VmRuntime : System.IDisposable
             .WithOutcome(stage, VmOutcome.InvalidState, reason, VmInitiator.Caller)
             .WithObject(kind, 0, attempted);
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=77C163
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=77C163
+    // Broiler-Human:        PENDING
     private bool TryBindCapabilities(out VmReason failure, out VmCapabilityId capability)
     {
         failure = VmReason.None;
@@ -768,8 +776,8 @@ public sealed partial class VmRuntime : System.IDisposable
         return true;
     }
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=77D442
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=77D442
+    // Broiler-Human:        PENDING
     private static bool TryResolveGuestLoadBounds(
         VmCatalog catalog,
         VmRuntimeCreationOptions options,
@@ -843,8 +851,8 @@ public sealed partial class VmRuntime : System.IDisposable
         return true;
     }
 
-    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=71C18F
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=71C18F
+    // Broiler-Human:        PENDING
     private static VmGuestLoadBounds Tighten(VmGuestLoadBounds left, VmGuestLoadBounds right) =>
         new(
             System.Math.Min(left.NestedLoadDepth, right.NestedLoadDepth),

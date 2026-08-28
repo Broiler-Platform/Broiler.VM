@@ -6,12 +6,12 @@
 
 namespace Probe;
 
-// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=48D70A
-// Broiler-Human: PENDING
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=48D70A
+// Broiler-Human:        PENDING
 public static class Assessed
 {
-    // Broiler-AI:    Origin=AI; IP Low; Security=Low; Resources=3; Fingerprint=TBF
-    // Broiler-Human: PENDING
+    // Broiler-AI:           Origin=AI; IP Low; Security=Low; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
     public static int Fold(int[] values)
     {
         var total = 0;

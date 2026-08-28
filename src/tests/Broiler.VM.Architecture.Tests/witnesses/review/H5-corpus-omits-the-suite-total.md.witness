@@ -3,6 +3,6 @@
 The split, the Native AOT image size and the trimmed image size are all still quoted and still
 correct. Only the suite total has gone, which a guard that compares no value would not notice.
 
-The run was 89 architecture tests and 131 behavioural tests, the fixtures host publishes and
+The run was 90 architecture tests and 131 behavioural tests, the fixtures host publishes and
 runs as a Native AOT binary of 1,279,488 bytes, and it also runs as a 162,816-byte trimmed
 binary.

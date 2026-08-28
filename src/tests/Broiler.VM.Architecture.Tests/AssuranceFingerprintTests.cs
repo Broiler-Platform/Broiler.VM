@@ -170,8 +170,8 @@ public sealed class AssuranceFingerprintTests
         public static class Gate
         {
             /// <summary>Admits a declared count, or refuses it.</summary>
-            // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=TBF
-            // Broiler-Human: PENDING
+            // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=TBF
+            // Broiler-Human:        PENDING
             public static bool Admit(uint declared, uint bound, out int taken)
             {
                 // Rewritten wholesale, and a second line added under it, because a comment is
@@ -359,8 +359,8 @@ public sealed class AssuranceFingerprintTests
             "\n" +
             "namespace Probe;\n\n" +
             "/* a formatter put this here */\n" +
-            "// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=ABCDEF\n" +
-            "// Broiler-Human: PENDING\n" +
+            "// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=ABCDEF\n" +
+            "// Broiler-Human:        PENDING\n" +
             "public sealed class Watched\n{\n    public int Depth; // trailing\n}\n";
 
         var attributed =

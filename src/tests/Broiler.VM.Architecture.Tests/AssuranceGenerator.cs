@@ -91,7 +91,7 @@ internal static class AssuranceGenerator
     internal static readonly string[] HeaderRowLabels =
     [
         "Relevant units:", "Annotated:", "Exempt:", "Human-reviewed:",
-        "IP risk:", "Security risk:", "Resource impact:", "Unverified:",
+        "IP risk:", "Security risk:", "Criteria:", "Resource impact:", "Unverified:",
     ];
 
     /// <summary>
@@ -120,12 +120,21 @@ internal static class AssuranceGenerator
     /// GENERATED text alone.
     /// </para>
     /// </remarks>
+    /// <remarks>
+    /// <c>criteria:</c> is the ninth row label and is here for the same reason the other eight are.
+    /// It does NOT reach a <c>// Broiler-Falsified-If:</c> line, which is a comment below the
+    /// generated header in every annotated file: the criterion line carries its own label and the
+    /// word appears nowhere on it. The list is asserted against the product tree, so a criterion
+    /// whose prose happened to contain a summary row label would be reported here rather than
+    /// silently accepted - which is a false positive on honest prose, and the answer to it is to
+    /// write the criterion without the phrase rather than to stop looking below the header.
+    /// </remarks>
     internal static readonly string[] SummaryVocabulary =
     [
         "broiler code assurance",
         "generated - do not edit manually",
         "relevant units:", "annotated:", "exempt:", "human-reviewed",
-        "ip risk", "security risk", "resource impact", "unverified:",
+        "ip risk", "security risk", "criteria:", "resource impact", "unverified:",
         "human reviewed", "reviewer", "reviewstate", "humanreviewed", "approved",
         "eligible for release",
     ];
@@ -385,10 +394,20 @@ internal static class AssuranceGenerator
     }
 
     /// <summary>
-    /// The file with every annotation's machine-maintained fields brought up to date, and nothing
-    /// else touched. Each rewrite is one line for one line, so the line numbers the scanner
-    /// recorded stay valid for the whole pass.
+    /// The file with every annotation's machine-maintained fields brought up to date and every
+    /// block aligned to the three-label width, and nothing else touched. Each rewrite is one line
+    /// for one line, so the line numbers the scanner recorded stay valid for the whole pass.
     /// </summary>
+    /// <remarks>
+    /// <b>The alignment is written here and nowhere else.</b> Three labels of three lengths line up
+    /// only if one writer owns the padding: 689 hand-aligned blocks would be 689 places for it to
+    /// be wrong, and the diff of the day the third line was introduced would have been unreadable.
+    /// A block with no criterion is re-rendered too, which is the point - the AI and human lines of
+    /// every block in the tree move to the width the criterion line needs whether or not that block
+    /// carries one. What the generator does NOT do is author a criterion: the prose is carried
+    /// through exactly as the source wrote it, because a criterion is a human's observation and
+    /// this is not the thing that observes.
+    /// </remarks>
     private static string RefreshedAnnotations(AssuranceSourceFile file, IReadOnlyList<AssuranceUnit> units)
     {
         var text = new AssuranceText(file.Text);
@@ -399,6 +418,11 @@ internal static class AssuranceGenerator
             var indent = AssuranceText.IndentOf(text[annotation.AiLine]);
 
             text[annotation.AiLine] = AssuranceAnnotation.RenderAiLine(indent, RefreshedFields(unit));
+
+            if (annotation.FalsifiedIfLine is { } criterion)
+            {
+                text[criterion] = AssuranceAnnotation.RenderFalsifiedIfLine(indent, annotation.FalsifiedIf!);
+            }
 
             var body = RefreshedHumanBody(annotation, unit.Fingerprint);
 
@@ -752,6 +776,11 @@ internal static class AssuranceGenerator
         yield return Row("Human-reviewed:", $"{summary.Verified}/{summary.Relevant}");
         yield return Row("IP risk:", summary.MaxIpRisk ?? "not assessed");
         yield return Row("Security risk:", summary.MaxSecurityRisk ?? "not assessed");
+
+        // How much of this file's high-risk surface carries a falsification criterion. It sits
+        // under the security row because the denominator IS that row: the units assessed High or
+        // Critical are the ones a criterion is required on.
+        yield return Row("Criteria:", $"{summary.Criteria}/{summary.CriteriaRequired}");
         yield return Row("Resource impact:", summary.MaxResources is { } score
             ? $"{score}/10 max"
             : "not assessed");
@@ -831,6 +860,29 @@ internal static class AssuranceGenerator
         report.Append(high.Length == 0
             ? "No annotated unit is assessed High or Critical. This says nothing about the units nothing\nhas assessed.\n\n"
             : string.Join("\n", high) + "\n\n");
+
+        // How much of that surface carries a falsification criterion. The section is next to the
+        // high-security list because it is the same population: the units listed above are the
+        // units a criterion is required on.
+        report.Append("## Falsification criteria\n\n");
+        report.Append("| Metric | Value |\n|---|---:|\n");
+        report.Append($"| Units carrying a criterion | {summary.Criteria} |\n");
+        report.Append($"| Units required to carry one | {summary.CriteriaRequired} |\n");
+        report.Append($"| Required and missing | {AssuranceScanner.MissingFalsificationCriteria(units).Count} |\n\n");
+        report.Append("A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make\n");
+        report.Append("the unit wrong. `Security=High` says a unit is risky, which is a set and not a test; the\n");
+        report.Append("criterion is the test. It is required where `Security` is `High` or `Critical`, permitted\n");
+        report.Append("elsewhere, and rule J10 names every unit that owes one and carries none.\n\n");
+        report.Append("The line is a comment, so it is outside every fingerprint by construction: rewording a\n");
+        report.Append("criterion moves no recorded value here, in a file header or in\n");
+        report.Append($"`{AssuranceManifest.RelativePath}`, and invalidates nothing. That is the intended reading - a\n");
+        report.Append("criterion is an instruction to whoever reads the unit, not part of what a review is bound to.\n\n");
+        report.Append("This third line is a local extension. The owner's policy defines two lines and not three,\n");
+        report.Append("and it is added here because the two cannot carry a falsification criterion at all, and\n");
+        report.Append("because the line numbers a separate worksheet cited rotted the moment the annotations moved\n");
+        report.Append("the code: an annotation travels with its declaration and a citation does not. Exclusion\n");
+        report.Append("EX-74 records that this is an extension to the policy rather than an implementation of it,\n");
+        report.Append("and that the owner may reject it.\n\n");
 
         report.Append("## Exemption\n\n");
         report.Append("Exemption is decided by one predicate in `AssuranceScanner.ExemptionFor`, not per unit, so\n");
@@ -933,6 +985,8 @@ internal sealed record AssuranceSummary(
     int Annotated,
     int Verified,
     int Unverified,
+    int Criteria,
+    int CriteriaRequired,
     string? MaxIpRisk,
     string? MaxSecurityRisk,
     int? MaxResources,
@@ -959,6 +1013,8 @@ internal sealed record AssuranceSummary(
             Annotated: assessed.Length,
             Verified: relevant.Count(static unit => unit.State == AssuranceReviewState.Verified),
             Unverified: relevant.Count(static unit => AssuranceStateMachine.BlocksRelease(unit.State)),
+            Criteria: AssuranceScanner.FalsificationCriteria(units),
+            CriteriaRequired: AssuranceScanner.UnitsRequiringACriterion(units),
             MaxIpRisk: Worst(assessed, "IP", AssuranceAnnotation.IpRiskValues),
             MaxSecurityRisk: Worst(assessed, "Security", AssuranceAnnotation.SecurityRiskValues),
             MaxResources: scores.Length == 0 ? null : scores.Max(),
