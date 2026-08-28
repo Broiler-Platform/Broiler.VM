@@ -1,0 +1,21 @@
+// Witness for rule J1: a negation is not a delegation.
+//
+// Exemption case 5 reaches ToString, GetHashCode, Equals and the operators, and only when the
+// body ONLY delegates. Its whitelist used to permit a logical negation, so `!left.Equals(right)`
+// read as a delegation to Equals - when it is the opposite decision, and the whole content of an
+// inequality operator is which way round it is. Every `operator !=` in the component was exempt,
+// so dropping the `!` moved no annotation and no fingerprint.
+//
+// operator != must be relevant. operator == is the accepting direction: it hands its question to
+// Equals unchanged and stays exempt, so the case is narrowed rather than deleted.
+
+namespace Probe;
+
+public readonly struct Negated
+{
+    public bool Equals(Negated other) => true;
+
+    public static bool operator ==(Negated left, Negated right) => left.Equals(right);
+
+    public static bool operator !=(Negated left, Negated right) => !left.Equals(right);
+}

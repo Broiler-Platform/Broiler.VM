@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   56
-// Annotated:        56/56
-// Exempt:           33
-// Human-reviewed:   0/56
+// Relevant units:   58
+// Annotated:        58/58
+// Exempt:           41
+// Human-reviewed:   0/58
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  0/10 max
-// Unverified:       56
+// Unverified:       58
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -57,9 +57,13 @@ public interface IVmOperationResult
 public readonly struct VmEnvelopeReadResult : IVmOperationResult
 {
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=9A0727
+    // Broiler-Human: PENDING
     public VmOutcome Outcome => VmOutcome.None;
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=651B37
+    // Broiler-Human: PENDING
     public VmReason Reason => VmReason.None;
 
     /// <inheritdoc/>

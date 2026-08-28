@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   21
-// Annotated:        21/21
-// Exempt:           57
-// Human-reviewed:   0/21
+// Relevant units:   28
+// Annotated:        28/28
+// Exempt:           53
+// Human-reviewed:   0/28
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  3/10 max
-// Unverified:       21
+// Unverified:       28
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -54,6 +54,8 @@ public readonly struct VmHostCorrelationToken : System.IEquatable<VmHostCorrelat
     public static bool operator ==(VmHostCorrelationToken left, VmHostCorrelationToken right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=F864F6
+    // Broiler-Human: PENDING
     public static bool operator !=(VmHostCorrelationToken left, VmHostCorrelationToken right) => !left.Equals(right);
 }
 
@@ -132,6 +134,8 @@ public readonly struct VmObjectState : System.IEquatable<VmObjectState>
     public static bool operator ==(VmObjectState left, VmObjectState right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=ACBD2D
+    // Broiler-Human: PENDING
     public static bool operator !=(VmObjectState left, VmObjectState right) => !left.Equals(right);
 }
 
@@ -266,6 +270,8 @@ public readonly struct VmSourcePosition : System.IEquatable<VmSourcePosition>
     public static bool operator ==(VmSourcePosition left, VmSourcePosition right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=7601B2
+    // Broiler-Human: PENDING
     public static bool operator !=(VmSourcePosition left, VmSourcePosition right) => !left.Equals(right);
 }
 
@@ -327,6 +333,8 @@ public readonly struct VmCallerIdentity : System.IEquatable<VmCallerIdentity>
     public static bool operator ==(VmCallerIdentity left, VmCallerIdentity right) => left.Equals(right);
 
     /// <summary>Ordinal inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=33A459
+    // Broiler-Human: PENDING
     public static bool operator !=(VmCallerIdentity left, VmCallerIdentity right) => !left.Equals(right);
 }
 
@@ -532,9 +540,13 @@ public readonly struct VmDiagnostics : System.IEquatable<VmDiagnostics>
             ProfileDiagnosticCode, ObjectKind, ObjectState, AttemptedCall, initiator);
 
     /// <summary>Group 1: the core contract version this build implements.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=7C60B3
+    // Broiler-Human: PENDING
     public int CoreContractVersion => VmCoreContract.Version;
 
     /// <summary>Group 1: the reason-registry revision the reason is drawn from.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=345DB5
+    // Broiler-Human: PENDING
     public int ReasonRegistryRevision => VmReasonRegistry.Revision;
 
     /// <summary>Group 2: which stage produced the result.</summary>
@@ -657,5 +669,7 @@ public readonly struct VmDiagnostics : System.IEquatable<VmDiagnostics>
     public static bool operator ==(VmDiagnostics left, VmDiagnostics right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=DCF31E
+    // Broiler-Human: PENDING
     public static bool operator !=(VmDiagnostics left, VmDiagnostics right) => !left.Equals(right);
 }

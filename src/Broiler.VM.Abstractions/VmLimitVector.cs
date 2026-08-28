@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   19
-// Annotated:        19/19
-// Exempt:           26
-// Human-reviewed:   0/19
+// Relevant units:   23
+// Annotated:        23/23
+// Exempt:           24
+// Human-reviewed:   0/23
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  1/10 max
-// Unverified:       19
+// Unverified:       23
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -222,6 +222,8 @@ public readonly struct VmLimitVector : System.IEquatable<VmLimitVector>
     public static bool operator ==(VmLimitVector left, VmLimitVector right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C8D278
+    // Broiler-Human: PENDING
     public static bool operator !=(VmLimitVector left, VmLimitVector right) => !left.Equals(right);
 }
 
@@ -331,6 +333,8 @@ public readonly struct VmBudgetDeclarationMatrix : System.IEquatable<VmBudgetDec
         left.Equals(right);
 
     /// <summary>Value inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=052283
+    // Broiler-Human: PENDING
     public static bool operator !=(VmBudgetDeclarationMatrix left, VmBudgetDeclarationMatrix right) =>
         !left.Equals(right);
 }
@@ -376,6 +380,8 @@ public readonly struct VmEffectiveCeilings : System.IEquatable<VmEffectiveCeilin
     public static bool operator ==(VmEffectiveCeilings left, VmEffectiveCeilings right) => left.Equals(right);
 
     /// <summary>Exact value inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=BF42B3
+    // Broiler-Human: PENDING
     public static bool operator !=(VmEffectiveCeilings left, VmEffectiveCeilings right) => !left.Equals(right);
 }
 
@@ -457,5 +463,7 @@ public readonly struct VmGuestLoadBounds : System.IEquatable<VmGuestLoadBounds>
     public static bool operator ==(VmGuestLoadBounds left, VmGuestLoadBounds right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=B1F72E
+    // Broiler-Human: PENDING
     public static bool operator !=(VmGuestLoadBounds left, VmGuestLoadBounds right) => !left.Equals(right);
 }

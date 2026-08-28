@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   21
-// Annotated:        21/21
-// Exempt:           6
-// Human-reviewed:   0/21
+// Relevant units:   22
+// Annotated:        22/22
+// Exempt:           7
+// Human-reviewed:   0/22
 // IP risk:          Low
 // Security risk:    High
 // Resource impact:  2/10 max
-// Unverified:       21
+// Unverified:       22
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -235,6 +235,8 @@ public readonly struct VmProfileId : System.IEquatable<VmProfileId>, System.ICom
     public static bool operator ==(VmProfileId left, VmProfileId right) => left.Equals(right);
 
     /// <summary>Ordinal, case-sensitive inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1D5E24
+    // Broiler-Human: PENDING
     public static bool operator !=(VmProfileId left, VmProfileId right) => !left.Equals(right);
 
     /// <summary>

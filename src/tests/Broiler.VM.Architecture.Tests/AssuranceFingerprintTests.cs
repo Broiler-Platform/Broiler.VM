@@ -341,4 +341,69 @@ public sealed class AssuranceFingerprintTests
         static string Fingerprint(string member) =>
             AssuranceProbe.Fingerprint($"namespace Probe;\n\npublic class Probe\n{{\n    {member}\n}}\n", "Nothing()");
     }
+
+    /// <summary>
+    /// A property declaration's fingerprint includes its INITIALIZER.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <c>public static VmControlResult Accepted { get; } = new(VmControlOutcome.Accepted,
+    /// VmReason.None);</c> is an auto-property, so the exemption predicate answers case 1 and it
+    /// carries no annotation - but the initializer states a value the type hands every caller, and
+    /// changing <c>VmReason.None</c> to <c>VmReason.ObjectDisposed</c> changes what ships.
+    /// </para>
+    /// <para>
+    /// The fingerprint has to move for that edit, or the manifest entry rule J7 keeps for the unit
+    /// would be the same before and after and the only record of the change would be silent. It
+    /// does move, because the initializer's tokens are the declaration's tokens; this pins that,
+    /// because the alternative - fingerprinting only the accessor list - would look identical on
+    /// every other property in the tree.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void A_Property_Initializer_Is_Part_Of_The_Declaration_It_Fingerprints()
+    {
+        const string Shipped = """
+            namespace Probe;
+
+            public sealed class Results
+            {
+                public static Verdict Accepted { get; } = new Verdict(Outcome.Accepted, Reason.None);
+            }
+            """;
+
+        const string Changed = """
+            namespace Probe;
+
+            public sealed class Results
+            {
+                public static Verdict Accepted { get; } = new Verdict(Outcome.Accepted, Reason.ObjectDisposed);
+            }
+            """;
+
+        // The unit is exempt, which is the point: nothing but the manifest records it.
+        Assert.True(AssuranceProbe.Named(Shipped, "Accepted").IsExempt);
+
+        Assert.Contains(
+            "Reason . None",
+            AssuranceProbe.TokenStream(Shipped, "Accepted"),
+            StringComparison.Ordinal);
+
+        Assert.NotEqual(
+            AssuranceProbe.Fingerprint(Shipped, "Accepted"),
+            AssuranceProbe.Fingerprint(Changed, "Accepted"));
+
+        // ...and the two manifest entries differ in the fingerprint and in nothing else, so the
+        // edit is one line of a diff rather than nothing at all.
+        Assert.NotEqual(
+            Entry(Shipped).Fingerprint,
+            Entry(Changed).Fingerprint);
+
+        Assert.Equal(Entry(Shipped).Name, Entry(Changed).Name);
+        Assert.Equal(Entry(Shipped).Exemption, Entry(Changed).Exemption);
+
+        static AssuranceManifestEntry Entry(string source) => AssuranceManifest
+            .Entries(AssuranceProbe.Scan(source))
+            .Single(static entry => entry.Name.EndsWith(".Accepted", StringComparison.Ordinal));
+    }
 }

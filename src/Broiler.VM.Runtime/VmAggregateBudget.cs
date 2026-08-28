@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   18
-// Annotated:        18/18
-// Exempt:           12
-// Human-reviewed:   0/18
+// Relevant units:   20
+// Annotated:        20/20
+// Exempt:           19
+// Human-reviewed:   0/20
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  3/10 max
-// Unverified:       18
+// Unverified:       20
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -27,6 +27,8 @@ public readonly struct VmAggregateBudgetId : System.IEquatable<VmAggregateBudget
     public bool IsEmpty => value.IsEmpty;
 
     /// <summary>The underlying object identity, so a handle can record its parent.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=DE3486
+    // Broiler-Human: PENDING
     public VmObjectId ObjectId => value;
 
     /// <inheritdoc/>
@@ -42,6 +44,8 @@ public readonly struct VmAggregateBudgetId : System.IEquatable<VmAggregateBudget
     public static bool operator ==(VmAggregateBudgetId left, VmAggregateBudgetId right) => left.Equals(right);
 
     /// <summary>Identity inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C9FF54
+    // Broiler-Human: PENDING
     public static bool operator !=(VmAggregateBudgetId left, VmAggregateBudgetId right) => !left.Equals(right);
 }
 

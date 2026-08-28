@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   7
-// Annotated:        7/7
-// Exempt:           10
-// Human-reviewed:   0/7
+// Relevant units:   8
+// Annotated:        8/8
+// Exempt:           12
+// Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  2/10 max
-// Unverified:       7
+// Unverified:       8
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -94,6 +94,8 @@ internal sealed class VmCapabilityInvoker : IVmHostCapabilityInvoker
     internal bool TerminatesOperation { get; private set; }
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=08A7E3
+    // Broiler-Human: PENDING
     public int BindingCount => bindings.Length;
 
     /// <inheritdoc/>

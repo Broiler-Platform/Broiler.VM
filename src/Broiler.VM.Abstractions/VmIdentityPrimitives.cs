@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   30
-// Annotated:        30/30
+// Relevant units:   39
+// Annotated:        39/39
 // Exempt:           50
-// Human-reviewed:   0/30
+// Human-reviewed:   0/39
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  3/10 max
-// Unverified:       30
+// Unverified:       39
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -70,6 +70,8 @@ public readonly struct VmFormatVersionRange : System.IEquatable<VmFormatVersionR
     public static bool operator ==(VmFormatVersionRange left, VmFormatVersionRange right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=E3AAA9
+    // Broiler-Human: PENDING
     public static bool operator !=(VmFormatVersionRange left, VmFormatVersionRange right) => !left.Equals(right);
 }
 
@@ -201,6 +203,8 @@ public readonly struct VmCapabilityId
     public static bool operator ==(VmCapabilityId left, VmCapabilityId right) => left.Equals(right);
 
     /// <summary>Ordinal inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=3DEEF5
+    // Broiler-Human: PENDING
     public static bool operator !=(VmCapabilityId left, VmCapabilityId right) => !left.Equals(right);
 }
 
@@ -254,6 +258,8 @@ public readonly struct VmCapabilitySignatureId : System.IEquatable<VmCapabilityS
     public static bool operator ==(VmCapabilitySignatureId left, VmCapabilitySignatureId right) => left.Equals(right);
 
     /// <summary>Ordinal inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=A7BA46
+    // Broiler-Human: PENDING
     public static bool operator !=(VmCapabilitySignatureId left, VmCapabilitySignatureId right) => !left.Equals(right);
 }
 
@@ -303,6 +309,8 @@ public readonly struct VmConformanceManifestId : System.IEquatable<VmConformance
     public static bool operator ==(VmConformanceManifestId left, VmConformanceManifestId right) => left.Equals(right);
 
     /// <summary>Ordinal inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=8ED44D
+    // Broiler-Human: PENDING
     public static bool operator !=(VmConformanceManifestId left, VmConformanceManifestId right) => !left.Equals(right);
 }
 
@@ -377,6 +385,8 @@ public readonly struct VmDiagnosticsIdentity : System.IEquatable<VmDiagnosticsId
     public static bool operator ==(VmDiagnosticsIdentity left, VmDiagnosticsIdentity right) => left.Equals(right);
 
     /// <summary>Ordinal inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1BA4FE
+    // Broiler-Human: PENDING
     public static bool operator !=(VmDiagnosticsIdentity left, VmDiagnosticsIdentity right) => !left.Equals(right);
 }
 
@@ -433,6 +443,8 @@ public readonly struct VmPackageIdentity : System.IEquatable<VmPackageIdentity>
     public static bool operator ==(VmPackageIdentity left, VmPackageIdentity right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=894A68
+    // Broiler-Human: PENDING
     public static bool operator !=(VmPackageIdentity left, VmPackageIdentity right) => !left.Equals(right);
 }
 
@@ -486,6 +498,8 @@ public readonly struct VmObjectId : System.IEquatable<VmObjectId>
     public static bool operator ==(VmObjectId left, VmObjectId right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=AC519E
+    // Broiler-Human: PENDING
     public static bool operator !=(VmObjectId left, VmObjectId right) => !left.Equals(right);
 }
 
@@ -525,6 +539,8 @@ public readonly struct VmOpaqueRef : System.IEquatable<VmOpaqueRef>
     public bool IsEmpty => runtime == 0 && generation == 0 && slot == 0;
 
     /// <summary>The identity of the runtime this reference belongs to.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=262C25
+    // Broiler-Human: PENDING
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public ulong OwningRuntime => runtime;
 
@@ -552,5 +568,7 @@ public readonly struct VmOpaqueRef : System.IEquatable<VmOpaqueRef>
     public static bool operator ==(VmOpaqueRef left, VmOpaqueRef right) => left.Equals(right);
 
     /// <summary>Identity inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=3BBA98
+    // Broiler-Human: PENDING
     public static bool operator !=(VmOpaqueRef left, VmOpaqueRef right) => !left.Equals(right);
 }

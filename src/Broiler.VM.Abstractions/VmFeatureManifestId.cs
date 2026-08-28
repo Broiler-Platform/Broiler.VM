@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   12
-// Annotated:        12/12
+// Relevant units:   13
+// Annotated:        13/13
 // Exempt:           5
-// Human-reviewed:   0/12
+// Human-reviewed:   0/13
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  2/10 max
-// Unverified:       12
+// Unverified:       13
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -187,5 +187,7 @@ public readonly struct VmFeatureManifestId
     public static bool operator ==(VmFeatureManifestId left, VmFeatureManifestId right) => left.Equals(right);
 
     /// <summary>Ordinal inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=EF7130
+    // Broiler-Human: PENDING
     public static bool operator !=(VmFeatureManifestId left, VmFeatureManifestId right) => !left.Equals(right);
 }

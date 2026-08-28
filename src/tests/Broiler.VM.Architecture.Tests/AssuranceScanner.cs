@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Broiler.VM.Architecture.Tests;
 
 /// <summary>
-/// Which of the six exemption cases, if any, covers a declaration.
+/// Which of the seven exemption cases, if any, covers a declaration.
 /// </summary>
 /// <remarks>
 /// The names are the cases as the component's assurance specification states them, so that a
@@ -38,8 +38,18 @@ internal enum AssuranceExemption
     InsideAssemblyMarker,
 
     /// <summary>
+    /// Case 7: a field declaration that is not a <c>const</c> or <c>static readonly</c> value. It
+    /// declares storage; what the storage holds is decided by the members that write it, and those
+    /// are reviewed. The declaration itself is WATCHED rather than reviewed - it is a unit, it
+    /// carries a fingerprint, and <c>assurance.manifest.json</c> records that fingerprint - so a
+    /// change to its type or its initializer moves a recorded value even though no human line
+    /// covers it.
+    /// </summary>
+    FieldDeclaringStorage,
+
+    /// <summary>
     /// The per-unit escape hatch: <c>// Broiler-AI: EXEMPT=&lt;reason&gt;</c>, for what the
-    /// predicate cannot see. It is not one of the six and is deliberately named apart from them.
+    /// predicate cannot see. It is not one of the seven and is deliberately named apart from them.
     /// </summary>
     DeclaredInSource,
 }
@@ -83,11 +93,10 @@ internal sealed class AssuranceUnit
 /// <para>
 /// <b>What counts as a declaration.</b> Every member that can carry executable code: methods,
 /// constructors, destructors, operators, conversion operators, properties, indexers and events -
-/// and every <c>const</c> or <c>static readonly</c> field that carries an initializer. Enum
-/// members, delegate declarations, plain instance fields and the type declarations themselves are
-/// not code units and are not enumerated. A bodiless declaration IS enumerated: an interface
-/// member, an abstract member or an <c>extern</c> member has a signature, and in a contract
-/// assembly the signature is precisely what a reviewer certifies.
+/// and EVERY field declaration, initialized or not. Enum members, delegate declarations and the
+/// type declarations themselves are not code units and are not enumerated. A bodiless declaration
+/// IS enumerated: an interface member, an abstract member or an <c>extern</c> member has a
+/// signature, and in a contract assembly the signature is precisely what a reviewer certifies.
 /// </para>
 /// <para>
 /// <b>Why an initialized constant is a unit.</b> An earlier revision excluded every field with the
@@ -95,10 +104,19 @@ internal sealed class AssuranceUnit
 /// initialized one, and the two constants it cost were both budgets: <c>MaximumEntries = 64</c>,
 /// which ADR 0002 freezes, and <c>DefaultUnwindBudget = 1_000_000</c>. Either could be multiplied
 /// by sixteen with no annotation to move and no fingerprint to invalidate, while the method that
-/// READS the constant went on asserting the fingerprint of the version that was assessed. A field
-/// initializer can also hold an arbitrary lambda - a whole admission algorithm with a loop in it -
-/// and carry no review state at all. A plain instance field with no initializer stays out: it
-/// declares storage and decides nothing.
+/// READS the constant went on asserting the fingerprint of the version that was assessed.
+/// </para>
+/// <para>
+/// <b>Why a plain instance field is a unit too, and what that does and does not mean.</b> A field
+/// with no initializer decides nothing a human has to certify - what it holds is decided by the
+/// constructors and methods that write it, and those are annotated - but its TYPE is the width of
+/// the arithmetic every one of those annotated bodies performs on it, and its declaration can
+/// change from <c>ulong</c> to <c>uint</c> with no annotated body's tokens moving at all. Being a
+/// unit is therefore not the same as being relevant. The predicate answers case 7 for it, so it
+/// needs no annotation; <c>assurance.manifest.json</c> records its fingerprint, so the change is
+/// DETECTED. Those are the two questions this system keeps apart: does this unit need a human
+/// annotation, which the predicate decides, and is this unit watched for change, which every unit
+/// is.
 /// </para>
 /// <para>
 /// <b>Why a predicate and not a list.</b> The policy asks for exemption rules that are
@@ -157,18 +175,20 @@ internal static class AssuranceScanner
         PropertyDeclarationSyntax or
         IndexerDeclarationSyntax or
         EventDeclarationSyntax => true,
-        FieldDeclarationSyntax field => IsFixedValue(field),
+        FieldDeclarationSyntax => true,
         _ => false,
     };
 
     /// <summary>
-    /// A <c>const</c> or <c>static readonly</c> field declaration that states a value.
+    /// A <c>const</c> or <c>static readonly</c> field declaration that states a value: the shape
+    /// that is RELEVANT rather than merely watched.
     /// </summary>
     /// <remarks>
     /// The value is the reviewable thing, so the declaration has to state one: a
-    /// <c>static readonly</c> assigned in a static constructor is reviewed there, and a field with
-    /// no initializer at all decides nothing. The whole declaration is the unit, so a fingerprint
-    /// covers the modifiers, the type, every declarator and every initializer expression.
+    /// <c>static readonly</c> assigned in a static constructor is reviewed there, and a field that
+    /// declares storage is reviewed where it is written. The whole declaration is the unit either
+    /// way, so a fingerprint covers the modifiers, the type, every declarator and every initializer
+    /// expression - and the manifest records that fingerprint for the exempt ones.
     /// </remarks>
     internal static bool IsFixedValue(FieldDeclarationSyntax field)
     {
@@ -186,7 +206,7 @@ internal static class AssuranceScanner
 
     /// <summary>
     /// Decides whether a declaration is exempt from carrying its own review block, and under which
-    /// of the six cases. <see cref="AssuranceExemption.None"/> means RELEVANT.
+    /// of the seven cases. <see cref="AssuranceExemption.None"/> means RELEVANT.
     /// </summary>
     /// <remarks>
     /// The cases are tried in the order they are written, and the first that matches is the answer.
@@ -198,7 +218,7 @@ internal static class AssuranceScanner
         AssuranceAnnotation? annotation)
     {
         // The escape hatch comes first: a reason a human wrote down outranks a predicate that
-        // could not see what they saw. It is not one of the six.
+        // could not see what they saw. It is not one of the seven.
         if (annotation?.ExemptReason is not null)
         {
             return AssuranceExemption.DeclaredInSource;
@@ -211,6 +231,15 @@ internal static class AssuranceScanner
                 string.Equals(type.Identifier.ValueText, "AssemblyMarker", StringComparison.Ordinal)))
         {
             return AssuranceExemption.InsideAssemblyMarker;
+        }
+
+        // CASE 7 - a field declaration that is not a const or static readonly value. It declares
+        // storage, and the members that write it are reviewed. Answered before case 4 because a
+        // plain field inside a record is not one of the members the compiler writes, and reporting
+        // it as one would be a false reason on a true answer.
+        if (declaration is FieldDeclarationSyntax field && !IsFixedValue(field))
+        {
+            return AssuranceExemption.FieldDeclaringStorage;
         }
 
         // CASE 4 - a compiler-generated member of a record or an enum. In a syntax tree the
@@ -236,10 +265,17 @@ internal static class AssuranceScanner
             return AssuranceExemption.ParameterAssigningConstructor;
         }
 
-        // CASE 3 - an expression-bodied member whose body is a single member access, a single
-        // delegation to another member of the same type, a constant, or `throw new ...`.
+        // CASE 3 - an expression-bodied member whose body is the member that CORRESPONDS to it, a
+        // single delegation to another member of the same type, a constant, or `throw new ...`.
+        //
+        // The correspondence is the same one case 1 and case 2 require, and it is here because
+        // this case is where a property that case 1 refused used to be readmitted: case 1 is tried
+        // first, but `public uint MaxSectionCount => _maxDeclaredCount;` has an arrow body, and an
+        // unconditional IsSingleMemberAccess here exempted it one screen further down. A member
+        // whose declaration carries no simple name - an operator, a conversion, an indexer - has
+        // nothing to correspond to, so a bare member-access body is RELEVANT for it.
         if (ArrowBody(declaration) is { } arrow &&
-            (IsSingleMemberAccess(arrow) ||
+            (IsCorrespondingMemberAccess(arrow, SimpleNameOf(declaration)) ||
              IsDelegationToOwnMember(arrow, declaration) ||
              IsConstant(arrow) ||
              IsThrowNew(arrow)))
@@ -258,14 +294,80 @@ internal static class AssuranceScanner
         return AssuranceExemption.None;
     }
 
+    // ---- The escape hatch, and where it may not be reached for -----------------------------------
+
+    /// <summary>
+    /// The assemblies in which the per-unit <c>EXEMPT=</c> escape hatch may not be used at all.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <c>Broiler.VM.Binary</c> is the component's reader over untrusted input. Every unit in it is
+    /// assessed <c>Security=High</c>, and the hatch is a sentence: nothing checks that the sentence
+    /// is true, that it refers to the unit it sits on, or that it refers to anything at all.
+    /// Replacing all twenty of that component's AI lines with one plausible sentence removed twenty
+    /// high-security assessments and twenty fingerprints, and left both modes of the gate green -
+    /// the hatch answers EXEMPT, an exempt unit needs no annotation, and a unit with no fingerprint
+    /// is bound to nothing.
+    /// </para>
+    /// <para>
+    /// So the hatch is refused outright where the stakes are highest, and everywhere else it is
+    /// COUNTED: <see cref="DeclaredExemptions"/> feeds a section of <c>CODE-ASSURANCE.md</c> that
+    /// names every use, so a use is visible in the component's own report rather than silent in one
+    /// source file. Neither is a judgement about whether a given reason is good; that is a review.
+    /// </para>
+    /// </remarks>
+    internal static readonly string[] AssembliesClosedToTheEscapeHatch = ["Broiler.VM.Binary"];
+
+    /// <summary>Every unit whose annotation states a per-unit <c>EXEMPT=</c> reason, in scan order.</summary>
+    internal static IReadOnlyList<AssuranceUnit> DeclaredExemptions(IEnumerable<AssuranceUnit> units) =>
+        units.Where(static unit => unit.Annotation?.ExemptReason is not null).ToArray();
+
+    /// <summary>Every use of the escape hatch in an assembly that is closed to it.</summary>
+    internal static List<string> EscapeHatchViolations(IEnumerable<AssuranceUnit> units) =>
+        DeclaredExemptions(units)
+            .Where(static unit => AssembliesClosedToTheEscapeHatch.Contains(
+                unit.File.Assembly, StringComparer.Ordinal))
+            .Select(static unit =>
+                $"{unit.Where} states EXEMPT={unit.Annotation!.ExemptReason}, and " +
+                $"{unit.File.Assembly} is closed to the per-unit exemption: a unit there is " +
+                "assessed or it is not shipped")
+            .ToList();
+
     // ---- Case 1 ---------------------------------------------------------------------------------
 
+    /// <summary>
+    /// An auto-property, or a property whose accessors only return or assign the field that
+    /// CORRESPONDS to the property.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The correspondence is the whole case, and an earlier revision left it out: it asked only
+    /// that the body be SOME member access, which is the constructor case's defect one screen
+    /// further down the same file. <c>public uint MaxSectionCount => _maxDeclaredCount;</c> reads
+    /// the declared-count ceiling out of the property every bounded read consults for the SECTION
+    /// ceiling, and the predicate called it trivial - so the unit carried no annotation, no
+    /// fingerprint moved, and no rule had anything to report. Re-pointing a property at a
+    /// different field is a decision, and a decision is what this system exists to put in front of
+    /// a human.
+    /// </para>
+    /// <para>
+    /// Names are compared exactly as case 2 compares them, by the one helper both use: a leading
+    /// underscore is decoration and the leading capital is a casing rule, so <c>MaxSectionCount</c>
+    /// corresponds to <c>maxSectionCount</c>, to <c>_maxSectionCount</c> and to
+    /// <c>this.maxSectionCount</c>, and to nothing else. An indexer has no simple name to
+    /// correspond to, so it is never trivial by this case.
+    /// </para>
+    /// </remarks>
     private static bool IsTrivialProperty(BasePropertyDeclarationSyntax property)
     {
-        // `public ulong MaxArtifactBytes => _bytes;` - a member access, nothing more.
+        var name = SimpleNameOf(property);
+
+        // `public ulong MaxArtifactBytes => maxArtifactBytes;` - the corresponding member, nothing
+        // more. A member access that is not the corresponding one is a decision about which value
+        // this property publishes.
         if (property is PropertyDeclarationSyntax { ExpressionBody: { } arrow })
         {
-            return IsSingleMemberAccess(arrow.Expression);
+            return IsCorrespondingMemberAccess(arrow.Expression, name);
         }
 
         if (property.AccessorList is null)
@@ -273,7 +375,7 @@ internal static class AssuranceScanner
             return false;
         }
 
-        return property.AccessorList.Accessors.All(static accessor =>
+        return property.AccessorList.Accessors.All(accessor =>
         {
             // An accessor with no body at all is compiler-supplied: this is an auto-property.
             if (accessor.Body is null && accessor.ExpressionBody is null)
@@ -281,26 +383,51 @@ internal static class AssuranceScanner
                 return true;
             }
 
-            if (accessor.ExpressionBody is { } arrow)
+            if (accessor.ExpressionBody is { } body)
             {
-                return IsSingleMemberAccess(arrow.Expression) || IsFieldAssignmentFromValue(arrow.Expression);
+                return IsCorrespondingMemberAccess(body.Expression, name) ||
+                    IsFieldAssignmentFromValue(body.Expression, name);
             }
 
             return accessor.Body!.Statements is [var only] && only switch
             {
-                ReturnStatementSyntax { Expression: { } returned } => IsSingleMemberAccess(returned),
-                ExpressionStatementSyntax statement => IsFieldAssignmentFromValue(statement.Expression),
+                ReturnStatementSyntax { Expression: { } returned } =>
+                    IsCorrespondingMemberAccess(returned, name),
+                ExpressionStatementSyntax statement =>
+                    IsFieldAssignmentFromValue(statement.Expression, name),
                 _ => false,
             };
         });
     }
 
+    /// <summary>
+    /// A member access that names the member CORRESPONDING to <paramref name="name"/>: the
+    /// accepting half of cases 1 and 3.
+    /// </summary>
+    private static bool IsCorrespondingMemberAccess(ExpressionSyntax expression, string? name) =>
+        name is not null &&
+        IsSingleMemberAccess(expression) &&
+        Corresponds(AssignedMemberName(expression), name);
+
     /// <summary>`_field = value;` - the setter half of "only returns or assigns a field".</summary>
-    private static bool IsFieldAssignmentFromValue(ExpressionSyntax expression) =>
+    private static bool IsFieldAssignmentFromValue(ExpressionSyntax expression, string? name) =>
         expression is AssignmentExpressionSyntax assignment &&
         assignment.IsKind(SyntaxKind.SimpleAssignmentExpression) &&
-        IsSingleMemberAccess(assignment.Left) &&
+        IsCorrespondingMemberAccess(assignment.Left, name) &&
         assignment.Right is IdentifierNameSyntax { Identifier.ValueText: "value" };
+
+    /// <summary>
+    /// The simple name a declaration publishes, or null when it has none. An operator, a
+    /// conversion, an indexer, a constructor and a destructor all have none, so nothing can
+    /// correspond to them and every borderline shape on them is answered RELEVANT.
+    /// </summary>
+    private static string? SimpleNameOf(MemberDeclarationSyntax declaration) => declaration switch
+    {
+        MethodDeclarationSyntax method => method.Identifier.ValueText,
+        PropertyDeclarationSyntax property => property.Identifier.ValueText,
+        EventDeclarationSyntax @event => @event.Identifier.ValueText,
+        _ => null,
+    };
 
     // ---- Case 2 ---------------------------------------------------------------------------------
 
@@ -552,10 +679,20 @@ internal static class AssuranceScanner
     /// literals, type tests and the two short-circuit operators - and contains at least one call.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// A whitelist rather than a pattern list, because the question is what the expression may NOT
     /// contain. `MaxArtifactBytes == other.MaxArtifactBytes &amp;&amp; ...` is four comparisons and
     /// no call: `==` is not on the list and there is no invocation, so it fails twice over and the
     /// unit stays relevant, which is the answer that matters.
+    /// </para>
+    /// <para>
+    /// <b>Logical negation is not on the list, and was.</b> `!Equals(other)` is not a delegation to
+    /// `Equals`; it is the OPPOSITE decision, and the whole content of an inequality operator is
+    /// which way round it is. With `!` whitelisted, every `operator !=` in the component was exempt,
+    /// so dropping the `!` - turning `a != b` into `a == b` across the public surface - moved no
+    /// annotation and no fingerprint. The rule is that this case reaches a member that hands its
+    /// question to another member unchanged; negating the answer is changing it.
+    /// </para>
     /// </remarks>
     private static bool OnlyDelegates(MemberDeclarationSyntax declaration)
     {
@@ -578,7 +715,6 @@ internal static class AssuranceScanner
             DeclarationPatternSyntax or SingleVariableDesignationSyntax => true,
             BinaryExpressionSyntax binary =>
                 binary.IsKind(SyntaxKind.LogicalAndExpression) || binary.IsKind(SyntaxKind.LogicalOrExpression),
-            PrefixUnaryExpressionSyntax unary => unary.IsKind(SyntaxKind.LogicalNotExpression),
             TypeSyntax => true,
             TypeArgumentListSyntax => true,
             _ => false,
@@ -659,14 +795,18 @@ internal static class AssuranceScanner
 
         var member = declaration switch
         {
-            MethodDeclarationSyntax method => method.Identifier.ValueText + Generics(method.TypeParameterList),
+            MethodDeclarationSyntax method =>
+                Explicit(method.ExplicitInterfaceSpecifier) +
+                method.Identifier.ValueText + Generics(method.TypeParameterList),
             ConstructorDeclarationSyntax constructor => constructor.Identifier.ValueText,
             DestructorDeclarationSyntax destructor => "~" + destructor.Identifier.ValueText,
             OperatorDeclarationSyntax @operator => "operator " + @operator.OperatorToken.ValueText,
             ConversionOperatorDeclarationSyntax conversion => "operator " + conversion.Type,
-            PropertyDeclarationSyntax property => property.Identifier.ValueText,
-            IndexerDeclarationSyntax => "this[]",
-            EventDeclarationSyntax @event => @event.Identifier.ValueText,
+            PropertyDeclarationSyntax property =>
+                Explicit(property.ExplicitInterfaceSpecifier) + property.Identifier.ValueText,
+            IndexerDeclarationSyntax indexer => Explicit(indexer.ExplicitInterfaceSpecifier) + "this[]",
+            EventDeclarationSyntax @event =>
+                Explicit(@event.ExplicitInterfaceSpecifier) + @event.Identifier.ValueText,
             FieldDeclarationSyntax field => string.Join(
                 ", ",
                 field.Declaration.Variables.Select(static variable => variable.Identifier.ValueText)),
@@ -680,6 +820,13 @@ internal static class AssuranceScanner
         static string Generics(TypeParameterListSyntax? parameters) => parameters is null
             ? string.Empty
             : "<" + string.Join(",", parameters.Parameters.Select(static p => p.Identifier.ValueText)) + ">";
+
+        // An explicit interface implementation is part of the name because it is a DIFFERENT
+        // member: `VmMeter.Poll()` and `IVmBoundedAllocationMeter.Poll()` are two declarations in
+        // one type, and a name that dropped the specifier gave them the same one - which made two
+        // units indistinguishable in a report, and made the manifest unable to address either.
+        static string Explicit(ExplicitInterfaceSpecifierSyntax? specifier) =>
+            specifier is null ? string.Empty : specifier.Name.ToString() + ".";
 
         // Parameter modifiers are part of the name because they are part of the signature: two
         // overloads differing only by `out` are two units, and a name that dropped the keyword

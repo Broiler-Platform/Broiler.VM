@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   12
-// Annotated:        12/12
-// Exempt:           29
-// Human-reviewed:   0/12
+// Relevant units:   13
+// Annotated:        13/13
+// Exempt:           34
+// Human-reviewed:   0/13
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  3/10 max
-// Unverified:       12
+// Unverified:       13
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -199,6 +199,8 @@ public readonly struct VmVerifiedArtifactIdentity : System.IEquatable<VmVerified
         left.Equals(right);
 
     /// <summary>Value inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=D15F6D
+    // Broiler-Human: PENDING
     public static bool operator !=(VmVerifiedArtifactIdentity left, VmVerifiedArtifactIdentity right) =>
         !left.Equals(right);
 }

@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   7
-// Annotated:        7/7
-// Exempt:           28
-// Human-reviewed:   0/7
+// Relevant units:   10
+// Annotated:        10/10
+// Exempt:           25
+// Human-reviewed:   0/10
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  3/10 max
-// Unverified:       7
+// Unverified:       10
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -211,6 +211,8 @@ public readonly struct VmHostCapabilityDescriptor : System.IEquatable<VmHostCapa
         left.Equals(right);
 
     /// <summary>Value inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=2E7664
+    // Broiler-Human: PENDING
     public static bool operator !=(VmHostCapabilityDescriptor left, VmHostCapabilityDescriptor right) =>
         !left.Equals(right);
 }
@@ -254,6 +256,8 @@ public readonly struct VmCapabilityImport : System.IEquatable<VmCapabilityImport
     public static bool operator ==(VmCapabilityImport left, VmCapabilityImport right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=E8E5B5
+    // Broiler-Human: PENDING
     public static bool operator !=(VmCapabilityImport left, VmCapabilityImport right) => !left.Equals(right);
 }
 
@@ -341,6 +345,8 @@ public readonly struct VmHostSignatureAssumption : System.IEquatable<VmHostSigna
         left.Equals(right);
 
     /// <summary>Value inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=14E94A
+    // Broiler-Human: PENDING
     public static bool operator !=(VmHostSignatureAssumption left, VmHostSignatureAssumption right) =>
         !left.Equals(right);
 }

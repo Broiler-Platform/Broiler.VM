@@ -1,8 +1,8 @@
 # Broiler.VM Code Assurance
 
 GENERATED - DO NOT EDIT MANUALLY. Regenerate with
-`BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release`, which rewrites this file
-and every generated source header from the annotations in the product tree.
+`BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release`, which rewrites this file,
+`assurance.manifest.json` and every generated source header from the product tree.
 
 **Nothing in this component has been reviewed by a human.** This report records that
 absence precisely. It is not a claim that the code is reviewed, assured or safe, and the
@@ -14,12 +14,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 45 |
 | Files carrying an annotation | 44 |
-| Code units | 1034 |
-| Relevant | 496 |
-| Exempt by predicate | 538 |
-| Annotated | 496 of 496 (100%) |
-| Human reviewed | 0 of 496 (0%) |
-| Unverified | 496 |
+| Code units | 1169 |
+| Relevant | 543 |
+| Exempt by predicate | 626 |
+| Annotated | 543 of 543 (100%) |
+| Human reviewed | 0 of 543 (0%) |
+| Unverified | 543 |
 
 ## Review states
 
@@ -27,18 +27,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 496 |
+| HUMAN_PENDING | 543 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 538 |
+| EXEMPT | 626 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
 | None | 19 |
-| Low | 477 |
+| Low | 524 |
 | Medium | 0 |
 | High | 0 |
 | Unknown | 0 |
@@ -49,7 +49,7 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 2 |
-| Low | 279 |
+| Low | 326 |
 | Medium | 184 |
 | High | 31 |
 | Critical | 0 |
@@ -60,8 +60,8 @@ figures below are the measurement of how far from that claim the component is.
 | Metric | Value |
 |---|---:|
 | Maximum | 8 / 10 |
-| Average over annotated units | 1.0 / 10 |
-| Units scored | 496 |
+| Average over annotated units | 0.9 / 10 |
+| Units scored | 543 |
 
 ## High-security review areas
 
@@ -104,13 +104,39 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 339 |
+| TrivialPropertyOrAccessor | 324 |
 | ParameterAssigningConstructor | 63 |
-| TrivialExpressionBodiedMember | 17 |
+| TrivialExpressionBodiedMember | 16 |
 | CompilerSuppliedRecordOrEnumMember | 0 |
-| DelegatingOverrideOrOperator | 119 |
+| DelegatingOverrideOrOperator | 88 |
 | InsideAssemblyMarker | 0 |
+| FieldDeclaringStorage | 135 |
 | DeclaredInSource | 0 |
+
+## Per-unit exemptions
+
+| Metric | Value |
+|---|---:|
+| Per-unit exemptions | 0 |
+
+A per-unit `EXEMPT=<reason>` line exempts one unit by a reason a human wrote, for what the
+predicate cannot see. Nothing mechanical checks that the reason is true, that it describes
+the unit it sits on, or that it says anything at all, so every use is counted and named
+here. `Broiler.VM.Binary` is closed to it entirely: that assembly reads untrusted
+input, and a unit there is assessed or it is not shipped. Rule J1 asserts both halves.
+
+No unit in this component states a per-unit exemption.
+
+## Change detection
+
+`assurance.manifest.json` lists **every** code unit in the three product assemblies -
+1169 of them, exempt and relevant alike - with the fingerprint of its declaration.
+This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
+the entry records what the declaration's tokens hashed to when the generator last ran, and
+nothing else. Exempt units still need no annotation and carry none, and no human line in
+this component has moved off `PENDING`. What the manifest adds is that a unit the exemption
+predicate treats as trivial is no longer invisible: a semantic change to one moves a value
+in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
 
 ## Verification
 
@@ -120,7 +146,7 @@ code, run as a test in the architecture suite:
 
 | Mode | Command | Effect |
 |---|---|---|
-| Generate | `BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release` | Fills every `Fingerprint=TBF`, refreshes a review the code has outrun into `STALE; Previous=...`, rewrites the generated headers and this file. |
+| Generate | `BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release` | Fills every `Fingerprint=TBF`, refreshes a review the code has outrun into `STALE; Previous=...`, rewrites the generated headers, `assurance.manifest.json` and this file. |
 | Gate | `dotnet test Broiler.VM.slnx -c Release` | Asserts every generated artefact is byte-identical to what the generator would produce. This is the mode a reviewer and a release run. |
 
 The fingerprint is six hex characters - 24 bits - of SHA-256 over the declaration's token

@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   5
-// Annotated:        5/5
-// Exempt:           13
-// Human-reviewed:   0/5
+// Relevant units:   6
+// Annotated:        6/6
+// Exempt:           12
+// Human-reviewed:   0/6
 // IP risk:          Low
 // Security risk:    Low
 // Resource impact:  1/10 max
-// Unverified:       5
+// Unverified:       6
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -225,5 +225,7 @@ public readonly struct VmPayloadKindIdRange : System.IEquatable<VmPayloadKindIdR
     public static bool operator ==(VmPayloadKindIdRange left, VmPayloadKindIdRange right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=66FED0
+    // Broiler-Human: PENDING
     public static bool operator !=(VmPayloadKindIdRange left, VmPayloadKindIdRange right) => !left.Equals(right);
 }

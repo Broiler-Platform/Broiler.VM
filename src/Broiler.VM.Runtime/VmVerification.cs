@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   5
-// Annotated:        5/5
+// Relevant units:   6
+// Annotated:        6/6
 // Exempt:           4
-// Human-reviewed:   0/5
+// Human-reviewed:   0/6
 // IP risk:          Low
 // Security risk:    High
 // Resource impact:  8/10 max
-// Unverified:       5
+// Unverified:       6
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -38,6 +38,8 @@ internal sealed class VmVerificationContext : IVmVerificationContext
     public IVmMeter Meter { get; }
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=9D33CA
+    // Broiler-Human: PENDING
     public System.Collections.Immutable.ImmutableArray<VmHostCapabilityDescriptor> RegisteredCapabilities => shapes;
 
     /// <inheritdoc/>

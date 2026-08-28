@@ -14,11 +14,23 @@ namespace Broiler.VM.Architecture.Tests;
 /// </remarks>
 internal static class AssuranceProbe
 {
-    internal static AssuranceSourceFile Source(string text, string name = "probe.cs") =>
+    /// <summary>
+    /// Synthesized source, named and attributed to an assembly.
+    /// </summary>
+    /// <remarks>
+    /// The assembly is a parameter because one rule reads it: the per-unit escape hatch is refused
+    /// in <c>Broiler.VM.Binary</c> and permitted elsewhere, and a witness for that clause has to be
+    /// able to say which assembly it is pretending to be compiled into. Everything else uses the
+    /// default, which names no real assembly.
+    /// </remarks>
+    internal static AssuranceSourceFile Source(
+        string text,
+        string name = "probe.cs",
+        string assembly = "Broiler.VM.Probe") =>
         new(
             FullPath: name,
             RelativePath: name,
-            Assembly: "Broiler.VM.Probe",
+            Assembly: assembly,
             Text: text,
             NewLine: "\n",
             Tree: AssuranceSources.Parse(text, name));

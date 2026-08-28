@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   10
-// Annotated:        10/10
-// Exempt:           7
-// Human-reviewed:   0/10
+// Relevant units:   13
+// Annotated:        13/13
+// Exempt:           10
+// Human-reviewed:   0/13
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  2/10 max
-// Unverified:       10
+// Unverified:       13
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -40,12 +40,16 @@ internal sealed class VmExecutionScope
     private readonly System.Threading.AsyncLocal<VmMeter?> current = new();
     private readonly System.Threading.AsyncLocal<VmOperation?> operation = new();
 
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=033A8F
+    // Broiler-Human: PENDING
     internal VmMeter? Current => current.Value;
 
     /// <summary>
     /// The operation the current step belongs to, so a host failure a capability produced can be
     /// latched onto the thing that will report it.
     /// </summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=BD09F0
+    // Broiler-Human: PENDING
     internal VmOperation? CurrentOperation => operation.Value;
 
     // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=F0C37E
@@ -131,6 +135,8 @@ internal sealed class VmAmbientCapabilityInvoker : IVmHostCapabilityInvoker
     internal VmCapabilityId LastFailureCapability { get; private set; }
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=08A7E3
+    // Broiler-Human: PENDING
     public int BindingCount => bindings.Length;
 
     /// <inheritdoc/>

@@ -1,0 +1,31 @@
+// Witness for rule J1: the per-unit escape hatch, used inside the untrusted-input reader.
+//
+// This witness is read as though it were compiled into Broiler.VM.Binary, which is the one
+// assembly closed to the hatch. That closure exists because the hatch defeated the whole system
+// once: replacing all twenty AI lines in VmBoundedReader.cs - every unit Security=High - with one
+// plausible sentence that refers to nothing removed twenty assessments and twenty fingerprints,
+// and left both modes of the gate green. An exempt unit needs no annotation, and a unit with no
+// annotation records no fingerprint, so there was nothing left for any rule to check.
+//
+// Nothing mechanical can judge whether a reason is true. What can be done is refuse the hatch
+// where the stakes are highest and count every use elsewhere, which is what the rule does and
+// what CODE-ASSURANCE.md publishes.
+
+namespace Probe;
+
+public static class Bounded
+{
+    // Broiler-AI:    EXEMPT=a bounds check that the reader performs elsewhere
+    // Broiler-Human: PENDING
+    public static bool TryConsume(ulong count, ref ulong position, ulong limit)
+    {
+        if (count > limit - position)
+        {
+            return false;
+        }
+
+        position += count;
+
+        return true;
+    }
+}

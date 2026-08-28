@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   17
-// Annotated:        17/17
-// Exempt:           3
-// Human-reviewed:   0/17
+// Relevant units:   18
+// Annotated:        18/18
+// Exempt:           14
+// Human-reviewed:   0/18
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  5/10 max
-// Unverified:       17
+// Unverified:       18
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -71,6 +71,8 @@ internal sealed class VmInstanceImplementation : VmInstance
     internal VmObjectId Identity { get; }
 
     /// <inheritdoc/>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=00165A
+    // Broiler-Human: PENDING
     public override VmObjectId ObjectId => Identity;
 
     /// <inheritdoc/>

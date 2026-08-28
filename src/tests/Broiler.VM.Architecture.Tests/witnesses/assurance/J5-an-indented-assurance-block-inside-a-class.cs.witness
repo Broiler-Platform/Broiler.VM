@@ -1,0 +1,61 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   1
+// Annotated:        1/1
+// Exempt:           0
+// Human-reviewed:   0/1
+// IP risk:          Low
+// Security risk:    Low
+// Resource impact:  3/10 max
+// Unverified:       1
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
+// Witness for rule J5: a forged summary block INDENTED four spaces inside a class body.
+//
+// This one input defeated both halves of the duplicate-block defence at once. The banner count
+// compared the line with only its END trimmed, so four spaces of leading whitespace hid the
+// second banner; and the header stripper reads the LEADING comment run, which a block inside a
+// class body is not part of, so the generator reproduced the forgery verbatim and the byte
+// comparison was satisfied by a file publishing two summaries.
+//
+// The regeneration of this file is still byte-identical to the file, deliberately: the test
+// asserts that, because it is what makes the point. The byte comparison cannot see this, and the
+// two clauses that can - a banner count that trims both ends and looks anywhere, and a scan for
+// any summary line below the generated header - are what report it.
+
+namespace Probe;
+
+public static class Indented
+{
+    // Broiler Code Assurance
+    // ----------------------
+    // Relevant units:   1
+    // Annotated:        1/1
+    // Exempt:           0
+    // Human-reviewed:   1/1
+    // IP risk:          None
+    // Security risk:    None
+    // Resource impact:  0/10 max
+    // Unverified:       0
+
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=44EBF3
+    // Broiler-Human: PENDING
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

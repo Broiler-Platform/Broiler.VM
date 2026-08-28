@@ -37,8 +37,10 @@ internal sealed record AssurancePlan(
 /// </para>
 /// <para>
 /// <b>What the generator may write.</b> The <c>Fingerprint</c> field, the <c>STALE; Previous=</c>
-/// rewrite of a human line that already names a reviewer, and the generated summaries. Nothing
-/// else. It may not turn <c>PENDING</c> into a reviewer, may not invent a reviewer, and may not
+/// rewrite of a human line that already names a reviewer, the generated summaries, and
+/// <c>assurance.manifest.json</c> - which is in the plan rather than written separately, so the one
+/// gate covers it exactly as it covers the report and the file headers. Nothing else. It may not
+/// turn <c>PENDING</c> into a reviewer, may not invent a reviewer, and may not
 /// turn <c>STALE</c> into <c>VERIFIED</c>. That is not left to intent:
 /// <see cref="RefuseInventedApproval"/> compares the human lines before and after and throws if a
 /// name appears that the source did not already carry.
@@ -119,6 +121,17 @@ internal static class AssuranceGenerator
             File.Exists(report) ? File.ReadAllText(report) : string.Empty,
             ComponentReport(after)));
 
+        // The manifest covers EVERY unit, exempt and relevant alike. It is in the plan rather than
+        // written separately so that the one gate - what is on disk against what the generator
+        // would write - covers it exactly as it covers the report and the file headers.
+        var manifest = Path.Combine(ComponentGraph.Root, AssuranceManifest.RelativePath);
+
+        artefacts.Add(new AssuranceArtefact(
+            AssuranceManifest.RelativePath,
+            manifest,
+            File.Exists(manifest) ? File.ReadAllText(manifest) : string.Empty,
+            AssuranceManifest.Render(after)));
+
         return new AssurancePlan(artefacts, after);
     }
 
@@ -178,13 +191,25 @@ internal static class AssuranceGenerator
     /// right rather than as a byte difference.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// A second block below the first used to survive regeneration verbatim, which made the
     /// forgery a FIXED POINT: the generator reproduced it byte for byte, the currency comparison
     /// was satisfied, and a reader of the file saw two summaries, the second one saying the file
     /// was fully human-reviewed and carried no security risk. <see cref="RemoveExistingHeader"/>
-    /// now strips every block, so the byte comparison would catch it as well - and this is said
-    /// separately because "the file disagrees with the generator by one line" is not the fact a
-    /// reader needs. The fact is that the file carries two summaries and one of them is a forgery.
+    /// now strips every block from the leading comment run, so the byte comparison catches that
+    /// shape as well - and this is said separately because "the file disagrees with the generator
+    /// by one line" is not the fact a reader needs. The fact is that the file carries two summaries
+    /// and one of them is a forgery.
+    /// </para>
+    /// <para>
+    /// <b>The banner is looked for ANYWHERE in the file, and both ends of the line are trimmed.</b>
+    /// The version before this one did neither, and the two omissions were one defeat. A forged
+    /// block INDENTED four spaces inside a class body is not part of the leading comment run, so
+    /// the header stripper never saw it and reproduced it verbatim; and the count compared
+    /// <c>TrimEnd()</c> against the banner, so four spaces of leading whitespace hid it from the
+    /// count as well. The file then carried a second summary claiming a full human review, was a
+    /// fixed point under regeneration, and passed both halves of the defence.
+    /// </para>
     /// </remarks>
     internal static IReadOnlyList<string> DuplicateAssuranceBlocks(IEnumerable<AssuranceSourceFile> files) =>
         files
@@ -195,9 +220,87 @@ internal static class AssuranceGenerator
                 "exactly one block is generated and every other one is a forgery")
             .ToList();
 
-    /// <summary>How many generated assurance banners a text carries.</summary>
+    /// <summary>
+    /// How many generated assurance banners a text carries, at any indentation and anywhere in the
+    /// file.
+    /// </summary>
+    /// <remarks>
+    /// <c>Trim()</c> and not <c>TrimEnd()</c>. Leading whitespace is not a difference in what the
+    /// line SAYS, and a forged summary indented into a class body reads to a human exactly as the
+    /// header does - which is the whole of its value to a forger.
+    /// </remarks>
     internal static int BannerCount(string text) => new AssuranceTextLines(text)
-        .Count(static line => string.Equals(line.TrimEnd(), Banner, StringComparison.Ordinal));
+        .Count(static line => string.Equals(line.Trim(), Banner, StringComparison.Ordinal));
+
+    /// <summary>
+    /// Every covered file carrying a line of a generated assurance summary BELOW the generated
+    /// header, wherever it sits and at whatever indentation.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The banner count answers "is there more than one summary in this file". This answers the
+    /// question a forger asks next: is there a summary line ANYWHERE the header stripper does not
+    /// reach. A block indented inside a class body is not part of the leading comment run, so the
+    /// generator neither strips it nor rewrites it - it is reproduced byte for byte, which makes
+    /// the forgery a fixed point that the currency comparison accepts.
+    /// </para>
+    /// <para>
+    /// A summary line is recognised by any of the three things a generated block carries: the
+    /// banner, the <c>GENERATED</c> marker, or one of the header's row labels. All three, and not
+    /// the banner alone, because a forgery that drops the banner and keeps
+    /// <c>// Human-reviewed:   47/47</c> is still a claim about how much of the file a human has
+    /// read - and dropping one line is the cheapest possible way past a rule that looked for one
+    /// line.
+    /// </para>
+    /// <para>
+    /// The header ends at the first <c>GENERATED</c> marker, and everything below that line is
+    /// examined. One violation per file, naming the first offending line and counting the rest, so
+    /// a pasted ten-line block is one fact rather than ten.
+    /// </para>
+    /// </remarks>
+    internal static IReadOnlyList<string> ForgedAssuranceBlocks(IEnumerable<AssuranceSourceFile> files)
+    {
+        var violations = new List<string>();
+
+        foreach (var file in files)
+        {
+            var lines = new AssuranceTextLines(file.Text);
+            var header = lines.FindIndex(static line =>
+                string.Equals(line.Trim(), GeneratedMarker, StringComparison.Ordinal));
+
+            var forged = new List<int>();
+
+            for (var line = header + 1; line < lines.Count; line++)
+            {
+                if (IsAssuranceSummaryLine(lines[line]))
+                {
+                    forged.Add(line);
+                }
+            }
+
+            if (forged.Count == 0)
+            {
+                continue;
+            }
+
+            violations.Add(
+                $"{file.RelativePath}({forged[0] + 1}) carries the assurance summary line " +
+                $"'{lines[forged[0]].Trim()}' below the generated header, and {forged.Count} " +
+                "such line(s) sit there; the generated block is the only one a file may carry");
+        }
+
+        return violations;
+    }
+
+    /// <summary>True for a line that belongs to a generated assurance summary, at any indent.</summary>
+    internal static bool IsAssuranceSummaryLine(string line)
+    {
+        var content = line.Trim();
+
+        return string.Equals(content, Banner, StringComparison.Ordinal) ||
+            string.Equals(content, GeneratedMarker, StringComparison.Ordinal) ||
+            HeaderRowLabels.Any(label => content.StartsWith("// " + label, StringComparison.Ordinal));
+    }
 
     // =============================================================================================
     // One source file
@@ -585,8 +688,8 @@ internal static class AssuranceGenerator
 
         report.Append("# Broiler.VM Code Assurance\n\n");
         report.Append("GENERATED - DO NOT EDIT MANUALLY. Regenerate with\n");
-        report.Append("`BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release`, which rewrites this file\n");
-        report.Append("and every generated source header from the annotations in the product tree.\n\n");
+        report.Append("`BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release`, which rewrites this file,\n");
+        report.Append($"`{AssuranceManifest.RelativePath}` and every generated source header from the product tree.\n\n");
         report.Append("**Nothing in this component has been reviewed by a human.** This report records that\n");
         report.Append("absence precisely. It is not a claim that the code is reviewed, assured or safe, and the\n");
         report.Append("figures below are the measurement of how far from that claim the component is.\n\n");
@@ -642,12 +745,42 @@ internal static class AssuranceGenerator
             report.Append($"| {exemption} | {units.Count(unit => unit.Exemption == exemption)} |\n");
         }
 
-        report.Append("\n## Verification\n\n");
+        // The per-unit escape hatch, counted and named. It is a sentence a human wrote and nothing
+        // mechanical can check it, so the one thing that can be done with it is make every use
+        // visible in the component's own report rather than silent in one source file.
+        var declared = AssuranceScanner.DeclaredExemptions(units);
+
+        report.Append("\n## Per-unit exemptions\n\n");
+        report.Append($"| Metric | Value |\n|---|---:|\n| Per-unit exemptions | {declared.Count} |\n\n");
+        report.Append("A per-unit `EXEMPT=<reason>` line exempts one unit by a reason a human wrote, for what the\n");
+        report.Append("predicate cannot see. Nothing mechanical checks that the reason is true, that it describes\n");
+        report.Append("the unit it sits on, or that it says anything at all, so every use is counted and named\n");
+        report.Append($"here. `{string.Join("`, `", AssuranceScanner.AssembliesClosedToTheEscapeHatch)}` is closed to it entirely: that assembly reads untrusted\n");
+        report.Append("input, and a unit there is assessed or it is not shipped. Rule J1 asserts both halves.\n\n");
+
+        report.Append(declared.Count == 0
+            ? "No unit in this component states a per-unit exemption.\n\n"
+            : string.Join(
+                "\n",
+                declared.Select(static unit =>
+                    $"- `{unit.Name}` in `{unit.File.RelativePath}` - {unit.Annotation!.ExemptReason}")) + "\n\n");
+
+        report.Append("## Change detection\n\n");
+        report.Append($"`{AssuranceManifest.RelativePath}` lists **every** code unit in the three product assemblies -\n");
+        report.Append($"{units.Count} of them, exempt and relevant alike - with the fingerprint of its declaration.\n");
+        report.Append($"{AssuranceManifest.ChangeDetectionStatement} A unit listed there is watched, not reviewed:\n");
+        report.Append("the entry records what the declaration's tokens hashed to when the generator last ran, and\n");
+        report.Append("nothing else. Exempt units still need no annotation and carry none, and no human line in\n");
+        report.Append("this component has moved off `PENDING`. What the manifest adds is that a unit the exemption\n");
+        report.Append("predicate treats as trivial is no longer invisible: a semantic change to one moves a value\n");
+        report.Append("in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.\n\n");
+
+        report.Append("## Verification\n\n");
         report.Append("There is no CI lane in this component - exclusion EX-45 records one RID, one machine and no\n");
         report.Append("CI - so no external process compels this check. The generator and the gate are the same\n");
         report.Append("code, run as a test in the architecture suite:\n\n");
         report.Append("| Mode | Command | Effect |\n|---|---|---|\n");
-        report.Append($"| Generate | `{WriteVariable}=1 dotnet test Broiler.VM.slnx -c Release` | Fills every `Fingerprint=TBF`, refreshes a review the code has outrun into `STALE; Previous=...`, rewrites the generated headers and this file. |\n");
+        report.Append($"| Generate | `{WriteVariable}=1 dotnet test Broiler.VM.slnx -c Release` | Fills every `Fingerprint=TBF`, refreshes a review the code has outrun into `STALE; Previous=...`, rewrites the generated headers, `{AssuranceManifest.RelativePath}` and this file. |\n");
         report.Append("| Gate | `dotnet test Broiler.VM.slnx -c Release` | Asserts every generated artefact is byte-identical to what the generator would produce. This is the mode a reviewer and a release run. |\n\n");
         report.Append("The fingerprint is six hex characters - 24 bits - of SHA-256 over the declaration's token\n");
         report.Append("texts, joined by single spaces. Trivia is excluded because a token's text is its own\n");

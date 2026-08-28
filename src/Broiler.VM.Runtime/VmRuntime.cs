@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   31
 // Annotated:        31/31
-// Exempt:           10
+// Exempt:           23
 // Human-reviewed:   0/31
 // IP risk:          Low
 // Security risk:    High

@@ -13,7 +13,7 @@ namespace Broiler.VM.Architecture.Tests;
 /// <para>
 /// <b>Where the assurance PROPERTIES are asserted.</b> Not here. Coverage, well-formedness,
 /// fingerprint currency, the prohibition on a machine-made approval and the currency of the
-/// generated artefacts are architecture rules J1 to J5, in <c>AssuranceRuleTests</c>, each with
+/// generated artefacts are architecture rules J1 to J7, in <c>AssuranceRuleTests</c>, each with
 /// per-clause witness inputs under <c>witnesses/assurance/</c>. An earlier revision asserted four
 /// of those properties here as bare facts over the checkout, with nothing showing them reject
 /// anything; they were moved rather than duplicated, because two places claiming the same property

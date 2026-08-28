@@ -1,0 +1,59 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   1
+// Annotated:        1/1
+// Exempt:           0
+// Human-reviewed:   0/1
+// IP risk:          Low
+// Security risk:    Low
+// Resource impact:  3/10 max
+// Unverified:       1
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
+// Witness for rule J5: a forged summary that drops its banner and keeps its rows.
+//
+// A forgery has to be recognised by more than one line, because dropping one line is the cheapest
+// possible way past a rule that looks for one. The block below the namespace carries no banner at
+// all, so the banner count sees exactly one summary in this file and reports nothing; it is not
+// part of the leading comment run either, so the header stripper leaves it and the regeneration is
+// byte-identical to the file. What a reader sees is a second summary claiming a full human review
+// of a unit whose annotation says PENDING.
+//
+// The clause that reports it recognises a summary line by the banner, by the GENERATED marker or
+// by any of the eight row labels, anywhere below the generated header.
+
+namespace Probe;
+
+// ----------------------
+// Relevant units:   1
+// Annotated:        1/1
+// Exempt:           0
+// Human-reviewed:   1/1
+// IP risk:          None
+// Security risk:    None
+// Resource impact:  0/10 max
+// Unverified:       0
+
+public static class Dropped
+{
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=44EBF3
+    // Broiler-Human: PENDING
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   15
-// Annotated:        15/15
-// Exempt:           22
-// Human-reviewed:   0/15
+// Relevant units:   19
+// Annotated:        19/19
+// Exempt:           23
+// Human-reviewed:   0/19
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  4/10 max
-// Unverified:       15
+// Unverified:       19
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -162,6 +162,8 @@ public sealed class VmCatalogIdentity : System.IEquatable<VmCatalogIdentity>
     internal VmCatalogIdentity(byte[] encoding) => this.encoding = encoding;
 
     /// <summary>How many bytes the canonical encoding occupies.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=45B780
+    // Broiler-Human: PENDING
     public int EncodedLength => encoding.Length;
 
     /// <summary>Copies the canonical encoding out.</summary>
@@ -349,6 +351,8 @@ public sealed class VmCatalog
     public static VmCatalogBuilder CreateBuilder() => new();
 
     /// <summary>How many profiles this catalog contains.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=4C63F3
+    // Broiler-Human: PENDING
     public int Count => entries.Length;
 
     /// <summary>The canonical encoding of this catalog, used as its identity.</summary>
@@ -379,6 +383,8 @@ public sealed class VmCatalog
     /// The host-facing listing. This is the only route to a catalog's contents: a result that names
     /// an unsupported profile carries the requested ID and never the catalog.
     /// </summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=7E65DC
+    // Broiler-Human: PENDING
     public VmProfileCatalogListing GetListing() => listing;
 
     // Broiler-AI:    Origin=AI; Spec=ADR-0002 s1; IP=Low; Security=Medium; Resources=3; Fingerprint=9DCDE6
@@ -398,5 +404,7 @@ public sealed class VmCatalog
         return false;
     }
 
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=A8F408
+    // Broiler-Human: PENDING
     internal System.Collections.Generic.IReadOnlyList<VmProfileDescriptor> Descriptors => entries;
 }

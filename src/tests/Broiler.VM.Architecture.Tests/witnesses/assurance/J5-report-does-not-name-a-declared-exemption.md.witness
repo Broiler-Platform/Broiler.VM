@@ -9,17 +9,19 @@ absence precisely.
 
 | Metric | Value |
 |---|---:|
-| Human reviewed | 0 of 1 (0%) |
-| Unverified | 1 |
+| Human reviewed | 0 of 0 |
+| Unverified | 0 |
 
 ## Review states
 
 | State | Count |
 |---|---:|
-| VERIFIED | 1 |
+| VERIFIED | 0 |
 
 ## Per-unit exemptions
 
 | Metric | Value |
 |---|---:|
-| Per-unit exemptions | 0 |
+| Per-unit exemptions | 1 |
+
+No unit in this component states a per-unit exemption.

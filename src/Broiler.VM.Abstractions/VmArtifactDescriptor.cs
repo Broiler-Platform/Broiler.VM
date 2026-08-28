@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   2
-// Annotated:        2/2
-// Exempt:           10
-// Human-reviewed:   0/2
+// Relevant units:   3
+// Annotated:        3/3
+// Exempt:           9
+// Human-reviewed:   0/3
 // IP risk:          Low
 // Security risk:    Low
 // Resource impact:  3/10 max
-// Unverified:       2
+// Unverified:       3
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -105,5 +105,7 @@ public readonly struct VmArtifactDescriptor : System.IEquatable<VmArtifactDescri
     public static bool operator ==(VmArtifactDescriptor left, VmArtifactDescriptor right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=A85631
+    // Broiler-Human: PENDING
     public static bool operator !=(VmArtifactDescriptor left, VmArtifactDescriptor right) => !left.Equals(right);
 }

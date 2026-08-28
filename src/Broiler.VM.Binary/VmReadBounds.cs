@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   1
-// Annotated:        1/1
-// Exempt:           9
-// Human-reviewed:   0/1
+// Relevant units:   2
+// Annotated:        2/2
+// Exempt:           8
+// Human-reviewed:   0/2
 // IP risk:          Low
 // Security risk:    Low
 // Resource impact:  0/10 max
-// Unverified:       1
+// Unverified:       2
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -87,5 +87,7 @@ public readonly struct VmReadBounds : System.IEquatable<VmReadBounds>
     public static bool operator ==(VmReadBounds left, VmReadBounds right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=9F3CE7
+    // Broiler-Human: PENDING
     public static bool operator !=(VmReadBounds left, VmReadBounds right) => !left.Equals(right);
 }

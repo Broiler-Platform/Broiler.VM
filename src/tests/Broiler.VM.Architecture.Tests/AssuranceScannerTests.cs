@@ -17,6 +17,7 @@ public sealed class AssuranceScannerTests
         public sealed class Shapes
         {
             private readonly int stored;
+            private readonly int read;
             private int mutable;
 
             // Case 2: assigns a parameter to the field that corresponds to it, and nothing else.
@@ -35,8 +36,9 @@ public sealed class AssuranceScannerTests
             // Case 1: an auto-property.
             public int Auto { get; init; }
 
-            // Case 1: an accessor that only returns, and one that only assigns.
-            public int Manual
+            // Case 1: an accessor that only returns, and one that only assigns, the field that
+            // CORRESPONDS to the property.
+            public int Mutable
             {
                 get { return this.mutable; }
                 set { this.mutable = value; }
@@ -49,12 +51,27 @@ public sealed class AssuranceScannerTests
                 set { this.mutable = value < 0 ? 0 : value; }
             }
 
-            // Case 1 again, and not case 3: an expression-bodied PROPERTY over a field is the
-            // getter half of "only returns a field", and is answered by the property case first.
+            // Case 1 must NOT cover a property that publishes some OTHER field. This is the
+            // permuted-constructor decision written as a property, and it was exempt.
+            public int Published
+            {
+                get { return this.read; }
+            }
+
+            // Case 1 again, and not case 3: an expression-bodied PROPERTY over its own field is
+            // the getter half of "only returns a field", and is answered by the property case
+            // first.
             public int Stored => this.stored;
 
-            // Case 3: a single member access.
-            public int Read() => this.stored;
+            // Case 1 must NOT cover the same shape pointed at another field.
+            public int Redirected => this.read;
+
+            // Case 3: a single member access, from a member whose name corresponds to it.
+            public int Read() => this.read;
+
+            // Case 3 must NOT cover a member access that does not correspond, whatever kind of
+            // member carries it.
+            public int Fetched() => this.read;
 
             // Case 3: a constant.
             public int Constant => 7;
@@ -159,7 +176,8 @@ public sealed class AssuranceScannerTests
 
             public static readonly int[] Widths = [1, 2, 4];
 
-            // A plain field, initialized or not, is not a unit at all.
+            // A field that is neither const nor static readonly declares storage. It IS a unit -
+            // every field declaration is - and the predicate answers case 7 for it.
             private readonly int used = 3;
 
             private int mutable;
@@ -194,9 +212,11 @@ public sealed class AssuranceScannerTests
             // Case 5: hand off to a framework combiner.
             public override int GetHashCode() => System.HashCode.Combine(X, Y);
 
-            // Case 5: an operator that only delegates, in both polarities.
+            // Case 5: an operator that only delegates.
             public static bool operator ==(Pair left, Pair right) => left.Equals(right);
 
+            // Case 5 must NOT cover a negation. `!left.Equals(right)` is the OPPOSITE decision,
+            // and while `!` was on the whitelist every operator != in the component was exempt.
             public static bool operator !=(Pair left, Pair right) => !left.Equals(right);
 
             // Case 5 must NOT cover an operator that computes.
@@ -236,14 +256,27 @@ public sealed class AssuranceScannerTests
     private static AssuranceExemption Exemption(string member) =>
         AssuranceProbe.Unit(Probe, member).Exemption;
 
+    /// <summary>
+    /// Case 1, and the correspondence that is the whole of it.
+    /// </summary>
+    /// <remarks>
+    /// The predicate used to accept ANY member access in a property body, which is the
+    /// permuted-constructor defect one screen further down the same file: case 2 was narrowed to
+    /// require that each parameter reach the member corresponding to it, and case 1 went on
+    /// exempting <c>MaxSectionCount =&gt; _maxDeclaredCount</c>. Publishing the declared-count
+    /// ceiling from the section-count property has the same effect on every bounded read as
+    /// exchanging the two constructor assignments, and it carried no annotation.
+    /// </remarks>
     [Fact]
-    public void Case_1_Covers_An_Auto_Property_And_A_Returning_Or_Assigning_Accessor()
+    public void Case_1_Covers_An_Auto_Property_And_An_Accessor_Over_Its_Own_Field()
     {
         Assert.Equal(AssuranceExemption.TrivialPropertyOrAccessor, Exemption("Shapes.Auto"));
-        Assert.Equal(AssuranceExemption.TrivialPropertyOrAccessor, Exemption("Shapes.Manual"));
+        Assert.Equal(AssuranceExemption.TrivialPropertyOrAccessor, Exemption("Shapes.Mutable"));
         Assert.Equal(AssuranceExemption.TrivialPropertyOrAccessor, Exemption("Shapes.Stored"));
 
         Assert.Equal(AssuranceExemption.None, Exemption("Shapes.Guarded"));
+        Assert.Equal(AssuranceExemption.None, Exemption("Shapes.Published"));
+        Assert.Equal(AssuranceExemption.None, Exemption("Shapes.Redirected"));
     }
 
     /// <summary>
@@ -294,27 +327,52 @@ public sealed class AssuranceScannerTests
         Assert.Equal(AssuranceExemption.None, Exemption("Shapes.Fixed()"));
         Assert.Equal(AssuranceExemption.None, Exemption("Shapes.Routed()"));
         Assert.Equal(AssuranceExemption.None, Exemption("Shapes.Captured()"));
+
+        // The member-access half of this case requires the same correspondence case 1 requires,
+        // and for the same reason: without it, a property case 1 had just refused was readmitted
+        // here, because a property has an arrow body like anything else.
+        Assert.Equal(AssuranceExemption.None, Exemption("Shapes.Fetched()"));
     }
 
     /// <summary>
-    /// An initialized <c>const</c> or <c>static readonly</c> field is a code unit; a plain field is
-    /// not.
+    /// Every field declaration is a code unit, and only a <c>const</c> or <c>static readonly</c>
+    /// one that states a value is RELEVANT.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The scanner's own doc comment used to justify excluding every field with "they declare no
     /// implementation for a human to certify", which is false for an initialized one. The two that
     /// cost this component most were both budgets - a catalog cap ADR 0002 freezes at 64, and a
     /// default unwind allowance - and each could be multiplied with nothing to notice, while the
     /// method that read the constant kept asserting the fingerprint of the reviewed version.
+    /// </para>
+    /// <para>
+    /// The next revision excluded the plain fields, which was the same mistake one step smaller: a
+    /// field's TYPE is the width of the arithmetic every annotated body performs on it, and
+    /// changing <c>ulong</c> to <c>uint</c> moves no annotated body's tokens. They are units now
+    /// and the predicate answers case 7 for them, so they need no annotation and the manifest
+    /// records their fingerprints. Being a unit and being relevant are different questions.
+    /// </para>
     /// </remarks>
     [Fact]
-    public void An_Initialized_Constant_Is_A_Code_Unit_And_A_Plain_Field_Is_Not()
+    public void Every_Field_Is_A_Unit_And_Only_A_Fixed_Value_Is_Relevant()
     {
         Assert.Equal(AssuranceExemption.None, Exemption("Constants.MaximumEntries"));
         Assert.Equal(AssuranceExemption.None, Exemption("Constants.Widths"));
 
+        Assert.Equal(AssuranceExemption.FieldDeclaringStorage, Exemption("Constants.used"));
+        Assert.Equal(AssuranceExemption.FieldDeclaringStorage, Exemption("Constants.mutable"));
+
         Assert.Equal(
-            new[] { "Constants.MaximumEntries", "Constants.Mutable", "Constants.Used", "Constants.Widths" },
+            new[]
+            {
+                "Constants.MaximumEntries",
+                "Constants.Mutable",
+                "Constants.Used",
+                "Constants.Widths",
+                "Constants.mutable",
+                "Constants.used",
+            },
             AssuranceProbe.Scan(Probe)
                 .Select(static unit => unit.Name)
                 .Where(static name => name.StartsWith("Probe.Constants.", StringComparison.Ordinal))
@@ -336,12 +394,17 @@ public sealed class AssuranceScannerTests
         Assert.Equal(AssuranceExemption.DelegatingOverrideOrOperator, Exemption("Pair.Equals(object?)"));
         Assert.Equal(AssuranceExemption.DelegatingOverrideOrOperator, Exemption("Pair.GetHashCode()"));
         Assert.Equal(AssuranceExemption.DelegatingOverrideOrOperator, Exemption("Pair.operator ==(Pair, Pair)"));
-        Assert.Equal(AssuranceExemption.DelegatingOverrideOrOperator, Exemption("Pair.operator !=(Pair, Pair)"));
 
         // The qualifier is the case. An Equals that compares the fields itself is a decision about
         // equality, and a decision is what the system exists to put in front of a human.
         Assert.Equal(AssuranceExemption.None, Exemption("Pair.Equals(Pair)"));
         Assert.Equal(AssuranceExemption.None, Exemption("Pair.operator +(Pair, Pair)"));
+
+        // And a negation is not a delegation. `!left.Equals(right)` is the opposite answer to the
+        // one Equals gives, which is the entire content of an inequality operator; while `!` was
+        // whitelisted, every operator != in the component was exempt and dropping the `!` moved
+        // nothing.
+        Assert.Equal(AssuranceExemption.None, Exemption("Pair.operator !=(Pair, Pair)"));
     }
 
     [Fact]
@@ -396,6 +459,27 @@ public sealed class AssuranceScannerTests
         Assert.NotEmpty(AssuranceProbe.Unit(Reasonless, "Hatched.Shim(int)").Annotation!.VocabularyProblems());
     }
 
+    /// <summary>
+    /// The predicate classifies over the real checkout, and the covered set is the set of product
+    /// projects ON DISK.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The second half used to be a tautology. It compared <c>CoveredAssemblies</c> against the
+    /// distinct assemblies of the scanned units - and the scanned units are produced by filtering
+    /// the project list THROUGH <c>CoveredAssemblies</c>, so the two sides were the same list
+    /// arriving by two routes and the assertion could not fail. Deleting a name from
+    /// <c>CoveredAssemblies</c> would have removed a whole product assembly from every rule in
+    /// group J with this test green: no unannotated unit to report, no header to regenerate, no
+    /// manifest entry to miss.
+    /// </para>
+    /// <para>
+    /// So the expected set is read off disk instead: every <c>*.csproj</c> under <c>src/</c> that
+    /// is not under <c>src/tests/</c> is a product project, and its assembly must be covered. That
+    /// is an independent source - a fourth product project appearing in the tree fails here until
+    /// someone decides whether it is covered, which is the decision this assertion exists to force.
+    /// </para>
+    /// </remarks>
     [Fact]
     public void The_Predicate_Answers_Both_Ways_Over_The_Real_Product_Tree()
     {
@@ -404,9 +488,25 @@ public sealed class AssuranceScannerTests
         Assert.NotEmpty(AssuranceScanner.Units.Where(static unit => unit.IsRelevant));
         Assert.NotEmpty(AssuranceScanner.Units.Where(static unit => unit.IsExempt));
 
-        // And it must reach all three assemblies, or the source set is wrong rather than the rule.
+        // The product projects on disk, found without going through the covered list.
+        var onDisk = Directory
+            .EnumerateFiles(Path.Combine(ComponentGraph.Root, "src"), "*.csproj", SearchOption.AllDirectories)
+            .Select(static path => Path.GetRelativePath(ComponentGraph.Root, path).Replace('\\', '/'))
+            .Where(static path => !path.StartsWith("src/tests/", StringComparison.Ordinal))
+            .Select(static path => Path.GetFileNameWithoutExtension(path))
+            .OrderBy(static name => name, StringComparer.Ordinal)
+            .ToArray();
+
+        Assert.Equal(3, onDisk.Length);
+
+        // The covered list is exactly those projects...
         Assert.Equal(
-            AssuranceSources.CoveredAssemblies.OrderBy(static name => name, StringComparer.Ordinal),
+            onDisk,
+            AssuranceSources.CoveredAssemblies.OrderBy(static name => name, StringComparer.Ordinal));
+
+        // ...and the scan reached every one of them, so the source set is not merely declared.
+        Assert.Equal(
+            onDisk,
             AssuranceScanner.Units
                 .Select(static unit => unit.File.Assembly)
                 .Distinct(StringComparer.Ordinal)
@@ -440,20 +540,31 @@ public sealed class AssuranceScannerTests
 
         var bounds = Units("src/Broiler.VM.Binary/VmReadBounds.cs");
 
-        // The one member of VmReadBounds that decides something: it compares the four ceilings
-        // itself rather than handing off, so case 5 does not reach it.
-        var equals = bounds.Single(static unit => unit.Name.EndsWith("Equals(VmReadBounds)", StringComparison.Ordinal));
+        // The two members of VmReadBounds that decide something. Equals compares the four ceilings
+        // itself rather than handing off, so case 5 does not reach it; operator != negates the
+        // answer Equals gives, which is the opposite decision and not a delegation to it.
+        var deciding = new[] { "Equals(VmReadBounds)", "operator !=(VmReadBounds, VmReadBounds)" }
+            .Select(name => bounds.Single(unit => unit.Name.EndsWith(name, StringComparison.Ordinal)))
+            .ToArray();
 
-        Assert.True(equals.IsRelevant);
-        Assert.NotNull(equals.Annotation);
-        Assert.Equal(AssuranceReviewState.HumanPending, equals.State);
+        Assert.All(deciding, static unit =>
+        {
+            Assert.True(unit.IsRelevant, $"{unit.Name} should be relevant.");
+            Assert.NotNull(unit.Annotation);
+            Assert.Equal(AssuranceReviewState.HumanPending, unit.State);
+        });
 
-        // Everything else in that file is exempt by the predicate, so the one annotation on it
-        // leaves nothing unaccounted for.
+        // Everything else in that file is exempt by the predicate, so the annotations on it leave
+        // nothing unaccounted for. What is exempt is not unwatched: the manifest carries a
+        // fingerprint for every one of them, which is rule J7.
         Assert.Empty(bounds
-            .Where(unit => unit != equals)
+            .Where(unit => !deciding.Contains(unit))
             .Where(static unit => unit.IsRelevant)
             .Select(static unit => unit.Where));
+
+        Assert.Equal(
+            bounds.Count,
+            AssuranceManifest.Entries(bounds).Count);
 
         // The post-generation unit set, so this reads the same in both modes: the gate
         // separately asserts that the tree on disk is what the generator would write.

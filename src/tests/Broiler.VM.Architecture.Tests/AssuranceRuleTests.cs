@@ -40,9 +40,22 @@ namespace Broiler.VM.Architecture.Tests;
 /// that nothing in the product tree or in any generated artefact carries a name at all.
 /// </para>
 /// <para>
-/// Each rule also holds its own register row to the limits it depends on, for the reason group H
-/// does: nothing else in the suite reads a row's prose, so a row could be rewritten into an
-/// over-claim - a rule weaker than its own statement - in one edit with the suite green.
+/// <b>Watched is not the same as annotated, and J7 is where that separation lives.</b> Three
+/// adversarial rounds put nearly every blocker in one place: a unit the exemption predicate treats
+/// as trivial carries no annotation, therefore no fingerprint, therefore no record of any kind, so
+/// a semantic change to it was invisible to J1 through J6. Narrowing the predicate case by case
+/// failed three times because each fix moved the same defeat one case over. J7 holds
+/// <c>assurance.manifest.json</c> to EVERY code unit instead. Whether a unit needs a human
+/// annotation is still the predicate's question; whether it is watched for change is no longer a
+/// question. The manifest is a change-detection record and not a review, and it says so in its own
+/// header, in <c>CODE-ASSURANCE.md</c> and in J7's register row.
+/// </para>
+/// <para>
+/// Each rule also holds its own register row to a FIXED EXPECTED TEXT, in all three of its prose
+/// fields. Nothing else in the suite reads a row's prose, and the substring check this replaced let
+/// a row CLAIM a capability the tests do not implement as easily as it let one shed a limit: a
+/// sentence saying CI compares every human line against the parent commit was appended to a row and
+/// the suite stayed green, and no such mechanism exists in this component.
 /// </para>
 /// </remarks>
 public sealed class AssuranceRuleTests
@@ -138,12 +151,7 @@ public sealed class AssuranceRuleTests
     [Fact]
     public void J1_Every_Relevant_Unit_Carries_An_Annotation()
     {
-        AssertTheRegisterRowStatesItsLimits(
-            "J1",
-            "exemption predicate",
-            "wrongly exempts",
-            "EX-62",
-            "EX-63");
+        AssertTheRegisterRowIsWhatTheRulesImplement("J1");
 
         // The clean direction, over the tree the generator would leave behind.
         Assert.Empty(CoverageViolations(ProductUnits));
@@ -183,16 +191,16 @@ public sealed class AssuranceRuleTests
             halved,
             StringComparison.Ordinal);
 
-        // Clause: the predicate decides relevance. Six exempt units, no annotation, no violation -
+        // Clause: the predicate decides relevance. Eight exempt units, no annotation, no violation -
         // the half of the rule that keeps it from becoming a rule about comments.
         var trivial = WitnessUnits("J1-exempt-units-need-no-annotation.cs.witness");
-        Assert.Equal(6, trivial.Count);
+        Assert.Equal(8, trivial.Count);
         Assert.All(trivial, static unit => Assert.True(unit.IsExempt, unit.Where));
         Assert.Empty(CoverageViolations(trivial));
 
         // Clause: the per-unit escape hatch, for what the predicate cannot see. Shim would
         // otherwise be relevant; a reason a human wrote outranks the predicate, and the case is
-        // reported apart from the six so that it stays countable in the component report.
+        // reported apart from the seven so that it stays countable in the component report.
         var hatched = WitnessUnits("J1-an-explicit-exemption-covers-a-unit.cs.witness");
         var shim = Assert.Single(hatched);
         Assert.Equal(AssuranceExemption.DeclaredInSource, shim.Exemption);
@@ -239,9 +247,10 @@ public sealed class AssuranceRuleTests
         Assert.Single(uninitialized.Where(static claim => claim.Contains(
             "Probe.Budgeted.Widths is relevant", StringComparison.Ordinal)));
 
-        // ...and the other half: a plain instance field is not a unit, so this is not a rule about
-        // every field. Four units in that witness - the two constants and the two trivial
-        // properties - and neither `used` nor `mutable` is one of them.
+        // ...and the other half: EVERY field declaration is a unit, and the two that state no fixed
+        // value are exempt rather than absent. Six units in that witness, `used` and `mutable`
+        // among them - so a change to either one's type moves a manifest fingerprint under J7,
+        // while neither needs an annotation here.
         Assert.Equal(
             new[]
             {
@@ -249,8 +258,84 @@ public sealed class AssuranceRuleTests
                 "Probe.Budgeted.Mutable",
                 "Probe.Budgeted.Used",
                 "Probe.Budgeted.Widths",
+                "Probe.Budgeted.mutable",
+                "Probe.Budgeted.used",
             },
             constants.Select(static unit => unit.Name).OrderBy(static name => name, StringComparer.Ordinal));
+
+        Assert.Equal(
+            new[] { "Probe.Budgeted.mutable", "Probe.Budgeted.used" },
+            constants
+                .Where(static unit => unit.Exemption == AssuranceExemption.FieldDeclaringStorage)
+                .Select(static unit => unit.Name)
+                .OrderBy(static name => name, StringComparer.Ordinal));
+
+        // Clause: exemption case 1 requires the SAME correspondence case 2 requires. A property
+        // that publishes a field other than its own is the permuted-constructor defeat one screen
+        // further down the predicate, and the accessor form of it is the same decision written
+        // longhand. Both must be relevant; the two that return their own field stay exempt, so the
+        // case is narrowed rather than deleted.
+        var published = CoverageViolations(
+            WitnessUnits("J1-a-property-that-publishes-another-field-is-relevant.cs.witness"));
+
+        Assert.Equal(2, published.Count);
+        Assert.Single(published.Where(static claim => claim.Contains(
+            "Probe.Published.MaxSectionCount is relevant", StringComparison.Ordinal)));
+        Assert.Single(published.Where(static claim => claim.Contains(
+            "Probe.Published.SectionCeiling is relevant", StringComparison.Ordinal)));
+
+        Assert.All(
+            WitnessUnits("J1-a-property-that-publishes-another-field-is-relevant.cs.witness")
+                .Where(static unit => unit.Name.EndsWith(".MaxDeclaredCount", StringComparison.Ordinal) ||
+                    unit.Name.EndsWith(".Depth", StringComparison.Ordinal)),
+            static unit => Assert.Equal(AssuranceExemption.TrivialPropertyOrAccessor, unit.Exemption));
+
+        // Clause: exemption case 5 reaches a member that hands its question on unchanged, and a
+        // negation changes it. `!left.Equals(right)` is the opposite decision, and with `!` on the
+        // whitelist every operator != in the component was exempt.
+        var negated = Assert.Single(CoverageViolations(
+            WitnessUnits("J1-a-negated-delegation-is-relevant.cs.witness")));
+
+        Assert.Contains(
+            "Probe.Negated.operator !=(Negated, Negated) is relevant",
+            negated,
+            StringComparison.Ordinal);
+
+        Assert.Equal(
+            AssuranceExemption.DelegatingOverrideOrOperator,
+            WitnessUnits("J1-a-negated-delegation-is-relevant.cs.witness")
+                .Single(static unit => unit.Name.Contains("operator ==", StringComparison.Ordinal))
+                .Exemption);
+
+        // Clause: the escape hatch is closed to the assembly that reads untrusted input. Replacing
+        // every AI line in VmBoundedReader.cs with one sentence that refers to nothing left both
+        // modes green, because an exempt unit needs no annotation and an unannotated unit records
+        // no fingerprint.
+        Assert.Empty(AssuranceScanner.EscapeHatchViolations(ProductUnits));
+
+        var closed = Assert.Single(AssuranceScanner.EscapeHatchViolations(AssuranceScanner.Scan(
+            AssuranceProbe.Source(
+                WitnessText("J1-the-escape-hatch-is-closed-to-the-binary-reader.cs.witness"),
+                "J1-the-escape-hatch-is-closed-to-the-binary-reader.cs.witness",
+                "Broiler.VM.Binary"))));
+
+        Assert.Contains(
+            "states EXEMPT=a bounds check that the reader performs elsewhere",
+            closed,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "Broiler.VM.Binary is closed to the per-unit exemption",
+            closed,
+            StringComparison.Ordinal);
+
+        // ...and the accepting direction of the same clause: the identical hatch in an assembly
+        // that is open to it is not reported here, so this is a rule about where the hatch is used
+        // and not a prohibition on the hatch, which J1 witnesses being accepted two clauses above.
+        Assert.Empty(AssuranceScanner.EscapeHatchViolations(AssuranceScanner.Scan(
+            AssuranceProbe.Source(
+                WitnessText("J1-the-escape-hatch-is-closed-to-the-binary-reader.cs.witness"),
+                "J1-the-escape-hatch-is-closed-to-the-binary-reader.cs.witness",
+                "Broiler.VM.Runtime"))));
 
         // Clause: the corpus this rule reads is the compiler's, not a directory heuristic. Only a
         // project's OWN bin and obj are build output; a product file under a nested directory that
@@ -302,12 +387,7 @@ public sealed class AssuranceRuleTests
     [Fact]
     public void J2_Every_Annotation_Parses_And_Every_Field_Is_In_Its_Vocabulary()
     {
-        AssertTheRegisterRowStatesItsLimits(
-            "J2",
-            "closed vocabulary",
-            "stranded",
-            "Spec is optional",
-            "EX-65");
+        AssertTheRegisterRowIsWhatTheRulesImplement("J2");
 
         // The clean direction: every annotation in the product tree parses and every field is in
         // vocabulary. Non-vacuous - the tree carries 496 of them.
@@ -486,12 +566,7 @@ public sealed class AssuranceRuleTests
     [Fact]
     public void J3_Every_Recorded_Fingerprint_Is_The_One_The_Code_Produces()
     {
-        AssertTheRegisterRowStatesItsLimits(
-            "J3",
-            "not a cryptographic commitment",
-            "collision-free",
-            "as read from disk",
-            "EX-61");
+        AssertTheRegisterRowIsWhatTheRulesImplement("J3");
 
         // The clean direction, over the units AS THEY ARE ON DISK.
         //
@@ -663,17 +738,12 @@ public sealed class AssuranceRuleTests
     [Fact]
     public void J4_No_Approval_Exists_That_A_Human_Did_Not_Make()
     {
-        AssertTheRegisterRowStatesItsLimits(
-            "J4",
-            "invented one",
-            "PENDING",
-            "defined shapes",
-            "pull-request history");
+        AssertTheRegisterRowIsWhatTheRulesImplement("J4");
 
         // The clean direction, at the source and in the artefacts. Non-vacuous: 496 annotated
         // units, every one of them PENDING.
         Assert.Empty(ApprovalViolations(ProductUnits));
-        Assert.Empty(ArtefactReviewerViolations());
+        Assert.Empty(ArtefactReviewerViolations(AssuranceGenerator.Current.Artefacts));
         Assert.NotEmpty(ProductUnits.Where(static unit => unit.Annotation is not null));
         Assert.All(
             ProductUnits.Where(static unit => unit.Annotation is not null),
@@ -788,6 +858,36 @@ public sealed class AssuranceRuleTests
             RewrittenLine(
                 "J4-the-generator-refreshes-a-review-the-code-has-outrun.cs.witness",
                 AssuranceAnnotation.HumanMarker));
+
+        // Clause: the artefact half, REJECTING. The clean direction above ran over the real tree
+        // and had no counterpart, so the whole of ArtefactReviewerViolations could be replaced by
+        // an empty list with the suite green - an accepting-only assertion cannot tell a check
+        // that found nothing from a check that looks for nothing.
+        //
+        // The witness carries a human line in one of the four defined shapes naming the version
+        // that is here, so the generator carries it through and the artefact it would write
+        // contains a reviewer identifier.
+        var rendered = Assert.Single(ArtefactReviewerViolations(
+        [
+            AssuranceProbe.ArtefactOnDisk(
+                WitnessText("J4-an-artefact-carries-a-reviewer.cs.witness"),
+                "J4-an-artefact-carries-a-reviewer.cs.witness"),
+        ]));
+
+        Assert.Contains(
+            "J4-an-artefact-carries-a-reviewer.cs.witness carries " +
+            $"'// Broiler-Human: WITNESS-ONLY; Fingerprint={WitnessFingerprint}'",
+            rendered,
+            StringComparison.Ordinal);
+
+        // ...and the accepting direction through the same harness, so the clause is a comparison
+        // rather than a function that reports every artefact it is handed.
+        Assert.Empty(ArtefactReviewerViolations(
+        [
+            AssuranceProbe.ArtefactOnDisk(
+                WitnessText("J4-a-pending-line-claims-nothing.cs.witness"),
+                "J4-a-pending-line-claims-nothing.cs.witness"),
+        ]));
     }
 
     /// <summary>The one line of a regenerated witness that opens with the given marker.</summary>
@@ -831,11 +931,20 @@ public sealed class AssuranceRuleTests
     /// Every human line in a generated artefact that reads as anything but <c>PENDING</c>.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Asserted against the rendered text rather than against the model, because what a reader
     /// trusts is the file. A defect that produced the right unit state and the wrong line would be
     /// invisible to a check that only read the model.
+    /// </para>
+    /// <para>
+    /// It takes the artefact list as an argument so that it can be shown REJECTING one. Its only
+    /// assertion used to be the accepting direction over the real tree, with no rejecting
+    /// counterpart anywhere in the suite: the whole body could be replaced by
+    /// <c>new List&lt;string&gt;()</c> and nothing went red, which makes it a check that reports
+    /// what it is given and cannot be told apart from one that reports nothing at all.
+    /// </para>
     /// </remarks>
-    private static List<string> ArtefactReviewerViolations() => AssuranceGenerator.Current.Artefacts
+    private static List<string> ArtefactReviewerViolations(IEnumerable<AssuranceArtefact> artefacts) => artefacts
         .SelectMany(static artefact => new AssuranceTextLines(artefact.Desired)
             .Where(static line => line.Trim().StartsWith(AssuranceAnnotation.HumanMarker, StringComparison.Ordinal))
             .Where(static line => !string.Equals(
@@ -876,20 +985,19 @@ public sealed class AssuranceRuleTests
     [Fact]
     public void J5_Every_Generated_Artefact_Is_What_The_Generator_Would_Write()
     {
-        AssertTheRegisterRowStatesItsLimits(
-            "J5",
-            "byte-identical",
-            "gate mode",
-            "no CI lane",
-            "EX-60",
-            "EX-64");
+        AssertTheRegisterRowIsWhatTheRulesImplement("J5");
 
-        // Non-vacuous: one artefact per covered product file, plus the component report.
-        Assert.Equal(AssuranceSources.Files.Count + 1, AssuranceGenerator.Current.Artefacts.Count);
+        // Non-vacuous: one artefact per covered product file, plus the component report and the
+        // manifest.
+        Assert.Equal(AssuranceSources.Files.Count + 2, AssuranceGenerator.Current.Artefacts.Count);
         Assert.Contains(
             AssuranceGenerator.Current.Artefacts,
             static artefact => string.Equals(
                 artefact.RelativePath, AssuranceGenerator.ReportPath, StringComparison.Ordinal));
+        Assert.Contains(
+            AssuranceGenerator.Current.Artefacts,
+            static artefact => string.Equals(
+                artefact.RelativePath, AssuranceManifest.RelativePath, StringComparison.Ordinal));
 
         // The primary clause: what is on disk is what the generator would write. It is
         // AssuranceGenerator.StaleArtefacts and not an expression written out here, because the
@@ -959,6 +1067,59 @@ public sealed class AssuranceRuleTests
             AssuranceGenerator.BannerCount(RegeneratedText(
                 "J5-a-second-assurance-block-below-the-header.cs.witness")));
 
+        // Clause: a forged block INDENTED inside a class body. This one input defeated both halves
+        // of the defence at once - the count compared only the END of the line, so leading
+        // whitespace hid the second banner, and the header stripper reads the leading comment run,
+        // which a block inside a class is not part of.
+        //
+        // The regeneration of that witness is byte-identical to the witness, and that is asserted
+        // rather than glossed: it is what makes the two clauses below necessary rather than
+        // redundant. The byte comparison cannot see this forgery at all.
+        Assert.Null(RegenerationDifference("J5-an-indented-assurance-block-inside-a-class.cs.witness"));
+
+        var indented = Assert.Single(AssuranceGenerator.DuplicateAssuranceBlocks(
+            [Witness("J5-an-indented-assurance-block-inside-a-class.cs.witness")]));
+
+        Assert.Contains(
+            "J5-an-indented-assurance-block-inside-a-class.cs.witness carries 2 " +
+            "'Broiler Code Assurance' banners",
+            indented,
+            StringComparison.Ordinal);
+
+        var below = Assert.Single(AssuranceGenerator.ForgedAssuranceBlocks(
+            [Witness("J5-an-indented-assurance-block-inside-a-class.cs.witness")]));
+
+        Assert.Contains(
+            "carries the assurance summary line '// Broiler Code Assurance' below the generated header",
+            below,
+            StringComparison.Ordinal);
+
+        // Clause: a forgery that drops the banner and keeps the rows. The banner count sees one
+        // summary and reports nothing, and the regeneration is byte-identical, so the row labels
+        // are the only thing left that recognises it. Dropping one line is the cheapest way past a
+        // rule that looks for one line.
+        Assert.Null(RegenerationDifference("J5-a-summary-block-that-drops-its-banner.cs.witness"));
+        Assert.Equal(
+            1,
+            AssuranceGenerator.BannerCount(
+                WitnessText("J5-a-summary-block-that-drops-its-banner.cs.witness")));
+        Assert.Empty(AssuranceGenerator.DuplicateAssuranceBlocks(
+            [Witness("J5-a-summary-block-that-drops-its-banner.cs.witness")]));
+
+        var bannerless = Assert.Single(AssuranceGenerator.ForgedAssuranceBlocks(
+            [Witness("J5-a-summary-block-that-drops-its-banner.cs.witness")]));
+
+        Assert.Contains(
+            "carries the assurance summary line '// Relevant units:   1' below the generated header",
+            bannerless,
+            StringComparison.Ordinal);
+
+        // ...and the accepting direction and the clean direction of the same function: a file
+        // whose only summary is its generated header is not reported, and no covered file is.
+        Assert.Empty(AssuranceGenerator.ForgedAssuranceBlocks(AssuranceSources.Files));
+        Assert.Empty(AssuranceGenerator.ForgedAssuranceBlocks(
+            [Witness("J5-the-header-is-current.cs.witness")]));
+
         // Clause: the accepted direction. A file already in the shape the generator writes is
         // regenerated to itself, so the rule is a comparison and not a rewrite.
         Assert.Null(RegenerationDifference("J5-the-header-is-current.cs.witness"));
@@ -1012,6 +1173,12 @@ public sealed class AssuranceRuleTests
         Assert.Contains("| VERIFIED | 0 |", ComponentReport, StringComparison.Ordinal);
         Assert.Contains("no CI lane", ComponentReport, StringComparison.Ordinal);
 
+        // The report says, in the manifest's own words, that a covered fingerprint is not a
+        // reviewed unit. The manifest header and rule J7's register row carry the same sentence,
+        // and the three are asserted separately because a reader reaches whichever one they open.
+        Assert.Contains(
+            AssuranceManifest.ChangeDetectionStatement, ComponentReport, StringComparison.Ordinal);
+
         // One probe unit set, four report witnesses, one clause each.
         var probe = WitnessUnits("J5-one-pending-unit.cs.witness");
 
@@ -1043,6 +1210,39 @@ public sealed class AssuranceRuleTests
         Assert.Contains(
             "no unit is human-reviewed and the report does not say so in its own words",
             silent,
+            StringComparison.Ordinal);
+
+        // Clause: the per-unit escape hatch is COUNTED in the report. The hatch is a sentence
+        // nothing can check, so the one thing that can be done with it is make every use visible
+        // in the component's own report rather than silent in one source file.
+        var hatched = WitnessUnits("J1-an-explicit-exemption-covers-a-unit.cs.witness");
+
+        Assert.Single(AssuranceScanner.DeclaredExemptions(hatched));
+
+        var uncounted = Assert.Single(ReportViolations(
+            WitnessText("J5-report-omits-a-declared-exemption.md.witness"), hatched));
+        Assert.Contains(
+            "states Per-unit exemptions 0 where the annotations give 1",
+            uncounted,
+            StringComparison.Ordinal);
+
+        // Clause: and NAMED. Counting a use and naming it are two different things a report can
+        // fail to do, so they are two clauses with a witness each; a report that stated the right
+        // count and named nothing would leave a reader unable to find the unit.
+        var unnamed = Assert.Single(ReportViolations(
+            WitnessText("J5-report-does-not-name-a-declared-exemption.md.witness"), hatched));
+        Assert.Contains(
+            "does not name the per-unit exemption on Probe.Hatched.Shim(int)",
+            unnamed,
+            StringComparison.Ordinal);
+
+        // ...and the real report, which states zero and names none because this component uses the
+        // hatch nowhere.
+        Assert.Empty(AssuranceScanner.DeclaredExemptions(ProductUnits));
+        Assert.Contains("| Per-unit exemptions | 0 |", ComponentReport, StringComparison.Ordinal);
+        Assert.Contains(
+            "No unit in this component states a per-unit exemption.",
+            ComponentReport,
             StringComparison.Ordinal);
     }
 
@@ -1119,6 +1319,19 @@ public sealed class AssuranceRuleTests
 
         Count("Unverified", @"\|\s*Unverified\s*\|\s*(?<n>\d+)\s*\|", summary.Unverified);
 
+        var declared = AssuranceScanner.DeclaredExemptions(units);
+
+        Count(
+            "Per-unit exemptions",
+            @"\|\s*Per-unit exemptions\s*\|\s*(?<n>\d+)\s*\|",
+            declared.Count);
+
+        foreach (var unit in declared.Where(unit =>
+                     !report.Contains($"`{unit.Name}`", StringComparison.Ordinal)))
+        {
+            violations.Add($"the report does not name the per-unit exemption on {unit.Name}");
+        }
+
         if (summary.Verified == 0 &&
             !report.Contains(
                 "**Nothing in this component has been reviewed by a human.**",
@@ -1185,12 +1398,7 @@ public sealed class AssuranceRuleTests
     [Fact]
     public void J6_No_Covered_Source_File_Carries_A_Preprocessor_Directive()
     {
-        AssertTheRegisterRowStatesItsLimits(
-            "J6",
-            "any preprocessor directive",
-            "conditional symbols",
-            "trivia",
-            "EX-63");
+        AssertTheRegisterRowIsWhatTheRulesImplement("J6");
 
         // The clean direction. Non-vacuous: 45 covered files are read, and the check is over the
         // parse rather than over a text search, so a directive inside a string literal is not one.
@@ -1244,31 +1452,161 @@ public sealed class AssuranceRuleTests
     }
 
     // =====================================================================================
+    // J7 - the manifest covers every unit
+    // =====================================================================================
+
+    /// <summary>
+    /// J7. <c>assurance.manifest.json</c> covers every code unit in the product tree, exempt and
+    /// relevant alike: every unit present, no extras, every fingerprint current.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Why this rule exists, and why it is not another patch.</b> Three adversarial rounds
+    /// returned the same defeat in five places, and every one of them had one shape: the exemption
+    /// predicate answered EXEMPT, an exempt unit carries no annotation, an unannotated unit carries
+    /// no fingerprint, and a unit with no fingerprint has no record of any kind - so a semantic
+    /// change to it was invisible to J1 through J6. Narrowing the predicate case by case failed
+    /// three times, because each fix moved the defeat one case over: the constructor case was
+    /// narrowed and the property case inherited it; <c>const</c> fields became units and property
+    /// initializers were still unwatched.
+    /// </para>
+    /// <para>
+    /// The repair separates two questions that had been fused. Whether a unit needs a human
+    /// ANNOTATION is decided by the predicate, and nothing about that changed: the 543 annotations
+    /// in the tree are the same 543, and every human line still reads PENDING. Whether a unit is
+    /// WATCHED for change is no longer a question - every unit is, and the manifest is the record.
+    /// </para>
+    /// <para>
+    /// <b>What the rule does not claim.</b> The manifest is a change-detection record and not a
+    /// review. A covered fingerprint is not a reviewed unit, and the sentence saying so is asserted
+    /// in all three places a reader might open: the manifest's own header, the component report and
+    /// this rule's register row. Detection is also not assessment - a moved fingerprint is a red
+    /// suite until someone regenerates, and nothing here judges what moved. That is EX-67.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void J7_The_Manifest_Covers_Every_Unit_In_The_Product_Tree()
+    {
+        AssertTheRegisterRowIsWhatTheRulesImplement("J7");
+
+        // The clean direction, against the file ON DISK. Gate mode only, for the reason J3 and
+        // J5's currency half run in gate mode only: a write run exists to refresh this file, and
+        // asserting that the pre-write text equalled the post-write text would fail every
+        // generation for a reason no reader could act on. Every witness below runs in both modes.
+        if (!AssuranceGenerator.WriteRequested)
+        {
+            Assert.Empty(AssuranceManifest.Violations(AssuranceScanner.Units, ManifestOnDisk()));
+        }
+
+        // Non-vacuous, and the whole point of the rule: the manifest covers the units that carry
+        // no annotation at all, which is most of them.
+        var covered = AssuranceManifest.Entries(AssuranceScanner.Units);
+
+        Assert.Equal(AssuranceScanner.Units.Count, covered.Count);
+        Assert.NotEmpty(covered.Where(static entry => entry.Exempt));
+        Assert.NotEmpty(covered.Where(static entry => !entry.Exempt));
+        Assert.All(covered, static entry => Assert.True(
+            AssuranceFingerprint.IsWellFormed(entry.Fingerprint), entry.Name));
+
+        // ...and it says, in the file a reader opens, that a covered fingerprint is not a review.
+        Assert.Contains(
+            AssuranceManifest.ChangeDetectionStatement,
+            AssuranceManifest.Render(AssuranceScanner.Units),
+            StringComparison.Ordinal);
+
+        // The witness tree: three units, two of which carry no annotation and would be recorded
+        // nowhere at all without this file.
+        var tree = AssuranceScanner.Scan(AssuranceProbe.Source(
+            WitnessText("J7-the-tree-the-manifest-covers.cs.witness"),
+            "J7-the-tree-the-manifest-covers.cs.witness"));
+
+        Assert.Equal(3, tree.Count);
+        Assert.Equal(2, tree.Count(static unit => unit.IsExempt));
+        Assert.Single(tree.Where(static unit => unit.Annotation is not null));
+
+        // Clause: the accepting direction. A manifest that covers its tree exactly is not reported,
+        // so a clean result is a comparison rather than a function that reports nothing.
+        Assert.Empty(AssuranceManifest.Violations(
+            tree, WitnessText("J7-the-manifest-covers-its-tree.json.witness")));
+
+        // Clause: a unit in the tree that the manifest does not cover. The plain field is the one
+        // missing, which is the population this rule exists for.
+        var missing = Assert.Single(AssuranceManifest.Violations(
+            tree, WitnessText("J7-a-unit-is-missing-from-the-manifest.json.witness")));
+
+        Assert.Contains(
+            "Probe.Watched.position is a code unit in the product tree and " +
+            "assurance.manifest.json does not cover it",
+            missing,
+            StringComparison.Ordinal);
+
+        // Clause: an entry naming a unit that is not in the tree.
+        var gone = Assert.Single(AssuranceManifest.Violations(
+            tree, WitnessText("J7-the-manifest-names-a-unit-that-is-gone.json.witness")));
+
+        Assert.Contains(
+            "assurance.manifest.json carries an entry for Probe.Watched.Retired(ulong), " +
+            "which is not a code unit in the product tree",
+            gone,
+            StringComparison.Ordinal);
+
+        // Clause: a recorded fingerprint the code does not produce. Both halves of the message
+        // matter - what was recorded, and what the code says now - and the unit is the exempt
+        // auto-property whose initializer states a shipped value, because for that population the
+        // manifest entry is the only record the change happened.
+        var stale = Assert.Single(AssuranceManifest.Violations(
+            tree, WitnessText("J7-a-recorded-fingerprint-is-not-current.json.witness")));
+
+        Assert.Contains("Probe.Watched.Accepted is recorded in", stale, StringComparison.Ordinal);
+        Assert.Contains("as AB12CD and the current code computes", stale, StringComparison.Ordinal);
+    }
+
+    /// <summary>The manifest as it is on disk, or the empty string when it is not there.</summary>
+    private static string ManifestOnDisk()
+    {
+        var path = Path.Combine(ComponentGraph.Root, AssuranceManifest.RelativePath);
+
+        return File.Exists(path) ? File.ReadAllText(path) : string.Empty;
+    }
+
+    // =====================================================================================
     // The register rows are held to the limits their rules depend on
     // =====================================================================================
 
     /// <summary>
-    /// Nothing else in the suite reads a register row's prose: <c>RuleRegisterTests</c> asserts
-    /// only that the fields are non-empty. The one field carrying a rule's honest limits could
-    /// therefore be rewritten into an over-claim in a single edit with the suite green, and an
-    /// over-claim is by definition a rule weaker than its own statement - the standing defect the
-    /// register exists to prevent. Group H carries the same helper for the same reason; the two
-    /// are deliberately separate so that neither group's rows depend on the other group's file.
+    /// Holds one group J register row to the exact text <see cref="AssuranceRegisterRows"/>
+    /// records for it, in all three of its prose fields.
     /// </summary>
-    private static void AssertTheRegisterRowStatesItsLimits(string id, params string[] required)
+    /// <remarks>
+    /// <para>
+    /// Nothing else in the suite reads a register row's prose: <c>RuleRegisterTests</c> asserts
+    /// only that the fields are non-empty. The version of this helper before this one asserted
+    /// that a row CONTAINED a handful of required phrases, which holds a row to stating its limits
+    /// and does not hold it to stating nothing else. A row could therefore CLAIM a capability the
+    /// tests do not implement: a sentence saying CI compares every human line against the parent
+    /// commit was appended to a row and the suite stayed green, and no such mechanism exists in
+    /// this component - there is no CI lane at all, which is EX-60. An over-claim in a row is the
+    /// same defect as a rule weaker than its own statement, reached by editing the row instead of
+    /// the rule.
+    /// </para>
+    /// <para>
+    /// Equality and not containment, therefore, and over all three fields rather than over the one
+    /// that happens to carry the limits: an appended sentence fails wherever it is appended. Group
+    /// H keeps the substring helper it has, which is EX-58; the two are deliberately separate so
+    /// that neither group's rows depend on the other group's file.
+    /// </para>
+    /// </remarks>
+    private static void AssertTheRegisterRowIsWhatTheRulesImplement(string id)
     {
-        var prose = RegisterRowProse(id);
+        var expected = Assert.Contains(id, AssuranceRegisterRows.Expected);
+        var row = RegisterRow(id);
 
-        foreach (var phrase in required)
-        {
-            Assert.True(
-                prose.Contains(phrase, StringComparison.OrdinalIgnoreCase),
-                $"The register row {id} no longer states the limit \"{phrase}\", so the row claims more " +
-                "than the rule delivers.");
-        }
+        Assert.Equal(expected.Statement, row.Statement);
+        Assert.Equal(expected.Evidence, row.Evidence);
+        Assert.Equal(expected.NonVacuousWhen, row.NonVacuousWhen);
     }
 
-    private static string RegisterRowProse(string id)
+    private static AssuranceRegisterRows.Row RegisterRow(string id)
     {
         var path = Path.Combine(
             ComponentGraph.Root, "src", "tests", "Broiler.VM.Architecture.Tests", "rules.register.json");
@@ -1284,12 +1622,15 @@ public sealed class AssuranceRuleTests
                 continue;
             }
 
-            return string.Join(
-                "\n",
-                new[] { "statement", "evidence", "nonVacuousWhen" }.Select(field =>
-                    rule.TryGetProperty(field, out var value) ? value.GetString() ?? string.Empty : string.Empty));
+            return new AssuranceRegisterRows.Row(
+                Field(rule, "statement"),
+                Field(rule, "evidence"),
+                Field(rule, "nonVacuousWhen"));
         }
 
         throw new InvalidOperationException($"The register has no row {id}.");
+
+        static string Field(JsonElement rule, string name) =>
+            rule.TryGetProperty(name, out var value) ? value.GetString() ?? string.Empty : string.Empty;
     }
 }

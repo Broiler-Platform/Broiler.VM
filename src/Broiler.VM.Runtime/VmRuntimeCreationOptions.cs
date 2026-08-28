@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   12
-// Annotated:        12/12
-// Exempt:           27
-// Human-reviewed:   0/12
+// Relevant units:   13
+// Annotated:        13/13
+// Exempt:           26
+// Human-reviewed:   0/13
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  1/10 max
-// Unverified:       12
+// Unverified:       13
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -129,6 +129,8 @@ public readonly struct VmCeilingSpec : System.IEquatable<VmCeilingSpec>
     public static bool operator ==(VmCeilingSpec left, VmCeilingSpec right) => left.Equals(right);
 
     /// <summary>Value inequality.</summary>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=DA9B18
+    // Broiler-Human: PENDING
     public static bool operator !=(VmCeilingSpec left, VmCeilingSpec right) => !left.Equals(right);
 }
 

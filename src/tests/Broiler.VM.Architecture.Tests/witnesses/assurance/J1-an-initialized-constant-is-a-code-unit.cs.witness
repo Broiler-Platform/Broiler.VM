@@ -1,12 +1,14 @@
-// Witness for rule J1: a const and a static readonly field with an initializer are code units.
+// Witness for rule J1: a const and a static readonly field with an initializer are RELEVANT.
 //
 // Both of these are budgets. Neither was a unit under the earlier scanner, which enumerated only
 // the members that can carry a body, so either could be multiplied by sixteen with no annotation
 // to move and no fingerprint to invalidate - while the method that READS the constant went on
 // asserting the fingerprint of the version that was assessed.
 //
-// The two fields at the bottom are the other half: a plain instance field declares storage and
-// decides nothing, so it is not a unit at all, and this is not a rule about every field.
+// The two fields below them are the other half of the same clause. Every field declaration is a
+// unit now, so `used` and `mutable` are enumerated, fingerprinted and covered by the manifest -
+// but neither states a value fixed for the life of the assembly, so the predicate answers case 7
+// and neither needs an annotation. Six units, two of them relevant.
 
 namespace Probe;
 
