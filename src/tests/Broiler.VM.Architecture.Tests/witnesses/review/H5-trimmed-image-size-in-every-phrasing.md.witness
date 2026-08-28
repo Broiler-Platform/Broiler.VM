@@ -1,0 +1,11 @@
+# Witness: a wrong trimmed image size in each recognised phrasing
+
+One sentence per recognised phrasing, each carrying its own number. The trimmed half is the
+half with no anti-deletion guard behind it in the first attempt, so a rewording that escaped
+the phrasing list escaped the rule entirely.
+
+- The host also publishes as a 944,444-byte trimmed binary.
+
+- It runs as a trimmed self-contained binary, which is 955,555 bytes.
+
+- The trimmed size is 966,666 bytes.

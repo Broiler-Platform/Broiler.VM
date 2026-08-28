@@ -1,0 +1,7 @@
+# Witness: an ATX heading whose final token is a backticked mark
+
+The heading branch has to unquote the final token before it decides. No review document
+currently carries a mark in a heading at all, so the backticked half of that clause is carried
+by this input alone; without it the branch could stop unquoting and nothing would go red.
+
+## 8. Area Verdicts `[APPROVED]`

@@ -1,0 +1,32 @@
+# Witness: an area-verdict table declaring one area twice
+
+Every one of the eight is declared, and nothing outside the eight appears, so neither of the
+other two halves of this clause fires. An area with two verdict rows can carry two different
+verdicts, which is why the duplicate is reported rather than tolerated.
+
+## 4. Review Route
+
+| ID | Area | What a defect here would cost | Suggested time |
+|---|---|---|---|
+| RA-1 | Bounded reading of untrusted bytes | A defect here is expensive. | 45 min |
+| RA-2 | Resource authority and budgets | A defect here is expensive. | 45 min |
+| RA-3 | Lifecycle and state machine | A defect here is expensive. | 45 min |
+| RA-4 | Verified-artifact ownership | A defect here is expensive. | 45 min |
+| RA-5 | Guest-initiated loads and external suspension | A defect here is expensive. | 45 min |
+| RA-6 | The public contract surface | A defect here is expensive. | 45 min |
+| RA-7 | The records themselves | A defect here is expensive. | 45 min |
+| RA-8 | The evidence and the rule register | A defect here is expensive. | 45 min |
+
+## 8. Area Verdicts
+
+| ID | Area | Verdict | Reviewer note |
+|---|---|---|---|
+| RA-1 | Bounded reading of untrusted bytes | `[ ]` | |
+| RA-2 | Resource authority and budgets | `[ ]` | |
+| RA-3 | Lifecycle and state machine | `[ ]` | |
+| RA-4 | Verified-artifact ownership | `[ ]` | |
+| RA-5 | Guest-initiated loads and external suspension | `[ ]` | |
+| RA-6 | The public contract surface | `[ ]` | |
+| RA-7 | The records themselves | `[ ]` | |
+| RA-8 | The evidence and the rule register | `[ ]` | |
+| RA-8 | The evidence and the rule register | `[ ]` | |

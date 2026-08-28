@@ -1,0 +1,48 @@
+# Witness: two legend sections in one document
+
+A section lookup that returns its first match and never asks whether it was the only one can be
+pointed at a decoy. Both sections below publish the nine, so the only thing wrong here is that
+there are two of them - which is the condition that makes every other clause in this rule
+readable from the wrong table.
+
+## 1. How To Use This File
+
+### Evidence verdicts - set by the author, about evidence
+
+| Mark | Meaning |
+|---|---|
+| `[MET]` | Demonstrated. |
+| `[PART]` | Partly demonstrated. |
+| `[UNMET]` | Not discharged. |
+| `[N/A]` | Not claimed at this milestone. |
+
+### Review verdicts - set by the reviewer, about their own reading
+
+| Mark | Meaning |
+|---|---|
+| `[ ]` | Not yet reviewed. |
+| `[A]` | Accepted as stated. |
+| `[C]` | Accepted with a condition. |
+| `[R]` | Rejected. |
+| `[?]` | Cannot be judged from what is here. |
+
+## 1. How To Use This File (superseded, kept for history)
+
+### Evidence verdicts - set by the author, about evidence
+
+| Mark | Meaning |
+|---|---|
+| `[MET]` | Demonstrated. |
+| `[PART]` | Partly demonstrated. |
+| `[UNMET]` | Not discharged. |
+| `[N/A]` | Not claimed at this milestone. |
+
+### Review verdicts - set by the reviewer, about their own reading
+
+| Mark | Meaning |
+|---|---|
+| `[ ]` | Not yet reviewed. |
+| `[A]` | Accepted as stated. |
+| `[C]` | Accepted with a condition. |
+| `[R]` | Rejected. |
+| `[?]` | Cannot be judged from what is here. |

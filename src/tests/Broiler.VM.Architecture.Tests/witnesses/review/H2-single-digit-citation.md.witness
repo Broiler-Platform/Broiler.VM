@@ -1,0 +1,10 @@
+# Witness: a one-digit exclusion citation
+
+Writing EX-4 where EX-04 was meant is the commonest way this citation goes wrong. The first
+attempt required two or more digits, so the mistake was silently ignored rather than reported.
+
+## 9. Exclusions
+
+| ID | Status | Exclusion |
+|---|---|---|
+| EX-04 | Open | Packaging is not gated at this milestone. |

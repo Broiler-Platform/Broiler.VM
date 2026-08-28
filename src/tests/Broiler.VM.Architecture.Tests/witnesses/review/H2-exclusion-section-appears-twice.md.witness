@@ -1,0 +1,17 @@
+# Witness: two exclusion sections in one bundle
+
+Both sections below define the same exclusion, so nothing is undefined and nothing is
+laundered. What is wrong is that a definition scanner reading the first match has no way to
+know which of the two a reader would take as the bundle's exclusions.
+
+## 9. Exclusions
+
+| ID | Status | Exclusion |
+|---|---|---|
+| EX-01 | Open | The inbound half of the legacy-boundary rule is environment-conditional. |
+
+## 9. Exclusions (superseded, kept for history)
+
+| ID | Status | Exclusion |
+|---|---|---|
+| EX-01 | Open | The inbound half of the legacy-boundary rule is environment-conditional. |

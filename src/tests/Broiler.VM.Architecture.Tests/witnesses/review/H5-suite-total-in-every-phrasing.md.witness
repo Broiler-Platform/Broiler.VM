@@ -1,0 +1,14 @@
+# Witness: a wrong suite total in each recognised phrasing
+
+One sentence per recognised phrasing, each carrying its own number, and no sentence is matched
+by more than one of them - so deleting any entry from the phrasing list drops exactly one
+violation and this assertion fails. The first is the phrasing HUMAN_REVIEW.md section 5, both
+bundle READMEs and the status ledger actually use, and it carried no witness at all.
+
+- The suite reports 901 passed, 0 failed, 0 skipped.
+
+- The suite records 902 passing tests.
+
+- The run shows 903 tests passed with no failures.
+
+- The run reported 904 tests, 0 failures, 0 skips.

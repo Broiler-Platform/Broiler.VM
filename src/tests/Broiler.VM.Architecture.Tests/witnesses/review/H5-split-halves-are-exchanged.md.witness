@@ -1,0 +1,5 @@
+# Witness: the two halves of the split exchanged
+
+131 architecture tests and 44 behavioural tests. Both numbers appear in the retained log, so a
+check that asks only whether each half is one of the per-assembly totals passes on this input.
+Binding each half to the assembly its own Passed: line names does not.

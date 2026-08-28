@@ -1,0 +1,9 @@
+# Witness: a table cell carrying a mark the legend does not publish
+
+`[APPROVED]` has eight characters inside the brackets. The first attempt capped the inner text
+at six, so `[APPROVED]`, `[REJECTED]`, `[NOT MET]` and `[PENDING]` all escaped the rule -
+precisely the tokens an author reaches for.
+
+| ID | Area | Verdict |
+|---|---|---|
+| RA-1 | Bounded reading of untrusted bytes | `[APPROVED]` |

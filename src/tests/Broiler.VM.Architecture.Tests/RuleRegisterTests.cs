@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 
 namespace Broiler.VM.Architecture.Tests;
 
@@ -123,19 +124,120 @@ public sealed class RuleRegisterTests
     [Fact]
     public void Every_Witness_Input_On_Disk_Is_Named_By_A_Rule()
     {
-        var named = Loaded.Rules
-            .Select(static rule => rule.Witness)
-            .Where(static witness => witness is not null)
-            .Select(static witness => witness!)
-            .ToArray();
+        // Every *.witness file under witnesses/, recursively. Globbing only *.csproj.witness in
+        // the top directory left witnesses/adr/ and witnesses/review/ entirely unchecked, so an
+        // orphaned documentation witness - one whose rule was deleted, renamed or never written -
+        // sat on disk looking like evidence for a rule that no longer read it.
+        //
+        // The comparison is by whole path and not by containment. Asking whether some rule's
+        // witness field CONTAINED the file name made every orphan whose name is a suffix of a
+        // named witness invisible - unknown-mark.md.witness is a suffix of
+        // H1-table-cell-unknown-mark.md.witness - and the realistic orphan is exactly that: a
+        // witness renamed to carry its rule prefix, the register updated, and the old file left
+        // behind. The same containment also let a rule name a path that resolves to nothing.
+        var named = NamedWitnesses()
+            .Select(static named => named.Witness)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        var orphans = ComponentGraph.Witnesses
-            .Select(static witness => Path.GetFileName(witness.Path))
-            .Where(file => !named.Any(witness => witness.Contains(file, StringComparison.Ordinal)))
+        var orphans = ComponentGraph.WitnessInputs
+            .Select(WitnessPath)
+            .Where(file => !named.Contains(file))
+            .Select(static file => $"{file} is on disk and no rule names it")
             .ToArray();
 
         Assert.Empty(orphans);
     }
+
+    /// <summary>
+    /// A witness file named for a rule is evidence for THAT rule. The three checks either side of
+    /// this one are all satisfied by a permutation of the truth: exchanging two rows' witness
+    /// fields wholesale leaves every path resolving, every file named by some rule, and every
+    /// count unchanged, so the register could record the attestation witnesses as the figure
+    /// rule's evidence and nothing would disagree. The file-name prefix is the one part of a
+    /// witness that says which rule it belongs to, so it is held to the row it sits in.
+    /// </summary>
+    /// <remarks>
+    /// Only the rule that OWNS the prefix has to name the file. A second rule may name it as well,
+    /// which is how A7 and A8 share one project-file witness: the same file violates both, and
+    /// saying so twice is honest rather than duplicated.
+    /// </remarks>
+    [Fact]
+    public void Every_Witness_Named_For_A_Rule_Is_Named_By_That_Rule()
+    {
+        var byRule = NamedWitnesses()
+            .GroupBy(static named => named.Id, StringComparer.Ordinal)
+            .ToDictionary(
+                static group => group.Key,
+                static group => group.Select(static named => named.Witness)
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase),
+                StringComparer.Ordinal);
+
+        var ids = Loaded.Rules.Select(static rule => rule.Id).ToHashSet(StringComparer.Ordinal);
+
+        var misfiled = ComponentGraph.WitnessInputs
+            .Select(path => (Path: WitnessPath(path), Owner: RulePrefix(path)))
+            .Where(witness => witness.Owner is not null)
+            .Select(witness => (witness.Path, Owner: witness.Owner!))
+            .Where(witness => !ids.Contains(witness.Owner) ||
+                !byRule.TryGetValue(witness.Owner, out var named) ||
+                !named.Contains(witness.Path))
+            .Select(static witness =>
+                $"{witness.Path} is named for rule {witness.Owner}, and rule {witness.Owner} does not name it")
+            .ToArray();
+
+        Assert.Empty(misfiled);
+    }
+
+    /// <summary>
+    /// The rule a witness file is named for: the identifier its file name opens with, if it opens
+    /// with one at all. Witness files that carry no rule prefix - the shared fixtures - are not
+    /// bound to any row by this.
+    /// </summary>
+    private static string? RulePrefix(string path)
+    {
+        var match = WitnessRulePrefix.Match(Path.GetFileName(path));
+
+        return match.Success ? match.Groups["id"].Value : null;
+    }
+
+    private static readonly Regex WitnessRulePrefix =
+        new(@"^(?<id>[A-Z]{1,2}\d{1,2}[a-z]?)-", RegexOptions.Compiled);
+
+    /// <summary>
+    /// A row that says nothing about itself is not a register row. Nothing else in the suite reads
+    /// <c>statement</c>, <c>evidence</c> or <c>nonVacuousWhen</c>, so a row could be emptied of the
+    /// prose that carries its honest limits and stay green; the group H tests hold their own rows
+    /// to the specific limits their rules depend on, and this holds every row to having them at
+    /// all.
+    /// </summary>
+    [Fact]
+    public void Every_Rule_Row_States_Itself()
+    {
+        var silent = Loaded.Rules
+            .SelectMany(static rule => new[]
+            {
+                (rule.Id, Field: "statement", Value: rule.Statement),
+                (rule.Id, Field: "evidence", Value: rule.Evidence),
+                (rule.Id, Field: "nonVacuousWhen", Value: rule.NonVacuousWhen),
+            })
+            .Where(static field => string.IsNullOrWhiteSpace(field.Value))
+            .Select(static field => $"{field.Id} has an empty {field.Field}")
+            .ToArray();
+
+        Assert.Empty(silent);
+    }
+
+    private static IEnumerable<(string Id, string Witness)> NamedWitnesses() =>
+        Loaded.Rules
+            .SelectMany(static rule => (rule.Witness ?? string.Empty)
+                .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                .Select(part => (rule.Id, Witness: part)));
+
+    private static string WitnessPath(string path) =>
+        Path.GetRelativePath(
+            Path.Combine(ComponentGraph.Root, "src", "tests", "Broiler.VM.Architecture.Tests"),
+            path)
+            .Replace('\\', '/');
 
     [Fact]
     public void The_Register_Agrees_With_The_Graph_Manifest_On_The_Contract_Version()
@@ -155,10 +257,10 @@ public sealed class RuleRegisterTests
             .GroupBy(static rule => rule.Status, StringComparer.Ordinal)
             .ToDictionary(static group => group.Key, static group => group.Count(), StringComparer.Ordinal);
 
-        Assert.Equal(33, byStatus["Active"]);
+        Assert.Equal(38, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(4, byStatus["Deferred"]);
-        Assert.Equal(38, Loaded.Rules.Count);
+        Assert.Equal(43, Loaded.Rules.Count);
     }
 
     private static Register Load()
@@ -201,6 +303,12 @@ public sealed class RuleRegisterTests
 
         [JsonPropertyName("statement")]
         public string Statement { get; init; } = string.Empty;
+
+        [JsonPropertyName("evidence")]
+        public string Evidence { get; init; } = string.Empty;
+
+        [JsonPropertyName("nonVacuousWhen")]
+        public string NonVacuousWhen { get; init; } = string.Empty;
 
         [JsonPropertyName("activationMilestone")]
         public string? ActivationMilestone { get; init; }

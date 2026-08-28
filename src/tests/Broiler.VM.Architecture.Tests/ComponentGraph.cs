@@ -33,6 +33,18 @@ internal static class ComponentGraph
     /// </summary>
     internal static IReadOnlyList<ProjectFile> Witnesses { get; } = LoadWitnesses();
 
+    /// <summary>
+    /// Every witness input on disk, of every shape, found by recursing over <c>*.witness</c>.
+    /// </summary>
+    /// <remarks>
+    /// <see cref="Witnesses"/> parses project files and so can only glob <c>*.csproj.witness</c>;
+    /// the group E witnesses under witnesses/adr/ and the group H witnesses under
+    /// witnesses/review/ are markdown and would not survive an XML load. The register's
+    /// orphan check reads THIS list, because a witness file no rule names is an orphan wherever
+    /// it sits, and globbing only the top directory left both subdirectories unchecked.
+    /// </remarks>
+    internal static IReadOnlyList<string> WitnessInputs { get; } = LoadWitnessInputs();
+
     internal static ProjectFile Witness(string fileName) =>
         Witnesses.SingleOrDefault(witness =>
             string.Equals(Path.GetFileName(witness.Path), fileName, StringComparison.Ordinal))
@@ -78,6 +90,22 @@ internal static class ComponentGraph
             .EnumerateFiles(directory, "*.csproj.witness", SearchOption.TopDirectoryOnly)
             .OrderBy(static path => path, StringComparer.Ordinal)
             .Select(static path => Parse(path, isWitness: true))
+            .ToArray();
+    }
+
+    private static IReadOnlyList<string> LoadWitnessInputs()
+    {
+        var directory = Path.Combine(
+            Root, "src", "tests", "Broiler.VM.Architecture.Tests", "witnesses");
+
+        if (!Directory.Exists(directory))
+        {
+            return [];
+        }
+
+        return Directory
+            .EnumerateFiles(directory, "*.witness", SearchOption.AllDirectories)
+            .OrderBy(static path => path, StringComparer.Ordinal)
             .ToArray();
     }
 

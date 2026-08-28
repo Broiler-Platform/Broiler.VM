@@ -1,0 +1,13 @@
+# Witness: exclusions written as list items inside the exclusion section
+
+The VM-0 bundle writes some exclusions as list items rather than as table rows. Both forms
+define, and only inside section 9. This fragment cites EX-61, EX-62 and EX-63; the first two
+are defined below and EX-63 is defined nowhere, so EX-63 is the only violation.
+
+## 9. Exclusions
+
+- **EX-61** - Defined as a list item inside the exclusion section.
+
+| ID | Status | Exclusion |
+|---|---|---|
+| EX-62 | Open | Defined as a table row inside the exclusion section. |

@@ -98,7 +98,9 @@ and stops when the time runs out has still spent that time where a defect would 
 the most; the ordering exists so that stopping early is a defensible outcome rather than
 a gap. The per-item checklist for each area is the worksheet at
 [docs/review/vm-0-vm-1.md](docs/review/vm-0-vm-1.md); the times below are suggestions,
-not budgets anyone is held to.
+not budgets anyone is held to. The worksheet carries 53 items, numbered contiguously from
+`RC-01`, with at least one for each of the eight areas; that count is stated here as well as
+there so that neither document can shed an item on its own.
 
 | ID | Area | What a defect here would cost | Suggested time | Where to start |
 |---|---|---|---|---|
@@ -191,7 +193,7 @@ condition.
   core's reason. The episode is retained in the bundle because it is evidence about how
   much the other assertions are worth, and a reviewer should ask the same question of
   them.
-- **AT-5 - Five of thirty-eight architecture rules assert nothing.** One is Vacuous and four
+- **AT-5 - Five of forty-three architecture rules assert nothing.** One is Vacuous and four
   are Deferred, which is the count VM-0 reported the same way when it said nine rules awaited
   their subject. Rule B3 stays Vacuous
   with its activation milestone moved to VM-3: its subject exists, but a violation is

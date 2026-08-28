@@ -111,7 +111,7 @@ public sealed class CoreContractVersionTests
 
         var unregistered = Adrs
             .SelectMany(static adr => Regex
-                .Matches(adr.Text, @"\bRule (?<id>[A-EV]\d{1,2}b?)\b")
+                .Matches(adr.Text, @"\bRule (?<id>[A-EHV]\d{1,2}b?)\b")
                 .Select(match => (adr.FileName, Id: match.Groups["id"].Value)))
             .Where(named => !registered.Contains(named.Id))
             .Select(named => $"{named.FileName} names unregistered {named.Id}")

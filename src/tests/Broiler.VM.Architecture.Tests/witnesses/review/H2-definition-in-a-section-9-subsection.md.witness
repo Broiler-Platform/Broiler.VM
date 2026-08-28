@@ -1,0 +1,20 @@
+# Witness: an exclusion defined in a subsection appended to section 9
+
+Section 9 is the LAST section of an evidence bundle, and a section runs to the next heading at
+its own level or above - so every subsection appended to the end of the file is inside it.
+Definitions stop at the first subheading for exactly that reason; otherwise an errata, hash or
+negative-control subsection appended to the end of a bundle silently mints exclusions.
+
+The unmeasured start-up path is recorded as EX-97.
+
+## 9. Exclusions
+
+| ID | Status | Exclusion |
+|---|---|---|
+| EX-01 | Open | The inbound half of the legacy-boundary rule is environment-conditional. |
+
+### Errata
+
+| ID | Status | Exclusion |
+|---|---|---|
+| EX-97 | Open | Appended to the end of the bundle, inside section 9, and not the exclusion table. |
