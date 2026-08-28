@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   10
-// Annotated:        10/10
+// Relevant units:   11
+// Annotated:        11/11
 // Exempt:           4
-// Human-reviewed:   0/10
+// Human-reviewed:   0/11
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  1/10 max
-// Unverified:       10
+// Unverified:       11
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -25,6 +25,8 @@ namespace Broiler.VM;
 /// tie-break rule requires knowing whether an outer level would also have refused - so the lock
 /// lives on the chain that owns the levels, and the levels themselves are plain state.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=67B55C
+// Broiler-Human: PENDING
 internal sealed class VmBudgetLevel
 {
     private readonly ulong[] ceilings;

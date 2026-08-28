@@ -13,13 +13,13 @@ figures below are the measurement of how far from that claim the component is.
 | Metric | Value |
 |---|---:|
 | Files scanned | 45 |
-| Files carrying an annotation | 44 |
-| Code units | 1169 |
-| Relevant | 543 |
-| Exempt by predicate | 626 |
-| Annotated | 543 of 543 (100%) |
-| Human reviewed | 0 of 543 (0%) |
-| Unverified | 543 |
+| Files carrying an annotation | 45 |
+| Code units | 1592 |
+| Relevant | 689 |
+| Exempt by predicate | 903 |
+| Annotated | 689 of 689 (100%) |
+| Human reviewed | 0 of 689 (0%) |
+| Unverified | 689 |
 
 ## Review states
 
@@ -27,18 +27,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 543 |
+| HUMAN_PENDING | 689 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 626 |
+| EXEMPT | 903 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
-| None | 19 |
-| Low | 524 |
+| None | 21 |
+| Low | 668 |
 | Medium | 0 |
 | High | 0 |
 | Unknown | 0 |
@@ -49,9 +49,9 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 2 |
-| Low | 326 |
-| Medium | 184 |
-| High | 31 |
+| Low | 385 |
+| Medium | 258 |
+| High | 44 |
 | Critical | 0 |
 | *not annotated* | 0 |
 
@@ -60,42 +60,55 @@ figures below are the measurement of how far from that claim the component is.
 | Metric | Value |
 |---|---:|
 | Maximum | 8 / 10 |
-| Average over annotated units | 0.9 / 10 |
-| Units scored | 543 |
+| Average over annotated units | 0.7 / 10 |
+| Units scored | 689 |
 
 ## High-security review areas
 
-- `Broiler.VM.IVmProfileVerifier.Verify(in VmArtifactDescriptor, System.ReadOnlySpan<byte>, IVmVerificationContext, System.Threading.CancellationToken)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmProfileId.TryParse(System.ReadOnlySpan<char>, out VmProfileId)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmProfileId.Parse(System.ReadOnlySpan<char>)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmProfileId.TryValidateGrammar(System.ReadOnlySpan<char>, int, int, int, int, out byte)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmProfileId.TryValidate(System.ReadOnlySpan<char>, out byte)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmProfileId.IsAsciiLetter(char)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmProfileId.IsAsciiAlphanumeric(char)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.IVmBoundedAllocationMeter.TryReserve(ulong)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.IVmBoundedAllocationMeter.TryChargeWork(ulong)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmBoundedAllocator.TryAllocate<T>(in VmReadBounds, IVmBoundedAllocationMeter, uint, out T[])` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmBoundedAllocator.TryAllocateExact<T>(in VmReadBounds, IVmBoundedAllocationMeter, ulong, out T[])` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmBoundedReader.VmBoundedReader(System.ReadOnlySpan<byte>, in VmReadBounds, IVmBoundedAllocationMeter)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmBoundedReader.Remaining` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmBoundedReader.TryReadByte(out byte)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmBoundedReader.TryReadUInt32LittleEndian(out uint)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmBoundedReader.TryReadUInt64LittleEndian(out ulong)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmBoundedReader.TryReadVarUInt32(out uint)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmBoundedReader.TryReadVarUInt64(out ulong)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmBoundedReader.TryReadDeclaredCount(out uint)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmBoundedReader.TryReadBytes(ulong, out System.ReadOnlySpan<byte>)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmBoundedReader.TryEnterSection(ulong, out VmSectionFrame)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmBoundedReader.TryExitSection(in VmSectionFrame)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmBoundedReader.TrySkipSectionBody(in VmSectionFrame)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmBoundedReader.TryChargeWork(ulong)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmBoundedReader.TryTake(ulong, out System.ReadOnlySpan<byte>)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmBoundedReader.TryConsume(ulong)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmBoundedReader.TryReadVarUInt64Core(int, out ulong)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmBoundedReader.ChargeWork(ulong)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmRuntime.Verify(in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmRuntime.VerifyCore(in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken, VmDiagnostics, VmArtifactOrigin, VmMeter?)` - Security=High, state HUMAN_PENDING
-- `Broiler.VM.VmRuntime.RunVerifier(VmProfileDescriptor, in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken, VmDiagnostics, VmArtifactOrigin, VmMeter?)` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.IVmVerifiedState` in `src/Broiler.VM.Abstractions/VmProfileContracts.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.IVmInstanceState` in `src/Broiler.VM.Abstractions/VmProfileContracts.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.IVmProfileContinuation` in `src/Broiler.VM.Abstractions/VmProfileContracts.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmInvocationRequest` in `src/Broiler.VM.Abstractions/VmProfileContracts.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.IVmProfileVerifier` in `src/Broiler.VM.Abstractions/VmProfileContracts.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.IVmProfileVerifier.Verify(in VmArtifactDescriptor, System.ReadOnlySpan<byte>, IVmVerificationContext, System.Threading.CancellationToken)` in `src/Broiler.VM.Abstractions/VmProfileContracts.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmExecutionStepKind` in `src/Broiler.VM.Abstractions/VmProfileContracts.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmExecutorFactory` in `src/Broiler.VM.Abstractions/VmProfileContracts.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmProfileId` in `src/Broiler.VM.Abstractions/VmProfileId.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmProfileId.TryParse(System.ReadOnlySpan<char>, out VmProfileId)` in `src/Broiler.VM.Abstractions/VmProfileId.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmProfileId.Parse(System.ReadOnlySpan<char>)` in `src/Broiler.VM.Abstractions/VmProfileId.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmProfileId.TryValidateGrammar(System.ReadOnlySpan<char>, int, int, int, int, out byte)` in `src/Broiler.VM.Abstractions/VmProfileId.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmProfileId.TryValidate(System.ReadOnlySpan<char>, out byte)` in `src/Broiler.VM.Abstractions/VmProfileId.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmProfileId.IsAsciiLetter(char)` in `src/Broiler.VM.Abstractions/VmProfileId.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmProfileId.IsAsciiAlphanumeric(char)` in `src/Broiler.VM.Abstractions/VmProfileId.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.IVmBoundedAllocationMeter` in `src/Broiler.VM.Binary/IVmBoundedAllocationMeter.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.IVmBoundedAllocationMeter.TryReserve(ulong)` in `src/Broiler.VM.Binary/IVmBoundedAllocationMeter.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.IVmBoundedAllocationMeter.TryChargeWork(ulong)` in `src/Broiler.VM.Binary/IVmBoundedAllocationMeter.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedAllocator` in `src/Broiler.VM.Binary/VmBoundedAllocator.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedAllocator.TryAllocate<T>(in VmReadBounds, IVmBoundedAllocationMeter, uint, out T[])` in `src/Broiler.VM.Binary/VmBoundedAllocator.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedAllocator.TryAllocateExact<T>(in VmReadBounds, IVmBoundedAllocationMeter, ulong, out T[])` in `src/Broiler.VM.Binary/VmBoundedAllocator.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.VmBoundedReader(System.ReadOnlySpan<byte>, in VmReadBounds, IVmBoundedAllocationMeter)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.Remaining` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryReadByte(out byte)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryReadUInt32LittleEndian(out uint)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryReadUInt64LittleEndian(out ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryReadVarUInt32(out uint)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryReadVarUInt64(out ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryReadDeclaredCount(out uint)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryReadBytes(ulong, out System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryEnterSection(ulong, out VmSectionFrame)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryExitSection(in VmSectionFrame)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TrySkipSectionBody(in VmSectionFrame)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryChargeWork(ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryTake(ulong, out System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryConsume(ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.TryReadVarUInt64Core(int, out ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmBoundedReader.ChargeWork(ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmRuntime` in `src/Broiler.VM.Runtime/VmRuntime.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmRuntime.Verify(in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken)` in `src/Broiler.VM.Runtime/VmRuntime.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmRuntime` in `src/Broiler.VM.Runtime/VmVerification.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmRuntime.VerifyCore(in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken, VmDiagnostics, VmArtifactOrigin, VmMeter?)` in `src/Broiler.VM.Runtime/VmVerification.cs` - Security=High, state HUMAN_PENDING
+- `Broiler.VM.VmRuntime.RunVerifier(VmProfileDescriptor, in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken, VmDiagnostics, VmArtifactOrigin, VmMeter?)` in `src/Broiler.VM.Runtime/VmVerification.cs` - Security=High, state HUMAN_PENDING
 
 ## Exemption
 
@@ -111,6 +124,7 @@ that the rule is reviewable in one place rather than in several hundred.
 | DelegatingOverrideOrOperator | 88 |
 | InsideAssemblyMarker | 0 |
 | FieldDeclaringStorage | 135 |
+| EnumMemberOfADeclaredVocabulary | 277 |
 | DeclaredInSource | 0 |
 
 ## Per-unit exemptions
@@ -130,13 +144,21 @@ No unit in this component states a per-unit exemption.
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-1169 of them, exempt and relevant alike - with the fingerprint of its declaration.
+1592 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
 this component has moved off `PENDING`. What the manifest adds is that a unit the exemption
 predicate treats as trivial is no longer invisible: a semantic change to one moves a value
 in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
+
+Beside the units it lists **every covered file** - 45 of them - with a
+fingerprint over the complete token stream of its compilation unit. A unit entry exists only
+for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an
+`[assembly: ...]` attribute is a member of nothing and can be in no unit at all.
+Nothing in a covered file can change without something moving here, whatever kind of declaration it is. Comments are outside the stream, because a token's
+text is its own characters, so the generated header above and the annotation lines below move
+no file fingerprint - which is what lets one generation be a fixed point.
 
 ## Verification
 
@@ -147,7 +169,7 @@ code, run as a test in the architecture suite:
 | Mode | Command | Effect |
 |---|---|---|
 | Generate | `BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release` | Fills every `Fingerprint=TBF`, refreshes a review the code has outrun into `STALE; Previous=...`, rewrites the generated headers, `assurance.manifest.json` and this file. |
-| Gate | `dotnet test Broiler.VM.slnx -c Release` | Asserts every generated artefact is byte-identical to what the generator would produce. This is the mode a reviewer and a release run. |
+| Gate | `dotnet test Broiler.VM.slnx -c Release` | Asserts every generated artefact is byte-identical to what the generator would produce. This is the mode a release and a read of this record run. |
 
 The fingerprint is six hex characters - 24 bits - of SHA-256 over the declaration's token
 texts, joined by single spaces. Trivia is excluded because a token's text is its own

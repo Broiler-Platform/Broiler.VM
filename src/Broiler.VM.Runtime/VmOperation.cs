@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   22
-// Annotated:        22/22
+// Relevant units:   24
+// Annotated:        24/24
 // Exempt:           28
-// Human-reviewed:   0/22
+// Human-reviewed:   0/24
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  5/10 max
-// Unverified:       22
+// Unverified:       24
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -32,6 +32,8 @@ namespace Broiler.VM;
 /// with two answers depending on when it was asked.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=5A574F
+// Broiler-Human: PENDING
 internal sealed class VmOperation
 {
     private readonly object gate = new();
@@ -449,6 +451,8 @@ internal sealed class VmOperation
 /// claim or policy: whoever holds this handle may control the operation, and the caller that
 /// received it decides who else gets it.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=DB24C6
+// Broiler-Human: PENDING
 internal sealed class VmOperationControlHandleImplementation : VmOperationControlHandle
 {
     private readonly VmOperation operation;

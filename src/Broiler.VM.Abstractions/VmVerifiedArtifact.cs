@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   13
-// Annotated:        13/13
-// Exempt:           34
-// Human-reviewed:   0/13
+// Relevant units:   17
+// Annotated:        17/17
+// Exempt:           37
+// Human-reviewed:   0/17
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  3/10 max
-// Unverified:       13
+// Unverified:       17
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -22,6 +22,8 @@ namespace Broiler.VM;
 /// force-dispose and no lease revocation: a handle with live leases drains, it is not seized, so one
 /// runtime can never invalidate another's input.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=8B4AA0
+// Broiler-Human: PENDING
 public enum VmVerifiedArtifactState
 {
     /// <summary>Usable: leases may be taken and instantiation may proceed.</summary>
@@ -44,6 +46,8 @@ public enum VmVerifiedArtifactState
 /// capability instance is reachable from here: component 7 records the <em>shape</em> the verifier
 /// assumed, never a binding.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=4C239B
+// Broiler-Human: PENDING
 public readonly struct VmVerifiedArtifactIdentity : System.IEquatable<VmVerifiedArtifactIdentity>
 {
     /// <summary>Creates an identity.</summary>
@@ -214,6 +218,8 @@ public readonly struct VmVerifiedArtifactIdentity : System.IEquatable<VmVerified
 /// exhaustion, and appear in no stage row. Releasing twice is a no-op rather than an error, because
 /// the alternative is a host that has to track whether its own <c>using</c> already ran.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=BB8BC2
+// Broiler-Human: PENDING
 public sealed class VmArtifactLease : System.IDisposable
 {
     private readonly VmVerifiedArtifact artifact;
@@ -268,6 +274,8 @@ public sealed class VmArtifactLease : System.IDisposable
 /// handle would be useless exactly when it is needed.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=111D5F
+// Broiler-Human: PENDING
 public sealed class VmVerifiedArtifact : System.IDisposable
 {
     private readonly IVmVerifiedState state;

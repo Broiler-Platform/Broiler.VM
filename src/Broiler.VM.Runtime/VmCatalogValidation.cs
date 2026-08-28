@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   3
-// Annotated:        3/3
-// Exempt:           5
-// Human-reviewed:   0/3
+// Relevant units:   5
+// Annotated:        5/5
+// Exempt:           42
+// Human-reviewed:   0/5
 // IP risk:          Low
 // Security risk:    Low
 // Resource impact:  1/10 max
-// Unverified:       3
+// Unverified:       5
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -32,6 +32,8 @@ namespace Broiler.VM;
 /// persisted artifact, no support table and no evidence bundle that records these numerically.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=2E8A43
+// Broiler-Human: PENDING
 public enum VmCatalogValidationReason
 {
     /// <summary>The profile ID does not satisfy the frozen grammar.</summary>
@@ -165,6 +167,8 @@ public enum VmCatalogValidationReason
 /// admission failure.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=EE7E00
+// Broiler-Human: PENDING
 public sealed class VmCatalogValidationException : System.Exception
 {
     /// <summary>Creates a failure naming the offending profile ID.</summary>

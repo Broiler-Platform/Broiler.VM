@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   0
-// Annotated:        0/0
-// Exempt:           0
-// Human-reviewed:   0/0
-// IP risk:          not assessed
-// Security risk:    not assessed
-// Resource impact:  not assessed
-// Unverified:       0
+// Relevant units:   1
+// Annotated:        1/1
+// Exempt:           9
+// Human-reviewed:   0/1
+// IP risk:          Low
+// Security risk:    Low
+// Resource impact:  0/10 max
+// Unverified:       1
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -29,6 +29,8 @@ namespace Broiler.VM;
 /// conditions naming a dimension and a scope. Encoding that mapping here would put contract
 /// vocabulary into a mechanism assembly, which ADR 0001 forbids.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=F5396D
+// Broiler-Human: PENDING
 public enum VmBoundedReadStatus
 {
     /// <summary>No bound has been reached; the reader is usable.</summary>

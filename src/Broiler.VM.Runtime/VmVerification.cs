@@ -3,20 +3,22 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   6
-// Annotated:        6/6
+// Relevant units:   8
+// Annotated:        8/8
 // Exempt:           4
-// Human-reviewed:   0/6
+// Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    High
 // Resource impact:  8/10 max
-// Unverified:       6
+// Unverified:       8
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 namespace Broiler.VM;
 
 /// <summary>What a verification is a total function of, and nothing else.</summary>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=300BB3
+// Broiler-Human: PENDING
 internal sealed class VmVerificationContext : IVmVerificationContext
 {
     private readonly System.Collections.Immutable.ImmutableArray<VmHostCapabilityDescriptor> shapes;
@@ -73,6 +75,8 @@ internal sealed class VmVerificationContext : IVmVerificationContext
 /// is what makes "nesting relaxes no bound and skips no descriptor match" true by construction
 /// rather than by review.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=910045
+// Broiler-Human: PENDING
 public sealed partial class VmRuntime
 {
     // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=8; Fingerprint=4166AF

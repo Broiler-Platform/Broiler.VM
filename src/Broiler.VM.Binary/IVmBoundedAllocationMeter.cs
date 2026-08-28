@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   4
-// Annotated:        4/4
+// Relevant units:   5
+// Annotated:        5/5
 // Exempt:           0
-// Human-reviewed:   0/4
+// Human-reviewed:   0/5
 // IP risk:          Low
 // Security risk:    High
 // Resource impact:  1/10 max
-// Unverified:       4
+// Unverified:       5
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -34,6 +34,8 @@ namespace Broiler.VM;
 /// input depend on how hostile it was.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=A95709
+// Broiler-Human: PENDING
 public interface IVmBoundedAllocationMeter
 {
     /// <summary>

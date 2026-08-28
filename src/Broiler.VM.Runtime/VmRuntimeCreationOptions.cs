@@ -3,20 +3,22 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   13
-// Annotated:        13/13
-// Exempt:           26
-// Human-reviewed:   0/13
+// Relevant units:   22
+// Annotated:        22/22
+// Exempt:           33
+// Human-reviewed:   0/22
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  1/10 max
-// Unverified:       13
+// Unverified:       22
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 namespace Broiler.VM;
 
 /// <summary>Where a runtime ceiling's value comes from.</summary>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F4502B
+// Broiler-Human: PENDING
 public enum VmCeilingSource
 {
     /// <summary>The host stated a number.</summary>
@@ -33,6 +35,8 @@ public enum VmCeilingSource
 }
 
 /// <summary>Whether an allowance is shared across a scope or refreshed per operation.</summary>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=D220A9
+// Broiler-Human: PENDING
 public enum VmAllowanceMode
 {
     /// <summary>One monotonically decreasing counter shared by every operation in the scope.</summary>
@@ -48,6 +52,8 @@ public enum VmAllowanceMode
 /// suspension <em>and</em> the composition must enable it. Either alone answers unsupported, and the
 /// reason says which, so a host can tell "this profile cannot" from "I did not turn it on".
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C8D932
+// Broiler-Human: PENDING
 public enum VmExternalSuspensionMode
 {
     /// <summary>The host may not suspend an operation from outside.</summary>
@@ -58,6 +64,8 @@ public enum VmExternalSuspensionMode
 }
 
 /// <summary>One runtime ceiling entry: a dimension and where its value comes from.</summary>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C6121D
+// Broiler-Human: PENDING
 public readonly struct VmCeilingSpec : System.IEquatable<VmCeilingSpec>
 {
     private VmCeilingSpec(
@@ -139,6 +147,8 @@ public readonly struct VmCeilingSpec : System.IEquatable<VmCeilingSpec>
 /// All-four-or-none by construction, so a half-configured quadruple is unrepresentable rather than
 /// caught by a check that could be forgotten.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=611462
+// Broiler-Human: PENDING
 public readonly struct VmGuestLoadBoundsSpec
 {
     // Broiler-AI:    Origin=AI; Spec=ADR-0008; IP=Low; Security=Low; Resources=0; Fingerprint=950977
@@ -165,9 +175,13 @@ public readonly struct VmGuestLoadBoundsSpec
 }
 
 /// <summary>A host capability delegate that takes integers and returns one.</summary>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=559AF2
+// Broiler-Human: PENDING
 public delegate VmHostCallOutcome VmHostCapabilityHandler(System.ReadOnlySpan<long> arguments, out long result);
 
 /// <summary>A host capability delegate that takes bytes and returns an opaque reference.</summary>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=17B32F
+// Broiler-Human: PENDING
 public delegate VmHostCallOutcome VmHostBytesCapabilityHandler(VmBytes argument, out VmOpaqueRef result);
 
 /// <summary>What a composition root registers into one runtime.</summary>
@@ -177,6 +191,8 @@ public delegate VmHostCallOutcome VmHostBytesCapabilityHandler(VmBytes argument,
 /// resolution: a capability the composition did not register is not reachable from the runtime at
 /// all, which is what makes registration the permission.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=EE9647
+// Broiler-Human: PENDING
 public readonly struct VmCapabilityRegistration
 {
     private VmCapabilityRegistration(
@@ -262,6 +278,8 @@ public readonly struct VmCapabilityRegistration
 /// residency is an unbounded retention with a debugger attached to it.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=B93A2B
+// Broiler-Human: PENDING
 public sealed class VmRuntimeCreationOptions
 {
     /// <summary>Creates an options object.</summary>

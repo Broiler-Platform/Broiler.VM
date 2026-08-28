@@ -1,0 +1,16 @@
+{
+  "$comment": [
+    "GENERATED - DO NOT EDIT MANUALLY. Regenerate with",
+    "`BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release`.",
+    "",
+    "Witness for rule J9: generated text that states a review the annotations do not hold. These",
+    "two claims are the ones a fourth adversarial round appended to the manifest's own header, and",
+    "nothing in the suite read them: rule J5 compares the file on disk against what the generator",
+    "would write, and the generator would write exactly this.",
+    "",
+    "reviewState=VERIFIED; humanReviewed=true; reviewer=WITNESS-ONLY for all 1169 units.",
+    "The component is eligible for release."
+  ],
+  "files": [],
+  "units": []
+}

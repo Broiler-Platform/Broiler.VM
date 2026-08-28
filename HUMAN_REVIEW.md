@@ -193,7 +193,7 @@ condition.
   core's reason. The episode is retained in the bundle because it is evidence about how
   much the other assertions are worth, and a reviewer should ask the same question of
   them.
-- **AT-5 - Five of forty-nine architecture rules assert nothing.** One is Vacuous and four
+- **AT-5 - Five of fifty-two architecture rules assert nothing.** One is Vacuous and four
   are Deferred, which is the count VM-0 reported the same way when it said nine rules awaited
   their subject. Rule B3 stays Vacuous
   with its activation milestone moved to VM-3: its subject exists, but a violation is

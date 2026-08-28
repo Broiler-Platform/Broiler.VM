@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   19
-// Annotated:        19/19
+// Relevant units:   24
+// Annotated:        24/24
 // Exempt:           23
-// Human-reviewed:   0/19
+// Human-reviewed:   0/24
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  4/10 max
-// Unverified:       19
+// Unverified:       24
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -25,6 +25,8 @@ namespace Broiler.VM;
 /// verifier, no factory, no limits and no capability descriptors, because a listing is for support
 /// tables and diagnostics, not for reaching into a profile.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=FD7E61
+// Broiler-Human: PENDING
 public readonly struct VmProfileCatalogEntry
 {
     // Broiler-AI:    Origin=AI; Spec=ADR-0002 s11; IP=Low; Security=Low; Resources=3; Fingerprint=793BDA
@@ -119,6 +121,8 @@ public readonly struct VmProfileCatalogEntry
 /// see what a composition contains, a guest may not - is enforced by type rather than by a flag,
 /// and there is no verbose-diagnostics option that could turn it back on.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=6DD727
+// Broiler-Human: PENDING
 public readonly struct VmProfileCatalogListing
 {
     internal VmProfileCatalogListing(System.Collections.Immutable.ImmutableArray<VmProfileCatalogEntry> entries) =>
@@ -155,6 +159,8 @@ public readonly struct VmProfileCatalogListing
 /// host retuning a limit does not appear to have changed what the catalog <em>is</em>.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C3E0F5
+// Broiler-Human: PENDING
 public sealed class VmCatalogIdentity : System.IEquatable<VmCatalogIdentity>
 {
     private readonly byte[] encoding;
@@ -220,6 +226,8 @@ public sealed class VmCatalogIdentity : System.IEquatable<VmCatalogIdentity>
 /// set-level rules.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F60C2C
+// Broiler-Human: PENDING
 public sealed class VmCatalogBuilder
 {
     /// <summary>The most entries one catalog may hold.</summary>
@@ -323,6 +331,8 @@ public sealed class VmCatalogBuilder
 /// hosts nothing, and a much better diagnostic than a corrupt-file report.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=24382D
+// Broiler-Human: PENDING
 public sealed class VmCatalog
 {
     private readonly VmProfileDescriptor[] entries;

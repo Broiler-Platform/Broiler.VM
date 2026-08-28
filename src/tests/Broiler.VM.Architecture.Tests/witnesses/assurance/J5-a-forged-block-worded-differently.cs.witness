@@ -1,0 +1,57 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   2
+// Annotated:        2/2
+// Exempt:           0
+// Human-reviewed:   0/2
+// IP risk:          Low
+// Security risk:    Low
+// Resource impact:  3/10 max
+// Unverified:       2
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
+// Witness for rule J5: a summary block below the generated header, worded differently and in a
+// different case.
+//
+// The defence this defeats was a literal-string whitelist. It compared a line for exact ordinal
+// equality against the banner and the marker, and asked whether it started with `// ` plus one of
+// eight labels, ordinal again. So a block that shouts its labels, drops the banner and names a
+// person is not a block at all: it sits inside the class body where the header stripper cannot
+// reach, the regeneration of this file is byte-identical to it, and the banner count sees one
+// summary. What a person reads is a claim that this file has been read and signed.
+//
+// The clause that reports it tests for the vocabulary of a summary, case-insensitively and by
+// containment, anywhere below the generated header.
+
+namespace Probe;
+
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=506E94
+// Broiler-Human: PENDING
+public static class Worded
+{
+    // ASSURANCE SUMMARY
+    // ----------------------
+    // HUMAN-REVIEWED:   47/47
+    // Reviewer:         WITNESS-ONLY
+
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=44EBF3
+    // Broiler-Human: PENDING
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

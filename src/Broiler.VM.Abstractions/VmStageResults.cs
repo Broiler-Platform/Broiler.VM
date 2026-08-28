@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   58
-// Annotated:        58/58
+// Relevant units:   65
+// Annotated:        65/65
 // Exempt:           41
-// Human-reviewed:   0/58
+// Human-reviewed:   0/65
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  0/10 max
-// Unverified:       58
+// Unverified:       65
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -25,6 +25,8 @@ namespace Broiler.VM;
 /// core. A result held behind this interface would allocate on every call, including the failure
 /// paths a hostile input drives hardest.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=1AD731
+// Broiler-Human: PENDING
 public interface IVmOperationResult
 {
     /// <summary>The outcome category.</summary>
@@ -54,6 +56,8 @@ public interface IVmOperationResult
 /// type has no factory that any runtime member could call. A type that existed and threw would be
 /// the shape-only stub invariant 8 rejects.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=39EBFB
+// Broiler-Human: PENDING
 public readonly struct VmEnvelopeReadResult : IVmOperationResult
 {
     /// <inheritdoc/>
@@ -83,6 +87,8 @@ public readonly struct VmEnvelopeReadResult : IVmOperationResult
 /// verification would let a half-verified artifact outlive its requesting operation, and no host
 /// capability is invoked on the caller-driven path.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=3C6DEB
+// Broiler-Human: PENDING
 public readonly struct VmVerificationResult : IVmOperationResult
 {
     private readonly VmVerifiedArtifact? artifact;
@@ -172,6 +178,8 @@ public readonly struct VmVerificationResult : IVmOperationResult
 /// matrix as a test oracle and hiding the nesting depth and requesting-operation identity that the
 /// charging rule must keep auditable.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=41D8F1
+// Broiler-Human: PENDING
 public readonly struct VmGuestLoadResult : IVmOperationResult
 {
     private readonly VmVerifiedArtifact? artifact;
@@ -264,6 +272,8 @@ public readonly struct VmGuestLoadResult : IVmOperationResult
 }
 
 /// <summary>S5: the instantiation result.</summary>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=657E43
+// Broiler-Human: PENDING
 public readonly struct VmInstantiationResult : IVmOperationResult
 {
     private readonly VmInstance? instance;
@@ -401,6 +411,8 @@ public readonly struct VmInstantiationResult : IVmOperationResult
 /// first would create a second, later verification point; the second is already answered, because
 /// the profile is bound once an instance exists.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=3B825D
+// Broiler-Human: PENDING
 public readonly struct VmInvocationResult : IVmOperationResult
 {
     private readonly IVmProfilePayload? payload;
@@ -531,6 +543,8 @@ public readonly struct VmInvocationResult : IVmOperationResult
 /// on a handle shared from another runtime, and that check has already passed by the time an
 /// instantiation suspends, so resume cannot reach it.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=768724
+// Broiler-Human: PENDING
 public readonly struct VmResumeResult : IVmOperationResult
 {
     private readonly VmInstance? instance;

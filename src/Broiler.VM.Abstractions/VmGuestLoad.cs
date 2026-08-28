@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   5
-// Annotated:        5/5
-// Exempt:           15
-// Human-reviewed:   0/5
+// Relevant units:   11
+// Annotated:        11/11
+// Exempt:           20
+// Human-reviewed:   0/11
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  7/10 max
-// Unverified:       5
+// Unverified:       11
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -22,6 +22,8 @@ namespace Broiler.VM;
 /// the requesting operation's remaining allowance rather than under a runtime ceiling. There is no
 /// separate flag for that, because origin already is it.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=AD1A5C
+// Broiler-Human: PENDING
 public enum VmArtifactOrigin
 {
     /// <summary>The caller presented the bytes.</summary>
@@ -38,6 +40,8 @@ public enum VmArtifactOrigin
 /// everything else on this type - the depth, the remaining allowance, and the identity of the
 /// operation being charged.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=3DECDC
+// Broiler-Human: PENDING
 public readonly ref struct VmArtifactRequest
 {
     /// <summary>Creates a request.</summary>
@@ -87,6 +91,8 @@ public readonly ref struct VmArtifactRequest
 /// A closed set of exactly three. Adding a fourth is a core contract amendment, because a fourth
 /// answer is a fourth thing the charging and refusal rules would have to cover.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=80106D
+// Broiler-Human: PENDING
 public enum VmArtifactProviderAnswerKind
 {
     /// <summary>The provider supplied a descriptor and bytes.</summary>
@@ -112,6 +118,8 @@ public enum VmArtifactProviderAnswerKind
 /// merely discouraged.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=AA1A58
+// Broiler-Human: PENDING
 public readonly ref struct VmArtifactProviderAnswer
 {
     private VmArtifactProviderAnswer(
@@ -176,6 +184,8 @@ public readonly ref struct VmArtifactProviderAnswer
 /// a socket or a compiler on its own.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=261597
+// Broiler-Human: PENDING
 public interface IVmArtifactProvider
 {
     /// <summary>The capability identity this provider is registered under.</summary>
@@ -199,6 +209,8 @@ public interface IVmArtifactProvider
 /// mediator as out of scope. After a suspend and resume cycle the profile must request through the
 /// freshly supplied mediator, because the old one belonged to an operation step that has ended.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=620FE6
+// Broiler-Human: PENDING
 public interface IVmArtifactLoadMediator
 {
     /// <summary>

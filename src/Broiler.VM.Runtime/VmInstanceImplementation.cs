@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   18
-// Annotated:        18/18
+// Relevant units:   19
+// Annotated:        19/19
 // Exempt:           14
-// Human-reviewed:   0/18
+// Human-reviewed:   0/19
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  5/10 max
-// Unverified:       18
+// Unverified:       19
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -27,6 +27,8 @@ namespace Broiler.VM;
 /// half-instantiated instance a caller can obtain and then wonder about.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=091BAF
+// Broiler-Human: PENDING
 internal sealed class VmInstanceImplementation : VmInstance
 {
     private readonly object gate = new();

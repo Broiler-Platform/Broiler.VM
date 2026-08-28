@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   23
-// Annotated:        23/23
+// Relevant units:   27
+// Annotated:        27/27
 // Exempt:           24
-// Human-reviewed:   0/23
+// Human-reviewed:   0/27
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  1/10 max
-// Unverified:       23
+// Unverified:       27
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -33,6 +33,8 @@ namespace Broiler.VM;
 /// may not, which is checked at catalog construction rather than left as a convention.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=256734
+// Broiler-Human: PENDING
 public readonly struct VmLimitVector : System.IEquatable<VmLimitVector>
 {
     private readonly ulong[]? values;
@@ -237,6 +239,8 @@ public readonly struct VmLimitVector : System.IEquatable<VmLimitVector>
 /// <c>NestedLoadDepth = NotApplicable</c> means no artifact-provider capability may be bound. All
 /// three are checked at catalog construction, where the composition root is on the stack.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=AC252A
+// Broiler-Human: PENDING
 public readonly struct VmBudgetDeclarationMatrix : System.IEquatable<VmBudgetDeclarationMatrix>
 {
     private readonly VmBudgetApplicability[]? rows;
@@ -349,6 +353,8 @@ public readonly struct VmBudgetDeclarationMatrix : System.IEquatable<VmBudgetDec
 /// receiving runtime - is ADR 0003's candidate amendment 1 and is breaking, because a refusal
 /// would become a success.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=E97F91
+// Broiler-Human: PENDING
 public readonly struct VmEffectiveCeilings : System.IEquatable<VmEffectiveCeilings>
 {
     /// <summary>Creates a ceiling pair.</summary>
@@ -395,6 +401,8 @@ public readonly struct VmEffectiveCeilings : System.IEquatable<VmEffectiveCeilin
 /// The struck names <c>MaxDepth</c>, <c>MaxFanOutPerOperation</c>,
 /// <c>MaxCumulativeNestedBytes</c> and <c>MaxCumulativeNestedVerifierWork</c> appear nowhere.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=327E45
+// Broiler-Human: PENDING
 public readonly struct VmGuestLoadBounds : System.IEquatable<VmGuestLoadBounds>
 {
     /// <summary>Creates a bound group.</summary>

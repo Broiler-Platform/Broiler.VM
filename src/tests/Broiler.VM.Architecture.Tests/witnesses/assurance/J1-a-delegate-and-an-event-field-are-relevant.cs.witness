@@ -1,0 +1,24 @@
+// Witness for rule J1: a delegate declaration and an event field declaration are code units, and
+// neither is exempt.
+//
+// An event field is a sibling of the field declarations the enumeration already had, and it was
+// missed by a switch that named `FieldDeclarationSyntax` rather than the base kind. It is NOT
+// covered by case 7 either: case 7 exempts a field that declares storage, on the ground that the
+// members which write it are reviewed, and a field-like event declares a public broadcast point
+// whose whole visible content is its declaration. A delegate declaration is a signature, and in a
+// contract assembly a signature is precisely what a reviewer certifies.
+//
+// `Verify` carries an annotation; `Escaped` carries none, so J1 names it.
+
+namespace Probe;
+
+// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=6FE072
+// Broiler-Human: PENDING
+public delegate bool ProbeVerifier(System.ReadOnlySpan<byte> payload);
+
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=E249FE
+// Broiler-Human: PENDING
+public sealed class Broadcaster
+{
+    public event System.Action Escaped;
+}

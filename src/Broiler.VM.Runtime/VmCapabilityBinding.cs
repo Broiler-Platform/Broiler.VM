@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   8
-// Annotated:        8/8
+// Relevant units:   10
+// Annotated:        10/10
 // Exempt:           12
-// Human-reviewed:   0/8
+// Human-reviewed:   0/10
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  2/10 max
-// Unverified:       8
+// Unverified:       10
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -24,6 +24,8 @@ namespace Broiler.VM;
 /// slot <em>k</em> and can ask only whether it is bound; it can never enumerate the table, resolve
 /// by name, or reach a CLR type or member through it.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C634B7
+// Broiler-Human: PENDING
 internal sealed class VmCapabilityBinding
 {
     internal VmCapabilityBinding(
@@ -65,6 +67,8 @@ internal sealed class VmCapabilityBinding
 /// from inside a non-reentrant capability is refused rather than deadlocking or recursing.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C2C91D
+// Broiler-Human: PENDING
 internal sealed class VmCapabilityInvoker : IVmHostCapabilityInvoker
 {
     private readonly VmCapabilityBinding[] bindings;

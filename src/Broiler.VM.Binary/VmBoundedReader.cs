@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   20
-// Annotated:        20/20
+// Relevant units:   21
+// Annotated:        21/21
 // Exempt:           12
-// Human-reviewed:   0/20
+// Human-reviewed:   0/21
 // IP risk:          Low
 // Security risk:    High
 // Resource impact:  2/10 max
-// Unverified:       20
+// Unverified:       21
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -42,6 +42,8 @@ namespace Broiler.VM;
 /// by a caller that ignored a return value.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=CCF177
+// Broiler-Human: PENDING
 public ref struct VmBoundedReader
 {
     private readonly System.ReadOnlySpan<byte> bytes;

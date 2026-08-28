@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   4
-// Annotated:        4/4
+// Relevant units:   8
+// Annotated:        8/8
 // Exempt:           16
-// Human-reviewed:   0/4
+// Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    Low
 // Resource impact:  1/10 max
-// Unverified:       4
+// Unverified:       8
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -25,6 +25,8 @@ namespace Broiler.VM;
 /// one across an await - the last of which is also why an asynchronous host capability is not
 /// representable.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=AB5195
+// Broiler-Human: PENDING
 public readonly ref struct VmBytes
 {
     private readonly System.ReadOnlySpan<byte> span;
@@ -52,6 +54,8 @@ public readonly ref struct VmBytes
 /// encoding, normalization or culture decision is made by the core on behalf of a profile whose
 /// language may have its own rules for all three.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=5C3E2F
+// Broiler-Human: PENDING
 public readonly ref struct VmUtf8Text
 {
     private readonly System.ReadOnlySpan<byte> utf8;
@@ -81,6 +85,8 @@ public readonly ref struct VmUtf8Text
 /// <c>Equals</c> on the payload itself, never pattern-matches on its concrete type, and never
 /// stores, clones, pools or serialises it.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=F24020
+// Broiler-Human: PENDING
 public readonly struct VmPayloadIdentity : System.IEquatable<VmPayloadIdentity>
 {
     /// <summary>Creates a payload identity.</summary>
@@ -132,6 +138,8 @@ public readonly struct VmPayloadIdentity : System.IEquatable<VmPayloadIdentity>
 /// acquiring a case for it: the core routes the payload and never interprets it, and the profile
 /// ships a static accessor its own consumers use to get the concrete type back out.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=EBD3C7
+// Broiler-Human: PENDING
 public interface IVmProfilePayload
 {
     /// <summary>Which profile minted this payload, of what kind, at what schema version.</summary>

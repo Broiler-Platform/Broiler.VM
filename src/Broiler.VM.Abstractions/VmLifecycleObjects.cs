@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   13
-// Annotated:        13/13
-// Exempt:           23
-// Human-reviewed:   0/13
+// Relevant units:   21
+// Annotated:        21/21
+// Exempt:           43
+// Human-reviewed:   0/21
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  7/10 max
-// Unverified:       13
+// Unverified:       21
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -22,6 +22,8 @@ namespace Broiler.VM;
 /// operation, which has two. An instance does not care who parked its operation; the operation
 /// does, because who parked it decides who may resume it.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=240C21
+// Broiler-Human: PENDING
 public enum VmInstanceState
 {
     /// <summary>Being instantiated.</summary>
@@ -53,6 +55,8 @@ public enum VmInstanceState
 /// on the profile's own terms and rides the caller's result, while a host suspension is delivered
 /// once through the control handle and can be abandoned.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=D86AF1
+// Broiler-Human: PENDING
 public enum VmOperationState
 {
     /// <summary>Executing.</summary>
@@ -83,6 +87,8 @@ public enum VmOperationState
 /// keeping its identity, its budget remainder and its nested-load counters - a fourth kind would
 /// imply a new operation and therefore a fresh allowance.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=549B18
+// Broiler-Human: PENDING
 public enum VmOperationKind
 {
     /// <summary>A verification.</summary>
@@ -96,6 +102,8 @@ public enum VmOperationKind
 }
 
 /// <summary>Who caused an operation to park.</summary>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=E8954C
+// Broiler-Human: PENDING
 public enum VmSuspensionOrigin
 {
     /// <summary>The guest suspended on its own terms.</summary>
@@ -124,6 +132,8 @@ public enum VmSuspensionOrigin
 /// handle was struck in favour of taking the object and resuming through the runtime.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=8E1BC7
+// Broiler-Human: PENDING
 public sealed class VmSuspension
 {
     private readonly IVmProfilePayload? projection;
@@ -205,6 +215,8 @@ public sealed class VmSuspension
 /// through the public surface - rule A10 leaves no internal route - and because "the latch is
 /// monotonic and is never cleared" is a contract property rather than an implementation detail.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=91BF26
+// Broiler-Human: PENDING
 public readonly struct VmOperationStateSnapshot
 {
     /// <summary>Creates a snapshot.</summary>
@@ -266,6 +278,8 @@ public readonly struct VmOperationStateSnapshot
 /// hole would make disposal timing depend on the garbage collector.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=4F6C59
+// Broiler-Human: PENDING
 public abstract class VmOperationControlHandle : System.IDisposable
 {
     /// <summary>For the runtime's implementation.</summary>
@@ -321,6 +335,8 @@ public abstract class VmOperationControlHandle : System.IDisposable
 /// only when instantiation completes normally: there is no half-instantiated instance a caller can
 /// obtain and then wonder about.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=66AFF3
+// Broiler-Human: PENDING
 public abstract class VmInstance : System.IDisposable
 {
     /// <summary>For the runtime's implementation.</summary>

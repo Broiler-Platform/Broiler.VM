@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   22
-// Annotated:        22/22
+// Relevant units:   23
+// Annotated:        23/23
 // Exempt:           7
-// Human-reviewed:   0/22
+// Human-reviewed:   0/23
 // IP risk:          Low
 // Security risk:    High
 // Resource impact:  2/10 max
-// Unverified:       22
+// Unverified:       23
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -48,6 +48,8 @@ namespace Broiler.VM;
 /// own diagnostics disagree with the composition root that wrote them.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=CB7A1C
+// Broiler-Human: PENDING
 public readonly struct VmProfileId : System.IEquatable<VmProfileId>, System.IComparable<VmProfileId>
 {
     /// <summary>The fewest labels a well-formed ID may have.</summary>

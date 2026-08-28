@@ -9,6 +9,8 @@
 
 namespace Probe;
 
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=6FBD04
+// Broiler-Human: PENDING
 public sealed class Hatched
 {
     // Broiler-AI:    EXEMPT=Generated marshalling shim - reviewed at the generator

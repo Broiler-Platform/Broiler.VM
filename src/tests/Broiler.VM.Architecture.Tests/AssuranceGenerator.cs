@@ -20,6 +20,7 @@ internal sealed record AssuranceArtefact(string RelativePath, string FullPath, s
 /// </remarks>
 internal sealed record AssurancePlan(
     IReadOnlyList<AssuranceArtefact> Artefacts,
+    IReadOnlyList<AssuranceSourceFile> Files,
     IReadOnlyList<AssuranceUnit> Units);
 
 /// <summary>
@@ -46,6 +47,16 @@ internal sealed record AssurancePlan(
 /// name appears that the source did not already carry.
 /// </para>
 /// <para>
+/// <b>And what the generator may SAY.</b> Nothing in this file used to be held to anything: two
+/// lines appended to <see cref="AssuranceManifest.Header"/> made the manifest assert that every
+/// unit was verified, human-reviewed and eligible for release, and both modes of the gate stayed
+/// green because the gate asks whether the file on disk is what this code would write and it was.
+/// Two rules now read the output text itself. Rule J8 holds every generated artefact line for line
+/// to <see cref="AssuranceArtefactShape"/>, a hand-maintained second copy of the fixed text with
+/// every derived value derived again; rule J9 refuses review vocabulary the annotations do not
+/// support anywhere in the generated text. Every sentence written here has to be written there too.
+/// </para>
+/// <para>
 /// <b>Scope of the file header.</b> EVERY covered product file receives the header, including the
 /// three that declare no code unit at all and therefore carry no annotation. Two things force
 /// that. The policy asks for SPDX copyright and licence metadata on the source, and the header's
@@ -64,21 +75,59 @@ internal static class AssuranceGenerator
 
     internal const string ReportPath = "CODE-ASSURANCE.md";
 
-    private const string GeneratedMarker = "// GENERATED - DO NOT EDIT MANUALLY";
-    private const string SpdxCopyright = "// SPDX-FileCopyrightText: 2026 Broiler Platform contributors";
-    private const string SpdxLicense = "// SPDX-License-Identifier: Apache-2.0";
+    internal const string GeneratedMarker = "// GENERATED - DO NOT EDIT MANUALLY";
+    internal const string SpdxCopyright = "// SPDX-FileCopyrightText: 2026 Broiler Platform contributors";
+    internal const string SpdxLicense = "// SPDX-License-Identifier: Apache-2.0";
+    internal const string BannerRule = "// ----------------------";
 
     /// <summary>The banner line that opens the generated summary. Exactly one per covered file.</summary>
     internal const string Banner = "// Broiler Code Assurance";
 
     /// <summary>
-    /// The labels the generated summary's rows carry, so a forged block can be recognised by its
-    /// shape and not only by its banner.
+    /// The labels the generated summary's rows carry, in the order it writes them, so a forged
+    /// block can be recognised by its shape and not only by its banner - and so that rule J8 can
+    /// hold the header to a row sequence rather than to whatever the generator felt like emitting.
     /// </summary>
-    private static readonly string[] HeaderRowLabels =
+    internal static readonly string[] HeaderRowLabels =
     [
         "Relevant units:", "Annotated:", "Exempt:", "Human-reviewed:",
         "IP risk:", "Security risk:", "Resource impact:", "Unverified:",
+    ];
+
+    /// <summary>
+    /// The vocabulary that marks a comment line as belonging to a generated assurance summary,
+    /// matched case-insensitively and by containment.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Why not a literal-string whitelist.</b> The version before this one compared each line
+    /// for exact equality against the banner and the marker, and asked whether it STARTED WITH
+    /// <c>"// " + label</c> - ordinal, both of them. A summary block worded differently was
+    /// therefore not a summary block: <c>// BROILER CODE ASSURANCE</c>, <c>//  Human-reviewed:
+    /// 47/47</c> with two spaces, or a block that says <c>// Reviewer: EB</c> instead of using a
+    /// row label at all, all sat below the generated header, survived regeneration byte for byte
+    /// and read to a human exactly as the real block does.
+    /// </para>
+    /// <para>
+    /// So the test is containment, case-insensitive, over the vocabulary a summary is made of: the
+    /// banner, the marker, the eight row labels, and the review claims a forged summary exists in
+    /// order to make. Every entry is checked against the product tree - below the generated header,
+    /// the three product assemblies contain none of these phrases in any comment - so the rule
+    /// costs nothing to adopt and is not a licence to reword an honest comment into a violation.
+    /// The word <c>verified</c> is deliberately NOT here: <c>VmVerifiedArtifact</c> is a public type
+    /// of this component and its name appears in 112 lines below the generated headers, 45 of them
+    /// comments. Rule J9 is where the review vocabulary including that word is forbidden, over the
+    /// GENERATED text alone.
+    /// </para>
+    /// </remarks>
+    internal static readonly string[] SummaryVocabulary =
+    [
+        "broiler code assurance",
+        "generated - do not edit manually",
+        "relevant units:", "annotated:", "exempt:", "human-reviewed",
+        "ip risk", "security risk", "resource impact", "unverified:",
+        "human reviewed", "reviewer", "reviewstate", "humanreviewed", "approved",
+        "eligible for release",
     ];
 
     internal static bool WriteRequested =>
@@ -103,14 +152,17 @@ internal static class AssuranceGenerator
         // one it found. Each rewritten file is rescanned from its own generated text, so one run
         // converges rather than publishing last run's states.
         var after = new List<AssuranceUnit>();
+        var rewritten = new List<AssuranceSourceFile>();
 
         foreach (var file in AssuranceSources.Files)
         {
             var units = byFile.TryGetValue(file.RelativePath, out var found) ? found : [];
             var desired = DesiredSource(file, units);
+            var generated = AssuranceSources.WithText(file, desired);
 
             artefacts.Add(new AssuranceArtefact(file.RelativePath, file.FullPath, file.Text, desired));
-            after.AddRange(AssuranceScanner.Scan(AssuranceSources.WithText(file, desired)));
+            rewritten.Add(generated);
+            after.AddRange(AssuranceScanner.Scan(generated));
         }
 
         var report = Path.Combine(ComponentGraph.Root, ReportPath);
@@ -130,9 +182,9 @@ internal static class AssuranceGenerator
             AssuranceManifest.RelativePath,
             manifest,
             File.Exists(manifest) ? File.ReadAllText(manifest) : string.Empty,
-            AssuranceManifest.Render(after)));
+            AssuranceManifest.Render(rewritten, after)));
 
-        return new AssurancePlan(artefacts, after);
+        return new AssurancePlan(artefacts, rewritten, after);
     }
 
     /// <summary>Writes every artefact that is not already current, and names the ones it changed.</summary>
@@ -227,10 +279,11 @@ internal static class AssuranceGenerator
     /// <remarks>
     /// <c>Trim()</c> and not <c>TrimEnd()</c>. Leading whitespace is not a difference in what the
     /// line SAYS, and a forged summary indented into a class body reads to a human exactly as the
-    /// header does - which is the whole of its value to a forger.
+    /// header does - which is the whole of its value to a forger. Case is not a difference either,
+    /// for the same reason: <c>// BROILER CODE ASSURANCE</c> is the same banner to a reader.
     /// </remarks>
     internal static int BannerCount(string text) => new AssuranceTextLines(text)
-        .Count(static line => string.Equals(line.Trim(), Banner, StringComparison.Ordinal));
+        .Count(static line => string.Equals(line.Trim(), Banner, StringComparison.OrdinalIgnoreCase));
 
     /// <summary>
     /// Every covered file carrying a line of a generated assurance summary BELOW the generated
@@ -292,14 +345,22 @@ internal static class AssuranceGenerator
         return violations;
     }
 
-    /// <summary>True for a line that belongs to a generated assurance summary, at any indent.</summary>
+    /// <summary>
+    /// True for a comment line that carries the vocabulary of a generated assurance summary, at any
+    /// indent, in any case and at any position in the line.
+    /// </summary>
+    /// <remarks>
+    /// The line must be a comment, because the subject is a forged SUMMARY and a summary is written
+    /// in comments; a string literal that happens to contain a row label is not one. Everything else
+    /// about the test is deliberately loose - see <see cref="SummaryVocabulary"/> for what an exact
+    /// whitelist cost.
+    /// </remarks>
     internal static bool IsAssuranceSummaryLine(string line)
     {
         var content = line.Trim();
 
-        return string.Equals(content, Banner, StringComparison.Ordinal) ||
-            string.Equals(content, GeneratedMarker, StringComparison.Ordinal) ||
-            HeaderRowLabels.Any(label => content.StartsWith("// " + label, StringComparison.Ordinal));
+        return content.StartsWith("//", StringComparison.Ordinal) &&
+            SummaryVocabulary.Any(term => content.Contains(term, StringComparison.OrdinalIgnoreCase));
     }
 
     // =============================================================================================
@@ -637,12 +698,7 @@ internal static class AssuranceGenerator
 
         for (var line = 0; line < run; line++)
         {
-            var content = text[line].TrimEnd();
-
-            if (string.Equals(content, Banner, StringComparison.Ordinal) ||
-                string.Equals(content, GeneratedMarker, StringComparison.Ordinal) ||
-                HeaderRowLabels.Any(label =>
-                    content.StartsWith("// " + label, StringComparison.Ordinal)))
+            if (IsAssuranceSummaryLine(text[line]))
             {
                 return true;
             }
@@ -651,7 +707,37 @@ internal static class AssuranceGenerator
         return false;
     }
 
-    private static IEnumerable<string> Header(IReadOnlyList<AssuranceUnit> units)
+    /// <summary>
+    /// The generated header block of a file, or nothing when it carries none: the lines from the
+    /// SPDX copyright through the <c>GENERATED</c> marker.
+    /// </summary>
+    /// <remarks>
+    /// This is the GENERATED text of a source artefact, and it is what rules J8 and J9 read. The
+    /// rest of the file is the component's own code and comments, which the generator does not
+    /// write and must not be held to the shape or the vocabulary of something it did not produce.
+    /// </remarks>
+    internal static IReadOnlyList<string> GeneratedHeaderLines(string text)
+    {
+        var lines = new AssuranceTextLines(text);
+
+        if (lines.Count == 0 ||
+            !lines[0].StartsWith("// SPDX-FileCopyrightText:", StringComparison.Ordinal))
+        {
+            return [];
+        }
+
+        for (var line = 0; line < lines.Count && lines[line].StartsWith("//", StringComparison.Ordinal); line++)
+        {
+            if (string.Equals(lines[line], GeneratedMarker, StringComparison.Ordinal))
+            {
+                return lines.Take(line + 1).ToArray();
+            }
+        }
+
+        return [];
+    }
+
+    internal static IEnumerable<string> Header(IReadOnlyList<AssuranceUnit> units)
     {
         var summary = AssuranceSummary.Of(units);
 
@@ -659,7 +745,7 @@ internal static class AssuranceGenerator
         yield return SpdxLicense;
         yield return "//";
         yield return Banner;
-        yield return "// ----------------------";
+        yield return BannerRule;
         yield return Row("Relevant units:", summary.Relevant.ToString());
         yield return Row("Annotated:", $"{summary.Annotated}/{summary.Relevant}");
         yield return Row("Exempt:", summary.Exempt.ToString());
@@ -672,9 +758,14 @@ internal static class AssuranceGenerator
         yield return Row("Unverified:", summary.Unverified.ToString());
         yield return "//";
         yield return GeneratedMarker;
-
-        static string Row(string label, string value) => $"// {label.PadRight(18)}{value}";
     }
+
+    /// <summary>
+    /// One row of the generated file header. Internal because rule J8 holds every header to this
+    /// shape and would otherwise have to spell the padding out a second time, which is how two
+    /// copies of one format drift apart.
+    /// </summary>
+    internal static string Row(string label, string value) => $"// {label.PadRight(18)}{value}";
 
     // =============================================================================================
     // CODE-ASSURANCE.md
@@ -725,9 +816,15 @@ internal static class AssuranceGenerator
 
         report.Append("## High-security review areas\n\n");
 
+        // The file is part of the entry because the NAME is not unique on its own: a partial type
+        // is two declarations, and `VmRuntime` appeared twice here with nothing to tell a reader
+        // which of the two they were looking at. A manifest entry is addressed by file and name for
+        // the same reason, and this is the section a reader turns to first.
         var high = units
             .Where(static unit => unit.Annotation?.Field("Security") is "High" or "Critical")
-            .Select(static unit => $"- `{unit.Name}` - Security={unit.Annotation!.Field("Security")}, " +
+            .Select(static unit =>
+                $"- `{unit.Name}` in `{unit.File.RelativePath}` - " +
+                $"Security={unit.Annotation!.Field("Security")}, " +
                 $"state {AssuranceStateMachine.Name(unit.State)}")
             .ToArray();
 
@@ -774,6 +871,13 @@ internal static class AssuranceGenerator
         report.Append("this component has moved off `PENDING`. What the manifest adds is that a unit the exemption\n");
         report.Append("predicate treats as trivial is no longer invisible: a semantic change to one moves a value\n");
         report.Append("in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.\n\n");
+        report.Append($"Beside the units it lists **every covered file** - {AssuranceSources.Files.Count} of them - with a\n");
+        report.Append("fingerprint over the complete token stream of its compilation unit. A unit entry exists only\n");
+        report.Append("for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an\n");
+        report.Append("`[assembly: ...]` attribute is a member of nothing and can be in no unit at all.\n");
+        report.Append($"{AssuranceManifest.CompletenessStatement} Comments are outside the stream, because a token's\n");
+        report.Append("text is its own characters, so the generated header above and the annotation lines below move\n");
+        report.Append("no file fingerprint - which is what lets one generation be a fixed point.\n\n");
 
         report.Append("## Verification\n\n");
         report.Append("There is no CI lane in this component - exclusion EX-45 records one RID, one machine and no\n");
@@ -781,7 +885,7 @@ internal static class AssuranceGenerator
         report.Append("code, run as a test in the architecture suite:\n\n");
         report.Append("| Mode | Command | Effect |\n|---|---|---|\n");
         report.Append($"| Generate | `{WriteVariable}=1 dotnet test Broiler.VM.slnx -c Release` | Fills every `Fingerprint=TBF`, refreshes a review the code has outrun into `STALE; Previous=...`, rewrites the generated headers, `{AssuranceManifest.RelativePath}` and this file. |\n");
-        report.Append("| Gate | `dotnet test Broiler.VM.slnx -c Release` | Asserts every generated artefact is byte-identical to what the generator would produce. This is the mode a reviewer and a release run. |\n\n");
+        report.Append("| Gate | `dotnet test Broiler.VM.slnx -c Release` | Asserts every generated artefact is byte-identical to what the generator would produce. This is the mode a release and a read of this record run. |\n\n");
         report.Append("The fingerprint is six hex characters - 24 bits - of SHA-256 over the declaration's token\n");
         report.Append("texts, joined by single spaces. Trivia is excluded because a token's text is its own\n");
         report.Append("characters and never the comments or whitespace around it, so `dotnet format` moves no\n");

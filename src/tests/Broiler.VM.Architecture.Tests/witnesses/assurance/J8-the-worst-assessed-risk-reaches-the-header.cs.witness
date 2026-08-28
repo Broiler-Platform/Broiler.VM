@@ -1,0 +1,24 @@
+// Witness for rule J8: the IP and Security rows of a file header are the WEAKEST claim any of its
+// annotations makes.
+//
+// Those two rows are the line a developer actually reads, and nothing pinned them. They are
+// produced by one function that ranks every assessed annotation and takes a maximum, and the
+// vocabularies are ordered weakest-claim-last on purpose: `Unknown` outranks `High` for IP,
+// because a provenance nobody established is not a better answer than one that was. This file
+// carries three annotations whose values are chosen so that a mistake in either direction changes
+// the answer - the highest IP is not the last one, and the Security values straddle the middle.
+
+namespace Probe;
+
+// Broiler-AI:    Origin=AI; IP=Unknown; Security=Low; Resources=1; Fingerprint=99572A
+// Broiler-Human: PENDING
+public static class Weakest
+{
+    // Broiler-AI:    Origin=AI; IP=None; Security=High; Resources=4; Fingerprint=DB5936
+    // Broiler-Human: PENDING
+    public static int Widest(int[] values) => values.Length;
+
+    // Broiler-AI:    Origin=AI; IP=High; Security=Medium; Resources=2; Fingerprint=D8D790
+    // Broiler-Human: PENDING
+    public static int Narrowest(int[] values) => values.Length + 1;
+}

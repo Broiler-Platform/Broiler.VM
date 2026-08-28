@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   4
-// Annotated:        4/4
+// Relevant units:   5
+// Annotated:        5/5
 // Exempt:           0
-// Human-reviewed:   0/4
+// Human-reviewed:   0/5
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  3/10 max
-// Unverified:       4
+// Unverified:       5
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -34,6 +34,8 @@ namespace Broiler.VM;
 /// runtime-scope entry is to adopt the parent's remaining, and with no parent that resolves to TOP.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=A5C61C
+// Broiler-Human: PENDING
 internal static class VmCeilingResolution
 {
     // Broiler-AI:    Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=3; Fingerprint=21E56B

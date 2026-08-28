@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   4
-// Annotated:        4/4
+// Relevant units:   5
+// Annotated:        5/5
 // Exempt:           0
-// Human-reviewed:   0/4
+// Human-reviewed:   0/5
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  4/10 max
-// Unverified:       4
+// Unverified:       5
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -39,6 +39,8 @@ namespace Broiler.VM;
 /// noisy enough to be ignored.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=8F3F8B
+// Broiler-Human: PENDING
 internal static class VmCanonicalCatalogEncoding
 {
     // Broiler-AI:    Origin=AI; Spec=ADR-0002 s11; IP=Low; Security=Medium; Resources=4; Fingerprint=DD5B38

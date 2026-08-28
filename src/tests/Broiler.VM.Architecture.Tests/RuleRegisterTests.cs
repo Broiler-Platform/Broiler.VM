@@ -257,10 +257,10 @@ public sealed class RuleRegisterTests
             .GroupBy(static rule => rule.Status, StringComparer.Ordinal)
             .ToDictionary(static group => group.Key, static group => group.Count(), StringComparer.Ordinal);
 
-        Assert.Equal(45, byStatus["Active"]);
+        Assert.Equal(47, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(4, byStatus["Deferred"]);
-        Assert.Equal(50, Loaded.Rules.Count);
+        Assert.Equal(52, Loaded.Rules.Count);
     }
 
     private static Register Load()

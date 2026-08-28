@@ -143,7 +143,17 @@ internal static class ComponentGraph
             RawText: File.ReadAllText(path),
             ProjectReferences: Resolve(document, "ProjectReference", "Include", basis),
             PackageReferences: Includes(document, "PackageReference"),
-            InternalsVisibleTo: Includes(document, "InternalsVisibleTo"),
+            // Both spellings. The <InternalsVisibleTo> item is the documented one; an
+            // <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            // emits the same attribute and reached the compiled assembly past this rule and past
+            // the assurance record, because it is neither an item A10 read nor a line in any
+            // covered source file.
+            InternalsVisibleTo:
+            [
+                .. Includes(document, "InternalsVisibleTo"),
+                .. Includes(document, "AssemblyAttribute")
+                    .Where(static include => include.Contains("InternalsVisibleTo", StringComparison.Ordinal)),
+            ],
             SourceItemPaths:
             [
                 .. Resolve(document, "Compile", "Include", basis),

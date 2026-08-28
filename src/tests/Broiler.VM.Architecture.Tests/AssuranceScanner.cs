@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Broiler.VM.Architecture.Tests;
 
 /// <summary>
-/// Which of the seven exemption cases, if any, covers a declaration.
+/// Which of the eight exemption cases, if any, covers a declaration.
 /// </summary>
 /// <remarks>
 /// The names are the cases as the component's assurance specification states them, so that a
@@ -48,8 +48,19 @@ internal enum AssuranceExemption
     FieldDeclaringStorage,
 
     /// <summary>
+    /// Case 8: one member of an <c>enum</c>. It is an entry in a closed vocabulary, and the
+    /// vocabulary is the reviewable thing: the enum DECLARATION is a unit whose fingerprint covers
+    /// every member and every value, and that declaration carries the annotation. The member is
+    /// still a unit here - it has a manifest entry of its own, so a changed value moves a recorded
+    /// value that names the member - but it needs no annotation of its own, because 277 identical
+    /// two-line blocks interleaved through this component's vocabularies would be a worse record
+    /// than one block on each vocabulary.
+    /// </summary>
+    EnumMemberOfADeclaredVocabulary,
+
+    /// <summary>
     /// The per-unit escape hatch: <c>// Broiler-AI: EXEMPT=&lt;reason&gt;</c>, for what the
-    /// predicate cannot see. It is not one of the seven and is deliberately named apart from them.
+    /// predicate cannot see. It is not one of the eight and is deliberately named apart from them.
     /// </summary>
     DeclaredInSource,
 }
@@ -93,10 +104,27 @@ internal sealed class AssuranceUnit
 /// <para>
 /// <b>What counts as a declaration.</b> Every member that can carry executable code: methods,
 /// constructors, destructors, operators, conversion operators, properties, indexers and events -
-/// and EVERY field declaration, initialized or not. Enum members, delegate declarations and the
-/// type declarations themselves are not code units and are not enumerated. A bodiless declaration
+/// EVERY field declaration, initialized or not, and every event field declaration beside it - and
+/// every enum member, every delegate declaration and every type declaration. A bodiless declaration
 /// IS enumerated: an interface member, an abstract member or an <c>extern</c> member has a
 /// signature, and in a contract assembly the signature is precisely what a reviewer certifies.
+/// </para>
+/// <para>
+/// <b>Why the last four are here, and why widening the list is not the repair.</b> A fourth
+/// adversarial round attacked the list rather than the predicate, and the list is a whitelist: what
+/// it does not name is in no unit, so it has no fingerprint, no manifest entry and no record of any
+/// kind. Four shapes went through it with the suite green and the manifest byte-unchanged - an enum
+/// member, which is how the budget dimensions and the reason codes are spelled; a type declaration
+/// header, which is where round one's permuted-ceiling defeat came back verbatim through a primary
+/// constructor; an <c>[assembly: InternalsVisibleTo]</c> that opens every internal type in
+/// <c>Broiler.VM.Runtime</c>; and an event field declaration, a sibling of the field declarations
+/// the list already had. Three of the four are answered by naming them here. The fourth is not a
+/// member of anything and never will be, which is the point: a whitelist cannot be completed by
+/// adding to it. <see cref="AssuranceFingerprint.OfFile"/> is the answer to the list itself - every
+/// covered file carries a fingerprint over its complete token stream, recorded in
+/// <c>assurance.manifest.json</c> beside the per-unit entries and held to the tree by the same
+/// rule, so nothing in a covered file can change without something moving whatever kind of
+/// declaration it is.
 /// </para>
 /// <para>
 /// <b>Why an initialized constant is a unit.</b> An earlier revision excluded every field with the
@@ -164,7 +192,17 @@ internal static class AssuranceScanner
         return units;
     }
 
-    /// <summary>The member kinds that can carry executable code, and so can be reviewed.</summary>
+    /// <summary>
+    /// The declaration kinds that are code units: everything a reviewer could be asked to certify.
+    /// </summary>
+    /// <remarks>
+    /// <c>BaseFieldDeclarationSyntax</c> rather than <c>FieldDeclarationSyntax</c>, so that an event
+    /// field declaration - a sibling of the field declarations this list already had - is a unit
+    /// too; <c>BaseTypeDeclarationSyntax</c> reaches classes, structs, interfaces, records and
+    /// enums alike. A namespace declaration is a <c>MemberDeclarationSyntax</c> and is deliberately
+    /// not here: it declares nothing, and its leading trivia is where the generated file header
+    /// lives.
+    /// </remarks>
     internal static bool IsCodeUnit(MemberDeclarationSyntax member) => member switch
     {
         MethodDeclarationSyntax or
@@ -175,7 +213,10 @@ internal static class AssuranceScanner
         PropertyDeclarationSyntax or
         IndexerDeclarationSyntax or
         EventDeclarationSyntax => true,
-        FieldDeclarationSyntax => true,
+        BaseFieldDeclarationSyntax => true,
+        EnumMemberDeclarationSyntax => true,
+        DelegateDeclarationSyntax => true,
+        BaseTypeDeclarationSyntax => true,
         _ => false,
     };
 
@@ -206,7 +247,7 @@ internal static class AssuranceScanner
 
     /// <summary>
     /// Decides whether a declaration is exempt from carrying its own review block, and under which
-    /// of the seven cases. <see cref="AssuranceExemption.None"/> means RELEVANT.
+    /// of the eight cases. <see cref="AssuranceExemption.None"/> means RELEVANT.
     /// </summary>
     /// <remarks>
     /// The cases are tried in the order they are written, and the first that matches is the answer.
@@ -218,7 +259,7 @@ internal static class AssuranceScanner
         AssuranceAnnotation? annotation)
     {
         // The escape hatch comes first: a reason a human wrote down outranks a predicate that
-        // could not see what they saw. It is not one of the seven.
+        // could not see what they saw. It is not one of the eight.
         if (annotation?.ExemptReason is not null)
         {
             return AssuranceExemption.DeclaredInSource;
@@ -233,10 +274,28 @@ internal static class AssuranceScanner
             return AssuranceExemption.InsideAssemblyMarker;
         }
 
+        // CASE 8 - one member of an enum. The vocabulary is the reviewable thing and the enum
+        // DECLARATION is the unit that carries it: its fingerprint covers every member and every
+        // value, so adding, removing, renaming, reordering or revaluing one moves the value the
+        // enum's own annotation is bound to. The member keeps a manifest entry of its own, so a
+        // changed value also moves a recorded value that NAMES the member. Answered before case 4
+        // because a member of an enum is written by the source and case 4 is about what the
+        // compiler writes; reporting it as compiler-supplied would be a false reason on a true
+        // answer.
+        if (declaration is EnumMemberDeclarationSyntax)
+        {
+            return AssuranceExemption.EnumMemberOfADeclaredVocabulary;
+        }
+
         // CASE 7 - a field declaration that is not a const or static readonly value. It declares
         // storage, and the members that write it are reviewed. Answered before case 4 because a
         // plain field inside a record is not one of the members the compiler writes, and reporting
         // it as one would be a false reason on a true answer.
+        //
+        // FieldDeclarationSyntax and not BaseFieldDeclarationSyntax: an EVENT field declares a
+        // public broadcast point rather than storage a member writes, nothing in this component
+        // writes one, and the whole of what a consumer sees of it is the declaration - so it is
+        // relevant, and this case does not reach it.
         if (declaration is FieldDeclarationSyntax field && !IsFixedValue(field))
         {
             return AssuranceExemption.FieldDeclaringStorage;
@@ -247,7 +306,12 @@ internal static class AssuranceScanner
         // produces them: a member of a record or an enum for which the source supplies no
         // implementation at all, the compiler's copy constructor, Equals, GetHashCode,
         // Deconstruct and printing members included.
-        if (ContainingTypes(declaration).FirstOrDefault() is RecordDeclarationSyntax or EnumDeclarationSyntax &&
+        //
+        // A type or a delegate DECLARED INSIDE a record is not one of those members. Without the
+        // first line a nested type inside a record was reported as compiler-supplied and exempt,
+        // which is how a whole type header could sit inside a record with nothing assessing it.
+        if (declaration is not BaseTypeDeclarationSyntax and not DelegateDeclarationSyntax &&
+            ContainingTypes(declaration).FirstOrDefault() is RecordDeclarationSyntax or EnumDeclarationSyntax &&
             !SuppliesAnImplementation(declaration))
         {
             return AssuranceExemption.CompilerSuppliedRecordOrEnumMember;
@@ -762,6 +826,13 @@ internal static class AssuranceScanner
             return field.Declaration.Variables.Any(static variable => variable.Initializer is not null);
         }
 
+        // The compiler writes no event into a record, so an event field declaration inside one is
+        // the source's own, initializer or not. Without this line case 4 exempted it.
+        if (declaration is EventFieldDeclarationSyntax)
+        {
+            return true;
+        }
+
         if (declaration is BaseMethodDeclarationSyntax { Body: not null })
         {
             return true;
@@ -807,13 +878,28 @@ internal static class AssuranceScanner
             IndexerDeclarationSyntax indexer => Explicit(indexer.ExplicitInterfaceSpecifier) + "this[]",
             EventDeclarationSyntax @event =>
                 Explicit(@event.ExplicitInterfaceSpecifier) + @event.Identifier.ValueText,
-            FieldDeclarationSyntax field => string.Join(
+            BaseFieldDeclarationSyntax field => string.Join(
                 ", ",
                 field.Declaration.Variables.Select(static variable => variable.Identifier.ValueText)),
+            EnumMemberDeclarationSyntax entry => entry.Identifier.ValueText,
+            DelegateDeclarationSyntax @delegate =>
+                @delegate.Identifier.ValueText + Generics(@delegate.TypeParameterList),
+            // A type declaration's own identifier, with no member part: the containing types and
+            // the namespace above it are already the qualifier, so `NS.Outer.Inner` names the
+            // nested type and `NS.Outer.Inner.Fold(int)` names a method on it. C# forbids a member
+            // and a nested type sharing a name, so the two can never collide.
+            TypeDeclarationSyntax type => type.Identifier.ValueText + Generics(type.TypeParameterList),
+            BaseTypeDeclarationSyntax type => type.Identifier.ValueText,
             _ => "<member>",
         };
 
-        var qualified = string.IsNullOrEmpty(space) ? owner : $"{space}.{owner}";
+        // The qualifier is whichever of the namespace and the containing types exist. A top-level
+        // type declaration has no containing type, and joining an empty one in produced
+        // `Broiler.VM..VmReadBounds` - a name with a hole in it, which a reader cannot navigate by
+        // and which no manifest entry could be matched against by eye.
+        var qualified = string.Join(
+            ".",
+            new[] { space, owner }.Where(static part => !string.IsNullOrEmpty(part)));
 
         return $"{qualified}.{member}{Parameters(declaration)}";
 

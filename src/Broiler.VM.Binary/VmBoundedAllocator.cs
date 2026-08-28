@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   2
-// Annotated:        2/2
+// Relevant units:   3
+// Annotated:        3/3
 // Exempt:           0
-// Human-reviewed:   0/2
+// Human-reviewed:   0/3
 // IP risk:          Low
 // Security risk:    High
 // Resource impact:  8/10 max
-// Unverified:       2
+// Unverified:       3
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -41,6 +41,8 @@ namespace Broiler.VM;
 /// so this assembly needs no <c>AllowUnsafeBlocks</c>.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=30CDFD
+// Broiler-Human: PENDING
 public static class VmBoundedAllocator
 {
     /// <summary>

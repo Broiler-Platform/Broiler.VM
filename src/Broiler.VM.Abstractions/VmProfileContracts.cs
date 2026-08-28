@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   25
-// Annotated:        25/25
-// Exempt:           28
-// Human-reviewed:   0/25
+// Relevant units:   39
+// Annotated:        39/39
+// Exempt:           33
+// Human-reviewed:   0/39
 // IP risk:          Low
 // Security risk:    High
 // Resource impact:  0/10 max
-// Unverified:       25
+// Unverified:       39
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -31,6 +31,8 @@ namespace Broiler.VM;
 /// <c>amount</c> is unsigned, so a negative charge - a refund by another name - is not expressible.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=7FA11B
+// Broiler-Human: PENDING
 public interface IVmMeter
 {
     /// <summary>
@@ -68,11 +70,15 @@ public interface IVmMeter
 /// immutable once verification returns and safe for unsynchronised concurrent readers, because a
 /// shareable handle is read by several runtimes at once with no lock between them.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=9B3EE1
+// Broiler-Human: PENDING
 public interface IVmVerifiedState
 {
 }
 
 /// <summary>The profile-owned mutable state of one instance. The core never inspects it.</summary>
+// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=FC8DAD
+// Broiler-Human: PENDING
 public interface IVmInstanceState
 {
 }
@@ -83,6 +89,8 @@ public interface IVmInstanceState
 /// point on abandonment. It never inspects it: what a paused profile exposes is the profile's own
 /// surface.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=9DB83C
+// Broiler-Human: PENDING
 public interface IVmProfileContinuation
 {
 }
@@ -92,6 +100,8 @@ public interface IVmProfileContinuation
 /// The entry point is UTF-8 text rather than a string or a symbol table index, because naming is a
 /// language concept: the core carries the bytes and the profile decides what they mean.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=B2651B
+// Broiler-Human: PENDING
 public readonly ref struct VmInvocationRequest
 {
     /// <summary>Creates a request naming an entry point.</summary>
@@ -111,6 +121,8 @@ public readonly ref struct VmInvocationRequest
 /// capability implementations that are absent or that throw, and it is what keeps verification
 /// separable from execution.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=A43F7C
+// Broiler-Human: PENDING
 public interface IVmVerificationContext
 {
     /// <summary>The materialized ceilings this verification runs under.</summary>
@@ -142,6 +154,8 @@ public interface IVmVerificationContext
 /// declare. Keeping the two lists apart by <em>type</em> rather than by review is why a profile
 /// author cannot end up believing the core will accept an outcome it cannot represent.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=8DC8E5
+// Broiler-Human: PENDING
 public readonly struct VmVerifierOutcome
 {
     // Broiler-AI:    Origin=AI; Spec=ADR-0006 s5; IP=Low; Security=Medium; Resources=0; Fingerprint=487D97
@@ -252,6 +266,8 @@ public readonly struct VmVerifierOutcome
 /// and hand the core another profile's verifier.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=8ED829
+// Broiler-Human: PENDING
 public interface IVmProfileVerifier
 {
     /// <summary>The profile this verifier belongs to.</summary>
@@ -286,6 +302,8 @@ public interface IVmProfileVerifier
 /// request is structurally unrepresentable rather than a runtime check that could be reported,
 /// logged, or forgotten.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=F33F5D
+// Broiler-Human: PENDING
 public interface IVmExecutionEnvironment
 {
     /// <summary>The profile this executor serves.</summary>
@@ -315,6 +333,8 @@ public interface IVmExecutionEnvironment
 /// profile may ask only whether index <em>k</em> is bound. That is what stops a capability registry
 /// becoming an ambient platform surface.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=E5E867
+// Broiler-Human: PENDING
 public interface IVmHostCapabilityInvoker
 {
     /// <summary>How many binding slots the profile declared.</summary>
@@ -343,6 +363,8 @@ public interface IVmHostCapabilityInvoker
 /// profile failed to convert. Letting a profile name a core category would be letting it write the
 /// core's result enum one language at a time.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=6F3649
+// Broiler-Human: PENDING
 public readonly struct VmExecutionStep
 {
     private VmExecutionStep(
@@ -409,6 +431,8 @@ public readonly struct VmExecutionStep
 }
 
 /// <summary>The five answers a profile executor may give for one step.</summary>
+// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=15A717
+// Broiler-Human: PENDING
 public enum VmExecutionStepKind
 {
     /// <summary>The step completed.</summary>
@@ -436,6 +460,8 @@ public enum VmExecutionStepKind
 /// identity is checked when it is created, and a mismatch is <em>returned</em> as a profile fault
 /// rather than thrown: it is a defect in a profile, observed at run time, not a composition error.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=4CE117
+// Broiler-Human: PENDING
 public interface IVmProfileExecutor
 {
     /// <summary>The profile this executor claims to be.</summary>
@@ -481,4 +507,6 @@ public interface IVmProfileExecutor
 /// A delegate named directly by a descriptor, so the executor type is rooted for trimming and
 /// Native AOT by an ordinary reference rather than by a rooting descriptor or a linker annotation.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=CC8727
+// Broiler-Human: PENDING
 public delegate IVmProfileExecutor VmExecutorFactory(IVmExecutionEnvironment environment);

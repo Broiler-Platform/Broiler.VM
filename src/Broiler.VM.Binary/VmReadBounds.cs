@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   2
-// Annotated:        2/2
+// Relevant units:   3
+// Annotated:        3/3
 // Exempt:           8
-// Human-reviewed:   0/2
+// Human-reviewed:   0/3
 // IP risk:          Low
 // Security risk:    Low
 // Resource impact:  0/10 max
-// Unverified:       2
+// Unverified:       3
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -36,6 +36,8 @@ namespace Broiler.VM;
 /// still a required constructor parameter - while ADR 0001's graph rule stays mechanically true.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=6E72B0
+// Broiler-Human: PENDING
 public readonly struct VmReadBounds : System.IEquatable<VmReadBounds>
 {
     /// <summary>

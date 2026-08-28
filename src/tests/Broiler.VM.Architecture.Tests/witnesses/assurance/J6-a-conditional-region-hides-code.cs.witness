@@ -11,6 +11,8 @@
 
 namespace Probe;
 
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=3607D0
+// Broiler-Human: PENDING
 public static class Conditioned
 {
 #if NET10_0_OR_GREATER

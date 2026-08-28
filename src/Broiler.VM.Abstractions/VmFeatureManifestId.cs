@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   13
-// Annotated:        13/13
+// Relevant units:   14
+// Annotated:        14/14
 // Exempt:           5
-// Human-reviewed:   0/13
+// Human-reviewed:   0/14
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  2/10 max
-// Unverified:       13
+// Unverified:       14
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -44,6 +44,8 @@ namespace Broiler.VM;
 /// surfaces is a language claim the core cannot evaluate.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=3F15DD
+// Broiler-Human: PENDING
 public readonly struct VmFeatureManifestId
     : System.IEquatable<VmFeatureManifestId>, System.IComparable<VmFeatureManifestId>
 {

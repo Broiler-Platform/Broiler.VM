@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   9
-// Annotated:        9/9
-// Exempt:           0
-// Human-reviewed:   0/9
+// Relevant units:   14
+// Annotated:        14/14
+// Exempt:           24
+// Human-reviewed:   0/14
 // IP risk:          Low
 // Security risk:    Low
 // Resource impact:  1/10 max
-// Unverified:       9
+// Unverified:       14
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -37,6 +37,8 @@ namespace Broiler.VM;
 /// earlier eleven-member spelling of this set and appear nowhere.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1FCDD8
+// Broiler-Human: PENDING
 public enum VmBudgetDimension
 {
     /// <summary>Profile-charged abstract execution work units. Allowance.</summary>
@@ -101,6 +103,8 @@ public enum VmBudgetDimension
 /// result learns which ceiling actually stopped it rather than the innermost one that happened to
 /// notice.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=945A7B
+// Broiler-Human: PENDING
 public enum VmBudgetScope
 {
     /// <summary>One invoke or resume of one operation.</summary>
@@ -128,6 +132,8 @@ public enum VmBudgetScope
 /// eight ceilings without a hard-coded table living in test code, where it could drift from the
 /// contract it is supposed to check.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=3FDFEC
+// Broiler-Human: PENDING
 public enum VmBudgetClass
 {
     /// <summary>Consumed monotonically and never refunded.</summary>
@@ -144,6 +150,8 @@ public enum VmBudgetClass
 /// There is no third value and no default. A descriptor that omits a row is rejected at catalog
 /// construction, because an omitted row is a claim nobody made.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C7D069
+// Broiler-Human: PENDING
 public enum VmBudgetApplicability
 {
     /// <summary>The profile charges this dimension.</summary>
@@ -162,6 +170,8 @@ public enum VmBudgetApplicability
 /// algorithm, the aggregate budget, the drift tests - reads it here rather than restating it,
 /// because a table restated is a table that can disagree with itself.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C44CFF
+// Broiler-Human: PENDING
 public static class VmBudgetDimensions
 {
     /// <summary>The number of dimensions. The set is closed; growing it is an amendment.</summary>

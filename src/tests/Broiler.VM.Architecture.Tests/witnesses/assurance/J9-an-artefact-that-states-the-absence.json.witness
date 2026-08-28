@@ -1,0 +1,17 @@
+{
+  "$comment": [
+    "GENERATED - DO NOT EDIT MANUALLY. Regenerate with",
+    "`BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release`.",
+    "",
+    "Witness for rule J9: the accepting direction, so that a clean result is a comparison and not a",
+    "function that reports nothing whatever it is given. Every line here carries the vocabulary and",
+    "every line is one the annotations support.",
+    "",
+    "It is not an approval, and nothing here has been reviewed by a human.",
+    "| VERIFIED | 0 |",
+    "// Human-reviewed:   0/1169",
+    "| HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |"
+  ],
+  "files": [],
+  "units": []
+}

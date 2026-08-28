@@ -1,15 +1,16 @@
 {
   "$comment": [
-    "Witness for rule J7's second clause: an entry for a unit that is not in the tree.",
-    "`Probe.Watched.Retired(ulong)` was deleted from the source and its entry was left behind. A",
-    "manifest that accumulated entries for code that no longer exists would grow into a record",
-    "nobody could read against the checkout, and the count of covered units - which the component",
-    "report publishes - would drift upwards while the tree shrank."
+    "Witness for rule J7: an entry naming a unit that is not in the tree. It is a record of code that",
+    "no longer exists, which is a different fact from a unit nothing watches and is reported as one."
+  ],
+  "files": [
+    { "file": "J7-the-tree-the-manifest-covers.cs.witness", "fingerprint": "3C1463" }
   ],
   "units": [
+    { "name": "Probe.Watched", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": false, "exemption": "None", "fingerprint": "0758D3" },
     { "name": "Probe.Watched.Accepted", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": true, "exemption": "TrivialPropertyOrAccessor", "fingerprint": "1FBF49" },
-    { "name": "Probe.Watched.Retired(ulong)", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": false, "exemption": "None", "fingerprint": "0C1D2E" },
     { "name": "Probe.Watched.TryAdvance(ulong, ulong)", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": false, "exemption": "None", "fingerprint": "D6E774" },
-    { "name": "Probe.Watched.position", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": true, "exemption": "FieldDeclaringStorage", "fingerprint": "B2A5C5" }
+    { "name": "Probe.Watched.position", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": true, "exemption": "FieldDeclaringStorage", "fingerprint": "B2A5C5" },
+    { "name": "Probe.Watched.Retired(ulong)", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": false, "exemption": "None", "fingerprint": "ABCDEF" }
   ]
 }

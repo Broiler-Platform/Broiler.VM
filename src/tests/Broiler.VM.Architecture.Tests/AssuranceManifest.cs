@@ -12,8 +12,19 @@ internal sealed record AssuranceManifestEntry(
     string Fingerprint);
 
 /// <summary>
-/// The manifest: every code unit in the product tree, exempt and relevant alike, with its
-/// fingerprint.
+/// One row of the manifest's <c>files</c> array: one covered file, watched WHOLE.
+/// </summary>
+/// <remarks>
+/// The unit entries beside it are a whitelist of declaration kinds, and what a whitelist does not
+/// name has no entry. This row has no such gap: its fingerprint is taken over the complete token
+/// stream of the file's compilation unit, so an assembly-level attribute, a using directive, a
+/// declaration kind nobody has thought of yet and a reordering of an enum's members all move it.
+/// </remarks>
+internal sealed record AssuranceManifestFile(string File, string Fingerprint);
+
+/// <summary>
+/// The manifest: every covered file in the product tree with a fingerprint over the whole of it,
+/// and every code unit inside them, exempt and relevant alike, with a fingerprint of its own.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -33,6 +44,15 @@ internal sealed record AssuranceManifestEntry(
 /// does this unit need a human annotation?   the exemption predicate decides this
 /// is this unit watched for change?          EVERY unit is, and this file is the record
 /// </code>
+/// <para>
+/// <b>And why the units are not enough on their own.</b> A fourth round attacked the ENUMERATION
+/// rather than the predicate. A unit exists only for a declaration kind the scanner names, so an
+/// enum member, a type declaration header, an event field and - the one that can never be fixed by
+/// naming it - an <c>[assembly: InternalsVisibleTo("anything")]</c> were in no unit, no fingerprint
+/// and no entry, while this file's header said it covered every code unit. The first three are
+/// units now. The fourth is why the <c>files</c> array exists: one fingerprint per covered file over
+/// its complete token stream, so the record is complete rather than merely wider.
+/// </para>
 /// <para>
 /// <b>What a manifest entry is, and what it is not.</b> It is a change-detection record. An entry
 /// says what a declaration's token texts hashed to when the generator last ran, and nothing else.
@@ -62,7 +82,26 @@ internal static class AssuranceManifest
     internal const string ChangeDetectionStatement =
         "This manifest is a change-detection record, not a review.";
 
-    private static readonly string[] Header =
+    /// <summary>
+    /// The sentence that states what the file fingerprints add, in the same three places for the
+    /// same reason: it is the claim a reader is entitled to make from this file.
+    /// </summary>
+    internal const string CompletenessStatement =
+        "Nothing in a covered file can change without something moving here, whatever kind of " +
+        "declaration it is.";
+
+    /// <summary>
+    /// The manifest's <c>$comment</c> block, exactly as it is written.
+    /// </summary>
+    /// <remarks>
+    /// Exposed rather than private because it is the text the generator publishes about itself, and
+    /// nothing held it to anything: appending two lines here made the manifest assert that every
+    /// unit was VERIFIED, human-reviewed and eligible for release, with both modes of the gate
+    /// green and every human line in the tree still reading PENDING. Rule J8 holds this array to a
+    /// hand-maintained copy in <see cref="AssuranceArtefactShape"/>, and rule J9 forbids the
+    /// vocabulary that attack used anywhere in any generated artefact.
+    /// </remarks>
+    internal static readonly string[] Header =
     [
         "GENERATED - DO NOT EDIT MANUALLY. Regenerate with",
         "`BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release`.",
@@ -74,11 +113,17 @@ internal static class AssuranceManifest
         "anyone has read the unit. Exempt units still need no annotation and carry none, and no",
         "human line in this component has moved off PENDING.",
         "",
+        "The 'files' array beside the units is what makes this record COMPLETE. A unit entry exists",
+        "only for a declaration kind the scanner enumerates, and that enumeration is a whitelist: an",
+        "assembly-level attribute is a member of nothing and can be in no unit at all. Each file",
+        "entry is a fingerprint over the complete token stream of that file's compilation unit.",
+        CompletenessStatement,
+        "",
         "What the manifest adds is that a unit the exemption predicate treats as trivial is no",
         "longer invisible: a semantic change to one moves a fingerprint in a generated file the",
         "gate compares byte for byte, so the change appears in a diff and fails an unregenerated",
-        "suite. Rule J7 holds this file to the tree - every unit present, no extras, every",
-        "fingerprint current.",
+        "suite. Rule J7 holds this file to the tree - every unit and every covered file present, no",
+        "extras, every fingerprint current.",
     ];
 
     /// <summary>The manifest the current tree implies, in the order it is written.</summary>
@@ -95,10 +140,26 @@ internal static class AssuranceManifest
             .ThenBy(static entry => entry.Fingerprint, StringComparer.Ordinal)
             .ToArray();
 
+    /// <summary>
+    /// The file rows the current tree implies, in the order they are written.
+    /// </summary>
+    /// <remarks>
+    /// One row per covered file, including the files that declare no code unit at all: a file with
+    /// no unit is exactly the file a unit-only record cannot say anything about.
+    /// </remarks>
+    internal static IReadOnlyList<AssuranceManifestFile> FileEntries(IEnumerable<AssuranceSourceFile> files) =>
+        files
+            .Select(static file => new AssuranceManifestFile(
+                File: file.RelativePath,
+                Fingerprint: AssuranceFingerprint.OfFile(file.Tree)))
+            .OrderBy(static entry => entry.File, StringComparer.Ordinal)
+            .ToArray();
+
     /// <summary>The manifest as it is written to disk. Deterministic, LF, no trailing whitespace.</summary>
-    internal static string Render(IEnumerable<AssuranceUnit> units)
+    internal static string Render(IEnumerable<AssuranceSourceFile> files, IEnumerable<AssuranceUnit> units)
     {
         var entries = Entries(units);
+        var covered = FileEntries(files);
         var json = new StringBuilder();
 
         json.Append("{\n  \"$comment\": [\n");
@@ -107,6 +168,17 @@ internal static class AssuranceManifest
         {
             json.Append("    \"").Append(Escape(Header[line])).Append('"');
             json.Append(line == Header.Length - 1 ? "\n" : ",\n");
+        }
+
+        json.Append("  ],\n");
+        json.Append("  \"files\": [\n");
+
+        for (var index = 0; index < covered.Count; index++)
+        {
+            json.Append("    {");
+            json.Append(" \"file\": \"").Append(Escape(covered[index].File)).Append("\",");
+            json.Append(" \"fingerprint\": \"").Append(Escape(covered[index].Fingerprint)).Append("\" }");
+            json.Append(index == covered.Count - 1 ? "\n" : ",\n");
         }
 
         json.Append("  ],\n");
@@ -142,7 +214,10 @@ internal static class AssuranceManifest
     /// not current is a unit that changed since the manifest was written - which, for an exempt
     /// unit, is the only record that the change happened at all.
     /// </remarks>
-    internal static List<string> Violations(IEnumerable<AssuranceUnit> units, string manifestText)
+    internal static List<string> Violations(
+        IEnumerable<AssuranceSourceFile> files,
+        IEnumerable<AssuranceUnit> units,
+        string manifestText)
     {
         var violations = new List<string>();
         var expected = new Dictionary<(string File, string Name), AssuranceManifestEntry>();
@@ -205,6 +280,68 @@ internal static class AssuranceManifest
             }
         }
 
+        violations.AddRange(FileViolations(files, manifestText));
+
+        return violations;
+    }
+
+    /// <summary>
+    /// Every disagreement between the manifest's <c>files</c> array and the covered files: a file
+    /// that is missing, an entry that names a file that is not covered, and an entry whose recorded
+    /// fingerprint is not the one the file's tokens produce now.
+    /// </summary>
+    /// <remarks>
+    /// Reported as three facts for the reason the unit disagreements are: a covered file missing
+    /// from the array is a file NOTHING watches whole, so a declaration kind the unit enumeration
+    /// does not name could change inside it with no record moving anywhere; an entry for a file
+    /// that is not covered is a record of a file that is gone; and a stale file fingerprint is a
+    /// file that changed since the manifest was written, which for anything outside a unit is the
+    /// only record that the change happened at all.
+    /// </remarks>
+    private static List<string> FileViolations(IEnumerable<AssuranceSourceFile> files, string manifestText)
+    {
+        var violations = new List<string>();
+        var expected = FileEntries(files).ToDictionary(
+            static entry => entry.File, static entry => entry.Fingerprint, StringComparer.Ordinal);
+
+        var recorded = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        foreach (var entry in ReadFiles(manifestText, violations))
+        {
+            if (!recorded.TryAdd(entry.File, entry.Fingerprint))
+            {
+                violations.Add($"{RelativePath} carries more than one file entry for {entry.File}");
+            }
+        }
+
+        foreach (var (file, fingerprint) in expected.OrderBy(static pair => pair.Key, StringComparer.Ordinal))
+        {
+            if (!recorded.TryGetValue(file, out var found))
+            {
+                violations.Add(
+                    $"{file} is a covered file and {RelativePath} records no fingerprint for it, so " +
+                    "nothing watches the whole of it");
+
+                continue;
+            }
+
+            if (!string.Equals(found, fingerprint, StringComparison.Ordinal))
+            {
+                violations.Add(
+                    $"{file} is recorded in {RelativePath} as file fingerprint {found} and the " +
+                    $"current file computes {fingerprint}");
+            }
+        }
+
+        foreach (var (file, _) in recorded.OrderBy(static pair => pair.Key, StringComparer.Ordinal))
+        {
+            if (!expected.ContainsKey(file))
+            {
+                violations.Add(
+                    $"{RelativePath} carries a file entry for {file}, which is not a covered file");
+            }
+        }
+
         return violations;
     }
 
@@ -256,12 +393,58 @@ internal static class AssuranceManifest
         }
 
         return entries;
-
-        static string Text(JsonElement element, string property) =>
-            element.TryGetProperty(property, out var value) && value.ValueKind == JsonValueKind.String
-                ? value.GetString() ?? string.Empty
-                : string.Empty;
     }
+
+    /// <summary>Reads the <c>files</c> array, reporting rather than throwing when it is not one.</summary>
+    private static IReadOnlyList<AssuranceManifestFile> ReadFiles(string text, List<string> violations)
+    {
+        var entries = new List<AssuranceManifestFile>();
+
+        if (text.Length == 0)
+        {
+            // The unit reader has already said the file is absent or empty. Saying it twice would
+            // report one fact as two.
+            return entries;
+        }
+
+        JsonDocument document;
+
+        try
+        {
+            document = JsonDocument.Parse(text);
+        }
+        catch (JsonException)
+        {
+            // Likewise: the unit reader names the parse failure with its message.
+            return entries;
+        }
+
+        using (document)
+        {
+            if (!document.RootElement.TryGetProperty("files", out var files) ||
+                files.ValueKind != JsonValueKind.Array)
+            {
+                violations.Add(
+                    $"{RelativePath} carries no 'files' array, so no covered file is watched whole");
+
+                return entries;
+            }
+
+            foreach (var file in files.EnumerateArray())
+            {
+                entries.Add(new AssuranceManifestFile(
+                    File: Text(file, "file"),
+                    Fingerprint: Text(file, "fingerprint")));
+            }
+        }
+
+        return entries;
+    }
+
+    private static string Text(JsonElement element, string property) =>
+        element.TryGetProperty(property, out var value) && value.ValueKind == JsonValueKind.String
+            ? value.GetString() ?? string.Empty
+            : string.Empty;
 
     /// <summary>
     /// JSON string escaping, written out rather than delegated.

@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   10
-// Annotated:        10/10
-// Exempt:           25
-// Human-reviewed:   0/10
+// Relevant units:   19
+// Annotated:        19/19
+// Exempt:           37
+// Human-reviewed:   0/19
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  3/10 max
-// Unverified:       10
+// Unverified:       19
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -23,6 +23,8 @@ namespace Broiler.VM;
 /// load with a descriptor and bytes instead of a value, and because a composition must be able to
 /// register value capabilities without acquiring a path to executable code.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=2FEF0B
+// Broiler-Human: PENDING
 public enum VmCapabilityKind
 {
     /// <summary>An ordinary import that returns a value.</summary>
@@ -39,6 +41,8 @@ public enum VmCapabilityKind
 /// <see cref="NonReentrant"/>. A declaration nothing enforces is documentation, and documentation
 /// is not a boundary.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=CFB013
+// Broiler-Human: PENDING
 public enum VmCapabilityReentrancy
 {
     /// <summary>The capability may not call back into the invoking runtime.</summary>
@@ -54,6 +58,8 @@ public enum VmCapabilityReentrancy
 /// one member, so an amendment can add affinity kinds without changing the descriptor's shape or the
 /// identity that records it.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=21CE96
+// Broiler-Human: PENDING
 public enum VmCapabilityThreadAffinity
 {
     /// <summary>
@@ -70,6 +76,8 @@ public enum VmCapabilityThreadAffinity
 /// capability may declare different modes: a host may reasonably want a failing value import to be
 /// observable to the guest while a failing provider terminates the operation.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=AF8502
+// Broiler-Human: PENDING
 public enum VmExceptionTranslation
 {
     /// <summary>The operation ends with a host failure.</summary>
@@ -80,6 +88,8 @@ public enum VmExceptionTranslation
 }
 
 /// <summary>Whether a profile requires a capability or can run without it.</summary>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=871A2F
+// Broiler-Human: PENDING
 public enum VmCapabilityImportKind
 {
     /// <summary>The runtime is not created unless the capability is registered.</summary>
@@ -95,6 +105,8 @@ public enum VmCapabilityImportKind
 /// on a path a guest can drive as often as it likes. This ships alongside the exception-translation
 /// boundary, not instead of it: a host that throws is still translated.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=2D76EA
+// Broiler-Human: PENDING
 public enum VmHostCallOutcome
 {
     /// <summary>The capability ran and produced its result.</summary>
@@ -124,6 +136,8 @@ public enum VmHostCallOutcome
 /// capability.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=910B5D
+// Broiler-Human: PENDING
 public readonly struct VmHostCapabilityDescriptor : System.IEquatable<VmHostCapabilityDescriptor>
 {
     /// <summary>Creates a capability description.</summary>
@@ -223,6 +237,8 @@ public readonly struct VmHostCapabilityDescriptor : System.IEquatable<VmHostCapa
 /// signature and the declared reentrancy and translation modes are what binding compares. A profile
 /// that named only an ID would be asking for whatever the host happened to register under it.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=78DEED
+// Broiler-Human: PENDING
 public readonly struct VmCapabilityImport : System.IEquatable<VmCapabilityImport>
 {
     /// <summary>Creates an import declaration.</summary>
@@ -272,6 +288,8 @@ public readonly struct VmCapabilityImport : System.IEquatable<VmCapabilityImport
 /// <see cref="VmHostCapabilityDescriptor.ThreadAffinity"/> is deliberately absent - it is a
 /// runtime-identity input, not a cache-key input.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C7C53D
+// Broiler-Human: PENDING
 public readonly struct VmHostSignatureAssumption : System.IEquatable<VmHostSignatureAssumption>
 {
     /// <summary>Creates an assumption record.</summary>

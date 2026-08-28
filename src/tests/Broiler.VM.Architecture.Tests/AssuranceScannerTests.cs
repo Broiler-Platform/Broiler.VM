@@ -540,10 +540,17 @@ public sealed class AssuranceScannerTests
 
         var bounds = Units("src/Broiler.VM.Binary/VmReadBounds.cs");
 
-        // The two members of VmReadBounds that decide something. Equals compares the four ceilings
+        // The three units of VmReadBounds that decide something. Equals compares the four ceilings
         // itself rather than handing off, so case 5 does not reach it; operator != negates the
-        // answer Equals gives, which is the opposite decision and not a delegation to it.
-        var deciding = new[] { "Equals(VmReadBounds)", "operator !=(VmReadBounds, VmReadBounds)" }
+        // answer Equals gives, which is the opposite decision and not a delegation to it; and the
+        // TYPE DECLARATION HEADER is a unit in its own right, because a primary constructor is
+        // declared in one and this is the type whose four ceilings round one permuted.
+        var deciding = new[]
+            {
+                "Equals(VmReadBounds)",
+                "operator !=(VmReadBounds, VmReadBounds)",
+                "Broiler.VM.VmReadBounds",
+            }
             .Select(name => bounds.Single(unit => unit.Name.EndsWith(name, StringComparison.Ordinal)))
             .ToArray();
 

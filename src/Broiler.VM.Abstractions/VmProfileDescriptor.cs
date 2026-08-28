@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   2
-// Annotated:        2/2
+// Relevant units:   3
+// Annotated:        3/3
 // Exempt:           32
-// Human-reviewed:   0/2
+// Human-reviewed:   0/3
 // IP risk:          None
 // Security risk:    Medium
 // Resource impact:  0/10 max
-// Unverified:       2
+// Unverified:       3
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -50,6 +50,8 @@ namespace Broiler.VM;
 /// the compiler saw.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=6BF23B
+// Broiler-Human: PENDING
 public sealed class VmProfileDescriptor
 {
     /// <summary>The most feature manifests one descriptor may accept.</summary>

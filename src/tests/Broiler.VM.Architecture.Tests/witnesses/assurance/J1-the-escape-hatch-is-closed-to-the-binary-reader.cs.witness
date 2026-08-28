@@ -13,6 +13,8 @@
 
 namespace Probe;
 
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=76131F
+// Broiler-Human: PENDING
 public static class Bounded
 {
     // Broiler-AI:    EXEMPT=a bounds check that the reader performs elsewhere

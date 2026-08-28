@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   13
-// Annotated:        13/13
+// Relevant units:   16
+// Annotated:        16/16
 // Exempt:           10
-// Human-reviewed:   0/13
+// Human-reviewed:   0/16
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  2/10 max
-// Unverified:       13
+// Unverified:       16
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -35,6 +35,8 @@ namespace Broiler.VM;
 /// may execute on two threads at once.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=51852E
+// Broiler-Human: PENDING
 internal sealed class VmExecutionScope
 {
     private readonly System.Threading.AsyncLocal<VmMeter?> current = new();
@@ -79,6 +81,8 @@ internal sealed class VmExecutionScope
 /// operation - which would be worse than either failing or succeeding, because the bill would land
 /// somewhere nobody was looking.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=593128
+// Broiler-Human: PENDING
 internal sealed class VmAmbientMeter : IVmMeter
 {
     private readonly VmExecutionScope scope;
@@ -115,6 +119,8 @@ internal sealed class VmAmbientMeter : IVmMeter
 /// is charged against changes per operation. Outside a step there is nothing to charge, so a call
 /// made there is unavailable rather than silently free.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=78B1C2
+// Broiler-Human: PENDING
 internal sealed class VmAmbientCapabilityInvoker : IVmHostCapabilityInvoker
 {
     private readonly VmCapabilityBinding[] bindings;

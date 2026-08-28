@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   3
-// Annotated:        3/3
+// Relevant units:   4
+// Annotated:        4/4
 // Exempt:           9
-// Human-reviewed:   0/3
+// Human-reviewed:   0/4
 // IP risk:          Low
 // Security risk:    Low
 // Resource impact:  3/10 max
-// Unverified:       3
+// Unverified:       4
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -37,6 +37,8 @@ namespace Broiler.VM;
 /// afterwards cannot change what a verified handle is bound to.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=06FA02
+// Broiler-Human: PENDING
 public readonly struct VmArtifactDescriptor : System.IEquatable<VmArtifactDescriptor>
 {
     /// <summary>Creates an artifact descriptor.</summary>

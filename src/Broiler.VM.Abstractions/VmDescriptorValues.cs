@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   6
-// Annotated:        6/6
-// Exempt:           12
-// Human-reviewed:   0/6
+// Relevant units:   14
+// Annotated:        14/14
+// Exempt:           24
+// Human-reviewed:   0/14
 // IP risk:          Low
 // Security risk:    Low
 // Resource impact:  1/10 max
-// Unverified:       6
+// Unverified:       14
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -25,6 +25,8 @@ namespace Broiler.VM;
 /// it semantically. It exists so a support table and a closure report can state which shape a
 /// profile uses, not so the core can behave differently for one of them.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=9C9CF5
+// Broiler-Human: PENDING
 public enum VmArtifactRepresentationKind
 {
     /// <summary>An immutable copy of the caller's bytes.</summary>
@@ -40,6 +42,8 @@ public enum VmArtifactRepresentationKind
 /// for both kinds. A profile that declares <see cref="Managed"/> is promising that disposal has
 /// nothing to release, not that disposal is unavailable.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=454F6D
+// Broiler-Human: PENDING
 public enum VmArtifactLifetimeKind
 {
     /// <summary>Ordinary managed immutable data.</summary>
@@ -55,6 +59,8 @@ public enum VmArtifactLifetimeKind
 /// nothing gets the answer that cannot leak state between runtimes. A verifier may narrow an
 /// artifact to <see cref="RuntimeScoped"/> and may never widen one to <see cref="Shareable"/>.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=EF64D0
+// Broiler-Human: PENDING
 public enum VmArtifactSharing
 {
     /// <summary>Usable only by the runtime that verified it.</summary>
@@ -70,6 +76,8 @@ public enum VmArtifactSharing
 /// mapping, and a defaulted answer would make that mapping depend on which value happened to be
 /// zero.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=B96EAC
+// Broiler-Human: PENDING
 public enum VmFaultRecovery
 {
     /// <summary>The instance remains live and may be invoked again.</summary>
@@ -85,6 +93,8 @@ public enum VmFaultRecovery
 /// object. One name for two closed sets would be exactly the ambiguity the qualifier rule exists to
 /// prevent, so the capability one is spelled separately.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=8E9D85
+// Broiler-Human: PENDING
 public enum VmThreadAffinity
 {
     /// <summary>Any thread may enter, one at a time.</summary>
@@ -100,6 +110,8 @@ public enum VmThreadAffinity
 /// descriptor's constructor parameters for these fields are required, so silence is not
 /// expressible at the only place a value is supplied.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=D8F051
+// Broiler-Human: PENDING
 public enum VmDeclaration
 {
     /// <summary>The profile does not declare the capability.</summary>
@@ -118,6 +130,8 @@ public enum VmDeclaration
 /// catalog construction by a thrown exception rather than by an invalid-state outcome later. The
 /// composition root is on the stack at that point, which is where a wiring defect belongs.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=536012
+// Broiler-Human: PENDING
 public sealed class VmGuestLoadDeclaration
 {
     private VmGuestLoadDeclaration(
@@ -183,6 +197,8 @@ public sealed class VmGuestLoadDeclaration
 /// payload minted by one profile is recognised as foreign when it appears on another profile's
 /// result, without the core learning what any kind means.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=C7A5E0
+// Broiler-Human: PENDING
 public readonly struct VmPayloadKindIdRange : System.IEquatable<VmPayloadKindIdRange>
 {
     /// <summary>Creates an inclusive range.</summary>

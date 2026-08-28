@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   28
-// Annotated:        28/28
-// Exempt:           53
-// Human-reviewed:   0/28
+// Relevant units:   36
+// Annotated:        36/36
+// Exempt:           84
+// Human-reviewed:   0/36
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  3/10 max
-// Unverified:       28
+// Unverified:       36
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -22,6 +22,8 @@ namespace Broiler.VM;
 /// correlates a core result with its own request without the core learning anything about the
 /// host's identifiers.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=CFBEE1
+// Broiler-Human: PENDING
 public readonly struct VmHostCorrelationToken : System.IEquatable<VmHostCorrelationToken>
 {
     private readonly ulong high;
@@ -60,6 +62,8 @@ public readonly struct VmHostCorrelationToken : System.IEquatable<VmHostCorrelat
 }
 
 /// <summary>The kind of lifecycle object a diagnostics record refers to.</summary>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=B8FE7C
+// Broiler-Human: PENDING
 public enum VmObjectKind
 {
     /// <summary>No object.</summary>
@@ -102,6 +106,8 @@ public enum VmObjectKind
 /// together: state 2 of a runtime and state 2 of an instance are different facts, and a
 /// diagnostics consumer that saw only the number would have to guess which table to read.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=A6A8FD
+// Broiler-Human: PENDING
 public readonly struct VmObjectState : System.IEquatable<VmObjectState>
 {
     /// <summary>Creates a state observation.</summary>
@@ -140,6 +146,8 @@ public readonly struct VmObjectState : System.IEquatable<VmObjectState>
 }
 
 /// <summary>The public call an invalid-state result was produced for.</summary>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=B50319
+// Broiler-Human: PENDING
 public enum VmAttemptedCall
 {
     /// <summary>No call.</summary>
@@ -203,6 +211,8 @@ public enum VmAttemptedCall
 /// different legal successors, and a result that did not distinguish them would make the state
 /// tables untestable.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=140C0D
+// Broiler-Human: PENDING
 public enum VmInitiator
 {
     /// <summary>The caller that entered the public surface.</summary>
@@ -227,6 +237,8 @@ public enum VmInitiator
 /// column, a function and offset, or anything else, without the core acquiring a notion of what
 /// any of them mean.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=69E733
+// Broiler-Human: PENDING
 public readonly struct VmSourcePosition : System.IEquatable<VmSourcePosition>
 {
     /// <summary>Creates a position.</summary>
@@ -283,6 +295,8 @@ public readonly struct VmSourcePosition : System.IEquatable<VmSourcePosition>
 /// caller-supplied so a diagnostics sink can redact it without having to guess which fields might
 /// carry a URL, a file path or a user identifier.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=8C6D88
+// Broiler-Human: PENDING
 public readonly struct VmCallerIdentity : System.IEquatable<VmCallerIdentity>
 {
     private readonly string? text;
@@ -356,6 +370,8 @@ public readonly struct VmCallerIdentity : System.IEquatable<VmCallerIdentity>
 /// could turn it back on.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=18A7D4
+// Broiler-Human: PENDING
 public readonly struct VmDiagnostics : System.IEquatable<VmDiagnostics>
 {
     /// <summary>Creates a diagnostics record. Every field is supplied; there is no partial form.</summary>

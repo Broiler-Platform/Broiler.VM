@@ -75,10 +75,35 @@ internal static class AssuranceProbe
         return lines;
     }
 
-    internal static string AnnotationLine(string text, string marker) =>
-        Rewritten(text)
-            .Select(static line => line.Trim())
-            .Single(line => line.StartsWith(marker, StringComparison.Ordinal));
+    /// <summary>
+    /// The rewritten annotation line of ONE named unit, by marker.
+    /// </summary>
+    /// <remarks>
+    /// Named rather than "the only line in the file that starts with this marker", because every
+    /// witness now carries a second annotation - on its carrier type declaration, which is a code
+    /// unit like any other - and a lone-match lookup would have made every generator-transition
+    /// clause fail for a reason that has nothing to do with the transition. The line is found by
+    /// rescanning the rewritten text, so the block is the one attached to that unit rather than the
+    /// nth line matching a prefix.
+    /// </remarks>
+    internal static string AnnotationLine(string text, string member, string marker)
+    {
+        var file = Source(text);
+        var rewritten = AssuranceGenerator.DesiredSource(file, AssuranceScanner.Scan(file));
+        var reread = Source(rewritten);
+
+        var annotation = AssuranceScanner.Scan(reread)
+            .Single(unit => unit.Name.EndsWith(member, StringComparison.Ordinal))
+            .Annotation
+            ?? throw new InvalidOperationException($"The rewritten probe has no annotation on {member}.");
+
+        var lines = new AssuranceTextLines(rewritten);
+
+        return lines[
+            string.Equals(marker, AssuranceAnnotation.AiMarker, StringComparison.Ordinal)
+                ? annotation.AiLine
+                : annotation.HumanLine].Trim();
+    }
 
     internal static MemberDeclarationSyntax Declaration(string text, string member) =>
         Unit(text, member).Declaration;

@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   2
-// Annotated:        2/2
+// Relevant units:   3
+// Annotated:        3/3
 // Exempt:           7
-// Human-reviewed:   0/2
+// Human-reviewed:   0/3
 // IP risk:          Low
 // Security risk:    Low
 // Resource impact:  0/10 max
-// Unverified:       2
+// Unverified:       3
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -26,6 +26,8 @@ namespace Broiler.VM;
 /// over-reads a section is a structural error the frame catches, rather than one the profile has
 /// to remember to look for.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=623BF6
+// Broiler-Human: PENDING
 public readonly struct VmSectionFrame : System.IEquatable<VmSectionFrame>
 {
     internal VmSectionFrame(ulong start, ulong declaredLength, uint depth)

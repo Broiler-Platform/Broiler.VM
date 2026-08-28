@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   5
-// Annotated:        5/5
+// Relevant units:   6
+// Annotated:        6/6
 // Exempt:           9
-// Human-reviewed:   0/5
+// Human-reviewed:   0/6
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  4/10 max
-// Unverified:       5
+// Unverified:       6
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -26,6 +26,8 @@ namespace Broiler.VM;
 /// is still rooted by a direct reference, which is what trimming and Native AOT need; laziness
 /// changes when it runs, not whether it is reachable.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=272B95
+// Broiler-Human: PENDING
 internal sealed class VmProfileRuntimeState
 {
     private readonly object gate = new();

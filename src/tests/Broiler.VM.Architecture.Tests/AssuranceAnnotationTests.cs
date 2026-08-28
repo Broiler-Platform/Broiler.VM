@@ -187,7 +187,7 @@ public sealed class AssuranceAnnotationTests
         Assert.Equal(
             "// Broiler-AI:    Origin=AI; Spec=ADR-0007 s6; IP=Low; Security=High; Resources=7; " +
             $"Fingerprint={Current}",
-            AssuranceProbe.AnnotationLine(source, AssuranceAnnotation.AiMarker));
+            AssuranceProbe.AnnotationLine(source, ".Measure(int)", AssuranceAnnotation.AiMarker));
     }
 
     [Fact]
@@ -201,7 +201,7 @@ public sealed class AssuranceAnnotationTests
         // reviewed, and the current code is not that" is the useful sentence.
         Assert.Equal(
             "// Broiler-Human: STALE; Previous=RV@7A91C2",
-            AssuranceProbe.AnnotationLine(source, AssuranceAnnotation.HumanMarker));
+            AssuranceProbe.AnnotationLine(source, ".Measure(int)", AssuranceAnnotation.HumanMarker));
 
         // And a line the generator already made stale is left exactly as it is: STALE never
         // becomes VERIFIED by anything automated.
@@ -211,7 +211,7 @@ public sealed class AssuranceAnnotationTests
 
         Assert.Equal(
             "// Broiler-Human: STALE; Previous=RV@7A91C2",
-            AssuranceProbe.AnnotationLine(already, AssuranceAnnotation.HumanMarker));
+            AssuranceProbe.AnnotationLine(already, ".Measure(int)", AssuranceAnnotation.HumanMarker));
     }
 
     [Fact]
@@ -223,7 +223,7 @@ public sealed class AssuranceAnnotationTests
 
         Assert.Equal(
             $"// Broiler-Human: RV; Fingerprint={Current}",
-            AssuranceProbe.AnnotationLine(source, AssuranceAnnotation.HumanMarker));
+            AssuranceProbe.AnnotationLine(source, ".Measure(int)", AssuranceAnnotation.HumanMarker));
     }
 
     [Fact]
@@ -240,7 +240,7 @@ public sealed class AssuranceAnnotationTests
         {
             Assert.Equal(
                 "// Broiler-Human: PENDING",
-                AssuranceProbe.AnnotationLine(Probe(ai, "Broiler-Human: PENDING"), AssuranceAnnotation.HumanMarker));
+                AssuranceProbe.AnnotationLine(Probe(ai, "Broiler-Human: PENDING"), ".Measure(int)", AssuranceAnnotation.HumanMarker));
         }
     }
 

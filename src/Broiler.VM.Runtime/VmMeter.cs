@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   16
-// Annotated:        16/16
+// Relevant units:   17
+// Annotated:        17/17
 // Exempt:           18
-// Human-reviewed:   0/16
+// Human-reviewed:   0/17
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  1/10 max
-// Unverified:       16
+// Unverified:       17
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -34,6 +34,8 @@ namespace Broiler.VM;
 /// first. That is why the levels are checked before any of them is committed.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=2575F4
+// Broiler-Human: PENDING
 internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
 {
     private readonly object gate;

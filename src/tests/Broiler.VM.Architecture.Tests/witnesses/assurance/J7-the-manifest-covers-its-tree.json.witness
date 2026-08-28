@@ -1,12 +1,16 @@
 {
   "$comment": [
-    "Witness for rule J7: the accepting direction. This manifest covers every unit in",
-    "J7-the-tree-the-manifest-covers.cs.witness exactly - the annotated method, the exempt",
-    "auto-property with an initializer and the exempt plain field - with the fingerprint the",
-    "current code produces for each. The rule must report nothing, so that a clean result is a",
-    "comparison and not a function that reports nothing whatever it is given."
+    "Witness for rule J7: the accepting direction. This manifest covers J7-the-tree-the-manifest-covers.cs.witness",
+    "exactly - the file, whole, and every one of its four units: the type declaration header, the",
+    "annotated method, the exempt auto-property with an initializer and the exempt plain field - each",
+    "with the fingerprint the current code produces. The rule must report nothing, so that a clean",
+    "result is a comparison and not a function that reports nothing whatever it is given."
+  ],
+  "files": [
+    { "file": "J7-the-tree-the-manifest-covers.cs.witness", "fingerprint": "3C1463" }
   ],
   "units": [
+    { "name": "Probe.Watched", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": false, "exemption": "None", "fingerprint": "0758D3" },
     { "name": "Probe.Watched.Accepted", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": true, "exemption": "TrivialPropertyOrAccessor", "fingerprint": "1FBF49" },
     { "name": "Probe.Watched.TryAdvance(ulong, ulong)", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": false, "exemption": "None", "fingerprint": "D6E774" },
     { "name": "Probe.Watched.position", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": true, "exemption": "FieldDeclaringStorage", "fingerprint": "B2A5C5" }

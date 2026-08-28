@@ -325,6 +325,68 @@ public sealed class AssuranceFingerprintTests
             "formatter", AssuranceFingerprint.TokenStream(trivial), StringComparison.Ordinal);
     }
 
+    /// <summary>
+    /// A WHOLE-FILE fingerprint covers everything the unit enumeration cannot, and excludes every
+    /// comment - including the generated header and the annotation lines the generator writes.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The exclusion is not a convenience here, it is what makes one generation a fixed point. The
+    /// generator writes a fifteen-line header into every covered file and two annotation lines above
+    /// every relevant unit. If either were in the stream, the file's fingerprint would depend on the
+    /// header, the header on the manifest, the manifest on the fingerprint, and the gate could never
+    /// be green after a write run. It is asserted rather than assumed because the mechanism is one
+    /// property of one method - a token's <c>Text</c> is its own characters - and a change from
+    /// <c>Text</c> to <c>ToFullString()</c> would break it silently.
+    /// </para>
+    /// <para>
+    /// The other half is the one the unit fingerprints cannot do: an
+    /// <c>[assembly: InternalsVisibleTo]</c> is a member of nothing, so it is in no unit at all, and
+    /// the file value is the only thing that moves when one appears.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void A_File_Fingerprint_Excludes_Comments_And_Covers_What_No_Unit_Can()
+    {
+        const string Bare = "namespace Probe;\n\npublic sealed class Watched\n{\n    public int Depth;\n}\n";
+
+        var commented =
+            "// SPDX-FileCopyrightText: 2026 Broiler Platform contributors\n" +
+            "//\n" +
+            "// Broiler Code Assurance\n" +
+            "// Human-reviewed:   0/1\n" +
+            "// GENERATED - DO NOT EDIT MANUALLY\n" +
+            "\n" +
+            "namespace Probe;\n\n" +
+            "/* a formatter put this here */\n" +
+            "// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=ABCDEF\n" +
+            "// Broiler-Human: PENDING\n" +
+            "public sealed class Watched\n{\n    public int Depth; // trailing\n}\n";
+
+        var attributed =
+            "using System.Runtime.CompilerServices;\n\n" +
+            "[assembly: InternalsVisibleTo(\"anything\")]\n\n" + Bare;
+
+        Assert.NotEqual(Bare, commented);
+        Assert.Equal(
+            AssuranceFingerprint.OfFile(AssuranceProbe.Source(Bare).Tree),
+            AssuranceFingerprint.OfFile(AssuranceProbe.Source(commented).Tree));
+        Assert.DoesNotContain(
+            "GENERATED",
+            AssuranceFingerprint.TokenStream(AssuranceProbe.Source(commented).Tree.GetRoot()),
+            StringComparison.Ordinal);
+
+        // ...and the half no unit can cover: the attribute is in the file stream and in no unit.
+        Assert.NotEqual(
+            AssuranceFingerprint.OfFile(AssuranceProbe.Source(Bare).Tree),
+            AssuranceFingerprint.OfFile(AssuranceProbe.Source(attributed).Tree));
+        Assert.Equal(
+            AssuranceScanner.Scan(AssuranceProbe.Source(Bare))
+                .Select(static unit => $"{unit.Name}@{unit.Fingerprint}"),
+            AssuranceScanner.Scan(AssuranceProbe.Source(attributed))
+                .Select(static unit => $"{unit.Name}@{unit.Fingerprint}"));
+    }
+
     [Fact]
     public void The_Fingerprint_Is_Stable_Across_Runs()
     {

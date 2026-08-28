@@ -3,20 +3,22 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   6
-// Annotated:        6/6
+// Relevant units:   9
+// Annotated:        9/9
 // Exempt:           6
-// Human-reviewed:   0/6
+// Human-reviewed:   0/9
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  5/10 max
-// Unverified:       6
+// Unverified:       9
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 namespace Broiler.VM;
 
 /// <summary>What the runtime hands an executor when it creates one.</summary>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C06550
+// Broiler-Human: PENDING
 internal sealed class VmExecutionEnvironment : IVmExecutionEnvironment
 {
     private readonly VmArtifactLoadMediator? mediator;
@@ -53,6 +55,8 @@ internal sealed class VmExecutionEnvironment : IVmExecutionEnvironment
 }
 
 /// <summary>The instantiation stage.</summary>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C8EFA1
+// Broiler-Human: PENDING
 internal static class VmInstantiation
 {
     // Broiler-AI:    Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=34BDC0
@@ -416,6 +420,8 @@ internal static class VmInstantiation
     /// is never handed to anyone: it exists so the parked operation has an instance to be resumed
     /// against. The profile supplies its real state when it completes.
     /// </remarks>
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=5323E5
+    // Broiler-Human: PENDING
     private sealed class PlaceholderState : IVmInstanceState
     {
         internal static PlaceholderState Instance { get; } = new();

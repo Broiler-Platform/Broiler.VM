@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   39
-// Annotated:        39/39
+// Relevant units:   47
+// Annotated:        47/47
 // Exempt:           50
-// Human-reviewed:   0/39
+// Human-reviewed:   0/47
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  3/10 max
-// Unverified:       39
+// Unverified:       47
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -25,6 +25,8 @@ namespace Broiler.VM;
 /// <see langword="default"/> is therefore <c>(0,0)</c>, which is not well formed - no separate
 /// sentinel is added, because a second way to spell "unset" is a second thing to check.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=A2D356
+// Broiler-Human: PENDING
 public readonly struct VmFormatVersionRange : System.IEquatable<VmFormatVersionRange>
 {
     /// <summary>Creates an inclusive range.</summary>
@@ -84,6 +86,8 @@ public readonly struct VmFormatVersionRange : System.IEquatable<VmFormatVersionR
 /// this is a validated value type over the same grammar, with the same reserved
 /// <c>Broiler.</c> first label under the same ASCII fold.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=85EDC9
+// Broiler-Human: PENDING
 public readonly struct VmCapabilityId
     : System.IEquatable<VmCapabilityId>, System.IComparable<VmCapabilityId>
 {
@@ -216,6 +220,8 @@ public readonly struct VmCapabilityId
 /// import declare independently, so a mismatch is refused at binding rather than discovered at
 /// first call. The core never parses the description: it compares the derived identifier.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=DB6159
+// Broiler-Human: PENDING
 public readonly struct VmCapabilitySignatureId : System.IEquatable<VmCapabilitySignatureId>
 {
     private readonly string? text;
@@ -270,6 +276,8 @@ public readonly struct VmCapabilitySignatureId : System.IEquatable<VmCapabilityS
 /// It is used for support tables and evidence only and never for matching. It is a distinct type
 /// rather than a string precisely so that a drift test can prove it never reaches a matching path.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=E12AD3
+// Broiler-Human: PENDING
 public readonly struct VmConformanceManifestId : System.IEquatable<VmConformanceManifestId>
 {
     private readonly string? text;
@@ -321,6 +329,8 @@ public readonly struct VmConformanceManifestId : System.IEquatable<VmConformance
 /// The namespace requirement is enforced at creation so that a malformed token can be reported at
 /// registration, where the composition root that wrote it is on the stack.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=623658
+// Broiler-Human: PENDING
 public readonly struct VmDiagnosticsIdentity : System.IEquatable<VmDiagnosticsIdentity>
 {
     private readonly string? text;
@@ -400,6 +410,8 @@ public readonly struct VmDiagnosticsIdentity : System.IEquatable<VmDiagnosticsId
 /// identity, precisely because these are inert data the core neither stores as an identity nor
 /// matches on.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=0CB78D
+// Broiler-Human: PENDING
 public readonly struct VmPackageIdentity : System.IEquatable<VmPackageIdentity>
 {
     /// <summary>Creates a package identity. No part may be empty.</summary>
@@ -456,6 +468,8 @@ public readonly struct VmPackageIdentity : System.IEquatable<VmPackageIdentity>
 /// derived from an address, a secret or host state - a diagnostics field that leaked an address
 /// would be an information disclosure in a type whose whole purpose is to be safe to log.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=6B27DF
+// Broiler-Human: PENDING
 public readonly struct VmObjectId : System.IEquatable<VmObjectId>
 {
     private readonly ulong value;
@@ -519,6 +533,8 @@ public readonly struct VmObjectId : System.IEquatable<VmObjectId>
 /// ambiguity ADR 0003's qualifier rule exists to prevent.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=699201
+// Broiler-Human: PENDING
 public readonly struct VmOpaqueRef : System.IEquatable<VmOpaqueRef>
 {
     private readonly ulong runtime;

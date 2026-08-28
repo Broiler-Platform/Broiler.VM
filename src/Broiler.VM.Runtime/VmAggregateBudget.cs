@@ -3,20 +3,22 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   20
-// Annotated:        20/20
+// Relevant units:   23
+// Annotated:        23/23
 // Exempt:           19
-// Human-reviewed:   0/20
+// Human-reviewed:   0/23
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  3/10 max
-// Unverified:       20
+// Unverified:       23
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 namespace Broiler.VM;
 
 /// <summary>The identity of one aggregate budget.</summary>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=CF9AFE
+// Broiler-Human: PENDING
 public readonly struct VmAggregateBudgetId : System.IEquatable<VmAggregateBudgetId>
 {
     private readonly VmObjectId value;
@@ -59,6 +61,8 @@ public readonly struct VmAggregateBudgetId : System.IEquatable<VmAggregateBudget
 /// its remaining allowance could spend exactly up to it on every operation while staying formally
 /// compliant.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=97559D
+// Broiler-Human: PENDING
 public readonly struct VmBudgetSnapshot
 {
     private readonly ulong[] consumed;
@@ -121,6 +125,8 @@ public readonly struct VmBudgetSnapshot
 /// dispose; the live-runtime count is a ceiling on a live measure and does decrement.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=3FFB3C
+// Broiler-Human: PENDING
 public sealed class VmAggregateBudget : System.IDisposable
 {
     private readonly object gate = new();

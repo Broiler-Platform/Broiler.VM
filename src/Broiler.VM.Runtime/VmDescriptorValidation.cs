@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   9
-// Annotated:        9/9
+// Relevant units:   10
+// Annotated:        10/10
 // Exempt:           0
-// Human-reviewed:   0/9
+// Human-reviewed:   0/10
 // IP risk:          Low
 // Security risk:    Low
 // Resource impact:  3/10 max
-// Unverified:       9
+// Unverified:       10
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -32,6 +32,8 @@ namespace Broiler.VM;
 /// implementation happened to reach first would make the failure depend on the implementation.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=E84F78
+// Broiler-Human: PENDING
 internal static class VmDescriptorValidation
 {
     // Broiler-AI:    Origin=AI; Spec=ADR-0002 s7; IP=Low; Security=Low; Resources=3; Fingerprint=682D94

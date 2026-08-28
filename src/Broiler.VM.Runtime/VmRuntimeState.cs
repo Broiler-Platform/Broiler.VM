@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   6
-// Annotated:        6/6
-// Exempt:           6
-// Human-reviewed:   0/6
+// Relevant units:   8
+// Annotated:        8/8
+// Exempt:           10
+// Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    Low
 // Resource impact:  0/10 max
-// Unverified:       6
+// Unverified:       8
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -23,6 +23,8 @@ namespace Broiler.VM;
 /// accept only disposal, because every later answer it gave would be computed from state the core
 /// no longer trusts.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=DE38F0
+// Broiler-Human: PENDING
 public enum VmRuntimeState
 {
     /// <summary>Usable.</summary>
@@ -45,6 +47,8 @@ public enum VmRuntimeState
 /// expressible if creation can return a resource exhaustion. Two error mechanisms at one surface
 /// guarantee that one of them is untested.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=E97B00
+// Broiler-Human: PENDING
 public readonly struct VmRuntimeCreationResult : IVmOperationResult
 {
     private readonly VmRuntime? runtime;

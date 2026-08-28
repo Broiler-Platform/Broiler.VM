@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   31
-// Annotated:        31/31
+// Relevant units:   32
+// Annotated:        32/32
 // Exempt:           23
-// Human-reviewed:   0/31
+// Human-reviewed:   0/32
 // IP risk:          Low
 // Security risk:    High
 // Resource impact:  8/10 max
-// Unverified:       31
+// Unverified:       32
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -34,6 +34,8 @@ namespace Broiler.VM;
 /// invocation: a profile that must wait suspends, and the host resumes it.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=C1CA36
+// Broiler-Human: PENDING
 public sealed partial class VmRuntime : System.IDisposable
 {
     private readonly object gate = new();

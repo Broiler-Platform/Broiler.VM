@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   6
-// Annotated:        6/6
-// Exempt:           0
-// Human-reviewed:   0/6
+// Relevant units:   8
+// Annotated:        8/8
+// Exempt:           86
+// Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    Low
 // Resource impact:  2/10 max
-// Unverified:       6
+// Unverified:       8
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -42,6 +42,8 @@ namespace Broiler.VM;
 /// catalog reason from a load-path API or a load-path reason from a catalog API.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=2A85D1
+// Broiler-Human: PENDING
 public enum VmReason
 {
     /// <summary>Reserved. It exists so that <c>default</c> cannot be read as a real reason.</summary>
@@ -348,6 +350,8 @@ public enum VmReason
 /// would make an additive reason look like a contract amendment and a contract amendment look like
 /// a new reason, which defeats the purpose of having two numbers.
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=BD4560
+// Broiler-Human: PENDING
 public static class VmReasonRegistry
 {
     /// <summary>

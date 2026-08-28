@@ -1,13 +1,14 @@
 {
   "$comment": [
-    "Witness for rule J7's third clause: an entry whose fingerprint is not the one the code",
-    "produces. `Probe.Watched.Accepted` is an auto-property whose initializer states a shipped",
-    "value, and the recorded value here is the one that declaration hashed to before the",
-    "initializer was changed. The property is exempt, so no annotation and no human line record",
-    "the change; for a unit in that population the manifest entry is the only record that the",
-    "change happened at all, and a stale one is no record."
+    "Witness for rule J7: a recorded unit fingerprint the code does not produce. The unit is the",
+    "exempt auto-property whose initializer states a shipped value, because for that population the",
+    "manifest entry is the only record that the change happened at all."
+  ],
+  "files": [
+    { "file": "J7-the-tree-the-manifest-covers.cs.witness", "fingerprint": "3C1463" }
   ],
   "units": [
+    { "name": "Probe.Watched", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": false, "exemption": "None", "fingerprint": "0758D3" },
     { "name": "Probe.Watched.Accepted", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": true, "exemption": "TrivialPropertyOrAccessor", "fingerprint": "AB12CD" },
     { "name": "Probe.Watched.TryAdvance(ulong, ulong)", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": false, "exemption": "None", "fingerprint": "D6E774" },
     { "name": "Probe.Watched.position", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": true, "exemption": "FieldDeclaringStorage", "fingerprint": "B2A5C5" }

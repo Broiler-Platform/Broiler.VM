@@ -3,14 +3,14 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   6
-// Annotated:        6/6
+// Relevant units:   7
+// Annotated:        7/7
 // Exempt:           10
-// Human-reviewed:   0/6
+// Human-reviewed:   0/7
 // IP risk:          Low
 // Security risk:    Medium
 // Resource impact:  7/10 max
-// Unverified:       6
+// Unverified:       7
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -44,6 +44,8 @@ namespace Broiler.VM;
 /// running. Handing out a fresh object per step would leave the stale one able to answer.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C62B33
+// Broiler-Human: PENDING
 internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
 {
     private readonly VmRuntime runtime;

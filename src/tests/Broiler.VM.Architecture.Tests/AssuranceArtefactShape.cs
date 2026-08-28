@@ -1,0 +1,556 @@
+using System.Globalization;
+using System.Text;
+
+namespace Broiler.VM.Architecture.Tests;
+
+/// <summary>
+/// The shape every generated artefact is held to: a hand-maintained copy of the fixed text, and an
+/// independent derivation of every value.
+/// </summary>
+/// <remarks>
+/// <para>
+/// <b>The defect this exists to close.</b> Nothing held the generator's own output TEXT to
+/// anything. Two lines appended to <see cref="AssuranceManifest.Header"/> made
+/// <c>assurance.manifest.json</c> assert <c>reviewState=VERIFIED</c>, <c>humanReviewed=true</c>,
+/// <c>reviewer=&lt;name&gt;</c> for all of its entries and state that the component was eligible for
+/// release - with both modes of the gate green, because rule J5 compares the file on disk against
+/// what the generator would write and the generator would write exactly that. A gate that asks only
+/// "is this what the generator produces" cannot ask "and should the generator produce it".
+/// </para>
+/// <para>
+/// So this file is the second copy, and it is hand-maintained on purpose, exactly as
+/// <see cref="AssuranceRegisterRows"/> is. Every fixed sentence in a generated artefact appears
+/// here verbatim, so an added, deleted or reworded sentence fails until somebody edits both places
+/// having read both. It is deliberately NOT generated from the generator: a copy the generator
+/// produced would agree with the generator whatever the generator said, which is the tautology this
+/// whole register was written to remove.
+/// </para>
+/// <para>
+/// <b>Where content is derived, the derivation is checked rather than copied.</b> A count, a
+/// portion, a distribution row, the worst assessed risk and the list of high-security units are
+/// computed here from the units, by expressions written differently from the generator's - the risk
+/// scan below walks its vocabulary backwards where <see cref="AssuranceSummary"/> ranks and takes a
+/// maximum. That is what pins <see cref="AssuranceSummary"/>: the IP and Security rows of every file
+/// header are the two lines a developer actually reads, and nothing compared them against the
+/// annotations they claim to summarize.
+/// </para>
+/// <para>
+/// <b>What it cannot do.</b> A change made in both places passes, and that is the accepted cost of
+/// the mechanism rather than an oversight - it is EX-70. What it buys is that no single edit to the
+/// generator can put a sentence in front of a reader, and that rule J9 gets a second, independent
+/// hold on the same text: J9 forbids the review vocabulary outright, whatever this shape says.
+/// </para>
+/// </remarks>
+internal static class AssuranceArtefactShape
+{
+    // =============================================================================================
+    // assurance.manifest.json - the $comment block
+    // =============================================================================================
+
+    /// <summary>
+    /// The manifest's <c>$comment</c> lines, hand-copied. This is the array the attack appended to.
+    /// </summary>
+    internal static readonly string[] ManifestHeader =
+    [
+        "GENERATED - DO NOT EDIT MANUALLY. Regenerate with",
+        "`BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release`.",
+        "",
+        "This manifest is a change-detection record, not a review. Every code unit in the three product",
+        "assemblies is listed here, exempt and relevant alike, with the fingerprint of its",
+        "declaration. An entry records what that declaration's tokens hashed to when the generator",
+        "last ran. It is not an assessment, it is not an approval, and it is not evidence that",
+        "anyone has read the unit. Exempt units still need no annotation and carry none, and no",
+        "human line in this component has moved off PENDING.",
+        "",
+        "The 'files' array beside the units is what makes this record COMPLETE. A unit entry exists",
+        "only for a declaration kind the scanner enumerates, and that enumeration is a whitelist: an",
+        "assembly-level attribute is a member of nothing and can be in no unit at all. Each file",
+        "entry is a fingerprint over the complete token stream of that file's compilation unit.",
+        "Nothing in a covered file can change without something moving here, whatever kind of declaration it is.",
+        "",
+        "What the manifest adds is that a unit the exemption predicate treats as trivial is no",
+        "longer invisible: a semantic change to one moves a fingerprint in a generated file the",
+        "gate compares byte for byte, so the change appears in a diff and fails an unregenerated",
+        "suite. Rule J7 holds this file to the tree - every unit and every covered file present, no",
+        "extras, every fingerprint current.",
+    ];
+
+    /// <summary>Every line of a manifest header that is not the line this shape declares.</summary>
+    /// <summary>
+    /// The property names the manifest may use, per array. Held here as a second copy so that a
+    /// property added in <c>AssuranceManifest.Render</c> is reported rather than published: the
+    /// attack that made every entry carry <c>reviewState</c>, <c>humanReviewed</c> and
+    /// <c>reviewer</c> passed because nothing below the $comment array was compared to anything.
+    /// </summary>
+    internal static readonly string[] ManifestFileProperties = ["file", "fingerprint"];
+
+    internal static readonly string[] ManifestUnitProperties =
+        ["name", "file", "exempt", "exemption", "fingerprint"];
+
+    internal static readonly string[] ManifestArrays = ["$comment", "files", "units"];
+
+    /// <summary>
+    /// Every property name the rendered manifest actually uses, against the three lists above.
+    /// A manifest is data, so the check is on its SHAPE: an entry may not carry a field this
+    /// system does not define, and a review state is exactly such a field.
+    /// </summary>
+    internal static List<string> ManifestShapeViolations(string rendered)
+    {
+        var violations = new List<string>();
+        using var document = System.Text.Json.JsonDocument.Parse(rendered);
+        var root = document.RootElement;
+
+        foreach (var property in root.EnumerateObject())
+        {
+            if (!ManifestArrays.Contains(property.Name, StringComparer.Ordinal))
+            {
+                violations.Add($"the manifest carries a top-level property this system does not define: {property.Name}");
+            }
+        }
+
+        foreach (var expected in ManifestArrays)
+        {
+            if (!root.TryGetProperty(expected, out _))
+            {
+                violations.Add($"the manifest is missing its {expected} array");
+            }
+        }
+
+        Check("files", ManifestFileProperties);
+        Check("units", ManifestUnitProperties);
+
+        return violations;
+
+        void Check(string array, string[] permitted)
+        {
+            if (!root.TryGetProperty(array, out var element))
+            {
+                return;
+            }
+
+            foreach (var entry in element.EnumerateArray())
+            {
+                foreach (var property in entry.EnumerateObject())
+                {
+                    if (!permitted.Contains(property.Name, StringComparer.Ordinal))
+                    {
+                        violations.Add(
+                            $"a {array} entry carries a property this system does not define: {property.Name}");
+                    }
+                }
+
+                foreach (var required in permitted)
+                {
+                    if (!entry.TryGetProperty(required, out _))
+                    {
+                        violations.Add($"a {array} entry is missing {required}");
+                    }
+                }
+            }
+        }
+    }
+
+    internal static List<string> ManifestHeaderViolations(IReadOnlyList<string> header) =>
+        Compare(AssuranceManifest.RelativePath, ManifestHeader, header);
+
+    // =============================================================================================
+    // The generated file header
+    // =============================================================================================
+
+    /// <summary>
+    /// The header the shape declares for a file carrying these units: five fixed lines, the eight
+    /// rows in their fixed order with independently derived values, and the closing marker.
+    /// </summary>
+    internal static IReadOnlyList<string> ExpectedFileHeader(IReadOnlyList<AssuranceUnit> units)
+    {
+        var relevant = units.Where(static unit => unit.IsRelevant).ToArray();
+        var assessed = relevant
+            .Where(static unit => unit.Annotation is { ExemptReason: null })
+            .Select(static unit => unit.Annotation!)
+            .ToArray();
+
+        var scores = assessed
+            .Select(static annotation =>
+                int.TryParse(annotation.Field("Resources"), NumberStyles.None, CultureInfo.InvariantCulture, out var score)
+                    ? score
+                    : (int?)null)
+            .Where(static score => score is not null)
+            .Select(static score => score!.Value)
+            .ToArray();
+
+        var verified = relevant.Count(static unit => unit.State == AssuranceReviewState.Verified);
+
+        return
+        [
+            AssuranceGenerator.SpdxCopyright,
+            AssuranceGenerator.SpdxLicense,
+            "//",
+            AssuranceGenerator.Banner,
+            AssuranceGenerator.BannerRule,
+            AssuranceGenerator.Row("Relevant units:", relevant.Length.ToString(CultureInfo.InvariantCulture)),
+            AssuranceGenerator.Row("Annotated:", $"{assessed.Length}/{relevant.Length}"),
+            AssuranceGenerator.Row("Exempt:", units.Count(static unit => unit.IsExempt).ToString(CultureInfo.InvariantCulture)),
+            AssuranceGenerator.Row("Human-reviewed:", $"{verified}/{relevant.Length}"),
+            AssuranceGenerator.Row("IP risk:", Weakest(assessed, "IP", AssuranceAnnotation.IpRiskValues) ?? "not assessed"),
+            AssuranceGenerator.Row("Security risk:", Weakest(assessed, "Security", AssuranceAnnotation.SecurityRiskValues) ?? "not assessed"),
+            AssuranceGenerator.Row("Resource impact:", scores.Length == 0 ? "not assessed" : $"{scores.Max()}/10 max"),
+            AssuranceGenerator.Row(
+                "Unverified:",
+                relevant.Count(static unit => AssuranceStateMachine.BlocksRelease(unit.State))
+                    .ToString(CultureInfo.InvariantCulture)),
+            "//",
+            AssuranceGenerator.GeneratedMarker,
+        ];
+    }
+
+    /// <summary>Every line of a file's generated header that is not the line this shape declares.</summary>
+    internal static List<string> FileHeaderViolations(
+        string where,
+        IReadOnlyList<string> header,
+        IReadOnlyList<AssuranceUnit> units) =>
+        Compare(where, ExpectedFileHeader(units), header);
+
+    /// <summary>
+    /// The weakest claim any assessed annotation makes for a field, or null when none makes one.
+    /// </summary>
+    /// <remarks>
+    /// This is <see cref="AssuranceSummary"/>'s <c>Worst</c>, derived the other way round: it walks
+    /// the vocabulary from its weakest-claim end and stops at the first value some annotation
+    /// carries, where the generator ranks every annotation and takes a maximum. Two expressions of
+    /// one rule, so a defect in either is a disagreement rather than a shared answer - which is the
+    /// whole of what "check the derivation" can mean for a value both sides read from the same
+    /// annotations.
+    /// </remarks>
+    private static string? Weakest(
+        IReadOnlyList<AssuranceAnnotation> assessed,
+        string field,
+        IReadOnlyList<string> vocabulary)
+    {
+        for (var index = vocabulary.Count - 1; index >= 0; index--)
+        {
+            if (assessed.Any(annotation =>
+                    string.Equals(annotation.Field(field), vocabulary[index], StringComparison.Ordinal)))
+            {
+                return vocabulary[index];
+            }
+        }
+
+        return null;
+    }
+
+    // =============================================================================================
+    // CODE-ASSURANCE.md
+    // =============================================================================================
+
+    /// <summary>
+    /// The component report this shape declares for a tree of this size and these units.
+    /// </summary>
+    /// <remarks>
+    /// Every fixed line is hand-copied; every value, table row and list entry is derived here. The
+    /// comparison against the generated report is therefore a comparison against a second author,
+    /// and a sentence the generator invents appears in one and not the other.
+    /// </remarks>
+    internal static string ExpectedReport(int filesScanned, IReadOnlyList<AssuranceUnit> units)
+    {
+        var relevant = units.Where(static unit => unit.IsRelevant).ToArray();
+        var assessed = relevant
+            .Where(static unit => unit.Annotation is { ExemptReason: null })
+            .Select(static unit => unit.Annotation!)
+            .ToArray();
+
+        var scores = assessed
+            .Select(static annotation =>
+                int.TryParse(annotation.Field("Resources"), NumberStyles.None, CultureInfo.InvariantCulture, out var score)
+                    ? score
+                    : (int?)null)
+            .Where(static score => score is not null)
+            .Select(static score => score!.Value)
+            .ToArray();
+
+        var verified = relevant.Count(static unit => unit.State == AssuranceReviewState.Verified);
+        var unverified = relevant.Count(static unit => AssuranceStateMachine.BlocksRelease(unit.State));
+        var declared = AssuranceScanner.DeclaredExemptions(units);
+        var report = new StringBuilder();
+
+        Fixed(report,
+            "# Broiler.VM Code Assurance",
+            "",
+            "GENERATED - DO NOT EDIT MANUALLY. Regenerate with",
+            "`BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release`, which rewrites this file,",
+            "`assurance.manifest.json` and every generated source header from the product tree.",
+            "",
+            "**Nothing in this component has been reviewed by a human.** This report records that",
+            "absence precisely. It is not a claim that the code is reviewed, assured or safe, and the",
+            "figures below are the measurement of how far from that claim the component is.",
+            "",
+            "## Summary",
+            "",
+            "| Metric | Value |",
+            "|---|---:|");
+
+        Line(report, $"| Files scanned | {filesScanned} |");
+        Line(report, $"| Files carrying an annotation | {AnnotatedFiles(units)} |");
+        Line(report, $"| Code units | {units.Count} |");
+        Line(report, $"| Relevant | {relevant.Length} |");
+        Line(report, $"| Exempt by predicate | {units.Count(static unit => unit.IsExempt)} |");
+        Line(report, $"| Annotated | {Portion(assessed.Length, relevant.Length)} |");
+        Line(report, $"| Human reviewed | {Portion(verified, relevant.Length)} |");
+        Line(report, $"| Unverified | {unverified} |");
+
+        Fixed(report,
+            "",
+            "## Review states",
+            "",
+            "| State | Count |",
+            "|---|---:|");
+
+        foreach (var state in Enum.GetValues<AssuranceReviewState>())
+        {
+            Line(report, $"| {AssuranceStateMachine.Name(state)} | {units.Count(unit => unit.State == state)} |");
+        }
+
+        Line(report, string.Empty);
+        Distribution(report, "IP risk", "IP", AssuranceAnnotation.IpRiskValues, units, relevant.Length - assessed.Length);
+        Distribution(report, "Security risk", "Security", AssuranceAnnotation.SecurityRiskValues, units, relevant.Length - assessed.Length);
+
+        Fixed(report,
+            "## Resource impact",
+            "",
+            "| Metric | Value |",
+            "|---|---:|");
+
+        Line(report, $"| Maximum | {(scores.Length == 0 ? "n/a" : $"{scores.Max()} / 10")} |");
+        Line(
+            report,
+            "| Average over annotated units | " +
+            (scores.Length == 0
+                ? "n/a"
+                : scores.Average().ToString("0.0", CultureInfo.InvariantCulture) + " / 10") +
+            " |");
+        Line(report, $"| Units scored | {assessed.Length} |");
+
+        Fixed(report,
+            "",
+            "## High-security review areas",
+            "");
+
+        var high = units
+            .Where(static unit => unit.Annotation?.Field("Security") is "High" or "Critical")
+            .ToArray();
+
+        if (high.Length == 0)
+        {
+            Fixed(report,
+                "No annotated unit is assessed High or Critical. This says nothing about the units nothing",
+                "has assessed.",
+                "");
+        }
+        else
+        {
+            foreach (var unit in high)
+            {
+                Line(
+                    report,
+                    $"- `{unit.Name}` in `{unit.File.RelativePath}` - " +
+                    $"Security={unit.Annotation!.Field("Security")}, " +
+                    $"state {AssuranceStateMachine.Name(unit.State)}");
+            }
+
+            Line(report, string.Empty);
+        }
+
+        Fixed(report,
+            "## Exemption",
+            "",
+            "Exemption is decided by one predicate in `AssuranceScanner.ExemptionFor`, not per unit, so",
+            "that the rule is reviewable in one place rather than in several hundred.",
+            "",
+            "| Case | Units |",
+            "|---|---:|");
+
+        foreach (var exemption in Enum.GetValues<AssuranceExemption>()
+                     .Where(static value => value != AssuranceExemption.None))
+        {
+            Line(report, $"| {exemption} | {units.Count(unit => unit.Exemption == exemption)} |");
+        }
+
+        Fixed(report,
+            "",
+            "## Per-unit exemptions",
+            "",
+            "| Metric | Value |",
+            "|---|---:|");
+
+        Line(report, $"| Per-unit exemptions | {declared.Count} |");
+
+        Fixed(report,
+            "",
+            "A per-unit `EXEMPT=<reason>` line exempts one unit by a reason a human wrote, for what the",
+            "predicate cannot see. Nothing mechanical checks that the reason is true, that it describes",
+            "the unit it sits on, or that it says anything at all, so every use is counted and named");
+
+        Line(
+            report,
+            $"here. `{string.Join("`, `", AssuranceScanner.AssembliesClosedToTheEscapeHatch)}` is closed to it entirely: that assembly reads untrusted");
+
+        Fixed(report,
+            "input, and a unit there is assessed or it is not shipped. Rule J1 asserts both halves.",
+            "");
+
+        if (declared.Count == 0)
+        {
+            Fixed(report, "No unit in this component states a per-unit exemption.", "");
+        }
+        else
+        {
+            foreach (var unit in declared)
+            {
+                Line(report, $"- `{unit.Name}` in `{unit.File.RelativePath}` - {unit.Annotation!.ExemptReason}");
+            }
+
+            Line(report, string.Empty);
+        }
+
+        Fixed(report,
+            "## Change detection",
+            "");
+
+        Line(
+            report,
+            $"`{AssuranceManifest.RelativePath}` lists **every** code unit in the three product assemblies -");
+        Line(report, $"{units.Count} of them, exempt and relevant alike - with the fingerprint of its declaration.");
+        Line(report, $"{AssuranceManifest.ChangeDetectionStatement} A unit listed there is watched, not reviewed:");
+
+        Fixed(report,
+            "the entry records what the declaration's tokens hashed to when the generator last ran, and",
+            "nothing else. Exempt units still need no annotation and carry none, and no human line in",
+            "this component has moved off `PENDING`. What the manifest adds is that a unit the exemption",
+            "predicate treats as trivial is no longer invisible: a semantic change to one moves a value",
+            "in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.",
+            "");
+
+        Line(report, $"Beside the units it lists **every covered file** - {filesScanned} of them - with a");
+
+        Fixed(report,
+            "fingerprint over the complete token stream of its compilation unit. A unit entry exists only",
+            "for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an",
+            "`[assembly: ...]` attribute is a member of nothing and can be in no unit at all.");
+
+        Line(report, $"{AssuranceManifest.CompletenessStatement} Comments are outside the stream, because a token's");
+
+        Fixed(report,
+            "text is its own characters, so the generated header above and the annotation lines below move",
+            "no file fingerprint - which is what lets one generation be a fixed point.",
+            "",
+            "## Verification",
+            "",
+            "There is no CI lane in this component - exclusion EX-45 records one RID, one machine and no",
+            "CI - so no external process compels this check. The generator and the gate are the same",
+            "code, run as a test in the architecture suite:",
+            "",
+            "| Mode | Command | Effect |",
+            "|---|---|---|");
+
+        Line(
+            report,
+            $"| Generate | `{AssuranceGenerator.WriteVariable}=1 dotnet test Broiler.VM.slnx -c Release` | Fills every `Fingerprint=TBF`, refreshes a review the code has outrun into `STALE; Previous=...`, rewrites the generated headers, `{AssuranceManifest.RelativePath}` and this file. |");
+
+        Fixed(report,
+            "| Gate | `dotnet test Broiler.VM.slnx -c Release` | Asserts every generated artefact is byte-identical to what the generator would produce. This is the mode a release and a read of this record run. |",
+            "",
+            "The fingerprint is six hex characters - 24 bits - of SHA-256 over the declaration's token",
+            "texts, joined by single spaces. Trivia is excluded because a token's text is its own",
+            "characters and never the comments or whitespace around it, so `dotnet format` moves no",
+            "fingerprint and an annotation is never part of what it describes. The value answers whether a",
+            "unit changed since it was reviewed. It is not a collision-free identifier across units and it",
+            "is not a cryptographic commitment.");
+
+        return report.ToString();
+    }
+
+    /// <summary>Every line of a component report that is not the line this shape declares.</summary>
+    internal static List<string> ReportViolations(
+        string report,
+        int filesScanned,
+        IReadOnlyList<AssuranceUnit> units) =>
+        Compare(
+            AssuranceGenerator.ReportPath,
+            new AssuranceTextLines(ExpectedReport(filesScanned, units)),
+            new AssuranceTextLines(report));
+
+    private static void Fixed(StringBuilder report, params string[] lines)
+    {
+        foreach (var line in lines)
+        {
+            Line(report, line);
+        }
+    }
+
+    private static void Line(StringBuilder report, string line) => report.Append(line).Append('\n');
+
+    private static void Distribution(
+        StringBuilder report,
+        string heading,
+        string field,
+        IReadOnlyList<string> vocabulary,
+        IReadOnlyList<AssuranceUnit> units,
+        int notAnnotated)
+    {
+        Fixed(report, $"## {heading}", "", "| Value | Units |", "|---|---:|");
+
+        foreach (var value in vocabulary)
+        {
+            Line(
+                report,
+                $"| {value} | {units.Count(unit => string.Equals(unit.Annotation?.Field(field), value, StringComparison.Ordinal))} |");
+        }
+
+        Line(report, $"| *not annotated* | {notAnnotated} |");
+        Line(report, string.Empty);
+    }
+
+    private static int AnnotatedFiles(IEnumerable<AssuranceUnit> units) => units
+        .Where(static unit => unit.Annotation is not null)
+        .Select(static unit => unit.File.RelativePath)
+        .Distinct(StringComparer.Ordinal)
+        .Count();
+
+    private static string Portion(int part, int whole) => whole == 0
+        ? $"{part}"
+        : $"{part} of {whole} ({(int)Math.Round(100.0 * part / whole)}%)";
+
+    // =============================================================================================
+    // The comparison
+    // =============================================================================================
+
+    /// <summary>
+    /// Every line at which a generated artefact and the shape declared for it disagree, each named
+    /// with both texts.
+    /// </summary>
+    /// <remarks>
+    /// Every differing line is reported and not only the first, because the fact a reader needs is
+    /// WHICH sentence the generator invented, and an artefact that gained one sentence disagrees
+    /// from there to its end. The messages name both sides so that the reader can tell an invented
+    /// sentence from a shape that has fallen behind an intended edit.
+    /// </remarks>
+    private static List<string> Compare(string where, IReadOnlyList<string> declared, IReadOnlyList<string> actual)
+    {
+        var violations = new List<string>();
+
+        for (var line = 0; line < Math.Max(declared.Count, actual.Count); line++)
+        {
+            var expected = line < declared.Count ? declared[line] : "<end of artefact>";
+            var found = line < actual.Count ? actual[line] : "<end of artefact>";
+
+            if (!string.Equals(expected, found, StringComparison.Ordinal))
+            {
+                violations.Add(
+                    $"{where}({line + 1}) is not the line the declared shape carries." +
+                    $"\n  generated: {found}" +
+                    $"\n  declared:  {expected}");
+            }
+        }
+
+        return violations;
+    }
+}

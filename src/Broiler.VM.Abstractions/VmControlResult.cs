@@ -3,20 +3,22 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   9
-// Annotated:        9/9
-// Exempt:           8
-// Human-reviewed:   0/9
+// Relevant units:   12
+// Annotated:        12/12
+// Exempt:           12
+// Human-reviewed:   0/12
 // IP risk:          Low
 // Security risk:    Low
 // Resource impact:  1/10 max
-// Unverified:       9
+// Unverified:       12
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 namespace Broiler.VM;
 
 /// <summary>The four kinds a control operation can answer with.</summary>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=970DEC
+// Broiler-Human: PENDING
 public enum VmControlOutcome
 {
     /// <summary>The request was accepted and the state changed.</summary>
@@ -60,6 +62,8 @@ public enum VmControlOutcome
 /// table rather than resolved by dropping a requirement.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=ACBD34
+// Broiler-Human: PENDING
 public readonly struct VmControlResult : System.IEquatable<VmControlResult>
 {
     private VmControlResult(VmControlOutcome kind, VmReason reason)
@@ -145,6 +149,8 @@ public readonly struct VmControlResult : System.IEquatable<VmControlResult>
 /// <c>Broiler.VM.Runtime</c> because nothing a profile package names mentions it.
 /// </para>
 /// </remarks>
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=98445A
+// Broiler-Human: PENDING
 public sealed class VmCoreDefectException : System.Exception
 {
     /// <summary>Creates a defect report naming the runtime that was poisoned.</summary>
