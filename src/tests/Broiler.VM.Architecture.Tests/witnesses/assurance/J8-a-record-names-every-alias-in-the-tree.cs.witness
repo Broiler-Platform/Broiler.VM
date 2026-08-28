@@ -1,0 +1,52 @@
+// Witness for rule J8: the human-review record carries a row for every alias the tree
+// names, and the counts that separate a live decision from one the code has outrun.
+//
+// The record this replaced had one signature line, and therefore room for one person.
+// Nothing in Broiler.VM is in either state below and nothing may be put into one by
+// anything but a human, which is rule J4's subject. What this input shows is the shape
+// of the answer when two people have written on two declarations: two rows, read out of
+// the lines rather than out of a roster, one Current and one Outrun.
+//
+// Neither identifier is a person - see README.md.
+
+
+namespace Probe;
+
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=48D70A
+// Broiler-Human:        PENDING
+public static class Assessed
+{
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=44EBF3
+    // Broiler-Human:        WITNESS-ONLY; Fingerprint=44EBF3
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=44EBF3
+    // Broiler-Human:        STALE; Previous=WITNESS-TWO@44EBF3
+    public static int Widest(int[] values)
+    {
+        var widest = 0;
+
+        foreach (var value in values)
+        {
+            if (value > widest)
+            {
+                widest = value;
+            }
+        }
+
+        return widest;
+    }
+}

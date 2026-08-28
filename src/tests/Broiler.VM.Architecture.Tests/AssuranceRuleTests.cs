@@ -106,6 +106,11 @@ public sealed class AssuranceRuleTests
             artefact.RelativePath, AssuranceGenerator.ReportPath, StringComparison.Ordinal))
         .Desired;
 
+    private static string HumanReviewRecord => AssuranceGenerator.Current.Artefacts
+        .Single(static artefact => string.Equals(
+            artefact.RelativePath, AssuranceHumanReview.RelativePath, StringComparison.Ordinal))
+        .Desired;
+
     /// <summary>
     /// A witness input under <c>witnesses/assurance/</c>, read as though it were a product file.
     /// </summary>
@@ -907,14 +912,40 @@ public sealed class AssuranceRuleTests
     {
         AssertTheRegisterRowIsWhatTheRulesImplement("J4");
 
-        // The clean direction, at the source and in the artefacts. Non-vacuous: 496 annotated
-        // units, every one of them PENDING.
-        Assert.Empty(ApprovalViolations(ProductUnits));
-        Assert.Empty(ArtefactReviewerViolations(AssuranceGenerator.Current.Artefacts));
+        // The clean direction: every alias any generated artefact carries is one the SOURCE already
+        // carried. That is an inclusion and not an absence, and the difference is the whole of what
+        // makes this rule usable. Asserted as an absence - every human line reads PENDING, in the
+        // tree and in every artefact - it was a statement about one milestone rather than a rule,
+        // and it turned red on the first line a reviewer wrote. The property that has to hold
+        // forever is that the generator invents nobody, and it holds whether nobody or everybody
+        // has recorded a decision.
+        Assert.Empty(InventedApprovalViolations(
+            AssuranceSources.Files, AssuranceGenerator.Current.Artefacts));
+
+        // Non-vacuous: 689 annotations are read and the source artefacts carry a human line for
+        // each, so the comparison is over a real corpus rather than over an empty one. The count is
+        // over the SOURCE artefacts: the human-review record quotes an annotation block in a fenced
+        // example, and an example of the shape a reviewer writes is not a line anybody wrote.
         Assert.NotEmpty(ProductUnits.Where(static unit => unit.Annotation is not null));
+        Assert.Equal(
+            ProductUnits.Count(static unit => unit.Annotation is not null),
+            AssuranceGenerator.Current.Artefacts
+                .Where(static artefact => artefact.RelativePath.EndsWith(".cs", StringComparison.Ordinal))
+                .SelectMany(static artefact => new AssuranceTextLines(artefact.Desired))
+                .Count(static line => line.Trim().StartsWith(
+                    AssuranceAnnotation.HumanMarker, StringComparison.Ordinal)));
+
+        // ...and no unit reaches VERIFIED without a source line that says so. The state machine is
+        // the only thing that can produce that state, and this is the assertion that it produces it
+        // from the line rather than from anything else: every VERIFIED unit names an alias and the
+        // fingerprint its own declaration hashes to.
         Assert.All(
-            ProductUnits.Where(static unit => unit.Annotation is not null),
-            static unit => Assert.True(unit.Annotation!.HumanIsPending, unit.Where));
+            ProductUnits.Where(static unit => unit.State == AssuranceReviewState.Verified),
+            static unit =>
+            {
+                Assert.NotNull(unit.Annotation!.Reviewer);
+                Assert.Equal(unit.Fingerprint, unit.Annotation!.HumanFingerprint);
+            });
 
         // Clause: a live reviewer identifier. Two facts, reported separately, because deleting
         // either check would leave the other reporting the same input and look like coverage.
@@ -1030,34 +1061,42 @@ public sealed class AssuranceRuleTests
                 AssuranceAnnotation.HumanMarker));
 
         // Clause: the artefact half, REJECTING. The clean direction above ran over the real tree
-        // and had no counterpart, so the whole of ArtefactReviewerViolations could be replaced by
-        // an empty list with the suite green - an accepting-only assertion cannot tell a check
-        // that found nothing from a check that looks for nothing.
+        // and had no counterpart, so the whole of the artefact check could be replaced by an empty
+        // list with the suite green - an accepting-only assertion cannot tell a check that found
+        // nothing from a check that looks for nothing.
         //
-        // The witness carries a human line in one of the four defined shapes naming the version
-        // that is here, so the generator carries it through and the artefact it would write
-        // contains a reviewer identifier.
-        var rendered = Assert.Single(ArtefactReviewerViolations(
-        [
-            AssuranceProbe.ArtefactOnDisk(
-                WitnessText("J4-an-artefact-carries-a-reviewer.cs.witness"),
-                "J4-an-artefact-carries-a-reviewer.cs.witness"),
-        ]));
+        // The input is an artefact naming an alias, read against a source tree that does not carry
+        // it. That is the shape of the forgery: not a name in an artefact, which is what a recorded
+        // decision looks like, but a name in an artefact that no line a human wrote produced.
+        var artefact = AssuranceProbe.ArtefactOnDisk(
+            WitnessText("J4-an-artefact-carries-a-reviewer.cs.witness"),
+            "J4-an-artefact-carries-a-reviewer.cs.witness");
+
+        var rendered = Assert.Single(InventedApprovalViolations(
+            [AssuranceProbe.Source(WitnessText("J4-a-pending-line-claims-nothing.cs.witness"))],
+            [artefact]));
 
         Assert.Contains(
-            "J4-an-artefact-carries-a-reviewer.cs.witness carries " +
-            $"'// Broiler-Human:        WITNESS-ONLY; Fingerprint={WitnessFingerprint}'",
+            "J4-an-artefact-carries-a-reviewer.cs.witness names 'WITNESS-ONLY' on a human line, " +
+            "and no human line in the source tree carries that name",
             rendered,
             StringComparison.Ordinal);
 
-        // ...and the accepting direction through the same harness, so the clause is a comparison
-        // rather than a function that reports every artefact it is handed.
-        Assert.Empty(ArtefactReviewerViolations(
-        [
-            AssuranceProbe.ArtefactOnDisk(
-                WitnessText("J4-a-pending-line-claims-nothing.cs.witness"),
-                "J4-a-pending-line-claims-nothing.cs.witness"),
-        ]));
+        // ...and the accepting direction through the same function: the SAME artefact, read against
+        // the source that produced it, is not reported. A recorded decision travelling from a
+        // declaration into the artefact generated from it is the system working, and a rule that
+        // could not tell that from a forgery would have to forbid reviews to be satisfied.
+        Assert.Empty(InventedApprovalViolations(
+            [AssuranceProbe.Source(WitnessText("J4-an-artefact-carries-a-reviewer.cs.witness"))],
+            [artefact]));
+
+        // ...and the rendered line is what a reader would see, which is the reason this half reads
+        // the text rather than the model: a defect producing the right unit state and the wrong
+        // line is invisible to a check that reads only the model.
+        Assert.Contains(
+            $"// Broiler-Human:        WITNESS-ONLY; Fingerprint={WitnessFingerprint}",
+            artefact.Desired,
+            StringComparison.Ordinal);
     }
 
     /// <summary>The one line of a regenerated witness that opens with the given marker.</summary>
@@ -1121,15 +1160,56 @@ public sealed class AssuranceRuleTests
     /// column moved. What it must not do is loosen further - the body is compared for equality
     /// with <c>PENDING</c>, so <c>PENDING; Fingerprint=TBF</c> is still a violation here.
     /// </remarks>
-    private static List<string> ArtefactReviewerViolations(IEnumerable<AssuranceArtefact> artefacts) => artefacts
-        .SelectMany(static artefact => new AssuranceTextLines(artefact.Desired)
-            .Where(static line => line.Trim().StartsWith(AssuranceAnnotation.HumanMarker, StringComparison.Ordinal))
-            .Where(static line => !string.Equals(
-                line.Trim()[AssuranceAnnotation.HumanMarker.Length..].Trim(),
-                AssuranceAnnotation.Pending,
-                StringComparison.Ordinal))
-            .Select(line => $"{artefact.RelativePath} carries '{line.Trim()}'"))
-        .ToList();
+    /// <summary>
+    /// Every alias a generated artefact carries that no human line in the SOURCE tree carries.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This replaces an absolute check - no artefact human line reads anything but <c>PENDING</c> -
+    /// which was a true statement about VM-1 and not a rule. A reviewer records a decision by
+    /// writing their alias on a declaration, and that line is then in the file, in the artefact, and
+    /// in this check; the absolute form turned red on the first one written, which would have made
+    /// the review process this record exists for unusable.
+    /// </para>
+    /// <para>
+    /// What survives, and it is the half that was ever worth having, is the direction: a name may
+    /// travel from the source into an artefact and never the other way. The generator's write budget
+    /// is the machine field and the <c>STALE; Previous=</c> rewrite, and
+    /// <see cref="AssuranceGenerator.RefuseInventedApproval"/> throws rather than exceeding it; this
+    /// is the observation that it did not, made on the rendered text rather than on the model that
+    /// produced it.
+    /// </para>
+    /// <para>
+    /// The names are read by <see cref="AssuranceGenerator.ReviewerNames"/> on both sides, because
+    /// what is under test here is the INCLUSION and not the parsing - and that parser is separately
+    /// witnessed by the refusal clauses above, which drive it through a real generation.
+    /// </para>
+    /// </remarks>
+    private static List<string> InventedApprovalViolations(
+        IEnumerable<AssuranceSourceFile> sources,
+        IEnumerable<AssuranceArtefact> artefacts)
+    {
+        var carried = sources
+            .SelectMany(static source => HumanBodies(source.Text))
+            .SelectMany(AssuranceGenerator.ReviewerNames)
+            .ToHashSet(StringComparer.Ordinal);
+
+        return artefacts
+            .SelectMany(artefact => HumanBodies(artefact.Desired)
+                .SelectMany(AssuranceGenerator.ReviewerNames)
+                .Where(name => !carried.Contains(name))
+                .Select(name =>
+                    $"{artefact.RelativePath} names '{name}' on a human line, and no human line in " +
+                    "the source tree carries that name"))
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+    }
+
+    /// <summary>Every human line's body in a piece of text, at any indentation.</summary>
+    private static IEnumerable<string> HumanBodies(string text) => new AssuranceTextLines(text)
+        .Select(static line => line.Trim())
+        .Where(static line => line.StartsWith(AssuranceAnnotation.HumanMarker, StringComparison.Ordinal))
+        .Select(static line => line[AssuranceAnnotation.HumanMarker.Length..].Trim());
 
     // =====================================================================================
     // J5 - the generated artefacts are current
@@ -1164,9 +1244,11 @@ public sealed class AssuranceRuleTests
     {
         AssertTheRegisterRowIsWhatTheRulesImplement("J5");
 
-        // Non-vacuous: one artefact per covered product file, plus the component report and the
-        // manifest.
-        Assert.Equal(AssuranceSources.Files.Count + 2, AssuranceGenerator.Current.Artefacts.Count);
+        // Non-vacuous: one artefact per covered product file, plus the component report, the
+        // manifest and the human-review record. The record is in the plan rather than beside it,
+        // which is the whole of what made it a generated artefact: the same comparison that holds a
+        // file header to the tree holds the document a release is refused on.
+        Assert.Equal(AssuranceSources.Files.Count + 3, AssuranceGenerator.Current.Artefacts.Count);
         Assert.Contains(
             AssuranceGenerator.Current.Artefacts,
             static artefact => string.Equals(
@@ -1175,6 +1257,10 @@ public sealed class AssuranceRuleTests
             AssuranceGenerator.Current.Artefacts,
             static artefact => string.Equals(
                 artefact.RelativePath, AssuranceManifest.RelativePath, StringComparison.Ordinal));
+        Assert.Contains(
+            AssuranceGenerator.Current.Artefacts,
+            static artefact => string.Equals(
+                artefact.RelativePath, AssuranceHumanReview.RelativePath, StringComparison.Ordinal));
 
         // The primary clause: what is on disk is what the generator would write. It is
         // AssuranceGenerator.StaleArtefacts and not an expression written out here, because the
@@ -1371,15 +1457,24 @@ public sealed class AssuranceRuleTests
 
         Assert.Empty(ReportViolations(ComponentReport, ProductUnits));
 
-        // The report says, in its own words, that nothing here has been reviewed. Asserted on the
-        // text a reader sees, because that sentence is the report's whole subject.
+        // The report says, in its own words, how much of the component a human has read - asserted
+        // on the text a reader sees, because that sentence is the report's whole subject. It is
+        // asserted against the ANNOTATIONS and not against a literal: written as "nothing here has
+        // been reviewed", this assertion is a fact about one milestone, and the day somebody records
+        // a decision it fails for a reason that is not a defect. Nothing about the check is weaker
+        // for being derived - it still refuses a report that overstates by one.
+        var reviewed = ProductUnits.Count(static unit =>
+            unit.IsRelevant && unit.State == AssuranceReviewState.Verified);
+
         Assert.Contains(
-            "**Nothing in this component has been reviewed by a human.**",
+            reviewed == 0
+                ? "**Nothing in this component has been reviewed by a human.**"
+                : $"**Human-reviewed: {reviewed} of ",
             ComponentReport,
             StringComparison.Ordinal);
-        Assert.Contains("| Human reviewed | 0 of ", ComponentReport, StringComparison.Ordinal);
-        Assert.Contains("| VERIFIED | 0 |", ComponentReport, StringComparison.Ordinal);
-        Assert.Contains("no CI lane", ComponentReport, StringComparison.Ordinal);
+        Assert.Contains($"| Human reviewed | {reviewed} of ", ComponentReport, StringComparison.Ordinal);
+        Assert.Contains($"| VERIFIED | {reviewed} |", ComponentReport, StringComparison.Ordinal);
+        Assert.Contains(".github/workflows/", ComponentReport, StringComparison.Ordinal);
 
         // The report says, in the manifest's own words, that a covered fingerprint is not a
         // reviewed unit. The manifest header and rule J7's register row carry the same sentence,
@@ -1609,6 +1704,21 @@ public sealed class AssuranceRuleTests
                 StringComparison.Ordinal))
         {
             violations.Add("no unit is human-reviewed and the report does not say so in its own words");
+        }
+
+        // The other half of the same clause, and it is the one that will matter. A report that goes
+        // on stating an absence while the annotations record decisions is the false record this
+        // whole system is built to prevent, reached by leaving a sentence alone rather than by
+        // writing one - and rule J9 would accept it, because a review term standing behind a
+        // negation is a statement of absence whatever the annotations say.
+        if (summary.Verified > 0 &&
+            !report.Contains(
+                $"**Human-reviewed: {summary.Verified} of {summary.Relevant} relevant units.**",
+                StringComparison.Ordinal))
+        {
+            violations.Add(
+                $"{summary.Verified} unit(s) are human-reviewed and the report does not say so in " +
+                "its own words");
         }
 
         return violations;
@@ -2146,6 +2256,84 @@ public sealed class AssuranceRuleTests
         Assert.NotEmpty(dropped);
         Assert.Single(dropped.Where(claim => claim.Contains(
             $"declared:  {HighSecurityEntry(high[0])}", StringComparison.Ordinal)));
+
+        // ---- HUMAN_REVIEW.md ----
+        //
+        // The record a release is refused on. It is held here for the same reason as the report and
+        // one more: it is the document whose subject is who has read what, so a sentence invented in
+        // the generator would be a sentence about people, standing where a reader goes to find out.
+
+        Assert.Empty(AssuranceArtefactShape.HumanReviewViolations(
+            HumanReviewRecord, AssuranceGenerator.Current.Files, ProductUnits));
+
+        // Clause: a sentence the generator invents. As above, the input is the real record with one
+        // line put into it rather than a copy on disk.
+        var claimed = "Every unit below was read and accepted by the architecture owner.";
+
+        var forgedRecord = AssuranceArtefactShape.HumanReviewViolations(
+            HumanReviewRecord.Replace(
+                "## 7. Decisions Recorded\n",
+                $"## 7. Decisions Recorded\n\n{claimed}\n",
+                StringComparison.Ordinal),
+            AssuranceGenerator.Current.Files,
+            ProductUnits);
+
+        Assert.NotEmpty(forgedRecord);
+        Assert.Single(forgedRecord.Where(violation =>
+            violation.Contains($"generated: {claimed}", StringComparison.Ordinal)));
+        Assert.All(forgedRecord, static violation => Assert.Contains(
+            "HUMAN_REVIEW.md", violation, StringComparison.Ordinal));
+
+        // Clause: the coverage table names every covered file, once, and a dropped row is reported.
+        // This is the table that replaced the hand-written eight-area review route, and a route that
+        // has quietly lost a file reads as a component with less to look at than it has.
+        Assert.All(
+            AssuranceGenerator.Current.Files,
+            static file => Assert.Contains(
+                $"| `{file.RelativePath}` |", HumanReviewRecord, StringComparison.Ordinal));
+
+        // Clause: the alias rows are DERIVED from the human lines, and the derivation is checked
+        // rather than restated - the shape rebuilds them from the lines where the generator asks
+        // AssuranceHumanReview.Reviewers, so the two agreeing is two expressions of one rule. This
+        // is also the only place the multi-alias answer exists at all: nothing in this component
+        // names anybody, and the record must still have room for everybody.
+        var roster = AssuranceProbe.Source(
+            WitnessText("J8-a-record-names-every-alias-in-the-tree.cs.witness"),
+            "J8-a-record-names-every-alias-in-the-tree.cs");
+
+        var rostered = AssuranceScanner.Scan(roster);
+        var declaredRoster = AssuranceArtefactShape.ExpectedHumanReview([roster], rostered);
+
+        Assert.Equal(declaredRoster, AssuranceHumanReview.Render([roster], rostered));
+        Assert.Contains("| Alias | Units | Files | Current | Outrun |", declaredRoster, StringComparison.Ordinal);
+        Assert.Contains("| WITNESS-ONLY | 1 | 1 | 1 | 0 |", declaredRoster, StringComparison.Ordinal);
+        Assert.Contains("| WITNESS-TWO | 1 | 1 | 0 | 1 |", declaredRoster, StringComparison.Ordinal);
+
+        // ...and the status word is the aggregate of the states rather than anybody's opinion: one
+        // of the three relevant units carries a decision the current code answers to.
+        Assert.Contains(
+            "> **Status: PARTIAL.** Human-reviewed: 1 of 3 relevant units.",
+            declaredRoster,
+            StringComparison.Ordinal);
+
+        // ...and the record over THIS tree says whatever the tree says, which is the other direction
+        // of the same clause. Derived and not written out: "the record names nobody" is a fact about
+        // a milestone, and the first alias anybody records would have made it false.
+        var aliases = ProductUnits
+            .Select(AssuranceHumanReview.AliasOn)
+            .Where(static alias => alias is not null)
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+
+        Assert.Contains(
+            aliases.Length == 0
+                ? "No alias appears on a human line anywhere in the product tree."
+                : "| Alias | Units | Files | Current | Outrun |",
+            HumanReviewRecord,
+            StringComparison.Ordinal);
+        Assert.All(
+            aliases,
+            alias => Assert.Contains($"| {alias} | ", HumanReviewRecord, StringComparison.Ordinal));
     }
 
     // =====================================================================================
@@ -2190,10 +2378,12 @@ public sealed class AssuranceRuleTests
         // Non-vacuous, and this is the assertion that keeps the rule from being a quantifier over
         // nothing: the generated corpus DOES carry the vocabulary, in every artefact kind, and
         // every occurrence of it is one the annotations support.
+        var verifiedRow = $"| VERIFIED | {ProductUnits.Count(static unit => unit.State == AssuranceReviewState.Verified)} |";
+
         Assert.Contains(
             generated,
             text => string.Equals(text.Where, AssuranceGenerator.ReportPath, StringComparison.Ordinal) &&
-                text.Lines.Any(static line => line.Contains("| VERIFIED | 0 |", StringComparison.Ordinal)));
+                text.Lines.Any(line => line.Contains(verifiedRow, StringComparison.Ordinal)));
         Assert.Contains(
             generated,
             text => string.Equals(text.Where, AssuranceManifest.RelativePath, StringComparison.Ordinal) &&
@@ -2203,6 +2393,36 @@ public sealed class AssuranceRuleTests
             static text => Assert.Contains(
                 text.Lines,
                 static line => line.StartsWith("// Human-reviewed:", StringComparison.Ordinal)));
+
+        // ...and the record a release is refused on, which is where the vocabulary matters most: its
+        // headline states the term and then the count the annotations give, and this rule is the
+        // only thing keeping the two together.
+        Assert.Contains(
+            generated,
+            text => string.Equals(text.Where, AssuranceHumanReview.RelativePath, StringComparison.Ordinal) &&
+                text.Lines.Any(static line => line.Contains(
+                    "Human-reviewed:", StringComparison.Ordinal)));
+
+        // Clause: the lie the generated record makes cheapest - a headline claiming every relevant
+        // unit has been read. It is reported with the count the annotations actually give, so the
+        // message names the arithmetic and not the wording, and the count is derived here for the
+        // same reason it is derived in the rule: an expected figure written out as a literal is an
+        // assertion about one milestone.
+        var relevant = ProductUnits.Count(static unit => unit.IsRelevant);
+        var carried = ProductUnits.Count(static unit =>
+            unit.IsRelevant && unit.State == AssuranceReviewState.Verified);
+
+        var overstated = Assert.Single(AssuranceReviewClaims.Violations(
+            [
+                new AssuranceGeneratedText(
+                    AssuranceHumanReview.RelativePath,
+                    [$"> **Status: COMPLETE.** Human-reviewed: {relevant + 1} of {relevant} relevant units."]),
+            ],
+            ProductUnits));
+
+        Assert.Contains(
+            $"the count the annotations give ({carried})", overstated, StringComparison.Ordinal);
+        Assert.Contains(AssuranceHumanReview.RelativePath, overstated, StringComparison.Ordinal);
 
         // Clause: the attack, verbatim. Two claims that no annotation supports - one stating a
         // count that is not the count the annotations give, one stating nothing countable at all.
@@ -2218,9 +2438,9 @@ public sealed class AssuranceRuleTests
             "says '\"The component is eligible for release.\"'", StringComparison.Ordinal)));
         Assert.All(claimed, static claim => Assert.Contains(
             "and the annotations hold no such state", claim, StringComparison.Ordinal));
-        Assert.Single(claimed.Where(static claim => claim.Contains(
-            "the term 'verified' is stated with neither the count the annotations give (0) nor a " +
-            "negation before it",
+        Assert.Single(claimed.Where(claim => claim.Contains(
+            $"the term 'verified' is stated with neither the count the annotations give ({carried}) " +
+            "nor a negation before it",
             StringComparison.Ordinal)));
         Assert.Single(claimed.Where(static claim => claim.Contains(
             "the term 'eligible for release' is stated with neither the count the annotations give " +
@@ -2229,9 +2449,14 @@ public sealed class AssuranceRuleTests
 
         // Clause: the accepting direction, through the same function, over lines that carry the
         // very same vocabulary - so the rule is a comparison and not a prohibition on words.
+        //
+        // The witness states the figures of a tree in which nothing is reviewed, so it is read
+        // against a unit set in which nothing is: reading it against THIS component's units would
+        // make the clause pass only while this component's count was zero, which is the milestone
+        // fact this whole change is removing from the suite.
         Assert.Empty(AssuranceReviewClaims.Violations(
             [WitnessGeneratedText("J9-an-artefact-that-states-the-absence.json.witness")],
-            ProductUnits));
+            WitnessUnits("J4-a-pending-line-claims-nothing.cs.witness")));
 
         // Clause: the count is DERIVED and not frozen at zero. Handed a unit set in which one unit
         // is VERIFIED, the same line that was honest above becomes a violation, and the line that
@@ -2279,8 +2504,12 @@ public sealed class AssuranceRuleTests
             static line => line.Contains(
                 AssuranceAnnotation.FalsifiedIfMarker, StringComparison.Ordinal));
 
+        // ...read against a unit set in which nothing is reviewed, for the reason given above: the
+        // witness carries a generated header stating its own file's zero, and the point of this
+        // clause is the criterion line, not the header.
         var readAsProse = Assert.Single(AssuranceReviewClaims.Violations(
-            [WitnessGeneratedText("J9-a-criterion-is-not-a-review-claim.cs.witness")], ProductUnits));
+            [WitnessGeneratedText("J9-a-criterion-is-not-a-review-claim.cs.witness")],
+            WitnessUnits("J4-a-pending-line-claims-nothing.cs.witness")));
 
         Assert.Contains(
             "a verified artifact is returned before the declared count is compared",
@@ -2441,11 +2670,173 @@ public sealed class AssuranceRuleTests
             Environment.NewLine + "  " + string.Join(Environment.NewLine + "  ", missing));
     }
 
+    // =====================================================================================
+    // J11 - the release gate
+    // =====================================================================================
+
+    /// <summary>
+    /// J11. A tree may be published only when its assurance record says five things at once, and
+    /// each blocker is named with the declaration it is about.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>What this asserts that the ordinary gate cannot.</b> Rule J5 asks whether the generated
+    /// artefacts are what the generator would write, and is deliberately silent about what they say:
+    /// this component is built while nothing in it has been read, which ledger update rule 8
+    /// permits, so the ordinary gate must accept that tree. Publishing is the irreversible act, and
+    /// there the record's CONTENT is the thing under test.
+    /// </para>
+    /// <para>
+    /// <b>Why the accepting direction needs a synthesized tree.</b> Every relevant unit in this
+    /// component is <c>HUMAN_PENDING</c>. Without a witness in which the gate returns an empty list,
+    /// this rule would be a function nobody has ever watched succeed - and a gate that has only been
+    /// seen refusing is a gate that could refuse everything.
+    /// </para>
+    /// <para>
+    /// <b>Why the rejecting directions are that same witness with one thing altered.</b> The same
+    /// reason rule J8's report clauses mutate the real report: a witness file holding a fully
+    /// generated tree would carry baked fingerprints, would go stale the moment normalization
+    /// changed, and would be repaired by regenerating it. Each clause is still asserted by the
+    /// CONTENT of the blocker it expects, so five clauses cannot be lost in one patch.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void J11_A_Tree_May_Be_Published_Only_When_The_Record_Says_So()
+    {
+        AssertTheRegisterRowIsWhatTheRulesImplement("J11");
+
+        const string Witness = "J11-a-tree-that-may-be-published.cs.witness";
+
+        // The accepting direction. Three relevant units, every one of them carrying a decision the
+        // current code answers to, and the gate names nothing.
+        var publishable = ReleasePlan(WitnessText(Witness));
+
+        Assert.Empty(AssuranceRelease.Blockers(publishable));
+        Assert.Equal(3, publishable.Units.Count);
+        Assert.All(publishable.Units, static unit =>
+            Assert.Equal(AssuranceReviewState.Verified, unit.State));
+
+        // Clause: a generated artefact on disk is not what the generator would write, so the record
+        // a reader is about to trust describes a tree that is not this one.
+        var stale = new AssurancePlan(
+            [publishable.Artefacts[0] with { Current = publishable.Artefacts[0].Current.Replace(
+                AssuranceGenerator.Row("Human-reviewed:", "3/3"),
+                AssuranceGenerator.Row("Human-reviewed:", "9/9"),
+                StringComparison.Ordinal) }],
+            publishable.Files,
+            publishable.Units);
+
+        Assert.Single(AssuranceRelease.Blockers(stale).Where(static blocker => blocker.Contains(
+            "is not what the generator would write", StringComparison.Ordinal)));
+
+        // Clause: the review syntax. A value outside its vocabulary is a line this system cannot
+        // read, which is a decision nothing recorded.
+        var malformed = AssuranceRelease.Blockers(ReleasePlan(
+            WitnessText(Witness).Replace("IP=Low; Security=Low; Resources=3", "IP=Sideways; Security=Low; Resources=3", StringComparison.Ordinal)));
+
+        Assert.Single(malformed.Where(static blocker => blocker.Contains(
+            "IP=Sideways is outside its vocabulary", StringComparison.Ordinal)));
+
+        // ...and a well-formed block attached to no declaration at all, which is the shape a block
+        // left behind by a deleted member takes: it parses, it says something, and it describes
+        // nothing that is there.
+        var stranded = AssuranceRelease.Blockers(ReleasePlan(
+            WitnessText(Witness) +
+            "\n// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=TBF" +
+            "\n// Broiler-Human:        WITNESS-ONLY\n"));
+
+        Assert.Single(stranded.Where(static blocker => blocker.Contains(
+            "an assurance comment that is attached to no declaration", StringComparison.Ordinal)));
+
+        // Clause: a recorded fingerprint that is not the one its declaration produces now. The
+        // human line still names the current version, so the unit is VERIFIED and the fifth clause
+        // says nothing - which is what makes this clause its own fact rather than a second spelling
+        // of the state.
+        var drifted = ReleasePlan(WitnessText(Witness));
+        var recorded = drifted.Units.First(static unit =>
+            unit.Name.EndsWith(".Fold(int[])", StringComparison.Ordinal)).Fingerprint;
+
+        var mismatched = AssuranceRelease.Blockers(ReleasePlanFrom(
+            drifted.Artefacts[0].Desired.Replace(
+                $"Resources=3; Fingerprint={recorded}",
+                "Resources=3; Fingerprint=000000",
+                StringComparison.Ordinal)));
+
+        Assert.Single(mismatched.Where(blocker =>
+            blocker.Contains("records Fingerprint=000000 and the declaration hashes to", StringComparison.Ordinal)));
+        Assert.DoesNotContain(mismatched, static blocker => blocker.Contains(
+            "blocks a release", StringComparison.Ordinal));
+
+        // Clause: a unit at the top of the security vocabulary carrying no criterion, so nothing at
+        // the declaration says what would make it wrong.
+        var unfalsifiable = AssuranceRelease.Blockers(ReleasePlan(
+            WitnessText(Witness).Replace(
+                "IP=Low; Security=Low; Resources=2", "IP=Low; Security=High; Resources=2", StringComparison.Ordinal)));
+
+        Assert.Single(unfalsifiable.Where(static blocker => blocker.Contains(
+            "is assessed Security=High and carries no", StringComparison.Ordinal)));
+
+        // Clause: a relevant unit left in a state that blocks a release, named with the declaration
+        // and the line that produced the state rather than counted.
+        var unresolved = AssuranceRelease.Blockers(ReleasePlan(
+            WitnessText(Witness).Replace(
+                "// Broiler-Human:        WITNESS-ONLY\n    public static int Widest",
+                "// Broiler-Human:        PENDING\n    public static int Widest",
+                StringComparison.Ordinal)));
+
+        var pending = Assert.Single(unresolved);
+
+        Assert.Contains("Probe.Publishable.Widest(int[]) is HUMAN_PENDING", pending, StringComparison.Ordinal);
+        Assert.Contains("its human line reads 'PENDING'", pending, StringComparison.Ordinal);
+
+        // The gate over THIS checkout, and only when the publish lane arms it. Every relevant unit
+        // here is HUMAN_PENDING, which the owner's ruling permits and which this must not reject on
+        // an ordinary run.
+        if (AssuranceRelease.GateRequested)
+        {
+            var blockers = AssuranceRelease.Blockers(AssuranceGenerator.Current);
+
+            Assert.True(
+                blockers.Count == 0,
+                $"{blockers.Count} thing(s) block a release of this tree:" +
+                Environment.NewLine + "  " + string.Join(Environment.NewLine + "  ", blockers.Take(50)));
+        }
+        else
+        {
+            Assert.NotEmpty(AssuranceRelease.Blockers(AssuranceGenerator.Current));
+        }
+    }
+
+    /// <summary>
+    /// A plan over one synthesized file, generated once so that the artefact on disk and the
+    /// artefact the generator would write are the same text.
+    /// </summary>
+    /// <remarks>
+    /// Without the generation step every witness would trip the artefact clause first, and the four
+    /// clauses behind it would never be reached - which is exactly the shape of defect the group J
+    /// witnesses are written one per clause to avoid.
+    /// </remarks>
+    private static AssurancePlan ReleasePlan(string text) =>
+        ReleasePlanFrom(AssuranceGenerator.DesiredSource(
+            AssuranceProbe.Source(text), AssuranceScanner.Scan(AssuranceProbe.Source(text))));
+
+    /// <summary>A plan over already-generated text, taken as both what is on disk and what is wanted.</summary>
+    private static AssurancePlan ReleasePlanFrom(string generated)
+    {
+        var file = AssuranceProbe.Source(generated);
+        var units = AssuranceScanner.Scan(file);
+
+        return new AssurancePlan(
+            [new AssuranceArtefact(file.RelativePath, file.FullPath, generated, generated)],
+            [file],
+            units);
+    }
+
     /// <summary>One line of the report's high-security list, as the generator writes it.</summary>
     private static string HighSecurityEntry(AssuranceUnit unit) =>
         $"- `{unit.Name}` in `{unit.File.RelativePath}` - " +
         $"Security={unit.Annotation!.Field("Security")}, " +
-        $"state {AssuranceStateMachine.Name(unit.State)}";
+        $"human line {AssuranceHumanReview.HumanLine(unit)}";
 
     /// <summary>A witness file read as one piece of generated text.</summary>
     private static AssuranceGeneratedText WitnessGeneratedText(string fileName) =>
