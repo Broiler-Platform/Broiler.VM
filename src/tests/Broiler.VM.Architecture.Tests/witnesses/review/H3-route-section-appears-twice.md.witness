@@ -1,0 +1,45 @@
+# Witness: two route sections in one review record
+
+Both route tables below declare all eight areas, so nothing is missing, duplicated or foreign.
+What is wrong is that there are two of them: a section lookup that takes its first match can be
+pointed at a decoy inserted above the real one, and the table a reviewer actually follows is
+then never the table under test.
+
+## 4. Review Route
+
+| ID | Area | What a defect here would cost | Suggested time |
+|---|---|---|---|
+| RA-1 | Bounded reading of untrusted bytes | A defect here is expensive. | 45 min |
+| RA-2 | Resource authority and budgets | A defect here is expensive. | 45 min |
+| RA-3 | Lifecycle and state machine | A defect here is expensive. | 45 min |
+| RA-4 | Verified-artifact ownership | A defect here is expensive. | 45 min |
+| RA-5 | Guest-initiated loads and external suspension | A defect here is expensive. | 45 min |
+| RA-6 | The public contract surface | A defect here is expensive. | 45 min |
+| RA-7 | The records themselves | A defect here is expensive. | 45 min |
+| RA-8 | The evidence and the rule register | A defect here is expensive. | 45 min |
+
+## 4. Review Route (superseded, kept for history)
+
+| ID | Area | What a defect here would cost | Suggested time |
+|---|---|---|---|
+| RA-1 | Bounded reading of untrusted bytes | A defect here is expensive. | 45 min |
+| RA-2 | Resource authority and budgets | A defect here is expensive. | 45 min |
+| RA-3 | Lifecycle and state machine | A defect here is expensive. | 45 min |
+| RA-4 | Verified-artifact ownership | A defect here is expensive. | 45 min |
+| RA-5 | Guest-initiated loads and external suspension | A defect here is expensive. | 45 min |
+| RA-6 | The public contract surface | A defect here is expensive. | 45 min |
+| RA-7 | The records themselves | A defect here is expensive. | 45 min |
+| RA-8 | The evidence and the rule register | A defect here is expensive. | 45 min |
+
+## 8. Area Verdicts
+
+| ID | Area | Verdict | Reviewer note |
+|---|---|---|---|
+| RA-1 | Bounded reading of untrusted bytes | `[ ]` | |
+| RA-2 | Resource authority and budgets | `[ ]` | |
+| RA-3 | Lifecycle and state machine | `[ ]` | |
+| RA-4 | Verified-artifact ownership | `[ ]` | |
+| RA-5 | Guest-initiated loads and external suspension | `[ ]` | |
+| RA-6 | The public contract surface | `[ ]` | |
+| RA-7 | The records themselves | `[ ]` | |
+| RA-8 | The evidence and the rule register | `[ ]` | |

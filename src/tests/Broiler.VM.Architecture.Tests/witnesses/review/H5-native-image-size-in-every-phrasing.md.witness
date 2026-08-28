@@ -1,0 +1,12 @@
+# Witness: a wrong Native AOT image size in each recognised phrasing
+
+One sentence per recognised phrasing, each carrying its own number. The second is the one that
+matters most: a size written after a comma rather than after the word "of" is perfectly
+readable prose, and a phrasing list that could not match it left the bundle free to publish an
+image size off by a factor of eight with the suite green.
+
+- The host publishes as a 911,111-byte self-contained native binary.
+
+- It also runs as a Native AOT binary, 922,222 bytes, on win-x64.
+
+- The Native AOT size is 933,333 bytes.

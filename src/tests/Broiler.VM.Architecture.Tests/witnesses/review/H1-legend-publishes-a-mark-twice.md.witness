@@ -1,0 +1,27 @@
+# Witness: a legend that publishes one of the nine twice
+
+Set equality alone does not see this: the nine are all published and no tenth is added. A
+legend that lists `[MET]` twice is still a legend that has been edited without being read, and
+the duplicate clause is the only thing that reports it.
+
+## 1. How To Use This File
+
+### Evidence verdicts - set by the author, about evidence
+
+| Mark | Meaning |
+|---|---|
+| `[MET]` | Demonstrated. |
+| `[MET]` | Demonstrated, said a second time. |
+| `[PART]` | Partly demonstrated. |
+| `[UNMET]` | Not discharged. |
+| `[N/A]` | Not claimed at this milestone. |
+
+### Review verdicts - set by the reviewer, about their own reading
+
+| Mark | Meaning |
+|---|---|
+| `[ ]` | Not yet reviewed. |
+| `[A]` | Accepted as stated. |
+| `[C]` | Accepted with a condition. |
+| `[R]` | Rejected. |
+| `[?]` | Cannot be judged from what is here. |

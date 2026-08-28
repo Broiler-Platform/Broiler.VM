@@ -1,0 +1,20 @@
+# Witness: a review record that states no worksheet item count at all
+
+The anti-deletion half. A cross-document count that may simply be deleted is no anchor: the
+sentence has to be there, or the worksheet's own counts are again the only thing holding the
+worksheet's own counts up.
+
+## 4. Review Route
+
+The eight areas are ordered by risk, highest first.
+
+| ID | Area | What a defect here would cost | Suggested time |
+|---|---|---|---|
+| RA-1 | Bounded reading of untrusted bytes | A defect here is expensive. | 45 min |
+| RA-2 | Resource authority and budgets | A defect here is expensive. | 45 min |
+| RA-3 | Lifecycle and state machine | A defect here is expensive. | 45 min |
+| RA-4 | Verified-artifact ownership | A defect here is expensive. | 45 min |
+| RA-5 | Guest-initiated loads and external suspension | A defect here is expensive. | 45 min |
+| RA-6 | The public contract surface | A defect here is expensive. | 45 min |
+| RA-7 | The records themselves | A defect here is expensive. | 45 min |
+| RA-8 | The evidence and the rule register | A defect here is expensive. | 45 min |

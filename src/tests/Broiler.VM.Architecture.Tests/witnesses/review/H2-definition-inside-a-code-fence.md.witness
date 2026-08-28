@@ -1,0 +1,24 @@
+# Witness: an exclusion defined by an example inside a fenced code block
+
+A bundle README that explains how to add an exclusion shows the whole table shape in a fence,
+header and delimiter row and all. Scanning section 9 line by line with no fence tracking makes
+that worked example DEFINE the identifier it illustrates - it is a well-formed exclusion table
+in every respect except that it is an illustration - and a live citation of it is then
+laundered by a template.
+
+The unmeasured start-up path is recorded as EX-96.
+
+## 9. Exclusions
+
+| ID | Status | Exclusion |
+|---|---|---|
+| EX-01 | Open | The inbound half of the legacy-boundary rule is environment-conditional. |
+
+An exclusion is added by appending a row to the table above, in this shape:
+
+```
+| ID | Status | Exclusion |
+|---|---|---|
+| EX-96 | Open | One sentence naming the limit, and what closes it. |
+| EX-94 | Open | An identifier written inside a fence is an illustration, not a citation either. |
+```

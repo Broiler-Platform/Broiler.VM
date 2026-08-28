@@ -1,0 +1,47 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   2
+// Annotated:        2/2
+// Exempt:           0
+// Human-reviewed:   0/2
+// Release gate:     open
+// IP risk:          Low
+// Security risk:    Low
+// Resource impact:  3/10 max
+// Unverified:       2
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
+// Witness for rule J8: a generated file header carrying a row the declared shape does not carry.
+//
+// Rule J5 compares what is on disk against what the generator would write, so a sentence the
+// GENERATOR invents is what J5 would reproduce rather than report. This is the other side of that:
+// the header is held line for line to a shape kept by hand in AssuranceArtefactShape, and a row
+// that shape does not declare is named with its text wherever it sits.
+
+namespace Probe;
+
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=98DE55
+// Broiler-Human: PENDING
+public static class Invented
+{
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=44EBF3
+    // Broiler-Human: PENDING
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

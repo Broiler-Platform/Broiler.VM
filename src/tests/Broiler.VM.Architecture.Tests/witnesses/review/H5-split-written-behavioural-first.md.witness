@@ -1,0 +1,8 @@
+# Witness: the split written with its behavioural half first
+
+The same false figure as the exchanged-halves witness, in the other word order. A single
+pattern requiring the architecture half to appear textually first matches nothing at all here,
+so no split is extracted and nothing is compared - a transposed figure in the review record,
+which is the exact defect this component already found once.
+
+The suite was 44 behavioural and 131 architecture tests.

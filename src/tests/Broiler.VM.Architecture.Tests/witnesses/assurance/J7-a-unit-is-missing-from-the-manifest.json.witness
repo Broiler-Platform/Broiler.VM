@@ -1,0 +1,15 @@
+{
+  "$comment": [
+    "Witness for rule J7: a unit in the tree that the manifest does not cover. The plain instance",
+    "field is the one missing, which is exactly the population this rule exists for: it carries no",
+    "annotation, so without an entry here nothing in the checkout records a change to it at all."
+  ],
+  "files": [
+    { "file": "J7-the-tree-the-manifest-covers.cs.witness", "fingerprint": "3C1463" }
+  ],
+  "units": [
+    { "name": "Probe.Watched", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": false, "exemption": "None", "fingerprint": "0758D3" },
+    { "name": "Probe.Watched.Accepted", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": true, "exemption": "TrivialPropertyOrAccessor", "fingerprint": "1FBF49" },
+    { "name": "Probe.Watched.TryAdvance(ulong, ulong)", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": false, "exemption": "None", "fingerprint": "D6E774" }
+  ]
+}

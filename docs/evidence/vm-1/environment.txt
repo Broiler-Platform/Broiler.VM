@@ -1,0 +1,35 @@
+Broiler.VM evidence bundle VM-1-003 - environment
+
+OS                : Windows-10-10.0.26200-SP0
+Architecture      : AMD64
+Processors        : 16
+Python            : 3.11.9
+
+--- dotnet --version ---
+10.0.400
+
+--- dotnet --list-sdks ---
+5.0.416 [C:\program files\dotnet\sdk]
+9.0.317 [C:\program files\dotnet\sdk]
+10.0.100-rc.1.25451.107 [C:\program files\dotnet\sdk]
+10.0.400 [C:\program files\dotnet\sdk]
+
+--- dotnet --list-runtimes ---
+Microsoft.AspNetCore.App 3.1.32 [C:\program files\dotnet\shared\Microsoft.AspNetCore.App]
+Microsoft.AspNetCore.App 5.0.17 [C:\program files\dotnet\shared\Microsoft.AspNetCore.App]
+Microsoft.AspNetCore.App 8.0.30 [C:\program files\dotnet\shared\Microsoft.AspNetCore.App]
+Microsoft.AspNetCore.App 9.0.19 [C:\program files\dotnet\shared\Microsoft.AspNetCore.App]
+Microsoft.AspNetCore.App 10.0.11 [C:\program files\dotnet\shared\Microsoft.AspNetCore.App]
+Microsoft.NETCore.App 3.1.32 [C:\program files\dotnet\shared\Microsoft.NETCore.App]
+Microsoft.NETCore.App 5.0.17 [C:\program files\dotnet\shared\Microsoft.NETCore.App]
+Microsoft.NETCore.App 8.0.30 [C:\program files\dotnet\shared\Microsoft.NETCore.App]
+Microsoft.NETCore.App 9.0.19 [C:\program files\dotnet\shared\Microsoft.NETCore.App]
+Microsoft.NETCore.App 10.0.11 [C:\program files\dotnet\shared\Microsoft.NETCore.App]
+Microsoft.WindowsDesktop.App 3.1.32 [C:\program files\dotnet\shared\Microsoft.WindowsDesktop.App]
+Microsoft.WindowsDesktop.App 5.0.17 [C:\program files\dotnet\shared\Microsoft.WindowsDesktop.App]
+Microsoft.WindowsDesktop.App 8.0.30 [C:\program files\dotnet\shared\Microsoft.WindowsDesktop.App]
+Microsoft.WindowsDesktop.App 9.0.19 [C:\program files\dotnet\shared\Microsoft.WindowsDesktop.App]
+Microsoft.WindowsDesktop.App 10.0.11 [C:\program files\dotnet\shared\Microsoft.WindowsDesktop.App]
+
+Not a CI lane. One developer workstation, one RID (win-x64).
+Exclusion EX-45 records what that does not cover.

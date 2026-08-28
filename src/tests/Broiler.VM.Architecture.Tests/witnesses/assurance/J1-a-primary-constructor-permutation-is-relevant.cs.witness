@@ -1,0 +1,32 @@
+// Witness for rule J1: a type declaration header is a code unit, and a primary constructor is
+// declared in one.
+//
+// Round one's permuted-ceiling defeat came back verbatim through this shape. The predicate's case 2
+// was narrowed so that a constructor BODY assigning its parameters to the wrong members is
+// relevant - and a primary constructor has no body, so the whole decision sits in the declaration
+// line, which was in no unit at all. Every caller's section-count argument landed in the
+// declared-count ceiling and nothing in the record moved: no annotation, no fingerprint, no
+// manifest entry.
+//
+// `Bounds` carries no annotation, so J1 names it. `Permuted` is the same declaration with its two
+// parameters exchanged, and the test asserts the two token streams in full: the parameter list is
+// IN the header fingerprint, so the exchange moves it. `Ceiling` shows where the header stops -
+// its members are units of their own with fingerprints of their own, and folding them in here
+// would make one annotation go stale every time any member moved.
+
+namespace Probe;
+
+public readonly record struct Bounds(ulong MaxSectionCount, ulong MaxDeclaredCount);
+
+// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=23BF24
+// Broiler-Human: PENDING
+public readonly record struct Permuted(ulong MaxDeclaredCount, ulong MaxSectionCount);
+
+// Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=0; Fingerprint=0BC208
+// Broiler-Human: PENDING
+public sealed class Ceiling(ulong maxSectionCount) : System.IComparable
+{
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=16CEF9
+    // Broiler-Human: PENDING
+    public int CompareTo(object? other) => maxSectionCount.CompareTo(other);
+}

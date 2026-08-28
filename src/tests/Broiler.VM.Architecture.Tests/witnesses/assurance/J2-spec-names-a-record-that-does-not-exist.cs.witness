@@ -1,0 +1,29 @@
+// Witness for rule J2: a Spec field citing an ADR that is not in docs/adr/.
+//
+// ADR-9999 does not exist. The vocabulary check cannot see that, because Spec has no closed
+// vocabulary to be in - it is a citation, and a citation nobody resolves is how an annotation
+// comes to point at a record that was never written.
+
+namespace Probe;
+
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=1B0C44
+// Broiler-Human: PENDING
+public static class Cited
+{
+    // Broiler-AI:    Origin=AI; Spec=ADR-9999 s42; IP=Low; Security=Low; Resources=3; Fingerprint=44EBF3
+    // Broiler-Human: PENDING
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

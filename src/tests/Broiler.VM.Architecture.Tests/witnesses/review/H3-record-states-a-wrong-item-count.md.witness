@@ -1,0 +1,22 @@
+# Witness: a review record stating an item count the worksheet does not bear out
+
+The number of worksheet items is not an enumeration and cannot be - the worksheet grows. It is
+held by agreement between two documents instead, so that deleting an item and correcting the
+worksheet's own two number cells no longer leaves everything true. This fragment is read
+against the real worksheet, which carries fifty-three.
+
+## 4. Review Route
+
+The worksheet carries 52 items, contiguous from `RC-01`, one or more for each of the eight
+areas below.
+
+| ID | Area | What a defect here would cost | Suggested time |
+|---|---|---|---|
+| RA-1 | Bounded reading of untrusted bytes | A defect here is expensive. | 45 min |
+| RA-2 | Resource authority and budgets | A defect here is expensive. | 45 min |
+| RA-3 | Lifecycle and state machine | A defect here is expensive. | 45 min |
+| RA-4 | Verified-artifact ownership | A defect here is expensive. | 45 min |
+| RA-5 | Guest-initiated loads and external suspension | A defect here is expensive. | 45 min |
+| RA-6 | The public contract surface | A defect here is expensive. | 45 min |
+| RA-7 | The records themselves | A defect here is expensive. | 45 min |
+| RA-8 | The evidence and the rule register | A defect here is expensive. | 45 min |

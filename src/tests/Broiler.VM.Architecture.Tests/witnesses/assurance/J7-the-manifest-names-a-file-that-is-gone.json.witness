@@ -1,0 +1,17 @@
+{
+  "$comment": [
+    "Witness for rule J7: a file entry naming a file that is not covered. It is a record of a file",
+    "that no longer exists, and it is reported apart from a missing one because the two are different",
+    "facts about a checkout."
+  ],
+  "files": [
+    { "file": "J7-the-tree-the-manifest-covers.cs.witness", "fingerprint": "3C1463" },
+    { "file": "src/Broiler.VM.Runtime/VmRetired.cs", "fingerprint": "C0FFEE" }
+  ],
+  "units": [
+    { "name": "Probe.Watched", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": false, "exemption": "None", "fingerprint": "0758D3" },
+    { "name": "Probe.Watched.Accepted", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": true, "exemption": "TrivialPropertyOrAccessor", "fingerprint": "1FBF49" },
+    { "name": "Probe.Watched.TryAdvance(ulong, ulong)", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": false, "exemption": "None", "fingerprint": "D6E774" },
+    { "name": "Probe.Watched.position", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": true, "exemption": "FieldDeclaringStorage", "fingerprint": "B2A5C5" }
+  ]
+}

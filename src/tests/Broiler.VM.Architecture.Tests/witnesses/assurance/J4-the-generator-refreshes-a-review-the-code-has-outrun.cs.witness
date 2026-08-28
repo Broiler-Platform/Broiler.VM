@@ -1,0 +1,30 @@
+// Witness for rule J4: an approval the code has outrun.
+//
+// A human approved 112233 and the code no longer produces it. The generator marks
+// the review stale and preserves who approved what, rather than deleting it: 'this
+// was reviewed, and the current code is not that' is the useful record.
+
+
+namespace Probe;
+
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=48D70A
+// Broiler-Human: PENDING
+public static class Assessed
+{
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=TBF
+    // Broiler-Human: WITNESS-ONLY; Fingerprint=112233
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

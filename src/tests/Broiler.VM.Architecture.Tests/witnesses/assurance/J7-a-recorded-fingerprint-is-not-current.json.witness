@@ -1,0 +1,16 @@
+{
+  "$comment": [
+    "Witness for rule J7: a recorded unit fingerprint the code does not produce. The unit is the",
+    "exempt auto-property whose initializer states a shipped value, because for that population the",
+    "manifest entry is the only record that the change happened at all."
+  ],
+  "files": [
+    { "file": "J7-the-tree-the-manifest-covers.cs.witness", "fingerprint": "3C1463" }
+  ],
+  "units": [
+    { "name": "Probe.Watched", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": false, "exemption": "None", "fingerprint": "0758D3" },
+    { "name": "Probe.Watched.Accepted", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": true, "exemption": "TrivialPropertyOrAccessor", "fingerprint": "AB12CD" },
+    { "name": "Probe.Watched.TryAdvance(ulong, ulong)", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": false, "exemption": "None", "fingerprint": "D6E774" },
+    { "name": "Probe.Watched.position", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": true, "exemption": "FieldDeclaringStorage", "fingerprint": "B2A5C5" }
+  ]
+}

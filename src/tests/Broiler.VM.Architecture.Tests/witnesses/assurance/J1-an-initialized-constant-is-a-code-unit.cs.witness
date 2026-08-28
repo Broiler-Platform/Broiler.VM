@@ -1,0 +1,34 @@
+// Witness for rule J1: a const and a static readonly field with an initializer are RELEVANT.
+//
+// Both of these are budgets. Neither was a unit under the earlier scanner, which enumerated only
+// the members that can carry a body, so either could be multiplied by sixteen with no annotation
+// to move and no fingerprint to invalidate - while the method that READS the constant went on
+// asserting the fingerprint of the version that was assessed.
+//
+// The two fields below them are the other half of the same clause. Every field declaration is a
+// unit now, so `used` and `mutable` are enumerated, fingerprinted and covered by the manifest -
+// but neither states a value fixed for the life of the assembly, so the predicate answers case 7
+// and neither needs an annotation. Six units, two of them relevant.
+
+namespace Probe;
+
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=97C85A
+// Broiler-Human: PENDING
+public sealed class Budgeted
+{
+    public const int MaximumEntries = 64;
+
+    public static readonly int[] Widths = [1, 2, 4];
+
+    private readonly int used;
+
+    private int mutable;
+
+    public int Used => used;
+
+    public int Mutable
+    {
+        get { return mutable; }
+        set { mutable = value; }
+    }
+}

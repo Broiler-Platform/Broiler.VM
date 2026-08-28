@@ -9,7 +9,33 @@ stop condition.
 This bundle supports `In progress`. It does not support `Accepted`, and no dependent milestone
 may treat VM-0 as accepted on the strength of it.
 
-## Identity
+---
+
+## Field coverage
+
+One row per field the status ledger requires, with the section that carries it. The mark is an
+evidence verdict about what this bundle records; where a field is only partly recorded, the row
+names what is missing.
+
+Mark legend: [`HUMAN_REVIEW.md` section 1](../../../HUMAN_REVIEW.md#1-how-to-use-this-file) is
+canonical and is not copied here. Evidence verdicts are the author's, about the evidence; review verdicts are the reviewer's,
+and no reviewer has set one in this file.
+
+| Field | Section | Evidence | What is not recorded |
+|---|---|---|---|
+| Identity | 1 | [MET] | - |
+| Source | 2 | [MET] | - |
+| Dependencies and corpus | 3 | [PART] | No lockfile and no SDK pin, so the toolchain is recorded but not enforced (EX-03). |
+| Environment | 4 | [PART] | No RID, and no trimming or Native AOT mode. VM-0 claims none; roadmap invariant 7 requires publish-and-run evidence for such a claim and none was collected. |
+| Procedure | 5 | [PART] | The step 4 injection is described rather than scripted, and no injection script is retained. The bundle states the edge is described precisely enough to recreate by hand. |
+| Outputs | 6 | [PART] | The three packages are not retained, only the log that records them, and no retention policy is stated. |
+| Decision | 7 | [PART] | No reviewer verdict. None exists to record: `HUMAN_REVIEW.md` is unsigned and `PENDING`. |
+| Validity | 8 | [MET] | - |
+
+Exclusions belong to the Decision field. They are carried in section 9 for length, not as a ninth
+field.
+
+## 1. Identity
 
 | Field | Value |
 |---|---|
@@ -23,11 +49,11 @@ may treat VM-0 as accepted on the strength of it.
 
 Roadmap section 13 lists "Named ownership for the core contract and its amendments" as VM-0's
 only dependency, and it is satisfied.
-[ADR 0012](../adr/0012-security-ownership-and-support-matrix.md) records the six roles, what each
+[ADR 0012](../../adr/0012-security-ownership-and-support-matrix.md) records the six roles, what each
 blocks, and that one person holds them all. That last part is why the Reviewer row above is not a
 second name: this bundle has been assembled and checked, but not independently reviewed.
 
-## Source
+## 2. Source
 
 | Field | Value |
 |---|---|
@@ -41,7 +67,7 @@ re-collected against the commit above once the work landed, which is why the log
 directory are newer than the commit they describe: they are the output of running the procedure
 below against it. Nothing else in the component differs from that commit.
 
-## Dependencies and corpus
+## 3. Dependencies and corpus
 
 | Field | Value |
 |---|---|
@@ -55,7 +81,7 @@ below against it. Nothing else in the component differs from that commit.
 No SDK pin exists (Exclusion EX-03), so the toolchain above is what this machine happened to
 resolve, not what the repository enforces.
 
-## Environment
+## 4. Environment
 
 See `environment.txt`. Windows 11 Enterprise 10.0.26200 on x64, one machine, JIT only.
 
@@ -63,7 +89,7 @@ See `environment.txt`. Windows 11 Enterprise 10.0.26200 on x64, one machine, JIT
 claims no RID and no AOT result; roadmap invariant 7 requires publish-and-run evidence for those
 and none was collected.
 
-## Procedure
+## 5. Procedure
 
 Working directory `D:/Broiler.Browser/Broiler.VM`, with `DOTNET_CLI_UI_LANGUAGE=en` so the logs
 are readable by reviewers who do not share this machine's locale.
@@ -90,7 +116,7 @@ are recorded here because a discarded control is evidence too:
   failing run, so the sentence "after revert, all tests pass" was not evidenced by anything in
   the directory. Both runs are now in the log.
 
-## Outputs
+## 6. Outputs
 
 | Artefact | Result |
 |---|---|
@@ -100,22 +126,32 @@ are recorded here because a discarded control is evidence too:
 | `negative-control.log` | run 1, edge injected: **A4 and A7 fail**, 33 of 35 pass. Run 2, after revert: 35 pass. Both retained. |
 | `d1-outcome.txt` | which branch rule D1 took - `SCANNED` here, because an aggregate checkout is present above the component |
 | `hashes.txt` | SHA-256 of the vendored and generated files, the contract-version source, and all thirteen records under `docs/adr/` |
-| `../../src/tests/Broiler.VM.Architecture.Tests/rules.register.json` | 28 rules: **19 Active, 6 Vacuous, 3 Deferred** |
+| `../../../src/tests/Broiler.VM.Architecture.Tests/rules.register.json` | 28 rules: **19 Active, 6 Vacuous, 3 Deferred** |
 
 Observed, not asserted: the produced `Broiler.VM.Runtime.nuspec` declares dependencies only on
 `Broiler.VM.Abstractions` and `Broiler.VM.Binary`, and no produced package's metadata names a
 language. Those are the conditions rules C1 to C3 will check when a pack step exists; at VM-0
 they are an observation about a manual run, not a gate (Exclusion EX-04).
 
-## Decision
+## 7. Decision
 
 **Expected gate:** roadmap section 13's VM-0 objective exit gate.
 
-**Actual result:** the acyclic shell graph builds; the architecture tests run and pass; the
-twelve boundary ADRs are written and bound to the code by tests E1 to E4; core contract version 1
-is assigned and carried by `VmCoreContract`; the amendment procedure is published; the four
-explicit decisions and the three embedding decisions each carry a recorded ruling with its
-reasoning; and verification is recorded as separable from execution and required to stay so.
+**Actual result.** The VM-0 gate is stated in prose rather than clause by clause. The claims below,
+`G-01` to `G-07`, are the ones that prose enumerates, in the order it names them; no clause has
+been invented to fill out a table. The **Evidence** column is the author's verdict about the
+evidence. The **Review** column is the reviewer's, one cell per claim, so a claim can be disagreed
+with singly; none has been set.
+
+| ID | Evidence | Review | Claim | Result |
+|---|---|---|---|---|
+| G-01 | [MET] | [ ] | the acyclic shell graph builds | 5 projects, Release, 0 warnings and 0 errors (`build.log`) |
+| G-02 | [MET] | [ ] | the architecture tests run and pass | 35 passed, 0 failed, 0 skipped (`test.log`). The negative control shows A4 and A7 rejecting the injected edge and the suite green after revert |
+| G-03 | [PART] | [ ] | the twelve boundary ADRs are written and bound to the code by tests E1 to E4 | The records are written and E1 to E4 bind them. No architecture rule asserts any transition, member, state or category named in ADRs 0002 through 0011 (EX-21) |
+| G-04 | [MET] | [ ] | core contract version 1 is assigned and carried by `VmCoreContract` | Read from the build output; the contract-version source is hashed in `hashes.txt` |
+| G-05 | [MET] | [ ] | the amendment procedure is published | Recorded with core contract version 1 in [ADR 0003](../../adr/0003-core-contract-v1-and-amendments.md) |
+| G-06 | [MET] | [ ] | the four explicit decisions and the three embedding decisions each carry a recorded ruling with its reasoning | Recorded, each in its owning record |
+| G-07 | [MET] | [ ] | verification is recorded as separable from execution and required to stay so | Recorded. Nothing in the VM-0 shell graph implements or checks it (EX-21) |
 
 **The claim this justifies, in the words the ledger and the ADRs use:** *every forbidden edge in
 the VM-0 shell graph is expressed and witnessed; nine rules await their subject and are
@@ -123,40 +159,21 @@ registered in rules.register.json.* The unqualified sentence "architecture tests
 forbidden edge" is not claimed anywhere, because six rules are Vacuous and three are Deferred.
 
 **Exclusions.** Thirty-four are declared across the ADRs and carried here by identifier; each is
-stated in full in its owning record. The ones that most limit this bundle:
+stated in full in its owning record. The ones that most limit this bundle are listed in section 9.
 
-- **EX-01** - the inbound half of the legacy-boundary rule is decidable only when an aggregate
-  checkout is present above the component. Rule D1 ran and passed here because one is; a
-  standalone checkout reports inconclusive, not pass. Closed by: a check owned by the aggregate
-  repository, recommended and not taken at VM-0.
-- **EX-05** - 9 of 28 rules await their subject and assert nothing about behaviour that does not
-  exist yet. Closed by: VM-1 for the six Vacuous rules, VM-6 for the three Deferred ones.
-- **EX-03** - no SDK pin exists; this bundle is reproducible only against the recorded SDK
-  version, not enforced by the repository.
-- **EX-11** - VM-0 proposes but does not apply 17 roadmap amendments. The register in ADR 0003
-  is a list of proposals; `roadmap.md` is unchanged except for one stale status sentence.
-- **EX-21** - no architecture rule asserts any transition, member, state or category named in
-  ADRs 0002 through 0011. Those are paper decisions; nothing in the shell graph implements or
-  checks them. Closed by: VM-1.
-- **EX-30** - all six roles are held, so the dependency is met, but owner and reviewer are the
-  same person and no review decision is signed, so ledger update rule 7's confirmation is not
-  independent and VM-0 is not accepted.
-- **EX-31** - no public support table exists; section 15 gate 1 is unmet. Closed by: VM-6.
-- **EX-02** - section 15 gate 2 is not claimed. It is a release gate.
-
-**Unexplained failures:** none. **Deviations:** none beyond the discarded controls recorded under
-Procedure.
+**Unexplained failures:** none. **Deviations:** none beyond the discarded controls recorded in
+section 5.
 
 **Reviewer verdict:** none recorded. The reviewer is named in
-[HUMAN_REVIEW.md](../../HUMAN_REVIEW.md), where the decision is `PENDING` and the attestation is
+[HUMAN_REVIEW.md](../../../HUMAN_REVIEW.md), where the decision is `PENDING` and the attestation is
 unsigned.
 
 **Follow-up owner:** MaiRat. The next action is not technical: it is reading the twelve records
-and signing or rejecting them in [HUMAN_REVIEW.md](../../HUMAN_REVIEW.md).
+and signing or rejecting them in [HUMAN_REVIEW.md](../../../HUMAN_REVIEW.md).
 
-## Validity
+## 8. Validity
 
-**Reproduction.** Check out commit `1bba027`, then run steps 1 to 4 above from the component
+**Reproduction.** Check out commit `1bba027`, then run steps 1 to 4 in section 5 from the component
 root. Step 4 needs the injection script; it is not retained in the repository, and
 the edge it adds is described precisely enough above to recreate by hand in one line of XML.
 
@@ -169,3 +186,22 @@ ledger update rule 5 it requires recording, per affected record, what recertifie
 must be re-collected, and what is superseded. Because every result here is JIT-only and
 single-platform, any claim about another RID, about trimming, or about Native AOT requires a new
 bundle rather than an extension of this one.
+
+## 9. Exclusions
+
+The exclusions that most limit this bundle. Each is stated in full in its owning record.
+**Status** is `Open` where the limit still stands and `Closed` where a dated decision has
+discharged it; a closed exclusion is retained, not deleted. All nine are open: nothing retained
+in this bundle discharges any of them.
+
+| ID | Status | Exclusion |
+|---|---|---|
+| EX-01 | Open | The inbound half of the legacy-boundary rule is decidable only when an aggregate checkout is present above the component. Rule D1 ran and passed here because one is; a standalone checkout reports inconclusive, not pass. Closed by: a check owned by the aggregate repository, recommended and not taken at VM-0. |
+| EX-02 | Open | Section 15 gate 2 is not claimed. It is a release gate. |
+| EX-03 | Open | No SDK pin exists; this bundle is reproducible only against the recorded SDK version, not enforced by the repository. |
+| EX-04 | Open | Packaging is not gated at VM-0. Rules C1, C2 and C3 are Deferred to VM-6, so the pack result in section 6 is an observation about a manual run rather than a rule assertion. |
+| EX-05 | Open | 9 of 28 rules await their subject and assert nothing about behaviour that does not exist yet. Closed by: VM-1 for the six Vacuous rules, VM-6 for the three Deferred ones. |
+| EX-11 | Open | VM-0 proposes but does not apply 17 roadmap amendments. The register in ADR 0003 is a list of proposals; `roadmap.md` is unchanged except for one stale status sentence. |
+| EX-21 | Open | No architecture rule asserts any transition, member, state or category named in ADRs 0002 through 0011. Those are paper decisions; nothing in the shell graph implements or checks them. Closed by: VM-1. |
+| EX-30 | Open | All six roles are held, so the dependency is met, but owner and reviewer are the same person and no review decision is signed, so ledger update rule 7's confirmation is not independent and VM-0 is not accepted. |
+| EX-31 | Open | No public support table exists; section 15 gate 1 is unmet. Closed by: VM-6. |

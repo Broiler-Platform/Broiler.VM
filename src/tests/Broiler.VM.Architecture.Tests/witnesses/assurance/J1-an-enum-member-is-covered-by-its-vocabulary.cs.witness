@@ -1,0 +1,29 @@
+// Witness for rule J1: an enum declaration is the reviewable unit, and its members are entries in
+// the vocabulary it declares.
+//
+// The budget dimensions and the reason codes of this component are enum members, and changing one
+// is a change to the contract vocabulary. Under the old enumeration a member was in no unit, so
+// nothing recorded it. Two things answer that here and they are different answers. Each member is
+// now a unit with a manifest entry of its own, so a changed VALUE moves a recorded value that names
+// the member. And the enum DECLARATION is a unit whose fingerprint covers the whole vocabulary -
+// every member, every value - so the one annotation on it is bound to the vocabulary rather than to
+// the word `enum`, and adding, removing, renaming, reordering or revaluing a member makes it stale.
+//
+// `ProbeDimension` carries that annotation. `ProbeReason` carries none, so J1 names it: an enum is
+// relevant, and being a vocabulary is not an exemption from being assessed.
+
+namespace Probe;
+
+// Broiler-AI:    Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=043DBE
+// Broiler-Human: PENDING
+public enum ProbeDimension
+{
+    AllocatedBytes = 2,
+
+    VerifierWork = 6,
+}
+
+public enum ProbeReason
+{
+    None = 0,
+}

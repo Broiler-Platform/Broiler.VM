@@ -1,0 +1,24 @@
+# Witness: a decoy decision section above the real one
+
+This is the shape of a false approval that a first-match section lookup cannot see. The decoy
+above ticks PENDING, so the rule reads one ticked box, decides the record is pending, and never
+looks at the attestation - while the section a reader sees records APPROVED FOR PREVIEW over
+four unsigned fields.
+
+## Decision vocabulary
+
+- [x] **PENDING** - the shape of a ticked entry.
+
+## 9. Decision
+
+- [x] **APPROVED FOR PREVIEW** within the intended-use scope above.
+- [ ] **APPROVED WITH CONDITIONS** listed below.
+- [ ] **NOT APPROVED.**
+- [ ] **PENDING** - not yet reviewed.
+
+## 11. Human Attestation
+
+- **Name:** _not yet signed_
+- **Reviewer alias:** _not yet signed_
+- **Signature or attributable commit:** _not yet signed_
+- **Date:** _not yet signed_

@@ -1,0 +1,42 @@
+// Witness for rule J7: an assembly-level attribute, which is in no code unit at all.
+//
+// This file is J7-the-tree-the-manifest-covers.cs.witness with ONE line added, and that line is
+// the fourth defeat of the fourth adversarial round: `[assembly: InternalsVisibleTo("anything")]`
+// opens every internal type in an assembly to a caller of the attacker's choosing. It is not a
+// member of any type, so no widening of the unit enumeration can ever reach it - the units below
+// are the same four units with the same four fingerprints, which the test asserts rather than
+// assumes. What moves is the file fingerprint, and that is the whole of the repair: the manifest
+// records one per covered file, over the complete token stream of its compilation unit.
+//
+// The test reads this file under the OTHER witness's name, so that the manifest which covers that
+// tree exactly is the manifest under test and the disagreement it reports is the file fingerprint
+// and nothing else.
+
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("anything")]
+
+namespace Probe;
+
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=0758D3
+// Broiler-Human: PENDING
+public sealed class Watched
+{
+    private ulong position;
+
+    public static Verdict Accepted { get; } = new Verdict(Reason.None);
+
+    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-Human: PENDING
+    public bool TryAdvance(ulong count, ulong limit)
+    {
+        if (count > limit - this.position)
+        {
+            return false;
+        }
+
+        this.position += count;
+
+        return true;
+    }
+}

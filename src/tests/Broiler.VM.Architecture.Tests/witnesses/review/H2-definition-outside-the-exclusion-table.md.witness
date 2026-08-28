@@ -1,0 +1,19 @@
+# Witness: an exclusion defined by a row that is not in the exclusion table
+
+A bundle carries a gate table, an errata table, a negative-control table and a hash table as
+well as its exclusion table. The first attempt accepted any table row in a bundle whose first
+cell was an EX- identifier, so any of them could launder an undefined citation.
+
+## 7. Decision
+
+| ID | Evidence | Review | Gate clause | Result |
+|---|---|---|---|---|
+| EX-77 | [MET] | [ ] | a gate clause, which is not an exclusion | Shown |
+
+The mediation bound is recorded as EX-77.
+
+## 9. Exclusions
+
+| ID | Status | Exclusion |
+|---|---|---|
+| EX-01 | Open | The inbound half of the legacy-boundary rule is environment-conditional. |

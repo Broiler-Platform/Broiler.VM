@@ -12,6 +12,20 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Include="xunit" Version="2.5.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
+
+    <!-- The Broiler Code Assurance scanner parses the product sources with Roslyn, because the
+         policy asks for a fingerprint over syntax rather than over file text.
+
+         5.3.0 is a stable release that ships a net10.0 lib rather than only netstandard2.0, and
+         it is pinned exactly. Newer stable releases exist (5.6.0, 5.9.0) and would also serve;
+         the scanner uses only the syntax API, which has not moved, so the reason to prefer this
+         one is that it needs nothing newer, not that nothing newer works.
+
+         THIS PROJECT ONLY. Rule A2 forbids a Broiler.* package and this is not one; rule B1
+         constrains Abstractions and Binary and this project is neither; NuGet.config clears every
+         source and lists nuget.org, where this package resolves. No product project may acquire
+         it - a parser in a shipping assembly would be a dependency the component does not have. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.3.0" />
   </ItemGroup>
 
   <ItemGroup>

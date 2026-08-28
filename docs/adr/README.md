@@ -4,9 +4,20 @@ These records are milestone VM-0 of [the component roadmap](../roadmap.md): they
 freeze the component's ownership, terminology, dependency graph, and the
 profile-neutral contract that milestone VM-1 implements. They are decisions, not
 implementation. What has actually been built and proven is recorded in
-[the status ledger](../roadmap.status.md) and in
-[the VM-0 evidence bundle](../evidence/vm-0/README.md); nothing here should be
+[the status ledger](../roadmap.status.md), in
+[the VM-0 evidence bundle](../evidence/vm-0/README.md) and in
+[the VM-1 evidence bundle](../evidence/vm-1/README.md); nothing here should be
 read as a capability claim.
+
+**Milestone VM-1 has now implemented what these records describe, and three of
+them could not be honoured verbatim.** The VM-1 bundle names all three as errata
+rather than amendments: `VmControlResult` is a struct rather than the enum ADR
+0003's name table records, because ADR 0004 and ADR 0009 both require it to carry
+a reason; stage results are constructed through hidden public factories rather
+than internal constructors, because rule A10 forbids `InternalsVisibleTo` and a
+profile package must be able to name them; and `VmOperation` is a frozen public
+name the implementation does not export. A reader comparing a record against the
+code should read that bundle's Deviations section first.
 
 Every record carries a `**Core contract:**` header field. The ten
 contract-bearing records own part of core contract version 1 and cannot change
@@ -18,10 +29,10 @@ table lists exactly the files present, that every record declares the field, and
 that the contract-bearing ten declare the version the `VmCoreContract` constants
 carry.
 
-All twelve are `Proposed`, not `Approved`. The core-contract owner role is
-vacant, so no one is in a position to accept them;
-[ADR 0012](0012-security-ownership-and-support-matrix.md) records the six vacant
-roles and what each blocks.
+All twelve are `Proposed`, not `Approved`. Every one of the six ownership roles
+in [ADR 0012](0012-security-ownership-and-support-matrix.md) is now held by one
+person, so someone is in a position to accept them - but nobody has, and with a
+single maintainer that confirmation would not be independent.
 
 | ADR | Topic | Core contract |
 |---|---|---|

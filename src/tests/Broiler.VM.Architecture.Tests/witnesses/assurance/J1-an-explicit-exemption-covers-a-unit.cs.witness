@@ -1,0 +1,19 @@
+// Witness for rule J1: the per-unit escape hatch the predicate cannot see.
+//
+// Shim would otherwise be relevant. A reason a human wrote down outranks a predicate
+// that could not see what they saw, so the coverage clause reports nothing and the
+// unit is recorded as exempt by DeclaredInSource rather than by one of the six cases.
+
+namespace Probe;
+
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=6793DD
+// Broiler-Human: PENDING
+public static class Hatched
+{
+    // Broiler-AI:    EXEMPT=a generated marshalling shim that decides nothing
+    // Broiler-Human: PENDING
+    public static int Shim(int value)
+    {
+        return value + 1;
+    }
+}

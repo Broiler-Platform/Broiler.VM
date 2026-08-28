@@ -1,0 +1,30 @@
+// Witness for rule J3: a STALE line, which the rule must not reject.
+//
+// Previous=WITNESS-ONLY@112233 is history and not a live claim. Reporting it as a
+// fingerprint mismatch would punish the generator for recording what it is
+// required to record, and would push a reviewer towards deleting the history.
+
+
+namespace Probe;
+
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=48D70A
+// Broiler-Human: PENDING
+public static class Assessed
+{
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=44EBF3
+    // Broiler-Human: STALE; Previous=WITNESS-ONLY@112233
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

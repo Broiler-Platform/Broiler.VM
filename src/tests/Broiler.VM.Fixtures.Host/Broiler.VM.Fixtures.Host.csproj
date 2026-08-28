@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Fixtures.Host</RootNamespace>
+    <AssemblyName>Broiler.VM.Fixtures.Host</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+
+    <!-- ADR 0001 names this the test-only composition root VM-1 creates, and reserves the
+         .Jit/.Trimmed/.Aot suffixes for its publish modes. One project with three publish
+         configurations satisfies the gate's "trimmed and Native AOT test hosts" inside the
+         two-project budget VM-1 is allowed; two host projects would need a dated revision of
+         that record and would prove nothing the publish properties do not. -->
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+
+    <!-- Invariant 7 classifies analyzer success as an INPUT and requires publish-and-run
+         evidence. Warnings are errors here so that an analyzer complaint cannot be walked past
+         on the way to collecting that evidence. -->
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Fixtures\Broiler.VM.Fixtures.csproj" />
+  </ItemGroup>
+
+</Project>

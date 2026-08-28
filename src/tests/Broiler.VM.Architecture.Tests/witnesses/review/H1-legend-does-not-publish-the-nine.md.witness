@@ -1,0 +1,30 @@
+# Witness: a legend that is not the nine marks
+
+This legend publishes a tenth mark and drops one of the nine. The first attempt read the
+legend with the same capped regex it used for the body, so a tenth mark was invisible to the
+equality check that was supposed to catch it.
+
+## 1. How To Use This File
+
+### Evidence verdicts - set by the author, about evidence
+
+| Mark | Meaning |
+|---|---|
+| `[MET]` | Demonstrated. |
+| `[PART]` | Partly demonstrated. |
+| `[UNMET]` | Not discharged. |
+| `[N/A]` | Not claimed at this milestone. |
+| `[WAIVED]` | A tenth mark, which the nine do not contain. |
+
+### Review verdicts - set by the reviewer, about their own reading
+
+| Mark | Meaning |
+|---|---|
+| `[ ]` | Not yet reviewed. |
+| `[A]` | Accepted as stated. |
+| `[C]` | Accepted with a condition. |
+| `[R]` | Rejected. |
+
+## 2. Something Else
+
+`[?]` is never published above, so the legend is short of the nine as well as over them.

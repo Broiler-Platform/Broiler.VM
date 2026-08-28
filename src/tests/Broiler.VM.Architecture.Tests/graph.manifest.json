@@ -1,17 +1,37 @@
 {
   "$comment": [
-    "The frozen VM-0 project graph. ADR 0001 prints this table; rule A7 asserts multiset",
-    "equality between the resolved checkout and this file, so an edge added without amending",
-    "ADR 0001 fails, and so does an edge the ADR promises that the checkout no longer has.",
+    "The frozen project graph. ADR 0001 prints this table; rule A7 asserts multiset equality",
+    "between the resolved checkout and this file, so an edge added without amending ADR 0001",
+    "fails, and so does an edge the ADR promises that the checkout no longer has.",
     "Generated at VM-0 and hand-maintained thereafter; the docs test asserting that the",
-    "printed table matches this file is deferred to VM-6."
+    "printed table matches this file is deferred to VM-6.",
+    "",
+    "VM-1 adds the two test-only projects ADR 0001's budget permits - the composition-root host",
+    "and the behavioural contract suite - taking the graph from 5 projects and 8 edges to 7 and",
+    "16. It adds ZERO packable assemblies: the packable set stays exactly the three product",
+    "packages, and a fourth PackageId before VM-3 requires a dated revision of ADR 0001."
   ],
+  "milestone": "VM-1",
   "coreContractVersion": 1,
   "projects": [
     {
       "path": "src/tests/Broiler.VM.Architecture.Tests/Broiler.VM.Architecture.Tests.csproj",
       "assemblyName": "Broiler.VM.Architecture.Tests",
       "rootNamespace": "Broiler.VM.Architecture.Tests",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": true,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Fixtures",
+        "Broiler.VM.Runtime"
+      ]
+    },
+    {
+      "path": "src/tests/Broiler.VM.Contract.Tests/Broiler.VM.Contract.Tests.csproj",
+      "assemblyName": "Broiler.VM.Contract.Tests",
+      "rootNamespace": "Broiler.VM.Contract.Tests",
       "packageId": null,
       "isPackable": false,
       "isTestProject": true,
@@ -32,6 +52,20 @@
       "projectReferences": [
         "Broiler.VM.Abstractions",
         "Broiler.VM.Binary"
+      ]
+    },
+    {
+      "path": "src/tests/Broiler.VM.Fixtures.Host/Broiler.VM.Fixtures.Host.csproj",
+      "assemblyName": "Broiler.VM.Fixtures.Host",
+      "rootNamespace": "Broiler.VM.Fixtures.Host",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Fixtures",
+        "Broiler.VM.Runtime"
       ]
     },
     {
@@ -66,3 +100,4 @@
     }
   ]
 }
+

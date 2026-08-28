@@ -1,0 +1,11 @@
+# Witness: a table row that omits the optional leading pipe
+
+GFM makes the leading pipe optional as well as the trailing one, and a row that omits it is a
+real row of the table it sits in. A scan gated on the leading pipe skipped such a row whole -
+the identical defect as the trailing-pipe one, one pipe over - so an overall verdict appended
+to the end of an area-verdict table went unread.
+
+| ID | Area | Verdict | Reviewer note |
+|---|---|---|---|
+| RA-1 | Bounded reading of untrusted bytes | `[ ]` | |
+Overall | Whole component | `[APPROVED]` | Signed off by the owner. |

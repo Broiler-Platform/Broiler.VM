@@ -1,0 +1,15 @@
+# Witness: an exclusion citation written in markdown italics
+
+An underscore is a word character, so a pattern anchored with a word boundary does not merely
+mis-parse an italicised citation - it never sees it at all, and an undefined exclusion goes
+entirely unreported. Section 11 of HUMAN_REVIEW.md writes its placeholders the same way, so
+this is a spelling the authors already use.
+
+Three limits are carried by the VM-1 bundle rather than restated here: _EX-95_ for the
+unmeasured start-up path, and two others.
+
+## 9. Exclusions
+
+| ID | Status | Exclusion |
+|---|---|---|
+| EX-01 | Open | The inbound half of the legacy-boundary rule is environment-conditional. |

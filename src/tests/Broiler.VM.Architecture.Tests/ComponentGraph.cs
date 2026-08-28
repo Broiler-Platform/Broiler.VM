@@ -33,6 +33,18 @@ internal static class ComponentGraph
     /// </summary>
     internal static IReadOnlyList<ProjectFile> Witnesses { get; } = LoadWitnesses();
 
+    /// <summary>
+    /// Every witness input on disk, of every shape, found by recursing over <c>*.witness</c>.
+    /// </summary>
+    /// <remarks>
+    /// <see cref="Witnesses"/> parses project files and so can only glob <c>*.csproj.witness</c>;
+    /// the group E witnesses under witnesses/adr/ and the group H witnesses under
+    /// witnesses/review/ are markdown and would not survive an XML load. The register's
+    /// orphan check reads THIS list, because a witness file no rule names is an orphan wherever
+    /// it sits, and globbing only the top directory left both subdirectories unchecked.
+    /// </remarks>
+    internal static IReadOnlyList<string> WitnessInputs { get; } = LoadWitnessInputs();
+
     internal static ProjectFile Witness(string fileName) =>
         Witnesses.SingleOrDefault(witness =>
             string.Equals(Path.GetFileName(witness.Path), fileName, StringComparison.Ordinal))
@@ -81,6 +93,22 @@ internal static class ComponentGraph
             .ToArray();
     }
 
+    private static IReadOnlyList<string> LoadWitnessInputs()
+    {
+        var directory = Path.Combine(
+            Root, "src", "tests", "Broiler.VM.Architecture.Tests", "witnesses");
+
+        if (!Directory.Exists(directory))
+        {
+            return [];
+        }
+
+        return Directory
+            .EnumerateFiles(directory, "*.witness", SearchOption.AllDirectories)
+            .OrderBy(static path => path, StringComparer.Ordinal)
+            .ToArray();
+    }
+
     private static bool IsUnderBuildOutput(string path)
     {
         var segments = Path
@@ -115,7 +143,17 @@ internal static class ComponentGraph
             RawText: File.ReadAllText(path),
             ProjectReferences: Resolve(document, "ProjectReference", "Include", basis),
             PackageReferences: Includes(document, "PackageReference"),
-            InternalsVisibleTo: Includes(document, "InternalsVisibleTo"),
+            // Both spellings. The <InternalsVisibleTo> item is the documented one; an
+            // <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            // emits the same attribute and reached the compiled assembly past this rule and past
+            // the assurance record, because it is neither an item A10 read nor a line in any
+            // covered source file.
+            InternalsVisibleTo:
+            [
+                .. Includes(document, "InternalsVisibleTo"),
+                .. Includes(document, "AssemblyAttribute")
+                    .Where(static include => include.Contains("InternalsVisibleTo", StringComparison.Ordinal)),
+            ],
             SourceItemPaths:
             [
                 .. Resolve(document, "Compile", "Include", basis),

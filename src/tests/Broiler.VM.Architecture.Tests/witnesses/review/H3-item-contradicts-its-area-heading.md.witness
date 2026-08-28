@@ -1,0 +1,126 @@
+# Witness worksheet: an item filed under one area heading while naming another
+
+Every count below is true, every identifier is contiguous, every area has an item, and every
+item names one of the eight. The worksheet is nonetheless self-contradictory: RC-09 sits under
+the RA-8 heading and declares RA-7. Without a clause binding an item to the heading it sits
+under, the worksheet's own "## RA-n" headings are bound to nothing.
+
+## Progress
+
+| Area | Name | Items | Finished (date, initials) |
+|---|---|---|---|
+| [RA-1](#ra-1) | Bounded reading of untrusted bytes | 1 | |
+| [RA-2](#ra-2) | Resource authority and budgets | 1 | |
+| [RA-3](#ra-3) | Lifecycle and state machine | 1 | |
+| [RA-4](#ra-4) | Verified-artifact ownership | 1 | |
+| [RA-5](#ra-5) | Guest-initiated loads and external suspension | 1 | |
+| [RA-6](#ra-6) | The public contract surface | 1 | |
+| [RA-7](#ra-7) | The records themselves | 2 | |
+| [RA-8](#ra-8) | The evidence and the rule register | 1 | |
+| | **Total** | **9** | |
+
+## RA-1 - Bounded reading of untrusted bytes
+
+### RC-01 - Confirm the thing this item is about
+
+| | |
+|---|---|
+| Area | RA-1 |
+| Verdict | `[ ]` |
+| Read | The sources this item names. |
+| Check | Decide whether the thing this item is about holds. |
+| Falsified if | It does not. |
+
+## RA-2 - Resource authority and budgets
+
+### RC-02 - Confirm the thing this item is about
+
+| | |
+|---|---|
+| Area | RA-2 |
+| Verdict | `[ ]` |
+| Read | The sources this item names. |
+| Check | Decide whether the thing this item is about holds. |
+| Falsified if | It does not. |
+
+## RA-3 - Lifecycle and state machine
+
+### RC-03 - Confirm the thing this item is about
+
+| | |
+|---|---|
+| Area | RA-3 |
+| Verdict | `[ ]` |
+| Read | The sources this item names. |
+| Check | Decide whether the thing this item is about holds. |
+| Falsified if | It does not. |
+
+## RA-4 - Verified-artifact ownership
+
+### RC-04 - Confirm the thing this item is about
+
+| | |
+|---|---|
+| Area | RA-4 |
+| Verdict | `[ ]` |
+| Read | The sources this item names. |
+| Check | Decide whether the thing this item is about holds. |
+| Falsified if | It does not. |
+
+## RA-5 - Guest-initiated loads and external suspension
+
+### RC-05 - Confirm the thing this item is about
+
+| | |
+|---|---|
+| Area | RA-5 |
+| Verdict | `[ ]` |
+| Read | The sources this item names. |
+| Check | Decide whether the thing this item is about holds. |
+| Falsified if | It does not. |
+
+## RA-6 - The public contract surface
+
+### RC-06 - Confirm the thing this item is about
+
+| | |
+|---|---|
+| Area | RA-6 |
+| Verdict | `[ ]` |
+| Read | The sources this item names. |
+| Check | Decide whether the thing this item is about holds. |
+| Falsified if | It does not. |
+
+## RA-7 - The records themselves
+
+### RC-07 - Confirm the thing this item is about
+
+| | |
+|---|---|
+| Area | RA-7 |
+| Verdict | `[ ]` |
+| Read | The sources this item names. |
+| Check | Decide whether the thing this item is about holds. |
+| Falsified if | It does not. |
+
+## RA-8 - The evidence and the rule register
+
+### RC-08 - Confirm the thing this item is about
+
+| | |
+|---|---|
+| Area | RA-8 |
+| Verdict | `[ ]` |
+| Read | The sources this item names. |
+| Check | Decide whether the thing this item is about holds. |
+| Falsified if | It does not. |
+
+### RC-09 - Confirm the thing this item is about
+
+| | |
+|---|---|
+| Area | RA-7 |
+| Verdict | `[ ]` |
+| Read | The sources this item names. |
+| Check | Decide whether the thing this item is about holds. |
+| Falsified if | It does not. |

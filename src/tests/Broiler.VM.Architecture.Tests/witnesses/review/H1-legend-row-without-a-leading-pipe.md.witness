@@ -1,0 +1,28 @@
+# Witness: a tenth mark published in a row that omits the leading pipe
+
+The legend is the document every other review document links to instead of repeating, so a
+mark added to it reopens the vocabulary the whole rule exists to close. All nine are published
+below, and a tenth is added in a row written without the optional leading pipe - one character
+short of the shape a scan gated on that pipe can see.
+
+## 1. How To Use This File
+
+### Evidence verdicts - set by the author, about evidence
+
+| Mark | Meaning |
+|---|---|
+| `[MET]` | Demonstrated. |
+| `[PART]` | Partly demonstrated. |
+| `[UNMET]` | Not discharged. |
+| `[N/A]` | Not claimed at this milestone. |
+
+### Review verdicts - set by the reviewer, about their own reading
+
+| Mark | Meaning |
+|---|---|
+| `[ ]` | Not yet reviewed. |
+| `[A]` | Accepted as stated. |
+| `[C]` | Accepted with a condition. |
+| `[R]` | Rejected. |
+| `[?]` | Cannot be judged from what is here. |
+`[WAIVED]` | A tenth mark, published without the optional leading pipe. |

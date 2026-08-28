@@ -1,0 +1,39 @@
+// Witness for rule J1: a property whose body is a member access that does NOT correspond to it.
+//
+// This is the permuted-constructor defeat, one screen further down the same predicate. Case 2 was
+// narrowed to require that a constructor assign each parameter to the member CORRESPONDING to it,
+// and case 1 went on accepting any member access at all - so exchanging two ceilings inside a
+// constructor became relevant while publishing the wrong one from a property stayed exempt, which
+// is the same edit with the same effect on every bounded read.
+//
+// MaxSectionCount publishes the declared-count ceiling. It must be relevant, and so must the
+// accessor form of it below. MaxDeclaredCount and Depth are the accepting direction: each returns
+// the field that corresponds to it and stays exempt, so the clause is a correspondence check and
+// not a rule that ends exemption case 1.
+
+namespace Probe;
+
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=613C61
+// Broiler-Human: PENDING
+public sealed class Published
+{
+    private readonly uint maxSectionCount;
+
+    private readonly uint maxDeclaredCount;
+
+    private readonly uint depth;
+
+    public uint MaxSectionCount => this.maxDeclaredCount;
+
+    public uint MaxDeclaredCount => this.maxDeclaredCount;
+
+    public uint SectionCeiling
+    {
+        get { return this.maxDeclaredCount; }
+    }
+
+    public uint Depth
+    {
+        get { return this.depth; }
+    }
+}

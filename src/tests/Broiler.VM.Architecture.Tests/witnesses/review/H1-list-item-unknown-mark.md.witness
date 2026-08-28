@@ -1,0 +1,7 @@
+# Witness: a list item led by a mark the legend does not publish
+
+Section 5 of HUMAN_REVIEW.md carries its author verdicts in exactly this form. The first
+attempt did not scan list items at all, so nine verdicts sat outside the rule while the
+register row implied full coverage.
+
+- `[NOT MET]` **Build and tests:** the suite was not run for this revision.

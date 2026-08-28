@@ -1,0 +1,19 @@
+# Witness: an exclusion defined by a row of another table inside section 9
+
+Section 9 may carry more than one table. Only the exclusion table defines: an errata table
+whose first cell is an EX- identifier would otherwise launder a citation that nothing in the
+bundle actually excludes. The header names the columns, and the header is what decides.
+
+The unmeasured start-up path is recorded as EX-98.
+
+## 9. Exclusions
+
+Corrections to identifiers are carried beside the exclusions themselves.
+
+| ID | Correction |
+|---|---|
+| EX-98 | The identifier is corrected here rather than renumbered. |
+
+| ID | Status | Exclusion |
+|---|---|---|
+| EX-01 | Open | The inbound half of the legacy-boundary rule is environment-conditional. |

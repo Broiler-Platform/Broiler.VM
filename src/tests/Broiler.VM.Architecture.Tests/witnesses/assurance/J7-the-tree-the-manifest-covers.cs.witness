@@ -1,0 +1,43 @@
+// Witness for rule J7: the tree the manifest witnesses in this directory describe.
+//
+// Four units, and two of them are the population this rule exists for. `position` is a plain
+// instance field: it decides nothing a human must certify, so the predicate answers case 7 and it
+// carries no annotation - but its TYPE is the width of the arithmetic TryAdvance performs on it,
+// and changing `ulong` to `uint` moves no annotated body's tokens at all. `Accepted` is an
+// auto-property whose INITIALIZER states a shipped value, and changing Reason.None to
+// Reason.Disposed is a change to what this type hands its callers; the property is exempt, so no
+// annotation records it either.
+//
+// Under the annotation-only record both edits were invisible. The manifest covers all four units,
+// so both edits move a fingerprint in a generated file the gate compares byte for byte. Neither
+// edit becomes REVIEWED by that; it becomes visible, which is the whole claim.
+//
+// The fourth unit is the type declaration header, which is a unit because a primary constructor
+// lives there. What NO unit can be is the assembly-level attribute in the sibling witness
+// J7-an-assembly-attribute-is-in-no-unit.cs.witness: it is a member of nothing, so it is in no
+// unit, no per-unit fingerprint and no manifest entry. The file fingerprint is what covers it.
+
+namespace Probe;
+
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=0758D3
+// Broiler-Human: PENDING
+public sealed class Watched
+{
+    private ulong position;
+
+    public static Verdict Accepted { get; } = new Verdict(Reason.None);
+
+    // Broiler-AI:    Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-Human: PENDING
+    public bool TryAdvance(ulong count, ulong limit)
+    {
+        if (count > limit - this.position)
+        {
+            return false;
+        }
+
+        this.position += count;
+
+        return true;
+    }
+}

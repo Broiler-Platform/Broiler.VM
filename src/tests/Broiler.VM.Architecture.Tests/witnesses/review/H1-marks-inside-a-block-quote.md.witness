@@ -1,0 +1,16 @@
+# Witness: marks inside a block quote
+
+HUMAN_REVIEW.md opens with a quoted status banner, so a quoted list item, table row or heading
+is this document set's own idiom rather than an exotic shape. Stripping the quote markers
+before a line is classified is what keeps all three inside the rule; without it the line begins
+with a quote marker and matches none of the three branches.
+
+> **Owner callout.**
+>
+> - `[APPROVED]` The owner records an overall acceptance ahead of the marks above.
+>
+> ## Overall verdict [WAIVED]
+>
+> | ID | Verdict |
+> |---|---|
+> | RA-1 | `[REJECTED]` |

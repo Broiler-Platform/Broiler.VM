@@ -1,0 +1,17 @@
+{
+  "$comment": [
+    "Witness for rule J7: a covered file with no file entry. Every unit is recorded correctly, so the",
+    "unit half of the rule is silent - and nothing watches the WHOLE of the file, which is where an",
+    "assembly-level attribute, a using directive and any declaration kind the enumeration does not",
+    "name would sit. A manifest that covers every unit is not a complete record; this is the",
+    "difference, said as its own fact."
+  ],
+  "files": [
+  ],
+  "units": [
+    { "name": "Probe.Watched", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": false, "exemption": "None", "fingerprint": "0758D3" },
+    { "name": "Probe.Watched.Accepted", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": true, "exemption": "TrivialPropertyOrAccessor", "fingerprint": "1FBF49" },
+    { "name": "Probe.Watched.TryAdvance(ulong, ulong)", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": false, "exemption": "None", "fingerprint": "D6E774" },
+    { "name": "Probe.Watched.position", "file": "J7-the-tree-the-manifest-covers.cs.witness", "exempt": true, "exemption": "FieldDeclaringStorage", "fingerprint": "B2A5C5" }
+  ]
+}

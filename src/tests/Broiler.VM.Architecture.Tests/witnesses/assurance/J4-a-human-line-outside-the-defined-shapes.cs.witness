@@ -1,0 +1,35 @@
+// Witness for rule J4: a human line the policy does not define, driven through the generator.
+//
+// `PENDING; Fingerprint=TBF` is not PENDING. The earlier guard skipped any part reading PENDING
+// wherever it appeared, so this body named nobody on either side of the name comparison and the
+// refusal never fired - while the annotation reader, which wants exact equality, answered "not
+// pending" and handed back the head token PENDING as a reviewer identifier. A write run therefore
+// filled the fingerprint, resolved the unit to VERIFIED and published a human review of a line
+// that names no human.
+//
+// The generator must refuse the line rather than rewrite it, and it must refuse it from inside
+// DesiredSource, so that deleting the call site is what this witness catches.
+
+namespace Probe;
+
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=13E204
+// Broiler-Human: PENDING
+public static class Unshaped
+{
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=44EBF3
+    // Broiler-Human: PENDING; Fingerprint=TBF
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

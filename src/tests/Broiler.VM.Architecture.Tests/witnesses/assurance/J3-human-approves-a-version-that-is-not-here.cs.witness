@@ -1,0 +1,30 @@
+// Witness for rule J3: a review bound to a version of the code that is gone.
+//
+// The AI fingerprint is the current one, so only the human half is wrong: someone
+// approved 112233 and the implementation has moved since. The policy's whole point
+// is that this must not silently read as a live approval.
+
+
+namespace Probe;
+
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=48D70A
+// Broiler-Human: PENDING
+public static class Assessed
+{
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=44EBF3
+    // Broiler-Human: WITNESS-ONLY; Fingerprint=112233
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

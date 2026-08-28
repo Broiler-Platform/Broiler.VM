@@ -1,0 +1,8 @@
+# Witness: a table row that omits the optional trailing pipe
+
+The trailing pipe is optional in GFM. The first attempt required a row to both start and end
+with one, so a row written this way was skipped whole and every mark in it went unread.
+
+| ID | Verdict |
+|---|---|
+| RA-1 | `[REJECTED]`

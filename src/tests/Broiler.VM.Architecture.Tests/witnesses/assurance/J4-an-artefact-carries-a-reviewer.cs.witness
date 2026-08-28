@@ -1,0 +1,37 @@
+// Witness for rule J4: a generated artefact whose rendered text names a reviewer.
+//
+// The artefact half of J4 asserts on the text a reader sees rather than on the model that
+// produced it, because a defect that produced the right unit state and the wrong line would be
+// invisible to a check that read only the model. It had no rejecting witness at all: its only
+// assertion was the accepting direction over the real tree, so the whole body of
+// ArtefactReviewerViolations could be replaced by an empty list with the suite green.
+//
+// This is that witness. The human line is one of the four defined shapes and names the version
+// that is here, so the generator carries it through unchanged and the artefact it produces
+// contains a reviewer identifier - which nothing generated from this component may.
+//
+// WITNESS-ONLY is not a person. It appears nowhere outside this directory.
+
+namespace Probe;
+
+// Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=54D953
+// Broiler-Human: PENDING
+public static class Approved
+{
+    // Broiler-AI:    Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=44EBF3
+    // Broiler-Human: WITNESS-ONLY; Fingerprint=44EBF3
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+}

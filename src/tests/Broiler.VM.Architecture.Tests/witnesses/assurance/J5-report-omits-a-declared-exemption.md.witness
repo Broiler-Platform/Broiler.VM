@@ -1,0 +1,27 @@
+# Probe Code Assurance
+
+GENERATED - DO NOT EDIT MANUALLY.
+
+**Nothing in this component has been reviewed by a human.** This report records that
+absence precisely.
+
+## Summary
+
+| Metric | Value |
+|---|---:|
+| Human reviewed | 0 of 1 (0%) |
+| Unverified | 1 |
+
+## Review states
+
+| State | Count |
+|---|---:|
+| VERIFIED | 0 |
+
+## Per-unit exemptions
+
+| Metric | Value |
+|---|---:|
+| Per-unit exemptions | 0 |
+
+- `Probe.Hatched.Shim(int)` in `J1-an-explicit-exemption-covers-a-unit.cs.witness` - a generated marshalling shim that decides nothing
