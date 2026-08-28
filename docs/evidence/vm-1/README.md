@@ -1,15 +1,21 @@
-# Evidence bundle VM-1-002
+# Evidence bundle VM-1-003
 
-> **VM-1-001 is superseded and its result is retained here rather than deleted.** It was collected
-> against component commit `350a7ba`, and an adversarial review of that commit returned 45 findings
-> that survived independent refutation, sixteen of them blockers. Several were confirmed by running
-> the code: the aggregate live measure could be driven to zero while memory was still live; an
-> operation resumed normally under a spent parent; a declared asynchronous instantiation was
-> reported as a profile fault; abandonment leaked a live-suspended slot for the life of the runtime;
-> a capability declaring `TerminateOperation` never terminated anything; and a guest could swallow a
-> terminal nested exhaustion and report success. VM-1-001 therefore demonstrated that the suite
-> passed, not that the contract was implemented. This bundle is collected against the corrected
-> tree, and section 6.1, *What the review found*, lists what changed and what is still open.
+> **VM-1-002 and VM-1-001 are superseded, and both results are retained rather than deleted.**
+> VM-1-001 was collected against component commit `350a7ba`, before an adversarial review of that
+> commit returned 45 findings that survived independent refutation, sixteen of them blockers -
+> among them an aggregate live measure that could be driven to zero while memory was still live, an
+> operation that resumed under a spent parent, and a capability declaring `TerminateOperation` that
+> terminated nothing. VM-1-001 therefore demonstrated that the suite passed, not that the contract
+> was implemented. VM-1-002 was collected against the corrected tree, and section 6.1 lists what
+> that review found.
+>
+> **This bundle supersedes VM-1-002 because the tree VM-1-002 described no longer exists.** Since
+> that collection the component gained the group H review-record rules, the Broiler Code Assurance
+> system with its per-unit and per-file fingerprints, and the group J rules that hold them. That
+> moved the architecture suite from 44 tests to 89, put an annotation above every relevant unit in
+> the product graph, and changed the hash of every product source file. Section 8 names a new
+> architecture rule and a change to the source as recertification triggers, so re-collecting was
+> required rather than optional.
 
 
 The retained evidence for milestone VM-1's working claim. It is filed against the eight fields
@@ -60,8 +66,8 @@ file starts `[ ]` because no reviewer has read it.
 | Roadmap revision | `docs/roadmap.md` as of component commit `a46d6c8`, unchanged by this work |
 | Core contract version | 1, read from the build output as `VmCoreContract.Version` |
 | Reason-registry revision | 1, read as `VmReasonRegistry.Revision` |
-| Evidence-bundle ID | VM-1-002, superseding VM-1-001 |
-| Collection timestamp | 2026-08-28, local time; VM-1-001 was collected 2026-08-27 |
+| Evidence-bundle ID | VM-1-003, superseding VM-1-002 and VM-1-001 |
+| Collection timestamp | 2026-08-28, local time. VM-1-002 was collected the same day against a tree without the assurance system; VM-1-001 on 2026-08-27 |
 | Owner | MaiRat / Maik Ratzmer, holding all six roles in ADR 0012 |
 | Reviewer | **None.** No reviewer has read this work. |
 
@@ -124,12 +130,19 @@ AOT result depends on a step no CI job currently performs.
 Step 7 is why the green suite in step 2 means anything. A rule that has never rejected anything
 expresses nothing, so each control injects one violation and both runs are retained.
 
+**The harness is retained this time.** Every step above is run by
+`eng/collect-evidence.py`, the four injections included. Both earlier bundles named its absence as
+a reproduction gap: VM-0-001 said the injection script "is not retained in the repository", and
+VM-1-002 said the controls "are reproduced by the script in the change that landed this bundle",
+which was not true because no script was landed. The controls are the reason a green suite means
+anything, so the thing that produces them belongs in the repository.
+
 ## 6. Outputs
 
 | Artefact | Result |
 |---|---|
 | `build.log` | 7 projects, Release, **0 warnings, 0 errors** |
-| `test.log` | **175 passed, 0 failed, 0 skipped** - 44 architecture and 131 behavioural |
+| `test.log` | **220 passed, 0 failed, 0 skipped** - 89 architecture and 131 behavioural |
 | `pack.log` | exactly **3 `.nupkg` and 3 `.snupkg`** - Abstractions, Binary, Runtime. Neither new test-only project packs |
 | `publish-jit-and-trimmed.log` | the fixtures host runs under JIT and as a trimmed self-contained binary of 162,816 bytes; **5 checks passed**, exit code 0, both times |
 | `publish-aot.log` | the fixtures host publishes and runs as a Native AOT binary of 1,279,488 bytes; **5 checks passed**, exit code 0. No trim or AOT warnings; the host builds with `TreatWarningsAsErrors` |
@@ -178,10 +191,17 @@ reviewer should treat the list as the next piece of work rather than as noise.
 
 | # | Injected | Expected | Observed |
 |---|---|---|---|
-| 1 | `Broiler.VM.Runtime` references the test-only `Broiler.VM.Fixtures` | A4 and A7 fail | 2 failed, 42 passed; 44 passed after revert |
-| 2 | An edge the checkout **has** is deleted from `graph.manifest.json` | A7 fails on a missing edge as on an extra one | 1 failed, 43 passed; 44 passed after revert |
-| 3 | A struck name, `VmHandle`, is exported from a product assembly | V3 fails | 1 failed, 43 passed; 44 passed after revert |
-| 4 | The mediator's no-provider refusal is removed | the behavioural suite fails | 1 failed, 130 passed of 131; 131 passed after revert |
+| 1 | `Broiler.VM.Runtime` references the test-only `Broiler.VM.Fixtures` | A4 and A7 fail | 2 failed, 87 passed of 89; 89 passed after revert |
+| 2 | An edge the checkout **has** is deleted from `graph.manifest.json` | A7 fails on a missing edge as on an extra one | 1 failed, 88 passed of 89; 89 passed after revert |
+| 3 | A struck name, `VmHandle`, is exported from a product assembly | V3 fails | 5 failed, 84 passed of 89; 89 passed after revert |
+| 4 | The mediator's no-provider refusal is removed | the behavioural suite fails | 1 failed of 131 behavioural and 4 failed of 89 architecture; both green after revert |
+
+Controls 3 and 4 now fail more rules than the one each was written for, and that is the assurance
+system working rather than noise. A struck name added to a product assembly changes that file's
+fingerprint, adds a unit the manifest does not carry, and leaves the generated header stale, so J3,
+J5 and J7 fail beside V3. Removing the mediator's refusal does the same to the runtime. The rule
+each control was written to exercise is named in the Expected column, and the extra failures are
+listed here so a reader is not surprised by them.
 
 **Control 4 did not fail on its first run, and that is retained rather than quietly fixed.** With
 the refusal removed, a null provider threw, the exception was translated to a host failure, and the
@@ -299,12 +319,14 @@ change alters a single executable statement - the diff over the three product as
 lines and nothing else - but a reader must not take this bundle's hashes as current. That is
 section 8's expiry clause doing its job, and the recertification is a later step.
 
-`test.log` is also older than the architecture suite it records. It retains **175 passed, 0 failed,
-0 skipped - 44 architecture and 131 behavioural**, which is what the suite was when the collection
-ran; the architecture assembly has grown since, first with the group H and group J rules and again
-with rule J7 and the tests around it. The figures quoted throughout this bundle are the figures in
-the retained logs, deliberately and per EX-54, and they are not a claim about the current
-checkout's suite size.
+`test.log` records **220 passed, 0 failed, 0 skipped - 89 architecture and 131 behavioural**
+against the tree this bundle describes, and `hashes.txt` recomputes against it. Rule H5 holds
+every review document to these figures, and it earned its keep during this collection: the first
+pass rewrote `test.log` before the negative controls ran, so from that point the documents and the
+log disagreed, H5 failed every remaining run, and all four controls reported red after revert for a
+reason that had nothing to do with the controls. The bundle was re-collected once the figures had
+moved. That is the ordering a re-collection has to follow whenever the suite changes size, and it
+is the reason the paragraph above says a stale bundle is an expiry rather than a defect.
 
 ## 9. Exclusions
 

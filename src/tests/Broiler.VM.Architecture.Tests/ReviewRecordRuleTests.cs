@@ -1391,7 +1391,7 @@ public sealed class ReviewRecordRuleTests
         // Clause: a quoted suite total is compared against the per-assembly totals and their sum.
         var total = Assert.Single(FigureViolations(
             Witness("H5-suite-total-does-not-match-the-log.md.witness"), current));
-        Assert.Contains("quotes a suite total of 176", total, StringComparison.Ordinal);
+        Assert.Contains("quotes a suite total of 221", total, StringComparison.Ordinal);
 
         // Clause, one per recognised suite-total phrasing. Each sentence is matched by exactly one
         // entry and carries its own number, so deleting any entry drops its violation. The first
@@ -1406,7 +1406,7 @@ public sealed class ReviewRecordRuleTests
         // halves cannot be exchanged for each other either.
         var split = Assert.Single(FigureViolations(
             Witness("H5-split-does-not-match-the-log.md.witness"), current));
-        Assert.Contains("quotes a split of 44 architecture and 130 behavioural", split, StringComparison.Ordinal);
+        Assert.Contains("quotes a split of 89 architecture and 130 behavioural", split, StringComparison.Ordinal);
 
         // Clause: each half of the split is bound to the assembly its own Passed: line names, so
         // exchanging the two halves fails even though both numbers are in the log.
@@ -1443,12 +1443,12 @@ public sealed class ReviewRecordRuleTests
         // Clause: the corpus must still quote the suite total, comparing the value.
         var noTotal = Assert.Single(RetainedFigureGuard(
             [Witness("H5-corpus-omits-the-suite-total.md.witness")], current));
-        Assert.Contains("no review document quotes the current suite total 175", noTotal, StringComparison.Ordinal);
+        Assert.Contains("no review document quotes the current suite total 220", noTotal, StringComparison.Ordinal);
 
         // Clause: the corpus must still quote the split, comparing the values.
         var noSplit = Assert.Single(RetainedFigureGuard(
             [Witness("H5-corpus-omits-the-split.md.witness")], current));
-        Assert.Contains("split of 44 architecture and 131 behavioural", noSplit, StringComparison.Ordinal);
+        Assert.Contains("split of 89 architecture and 131 behavioural", noSplit, StringComparison.Ordinal);
 
         // Clause: the corpus must still quote the Native AOT image size, comparing the value.
         var noNative = Assert.Single(RetainedFigureGuard(

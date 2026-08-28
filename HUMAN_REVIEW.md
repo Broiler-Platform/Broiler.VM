@@ -123,7 +123,7 @@ these are the author's marks about evidence, not review verdicts.
 
 - `[MET]` **Build and tests:** `dotnet build Broiler.VM.slnx -c Release` completes with 0
   warnings and 0 errors across seven projects; `dotnet test Broiler.VM.slnx -c Release`
-  reports 175 passed, 0 failed, 0 skipped - 44 architecture and 131 behavioural.
+  reports 220 passed, 0 failed, 0 skipped - 89 architecture and 131 behavioural.
 - `[PART]` **An adversarial review has been run, and it found a great deal.** Six reviewers
   against the frozen records, every finding put to two independent refuters: 45
   findings survived, sixteen of them blockers, several confirmed by executing the

@@ -1,17 +1,21 @@
-﻿  Determining projects to restore...
+Determining projects to restore...
   All projects are up-to-date for restore.
   Broiler.VM.Binary -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Successfully created package 'C:\Users\proof\AppData\Local\Temp\broiler-vm-pack-90pff21e\Broiler.VM.Binary.0.1.0-preview.1.nupkg'.
+  Successfully created package 'C:\Users\proof\AppData\Local\Temp\broiler-vm-pack-90pff21e\Broiler.VM.Binary.0.1.0-preview.1.snupkg'.
   Broiler.VM.Abstractions -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
-  Successfully created package 'C:\Users\proof\AppData\Local\Temp\broiler-vm-1-pack\Broiler.VM.Binary.0.1.0-preview.1.nupkg'.
-  Successfully created package 'C:\Users\proof\AppData\Local\Temp\broiler-vm-1-pack\Broiler.VM.Binary.0.1.0-preview.1.snupkg'.
-  Successfully created package 'C:\Users\proof\AppData\Local\Temp\broiler-vm-1-pack\Broiler.VM.Abstractions.0.1.0-preview.1.nupkg'.
-  Successfully created package 'C:\Users\proof\AppData\Local\Temp\broiler-vm-1-pack\Broiler.VM.Abstractions.0.1.0-preview.1.snupkg'.
   Broiler.VM.Runtime -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
-  Successfully created package 'C:\Users\proof\AppData\Local\Temp\broiler-vm-1-pack\Broiler.VM.Runtime.0.1.0-preview.1.nupkg'.
-  Successfully created package 'C:\Users\proof\AppData\Local\Temp\broiler-vm-1-pack\Broiler.VM.Runtime.0.1.0-preview.1.snupkg'.
+  Successfully created package 'C:\Users\proof\AppData\Local\Temp\broiler-vm-pack-90pff21e\Broiler.VM.Abstractions.0.1.0-preview.1.nupkg'.
+  Successfully created package 'C:\Users\proof\AppData\Local\Temp\broiler-vm-pack-90pff21e\Broiler.VM.Abstractions.0.1.0-preview.1.snupkg'.
+  Successfully created package 'C:\Users\proof\AppData\Local\Temp\broiler-vm-pack-90pff21e\Broiler.VM.Runtime.0.1.0-preview.1.nupkg'.
+  Successfully created package 'C:\Users\proof\AppData\Local\Temp\broiler-vm-pack-90pff21e\Broiler.VM.Runtime.0.1.0-preview.1.snupkg'.
+
+--- produced ---
 Broiler.VM.Abstractions.0.1.0-preview.1.nupkg
 Broiler.VM.Abstractions.0.1.0-preview.1.snupkg
 Broiler.VM.Binary.0.1.0-preview.1.nupkg
 Broiler.VM.Binary.0.1.0-preview.1.snupkg
 Broiler.VM.Runtime.0.1.0-preview.1.nupkg
 Broiler.VM.Runtime.0.1.0-preview.1.snupkg
+nupkg: 3
+snupkg: 3

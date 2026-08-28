@@ -1,4 +1,4 @@
-﻿  Determining projects to restore...
+Determining projects to restore...
   All projects are up-to-date for restore.
   Broiler.VM.Abstractions -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
   Broiler.VM.Binary -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
@@ -11,6 +11,6 @@ Test run for D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Architecture.Tes
 A total of 1 test files matched the specified pattern.A total of 1 test files matched the specified pattern.
 
 
-Passed!  - Failed:     0, Passed:   131, Skipped:     0, Total:   131, Duration: 88 ms - Broiler.VM.Contract.Tests.dll (net10.0)
+Passed!  - Failed:     0, Passed:   131, Skipped:     0, Total:   131, Duration: 115 ms - Broiler.VM.Contract.Tests.dll (net10.0)
 
-Passed!  - Failed:     0, Passed:    44, Skipped:     0, Total:    44, Duration: 228 ms - Broiler.VM.Architecture.Tests.dll (net10.0)
+Passed!  - Failed:     0, Passed:    89, Skipped:     0, Total:    89, Duration: 1 s - Broiler.VM.Architecture.Tests.dll (net10.0)
