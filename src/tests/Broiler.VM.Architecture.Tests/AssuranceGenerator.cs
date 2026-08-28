@@ -70,6 +70,13 @@ internal sealed record AssurancePlan(
 /// </remarks>
 internal static class AssuranceGenerator
 {
+    /// <summary>
+    /// The fields a human line may carry beside the reviewer. Fingerprint is machine-maintained;
+    /// the other three are the reviewer's own assessment and the generator never writes them.
+    /// </summary>
+    private static readonly string[] HumanFieldMarkers =
+        ["Fingerprint=", "IP=", "Security=", "Resources="];
+
     /// <summary>Set to <c>1</c> to make the run write rather than assert.</summary>
     internal const string WriteVariable = "BROILER_ASSURANCE_WRITE";
 
@@ -460,18 +467,29 @@ internal static class AssuranceGenerator
         var reviewer = annotation.Reviewer;
         var approved = annotation.HumanFingerprint;
 
+        // Whatever the reviewer wrote beside their name, carried through untouched. Rebuilding
+        // the line as "<reviewer>; Fingerprint=<x>" DELETED a reviewer's own IP, Security and
+        // Resources assessment, which is precisely what the policy's CI mutation rules forbid:
+        // the machine may fill the machine field and may never edit a human decision.
+        var assessment = string.Concat(
+            annotation.HumanBody
+                .Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                .Skip(1)
+                .Where(static part => !part.StartsWith("Fingerprint=", StringComparison.Ordinal))
+                .Select(static part => "; " + part));
+
         // A human approved and left the machine field for the machine: fill it. This is the only
         // transition the generator performs into VERIFIED, and the approval was already there.
         if (approved is null ||
             string.Equals(approved, AssuranceFingerprint.ToBeFilled, StringComparison.Ordinal))
         {
-            return $"{reviewer}; Fingerprint={currentFingerprint}";
+            return $"{reviewer}{assessment}; Fingerprint={currentFingerprint}";
         }
 
         // The reviewed version is still the version here.
         if (string.Equals(approved, currentFingerprint, StringComparison.Ordinal))
         {
-            return $"{reviewer}; Fingerprint={approved}";
+            return $"{reviewer}{assessment}; Fingerprint={approved}";
         }
 
         // The code has moved since the review. The reviewer and what they approved are preserved
@@ -568,8 +586,22 @@ internal static class AssuranceGenerator
             return false;
         }
 
-        return parts.Length == 1 ||
-            (parts.Length == 2 && parts[1].StartsWith("Fingerprint=", StringComparison.Ordinal));
+        // A reviewer may state their OWN assessment beside their name. The policy's CI mutation
+        // rules name "human IP assessment, human security assessment, human resource assessment"
+        // among the things CI must never create, which only means anything if a human may write
+        // them. It is also the one mechanical answer to EX-76 and EX-65: an AI assessment is a
+        // comment that moves no fingerprint, so a reviewer who disagrees with Security=High has
+        // nowhere to say so unless the human line can carry it.
+        for (var index = 1; index < parts.Length; index++)
+        {
+            if (!HumanFieldMarkers.Any(marker =>
+                    parts[index].StartsWith(marker, StringComparison.Ordinal)))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /// <summary>
