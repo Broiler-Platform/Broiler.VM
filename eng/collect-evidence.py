@@ -6,15 +6,23 @@ the controls "are reproduced by the script in the change that landed this bundle
 not true, because no script was landed. The controls are the reason a green suite means
 anything, so the thing that produces them belongs in the repository.
 
-    python eng/collect-evidence.py --bundle VM-1-003 --out docs/evidence/vm-1
+    python eng/collect-evidence.py --bundle VM-2-001 --out docs/evidence/vm-2
 
 Every step writes its own log. Nothing here decides whether the result is good: it runs the
 procedure and retains what happened, including failures. Reading the result is the bundle's job.
 
-Step 6 needs a vcvars64 shell. The ILCompiler package's own findvcvarsall.bat cannot locate
-vswhere.exe on this machine and emits its error text into the property that becomes the linker
-path, so a plain -p:PublishAot=true fails with MSB3073. Exclusion EX-42 records it; pass
---vcvars to point at a different Visual Studio.
+VM-2 adds four steps and makes the file portable. The corpus is replayed by the published host
+in all three modes and the three tables are compared byte for byte, which is the whole of the
+cross-mode stability claim; the fuzz target runs several seeded sessions; and four controls are
+added that a corpus and a fuzz target must be shown to reject, because a corpus that has never
+rejected anything is a file tree and not a gate.
+
+Portability, because VM-1 collected on win-x64 and this runs anywhere. The RID, the binary's
+extension and the Native AOT invocation are all derived from the platform. On Windows the AOT
+step still needs a vcvars64 shell - the ILCompiler package's own findvcvarsall.bat cannot locate
+vswhere.exe on the VM-1 machine and emits its error text into the property that becomes the
+linker path, so a plain -p:PublishAot=true fails with MSB3073, which exclusion EX-42 records.
+Elsewhere the ordinary publish is used and no shell is needed.
 """
 
 import argparse
@@ -28,9 +36,27 @@ import sys
 import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-HOST = r"src\tests\Broiler.VM.Fixtures.Host\Broiler.VM.Fixtures.Host.csproj"
+
+
+def local(*parts):
+    """A repository-relative path in this platform's own separator."""
+    return os.path.join(*parts)
+
+
+HOST = local("src", "tests", "Broiler.VM.Fixtures.Host", "Broiler.VM.Fixtures.Host.csproj")
+FUZZ_HOST = local("src", "tests", "Broiler.VM.Fuzz.Host", "Broiler.VM.Fuzz.Host.csproj")
+CORPUS = local("src", "tests", "corpus", "vm-2")
 SOLUTION = "Broiler.VM.slnx"
 DEFAULT_VCVARS = r"C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvars64.bat"
+WINDOWS = os.name == "nt"
+DEFAULT_RID = "win-x64" if WINDOWS else ("osx-x64" if sys.platform == "darwin" else "linux-x64")
+HOST_BINARY = "Broiler.VM.Fixtures.Host" + (".exe" if WINDOWS else "")
+
+# Eight sessions rather than one long one. A session is a total function of its seed, so eight
+# seeds are eight independent walks of the same space, and a defect only one walk reaches is
+# still reproduced by naming its seed.
+FUZZ_SEEDS = (1, 2, 3, 4, 5, 6, 7, 8)
+FUZZ_ITERATIONS = 250_000
 
 # The four negative controls. Each is one edit that a named rule must reject: (file, old, new).
 # A control that does not fail is a finding about the suite, not a step to retry - VM-1-002
@@ -38,7 +64,7 @@ DEFAULT_VCVARS = r"C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxi
 CONTROLS = [
     (
         "Broiler.VM.Runtime references the test-only Broiler.VM.Fixtures",
-        r"src\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj",
+        local("src", "Broiler.VM.Runtime", "Broiler.VM.Runtime.csproj"),
         "</Project>",
         '  <ItemGroup>\n'
         '    <ProjectReference Include="..\\tests\\Broiler.VM.Fixtures\\Broiler.VM.Fixtures.csproj" />\n'
@@ -47,21 +73,52 @@ CONTROLS = [
     ),
     (
         "an edge the checkout HAS is deleted from graph.manifest.json",
-        r"src\tests\Broiler.VM.Architecture.Tests\graph.manifest.json",
+        local("src", "tests", "Broiler.VM.Architecture.Tests", "graph.manifest.json"),
         None,  # resolved at run time: drop the first Runtime edge the manifest declares
         None,
     ),
     (
         "a retired name is exported from a product assembly",
-        r"src\Broiler.VM.Abstractions\VmCoreContract.cs",
+        local("src", "Broiler.VM.Abstractions", "VmCoreContract.cs"),
         None,  # append a public type carrying a struck name
         None,
     ),
     (
         "the deterministic no-provider refusal is removed",
-        r"src\Broiler.VM.Runtime\VmArtifactLoadMediator.cs",
+        local("src", "Broiler.VM.Runtime", "VmArtifactLoadMediator.cs"),
         "        if (provider is null)\n        {",
         "        if (provider is null && false)\n        {",
+    ),
+    (
+        "the verifier reserves an allocation before reading a byte",
+        local("src", "tests", "Broiler.VM.Fixtures", "FixtureVmVerifier.cs"),
+        "        var reader = new VmBoundedReader(payload, in bounds, adapter);",
+        "        VmBoundedAllocator.TryAllocate<long>(in bounds, adapter, 8, out _);\n"
+        "        var reader = new VmBoundedReader(payload, in bounds, adapter);",
+    ),
+    (
+        "the verifier escapes instead of answering",
+        local("src", "tests", "Broiler.VM.Fixtures", "FixtureVmVerifier.cs"),
+        "        if (!reader.TryReadDeclaredCount(out var sectionCount))\n"
+        "        {\n"
+        "            return Fail(ref reader, reader.Position);",
+        "        if (!reader.TryReadDeclaredCount(out var sectionCount))\n"
+        "        {\n"
+        "            throw new System.InvalidOperationException(\"negative control\");",
+    ),
+    (
+        "one declared corpus expectation is changed to a wrong reason",
+        local("src", "tests", "Broiler.VM.Fixtures", "FixtureCorpus.cs"),
+        "            VmReason.SemanticValidationFailed, 1006,\n"
+        "            \"An opcode outside",
+        "            VmReason.Truncated, 2001,\n"
+        "            \"An opcode outside",
+    ),
+    (
+        "one byte of one retained corpus artifact is changed",
+        local("src", "tests", "corpus", "vm-2", "control-sum.bin"),
+        None,  # resolved at run time: invert the artifact's last byte
+        None,
     ),
 ]
 
@@ -95,7 +152,7 @@ def restore(path, original):
 
 
 def native_binary(publish_directory):
-    exe = os.path.join(ROOT, publish_directory, "Broiler.VM.Fixtures.Host.exe")
+    exe = os.path.join(ROOT, publish_directory, HOST_BINARY)
     return exe if os.path.exists(exe) else None
 
 
@@ -106,6 +163,35 @@ def collect_controls(out):
     for index, (name, relative, old, new) in enumerate(CONTROLS, start=1):
         path = os.path.join(ROOT, relative)
         original = read_bytes(path)
+
+        if relative.endswith(".bin"):
+            # A corpus artifact is bytes and has no injection point to match. Inverting one byte
+            # is the whole control: the manifest records a hash, and a file that no longer hashes
+            # to it is a case nothing can cite any more.
+            mutated_bytes = bytearray(original)
+            mutated_bytes[-1] ^= 0xFF
+
+            log.append("=== CONTROL %d: %s ===" % (index, name))
+            log.append("file: " + relative)
+            io.open(path, "wb").write(bytes(mutated_bytes))
+            try:
+                _, injected = run(["dotnet", "test", SOLUTION, "-c", "Release"])
+            finally:
+                restore(path, original)
+
+            log.append(injected.strip())
+            log.append("")
+            log.append("--- after revert ---")
+            _, reverted = run(["dotnet", "test", SOLUTION, "-c", "Release"])
+            log.append(reverted.strip())
+            log.append("")
+
+            print("  control %d: %s when injected, %s after revert"
+                  % (index,
+                     "FAILED" if "Failed!" in injected else "PASSED - a finding about the suite",
+                     "green" if "Failed!" not in reverted else "STILL RED"))
+            continue
+
         text = original.decode("utf-8")
 
         # Injection points are written with \n and the working tree is CRLF. Matching without
@@ -157,6 +243,78 @@ def collect_controls(out):
     write(os.path.join(out, "negative-control.log"), "\n".join(log))
 
 
+def replay_corpus(arguments, trimmed_out, aot_out):
+    """Replay the corpus from each published binary and compare the three tables byte for byte.
+
+    This is the whole of the cross-mode stability claim, and it is a claim about published
+    binaries rather than about a test run: an enumeration rendered by name, a switch the linker
+    reshaped, a generic instantiation the AOT compiler could not see - each of those changes what
+    a host is told an artifact was, and none of them is visible to a suite running under the JIT.
+    """
+    corpus = os.path.join(ROOT, CORPUS)
+    lines = ["=== CORPUS REPLAY: one table per publish mode, compared byte for byte ==="]
+    tables = {}
+
+    # The JIT row runs from the built assemblies rather than a published directory, which is what
+    # "JIT" means here: the same IL the suite runs, with nothing removed and nothing compiled ahead.
+    code, jit = run(["dotnet", "run", "--project", HOST, "-c", "Release", "--", "--corpus", corpus])
+    tables["jit"] = jit
+    lines.append("--- jit (dotnet run) exit=%d ---" % code)
+
+    for mode, directory in (("trimmed", trimmed_out), ("aot", aot_out)):
+        binary = native_binary(directory)
+
+        if binary is None:
+            lines.append("--- %s: SKIPPED, no published binary ---" % mode)
+            continue
+
+        code, output = run([binary, "--corpus", corpus])
+        tables[mode] = output
+        lines.append("--- %s exit=%d ---" % (mode, code))
+
+    for mode, table in sorted(tables.items()):
+        digest = hashlib.sha256(table.encode("utf-8")).hexdigest()
+        rows = len([line for line in table.splitlines() if line and not line.startswith("#")])
+        lines.append("%-8s rows=%-4d sha256=%s" % (mode, rows, digest))
+
+    digests = {hashlib.sha256(table.encode("utf-8")).hexdigest() for table in tables.values()}
+
+    lines.append("")
+    lines.append("modes compared: %d" % len(tables))
+    lines.append("distinct tables: %d" % len(digests))
+    lines.append("IDENTICAL" if len(digests) == 1 and len(tables) > 1
+                 else "NOT IDENTICAL - the failure classes differ between publish modes")
+    lines.append("")
+    lines.append("--- the table, as every mode produced it ---")
+    lines.append(sorted(tables.items())[0][1].strip() if tables else "(no table)")
+
+    return "\n".join(lines) + "\n"
+
+
+def fuzz_sessions():
+    """Run the seeded fuzz sessions and retain every histogram, including a session that found one."""
+    lines = ["=== FUZZ: %d iterations per seed, seeds %s ==="
+             % (FUZZ_ITERATIONS, ", ".join(str(seed) for seed in FUZZ_SEEDS))]
+
+    findings = 0
+
+    for seed in FUZZ_SEEDS:
+        code, output = run(["dotnet", "run", "--project", FUZZ_HOST, "-c", "Release", "--",
+                            "--iterations", str(FUZZ_ITERATIONS), "--seed", str(seed)])
+        lines.append("--- seed %d exit=%d ---" % (seed, code))
+        lines.append(output.strip())
+        lines.append("")
+
+        if code != 0:
+            findings += 1
+
+    lines.append("sessions: %d" % len(FUZZ_SEEDS))
+    lines.append("iterations: %d" % (len(FUZZ_SEEDS) * FUZZ_ITERATIONS))
+    lines.append("sessions reporting a finding: %d" % findings)
+
+    return "\n".join(lines) + "\n"
+
+
 def hashed_files():
     """The set the bundle pins: the vendored file, the manifests, the records, product source."""
     files = [SOLUTION, "Directory.Build.props", "NuGet.config",
@@ -179,6 +337,15 @@ def hashed_files():
     for manifest in ("graph.manifest.json", "rules.register.json"):
         files.append("src/tests/Broiler.VM.Architecture.Tests/" + manifest)
 
+    # The corpus, every artifact of it. A bundle that hashed the manifest and not the files it
+    # names would pin a description of the corpus rather than the corpus, and a minimized fuzz
+    # regression has no declaration anywhere else to be checked against.
+    corpus = os.path.join(ROOT, CORPUS)
+    if os.path.isdir(corpus):
+        files.append("src/tests/corpus/vm-2/manifest.json")
+        files += ["src/tests/corpus/vm-2/" + name
+                  for name in sorted(os.listdir(corpus)) if name.endswith(".bin")]
+
     return [f.replace(os.sep, "/") for f in files]
 
 
@@ -187,6 +354,7 @@ def main():
     parser.add_argument("--bundle", required=True)
     parser.add_argument("--out", required=True)
     parser.add_argument("--vcvars", default=DEFAULT_VCVARS)
+    parser.add_argument("--rid", default=DEFAULT_RID)
     parser.add_argument("--skip-controls", action="store_true")
     arguments = parser.parse_args()
 
@@ -219,9 +387,10 @@ def main():
     lines.append(jit.strip())
 
     lines.append("")
-    lines.append("=== TRIMMED: dotnet publish -r win-x64 --self-contained true -p:PublishAot=false ===")
+    lines.append("=== TRIMMED: dotnet publish -r %s --self-contained true -p:PublishAot=false ==="
+                 % arguments.rid)
     trimmed_out = os.path.join("artifacts", "publish-trimmed")
-    _, trimmed = run(["dotnet", "publish", HOST, "-c", "Release", "-r", "win-x64",
+    _, trimmed = run(["dotnet", "publish", HOST, "-c", "Release", "-r", arguments.rid,
                       "--self-contained", "true", "-p:PublishAot=false", "-p:PublishTrimmed=true",
                       "-o", trimmed_out])
     lines.append(trimmed.strip())
@@ -237,8 +406,37 @@ def main():
     write(os.path.join(out, "publish-jit-and-trimmed.log"), "\n".join(lines) + "\n")
 
     print("  6 native aot")
+    aot_out = os.path.join("artifacts", "publish-aot")
     aot = ["=== NATIVE AOT ==="]
-    if not os.path.exists(arguments.vcvars):
+
+    if not WINDOWS:
+        # No shell to prepare. The toolchain discovery that EX-42 records is a Windows-only
+        # problem, so this platform publishes with the ordinary command and the exclusion does
+        # not apply to the result.
+        command = ["dotnet", "publish", HOST, "-c", "Release", "-r", arguments.rid,
+                   "-p:PublishAot=true", "-o", aot_out]
+        aot.append("command: " + " ".join(command))
+        _, published = run(command)
+        aot.append(published.strip())
+
+        binary = native_binary(aot_out)
+
+        if binary is not None and os.path.getsize(binary) < 500_000:
+            aot.append("")
+            aot.append("REFUSED: the produced binary is %d bytes, too small to be a native image."
+                       % os.path.getsize(binary))
+            binary = None
+        if binary:
+            aot.append("")
+            aot.append("--- running the native binary ---")
+            aot.append("native image size: %d bytes" % os.path.getsize(binary))
+            code, output = run([binary, "--verbose"])
+            aot.append(output.strip())
+            aot.append("exit code: %d" % code)
+
+        write(os.path.join(out, "publish-aot.log"), "\n".join(aot) + "\n")
+        aot = None
+    elif not os.path.exists(arguments.vcvars):
         aot.append("SKIPPED: no vcvars64.bat at " + arguments.vcvars)
         aot.append("Exclusion EX-42 records why this step needs one.")
     else:
@@ -248,12 +446,12 @@ def main():
         # with exactly the MSB3073 that EX-42 describes - after which the step read the trimmed
         # binary still sitting in the shared publish directory and would have retained a Native
         # AOT result that never happened.
-        aot_out = os.path.join("artifacts", "publish-aot")
         script = ('@echo off\r\n'
                   'call "%s"\r\n'
                   'set Platform=\r\n'
-                  'dotnet publish %s -c Release -r win-x64 -p:PublishAot=true '
-                  '-p:IlcUseEnvironmentalTools=true -o %s\r\n' % (arguments.vcvars, HOST, aot_out))
+                  'dotnet publish %s -c Release -r %s -p:PublishAot=true '
+                  '-p:IlcUseEnvironmentalTools=true -o %s\r\n'
+                  % (arguments.vcvars, HOST, arguments.rid, aot_out))
         handle, batch = tempfile.mkstemp(suffix=".bat")
         os.close(handle)
         io.open(batch, "w", encoding="ascii", newline="").write(script)
@@ -281,13 +479,21 @@ def main():
             code, output = run([binary, "--verbose"])
             aot.append(output.strip())
             aot.append("exit code: %d" % code)
-    write(os.path.join(out, "publish-aot.log"), "\n".join(aot) + "\n")
+
+    if aot is not None:
+        write(os.path.join(out, "publish-aot.log"), "\n".join(aot) + "\n")
+
+    print("  7 corpus replay in three modes")
+    write(os.path.join(out, "corpus-replay.log"), replay_corpus(arguments, trimmed_out, aot_out))
+
+    print("  8 fuzz sessions")
+    write(os.path.join(out, "fuzz.log"), fuzz_sessions())
 
     if not arguments.skip_controls:
-        print("  7 negative controls")
+        print("  9 negative controls")
         collect_controls(out)
 
-    print("  8 environment, hashes")
+    print("  10 environment, hashes")
     environment = [
         "Broiler.VM evidence bundle %s - environment" % arguments.bundle,
         "",
@@ -304,7 +510,7 @@ def main():
         environment.append("--- %s ---" % label)
         environment.append(output.strip())
         environment.append("")
-    environment.append("Not a CI lane. One developer workstation, one RID (win-x64).")
+    environment.append("Not a CI lane. One machine, one RID (%s)." % arguments.rid)
     environment.append("Exclusion EX-45 records what that does not cover.")
     write(os.path.join(out, "environment.txt"), "\n".join(environment) + "\n")
 

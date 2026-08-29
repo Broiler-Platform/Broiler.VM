@@ -1,5 +1,5 @@
 # Witness: a corpus that has stopped quoting the Native AOT image size
 
-The suite reported 221 tests passed, of which 90 architecture tests and 131 behavioural tests,
-and the fixtures host also runs as a 162,816-byte trimmed binary. No Native AOT size is quoted
+The suite reported 255 tests passed, of which 90 architecture tests and 165 behavioural tests,
+and the fixtures host also runs as a 78,256-byte trimmed binary. No Native AOT size is quoted
 anywhere here.

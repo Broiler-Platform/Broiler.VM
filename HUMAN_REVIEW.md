@@ -119,14 +119,26 @@ areas keeps one item asking the reviewer to judge those criteria.
 ## 5. Evidence Available To The Reviewer
 
 Collected by automation and retained in
-[the VM-0 evidence bundle](docs/evidence/vm-0/README.md) and
-[the VM-1 evidence bundle](docs/evidence/vm-1/README.md). It is input to a review, not
+[the VM-0 evidence bundle](docs/evidence/vm-0/README.md),
+[the VM-1 evidence bundle](docs/evidence/vm-1/README.md) and
+[the VM-2 evidence bundle](docs/evidence/vm-2/README.md). It is input to a review, not
 a substitute for one. Each line carries an evidence verdict as defined in section 1;
 these are the author's marks about evidence, not review verdicts.
 
-- `[MET]` **Build and tests:** `dotnet build Broiler.VM.slnx -c Release` completes with 0
-  warnings and 0 errors across seven projects; `dotnet test Broiler.VM.slnx -c Release`
-  reports 221 passed, 0 failed, 0 skipped - 90 architecture and 131 behavioural.
+**Two milestones are now waiting on one reading.** This file was written for VM-0's records
+and VM-1's implementation. VM-2 has since landed - the limit-precedence layers, a retained
+malformed-input corpus, a fuzz target, and the guest-load bounds that were carried in a
+descriptor and read nowhere - and nobody has read that either. The lines below say which
+milestone each figure belongs to rather than merging them, because a reviewer needs to know
+what a number is about before it is worth anything.
+
+- `[MET]` **Build and tests, as the tree stands:** `dotnet build Broiler.VM.slnx -c Release`
+  completes with 0 warnings and 0 errors across eight projects; `dotnet test Broiler.VM.slnx
+  -c Release` reports 255 tests passed, 0 failed, 0 skipped - 90 architecture and 165
+  behavioural. At VM-1 the same commands reported 221 passed over seven projects, of which 90
+  architecture and 131 behavioural; VM-2 adds thirty-four behavioural tests and no
+  architecture test, which is the shape of a milestone that forbids no new edge and adds a
+  great deal of behaviour.
 - `[PART]` **An adversarial review has been run, and it found a great deal.** Six reviewers
   against the frozen records, every finding put to two independent refuters: 45
   findings survived, sixteen of them blockers, several confirmed by executing the
@@ -157,8 +169,18 @@ these are the author's marks about evidence, not review verdicts.
   handle and execution consumes only that handle; a caller's buffer may be mutated
   afterwards without effect. There is still no file, network, process, native-interop,
   unsafe or code-execution path, and rule B5 asserts the absence of dynamic-loading
-  APIs over compiled metadata. What has **not** been done is fuzzing, a retained
-  malformed-input corpus, or any concurrency testing; those are VM-2's and VM-4's.
+  APIs over compiled metadata. VM-2 adds the retained malformed-input corpus and the fuzz
+  target that VM-1 recorded as absent: eighty-seven artifacts with their hashes and their
+  expected answers, and two million seeded iterations that found nothing. What has still
+  **not** been done is any concurrency testing, which is VM-4's.
+- `[PART]` **VM-2's own boundary work.** The precedence algorithm's artifact-request clamp and
+  its instance and invocation overrides are implemented, where VM-1 left them as a reason no
+  code path could produce; the materialization ordering is asserted for every corpus artifact
+  including every failing one; the caller's buffer is now overwritten concurrently as well as
+  mutated; and the fourth guest-load bound is enforced. Two clauses of the VM-2 gate are
+  `[PART]` rather than `[MET]` and the bundle names both: no fuzz session has found a
+  regression to retain (EX-79), and the nesting-depth bound is unreachable at contract
+  version 1 (EX-78).
 - `[MET]` **License:** Apache-2.0, byte-identical to the other Broiler components. No
   third-party runtime dependency was introduced, so no notices file is carried.
 
@@ -212,6 +234,20 @@ condition.
 - **AT-8 - The Native AOT result is not reproducible by automation** (Exclusion EX-42). It
   needs a `vcvars64` shell and `IlcUseEnvironmentalTools=true`, because the ILCompiler
   package's own toolchain discovery fails on the collecting machine.
+- **AT-10 - Three of VM-2's corrections were found by its own corpus and suite rather than by a
+  reviewer.** The uncharged-work counter summed every budget dimension, so one correctly
+  metered in-bounds allocation breached a poll bound instantly and a core unit conflation was
+  billed to the profile as a broken metering contract; the cumulative nested verifier-work
+  bound was validated at runtime creation and read nowhere; and the artifact-limit clamp the
+  precedence algorithm requires was computed and discarded. None was found by reading. A
+  reviewer should ask what else is in the same category, since the mechanism that found these
+  three is the mechanism VM-2 added rather than one that was already looking.
+- **AT-11 - The review worksheet covers VM-0 and VM-1 and has no VM-2 items.**
+  `docs/review/vm-0-vm-1.md` is the checklist a reviewer walks, and it was written before
+  VM-2 existed. Its items are still true and none of them covers the corpus, the fuzz target,
+  the precedence layers or the guest-load bounds this milestone added. Rule H3 holds the
+  worksheet's own counts and its area coverage and cannot notice that the component has
+  outgrown it.
 - **AT-9 - The records and the implementation were drafted with AI assistance and reviewed the
   same way.** The adversarial review that produced the VM-0 revision confirmed 24
   findings, four of them blockers. That is a check on the work, not an independent
@@ -229,6 +265,16 @@ than a defect in this component, but it belongs on the record rather than glosse
 That matters more at VM-1 than it did at VM-0. VM-0 froze decisions on paper, where a
 mistake is cheap to reverse. VM-1 decodes untrusted bytes, and the component is now
 carrying an unreviewed parser and an unreviewed budget enforcer.
+
+It matters more again at VM-2, and in a way worth stating plainly rather than leaving to be
+inferred. VM-2's corpus and fuzz target are exactly the mechanisms that make an unreviewed
+parser bearable, and they are themselves unreviewed: the corpus's expectations are one
+person's reading of what the verifier ought to answer, the fuzz target's invariants are the
+same person's list of what must never happen, and the negative controls show only that each
+mechanism rejects the defect it was written to reject. Two million iterations finding nothing
+is worth what the invariants are worth. Ledger update rule 8's second consequence is the one
+being observed here: unreviewed work accumulates, and there is now more of it to read in one
+sitting than there was.
 
 ## 8. Area Verdicts
 
