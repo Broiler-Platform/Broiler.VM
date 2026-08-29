@@ -1,0 +1,79 @@
+# The publish lane.
+#
+# Publishing is the irreversible act, so this is where the review record's
+# CONTENT is the thing under test. The ordinary gate asks whether the generated
+# artefacts are what the generator would write and is deliberately silent about
+# what they say - this component is built while nothing in it has been read,
+# which update rule 8 in the status ledger permits. Here that silence ends.
+#
+# `BROILER_ASSURANCE_RELEASE=1` arms rule J11, which refuses the tree while any
+# of five things is true:
+#
+#   1. a generated artefact on disk is not what the generator would write;
+#   2. an annotation does not parse, states a value outside its vocabulary, or is
+#      attached to no declaration - the review syntax;
+#   3. a recorded fingerprint is not the one its declaration produces now, or is
+#      still the placeholder;
+#   4. a unit assessed Security=High or Critical carries no falsification
+#      criterion;
+#   5. a relevant unit is in any state but VERIFIED.
+#
+# Every blocker is named with the declaration it is about, so a refusal is a list
+# of work rather than a number.
+#
+# The pack step runs only after that, and `dotnet pack` is as far as this lane
+# goes: pushing to a feed needs a credential this repository deliberately does not
+# hold - NuGet.config carries a single source and no token - and adding one is the
+# owner's decision, not this file's.
+
+name: Publish
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Gate the record, then pack
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build
+        run: dotnet build Broiler.VM.slnx -c Release
+
+      - name: Gate - every generated artefact is current
+        # No BROILER_ASSURANCE_WRITE here, and that is the point. A publish lane
+        # that regenerated first would be asking whether the generator agrees with
+        # itself; it has to ask whether the tree that is being published carries
+        # the record that describes it.
+        run: dotnet test Broiler.VM.slnx -c Release
+
+      - name: Release gate - fingerprints, review syntax, and every unresolved unit
+        env:
+          BROILER_ASSURANCE_RELEASE: '1'
+        run: dotnet test Broiler.VM.slnx -c Release
+
+      - name: Pack
+        run: dotnet pack Broiler.VM.slnx -c Release --no-build
+
+      - name: Publish the record beside the packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: broiler-vm-packages
+          path: |
+            **/bin/Release/*.nupkg
+            **/bin/Release/*.snupkg
+            HUMAN_REVIEW.md
+            CODE-ASSURANCE.md

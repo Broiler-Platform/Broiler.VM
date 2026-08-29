@@ -18,8 +18,9 @@ aggregate budgets, guest-initiated-load mediation, external suspension, two fixt
 composition-root host that publishes and runs under trimming and Native AOT, and 221 passing
 tests: 90 architecture and 131 behavioural.
 
-**Neither milestone is accepted, and neither can be until a human signs.** VM-0 and VM-1 are both
-unaccepted because `HUMAN_REVIEW.md` is unsigned and `PENDING`.
+**Neither milestone is accepted, and neither can be until a human reads the work.** VM-0 and VM-1
+are both unaccepted because no relevant code unit carries a decision on its `// Broiler-Human:`
+line, so the generated [`HUMAN_REVIEW.md`](../HUMAN_REVIEW.md) states `PENDING`.
 
 VM-1 was nonetheless built against VM-0's frozen-but-unapproved records, and update rule 8 now
 records why that was legitimate: **human review gates a release, not a development step.** The
@@ -89,9 +90,10 @@ milestone claims nothing at this snapshot.
 
 ### Where the review stands
 
-No area has been reviewed, so no verdict below is set. Each one is recorded in
-[HUMAN_REVIEW.md section 8](../HUMAN_REVIEW.md#8-area-verdicts); this table mirrors that
-one and does not replace it.
+No area has been reviewed, so no verdict below is set. **This table is a reader's summary and is
+not the record.** The record is per code unit, in the `// Broiler-Human:` line on each declaration,
+and [HUMAN_REVIEW.md](../HUMAN_REVIEW.md) is generated from those lines; the areas below are a
+risk ordering a reader may find useful and are not bound to anything mechanical.
 
 | Verdict | ID | Area |
 |---|---|---|
@@ -109,7 +111,8 @@ milestones rather than one. VM-0's records and VM-1's implementation are both wr
 retained evidence, and all six roles recorded in
 [ADR 0012](adr/0012-security-ownership-and-support-matrix.md) are held. What remains is a human
 reading the twelve records *and* the contract surface that implements them, and signing or
-rejecting both in [HUMAN_REVIEW.md](../HUMAN_REVIEW.md). With a single maintainer that confirmation
+rejecting both on the declarations themselves, which regenerates
+[HUMAN_REVIEW.md](../HUMAN_REVIEW.md). With a single maintainer that confirmation
 is not independent, which EX-30 records rather than resolves.
 
 Reviewing them together is easier than reviewing VM-0 alone was: a decision that was paper in
@@ -188,8 +191,10 @@ claimed RID; analyzer success alone is not a publish-and-run result.
    and release owner. Development work - implementing a milestone, landing it, and collecting its
    evidence - may proceed and merge without a review decision. A **release** may not: no package is
    published, no RID is claimed, no support table is issued, and no milestone moves to `Accepted`
-   until a named human has read the work and signed
-   [HUMAN_REVIEW.md](../HUMAN_REVIEW.md) for the revision under review.
+   until a named human has read the work and recorded a decision on every relevant code unit, which
+   the publish lane checks and [HUMAN_REVIEW.md](../HUMAN_REVIEW.md) reports. The decision is bound
+   to the fingerprint of each declaration rather than to a revision, so a unit that changes
+   afterwards is reported as `STALE` rather than silently carried.
 
    This settles the question Exclusion EX-43 recorded rather than answering. Roadmap section 13
    sequences each milestone "after VM-*n* acceptance"; under this ruling that sequencing binds the
