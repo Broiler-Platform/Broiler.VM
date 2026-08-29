@@ -257,7 +257,7 @@
       "statement": "dotnet pack over Broiler.VM.slnx produces exactly three .nupkg and three .snupkg, named for the three product assemblies.",
       "evidence": "Pack output",
       "activationMilestone": "VM-6",
-      "nonVacuousWhen": "A component CI pack step exists. VM-0 creates no CI workflow; a manually executed pack log is retained in the evidence bundle as observed state, not as a rule assertion.",
+      "nonVacuousWhen": "A component CI pack step exists - the publish lane added at VM-1 runs one, where VM-0 created no CI workflow at all and a manually executed pack log was retained in the evidence bundle as observed state rather than as a rule assertion. The row stays Deferred because the rule's subject is packed artefact CONTENT, which nothing asserts yet; a pack step existing is necessary for it and not sufficient.",
       "witness": null
     },
     {

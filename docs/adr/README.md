@@ -19,6 +19,16 @@ profile package must be able to name them; and `VmOperation` is a frozen public
 name the implementation does not export. A reader comparing a record against the
 code should read that bundle's Deviations section first.
 
+**One record has since been amended rather than deviated from.** On 2026-08-29
+the owner ruled that a reviewer fills in the `// Broiler-Human:` line on a
+declaration and nothing else, so `HUMAN_REVIEW.md` became a generated record and
+ADR 0001's artefact register - which described a hand-signed attestation naming a
+reviewed commit - was revised to match. ADR 0001 is not contract-bearing, so no
+version was minted; it carries a dated `Revisions` section stating what each
+amended row said before. That is the distinction to keep in view when reading
+the three deviations above: there, the implementation could not honour a record
+and the record stands; here, the decision itself changed, so the record moved.
+
 Every record carries a `**Core contract:**` header field. The ten
 contract-bearing records own part of core contract version 1 and cannot change
 without the amendment procedure in

@@ -11,10 +11,11 @@ namespace Broiler.VM.Architecture.Tests;
 /// fields are non-empty. The version of this check before this one asserted that a row CONTAINED a
 /// handful of required phrases, which holds a row to stating its limits and does not hold it to
 /// stating nothing else. A sentence claiming that CI compares every human line against the parent
-/// commit was appended to a row and the suite stayed green - and there is no CI lane in this
-/// component at all, let alone a parent-commit comparison, so the register advertised a capability
-/// that exists nowhere. An over-claim in a register row is the same defect as a rule weaker than
-/// its own statement, reached by editing the row instead of the rule.
+/// commit was appended to a row and the suite stayed green - and no lane compares a human line
+/// against its parent commit, then or now, so the register advertised a capability that exists
+/// nowhere. Two lanes landed at VM-1 and neither closes that gap; EX-60 records what is left.
+/// An over-claim in a register row is the same defect as a rule weaker than its own statement,
+/// reached by editing the row instead of the rule.
 /// </para>
 /// <para>
 /// So each row is held to a FIXED EXPECTED TEXT, in all three of its prose fields, and any edit to
