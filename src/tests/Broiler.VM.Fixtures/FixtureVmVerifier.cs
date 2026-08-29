@@ -22,18 +22,21 @@ public sealed class FixtureVmVerifier : IVmProfileVerifier
 {
     private readonly bool chargesWork;
     private readonly FixtureVmProfileVariant variant;
+    private readonly FixtureReadOrderRecorder? recorder;
 
     /// <summary>Creates a verifier for <paramref name="profileId"/>.</summary>
     public FixtureVmVerifier(
         VmProfileId profileId,
         int semanticVersion,
         bool chargesWork = true,
-        FixtureVmProfileVariant variant = FixtureVmProfileVariant.Conforming)
+        FixtureVmProfileVariant variant = FixtureVmProfileVariant.Conforming,
+        FixtureReadOrderRecorder? orderRecorder = null)
     {
         ProfileId = profileId;
         VerifierSemanticVersion = semanticVersion;
         this.chargesWork = chargesWork;
         this.variant = variant;
+        recorder = orderRecorder;
     }
 
     /// <inheritdoc/>
@@ -68,7 +71,15 @@ public sealed class FixtureVmVerifier : IVmProfileVerifier
             return VmVerifierOutcome.Verified(null!, VmArtifactSharing.RuntimeScoped);
         }
 
-        var adapter = new FixtureBoundedReadAdapter(context.Meter);
+        // Stamped here because the parameter list is the first moment the frozen policy is
+        // observable at all: the core materialized it before this call, and nothing in this method
+        // can have read a payload byte before the line that follows.
+        recorder?.StampPolicy(context.Ceilings.VerificationCeilings);
+
+        IVmBoundedAllocationMeter adapter = recorder is null
+            ? new FixtureBoundedReadAdapter(context.Meter)
+            : new FixtureRecordingReadAdapter(context.Meter, recorder);
+
         var bounds = FixtureBoundedReadAdapter.ToReadBounds(context.Ceilings.VerificationCeilings);
         var reader = new VmBoundedReader(payload, in bounds, adapter);
 

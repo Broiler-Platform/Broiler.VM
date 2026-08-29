@@ -90,7 +90,14 @@ public static class FixtureVmProfile
 
     /// <summary>The descriptor for one deliberately shaped variant.</summary>
     public static VmProfileDescriptor DescriptorFor(FixtureVmProfileVariant variant) =>
-        FixtureDescriptorFactory.Create(Id, Manifest, "Fixture Alpha", "Broiler.VM.Fixtures", variant, 1);
+        DescriptorFor(variant, null);
+
+    /// <summary>The descriptor for one variant, with a read-order recorder attached to its verifier.</summary>
+    public static VmProfileDescriptor DescriptorFor(
+        FixtureVmProfileVariant variant,
+        FixtureReadOrderRecorder? orderRecorder) =>
+        FixtureDescriptorFactory.Create(
+            Id, Manifest, "Fixture Alpha", "Broiler.VM.Fixtures", variant, 1, orderRecorder);
 }
 
 /// <summary>
@@ -115,7 +122,7 @@ public static class SecondFixtureVmProfile
 
     /// <summary>The descriptor for one deliberately shaped variant.</summary>
     public static VmProfileDescriptor DescriptorFor(FixtureVmProfileVariant variant) =>
-        FixtureDescriptorFactory.Create(Id, Manifest, "Fixture Beta", "Broiler.VM.Fixtures", variant, 2);
+        FixtureDescriptorFactory.Create(Id, Manifest, "Fixture Beta", "Broiler.VM.Fixtures", variant, 2, null);
 }
 
 /// <summary>Builds fixture descriptors, filling every one of the thirty required rows.</summary>
@@ -139,7 +146,8 @@ public static class FixtureDescriptorFactory
         string displayName,
         string packageId,
         FixtureVmProfileVariant variant,
-        int ordinal)
+        int ordinal,
+        FixtureReadOrderRecorder? orderRecorder = null)
     {
         VmDiagnosticsIdentity.TryCreate(profileId, profileId + ".diagnostics", out var diagnostics);
 
@@ -181,7 +189,8 @@ public static class FixtureDescriptorFactory
             descriptorRevision: 1,
             supportedFormatVersions: new VmFormatVersionRange(1, 1),
             acceptedFeatureManifests: manifests,
-            verifier: new FixtureVmVerifier(profileId, semanticVersion: 1, variant: variant),
+            verifier: new FixtureVmVerifier(
+                profileId, semanticVersion: 1, variant: variant, orderRecorder: orderRecorder),
             executorFactory: environment => new FixtureVmExecutor(
                 executorIdentity, environment, variant, chargingGranularity: 1),
             artifactRepresentationKind: VmArtifactRepresentationKind.Decoded,
