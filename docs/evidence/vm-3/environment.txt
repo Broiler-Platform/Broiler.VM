@@ -1,0 +1,19 @@
+Broiler.VM evidence bundle VM-3-001 - environment
+
+OS                : Linux-6.18.44-fc-v22-x86_64-with-glibc2.39
+Architecture      : x86_64
+Processors        : 4
+Python            : 3.11.15
+
+--- dotnet --version ---
+10.0.400
+
+--- dotnet --list-sdks ---
+10.0.400 [/home/user/.dotnet/sdk]
+
+--- dotnet --list-runtimes ---
+Microsoft.AspNetCore.App 10.0.11 [/home/user/.dotnet/shared/Microsoft.AspNetCore.App]
+Microsoft.NETCore.App 10.0.11 [/home/user/.dotnet/shared/Microsoft.NETCore.App]
+
+Not a CI lane. One machine, one RID (linux-x64).
+Exclusion EX-45 records what that does not cover.

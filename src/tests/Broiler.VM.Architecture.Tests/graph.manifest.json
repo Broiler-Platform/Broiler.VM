@@ -11,9 +11,10 @@
     "16. It adds ZERO packable assemblies: the packable set stays exactly the three product",
     "packages, and a fourth PackageId before VM-3 requires a dated revision of ADR 0001.",
     "",
-    "VM-2 adds the one test-only project ADR 0001's budget permits it - a fuzz target host - taking the graph from 7 projects and 16 edges to 8 and 20. That is the ceiling the record names: 5 test-only projects and 8 in total. It adds ZERO packable assemblies, so the packable set is still exactly the three product packages."
+    "VM-2 adds the one test-only project ADR 0001's budget permits it - a fuzz target host - taking the graph from 7 projects and 16 edges to 8 and 20. That is the ceiling the record names: 5 test-only projects and 8 in total. It adds ZERO packable assemblies, so the packable set is still exactly the three product packages.",
+    "VM-3 adds the four projects ADR 0001 revision 1 authorises - two application-local consumer profiles and two named composition roots - taking the graph from 8 projects and 20 edges to 12 and 33, and test-only projects from 5 to 7. It adds ZERO packable assemblies: the packable set is still exactly the three product packages. The composition roots are the only projects permitted to reference a profile assembly, which is the deployment boundary src/compositions/ exists to enforce."
   ],
-  "milestone": "VM-2",
+  "milestone": "VM-3",
   "coreContractVersion": 1,
   "projects": [
     {
@@ -44,6 +45,35 @@
       "projectReferences": [
         "Broiler.VM.Abstractions",
         "Broiler.VM.Binary"
+      ]
+    },
+    {
+      "path": "src/compositions/Broiler.VM.Composition.Calculator/Broiler.VM.Composition.Calculator.csproj",
+      "assemblyName": "Broiler.VM.Composition.Calculator",
+      "rootNamespace": "Broiler.VM.Composition.Calculator",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Runtime",
+        "Com.Example.Calculator"
+      ]
+    },
+    {
+      "path": "src/compositions/Broiler.VM.Composition.Workbench/Broiler.VM.Composition.Workbench.csproj",
+      "assemblyName": "Broiler.VM.Composition.Workbench",
+      "rootNamespace": "Broiler.VM.Composition.Workbench",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Runtime",
+        "Com.Example.Calculator",
+        "Com.Example.Ledger"
       ]
     },
     {
@@ -112,6 +142,30 @@
         "Broiler.VM.Binary",
         "Broiler.VM.Fixtures",
         "Broiler.VM.Runtime"
+      ]
+    },
+    {
+      "path": "src/tests/Com.Example.Calculator/Com.Example.Calculator.csproj",
+      "assemblyName": "Com.Example.Calculator",
+      "rootNamespace": "Com.Example.Calculator",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary"
+      ]
+    },
+    {
+      "path": "src/tests/Com.Example.Ledger/Com.Example.Ledger.csproj",
+      "assemblyName": "Com.Example.Ledger",
+      "rootNamespace": "Com.Example.Ledger",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary"
       ]
     }
   ]

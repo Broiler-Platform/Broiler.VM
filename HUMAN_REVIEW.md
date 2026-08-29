@@ -120,25 +120,30 @@ areas keeps one item asking the reviewer to judge those criteria.
 
 Collected by automation and retained in
 [the VM-0 evidence bundle](docs/evidence/vm-0/README.md),
-[the VM-1 evidence bundle](docs/evidence/vm-1/README.md) and
-[the VM-2 evidence bundle](docs/evidence/vm-2/README.md). It is input to a review, not
+[the VM-1 evidence bundle](docs/evidence/vm-1/README.md),
+[the VM-2 evidence bundle](docs/evidence/vm-2/README.md) and
+[the VM-3 evidence bundle](docs/evidence/vm-3/README.md). It is input to a review, not
 a substitute for one. Each line carries an evidence verdict as defined in section 1;
 these are the author's marks about evidence, not review verdicts.
 
-**Two milestones are now waiting on one reading.** This file was written for VM-0's records
+**Three milestones are now waiting on one reading.** This file was written for VM-0's records
 and VM-1's implementation. VM-2 has since landed - the limit-precedence layers, a retained
 malformed-input corpus, a fuzz target, and the guest-load bounds that were carried in a
-descriptor and read nowhere - and nobody has read that either. The lines below say which
-milestone each figure belongs to rather than merging them, because a reviewer needs to know
-what a number is about before it is worth anything.
+descriptor and read nowhere - and VM-3 after it: two consumer profiles written against the
+public contract alone, two named composition roots, and the register and closure reports that
+say what each of them contains. Nobody has read either. The lines below say which milestone
+each figure belongs to rather than merging them, because a reviewer needs to know what a number
+is about before it is worth anything.
 
 - `[MET]` **Build and tests, as the tree stands:** `dotnet build Broiler.VM.slnx -c Release`
-  completes with 0 warnings and 0 errors across eight projects; `dotnet test Broiler.VM.slnx
-  -c Release` reports 255 tests passed, 0 failed, 0 skipped - 90 architecture and 165
-  behavioural. At VM-1 the same commands reported 221 passed over seven projects, of which 90
-  architecture and 131 behavioural; VM-2 adds thirty-four behavioural tests and no
-  architecture test, which is the shape of a milestone that forbids no new edge and adds a
-  great deal of behaviour.
+  completes with 0 warnings and 0 errors across twelve projects; `dotnet test Broiler.VM.slnx
+  -c Release` reports 262 tests passed, 0 failed, 0 skipped - 97 architecture and 165
+  behavioural. At VM-2 the same commands reported 255 passed over eight projects, of which 90
+  architecture and 165 behavioural; VM-3 adds seven architecture tests and no behavioural test,
+  which is the shape of a milestone whose claims are about the graph, the register and the
+  published images rather than about behaviour. **Read that number with section 5's VM-3 line:
+  the two consumer profiles VM-3 added are referenced by no test project at all, by rule, so
+  what exercises them is two published binaries and not the suite.**
 - `[PART]` **An adversarial review has been run, and it found a great deal.** Six reviewers
   against the frozen records, every finding put to two independent refuters: 45
   findings survived, sixteen of them blockers, several confirmed by executing the
@@ -158,7 +163,9 @@ what a number is about before it is worth anything.
   warnings. It builds with `TreatWarningsAsErrors`. What is not shown is a reproduction
   by automation: see AT-8.
 - `[MET]` **Packaging:** `dotnet pack` still produces exactly three `.nupkg` and three
-  `.snupkg`. Neither test-only project added by VM-1 packs.
+  `.snupkg`. None of the seven test-only projects packs, and neither composition root does:
+  the advertised composition set is empty at core contract version 1, and
+  [the composition register](docs/compositions.md) says so in its first section.
 - `[MET]` **Runtime dependencies:** the three product projects have no package references and
   no project references outside the component. Test packages are confined to the two
   test projects.
@@ -181,6 +188,18 @@ what a number is about before it is worth anything.
   `[PART]` rather than `[MET]` and the bundle names both: no fuzz session has found a
   regression to retain (EX-79), and the nesting-depth bound is unreachable at contract
   version 1 (EX-78).
+- `[PART]` **VM-3's own composition work.** Two application-local consumer profiles were written
+  against `Broiler.VM.Abstractions` and `Broiler.VM.Binary` and nothing else - no runtime
+  reference, no `InternalsVisibleTo` in either direction, no package reference, no reflection -
+  and composed by direct typed registration into two named roots that publish and run under JIT,
+  trimming and Native AOT. The closure of each published image is listed off the published
+  output: five non-framework assemblies for the single-profile composition, six for the
+  two-profile one, differing by exactly the second profile. **No file under any of the three
+  product project directories changed, and both published image sizes are byte-identical to
+  VM-2's**, which is the gate's central clause in numeric form. It is `[PART]` rather than
+  `[MET]` for one reason worth a reviewer's attention: neither consumer profile is fuzzed, and
+  neither is reachable from the test suite, so everything true of them is demonstrated by two
+  transcripts rather than by assertions a suite re-runs.
 - `[MET]` **License:** Apache-2.0, byte-identical to the other Broiler components. No
   third-party runtime dependency was introduced, so no notices file is carried.
 
@@ -242,12 +261,33 @@ condition.
   precedence algorithm requires was computed and discarded. None was found by reading. A
   reviewer should ask what else is in the same category, since the mechanism that found these
   three is the mechanism VM-2 added rather than one that was already looking.
-- **AT-11 - The review worksheet covers VM-0 and VM-1 and has no VM-2 items.**
+- **AT-11 - The review worksheet covers VM-0 and VM-1 and has no VM-2 or VM-3 items.**
   `docs/review/vm-0-vm-1.md` is the checklist a reviewer walks, and it was written before
   VM-2 existed. Its items are still true and none of them covers the corpus, the fuzz target,
-  the precedence layers or the guest-load bounds this milestone added. Rule H3 holds the
+  the precedence layers or the guest-load bounds VM-2 added, nor the consumer profiles, the
+  composition register or the closure reports VM-3 added. Rule H3 holds the
   worksheet's own counts and its area coverage and cannot notice that the component has
   outgrown it.
+- **AT-12 - VM-3 found a contract property nobody had written down, and it was found by
+  composing rather than by reading.** A runtime ceiling is clamped to the tightest profile hard
+  maximum in the CATALOG, and adopting a profile default resolves to the tightest default in the
+  catalog; both are catalog-wide facts rather than per-profile ones. So a profile that declares
+  its own usage as its hard maximum silently caps every profile composed beside it, and the
+  failure surfaces as a resource refusal inside an innocent verifier. The two consumer profiles
+  were written that way first and the two-profile composition could not verify a ledger artifact
+  until both were corrected. Nothing in the core changed and nothing here is proposed as a
+  defect; what a reviewer should decide is whether the core should be able to say so - a
+  catalog-construction diagnostic when one profile's maxima bind another's defaults would turn a
+  confusing runtime refusal into a composition-time message. `docs/compositions.md` section 5
+  is where a profile author currently finds this out, which is documentation rather than a
+  mechanism.
+- **AT-13 - VM-3's two consumer profiles are exercised by published binaries and by no test
+  project.** Rule A11 forbids a project outside a composition root to reference a profile
+  assembly, and demonstrating that rule is part of what VM-3 is for, so the suite cannot reach
+  either profile. Twelve checks across two composition roots run in three publish modes each and
+  their transcripts are retained, but nothing re-runs them in `dotnet test`, and neither profile
+  is fuzzed. A reviewer should decide whether that trade is right: the alternative is a weaker
+  A11 and a larger suite.
 - **AT-9 - The records and the implementation were drafted with AI assistance and reviewed the
   same way.** The adversarial review that produced the VM-0 revision confirmed 24
   findings, four of them blockers. That is a check on the work, not an independent
@@ -267,7 +307,10 @@ mistake is cheap to reverse. VM-1 decodes untrusted bytes, and the component is 
 carrying an unreviewed parser and an unreviewed budget enforcer.
 
 It matters more again at VM-2, and in a way worth stating plainly rather than leaving to be
-inferred. VM-2's corpus and fuzz target are exactly the mechanisms that make an unreviewed
+inferred, and VM-3 adds a third turn of the same screw: the two consumer profiles are the
+component's own demonstration that its contract is usable by someone outside it, and they were
+written by the same person who wrote the contract. A profile author who did not already know
+what the core expects is exactly the reader they were meant to stand in for. VM-2's corpus and fuzz target are exactly the mechanisms that make an unreviewed
 parser bearable, and they are themselves unreviewed: the corpus's expectations are one
 person's reading of what the verifier ought to answer, the fuzz target's invariants are the
 same person's list of what must never happen, and the negative controls show only that each

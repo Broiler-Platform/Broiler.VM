@@ -493,6 +493,13 @@ public sealed class AssuranceScannerTests
             .EnumerateFiles(Path.Combine(ComponentGraph.Root, "src"), "*.csproj", SearchOption.AllDirectories)
             .Select(static path => Path.GetRelativePath(ComponentGraph.Root, path).Replace('\\', '/'))
             .Where(static path => !path.StartsWith("src/tests/", StringComparison.Ordinal))
+
+            // A composition root is not a product project - ADR 0001 revision 1 puts it in its own
+            // partition - so it is not assurance-covered either. The decision this assertion
+            // exists to force was made when the directory was authorised: what a composition root
+            // contains is a host's own wiring, published and run rather than shipped as a package,
+            // and annotating it would claim a review obligation over code no consumer receives.
+            .Where(static path => !path.StartsWith("src/compositions/", StringComparison.Ordinal))
             .Select(static path => Path.GetFileNameWithoutExtension(path))
             .OrderBy(static name => name, StringComparer.Ordinal)
             .ToArray();

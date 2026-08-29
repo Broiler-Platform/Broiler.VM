@@ -577,7 +577,7 @@ section 8's extraction gate forbids, so VM-0 does not.
 | `.gitattributes` | not created (VM-0 decision on paper; no file at VM-0) | The component contains no shell script, so there is no line-ending rule to fix yet. |
 | `global.json` | not created (VM-0 decision on paper; no file at VM-0) | No SDK pin; see Exclusion EX-03. |
 | `.github/workflows/` | deferred to VM-6 | The component runs no CI of its own at VM-0; see Exclusion EX-06. |
-| `docs/compositions.md` | deferred to VM-3 | The composition and RID register. Until it exists, the composition-root allow-list is an empty constant in the test project; see Exclusion EX-08. |
+| `docs/compositions.md` | exists at VM-3: docs/compositions.md | The composition and RID register. It carries the schema, the advertised set - empty at core contract version 1 - the two demonstration compositions, and what each was published and run for. Rule A11's allow-list is a path rather than a constant now, and group K holds the register to the checkout. Exclusion EX-08 is closed; revision 1 records it. |
 | `docs/platform-references.md` | not created (VM-0 decision on paper; no file at VM-0) | The section 17 pinned-revision table. ADR 0012 records why it is absent and what closes it. |
 | `docs/support.md` | deferred to VM-6 | The public support table. ADR 0012 records that none is published at VM-0. |
 | `THIRD_PARTY_NOTICES.md` | deferred to VM-6 | Broiler.VM has zero third-party runtime dependencies at VM-0 - SourceLink is `PrivateAssets=all` and xunit is test-only - and an empty notices file would assert a license pass that has not happened. Required at VM-6 or on the day a runtime dependency first lands, whichever comes first. |
@@ -661,7 +661,10 @@ Exclusion EX-08: the composition-root allow-list Rule A11 reads is an empty
 constant inside the architecture-test project rather than a reviewable register,
 so relaxing it at VM-3 will be a code change rather than a documented row.
 Reason: `docs/compositions.md` is VM-3's artefact and creating it now would
-publish a schema for compositions that do not exist. Closed by: VM-3.
+publish a schema for compositions that do not exist. Closed by: VM-3. **CLOSED at
+VM-3**: the register exists, the allow-list is the path `src/compositions/`, and
+rules K1 to K4 hold the register, the reference sets, the catalogs and the
+published closures to each other. Revision 1 of this record states what changed.
 
 ## Consequences
 
@@ -709,3 +712,108 @@ publish a schema for compositions that do not exist. Closed by: VM-3.
   body, the component advertises no composition, claims no RID, and publishes no
   package; ADR 0012 owns the roles, the support position and the evidence bundle
   in which every exclusion identifier above is repeated verbatim.
+
+## Revision 1 - 2026-08-29 - the VM-3 project budget and the compositions directory
+
+This record's budget section stops at VM-2 and says the project set "may not
+grow silently at any point". VM-3's gate requires a separate consumer project
+and named composition roots, so the growth has to be recorded here before it
+happens. This is that record. It changes no decision above; it extends one
+budget and settles three readings that the sections above left open because
+nothing existed to read them against.
+
+**The budget.** VM-3 adds four projects and no packable assembly:
+
+| Project | Path | Kind | Why |
+|---|---|---|---|
+| `Com.Example.Calculator` | `src/tests/Com.Example.Calculator/` | test-only | The application-local consumer profile ADR 0011 asks for |
+| `Com.Example.Ledger` | `src/tests/Com.Example.Ledger/` | test-only | A second one, so a two-profile composition exists whose closure is not the single-profile one |
+| `Broiler.VM.Composition.Calculator` | `src/compositions/Broiler.VM.Composition.Calculator/` | composition root | The single-profile composition |
+| `Broiler.VM.Composition.Workbench` | `src/compositions/Broiler.VM.Composition.Workbench/` | composition root | The two-profile composition |
+
+The graph goes from 8 projects to 12, and test-only projects from 5 to 7. **The
+packable set is unchanged at exactly three** - `Broiler.VM.Abstractions`,
+`Broiler.VM.Binary` and `Broiler.VM.Runtime` - so the clause requiring a dated
+revision for a fourth packable assembly is not exercised by this one. The
+composition roots are non-packable, which the section above already requires of
+any root the composition register does not list as advertised, and the register
+`docs/compositions.md` lists neither as advertised: core contract version 1
+ships no composition.
+
+**Which boundary `src/compositions/` enforces.** Section 5's DEPLOYMENT
+boundary, and only that one. A composition root is the one project kind
+permitted to reference a profile assembly, so the directory is where the
+reference graph is allowed to fan out and everywhere else it is not. It is not a
+package boundary - nothing there packs - and not an ownership boundary, because
+both roots are owned by the same person as everything else here.
+
+**Why the consumer profiles live under `src/tests/`.** The path decision above
+admits exactly two shapes plus this reserved third, and none of them is "an
+application project". A consumer profile is not a Broiler product package - it
+must not be, since its identity is deliberately outside the reserved namespace -
+and it is not a composition root. `src/tests/` is therefore the only shape that
+fits, and the profiles are non-packable for the same reason every project there
+is. Adding a fourth path shape was rejected: it would exist to hold two projects
+that already have a shape that fits, and every path expression in the group A
+rules would have to learn about it.
+
+**How "no fixture or test assembly" is read in a closure report.** VM-3's gate
+asks that each closure report contain "exactly the declared profiles and no
+fixture or test assembly", and the consumer profiles live at a test-only path,
+so the sentence read literally forbids the closure from containing the profile
+the composition declares. The reading this record fixes is the one that makes
+the clause do its job: a closure report is accepted when it contains exactly the
+profile assemblies its register row declares, **no** `Broiler.VM.Fixtures`, no
+testing-framework assembly, and no reflection or dynamic-code assembly. The
+consumer profile is one of the declared profiles and belongs there; what the
+clause exists to catch is a composition that drags the fixture profile or a test
+harness into a shipped image, and both are still caught.
+
+**What this revision moves, and what it does not.** It moves no packable
+boundary: the three product assemblies are unchanged across this milestone, the
+API baseline they export is unchanged, and their published image sizes are
+byte-identical to VM-2's, which is the claim VM-3 exists to make rather than a
+side effect of it.
+
+It does change the project partition the group A rules read, and that is a real
+change rather than a clarification, so it is written down here rather than only
+in the test project. Two of the three partitions were exhaustive - a project was
+test-only or it was product - and a composition root is neither. Product it
+cannot be: nothing there packs, and rule A4 would forbid the reference to a
+consumer profile that this record exists to permit. Test-only it is not: it is
+published and run rather than collected by a runner. So there are three
+partitions now, and three rules moved with it:
+
+- **A4** gains an exemption for a composition root, and the register row says so.
+  The exemption is not a hole, because the rule that replaces it is stricter than
+  A4 was.
+- **A12** is new: a composition root's references are exactly the three core
+  packages plus one or more profile assemblies, it composes at least one profile,
+  and it declares no package reference. `Broiler.VM.Fixtures` and every test
+  project are forbidden by name.
+- **A13** is new: ADR 0011's obligation P1 as a rule. A consumer profile
+  references exactly `Broiler.VM.Abstractions` and `Broiler.VM.Binary`, declares
+  no package reference, and opens its internals to nobody.
+
+**Exclusion EX-08 is closed.** The composition-root allow-list rule A11 reads is
+no longer an empty constant inside the test project. It is a path - every project
+under `src/compositions/` - and what each of those projects may contain is
+`docs/compositions.md` (exists at VM-3: `docs/compositions.md`), the register
+this record deferred. Group K holds the register and the checkout to each other
+in both directions, holds each row to the composition's own reference set and to
+the catalog its published binary prints, and holds each published closure to
+exactly what its row declares. A11's scope widened with it: it now covers
+consumer profiles as well as `Broiler.VM.Profile.*`, and its allow-list has real
+members rather than being empty.
+
+**One finding, recorded because it is a property of the contract rather than of
+these two profiles.** A runtime ceiling is clamped to the tightest profile hard
+maximum in the CATALOG, across every profile in it, and adopting a profile
+default resolves to the tightest default in the catalog. Both are catalog-wide
+facts. A profile that declares its own usage as its hard maximum therefore caps
+every profile composed beside it, and the failure surfaces as a resource refusal
+inside somebody else's verifier. The two consumer profiles were written that way
+first and the two-profile composition could not verify a ledger artifact until
+they were corrected. Nothing in the core changed; what changed is what a profile
+author should declare, and `docs/compositions.md` section 5 records it where a
+profile author will look.

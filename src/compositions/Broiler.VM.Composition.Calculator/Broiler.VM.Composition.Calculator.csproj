@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Composition.Calculator</RootNamespace>
+    <AssemblyName>Broiler.VM.Composition.Calculator</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- ADR 0001 revision 1: a composition root is non-packable unless the composition register
+         lists it as advertised, and docs/compositions.md lists neither of VM-3's roots as
+         advertised. Core contract version 1 ships no composition. -->
+    <IsPackable>false</IsPackable>
+
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+
+    <!-- Invariant 7 classifies analyzer success as an INPUT and requires publish-and-run
+         evidence. Warnings are errors here so that an analyzer or trimmer complaint cannot be
+         walked past on the way to collecting that evidence. -->
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <!-- The single-profile closure, stated as a reference set. It names ONE profile assembly, and
+       the closure report over a publish of this project is expected to contain exactly that one:
+       no Com.Example.Ledger, no Broiler.VM.Fixtures, no testing framework. A composition root is
+       the one project kind ADR 0001 permits to reference a profile assembly at all. -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+    <ProjectReference Include="..\..\tests\Com.Example.Calculator\Com.Example.Calculator.csproj" />
+  </ItemGroup>
+
+</Project>

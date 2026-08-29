@@ -51,8 +51,18 @@ public sealed class ReviewRecordRuleTests
     private const string HumanReviewName = "HUMAN_REVIEW.md";
     private const string WorksheetName = "docs/review/vm-0-vm-1.md";
 
-    /// <summary>The bundle whose logs the current milestone's figures are quoted from.</summary>
-    private const string CurrentBundle = "vm-2";
+    /// <summary>
+    /// The bundle whose logs the current milestone's figures are quoted from.
+    /// </summary>
+    /// <remarks>
+    /// Read from the rule register's own milestone rather than written down here. A literal went
+    /// stale twice: at VM-2 and again at VM-3 the register advanced, the current bundle changed,
+    /// and this constant went on naming the previous one - so every document was compared against
+    /// a superseded bundle's figures and the anti-deletion guards demanded the superseded
+    /// bundle's numbers be kept current. That is the same defect the deferred-rule test records
+    /// for its own hardcoded milestone, and it has the same fix.
+    /// </remarks>
+    private static string CurrentBundle => ComponentGraph.CurrentEvidenceDirectory;
 
     private static ReviewDocument HumanReview => Document(HumanReviewName);
 
@@ -1487,12 +1497,12 @@ public sealed class ReviewRecordRuleTests
         // Clause: the corpus must still quote the suite total, comparing the value.
         var noTotal = Assert.Single(RetainedFigureGuard(
             [Witness("H5-corpus-omits-the-suite-total.md.witness")], current));
-        Assert.Contains("no review document quotes the current suite total 255", noTotal, StringComparison.Ordinal);
+        Assert.Contains("no review document quotes the current suite total 262", noTotal, StringComparison.Ordinal);
 
         // Clause: the corpus must still quote the split, comparing the values.
         var noSplit = Assert.Single(RetainedFigureGuard(
             [Witness("H5-corpus-omits-the-split.md.witness")], current));
-        Assert.Contains("split of 90 architecture and 165 behavioural", noSplit, StringComparison.Ordinal);
+        Assert.Contains("split of 97 architecture and 165 behavioural", noSplit, StringComparison.Ordinal);
 
         // Clause: the corpus must still quote the Native AOT image size, comparing the value.
         var noNative = Assert.Single(RetainedFigureGuard(
@@ -1534,7 +1544,9 @@ public sealed class ReviewRecordRuleTests
         int? Architecture,
         int? Behavioural,
         long? NativeImageSize,
-        long? TrimmedImageSize);
+        long? TrimmedImageSize,
+        IReadOnlyList<long> OtherNativeImageSizes,
+        IReadOnlyList<long> OtherTrimmedImageSizes);
 
     // These three are declared ahead of BundleFigures on purpose: static field initializers run in
     // textual order, and LoadBundleFigures reads all three while the type initializer is running.
@@ -1547,6 +1559,13 @@ public sealed class ReviewRecordRuleTests
 
     private static readonly Regex ImageSizeInLog =
         new(@"(?:^|\s)image size:\s*(?<size>[\d.,]+)\s*bytes", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+    // The trimmed spelling, and only it. A composition log records both of its modes and the two
+    // lines differ by one word, so a pattern that matched "image size:" anywhere would read an
+    // AOT image as a trimmed one and admit the two figures into each other's set - which is the
+    // exchange the swapped-sizes witness exists to catch.
+    private static readonly Regex TrimmedOnlyImageSizeInLog =
+        new(@"(?:^|\n)image size:\s*(?<size>[\d.,]+)\s*bytes", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
     private static IReadOnlyDictionary<string, LogFigures> BundleFigures { get; } = LoadBundleFigures();
 
@@ -1661,10 +1680,41 @@ public sealed class ReviewRecordRuleTests
                 Architecture: architecture,
                 Behavioural: behavioural,
                 NativeImageSize: SizeFromLog(Path.Combine(directory, "publish-aot.log"), NativeImageSizeInLog),
-                TrimmedImageSize: SizeFromLog(Path.Combine(directory, "publish-jit-and-trimmed.log"), ImageSizeInLog));
+                TrimmedImageSize: SizeFromLog(Path.Combine(directory, "publish-jit-and-trimmed.log"), ImageSizeInLog),
+
+                // A bundle may publish more than one image. VM-3 publishes three - the fixtures
+                // host and two composition roots - and a rule that knew only the first would call
+                // a correctly quoted composition size a violation, which is the rule failing
+                // rather than the document. Every size the bundle retained is admitted; the
+                // anti-deletion guard still holds the corpus to the two PRIMARY figures, so
+                // widening what is admitted does not weaken what must be quoted.
+                OtherNativeImageSizes: SizesFromLogs(directory, "composition-*.log", NativeImageSizeInLog),
+                OtherTrimmedImageSizes: SizesFromLogs(directory, "composition-*.log", TrimmedOnlyImageSizeInLog));
         }
 
         return figures;
+    }
+
+    /// <summary>
+    /// Every distinct size the named logs record, in file order. Unlike
+    /// <see cref="SizeFromLog"/> this does not refuse a log with several: a composition log
+    /// deliberately records both of its modes, and the caller is asking which sizes the bundle
+    /// retained rather than binding one figure to one log.
+    /// </summary>
+    private static IReadOnlyList<long> SizesFromLogs(string directory, string pattern, Regex expression)
+    {
+        if (!Directory.Exists(directory))
+        {
+            return [];
+        }
+
+        return Directory
+            .EnumerateFiles(directory, pattern)
+            .OrderBy(static path => path, StringComparer.Ordinal)
+            .SelectMany(path => expression.Matches(File.ReadAllText(path))
+                .Select(match => Grouped(match.Groups["size"].Value)))
+            .Distinct()
+            .ToArray();
     }
 
     private static long? SizeFromLog(string path, Regex pattern)
@@ -1834,7 +1884,7 @@ public sealed class ReviewRecordRuleTests
 
         foreach (var size in NativeSizes(document).Distinct())
         {
-            if (size != figures.NativeImageSize)
+            if (size != figures.NativeImageSize && !figures.OtherNativeImageSizes.Contains(size))
             {
                 violations.Add(
                     $"{document.Name} quotes a Native AOT image size of {size} bytes; " +
@@ -1844,7 +1894,7 @@ public sealed class ReviewRecordRuleTests
 
         foreach (var size in TrimmedSizes(document).Distinct())
         {
-            if (size != figures.TrimmedImageSize)
+            if (size != figures.TrimmedImageSize && !figures.OtherTrimmedImageSizes.Contains(size))
             {
                 violations.Add(
                     $"{document.Name} quotes a trimmed image size of {size} bytes; " +

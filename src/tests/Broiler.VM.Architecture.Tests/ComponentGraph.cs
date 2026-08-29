@@ -284,7 +284,22 @@ internal static class ComponentGraph
         internal bool IsTestOnly =>
             !IsWitness && RelativePath.StartsWith("src/tests/", StringComparison.Ordinal);
 
-        internal bool IsProduct => !IsTestOnly && !IsWitness;
+        /// <summary>
+        /// A named composition root: the one project kind ADR 0001 permits to reference a profile
+        /// assembly.
+        /// </summary>
+        /// <remarks>
+        /// A third partition rather than a flag on either of the other two, because a composition
+        /// root is neither. It is not a product project - nothing there packs, no rule about
+        /// product packages applies to it, and A4 would otherwise forbid the reference the record
+        /// exists to permit - and it is not test-only, because it is published and run rather than
+        /// collected by a test runner. ADR 0001 revision 1 records the directory and what boundary
+        /// it enforces.
+        /// </remarks>
+        internal bool IsComposition =>
+            !IsWitness && RelativePath.StartsWith("src/compositions/", StringComparison.Ordinal);
+
+        internal bool IsProduct => !IsTestOnly && !IsComposition && !IsWitness;
 
         internal IEnumerable<string> ReferencedAssemblyNames =>
             ProjectReferences.Select(static reference =>

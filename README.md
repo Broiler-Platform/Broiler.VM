@@ -20,7 +20,7 @@ reference.
 ## Status
 
 [The status ledger](docs/roadmap.status.md) is the authority for accepted evidence. It records
-**VM-0, VM-1 and VM-2 as in progress and unaccepted, and VM-3 through VM-6 as not started.**
+**VM-0, VM-1, VM-2 and VM-3 as in progress and unaccepted, and VM-4 through VM-6 as not started.**
 
 What exists is [twelve boundary records](docs/adr/README.md) and an implementation of core
 contract version 1: the profile-neutral contracts, the bounded binary primitives, the immutable
@@ -34,9 +34,15 @@ artifacts, each with its hash and its expected answer, and by a deterministic fu
 from it. Nothing about that is a claim that the component is safe: nobody has reviewed any of it,
 and `HUMAN_REVIEW.md` records that absence rather than a decision.
 
-What does not exist is a language. There is no product profile, no persisted envelope, no
-malformed-input corpus, no fuzz target, no concurrency evidence, no second RID, and no performance
-measurement.
+The composition claim is demonstrated rather than asserted. Two application-local consumer
+profiles - written against `Broiler.VM.Abstractions` and `Broiler.VM.Binary` and nothing else -
+are composed by two named roots listed in [the composition register](docs/compositions.md), each
+of which publishes and runs under JIT, trimming and Native AOT. The closure of each published
+image is read off the published output and contains exactly the profiles its register row
+declares. Adding the second profile changed no file in any product project.
+
+What does not exist is a language. There is no product profile, no advertised composition, no
+persisted envelope, no concurrency evidence, no second RID, and no performance measurement.
 
 And **nothing here is accepted**: no human has reviewed the records or the code, so no capability
 should be inferred from a passing test suite, a green publish, or this paragraph. `HUMAN_REVIEW.md`

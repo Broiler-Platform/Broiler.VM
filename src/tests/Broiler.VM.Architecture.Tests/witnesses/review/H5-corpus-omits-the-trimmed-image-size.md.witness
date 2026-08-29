@@ -1,6 +1,6 @@
 # Witness: a corpus that has stopped quoting the trimmed image size
 
-The suite reported 255 tests passed, of which 90 architecture tests and 165 behavioural tests,
+The suite reported 262 tests passed, of which 97 architecture tests and 165 behavioural tests,
 and the fixtures host publishes and runs as a Native AOT binary of 1,557,288 bytes. The trimmed
 size is the figure that has gone - and it is the one figure of the four that had no
 anti-deletion guard at all, so nothing forced the corpus to keep quoting it correctly, or at

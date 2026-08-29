@@ -44,6 +44,17 @@ def local(*parts):
 
 
 HOST = local("src", "tests", "Broiler.VM.Fixtures.Host", "Broiler.VM.Fixtures.Host.csproj")
+
+# The two named composition roots VM-3 publishes and runs. The register docs/compositions.md
+# lists the same two, and rule K1 holds the two lists to each other.
+COMPOSITIONS = (
+    ("Broiler.VM.Composition.Calculator",
+     local("src", "compositions", "Broiler.VM.Composition.Calculator",
+           "Broiler.VM.Composition.Calculator.csproj")),
+    ("Broiler.VM.Composition.Workbench",
+     local("src", "compositions", "Broiler.VM.Composition.Workbench",
+           "Broiler.VM.Composition.Workbench.csproj")),
+)
 FUZZ_HOST = local("src", "tests", "Broiler.VM.Fuzz.Host", "Broiler.VM.Fuzz.Host.csproj")
 CORPUS = local("src", "tests", "corpus", "vm-2")
 SOLUTION = "Broiler.VM.slnx"
@@ -120,6 +131,27 @@ CONTROLS = [
         None,  # resolved at run time: invert the artifact's last byte
         None,
     ),
+    (
+        "a composition root links the fixture profile",
+        local("src", "compositions", "Broiler.VM.Composition.Calculator",
+              "Broiler.VM.Composition.Calculator.csproj"),
+        "  </ItemGroup>",
+        '    <ProjectReference Include="..\\..\\tests\\Broiler.VM.Fixtures\\Broiler.VM.Fixtures.csproj" />\n'
+        "  </ItemGroup>",
+    ),
+    (
+        "a composition is deleted from the composition register",
+        local("docs", "compositions.md"),
+        "| `Broiler.VM.Composition.Workbench` | demonstration |",
+        "| ~~Broiler.VM.Composition.Workbench~~ | demonstration |",
+    ),
+    (
+        "a checked-in catalog baseline gains a profile the composition does not compose",
+        local("src", "tests", "Broiler.VM.Architecture.Tests", "catalogs", "calculator.catalog.txt"),
+        "profile com.example.calculator Com.Example.Calculator 1 0",
+        "profile com.example.calculator Com.Example.Calculator 1 0\n"
+        "profile com.example.stowaway Com.Example.Stowaway 1 0",
+    ),
 ]
 
 
@@ -154,6 +186,159 @@ def restore(path, original):
 def native_binary(publish_directory):
     exe = os.path.join(ROOT, publish_directory, HOST_BINARY)
     return exe if os.path.exists(exe) else None
+
+
+def published_binary(publish_directory, assembly_name):
+    """The executable a publish of `assembly_name` produced, or None."""
+    exe = os.path.join(ROOT, publish_directory, assembly_name + (".exe" if WINDOWS else ""))
+    return exe if os.path.exists(exe) else None
+
+
+def publish(project, out_directory, arguments, aot):
+    """Publish one project, trimmed or Native AOT, and return the combined output."""
+    if not aot:
+        return run(["dotnet", "publish", project, "-c", "Release", "-r", arguments.rid,
+                    "--self-contained", "true", "-p:PublishAot=false", "-p:PublishTrimmed=true",
+                    "-o", out_directory])
+
+    if not WINDOWS:
+        return run(["dotnet", "publish", project, "-c", "Release", "-r", arguments.rid,
+                    "-p:PublishAot=true", "-o", out_directory])
+
+    if not os.path.exists(arguments.vcvars):
+        return 1, "SKIPPED: no vcvars64.bat at " + arguments.vcvars
+
+    # The same one-session batch file the fixtures host needs, for the same reason: chaining
+    # through Python's own shell loses the environment vcvars64 sets, and the publish then fails
+    # with the MSB3073 exclusion EX-42 describes.
+    script = ('@echo off\r\n'
+              'call "%s"\r\n'
+              'set Platform=\r\n'
+              'dotnet publish %s -c Release -r %s -p:PublishAot=true '
+              '-p:IlcUseEnvironmentalTools=true -o %s\r\n'
+              % (arguments.vcvars, project, arguments.rid, out_directory))
+    handle, batch = tempfile.mkstemp(suffix=".bat")
+    os.close(handle)
+    io.open(batch, "w", encoding="ascii", newline="").write(script)
+
+    try:
+        return run(["cmd", "/c", batch])
+    finally:
+        os.remove(batch)
+
+
+def closure_of(publish_directory):
+    """
+    The non-framework assemblies a published directory contains.
+
+    This is the closure report VM-3's gate asks for, and it is read off the published output
+    rather than derived from the project file. A reference set that looks right can still pull
+    something in through a transitive package, and the linker is the only party that knows what
+    actually shipped.
+
+    Framework assemblies are excluded by prefix because a self-contained publish carries the
+    whole runtime and the claim is about what the COMPOSITION contributes. The prefixes are
+    deliberately coarse - anything System.* or Microsoft.* - which cannot hide a fixture, a test
+    framework or a profile, since none of those is named that way.
+    """
+    directory = os.path.join(ROOT, publish_directory)
+
+    if not os.path.isdir(directory):
+        return []
+
+    return sorted(
+        name[:-4] for name in os.listdir(directory)
+        if name.endswith(".dll")
+        and not name.startswith("System.")
+        and not name.startswith("Microsoft.")
+        and name not in ("netstandard.dll", "mscorlib.dll", "WindowsBase.dll"))
+
+
+def collect_compositions(arguments, out):
+    """
+    Publish and run each named composition in three modes, and retain what it composed.
+
+    Three artefacts per composition. The transcript says the checks passed in every mode; the
+    catalog table says which profiles were composed, compared across modes byte for byte so a
+    difference between JIT and Native AOT is a failure rather than a footnote; and the closure
+    report lists what the published image actually contains.
+    """
+    for name, project in COMPOSITIONS:
+        slug = name.split(".")[-1].lower()
+        lines = ["=== COMPOSITION %s ===" % name, "project: " + project, ""]
+        catalogs = {}
+
+        lines.append("--- JIT: dotnet run -- --verbose ---")
+        code, output = run(["dotnet", "run", "--project", project, "-c", "Release",
+                            "--", "--verbose"])
+        lines.append(output.strip())
+        lines.append("exit code: %d" % code)
+
+        _, catalog = run(["dotnet", "run", "--project", project, "-c", "Release",
+                          "--", "--closure"])
+        catalogs["jit"] = catalog.strip()
+
+        trimmed_out = os.path.join("artifacts", "publish-" + slug + "-trimmed")
+        aot_out = os.path.join("artifacts", "publish-" + slug + "-aot")
+
+        for mode, directory, is_aot in (("trimmed", trimmed_out, False), ("aot", aot_out, True)):
+            lines.append("")
+            lines.append("--- %s: dotnet publish -r %s ---" % (mode.upper(), arguments.rid))
+            _, published = publish(project, directory, arguments, aot=is_aot)
+            lines.append(published.strip())
+
+            binary = published_binary(directory, name)
+
+            if is_aot and binary is not None and os.path.getsize(binary) < 500_000:
+                # A native image is over a megabyte. Anything this small is a trimmed binary or a
+                # stale artefact, and reporting it as Native AOT would be a false claim.
+                lines.append("REFUSED: the produced binary is %d bytes, too small to be a native image."
+                             % os.path.getsize(binary))
+                binary = None
+
+            if binary is None:
+                lines.append("no binary to run in this mode")
+                continue
+
+            # The same two spellings the fixtures-host steps use, because rule H5 reads the logs
+            # by them: "native image size" for an AOT image and "image size" for a trimmed one.
+            lines.append("%simage size: %d bytes"
+                         % ("native " if is_aot else "", os.path.getsize(binary)))
+            code, output = run([binary, "--verbose"])
+            lines.append(output.strip())
+            lines.append("exit code: %d" % code)
+
+            _, catalog = run([binary, "--closure"])
+            catalogs[mode] = catalog.strip()
+
+        lines.append("")
+        lines.append("--- catalog table, compared across modes ---")
+
+        for mode in ("jit", "trimmed", "aot"):
+            lines.append("[%s]" % mode)
+            lines.append(catalogs.get(mode, "MISSING"))
+
+        distinct = set(catalogs.values())
+        lines.append("")
+        lines.append("modes captured: %d; identical: %s"
+                     % (len(catalogs), "yes" if len(distinct) == 1 else "NO"))
+
+        write(os.path.join(out, "composition-%s.log" % slug), "\n".join(lines) + "\n")
+
+        # The catalog table itself, retained on its own so a rule can compare it against the
+        # checked-in baseline without parsing a transcript.
+        write(os.path.join(out, "catalog-%s.txt" % slug),
+              (catalogs.get("jit", "") + "\n") if catalogs else "\n")
+
+        report = ["# closure %s rid=%s" % (name, arguments.rid), ""]
+
+        for mode, directory in (("trimmed", trimmed_out), ("aot", aot_out)):
+            assemblies = closure_of(directory)
+            report.append("[%s] %d non-framework assemblies" % (mode, len(assemblies)))
+            report += assemblies
+            report.append("")
+
+        write(os.path.join(out, "closure-%s.txt" % slug), "\n".join(report).strip() + "\n")
 
 
 def collect_controls(out):
@@ -337,6 +522,16 @@ def hashed_files():
     for manifest in ("graph.manifest.json", "rules.register.json"):
         files.append("src/tests/Broiler.VM.Architecture.Tests/" + manifest)
 
+    # The composition register and the catalog baselines rules K1 to K4 read. A bundle that pinned
+    # the closure reports but not the baselines they are compared against would pin one side of a
+    # comparison, which is the shape the corpus note below already warns about.
+    files.append("docs/compositions.md")
+
+    catalogs = os.path.join(ROOT, "src", "tests", "Broiler.VM.Architecture.Tests", "catalogs")
+    if os.path.isdir(catalogs):
+        files += ["src/tests/Broiler.VM.Architecture.Tests/catalogs/" + name
+                  for name in sorted(os.listdir(catalogs)) if name.endswith(".txt")]
+
     # The corpus, every artifact of it. A bundle that hashed the manifest and not the files it
     # names would pin a description of the corpus rather than the corpus, and a minimized fuzz
     # regression has no declaration anywhere else to be checked against.
@@ -488,6 +683,9 @@ def main():
 
     print("  8 fuzz sessions")
     write(os.path.join(out, "fuzz.log"), fuzz_sessions())
+
+    print("  8b compositions: publish, run and report the closure of each")
+    collect_compositions(arguments, out)
 
     if not arguments.skip_controls:
         print("  9 negative controls")

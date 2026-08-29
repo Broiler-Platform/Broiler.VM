@@ -1,0 +1,21 @@
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Successfully created package '/tmp/broiler-vm-pack-ghnnzivn/Broiler.VM.Abstractions.0.1.0-preview.1.nupkg'.
+  Successfully created package '/tmp/broiler-vm-pack-ghnnzivn/Broiler.VM.Abstractions.0.1.0-preview.1.snupkg'.
+  Successfully created package '/tmp/broiler-vm-pack-ghnnzivn/Broiler.VM.Binary.0.1.0-preview.1.nupkg'.
+  Successfully created package '/tmp/broiler-vm-pack-ghnnzivn/Broiler.VM.Binary.0.1.0-preview.1.snupkg'.
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Successfully created package '/tmp/broiler-vm-pack-ghnnzivn/Broiler.VM.Runtime.0.1.0-preview.1.nupkg'.
+  Successfully created package '/tmp/broiler-vm-pack-ghnnzivn/Broiler.VM.Runtime.0.1.0-preview.1.snupkg'.
+
+--- produced ---
+Broiler.VM.Abstractions.0.1.0-preview.1.nupkg
+Broiler.VM.Abstractions.0.1.0-preview.1.snupkg
+Broiler.VM.Binary.0.1.0-preview.1.nupkg
+Broiler.VM.Binary.0.1.0-preview.1.snupkg
+Broiler.VM.Runtime.0.1.0-preview.1.nupkg
+Broiler.VM.Runtime.0.1.0-preview.1.snupkg
+nupkg: 3
+snupkg: 3

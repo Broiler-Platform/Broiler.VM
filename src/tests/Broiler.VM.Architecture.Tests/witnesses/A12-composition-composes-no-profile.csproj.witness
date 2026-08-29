@@ -1,0 +1,14 @@
+<!-- Violates A12: a composition root that names no profile at all. It would publish, run and
+     compose nothing, and every closure claim made about it would be about an empty catalog. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Composition.Witness</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+  </ItemGroup>
+</Project>

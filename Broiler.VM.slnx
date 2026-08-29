@@ -4,11 +4,17 @@
     <Project Path="src/Broiler.VM.Binary/Broiler.VM.Binary.csproj" />
     <Project Path="src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj" />
   </Folder>
+  <Folder Name="/compositions/">
+    <Project Path="src/compositions/Broiler.VM.Composition.Calculator/Broiler.VM.Composition.Calculator.csproj" />
+    <Project Path="src/compositions/Broiler.VM.Composition.Workbench/Broiler.VM.Composition.Workbench.csproj" />
+  </Folder>
   <Folder Name="/tests/">
     <Project Path="src/tests/Broiler.VM.Architecture.Tests/Broiler.VM.Architecture.Tests.csproj" />
     <Project Path="src/tests/Broiler.VM.Contract.Tests/Broiler.VM.Contract.Tests.csproj" />
     <Project Path="src/tests/Broiler.VM.Fixtures/Broiler.VM.Fixtures.csproj" />
     <Project Path="src/tests/Broiler.VM.Fixtures.Host/Broiler.VM.Fixtures.Host.csproj" />
     <Project Path="src/tests/Broiler.VM.Fuzz.Host/Broiler.VM.Fuzz.Host.csproj" />
+    <Project Path="src/tests/Com.Example.Calculator/Com.Example.Calculator.csproj" />
+    <Project Path="src/tests/Com.Example.Ledger/Com.Example.Ledger.csproj" />
   </Folder>
 </Solution>

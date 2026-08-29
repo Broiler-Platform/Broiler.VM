@@ -1,0 +1,17 @@
+<!-- Violates A12: a composition root linking the fixture profile. This is the failure VM-3's
+     exit gate names by name - a closure report that contains a fixture or test assembly - and it
+     is a project-file fact, so it is caught here rather than only in a published image. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Composition.Witness</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+    <ProjectReference Include="..\Com.Example.Calculator\Com.Example.Calculator.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Fixtures\Broiler.VM.Fixtures.csproj" />
+  </ItemGroup>
+</Project>

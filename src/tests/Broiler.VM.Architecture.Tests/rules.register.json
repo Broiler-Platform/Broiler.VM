@@ -59,9 +59,11 @@
     "",
     "WHAT VM-2 CHANGED, AND WHY IT MINTS NO ROW. The milestone advances to VM-2 and the graph grows from 7 projects and 16 edges to 8 and 20 - the fuzz target host ADR 0001's budget permits - which A5, A6 and A7 already hold against graph.manifest.json in both directions. Beyond that VM-2 forbids no new edge, exports no new banned shape and adds no new surface claim, so it mints no new row. Its gates are behavioural and they live in the behavioural suite: the corpus manifest against the corpus in both directions, every artifact against its recorded hash, every pinned answer against its declaration, the materialization ordering for every artifact including every failing one, and the load-stage invariants a fuzz session looks for a counterexample to. Writing second copies of those here would be two implementations of one rule, which is the drift this register exists to prevent, and the negative controls in the VM-2 bundle are what show each of them rejecting an input.",
     "",
-    "H5 CHANGED, AND THE CHANGE IS A WEAKENING THAT IS RECORDED AS ONE. The rule compared every review document against the CURRENT bundle's logs. That was right while one milestone had evidence and wrong as soon as two did: the status ledger is a dated history as well as a current-state record, update rule 1 requires earlier evidence links and decisions to be preserved, and comparing the VM-1 row against VM-2's logs would have made preserving that history a violation - the rule pushing the document to delete what the ledger's own rules require it to keep. A document that is not a bundle README may now also quote the figures of any bundle whose README it LINKS. The link is what keeps it a citation rather than a loophole. What it cannot do is tell which row a figure belongs to, which is EX-81, and the four anti-deletion guards are untouched: they compare the current bundle's values and still fail if no document quotes them."
+    "H5 CHANGED, AND THE CHANGE IS A WEAKENING THAT IS RECORDED AS ONE. The rule compared every review document against the CURRENT bundle's logs. That was right while one milestone had evidence and wrong as soon as two did: the status ledger is a dated history as well as a current-state record, update rule 1 requires earlier evidence links and decisions to be preserved, and comparing the VM-1 row against VM-2's logs would have made preserving that history a violation - the rule pushing the document to delete what the ledger's own rules require it to keep. A document that is not a bundle README may now also quote the figures of any bundle whose README it LINKS. The link is what keeps it a citation rather than a loophole. What it cannot do is tell which row a figure belongs to, which is EX-81, and the four anti-deletion guards are untouched: they compare the current bundle's values and still fail if no document quotes them.",
+    "GROUP K, THE COMPOSITION-GOVERNANCE RULES. VM-3's exit gate asks that five things be detected: duplicate or reserved IDs, undocumented entries, missing factories, forbidden edges and catalog drift. Only the forbidden edges are decidable from project files, where group A already lives - A12 and A13 are the two rows minted there. The other four are facts about what a composition COMPOSED, so they are held against three independent statements of the same thing: the register docs/compositions.md, the reference set of the composition's own project, and the catalog table the published binary prints. K1 holds the register and the checkout to each other in both directions, K2 holds a row to the reference set and to the catalog, K3 is catalog drift against a checked-in baseline, and K4 holds each published closure to exactly what its row declares. The letter K was free: A-E, V, F, M, G, P, S and T are in use, H is group R's replacement, J is the assurance group, and R1..R6 is the reserved namespace ADR 0003 records for ADR 0012's six ownership roles.",
+    "K3 AND K4 READ RETAINED EVIDENCE RATHER THAN RUNNING ANYTHING, and that is a consequence of the promise the milestone makes rather than a shortcut. Rule A11 forbids the architecture-test project to reference a profile assembly - that is one of the things VM-3 exists to demonstrate - so the suite cannot build a catalog of its own to compare against. What it does instead is stronger: the baseline is compared against what PUBLISHED binaries printed, in three modes, and the closure reports are read off published output rather than derived from project files. A reference set that looks right can still pull something in through a transitive package, and the linker is the only party that knows what shipped. The limits are recorded as exclusions rather than implied: EX-86, that the bundle is retained by a script a person runs, so K3 and K4 compare against the last collection rather than against the working tree; and EX-87, that the closure report excludes framework assemblies by name prefix, so a hypothetical System.*-named profile would not be seen (nothing in the checkout is named that way, and the exact-set clause of K4 catches everything else)."
   ],
-  "milestone": "VM-2",
+  "milestone": "VM-3",
   "coreContractVersion": 1,
   "rules": [
     {
@@ -98,10 +100,10 @@
       "id": "A4",
       "owningAdr": "0001",
       "status": "Active",
-      "statement": "No product project has a ProjectReference resolving under src/tests/.",
+      "statement": "No product project references a test-only project. A composition root is not a product project and is exempt; A12 states what it may reference instead.",
       "evidence": "Project files",
       "activationMilestone": null,
-      "nonVacuousWhen": "Broiler.VM.Fixtures exists at VM-0, so the forbidden target is present.",
+      "nonVacuousWhen": "Five test-only projects exist that a product project could reference, and two composition roots reference two of them legally.",
       "witness": "witnesses/A4-product-references-test.csproj.witness"
     },
     {
@@ -138,10 +140,10 @@
       "id": "A8",
       "owningAdr": "0001",
       "status": "Active",
-      "statement": "No profile project references Broiler.VM.Runtime.",
+      "statement": "No profile project references Broiler.VM.Runtime. Profile-shaped means the fixture profile, a Broiler.VM.Profile.* assembly, or an application-local consumer profile.",
       "evidence": "Project files",
       "activationMilestone": null,
-      "nonVacuousWhen": "Broiler.VM.Fixtures is profile-shaped and exists at VM-0.",
+      "nonVacuousWhen": "Broiler.VM.Fixtures is profile-shaped and exists at VM-0; VM-3 adds two consumer profiles whose whole promise is the reference set this rule guards half of.",
       "witness": "witnesses/A8-profile-references-runtime.csproj.witness"
     },
     {
@@ -168,11 +170,31 @@
       "id": "A11",
       "owningAdr": "0001",
       "status": "Active",
-      "statement": "No project outside the composition-root allow-list references an assembly matching Broiler.VM.Profile.*. The allow-list is empty at VM-0.",
+      "statement": "No project outside the composition-root allow-list references a profile assembly matching Broiler.VM.Profile.* or Com.Example.*. The allow-list is every project under src/compositions/. The fixture profile is out of scope: its test-only path is what contains it, and A12 forbids it inside a composition root.",
       "evidence": "Project files",
       "activationMilestone": null,
-      "nonVacuousWhen": "The allow-list is empty at VM-0, so any profile reference violates it.",
+      "nonVacuousWhen": "Two consumer profiles exist at VM-3 and two composition roots reference them, so the rule has subjects on both sides rather than only a witness.",
       "witness": "witnesses/A11-profile-reference-outside-composition-root.csproj.witness"
+    },
+    {
+      "id": "A12",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "A composition root's project references are exactly the three core packages plus one or more profile assemblies, it composes at least one profile, and it declares no PackageReference. Broiler.VM.Fixtures and every test project are forbidden.",
+      "evidence": "Project files",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Two composition roots exist at VM-3, each referencing a profile assembly that lives under src/tests/, so the rule decides a real reference set rather than an empty one.",
+      "witness": "witnesses/A12-composition-references-fixtures.csproj.witness, witnesses/A12-composition-composes-no-profile.csproj.witness, witnesses/A12-composition-package-reference.csproj.witness"
+    },
+    {
+      "id": "A13",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "A consumer profile's project references are exactly Broiler.VM.Abstractions and Broiler.VM.Binary, it declares no PackageReference, and it opens its internals to nobody. ADR 0011's obligation P1 as a rule rather than as a sentence.",
+      "evidence": "Project files",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Com.Example.Calculator and Com.Example.Ledger exist at VM-3 and are the subject; the promise the milestone demonstrates is a property of exactly this reference set.",
+      "witness": "witnesses/A13-profile-references-runtime.csproj.witness, witnesses/A13-profile-package-reference.csproj.witness, witnesses/A13-profile-internals-visible-to.csproj.witness"
     },
     {
       "id": "B1",
@@ -200,8 +222,8 @@
       "status": "Vacuous",
       "statement": "No assembly in the product graph names a Broiler.* assembly outside the component's own set. The assembly-level twin of A1 and A2.",
       "evidence": "AssemblyRef table",
-      "activationMilestone": "VM-3",
-      "nonVacuousWhen": "A product assembly could name a foreign Broiler.* assembly. The subject now exists - the product graph names non-framework assemblies for the first time - but a VIOLATION is still unreachable: A1 forbids the outbound ProjectReference, A2 forbids the Broiler.* PackageReference, and the single-source NuGet.config makes such a package unresolvable, so no project in the checkout can acquire one. It becomes reachable at VM-3, when composition roots and profile packages exist. Exclusion EX-40 records the reasoning and the alternative that was rejected.",
+      "activationMilestone": "VM-6",
+      "nonVacuousWhen": "A product assembly could name a foreign Broiler.* assembly. The subject exists - the product graph names non-framework assemblies - but a VIOLATION is still unreachable, and the VM-3 prediction this row used to carry did not come true. It said composition roots and profile packages would make one reachable; they did not, because the three mechanisms that exclude it are untouched by either. A1 forbids the outbound ProjectReference, A2 forbids the Broiler.* PackageReference, and the single-source NuGet.config leaves such a package unresolvable - and a composition root is bound by all three exactly as a product project is. VM-6 is named instead because that is when pristine feed consumers exist and a foreign Broiler package becomes resolvable at all. Exclusion EX-40 records the reasoning and the alternative that was rejected.",
       "witness": "none - a witness needs a foreign Broiler assembly, and the graph is closed over its own seven. The project-file twins A1 and A2 are witnessed."
     },
     {
@@ -592,6 +614,46 @@
       "evidence": "Every annotated unit in the three product assemblies against `AssuranceScanner.MissingFalsificationCriteria`, and the three criteria on `src/Broiler.VM.Binary/VmBoundedAllocator.cs` against `AssuranceFingerprint.Of`, `AssuranceFingerprint.OfFile` and `AssuranceManifest.Render`",
       "nonVacuousWhen": "THIS RULE IS RED AT THIS MILESTONE, WHICH IS THE CLAUSE WORKING. Forty-four units are assessed High or Critical; three of them - the whole of `src/Broiler.VM.Binary/VmBoundedAllocator.cs` - carry a criterion, and the rule names the other 41 one by one, because a count is a number a reader can do nothing with and a name is the declaration they have to write the criterion on. The clean direction is asserted last in the test, so that a reader who runs the suite sees the clause's own witnesses pass before they see the list of work it names. Both directions are witnessed: a High unit and a Critical unit carrying none are each named with the risk they were assessed at, and the Medium unit standing beside them is not, because below High the line is permitted and a rule that reported every unit without one would be a rule about comments rather than about the high-risk surface. `Security=High` is a set of forty-four units and not a test; the criterion is the test, and that is the whole reason the line exists. The fingerprint clause is asserted on the real file rather than on a probe: the three criteria are reworded, every unit fingerprint in the file is compared before and after, the file fingerprint over the complete token stream is compared, and the rendered manifest entries are compared - and the rewording is asserted to have happened, so a test that changed nothing would not pass it silently. That property is why a criterion may be edited freely: it is an instruction to the reviewer, not part of what they certify, so changing one must not invalidate an approval. THE FIRST LIMIT, STATED RATHER THAN IMPLIED: nothing here judges a criterion. A line reading `the code is wrong` parses, is one line, carries no field and satisfies this rule completely; whether the observation it names is the right one for that unit, and whether it is already unmet, is a review. That is EX-75, and it is the shape of EX-68's limit on the per-unit exemption reason one line down the block - a rule can hold a sentence to being present and cannot read it. A SECOND LIMIT: the requirement is driven by the annotation's own `Security` value, so a unit downgraded from High to Low owes no criterion and this rule reports nothing, which is EX-65 reached one field over. A THIRD: the line is a local extension to `BROILER-CODE-ASSURANCE.md`, which defines two lines and not three, and the owner may reject it. That is EX-74.",
       "witness": "witnesses/assurance/J10-a-high-unit-carries-no-criterion.cs.witness, witnesses/assurance/J10-a-high-unit-carries-a-criterion.cs.witness"
+    },
+    {
+      "id": "K1",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "Every composition root under src/compositions/ has exactly one row in docs/compositions.md, every row names a root that exists in the checkout, every row declares a kind of advertised or demonstration, and every row declares at least one profile with matching ID and assembly counts.",
+      "evidence": "docs/compositions.md against the project graph",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Two composition roots and two register rows exist at VM-3, so the correspondence is over real entries in both directions rather than over two empty lists.",
+      "witness": "CompositionRegisterTests in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
+      "id": "K2",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "A register row's declared profile assemblies equal the composition project's non-core project references, its declared profile IDs and package identities equal the catalog table the composition prints, no catalog composes the same profile twice, and no composed profile ID claims the reserved broiler first label.",
+      "evidence": "docs/compositions.md, project files, and the checked-in catalog baselines",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Two rows describe two real compositions whose reference sets and catalogs are in the checkout, so all three statements of the same fact exist and can disagree.",
+      "witness": "CompositionRegisterTests in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
+      "id": "K3",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "The checked-in catalog baseline for each composition equals the catalog table the published composition printed, retained in the current evidence bundle. This is catalog drift, compared against a published binary rather than against an in-process build.",
+      "evidence": "src/tests/Broiler.VM.Architecture.Tests/catalogs/ against the current evidence bundle",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Two baselines and two retained catalog tables exist at VM-3, and the retained tables are the output of binaries published in three modes.",
+      "witness": "CompositionRegisterTests in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
+      "id": "K4",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "Every published mode's closure for a composition contains exactly that composition, the three core assemblies and the profile assemblies its register row declares - no fixture, no testing framework, no reflection-emit assembly, and nothing it does not declare. A mode that contains no managed assembly at all, which is what Native AOT produces, satisfies the rule.",
+      "evidence": "The closure reports in the current evidence bundle, read off published output",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Two compositions were published in two modes each at VM-3 and their closures are retained, one of which contains five non-framework assemblies and the other six.",
+      "witness": "CompositionRegisterTests in Broiler.VM.Architecture.Tests.dll"
     }
   ]
 }
