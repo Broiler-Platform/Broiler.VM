@@ -2316,6 +2316,44 @@ public sealed class AssuranceRuleTests
             declaredRoster,
             StringComparison.Ordinal);
 
+        // Clause: the two derivations agree over a tree that carries the shapes THIS component does
+        // not. Deriving the record twice buys nothing on branches neither derivation is ever asked
+        // about, and Broiler.VM exercises almost none of them: it has no per-unit exemption, no
+        // STALE line, no alias, no unit that owes a criterion and carries none, and no file with no
+        // units at all. Every one of those branches was compared against nothing, on the one tree
+        // both derivations happen to be right about.
+        var awkward = AssuranceProbe.Source(
+            WitnessText("J8-a-tree-the-two-derivations-must-agree-on.cs.witness"),
+            "J8-a-tree-the-two-derivations-must-agree-on.cs");
+
+        // ...paired with a file declaring no code unit at all, which is a covered file the coverage
+        // table still has to carry a row for.
+        var silent = AssuranceProbe.Source("namespace Probe;\n", "J8-a-file-with-no-units.cs");
+
+        var awkwardFiles = new[] { awkward, silent };
+        var awkwardUnits = awkwardFiles.SelectMany(AssuranceScanner.Scan).ToArray();
+
+        Assert.Equal(
+            AssuranceArtefactShape.ExpectedHumanReview(awkwardFiles, awkwardUnits),
+            AssuranceHumanReview.Render(awkwardFiles, awkwardUnits));
+
+        // ...and the branches really are reached, asserted rather than hoped for: the per-unit
+        // escape hatch, an outrun decision, a unit that owes a criterion and carries none, and a
+        // file with nothing in it. A witness that exercised none of them would pass this clause by
+        // agreeing about nothing.
+        Assert.NotEmpty(AssuranceScanner.DeclaredExemptions(awkwardUnits));
+        Assert.Contains(awkwardUnits, static unit => unit.State == AssuranceReviewState.Stale);
+        Assert.Contains(awkwardUnits, static unit => unit.State == AssuranceReviewState.Verified);
+        Assert.NotEmpty(AssuranceScanner.MissingFalsificationCriteria(awkwardUnits));
+        Assert.Empty(AssuranceScanner.Scan(silent));
+
+        var declaredAwkward = AssuranceArtefactShape.ExpectedHumanReview(awkwardFiles, awkwardUnits);
+
+        Assert.Contains("| `J8-a-file-with-no-units.cs` | 0 |", declaredAwkward, StringComparison.Ordinal);
+        Assert.Contains("Spec=ADR-0007 s6", declaredAwkward, StringComparison.Ordinal);
+        Assert.Contains("Spec=none cited", declaredAwkward, StringComparison.Ordinal);
+        Assert.Contains("no criterion is stated", declaredAwkward, StringComparison.Ordinal);
+
         // ...and the record over THIS tree says whatever the tree says, which is the other direction
         // of the same clause. Derived and not written out: "the record names nobody" is a fact about
         // a milestone, and the first alias anybody records would have made it false.

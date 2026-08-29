@@ -637,8 +637,15 @@ internal static class AssuranceArtefactShape
             !unit.IsExempt && unit.Annotation is { ExemptReason: null });
         var reviewed = units.Count(static unit =>
             !unit.IsExempt && unit.State == AssuranceReviewState.Verified);
+        // AssuranceStateMachine.BlocksRelease written out rather than called, so the two
+        // derivations stay two. The second half is redundant today and is kept deliberately: a
+        // relevant unit cannot be in state EXEMPT, because the one thing that produces that state
+        // for an annotated unit - a per-unit `EXEMPT=` reason - is also what makes
+        // AssuranceScanner.ExemptionFor answer DeclaredInSource. Writing only the first half would
+        // be relying on that coincidence between two files, which is the kind of agreement this
+        // shape exists to stop depending on.
         var unverified = units.Count(static unit =>
-            !unit.IsExempt && unit.State != AssuranceReviewState.Verified);
+            !unit.IsExempt && unit.State is not (AssuranceReviewState.Verified or AssuranceReviewState.Exempt));
         var aliases = Aliases(units);
         var record = new StringBuilder();
 
@@ -813,7 +820,7 @@ internal static class AssuranceArtefactShape
                 $"| `{file.RelativePath}` | {owned.Length} | " +
                 $"{owned.Count(static unit => !unit.IsExempt)} | " +
                 $"{owned.Count(static unit => unit.IsExempt)} | " +
-                $"{owned.Count(static unit => !unit.IsExempt && unit.State != AssuranceReviewState.Verified)} | " +
+                $"{owned.Count(static unit => !unit.IsExempt && unit.State is not (AssuranceReviewState.Verified or AssuranceReviewState.Exempt))} | " +
                 $"{Weakest(scored, "IP", AssuranceAnnotation.IpRiskValues) ?? "not assessed"} | " +
                 $"{Weakest(scored, "Security", AssuranceAnnotation.SecurityRiskValues) ?? "not assessed"} | " +
                 $"{Criteria(owned)}/{RequiringACriterion(owned)} |");

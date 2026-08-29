@@ -1,2 +1,2 @@
 Rule D1, inbound half of the legacy boundary.
-SCANNED - aggregate checkout at D:\Broiler.Browser; 0 project file(s) outside the component reference into it.
+INCONCLUSIVE - no aggregate checkout above the component root, so D1 scanned nothing. This is not a pass: see Exclusion EX-01.
