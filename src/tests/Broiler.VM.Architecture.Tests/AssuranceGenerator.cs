@@ -29,9 +29,10 @@ internal sealed record AssurancePlan(
 /// <remarks>
 /// <para>
 /// <b>Why one function and not two.</b> The policy gives fingerprint maintenance and summary
-/// generation to CI. This component has no CI lane - exclusion EX-45 records one RID, one machine
-/// and no lane - so the same code runs in both roles. <see cref="Plan"/> computes what every
-/// generated artefact should contain and is pure; <see cref="Apply"/> writes it. With
+/// generation to CI, and the review lane under <c>.github/workflows/</c> is that CI - but it runs
+/// this same code in both roles rather than carrying a second implementation of it.
+/// <see cref="Plan"/> computes what every generated artefact should contain and is pure;
+/// <see cref="Apply"/> writes it. With
 /// <c>BROILER_ASSURANCE_WRITE=1</c> the test applies the plan; without it, the test asserts every
 /// artefact already equals it. A gate that verified a different computation from the one that
 /// generated would be a gate over nothing, which is why there is only one.
