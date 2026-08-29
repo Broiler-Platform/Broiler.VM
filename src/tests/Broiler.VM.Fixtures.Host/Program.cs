@@ -29,6 +29,13 @@ internal static class Program
 
         try
         {
+            var corpus = Value(args, "--corpus");
+
+            if (corpus is not null)
+            {
+                return ReplayCorpus(corpus);
+            }
+
             var checks = new List<(string Name, bool Passed, string Detail)>
             {
                 SingleProfileComposition(),
@@ -263,6 +270,96 @@ internal static class Program
                 ? ("unsupported-profile", true, $"{result.Outcome}/{result.Reason}")
                 : ("unsupported-profile", false, $"expected UnsupportedProfile, got {result.Outcome}/{result.Reason}");
         }
+    }
+
+    /// <summary>
+    /// Replays every retained corpus artifact and prints one line per artifact: the identifier, the
+    /// outcome, the reason, the profile's diagnostic code, and the dimension and scope a resource
+    /// answer named.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This is the whole of the cross-mode stability claim. The same table is produced by this host
+    /// published three ways - JIT, trimmed, and Native AOT - and the three are compared byte for
+    /// byte. A category that differs between them is a category a host cannot rely on, and an
+    /// enumeration rendered by name rather than by number is exactly the kind of thing trimming and
+    /// AOT change without warning.
+    /// </para>
+    /// <para>
+    /// One descriptor for every artifact, deliberately. Three corpus entries are presented under a
+    /// varied descriptor by the behavioural suite, and reproducing that here would mean reading the
+    /// manifest - which means a JSON reader in a trimmed and AOT-published binary, whose own
+    /// behaviour under trimming is then part of what the table measures.
+    /// </para>
+    /// </remarks>
+    private static int ReplayCorpus(string directory)
+    {
+        if (!Directory.Exists(directory))
+        {
+            Console.Error.WriteLine($"broiler-vm-fixtures-host: no corpus directory at {directory}");
+            return 2;
+        }
+
+        var files = Directory.GetFiles(directory, "*.bin");
+        Array.Sort(files, StringComparer.Ordinal);
+
+        if (files.Length == 0)
+        {
+            Console.Error.WriteLine($"broiler-vm-fixtures-host: no corpus artifacts in {directory}");
+            return 2;
+        }
+
+        Console.WriteLine($"# broiler-vm-corpus-replay core-contract-version={VmCoreContract.Version} artifacts={files.Length}");
+
+        foreach (var file in files)
+        {
+            var payload = File.ReadAllBytes(file);
+            var catalog = VmCatalog.CreateBuilder().Add(FixtureVmProfile.Descriptor).Build();
+            var created = VmRuntime.Create(catalog, Options());
+
+            if (!created.TryGetRuntime(out var runtime))
+            {
+                Console.Error.WriteLine(
+                    $"broiler-vm-fixtures-host: runtime creation {created.Outcome}/{created.Reason}");
+
+                return 2;
+            }
+
+            using (runtime)
+            {
+                var descriptor = Descriptor(FixtureVmProfile.Id, FixtureVmProfile.Manifest);
+                var result = runtime.Verify(in descriptor, payload, CancellationToken.None);
+                var handle = result.TryGetArtifact(out var artifact);
+
+                artifact?.Dispose();
+
+                Console.WriteLine(
+                    string.Join(
+                        ' ',
+                        Path.GetFileNameWithoutExtension(file),
+                        result.Outcome,
+                        result.Reason,
+                        result.Diagnostics.ProfileDiagnosticCode,
+                        result.Diagnostics.ExhaustedDimension,
+                        result.Diagnostics.ExhaustedScope,
+                        handle ? "handle" : "no-handle"));
+            }
+        }
+
+        return 0;
+    }
+
+    private static string? Value(string[] arguments, string name)
+    {
+        for (var index = 0; index + 1 < arguments.Length; index++)
+        {
+            if (string.Equals(arguments[index], name, StringComparison.Ordinal))
+            {
+                return arguments[index + 1];
+            }
+        }
+
+        return null;
     }
 
     private static VmArtifactDescriptor Descriptor(VmProfileId profileId, VmFeatureManifestId manifest) =>

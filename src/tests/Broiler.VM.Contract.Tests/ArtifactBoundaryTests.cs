@@ -11,7 +11,7 @@ namespace Broiler.VM.Contract.Tests;
 public sealed class ArtifactBoundaryTests
 {
     [Fact]
-    public void Overwriting_The_Callers_Buffer_Concurrently_Cannot_Change_What_Was_Verified()
+    public async Task Overwriting_The_Callers_Buffer_Concurrently_Cannot_Change_What_Was_Verified()
     {
         // Mutation after the fact is already covered; this is the harder half. Another thread
         // rewrites the caller's array continuously while the handle is instantiated and invoked, so
@@ -57,8 +57,8 @@ public sealed class ArtifactBoundaryTests
         }
         finally
         {
-            stop.Cancel();
-            vandal.Wait(TimeSpan.FromSeconds(10));
+            await stop.CancelAsync();
+            await vandal.WaitAsync(TimeSpan.FromSeconds(10));
         }
     }
 
