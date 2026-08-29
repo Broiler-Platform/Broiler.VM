@@ -52,7 +52,7 @@ internal static class VmLimitPrecedence
     /// before the first payload byte is examined. A descriptor stating no limits produces no clamps
     /// rather than fifteen clamps against TOP.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=2; Fingerprint=502459
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=2; Fingerprint=6EB4E9
     // Broiler-Human:        PENDING
     internal static System.Collections.Immutable.ImmutableArray<VmLimitClamp> Clamps(
         VmLimitVector bound,
@@ -67,6 +67,15 @@ internal static class VmLimitPrecedence
 
         foreach (var dimension in VmBudgetDimensions.All)
         {
+            // TOP is how a vector spells "this dimension says nothing", and a dimension that says
+            // nothing was not clamped - it was never a request. Reporting one would fill the record
+            // with fourteen clamps for every descriptor that tightened a single dimension, which is
+            // the same as reporting none.
+            if (requested.IsUnconstrained(dimension))
+            {
+                continue;
+            }
+
             var asked = requested[dimension];
 
             if (asked <= bound[dimension])

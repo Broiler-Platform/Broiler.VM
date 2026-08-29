@@ -102,13 +102,14 @@ internal static class FixtureComposition
         VmExternalSuspensionMode externalSuspension = VmExternalSuspensionMode.Disabled,
         ImmutableArray<VmCapabilityRegistration>? capabilities = null,
         int maxLiveSuspendedOperations = 4,
-        TimeSpan? maxSuspendedResidency = null) =>
+        TimeSpan? maxSuspendedResidency = null,
+        VmGuestLoadBoundsSpec? guestLoadBounds = null) =>
         new(
             aggregateBudget: parent,
             ceilings: ceilings ?? AdoptedCeilings(),
             maxSuspendedResidency: maxSuspendedResidency ?? TimeSpan.FromMinutes(1),
             maxLiveSuspendedOperations: maxLiveSuspendedOperations,
-            guestLoadBounds: VmGuestLoadBoundsSpec.AdoptProfileMaxima,
+            guestLoadBounds: guestLoadBounds ?? VmGuestLoadBoundsSpec.AdoptProfileMaxima,
             externalSuspension: externalSuspension,
             capabilities: capabilities ?? ValueCapabilities());
 
