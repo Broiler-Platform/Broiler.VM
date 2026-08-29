@@ -122,4 +122,32 @@ public sealed class ApiBaselineRuleTests
         // The witness: a type naming the envelope shape and a member naming the incremental one.
         Assert.NotEmpty(ApiBaselineRules.V10([typeof(ApiBaselineWitnesses.VmEnvelopeReaderWitness)]));
     }
+
+    [Fact]
+    public void V11_No_Diagnostics_Field_Can_Carry_Free_Text()
+    {
+        Assert.Empty(ApiBaselineRules.V11(typeof(VmDiagnostics)));
+
+        // Two witnesses, because the rule makes two claims and a single non-empty assertion would
+        // pin only whichever fired first: a message on the record itself, and a group that carries
+        // the text one level down where a check of the record's own members would not look.
+        Assert.Contains(
+            ApiBaselineRules.V11(typeof(ApiBaselineWitnesses.DiagnosticsWithAMessage)),
+            message => message.Contains("Message", StringComparison.Ordinal));
+
+        Assert.Contains(
+            ApiBaselineRules.V11(typeof(ApiBaselineWitnesses.DiagnosticsWithATextBearingGroup)),
+            message => message.Contains("Detail", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void V12_No_Profile_Facing_Member_Reaches_The_Clr()
+    {
+        Assert.Empty(ApiBaselineRules.V12(ApiBaselineRules.ProfileFacingContracts));
+
+        var leaked = ApiBaselineRules.V12([typeof(ApiBaselineWitnesses.ICapabilityTableThatLeaksTheClr)]).ToArray();
+
+        Assert.Contains(leaked, message => message.Contains("Type", StringComparison.Ordinal));
+        Assert.Contains(leaked, message => message.Contains("Object", StringComparison.Ordinal));
+    }
 }

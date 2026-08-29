@@ -146,7 +146,7 @@ internal static class VmInstantiation
         }
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=C17AC2
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=C04083
     // Broiler-Falsified-If: the scope is entered with no owning operation, or the switch tests no host failure or poll bound
     // Broiler-Human:        PENDING
     private static VmInstantiationResult Instantiate(
@@ -247,7 +247,20 @@ internal static class VmInstantiation
                     runtime, profile, executor, step.State, instanceLevel, identified,
                     profileState.Scope, mediator, lease);
 
-                runtime.RegisterInstance(instance);
+                if (!runtime.RegisterInstance(instance))
+                {
+                    // The runtime began disposing while this instantiation was inside the profile.
+                    // The instance exists and holds a lease and an allowance, and nothing else can
+                    // reach it, so this is the only place it can be given back.
+                    instance.Dispose();
+
+                    return VmInstantiationResult.InvalidState(
+                        VmReason.ObjectDisposing,
+                        VmRuntime.Invalid(
+                            identified, VmStage.Instantiation, VmReason.ObjectDisposing,
+                            VmObjectKind.Runtime, VmAttemptedCall.Instantiate));
+                }
+
                 succeeded = true;
 
                 return VmInstantiationResult.Normal(
@@ -306,7 +319,20 @@ internal static class VmInstantiation
                             VmObjectKind.Operation, VmAttemptedCall.Instantiate));
                 }
 
-                runtime.RegisterInstance(pending);
+                if (!runtime.RegisterInstance(pending))
+                {
+                    // Same race, on the asynchronous-instantiation path: the operation is parked
+                    // and the placeholder instance is live, and neither is reachable by anyone but
+                    // this frame.
+                    operation.Abandon(VmReason.ObjectDisposing);
+                    pending.Dispose();
+
+                    return VmInstantiationResult.InvalidState(
+                        VmReason.ObjectDisposing,
+                        VmRuntime.Invalid(
+                            identified, VmStage.Instantiation, VmReason.ObjectDisposing,
+                            VmObjectKind.Runtime, VmAttemptedCall.Instantiate));
+                }
                 succeeded = true;
 
                 return VmInstantiationResult.Suspension(

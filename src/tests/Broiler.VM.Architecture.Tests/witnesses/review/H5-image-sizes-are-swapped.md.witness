@@ -5,4 +5,4 @@ in one sentence. A set-membership check over both publish logs passes on this in
 each figure to the log that records it does not.
 
 The fixtures host publishes and runs as a Native AOT binary of 78,256 bytes, and as a
-1,557,288-byte trimmed binary.
+1,565,592-byte trimmed binary.

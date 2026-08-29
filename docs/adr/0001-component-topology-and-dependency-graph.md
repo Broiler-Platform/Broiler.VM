@@ -817,3 +817,39 @@ first and the two-profile composition could not verify a ledger artifact until
 they were corrected. Nothing in the core changed; what changed is what a profile
 author should declare, and `docs/compositions.md` section 5 records it where a
 profile author will look.
+
+## Revision 2 - 2026-08-29 - the VM-4 soak host
+
+VM-4's gate asks for a **declared memory plateau**. The behavioural suite already
+asserts the metered plateau - the live-bytes counter returns to where it started
+after a load-run-evict cycle - and that is a different claim from the one the
+gate makes. A metered counter says the core's accounting balances; it says
+nothing about whether the process grows. A plateau is a measurement of the
+running image, and a measurement needs something that runs long enough to
+measure.
+
+**The budget.** VM-4 adds one project and no packable assembly:
+
+| Project | Path | Kind | Why |
+|---|---|---|---|
+| `Broiler.VM.Soak.Host` | `src/tests/Broiler.VM.Soak.Host/` | test-only | The long-running lifecycle host whose managed heap and working set are sampled |
+
+The graph goes from 12 projects to 13, and test-only projects from 7 to 8. **The
+packable set is unchanged at exactly three**, so the clause requiring a dated
+revision for a fourth packable assembly is not exercised by this one either.
+
+**Why a host rather than a test.** Three reasons, and the third is the one that
+decides it. A test process is shared with a runner whose own allocations are
+indistinguishable from the component's in any working-set figure. A test that ran
+long enough to plateau would dominate the suite's wall-clock, and a suite people
+skip proves nothing. And a plateau is a property of a PUBLISHED image: the
+figure a host actually cares about is what the trimmed or Native AOT binary does
+over an hour, which a JIT-hosted test cannot report at all. The fuzz host exists
+for the same reason and the same shape is reused deliberately.
+
+**What it does not do.** It declares no threshold and passes no judgement. It
+runs the cycles it was asked for, samples at intervals, and prints what it saw;
+whether the numbers are a plateau is the bundle's reading, and whether that
+plateau is acceptable is a release decision ADR 0012 owns. A host that decided
+for itself would be a benchmark with an opinion, and VM-5 is the milestone that
+owns baselines.

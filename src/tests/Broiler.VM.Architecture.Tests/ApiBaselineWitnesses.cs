@@ -121,4 +121,66 @@ public static class ApiBaselineWitnesses
         /// <summary>The fixture profile's identity, named here purely to create the reference.</summary>
         public static VmProfileId FixtureProfileId => Broiler.VM.Fixtures.FixtureVmProfile.Id;
     }
+
+    /// <summary>
+    /// Witness for V11: a diagnostics record carrying a message, which is how a host secret gets in.
+    /// </summary>
+    /// <remarks>
+    /// A message field is the shape that always looks reasonable. The exception handler that fills
+    /// it is somewhere else, is written later, and is the one line between an operation's failure
+    /// and a connection string in a caller's log.
+    /// </remarks>
+    public readonly struct DiagnosticsWithAMessage
+    {
+        /// <summary>The stage, as the real record carries it.</summary>
+        public VmStage Stage { get; init; }
+
+        /// <summary>The free text this rule exists to forbid.</summary>
+        public string Message { get; init; }
+    }
+
+    /// <summary>
+    /// Witness for V11: a diagnostics record whose group carries text one level down.
+    /// </summary>
+    /// <remarks>
+    /// The second shape, and the one a check that only looked at the record's own members would
+    /// miss: the field is a struct of the contract's own namespace, and the string is inside it.
+    /// </remarks>
+    public readonly struct DiagnosticsWithATextBearingGroup
+    {
+        /// <summary>A group that looks like every other group and is not.</summary>
+        public HostDetail Detail { get; init; }
+
+        /// <summary>A group carrying free text.</summary>
+        public readonly struct HostDetail
+        {
+            private readonly string text;
+
+            /// <summary>Creates the group.</summary>
+            public HostDetail(string value) => text = value;
+
+            /// <summary>What the host said.</summary>
+            public override string ToString() => text;
+        }
+    }
+
+    /// <summary>
+    /// Witness for V12: a profile-facing surface that hands back a CLR type.
+    /// </summary>
+    /// <remarks>
+    /// One member is enough. A capability table that can answer "what type is behind binding zero"
+    /// is a reflection surface with an index, and everything the index was supposed to prevent
+    /// follows from that one answer.
+    /// </remarks>
+    public interface ICapabilityTableThatLeaksTheClr
+    {
+        /// <summary>How many slots there are, which is the legitimate half.</summary>
+        int BindingCount { get; }
+
+        /// <summary>The type behind a slot, which is the half that must not exist.</summary>
+        Type TypeOf(int bindingIndex);
+
+        /// <summary>And an untyped answer, which is the same leak with fewer steps.</summary>
+        object Resolve(int bindingIndex);
+    }
 }

@@ -20,17 +20,20 @@ public sealed class FixtureVmExecutor : IVmProfileExecutor
     private readonly IVmExecutionEnvironment environment;
     private readonly FixtureVmProfileVariant variant;
     private readonly uint chargingGranularity;
+    private readonly FixtureExecutionGate? gate;
 
     internal FixtureVmExecutor(
         VmProfileId profileId,
         IVmExecutionEnvironment environment,
         FixtureVmProfileVariant variant,
-        uint chargingGranularity)
+        uint chargingGranularity,
+        FixtureExecutionGate? gate = null)
     {
         ProfileId = profileId;
         this.environment = environment;
         this.variant = variant;
         this.chargingGranularity = chargingGranularity;
+        this.gate = gate;
     }
 
     /// <inheritdoc/>
@@ -53,6 +56,8 @@ public sealed class FixtureVmExecutor : IVmProfileExecutor
         VmVerifiedArtifact artifact,
         System.Threading.CancellationToken cancellationToken)
     {
+        gate?.Reached(FixtureGatePoint.Instantiate);
+
         if (variant is FixtureVmProfileVariant.SuspendsDuringInstantiation)
         {
             // Parking here is legal only where the descriptor declares asynchronous instantiation.
@@ -74,6 +79,8 @@ public sealed class FixtureVmExecutor : IVmProfileExecutor
         in VmInvocationRequest request,
         System.Threading.CancellationToken cancellationToken)
     {
+        gate?.Reached(FixtureGatePoint.Invoke);
+
         if (state is not FixtureInstanceState fixtureState)
         {
             return VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation);
@@ -101,6 +108,8 @@ public sealed class FixtureVmExecutor : IVmProfileExecutor
     /// <inheritdoc/>
     public void Unwind(IVmProfileContinuation continuation, ulong effectiveUnwindAllowance)
     {
+        gate?.Reached(FixtureGatePoint.Unwind);
+
         if (variant is FixtureVmProfileVariant.NoUnwindEntryPoint)
         {
             // A profile that declares no unwinding leaves this empty; the core drops the

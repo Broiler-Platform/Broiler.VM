@@ -20,7 +20,7 @@ reference.
 ## Status
 
 [The status ledger](docs/roadmap.status.md) is the authority for accepted evidence. It records
-**VM-0, VM-1, VM-2 and VM-3 as in progress and unaccepted, and VM-4 through VM-6 as not started.**
+**VM-0 through VM-4 as in progress and unaccepted, and VM-5 and VM-6 as not started.**
 
 What exists is [twelve boundary records](docs/adr/README.md) and an implementation of core
 contract version 1: the profile-neutral contracts, the bounded binary primitives, the immutable
@@ -33,6 +33,13 @@ The verification boundary is exercised by a retained malformed-input corpus of e
 artifacts, each with its hash and its expected answer, and by a deterministic fuzz target seeded
 from it. Nothing about that is a claim that the component is safe: nobody has reviewed any of it,
 and `HUMAN_REVIEW.md` records that absence rather than a decision.
+
+The lifecycle is exercised under concurrency rather than described. Disposal drains a step that is
+inside the profile before it releases anything, an operation a profile pinned to its starting thread
+is refused on any other, a shared aggregate budget is spent once between concurrent runtimes rather
+than once each, and a soak host runs four hundred thousand lifecycle cycles across a hundred
+recycled runtimes and reports where the managed heap settles. Four rules that were frozen at VM-0
+and implemented at VM-1 were being enforced nowhere until a suite could reach a second thread.
 
 The composition claim is demonstrated rather than asserted. Two application-local consumer
 profiles - written against `Broiler.VM.Abstractions` and `Broiler.VM.Binary` and nothing else -

@@ -14,6 +14,7 @@
     <Project Path="src/tests/Broiler.VM.Fixtures/Broiler.VM.Fixtures.csproj" />
     <Project Path="src/tests/Broiler.VM.Fixtures.Host/Broiler.VM.Fixtures.Host.csproj" />
     <Project Path="src/tests/Broiler.VM.Fuzz.Host/Broiler.VM.Fuzz.Host.csproj" />
+    <Project Path="src/tests/Broiler.VM.Soak.Host/Broiler.VM.Soak.Host.csproj" />
     <Project Path="src/tests/Com.Example.Calculator/Com.Example.Calculator.csproj" />
     <Project Path="src/tests/Com.Example.Ledger/Com.Example.Ledger.csproj" />
   </Folder>

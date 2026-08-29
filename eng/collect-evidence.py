@@ -56,6 +56,13 @@ COMPOSITIONS = (
            "Broiler.VM.Composition.Workbench.csproj")),
 )
 FUZZ_HOST = local("src", "tests", "Broiler.VM.Fuzz.Host", "Broiler.VM.Fuzz.Host.csproj")
+SOAK_HOST = local("src", "tests", "Broiler.VM.Soak.Host", "Broiler.VM.Soak.Host.csproj")
+
+# The soak run VM-4 retains. Long enough that a plateau is a measurement rather than a snapshot,
+# and short enough that a person collecting the bundle will actually wait for it.
+SOAK_CYCLES = 400_000
+SOAK_WORKERS = 4
+SOAK_SAMPLE_EVERY = 20_000
 CORPUS = local("src", "tests", "corpus", "vm-2")
 SOLUTION = "Broiler.VM.slnx"
 DEFAULT_VCVARS = r"C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvars64.bat"
@@ -151,6 +158,24 @@ CONTROLS = [
         "profile com.example.calculator Com.Example.Calculator 1 0",
         "profile com.example.calculator Com.Example.Calculator 1 0\n"
         "profile com.example.stowaway Com.Example.Stowaway 1 0",
+    ),
+    (
+        "disposal stops waiting for a step that is inside the profile",
+        local("src", "Broiler.VM.Runtime", "VmInstanceImplementation.cs"),
+        "            while (stepsInFlight > 0)",
+        "            while (false && stepsInFlight > 0)",
+    ),
+    (
+        "the declared thread affinity is no longer checked on resume",
+        local("src", "Broiler.VM.Runtime", "VmRuntime.cs"),
+        "            if (!operation.AffinityAdmitsCurrentThread)",
+        "            if (false && !operation.AffinityAdmitsCurrentThread)",
+    ),
+    (
+        "a disposing runtime accepts an instance registration again",
+        local("src", "Broiler.VM.Runtime", "VmRuntime.cs"),
+        "            if (state is not VmRuntimeState.Ready)\n            {\n                return false;",
+        "            if (false)\n            {\n                return false;",
     ),
 ]
 
@@ -339,6 +364,48 @@ def collect_compositions(arguments, out):
             report.append("")
 
         write(os.path.join(out, "closure-%s.txt" % slug), "\n".join(report).strip() + "\n")
+
+
+def soak_run(arguments):
+    """
+    Publish the soak host and run it, retaining every sample it printed.
+
+    Published rather than run from source, for the reason the host exists at all: a plateau is a
+    property of the image a host would actually ship, and a JIT run under `dotnet run` measures a
+    process that also contains the SDK's own host. The trimmed self-contained publish is what is
+    measured; the JIT run is retained beside it so the two can be compared.
+    """
+    lines = ["=== SOAK: %d cycles across %d workers ===" % (SOAK_CYCLES, SOAK_WORKERS)]
+
+    arguments_for_run = ["--cycles", str(SOAK_CYCLES),
+                         "--workers", str(SOAK_WORKERS),
+                         "--sample-every", str(SOAK_SAMPLE_EVERY)]
+
+    lines.append("")
+    lines.append("--- JIT ---")
+    code, output = run(["dotnet", "run", "--project", SOAK_HOST, "-c", "Release", "--"] + arguments_for_run)
+    lines.append(output.strip())
+    lines.append("exit code: %d" % code)
+
+    out_directory = os.path.join("artifacts", "publish-soak-trimmed")
+
+    lines.append("")
+    lines.append("--- TRIMMED: dotnet publish -r %s ---" % arguments.rid)
+    _, published = publish(SOAK_HOST, out_directory, arguments, aot=False)
+    lines.append(published.strip())
+
+    binary = published_binary(out_directory, "Broiler.VM.Soak.Host")
+
+    if binary is None:
+        lines.append("no binary to run")
+        return "\n".join(lines) + "\n"
+
+    lines.append("image size: %d bytes" % os.path.getsize(binary))
+    code, output = run([binary] + arguments_for_run)
+    lines.append(output.strip())
+    lines.append("exit code: %d" % code)
+
+    return "\n".join(lines) + "\n"
 
 
 def collect_controls(out):
@@ -686,6 +753,9 @@ def main():
 
     print("  8b compositions: publish, run and report the closure of each")
     collect_compositions(arguments, out)
+
+    print("  8c soak: a long lifecycle run, sampled")
+    write(os.path.join(out, "soak.log"), soak_run(arguments))
 
     if not arguments.skip_controls:
         print("  9 negative controls")

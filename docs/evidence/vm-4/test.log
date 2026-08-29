@@ -1,0 +1,16 @@
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Fixtures -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/bin/Release/net10.0/Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Contract.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+  Broiler.VM.Architecture.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:   194, Skipped:     0, Total:   194, Duration: 828 ms - Broiler.VM.Contract.Tests.dll (net10.0)
+
+Passed!  - Failed:     0, Passed:    99, Skipped:     0, Total:    99, Duration: 2 s - Broiler.VM.Architecture.Tests.dll (net10.0)

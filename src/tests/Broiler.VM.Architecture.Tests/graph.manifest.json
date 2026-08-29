@@ -12,9 +12,10 @@
     "packages, and a fourth PackageId before VM-3 requires a dated revision of ADR 0001.",
     "",
     "VM-2 adds the one test-only project ADR 0001's budget permits it - a fuzz target host - taking the graph from 7 projects and 16 edges to 8 and 20. That is the ceiling the record names: 5 test-only projects and 8 in total. It adds ZERO packable assemblies, so the packable set is still exactly the three product packages.",
-    "VM-3 adds the four projects ADR 0001 revision 1 authorises - two application-local consumer profiles and two named composition roots - taking the graph from 8 projects and 20 edges to 12 and 33, and test-only projects from 5 to 7. It adds ZERO packable assemblies: the packable set is still exactly the three product packages. The composition roots are the only projects permitted to reference a profile assembly, which is the deployment boundary src/compositions/ exists to enforce."
+    "VM-3 adds the four projects ADR 0001 revision 1 authorises - two application-local consumer profiles and two named composition roots - taking the graph from 8 projects and 20 edges to 12 and 33, and test-only projects from 5 to 7. It adds ZERO packable assemblies: the packable set is still exactly the three product packages. The composition roots are the only projects permitted to reference a profile assembly, which is the deployment boundary src/compositions/ exists to enforce.",
+    "VM-4 adds the one test-only project ADR 0001 revision 2 authorises - a soak host whose managed heap and working set are sampled over a long lifecycle run - taking the graph from 12 projects and 33 edges to 13 and 37, and test-only projects from 7 to 8. It adds ZERO packable assemblies, so the packable set is still exactly the three product packages."
   ],
-  "milestone": "VM-3",
+  "milestone": "VM-4",
   "coreContractVersion": 1,
   "projects": [
     {
@@ -134,6 +135,20 @@
       "path": "src/tests/Broiler.VM.Fuzz.Host/Broiler.VM.Fuzz.Host.csproj",
       "assemblyName": "Broiler.VM.Fuzz.Host",
       "rootNamespace": "Broiler.VM.Fuzz.Host",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Fixtures",
+        "Broiler.VM.Runtime"
+      ]
+    },
+    {
+      "path": "src/tests/Broiler.VM.Soak.Host/Broiler.VM.Soak.Host.csproj",
+      "assemblyName": "Broiler.VM.Soak.Host",
+      "rootNamespace": "Broiler.VM.Soak.Host",
       "packageId": null,
       "isPackable": false,
       "isTestProject": false,

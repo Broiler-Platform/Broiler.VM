@@ -1480,7 +1480,7 @@ public sealed class ReviewRecordRuleTests
         Assert.Single(swapped.Where(static violation => violation.Contains(
             "quotes a Native AOT image size of 78256 bytes", StringComparison.Ordinal)));
         Assert.Single(swapped.Where(static violation => violation.Contains(
-            "quotes a trimmed image size of 1557288 bytes", StringComparison.Ordinal)));
+            "quotes a trimmed image size of 1565592 bytes", StringComparison.Ordinal)));
 
         // Clause, one per recognised native-size phrasing.
         AssertRecognisedFigure("H5-native-image-size-in-every-phrasing.md.witness", current, 3,
@@ -1497,17 +1497,17 @@ public sealed class ReviewRecordRuleTests
         // Clause: the corpus must still quote the suite total, comparing the value.
         var noTotal = Assert.Single(RetainedFigureGuard(
             [Witness("H5-corpus-omits-the-suite-total.md.witness")], current));
-        Assert.Contains("no review document quotes the current suite total 262", noTotal, StringComparison.Ordinal);
+        Assert.Contains("no review document quotes the current suite total 293", noTotal, StringComparison.Ordinal);
 
         // Clause: the corpus must still quote the split, comparing the values.
         var noSplit = Assert.Single(RetainedFigureGuard(
             [Witness("H5-corpus-omits-the-split.md.witness")], current));
-        Assert.Contains("split of 97 architecture and 165 behavioural", noSplit, StringComparison.Ordinal);
+        Assert.Contains("split of 99 architecture and 194 behavioural", noSplit, StringComparison.Ordinal);
 
         // Clause: the corpus must still quote the Native AOT image size, comparing the value.
         var noNative = Assert.Single(RetainedFigureGuard(
             [Witness("H5-corpus-omits-the-native-image-size.md.witness")], current));
-        Assert.Contains("Native AOT image size 1557288 bytes", noNative, StringComparison.Ordinal);
+        Assert.Contains("Native AOT image size 1565592 bytes", noNative, StringComparison.Ordinal);
 
         // Clause: and the trimmed size, which had no guard at all - so nothing forced the corpus
         // to keep quoting it correctly, or at all, once it had been reworded.

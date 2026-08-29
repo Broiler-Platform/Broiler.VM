@@ -1,0 +1,4 @@
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.Calculator
+profiles 1
+profile com.example.calculator Com.Example.Calculator 1 0

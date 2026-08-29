@@ -98,6 +98,28 @@ public static class FixtureVmProfile
         FixtureReadOrderRecorder? orderRecorder) =>
         FixtureDescriptorFactory.Create(
             Id, Manifest, "Fixture Alpha", "Broiler.VM.Fixtures", variant, 1, orderRecorder);
+
+    /// <summary>
+    /// The descriptor for one variant, with an execution gate a test uses to hold the executor
+    /// inside a step.
+    /// </summary>
+    /// <remarks>
+    /// The gate belongs to the descriptor rather than to the profile type, so two tests running in
+    /// parallel hold two different executors and neither can see the other's rendezvous.
+    /// </remarks>
+    public static VmProfileDescriptor DescriptorFor(
+        FixtureVmProfileVariant variant,
+        FixtureExecutionGate gate,
+        VmThreadAffinity affinity = VmThreadAffinity.Agile) =>
+        FixtureDescriptorFactory.Create(
+            Id, Manifest, "Fixture Alpha", "Broiler.VM.Fixtures", variant, 1, null, gate, affinity);
+
+    /// <summary>The descriptor for one variant under a declared thread affinity.</summary>
+    public static VmProfileDescriptor DescriptorFor(
+        FixtureVmProfileVariant variant,
+        VmThreadAffinity affinity) =>
+        FixtureDescriptorFactory.Create(
+            Id, Manifest, "Fixture Alpha", "Broiler.VM.Fixtures", variant, 1, null, null, affinity);
 }
 
 /// <summary>
@@ -147,7 +169,9 @@ public static class FixtureDescriptorFactory
         string packageId,
         FixtureVmProfileVariant variant,
         int ordinal,
-        FixtureReadOrderRecorder? orderRecorder = null)
+        FixtureReadOrderRecorder? orderRecorder = null,
+        FixtureExecutionGate? gate = null,
+        VmThreadAffinity affinity = VmThreadAffinity.Agile)
     {
         VmDiagnosticsIdentity.TryCreate(profileId, profileId + ".diagnostics", out var diagnostics);
 
@@ -192,11 +216,11 @@ public static class FixtureDescriptorFactory
             verifier: new FixtureVmVerifier(
                 profileId, semanticVersion: 1, variant: variant, orderRecorder: orderRecorder),
             executorFactory: environment => new FixtureVmExecutor(
-                executorIdentity, environment, variant, chargingGranularity: 1),
+                executorIdentity, environment, variant, chargingGranularity: 1, gate),
             artifactRepresentationKind: VmArtifactRepresentationKind.Decoded,
             artifactLifetimeKind: VmArtifactLifetimeKind.Managed,
             supportsConcurrentVerification: true,
-            threadAffinity: VmThreadAffinity.Agile,
+            threadAffinity: affinity,
             cancellationPollBound: variant is FixtureVmProfileVariant.PollBoundBreaker ? 32UL : 1024UL,
             abandonBudget: 1000,
             limitDefaults: Defaults(),

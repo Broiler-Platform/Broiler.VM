@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Soak.Host</RootNamespace>
+    <AssemblyName>Broiler.VM.Soak.Host</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+
+    <!-- ADR 0001 revision 2 authorises this as the one project VM-4 adds. It exists to be
+         published and run long enough that a memory plateau is a measurement rather than an
+         assertion, which a test process shared with a runner cannot report. -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <IsAotCompatible>true</IsAotCompatible>
+
+    <!-- Server GC would make the plateau a property of the collector's heap-count heuristics on
+         the collecting machine rather than of the component. Workstation GC is what a host
+         embedding a VM in a desktop application or a browser process actually runs. -->
+    <ServerGarbageCollection>false</ServerGarbageCollection>
+    <ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Fixtures\Broiler.VM.Fixtures.csproj" />
+  </ItemGroup>
+
+</Project>

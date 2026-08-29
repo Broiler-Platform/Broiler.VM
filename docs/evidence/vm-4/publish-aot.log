@@ -1,0 +1,25 @@
+=== NATIVE AOT ===
+command: dotnet publish src/tests/Broiler.VM.Fixtures.Host/Broiler.VM.Fixtures.Host.csproj -c Release -r linux-x64 -p:PublishAot=true -o artifacts/publish-aot
+Determining projects to restore...
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 389 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/Broiler.VM.Fixtures.csproj (in 389 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 389 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures.Host/Broiler.VM.Fixtures.Host.csproj (in 389 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 7 ms).
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Fixtures -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/bin/Release/net10.0/Broiler.VM.Fixtures.dll
+  Broiler.VM.Fixtures.Host -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures.Host/bin/Release/net10.0/linux-x64/Broiler.VM.Fixtures.Host.dll
+  Generating native code
+  Broiler.VM.Fixtures.Host -> /home/user/Broiler.Browser/Broiler.VM/artifacts/publish-aot/
+
+--- running the native binary ---
+native image size: 1565592 bytes
+ok   single-profile: returned 42
+ok   two-profile: 2 profiles composed
+ok   suspend-resume: resumed with 17
+ok   no-provider-refusal: refused twice as ProfileFault/ProfileFaultUnspecified
+ok   unsupported-profile: UnsupportedProfile/ProfileNotInCatalog
+broiler-vm-fixtures-host: 5 checks passed, core contract version 1
+exit code: 0

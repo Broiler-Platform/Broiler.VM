@@ -121,29 +121,32 @@ areas keeps one item asking the reviewer to judge those criteria.
 Collected by automation and retained in
 [the VM-0 evidence bundle](docs/evidence/vm-0/README.md),
 [the VM-1 evidence bundle](docs/evidence/vm-1/README.md),
-[the VM-2 evidence bundle](docs/evidence/vm-2/README.md) and
-[the VM-3 evidence bundle](docs/evidence/vm-3/README.md). It is input to a review, not
+[the VM-2 evidence bundle](docs/evidence/vm-2/README.md),
+[the VM-3 evidence bundle](docs/evidence/vm-3/README.md) and
+[the VM-4 evidence bundle](docs/evidence/vm-4/README.md). It is input to a review, not
 a substitute for one. Each line carries an evidence verdict as defined in section 1;
 these are the author's marks about evidence, not review verdicts.
 
-**Three milestones are now waiting on one reading.** This file was written for VM-0's records
+**Four milestones are now waiting on one reading.** This file was written for VM-0's records
 and VM-1's implementation. VM-2 has since landed - the limit-precedence layers, a retained
 malformed-input corpus, a fuzz target, and the guest-load bounds that were carried in a
 descriptor and read nowhere - and VM-3 after it: two consumer profiles written against the
 public contract alone, two named composition roots, and the register and closure reports that
-say what each of them contains. Nobody has read either. The lines below say which milestone
-each figure belongs to rather than merging them, because a reviewer needs to know what a number
-is about before it is worth anything.
+say what each of them contains. VM-4 has landed after it, and it is the one a reviewer should
+start with: it changed the product assemblies for the first time since VM-1, and it changed them
+because four rules the records froze were being enforced nowhere. Nobody has read any of it. The
+lines below say which milestone each figure belongs to rather than merging them, because a reviewer
+needs to know what a number is about before it is worth anything.
 
 - `[MET]` **Build and tests, as the tree stands:** `dotnet build Broiler.VM.slnx -c Release`
-  completes with 0 warnings and 0 errors across twelve projects; `dotnet test Broiler.VM.slnx
-  -c Release` reports 262 tests passed, 0 failed, 0 skipped - 97 architecture and 165
-  behavioural. At VM-2 the same commands reported 255 passed over eight projects, of which 90
-  architecture and 165 behavioural; VM-3 adds seven architecture tests and no behavioural test,
-  which is the shape of a milestone whose claims are about the graph, the register and the
-  published images rather than about behaviour. **Read that number with section 5's VM-3 line:
-  the two consumer profiles VM-3 added are referenced by no test project at all, by rule, so
-  what exercises them is two published binaries and not the suite.**
+  completes with 0 warnings and 0 errors across thirteen projects; `dotnet test Broiler.VM.slnx
+  -c Release` reports 293 tests passed, 0 failed, 0 skipped - 99 architecture and 194
+  behavioural. At VM-3 the same commands reported 262 passed over twelve projects, of which 97
+  architecture and 165 behavioural; VM-4 adds twenty-nine behavioural tests and two architecture
+  rules, which is the shape of a milestone whose subject is behaviour under concurrency.
+  **Read that number with section 5's VM-3 line: the two consumer profiles VM-3 added are
+  referenced by no test project at all, by rule, so what exercises them is two published binaries
+  and not the suite.**
 - `[PART]` **An adversarial review has been run, and it found a great deal.** Six reviewers
   against the frozen records, every finding put to two independent refuters: 45
   findings survived, sixteen of them blockers, several confirmed by executing the
@@ -200,6 +203,22 @@ is about before it is worth anything.
   `[MET]` for one reason worth a reviewer's attention: neither consumer profile is fuzzed, and
   neither is reachable from the test suite, so everything true of them is demonstrated by two
   transcripts rather than by assertions a suite re-runs.
+- `[PART]` **VM-4's corrections, and why they are where a reviewer should start.** Four rules that
+  were frozen at VM-0, implemented at VM-1 and enforced nowhere are now enforced, and each was found
+  by a test that could reach a second thread rather than by anyone reading the code. A running host
+  capability refused every *other* thread's call into the runtime; disposal returned while a profile
+  was still executing and then released the artifact lease under it; the declared thread affinity
+  was carried in every descriptor and read by nothing; and an instantiation racing disposal
+  registered its instance into a runtime that had already walked its list. The pattern is the same
+  one VM-2 found three times - a bound that is declared, carried and read nowhere - and a reviewer
+  should ask what else is in that category rather than reading these four as isolated slips. It is
+  `[PART]` because the evidence was collected on four processors (EX-88) and because affinity is
+  enforced only where the core can see a thread (EX-89).
+- `[MET]` **A declared memory plateau, measured rather than metered.** 400,000 lifecycle cycles
+  across four workers, sampled throughout, with the settled managed heap returning to within tens of
+  kilobytes of its starting figure after gigabytes of allocation. The behavioural suite already
+  asserted the *metered* plateau, which says the core's accounting balances and nothing about
+  whether the process grows; this is the other claim.
 - `[MET]` **License:** Apache-2.0, byte-identical to the other Broiler components. No
   third-party runtime dependency was introduced, so no notices file is carried.
 
@@ -281,6 +300,21 @@ condition.
   confusing runtime refusal into a composition-time message. `docs/compositions.md` section 5
   is where a profile author currently finds this out, which is documentation rather than a
   mechanism.
+- **AT-14 - The four VM-4 corrections were all record-versus-implementation gaps, not design
+  errors.** Every one of them is a case where a frozen record says a thing is enforced and nothing
+  enforced it, and all four survived three milestones and an adversarial review. Two of them -
+  `DisposeDrainBudget` and `VmThreadAffinity.OperationThreadPinned` - were carried in the public
+  surface the whole time, so a host could configure them and a profile could declare them, and
+  neither did anything. A reviewer's most useful question is not whether these four fixes are right
+  but what mechanism would have found them earlier: the answer this component has is the unused-
+  reason sweep that found `ThreadAffinityViolation`, and it is a script rather than a rule.
+- **AT-15 - The in-capability scope change is a deviation from ADR 0011 F5 and a reviewer may
+  reverse it.** The record says "per-runtime in-capability flag". Read literally that is what was
+  implemented, and it made any blocking host capability stop the whole runtime for every other
+  thread. The reading taken here is that the record's own sentence - a capability must not call back
+  into *the invoking runtime* - is about a call stack. If a reviewer prefers the literal reading, the
+  fix is to amend the sentence rather than to restore the behaviour, because the behaviour it
+  produced is an availability failure with no compensating safety property.
 - **AT-13 - VM-3's two consumer profiles are exercised by published binaries and by no test
   project.** Rule A11 forbids a project outside a composition root to reference a profile
   assembly, and demonstrating that rule is part of what VM-3 is for, so the suite cannot reach

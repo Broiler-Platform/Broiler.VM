@@ -86,6 +86,38 @@ internal static class FixtureComposition
         return builder.ToImmutable();
     }
 
+    /// <summary>
+    /// The ordinary capability set with the doubling handler replaced by one of the test's own.
+    /// </summary>
+    /// <remarks>
+    /// The three imports the fixture declares are positional: binding zero is the doubling
+    /// capability, and a test that wants to observe what happens inside a host call replaces that
+    /// one rather than adding a fourth, so the artifact writer's binding index still means what it
+    /// says.
+    /// </remarks>
+    internal static ImmutableArray<VmCapabilityRegistration> CapabilitiesWithDouble(
+        VmHostCapabilityHandler handler)
+    {
+        var builder = ImmutableArray.CreateBuilder<VmCapabilityRegistration>();
+
+        builder.Add(VmCapabilityRegistration.Value(FixtureHostCapabilities.Double, handler));
+        builder.Add(VmCapabilityRegistration.Value(
+            FixtureHostCapabilities.Throwing, FixtureHostCapabilities.ThrowingHandler));
+        builder.Add(VmCapabilityRegistration.Value(
+            FixtureHostCapabilities.Refusing, FixtureHostCapabilities.RefusingHandler));
+
+        return builder.ToImmutable();
+    }
+
+    /// <summary>The ordinary capability set, with the doubling handler held by a gate.</summary>
+    internal static ImmutableArray<VmCapabilityRegistration> GatedCapabilities(FixtureExecutionGate gate) =>
+        CapabilitiesWithDouble((ReadOnlySpan<long> arguments, out long result) =>
+        {
+            gate.Reached(FixtureGatePoint.Capability);
+            result = arguments.Length > 0 ? arguments[0] * 2 : 0;
+            return VmHostCallOutcome.Completed;
+        });
+
     internal static ImmutableArray<VmCapabilityRegistration> WithProvider(IVmArtifactProvider provider)
     {
         var builder = ValueCapabilities().ToBuilder();
@@ -103,7 +135,8 @@ internal static class FixtureComposition
         ImmutableArray<VmCapabilityRegistration>? capabilities = null,
         int maxLiveSuspendedOperations = 4,
         TimeSpan? maxSuspendedResidency = null,
-        VmGuestLoadBoundsSpec? guestLoadBounds = null) =>
+        VmGuestLoadBoundsSpec? guestLoadBounds = null,
+        TimeSpan? disposeDrainBudget = null) =>
         new(
             aggregateBudget: parent,
             ceilings: ceilings ?? AdoptedCeilings(),
@@ -111,7 +144,8 @@ internal static class FixtureComposition
             maxLiveSuspendedOperations: maxLiveSuspendedOperations,
             guestLoadBounds: guestLoadBounds ?? VmGuestLoadBoundsSpec.AdoptProfileMaxima,
             externalSuspension: externalSuspension,
-            capabilities: capabilities ?? ValueCapabilities());
+            capabilities: capabilities ?? ValueCapabilities(),
+            disposeDrainBudget: disposeDrainBudget);
 
     internal static VmRuntime Runtime(VmCatalog catalog, VmRuntimeCreationOptions? options = null)
     {

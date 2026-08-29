@@ -61,9 +61,10 @@
     "",
     "H5 CHANGED, AND THE CHANGE IS A WEAKENING THAT IS RECORDED AS ONE. The rule compared every review document against the CURRENT bundle's logs. That was right while one milestone had evidence and wrong as soon as two did: the status ledger is a dated history as well as a current-state record, update rule 1 requires earlier evidence links and decisions to be preserved, and comparing the VM-1 row against VM-2's logs would have made preserving that history a violation - the rule pushing the document to delete what the ledger's own rules require it to keep. A document that is not a bundle README may now also quote the figures of any bundle whose README it LINKS. The link is what keeps it a citation rather than a loophole. What it cannot do is tell which row a figure belongs to, which is EX-81, and the four anti-deletion guards are untouched: they compare the current bundle's values and still fail if no document quotes them.",
     "GROUP K, THE COMPOSITION-GOVERNANCE RULES. VM-3's exit gate asks that five things be detected: duplicate or reserved IDs, undocumented entries, missing factories, forbidden edges and catalog drift. Only the forbidden edges are decidable from project files, where group A already lives - A12 and A13 are the two rows minted there. The other four are facts about what a composition COMPOSED, so they are held against three independent statements of the same thing: the register docs/compositions.md, the reference set of the composition's own project, and the catalog table the published binary prints. K1 holds the register and the checkout to each other in both directions, K2 holds a row to the reference set and to the catalog, K3 is catalog drift against a checked-in baseline, and K4 holds each published closure to exactly what its row declares. The letter K was free: A-E, V, F, M, G, P, S and T are in use, H is group R's replacement, J is the assurance group, and R1..R6 is the reserved namespace ADR 0003 records for ADR 0012's six ownership roles.",
-    "K3 AND K4 READ RETAINED EVIDENCE RATHER THAN RUNNING ANYTHING, and that is a consequence of the promise the milestone makes rather than a shortcut. Rule A11 forbids the architecture-test project to reference a profile assembly - that is one of the things VM-3 exists to demonstrate - so the suite cannot build a catalog of its own to compare against. What it does instead is stronger: the baseline is compared against what PUBLISHED binaries printed, in three modes, and the closure reports are read off published output rather than derived from project files. A reference set that looks right can still pull something in through a transitive package, and the linker is the only party that knows what shipped. The limits are recorded as exclusions rather than implied: EX-86, that the bundle is retained by a script a person runs, so K3 and K4 compare against the last collection rather than against the working tree; and EX-87, that the closure report excludes framework assemblies by name prefix, so a hypothetical System.*-named profile would not be seen (nothing in the checkout is named that way, and the exact-set clause of K4 catches everything else)."
+    "K3 AND K4 READ RETAINED EVIDENCE RATHER THAN RUNNING ANYTHING, and that is a consequence of the promise the milestone makes rather than a shortcut. Rule A11 forbids the architecture-test project to reference a profile assembly - that is one of the things VM-3 exists to demonstrate - so the suite cannot build a catalog of its own to compare against. What it does instead is stronger: the baseline is compared against what PUBLISHED binaries printed, in three modes, and the closure reports are read off published output rather than derived from project files. A reference set that looks right can still pull something in through a transitive package, and the linker is the only party that knows what shipped. The limits are recorded as exclusions rather than implied: EX-86, that the bundle is retained by a script a person runs, so K3 and K4 compare against the last collection rather than against the working tree; and EX-87, that the closure report excludes framework assemblies by name prefix, so a hypothetical System.*-named profile would not be seen (nothing in the checkout is named that way, and the exact-set clause of K4 catches everything else).",
+    "WHAT VM-4 MINTS, AND WHAT IT DELIBERATELY DOES NOT. The milestone hardens the lifecycle under concurrency, and almost everything it establishes is BEHAVIOURAL - a disposal that drains, a capability that no longer refuses another thread, an operation pinned to the thread that started it, a shared aggregate budget under contention. Those live in the behavioural suite, where they can be arranged with an execution gate rather than raced, and writing second copies of them here would be two implementations of one rule. Two claims are STRUCTURAL and are minted as rows. V11 holds the diagnostics record to a shape with nowhere to put free text, which is how 'leaks no host secret' becomes a property of the type rather than of today's call sites. V12 holds every profile-facing contract to trafficking in the contract's own types, which is how 'host imports cannot reach undeclared CLR surface' becomes checkable rather than asserted."
   ],
-  "milestone": "VM-3",
+  "milestone": "VM-4",
   "coreContractVersion": 1,
   "rules": [
     {
@@ -654,6 +655,26 @@
       "activationMilestone": null,
       "nonVacuousWhen": "Two compositions were published in two modes each at VM-3 and their closures are retained, one of which contains five non-framework assemblies and the other six.",
       "witness": "CompositionRegisterTests in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
+      "id": "V11",
+      "owningAdr": "0005",
+      "status": "Active",
+      "statement": "No member of VmDiagnostics can carry free text. Every member is an enum, a primitive, or one of four text-bearing identity types: the caller identity, whose content the caller itself supplies, and the profile, feature-manifest and capability identities, which are validated under a closed grammar. A member reaching a string by any other route, at the record's own level or one struct down, is a violation.",
+      "evidence": "Compiled metadata over the diagnostics record",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The record exists with twenty-five members, four of which carry text, so the rule decides a real shape rather than an empty one.",
+      "witness": "ApiBaselineWitnesses.DiagnosticsWithAMessage in Broiler.VM.Architecture.Tests.dll, ApiBaselineWitnesses.DiagnosticsWithATextBearingGroup in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
+      "id": "V12",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "No member of the profile-facing contracts - the execution environment, the capability invoker, the metering surface, the verification context and the artifact-load mediator - has a parameter or return type of object, Type, Delegate, a System.Reflection type, an assembly load context, or a raw pointer. A profile reaches the contract's own types and nothing else.",
+      "evidence": "Compiled metadata over the five profile-facing contracts",
+      "activationMilestone": null,
+      "nonVacuousWhen": "All five contracts exist and are implemented, and a profile holds instances of four of them during every step it runs.",
+      "witness": "ApiBaselineWitnesses.ICapabilityTableThatLeaksTheClr in Broiler.VM.Architecture.Tests.dll"
     }
   ]
 }
