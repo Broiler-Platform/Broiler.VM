@@ -109,6 +109,8 @@ internal static class AssuranceReviewClaims
 
         foreach (var text in texts)
         {
+            var scope = Scope(text.Where, units);
+
             for (var line = 0; line < text.Lines.Count; line++)
             {
                 var content = text.Lines[line];
@@ -118,7 +120,7 @@ internal static class AssuranceReviewClaims
                 {
                     var at = WholeWord(lowered, term);
 
-                    if (at < 0 || IsSupported(lowered, at, term, units))
+                    if (at < 0 || IsSupported(lowered, at, term, scope))
                     {
                         continue;
                     }
@@ -126,7 +128,7 @@ internal static class AssuranceReviewClaims
                     violations.Add(
                         $"{text.Where}({line + 1}) says '{content.Trim()}', and the annotations hold " +
                         $"no such state: the term '{term}' is stated with neither the count the " +
-                        $"annotations give ({Supported(term, units)?.ToString(CultureInfo.InvariantCulture) ?? "none is defined for it"}) " +
+                        $"annotations give ({Supported(term, scope)?.ToString(CultureInfo.InvariantCulture) ?? "none is defined for it"}) " +
                         "nor a negation before it");
 
                     break;
@@ -136,6 +138,32 @@ internal static class AssuranceReviewClaims
 
         return violations;
     }
+
+    /// <summary>
+    /// The units a piece of generated text speaks for: one file's, for a source header, and the
+    /// whole component's for a report, a record or the manifest.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>This was a latent defect and the first recorded decision would have found it.</b> A
+    /// generated file header states its OWN file's figures - <c>// Human-reviewed:   1/3</c> - and
+    /// the count was taken over the whole component, so every one of the 45 headers agreed with the
+    /// rule only while both numbers were zero. The day one unit was read, 44 headers stating the
+    /// truth about their own files became violations and the rule would have had to be switched off
+    /// to let anybody record a review at all.
+    /// </para>
+    /// <para>
+    /// Scoping the count to the artefact is not a relaxation: a header still cannot claim one review
+    /// more than its own file's annotations carry, which is the claim the header is actually making.
+    /// It is the same comparison, made against the right denominator.
+    /// </para>
+    /// </remarks>
+    private static IReadOnlyList<AssuranceUnit> Scope(string where, IReadOnlyList<AssuranceUnit> units) =>
+        where.EndsWith(".cs", StringComparison.Ordinal)
+            ? units
+                .Where(unit => string.Equals(unit.File.RelativePath, where, StringComparison.Ordinal))
+                .ToArray()
+            : units;
 
     /// <summary>
     /// Where a term first stands as a WHOLE WORD that is not the tail of a dotted name, or -1.

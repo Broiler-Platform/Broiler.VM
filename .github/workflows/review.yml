@@ -1,0 +1,123 @@
+# The review lane.
+#
+# Produces and updates the human-review record on every pull request. A reviewer
+# writes one thing - the `// Broiler-Human:` line on the declaration they read -
+# and this lane runs the generator, which fills the machine fields, refreshes a
+# decision the code has outrun into `STALE; Previous=...` and rewrites
+# HUMAN_REVIEW.md, CODE-ASSURANCE.md, assurance.manifest.json and every generated
+# source header from the tree. Whatever moved is committed back onto the branch.
+#
+# It then runs the gate with nothing set, which asserts that what is now on disk
+# is byte-identical to what the generator would write. A generation that is not a
+# fixed point fails here rather than on the next pull request.
+#
+# What this lane does NOT do, so that nobody reads more into it: it does not
+# decide anything. The generator may fill a fingerprint and may never turn
+# PENDING into a name - AssuranceGenerator.RefuseInventedApproval throws rather
+# than exceed that budget, and rule J4 asserts the same property over the
+# rendered artefacts.
+
+name: Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: review-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  record:
+    name: Produce the review record
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the pull request head
+        uses: actions/checkout@v5
+        with:
+          # The head branch itself, not the merge commit, because this job
+          # commits back to it.
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build
+        run: dotnet build Broiler.VM.slnx -c Release
+
+      - name: Regenerate every assurance artefact
+        env:
+          BROILER_ASSURANCE_WRITE: '1'
+        run: dotnet test Broiler.VM.slnx -c Release
+
+      - name: Restore the retained evidence
+        # Rule D1 writes which branch it took to docs/evidence/vm-0/d1-outcome.txt
+        # on every run, and on a hosted runner there is no aggregate checkout above
+        # the component, so it writes INCONCLUSIVE. That file is a record of a
+        # collection performed on the owner's machine; a CI run is not that
+        # collection, and this lane must not rewrite the evidence bundles. The
+        # restore is narrow and named rather than a blanket `git checkout docs/`,
+        # so a real change to a bundle in the pull request survives it.
+        run: git checkout -- docs/evidence/vm-0/d1-outcome.txt || true
+
+      - name: Report what the generator changed
+        id: generated
+        run: |
+          git add -A -- HUMAN_REVIEW.md CODE-ASSURANCE.md assurance.manifest.json 'src/**/*.cs'
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Every assurance artefact was already current."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git diff --cached --stat
+          fi
+
+      - name: Commit the record back to the branch
+        if: >-
+          steps.generated.outputs.changed == 'true' &&
+          github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Regenerate the assurance record' \
+                     -m 'Produced by the review lane from the annotations in the tree.'
+          git push origin "HEAD:${{ github.event.pull_request.head.ref }}"
+
+      - name: Fail when a fork's record is out of date
+        # A pull request from a fork gives this job no write access to the fork's
+        # branch, so the record cannot be committed there. Saying so and failing
+        # is the honest outcome: the alternative is a green lane over a record
+        # that does not describe the tree.
+        if: >-
+          steps.generated.outputs.changed == 'true' &&
+          github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          echo '::error::The assurance artefacts are not current, and this lane cannot' \
+               'commit to a fork. Run BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx' \
+               '-c Release locally and push the result.'
+          git diff --cached
+          exit 1
+
+      - name: Publish the record as an artifact
+        # v6 and not v5, which is the odd one out of the three actions here.
+        # checkout and setup-dotnet moved to Node 24 at v5; upload-artifact@v5
+        # still declares `using: node20`, so bumping it to v5 would leave the
+        # deprecation this bump exists to clear.
+        uses: actions/upload-artifact@v6
+        with:
+          name: human-review-record
+          path: |
+            HUMAN_REVIEW.md
+            CODE-ASSURANCE.md
+
+      - name: Gate - what is on disk is what the generator would write
+        run: dotnet test Broiler.VM.slnx -c Release

@@ -1,0 +1,58 @@
+// Witness for rule J11: the accepting direction - a tree whose assurance record says
+// everything a publish needs it to say.
+//
+// This state exists nowhere in Broiler.VM. Every relevant unit here is HUMAN_PENDING, and
+// the owner has ruled that human review gates a release rather than a development step,
+// so the gate has to be shown SUCCEEDING somewhere or it is a function nobody has ever
+// watched return an empty list.
+//
+// The fingerprints are deliberately absent. `Fingerprint=TBF` on the AI line and a bare
+// alias on the human line are what a person writes; the generator fills both, and the
+// test drives this text through it before asking the gate anything. A witness carrying
+// baked fingerprints would go stale the moment normalization changed, and would be
+// repaired by regenerating it - which is the tautology this register exists to remove.
+//
+// The rejecting directions are this same tree with one thing altered, for the same
+// reason. WITNESS-ONLY is not a person - see README.md.
+
+
+namespace Probe;
+
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=TBF
+// Broiler-Human:        WITNESS-ONLY
+public static class Publishable
+{
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        WITNESS-ONLY
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        WITNESS-ONLY
+    public static int Widest(int[] values)
+    {
+        var widest = 0;
+
+        foreach (var value in values)
+        {
+            if (value > widest)
+            {
+                widest = value;
+            }
+        }
+
+        return widest;
+    }
+}

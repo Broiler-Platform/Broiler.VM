@@ -1,0 +1,112 @@
+// Witness for rule J8: a tree carrying every shape this component does not, so that the
+// generator and the declared shape are compared somewhere other than on the one tree they
+// both happen to be right about.
+//
+// The record is derived twice on purpose - once by the generator, once by the shape, by
+// different expressions - and that only buys anything where the two are actually exercised.
+// Broiler.VM has 689 relevant units, no per-unit exemption, no STALE line, no alias and no
+// unit that owes a criterion and carries none, so every one of those branches was compared
+// against nothing.
+//
+// The shapes below, in order:
+//
+//   Retained         a per-unit EXEMPT= reason the predicate does NOT exempt. It is relevant,
+//                    it resolves to EXEMPT, and it is therefore NOT unverified - which is the
+//                    exact pair of conditions that made the shape and the generator disagree.
+//   Fold             a decision the current code answers to.
+//   Widest           a decision the code has outrun, preserving who made it.
+//   Unfalsifiable    Security=High carrying no criterion, so the Criteria column reads 0/1.
+//   Cited            a Spec citation, which section 9 prints beside the assessment.
+//
+// WITNESS-ONLY and WITNESS-TWO are not people - see README.md.
+
+
+namespace Probe;
+
+// Broiler-AI:           Origin=Original; IP=Unknown; Security=None; Resources=0; Fingerprint=TBF
+// Broiler-Human:        PENDING
+public static class Divergent
+{
+    // Broiler-AI:           EXEMPT=a reason the predicate cannot see
+    // Broiler-Human:        PENDING
+    public static int Retained(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            total += value;
+        }
+
+        return total;
+    }
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=44EBF3
+    // Broiler-Human:        WITNESS-ONLY; Fingerprint=44EBF3
+    public static int Fold(int[] values)
+    {
+        var total = 0;
+
+        foreach (var value in values)
+        {
+            if (value > 0)
+            {
+                total += value;
+            }
+        }
+
+        return total;
+    }
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=3; Fingerprint=44EBF3
+    // Broiler-Human:        STALE; Previous=WITNESS-TWO@44EBF3
+    public static int Widest(int[] values)
+    {
+        var widest = 0;
+
+        foreach (var value in values)
+        {
+            if (value > widest)
+            {
+                widest = value;
+            }
+        }
+
+        return widest;
+    }
+
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=High; Resources=9; Fingerprint=44EBF3
+    // Broiler-Human:        PENDING
+    public static int Unfalsifiable(int[] values)
+    {
+        var count = 0;
+
+        foreach (var value in values)
+        {
+            if (value != 0)
+            {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    // Broiler-AI:           Origin=Derived; Spec=ADR-0007 s6; IP=Low; Security=Critical; Resources=2; Fingerprint=44EBF3
+    // Broiler-Falsified-If: a bound is compared after the value it bounds is used
+    // Broiler-Human:        PENDING
+    public static int Cited(int[] values)
+    {
+        var first = 0;
+
+        foreach (var value in values)
+        {
+            if (first == 0)
+            {
+                first = value;
+            }
+        }
+
+        return first;
+    }
+}

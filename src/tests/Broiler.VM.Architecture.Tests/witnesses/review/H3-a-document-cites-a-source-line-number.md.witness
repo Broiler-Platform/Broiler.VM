@@ -1,0 +1,18 @@
+# Witness: a review document that pins a source file to a line number
+
+Everything else about this fragment is well formed. The one fault is the row below, which cites a
+range rather than a member - the form this repository has already watched rot. The annotations
+shifted every line in every file, and the citation the worksheet carried went stale unnoticed,
+because a rule that checks identifiers and counts never asks whether a cited line means anything.
+
+The scan is the whole document and no longer one kind of row. Restricting it to the worksheet's
+`Read` rows was safe only while the worksheet was the only document that pointed anywhere; a
+pointer in an evidence bundle or in the status ledger rots in exactly the same way, and was read
+by nothing.
+
+## Where to look
+
+| Area | Read |
+|---|---|
+| Bounded reading | `src/Broiler.VM.Binary/VmBoundedAllocator.cs` 34-68, and the governing record |
+| Allocation guard | `src/Broiler.VM.Binary/VmBoundedReader.cs:57` |

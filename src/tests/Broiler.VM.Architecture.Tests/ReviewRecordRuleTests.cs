@@ -43,20 +43,23 @@ public sealed class ReviewRecordRuleTests
     // -------------------------------------------------------------------------------------
 
     /// <summary>
-    /// The documents a reviewer reads: the review record itself, the per-item worksheets, the
-    /// evidence bundles, and the status ledger. Every group H rule reads this one set.
+    /// The documents a reviewer reads: the generated review record, the evidence bundles, and the
+    /// status ledger. Every group H rule reads this one set.
     /// </summary>
+    /// <remarks>
+    /// <c>docs/review/</c> is still enumerated although nothing is in it any more. The per-item
+    /// worksheet that lived there is deleted - it cited source files by line number, and a
+    /// reviewer now writes on the declaration instead - and leaving the directory in the corpus
+    /// costs nothing and means a document dropped there later is read rather than unread.
+    /// </remarks>
     private static IReadOnlyList<ReviewDocument> Corpus { get; } = LoadCorpus();
 
     private const string HumanReviewName = "HUMAN_REVIEW.md";
-    private const string WorksheetName = "docs/review/vm-0-vm-1.md";
 
     /// <summary>The bundle whose logs the current milestone's figures are quoted from.</summary>
     private const string CurrentBundle = "vm-1";
 
     private static ReviewDocument HumanReview => Document(HumanReviewName);
-
-    private static ReviewDocument Worksheet => Document(WorksheetName);
 
     private static IEnumerable<ReviewDocument> EvidenceBundles =>
         Corpus.Where(static document => BundleReadme.IsMatch(document.Name));
@@ -588,249 +591,175 @@ public sealed class ReviewRecordRuleTests
             .ToList();
 
     // =====================================================================================
-    // H3 - the review route is covered, contiguous and counted
+    // H3 - no review document points at a line, and the record's coverage is the tree's
     // =====================================================================================
 
     /// <summary>
-    /// H3. The eight review areas are declared in the review record, every one has at least one
-    /// worksheet item, every item names one of the eight and agrees with the area heading it sits
-    /// under, item identifiers are contiguous from <c>RC-01</c>, and the worksheet's own counts
-    /// are true and agree with the count the review record states.
+    /// H3. No review document cites a source file by line number, anywhere; and the generated
+    /// review record's coverage table names every covered file exactly once, names nothing that is
+    /// not a covered file, and gives each one the figures the annotations give for it.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// The eight areas are a fixed enumeration here. An earlier attempt derived them from the
-    /// document under test, so deleting <c>RA-8</c> from the route table, the verdict table, the
-    /// worksheet heading and its six items passed the suite: an entire risk area vanished
-    /// silently. That is structurally the same defect as the V4 one this register was created to
-    /// prevent, so the expectation is the enumeration and never the document.
+    /// <b>What this rule used to be, and why it is not that any more.</b> It held a hand-written
+    /// review route of eight areas to a hand-written worksheet of numbered items, and the two to
+    /// each other's counts. Both documents are gone. The worksheet cited source files by LINE
+    /// NUMBER, and its first item cited a checked multiplication that the annotations had since
+    /// turned into a parameter declaration - the rule checked identifiers, areas and counts, and
+    /// never whether a citation meant anything. A reviewer now writes in one place, the
+    /// <c>Broiler-Human</c> line on the declaration they read, and the record is generated from
+    /// those lines.
     /// </para>
     /// <para>
-    /// Fixing the enumeration was not enough on its own. Every section this rule reads is
-    /// identified by a heading pattern, and a section lookup that returned its FIRST match let a
-    /// decoy heading inserted above the real one become the section under test - so a full decoy
-    /// route table above the real one hid an RA-8 row deleted from the real one. Each section is
-    /// therefore required to be unique.
+    /// So the clause worth keeping is the one that was there and was too narrow: the line-number
+    /// scan. It ran over the worksheet's <c>Read</c> rows alone, which was safe only while the
+    /// worksheet was the only document that pointed anywhere. It now runs over every line of every
+    /// review document, which is the mechanical form of the rule the owner stated: a review record
+    /// does not carry pointers that rot.
     /// </para>
     /// <para>
-    /// The item COUNT is not an enumeration and cannot be: the worksheet grows. It is held by
-    /// agreement between two documents instead - the worksheet's own progress table and the count
-    /// HUMAN_REVIEW.md states - so no single-file edit can drop an item and stay green. Exclusion
-    /// EX-55 records what that does not reach.
+    /// <b>And the clause that replaces the route.</b> The eight areas were a fixed enumeration
+    /// precisely because deriving them from the document under test let an entire risk area be
+    /// deleted from both tables at once. The coverage table has the same weakness and a better
+    /// anchor: it is compared against <see cref="AssuranceSources.Files"/> and against the
+    /// annotations, which are not the document. A file dropped from the record is a file the
+    /// release decision cannot see, and that is the same defect as a deleted review area, reached
+    /// through a generated document instead of a written one.
+    /// </para>
+    /// <para>
+    /// <b>Exclusion EX-55 closes here.</b> It recorded that nothing outside two documents said how
+    /// many items the review ought to have. The extent of the review is now the tree.
     /// </para>
     /// </remarks>
     [Fact]
-    public void H3_The_Review_Route_Is_Covered_Contiguous_And_Counted()
+    public void H3_No_Review_Document_Points_At_A_Line_And_The_Record_Covers_The_Tree()
     {
         AssertTheRegisterRowStatesItsLimits(
             "H3",
-            "fixed enumeration",
-            "EX-55");
+            "not derived from the document under test",
+            "EX-65");
 
-        Assert.Empty(RouteViolations(HumanReview));
-        Assert.Empty(WorksheetViolations(Worksheet));
+        // Clause: no review document cites a source line number. The whole corpus, every line -
+        // the worksheet whose Read rows were the old scope no longer exists, and a pointer in a
+        // bundle or in the ledger rots in exactly the same way.
+        Assert.All(Corpus, static document => Assert.Empty(SourceLineCitations(document)));
 
-        // Clause: no worksheet item cites a source line number. This is the defect that justified
-        // moving the criteria into the source in the first place - RC-01 cited the checked
-        // multiplication at VmBoundedAllocator.cs:57, which the annotations turned into a
-        // parameter declaration, and nothing noticed. A member name survives an edit; a line
-        // number does not. The rationale paragraph in the worksheet header quotes the rotted
-        // citation deliberately, so only Read rows are scanned.
-        Assert.Empty(SourceLineCitations(Worksheet));
+        var cited = SourceLineCitations(Witness("H3-a-document-cites-a-source-line-number.md.witness"));
 
-        var cited = Assert.Single(SourceLineCitations(
-            Witness("H3-an-item-cites-a-source-line-number.md.witness")));
+        Assert.Equal(2, cited.Count);
+        Assert.Single(cited.Where(static violation => violation.Contains(
+            "`src/Broiler.VM.Binary/VmBoundedAllocator.cs` 34-68", StringComparison.Ordinal)));
+        Assert.Single(cited.Where(static violation => violation.Contains(
+            "`src/Broiler.VM.Binary/VmBoundedReader.cs:57`", StringComparison.Ordinal)));
+        Assert.All(cited, static violation => Assert.Contains(
+            "a line number does not survive an edit - name the member instead",
+            violation,
+            StringComparison.Ordinal));
 
-        Assert.Contains("VmBoundedAllocator.cs` 34-68", cited, StringComparison.Ordinal);
-        Assert.Empty(ItemCountViolations(HumanReview, Worksheet));
+        // Clause: the coverage table is the tree. Every covered file, once, with true figures.
+        Assert.Empty(CoverageViolations(HumanReview, AssuranceSources.Files, AssuranceScanner.Units));
+        Assert.Empty(FileCountViolations(HumanReview, AssuranceSources.Files));
 
-        // Clause: section 4 declares exactly the eight.
-        var route = Assert.Single(RouteViolations(Witness("H3-route-table-omits-an-area.md.witness")));
-        Assert.Contains("section 4 does not declare RA-8", route, StringComparison.Ordinal);
+        // Non-vacuous: the table is 45 rows over a tree of 45 files, so a clean result is a
+        // comparison and not a quantifier over nothing.
+        Assert.Equal(45, AssuranceSources.Files.Count);
+        Assert.All(
+            AssuranceSources.Files,
+            static file => Assert.Contains(
+                $"| `{file.RelativePath}` |", HumanReview.Text, StringComparison.Ordinal));
 
-        // Clause: section 8 declares exactly the eight.
-        var verdicts = Assert.Single(RouteViolations(Witness("H3-verdict-table-omits-an-area.md.witness")));
-        Assert.Contains("section 8 does not declare RA-8", verdicts, StringComparison.Ordinal);
+        // The rejecting directions are the real record with one thing altered, and each is asserted
+        // by the CONTENT of the violation it expects. A stored copy of a generated artefact would be
+        // a second copy of the thing under test, would go stale at every regeneration, and would be
+        // repaired by regenerating it - the same reason rule J8's report clauses mutate rather than
+        // store.
+        var dropped = AssuranceSources.Files[0].RelativePath;
 
-        // Clause: EXACTLY the eight - a ninth area declared in the route table is a violation too.
-        // This is the clause that keeps the fixed enumeration self-checking against the document.
-        var ninth = Assert.Single(RouteViolations(Witness("H3-route-table-declares-a-ninth-area.md.witness")));
-        Assert.Contains(
-            "section 4 declares RA-9, which is not one of the eight review areas",
-            ninth,
-            StringComparison.Ordinal);
+        var omitted = CoverageViolations(
+            Doctored(HumanReview, $"| `{dropped}` |", "| `src/Broiler.VM.Elsewhere/Gone.cs` |"),
+            AssuranceSources.Files,
+            AssuranceScanner.Units);
 
-        // Clause: no area is declared twice.
-        var repeatedArea = Assert.Single(RouteViolations(Witness("H3-verdict-table-declares-an-area-twice.md.witness")));
-        Assert.Contains("section 8 declares RA-8 more than once", repeatedArea, StringComparison.Ordinal);
+        Assert.Single(omitted.Where(violation => violation.Contains(
+            $"does not name the covered file {dropped}", StringComparison.Ordinal)));
+        Assert.Single(omitted.Where(static violation => violation.Contains(
+            "names src/Broiler.VM.Elsewhere/Gone.cs, which is not a covered file",
+            StringComparison.Ordinal)));
 
-        // Clause: exactly one route section, and exactly one verdict section.
-        var twoRoutes = Assert.Single(RouteViolations(Witness("H3-route-section-appears-twice.md.witness")));
-        Assert.Contains("carries 2 'section 4 route' headings", twoRoutes, StringComparison.Ordinal);
+        // Clause: a file named twice. One row duplicated is a row whose figures nobody can act on.
+        var twice = CoverageViolations(
+            Doctored(
+                HumanReview,
+                $"| `{dropped}` |",
+                $"| `{dropped}` | 0 | 0 | 0 | 0 | Low | Low | 0/0 |\n| `{dropped}` |"),
+            AssuranceSources.Files,
+            AssuranceScanner.Units);
 
-        var twoVerdicts = Assert.Single(RouteViolations(Witness("H3-verdict-section-appears-twice.md.witness")));
-        Assert.Contains("carries 2 'section 8 area verdict' headings", twoVerdicts, StringComparison.Ordinal);
+        Assert.Single(twice.Where(violation => violation.Contains(
+            $"names {dropped} 2 times", StringComparison.Ordinal)));
 
-        // Clause: every area has at least one item.
-        var uncovered = Assert.Single(WorksheetViolations(Witness("H3-area-with-no-worksheet-item.md.witness")));
-        Assert.Contains("has no item for review area RA-8", uncovered, StringComparison.Ordinal);
+        // Clause: a row whose figures are not the annotations'. This is the row a reader uses to
+        // decide where to spend their time, and nothing else compares it with the tree.
+        var relevant = AssuranceScanner.Units.Count(unit =>
+            unit.IsRelevant &&
+            string.Equals(unit.File.RelativePath, dropped, StringComparison.Ordinal));
 
-        // Clause: every item names an area in the enumeration.
-        var foreignArea = Assert.Single(WorksheetViolations(
-            Witness("H3-item-names-an-area-outside-the-enumeration.md.witness")));
-        Assert.Contains("item RC-09 names RA-9", foreignArea, StringComparison.Ordinal);
+        var untrue = CoverageViolations(
+            Doctored(
+                HumanReview,
+                $"| `{dropped}` | 13 | {relevant} |",
+                $"| `{dropped}` | 13 | {relevant + 7} |"),
+            AssuranceSources.Files,
+            AssuranceScanner.Units);
 
-        // Clause: an item names the area of the heading it sits under. Without this the worksheet
-        // can be left self-contradictory - an item filed under RA-8 declaring RA-7 - with every
-        // count still true.
-        var misfiled = Assert.Single(WorksheetViolations(
-            Witness("H3-item-contradicts-its-area-heading.md.witness")));
-        Assert.Contains("item RC-09 sits under RA-8 but names RA-7", misfiled, StringComparison.Ordinal);
+        Assert.Single(untrue.Where(violation => violation.Contains(
+            $"gives {dropped} {relevant + 7} relevant units; the tree declares {relevant}",
+            StringComparison.Ordinal)));
 
-        // Clause: the identifiers are contiguous from RC-01.
-        var gap = Assert.Single(WorksheetViolations(Witness("H3-item-identifiers-skip-a-number.md.witness")));
-        Assert.Contains("item RC-09 appears where RC-08 was expected", gap, StringComparison.Ordinal);
+        // Clause: exactly one coverage section. A decoy heading above the real one is how every
+        // section-reading clause in this group was defeated at once, and a generated document is no
+        // less readable from a decoy than a written one.
+        var twoSections = CoverageViolations(
+            Doctored(HumanReview, "## 6. Coverage By File", "## 6. Coverage By File\n\n## 6. Coverage By File"),
+            AssuranceSources.Files,
+            AssuranceScanner.Units);
 
-        // Clause: no identifier is used twice. The positional check fires too, so the duplicate
-        // message is singled out by name rather than by being the only violation.
-        var repeated = WorksheetViolations(Witness("H3-item-identifier-is-used-twice.md.witness"));
-        Assert.Single(repeated.Where(static violation =>
-            violation.Contains("declares item identifier RC-07 more than once", StringComparison.Ordinal)));
+        Assert.Single(twoSections.Where(static violation => violation.Contains(
+            "carries 2 'section 6 coverage' headings", StringComparison.Ordinal)));
 
-        // Clause: every item declares an Area row.
-        var noArea = Assert.Single(WorksheetViolations(Witness("H3-item-declares-no-area-row.md.witness")));
-        Assert.Contains("item RC-03 declares no Area row", noArea, StringComparison.Ordinal);
+        // Clause: the summary's own file count agrees with the tree, so dropping a row and
+        // correcting the count is not a way through.
+        var miscounted = FileCountViolations(
+            Doctored(
+                HumanReview,
+                $"| Files scanned | {AssuranceSources.Files.Count} |",
+                "| Files scanned | 44 |"),
+            AssuranceSources.Files);
 
-        // Clause: no item repeats the Area row.
-        var twoAreas = Assert.Single(WorksheetViolations(Witness("H3-item-declares-two-area-rows.md.witness")));
-        Assert.Contains("item RC-03 declares the Area row 2 times", twoAreas, StringComparison.Ordinal);
-
-        // Clause: an Area row is a two-cell row, read with or without the optional trailing pipe.
-        // Stripping that pipe is what makes the row two cells rather than three, so this input
-        // stops being read at all if the strip is removed - and so does every row of the real
-        // worksheet.
-        Assert.Empty(WorksheetViolations(Witness("H3-item-area-row-without-a-trailing-pipe.md.witness")));
-
-        // Clause: the per-area counts in the progress table are true.
-        var count = Assert.Single(WorksheetViolations(Witness("H3-progress-count-is-wrong.md.witness")));
-        Assert.Contains("progress table gives RA-4 2 items; the worksheet declares 1", count, StringComparison.Ordinal);
-
-        // Clause: the progress table gives a row for every area.
-        var noRow = Assert.Single(WorksheetViolations(Witness("H3-progress-table-omits-a-row.md.witness")));
-        Assert.Contains("progress table has no row for RA-8", noRow, StringComparison.Ordinal);
-
-        // Clause: the total in the progress table is true.
-        var total = Assert.Single(WorksheetViolations(Witness("H3-progress-total-is-wrong.md.witness")));
-        Assert.Contains("progress table gives a total of 9 items; the worksheet declares 8", total, StringComparison.Ordinal);
-
-        // Clause: the progress table gives a total at all.
-        var noTotal = Assert.Single(WorksheetViolations(Witness("H3-progress-table-records-no-total.md.witness")));
-        Assert.Contains("progress table records no total", noTotal, StringComparison.Ordinal);
-
-        // Clause: exactly one progress section.
-        var twoProgress = Assert.Single(WorksheetViolations(Witness("H3-progress-section-appears-twice.md.witness")));
-        Assert.Contains("carries 2 'Progress' headings", twoProgress, StringComparison.Ordinal);
-
-        // Clause: the count HUMAN_REVIEW.md states is the number of items the worksheet carries,
-        // so deleting an item and correcting the worksheet's own two number cells is not enough.
-        var wrongCount = Assert.Single(ItemCountViolations(
-            Witness("H3-record-states-a-wrong-item-count.md.witness"), Worksheet));
-        Assert.Contains("states that the worksheet carries 34 items", wrongCount, StringComparison.Ordinal);
-        Assert.Contains("docs/review/vm-0-vm-1.md declares 35", wrongCount, StringComparison.Ordinal);
-
-        // Clause: the anti-deletion half. Removing the sentence must not be a way past the check.
-        var noCount = Assert.Single(ItemCountViolations(
-            Witness("H3-record-states-no-item-count.md.witness"), Worksheet));
-        Assert.Contains("states no worksheet item count", noCount, StringComparison.Ordinal);
+        Assert.Single(miscounted.Where(violation => violation.Contains(
+            $"states 44 files scanned; the tree carries {AssuranceSources.Files.Count}",
+            StringComparison.Ordinal)));
     }
 
-    /// <summary>The eight review areas, risk-ordered. A fixed enumeration, never derived.</summary>
-    private static readonly string[] ReviewAreas =
-        ["RA-1", "RA-2", "RA-3", "RA-4", "RA-5", "RA-6", "RA-7", "RA-8"];
+    private static readonly Regex CoverageSection = new(@"^##\s+6\.\s", RegexOptions.Compiled);
 
-    private static readonly Regex RouteSection = new(@"^##\s+4\.\s", RegexOptions.Compiled);
-    private static readonly Regex VerdictSection = new(@"^##\s+8\.\s", RegexOptions.Compiled);
-    private static readonly Regex ProgressSection = new(@"^##\s+Progress\s*$", RegexOptions.Compiled);
-    private static readonly Regex AreaIdentifier = new(@"^RA-\d+$", RegexOptions.Compiled);
-    private static readonly Regex AreaInCell = new(@"RA-\d+", RegexOptions.Compiled);
-    private static readonly Regex ItemHeading = new(@"^###\s+(?<id>RC-\d+)\b", RegexOptions.Compiled);
-    private static readonly Regex AreaHeading = new(@"^##\s+(?<area>RA-\d+)\b", RegexOptions.Compiled);
-
-    /// <summary>The sentence in HUMAN_REVIEW.md section 4 that states how large the worksheet is.</summary>
-    private static readonly Regex StatedItemCount =
-        new(@"\bworksheet\s+carries\s+(?<count>\d+)\s+items\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-    private static List<string> RouteViolations(ReviewDocument document)
-    {
-        var violations = new List<string>();
-
-        Compare(RouteSection, "section 4 route", "section 4");
-        Compare(VerdictSection, "section 8 area verdict", "section 8");
-
-        return violations;
-
-        void Compare(Regex heading, string sectionLabel, string label)
-        {
-            var declared = DeclaredAreas(document, heading, sectionLabel, violations);
-
-            violations.AddRange(ReviewAreas
-                .Where(area => !declared.Contains(area, StringComparer.Ordinal))
-                .Select(area => $"{document.Name} {label} does not declare {area}"));
-
-            violations.AddRange(declared
-                .Distinct(StringComparer.Ordinal)
-                .Where(area => !ReviewAreas.Contains(area, StringComparer.Ordinal))
-                .Select(area => $"{document.Name} {label} declares {area}, which is not one of the eight review areas"));
-
-            violations.AddRange(declared
-                .GroupBy(static area => area, StringComparer.Ordinal)
-                .Where(static group => group.Count() > 1)
-                .Select(group => $"{document.Name} {label} declares {group.Key} more than once"));
-        }
-    }
-
-    private static List<string> DeclaredAreas(
-        ReviewDocument document,
-        Regex heading,
-        string label,
-        List<string> violations)
-    {
-        var declared = new List<string>();
-
-        foreach (var line in Section(document, heading, label, violations))
-        {
-            if (!line.IsTableRow)
-            {
-                continue;
-            }
-
-            var first = Unquote(TableCells(line.Text).FirstOrDefault() ?? string.Empty);
-
-            if (AreaIdentifier.IsMatch(first))
-            {
-                declared.Add(first);
-            }
-        }
-
-        return declared;
-    }
+    private static readonly Regex FilesScannedRow =
+        new(@"^\|\s*Files scanned\s*\|\s*(?<count>\d+)\s*\|", RegexOptions.Compiled);
 
     /// <summary>
-    /// Every Read row that pins a source file to a line number. The worksheet's whole remaining
-    /// job is to point a reviewer at things the assurance annotations cannot carry, and a line
-    /// number is the one form of pointer this repository has already watched rot unnoticed.
+    /// Every citation that pins a source file to a line number, anywhere in a review document.
     /// </summary>
+    /// <remarks>
+    /// A member name survives an edit and a line number does not. This is the one form of pointer
+    /// this repository has already watched rot unnoticed, and the scan is the whole document
+    /// because the document that carried them is gone and the next one will not be a worksheet.
+    /// </remarks>
     private static List<string> SourceLineCitations(ReviewDocument document)
     {
         var violations = new List<string>();
 
         foreach (var line in document.Lines)
         {
-            if (!line.Text.TrimStart().StartsWith("| Read |", StringComparison.Ordinal))
-            {
-                continue;
-            }
-
             foreach (Match match in SourceLineCitation.Matches(line.Text))
             {
                 violations.Add(
@@ -845,538 +774,419 @@ public sealed class ReviewRecordRuleTests
     private static readonly Regex SourceLineCitation =
         new(@"`[^`]+\.cs`[ ]\d+(?:-\d+)?|`[^`]+\.cs:\d+`", RegexOptions.Compiled);
 
-    private static List<string> WorksheetViolations(ReviewDocument document)
-    {
-        var violations = new List<string>();
-        var items = WorksheetItems(document.Lines);
-
-        foreach (var item in items)
-        {
-            if (item.Areas.Count == 0)
-            {
-                violations.Add($"{document.Name} item {item.Id} declares no Area row");
-            }
-            else if (item.Areas.Count > 1)
-            {
-                violations.Add($"{document.Name} item {item.Id} declares the Area row {item.Areas.Count} times");
-            }
-
-            violations.AddRange(item.Areas
-                .Distinct(StringComparer.Ordinal)
-                .Where(area => !ReviewAreas.Contains(area, StringComparer.Ordinal))
-                .Select(area => $"{document.Name} item {item.Id} names {area}, which is not one of the eight review areas"));
-
-            // An item that names an area outside the enumeration is already reported above; saying
-            // it twice would make one defect look like two and would break the one-clause-per-
-            // witness assertions. The contradiction clause is about a VALID area filed under the
-            // wrong heading, which no other clause can see.
-            violations.AddRange(item.Areas
-                .Distinct(StringComparer.Ordinal)
-                .Where(area => ReviewAreas.Contains(area, StringComparer.Ordinal))
-                .Where(area => item.Heading is not null && !string.Equals(area, item.Heading, StringComparison.Ordinal))
-                .Select(area => $"{document.Name} item {item.Id} sits under {item.Heading} but names {area}"));
-        }
-
-        violations.AddRange(items
-            .GroupBy(static item => item.Id, StringComparer.Ordinal)
-            .Where(static group => group.Count() > 1)
-            .Select(group => $"{document.Name} declares item identifier {group.Key} more than once"));
-
-        for (var index = 0; index < items.Count; index++)
-        {
-            var expected = $"RC-{index + 1:D2}";
-
-            if (!string.Equals(items[index].Id, expected, StringComparison.Ordinal))
-            {
-                violations.Add($"{document.Name} item {items[index].Id} appears where {expected} was expected");
-            }
-        }
-
-        var covered = items
-            .SelectMany(static item => item.Areas)
-            .ToHashSet(StringComparer.Ordinal);
-
-        violations.AddRange(ReviewAreas
-            .Where(area => !covered.Contains(area))
-            .Select(area => $"{document.Name} has no item for review area {area}"));
-
-        var (perArea, total) = ProgressCounts(document, violations);
-
-        foreach (var area in ReviewAreas)
-        {
-            var actual = items.Count(item => item.Areas.Contains(area, StringComparer.Ordinal));
-
-            if (!perArea.TryGetValue(area, out var declared))
-            {
-                violations.Add($"{document.Name} progress table has no row for {area}");
-            }
-            else if (declared != actual)
-            {
-                violations.Add($"{document.Name} progress table gives {area} {declared} items; the worksheet declares {actual}");
-            }
-        }
-
-        if (total is null)
-        {
-            violations.Add($"{document.Name} progress table records no total");
-        }
-        else if (total != items.Count)
-        {
-            violations.Add($"{document.Name} progress table gives a total of {total} items; the worksheet declares {items.Count}");
-        }
-
-        return violations;
-    }
+    /// <summary>One row of the record's coverage table, as the document states it.</summary>
+    private sealed record CoverageRow(string Path, int Relevant, int Unverified);
 
     /// <summary>
-    /// The one clause of H3 that reads two documents at once. The number of worksheet items is not
-    /// an enumeration and cannot be - the worksheet grows - so it is held by agreement between the
-    /// review record and the worksheet instead. Without it, H3 clause 5 is entirely
-    /// self-referential: deleting an item and editing the worksheet's own two number cells leaves
-    /// every count true and every identifier contiguous.
+    /// Every disagreement between the record's coverage table and the tree it describes.
     /// </summary>
-    private static List<string> ItemCountViolations(ReviewDocument record, ReviewDocument worksheet)
+    /// <remarks>
+    /// The expectation is the covered file set and the annotations, and never the document: the
+    /// eight review areas this replaced were a fixed enumeration for exactly that reason, because
+    /// an expectation read from the document under test agrees with it whatever it says.
+    /// </remarks>
+    private static List<string> CoverageViolations(
+        ReviewDocument document,
+        IReadOnlyList<AssuranceSourceFile> files,
+        IReadOnlyList<AssuranceUnit> units)
     {
         var violations = new List<string>();
-        var items = WorksheetItems(worksheet.Lines).Count;
+        var covered = files.Select(static file => file.RelativePath).ToHashSet(StringComparer.Ordinal);
+        var declared = new List<CoverageRow>();
 
-        // Read from the rejoined paragraph rather than the raw line, because the review record is
-        // hard-wrapped and the sentence is longer than its column width.
-        var stated = LogicalLines(record.Lines)
-            .SelectMany(static line => StatedItemCount.Matches(line).Select(
-                static match => int.Parse(match.Groups["count"].Value, CultureInfo.InvariantCulture)))
-            .Distinct()
-            .ToArray();
-
-        if (stated.Length == 0)
+        foreach (var line in Section(document, CoverageSection, "section 6 coverage", violations))
         {
-            violations.Add(
-                $"{record.Name} states no worksheet item count, so nothing outside {worksheet.Name} " +
-                $"holds it to the {items} items it carries");
+            if (!line.IsTableRow || IsDelimiterRow(line.Text))
+            {
+                continue;
+            }
 
-            return violations;
+            var cells = TableCells(line.Text).ToArray();
+
+            if (cells.Length < 5)
+            {
+                continue;
+            }
+
+            var path = Unquote(cells[0]);
+
+            if (!path.EndsWith(".cs", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            declared.Add(new CoverageRow(path, ParseCount(cells[2]) ?? -1, ParseCount(cells[4]) ?? -1));
         }
 
-        violations.AddRange(stated
-            .Where(count => count != items)
-            .Select(count =>
-                $"{record.Name} states that the worksheet carries {count} items; {worksheet.Name} declares {items}"));
+        violations.AddRange(covered
+            .Where(path => !declared.Any(row => string.Equals(row.Path, path, StringComparison.Ordinal)))
+            .OrderBy(static path => path, StringComparer.Ordinal)
+            .Select(path => $"{document.Name} section 6 does not name the covered file {path}"));
+
+        foreach (var group in declared.GroupBy(static row => row.Path, StringComparer.Ordinal))
+        {
+            if (!covered.Contains(group.Key))
+            {
+                violations.Add($"{document.Name} section 6 names {group.Key}, which is not a covered file");
+
+                continue;
+            }
+
+            if (group.Count() > 1)
+            {
+                violations.Add($"{document.Name} section 6 names {group.Key} {group.Count()} times");
+            }
+        }
+
+        foreach (var row in declared.Where(row => covered.Contains(row.Path)))
+        {
+            var owned = units
+                .Where(unit => string.Equals(unit.File.RelativePath, row.Path, StringComparison.Ordinal))
+                .ToArray();
+
+            var relevant = owned.Count(static unit => unit.IsRelevant);
+            var unverified = owned.Count(static unit =>
+                unit.IsRelevant && AssuranceStateMachine.BlocksRelease(unit.State));
+
+            if (row.Relevant != relevant)
+            {
+                violations.Add(
+                    $"{document.Name} section 6 gives {row.Path} {row.Relevant} relevant units; " +
+                    $"the tree declares {relevant}");
+            }
+
+            if (row.Unverified != unverified)
+            {
+                violations.Add(
+                    $"{document.Name} section 6 gives {row.Path} {row.Unverified} unverified units; " +
+                    $"the tree declares {unverified}");
+            }
+        }
 
         return violations;
     }
 
-    private static IReadOnlyList<WorksheetItem> WorksheetItems(IReadOnlyList<SourceLine> lines)
-    {
-        var items = new List<WorksheetItem>();
-        string? current = null;
-        string? area = null;
-        var areas = new List<string>();
-
-        foreach (var line in lines)
-        {
-            var depth = HashCount(line.Text);
-
-            if (depth > 0)
-            {
-                var heading = ItemHeading.Match(line.Text);
-
-                if (heading.Success)
-                {
-                    Flush();
-                    current = heading.Groups["id"].Value;
-                    continue;
-                }
-
-                if (depth > 3)
-                {
-                    continue;
-                }
-
-                Flush();
-
-                // The area heading an item sits under is remembered so that an item filed under
-                // one heading while naming another is visible. Without it the worksheet's own
-                // "## RA-n" headings are bound to nothing and the document can be left
-                // self-contradictory with every count still true.
-                if (depth <= 2)
-                {
-                    var section = AreaHeading.Match(line.Text);
-                    area = section.Success ? section.Groups["area"].Value : null;
-                }
-
-                continue;
-            }
-
-            if (current is null || !line.IsTableRow)
-            {
-                continue;
-            }
-
-            // An Area row is a two-cell table row. Reading it through the cell splitter rather
-            // than a bespoke regex is what binds the optional-trailing-pipe handling to something
-            // real: without it, every row of the worksheet parses as three cells and no item
-            // declares an area at all.
-            var cells = TableCells(line.Text).ToArray();
-
-            if (cells.Length == 2 && string.Equals(Plain(cells[0]), "Area", StringComparison.Ordinal))
-            {
-                areas.Add(Unquote(cells[1]));
-            }
-        }
-
-        Flush();
-
-        return items;
-
-        void Flush()
-        {
-            if (current is not null)
-            {
-                items.Add(new WorksheetItem(current, area, areas.ToArray()));
-            }
-
-            current = null;
-            areas = [];
-        }
-    }
-
-    private static (Dictionary<string, int> PerArea, int? Total) ProgressCounts(
+    /// <summary>The record's own count of covered files, against the tree.</summary>
+    private static List<string> FileCountViolations(
         ReviewDocument document,
-        List<string> violations)
+        IReadOnlyList<AssuranceSourceFile> files)
     {
-        var perArea = new Dictionary<string, int>(StringComparer.Ordinal);
-        int? total = null;
+        var stated = document.Lines
+            .Select(static line => FilesScannedRow.Match(line.Text))
+            .Where(static match => match.Success)
+            .Select(static match => int.Parse(match.Groups["count"].Value, CultureInfo.InvariantCulture))
+            .ToArray();
 
-        foreach (var line in Section(document, ProgressSection, "Progress", violations))
+        if (stated.Length != 1)
         {
-            if (!line.IsTableRow)
-            {
-                continue;
-            }
-
-            var cells = TableCells(line.Text).ToArray();
-
-            if (cells.Length < 3)
-            {
-                continue;
-            }
-
-            var count = ParseCount(cells[2]);
-
-            if (count is null)
-            {
-                continue;
-            }
-
-            var area = AreaInCell.Match(Unquote(cells[0]));
-
-            if (area.Success)
-            {
-                // Plain assignment was last-wins: a false row placed ABOVE the true one was
-                // overwritten and never compared, so the table a reviewer reads could publish
-                // any count at all. A repeated key is itself the violation.
-                if (perArea.TryGetValue(area.Value, out var already))
-                {
-                    violations.Add(
-                        $"{document.Name} progress table records {area.Value} twice, as {already} and as {count.Value}");
-                    continue;
-                }
-
-                perArea[area.Value] = count.Value;
-                continue;
-            }
-
-            if (string.Equals(Plain(cells[1]), "Total", StringComparison.OrdinalIgnoreCase))
-            {
-                if (total is not null)
-                {
-                    violations.Add(
-                        $"{document.Name} progress table records a total twice, as {total} and as {count.Value}");
-                    continue;
-                }
-
-                total = count.Value;
-            }
+            return
+            [
+                $"{document.Name} states {stated.Length} 'Files scanned' rows; exactly one is required",
+            ];
         }
 
-        return (perArea, total);
+        return stated[0] == files.Count
+            ? []
+            : [$"{document.Name} states {stated[0]} files scanned; the tree carries {files.Count}"];
     }
 
     private static int? ParseCount(string cell) =>
-        int.TryParse(Plain(cell), NumberStyles.Integer, CultureInfo.InvariantCulture, out var value)
-            ? value
+        int.TryParse(Plain(cell), NumberStyles.None, CultureInfo.InvariantCulture, out var count)
+            ? count
             : null;
 
-    private sealed record WorksheetItem(string Id, string? Heading, IReadOnlyList<string> Areas);
+    /// <summary>The same document with one substitution, for a rejecting direction.</summary>
+    private static ReviewDocument Doctored(ReviewDocument document, string find, string replace) =>
+        new(document.Name, document.Text.Replace(find, replace, StringComparison.Ordinal));
 
     // =====================================================================================
-    // H4 - an unsigned attestation cannot record an approval
+    // H4 - the record states no decision the annotations do not hold
     // =====================================================================================
 
     /// <summary>
-    /// H4. If HUMAN_REVIEW.md records any decision other than <c>PENDING</c>, every field of its
-    /// human attestation is filled; and exactly one decision is recorded.
+    /// H4. The review record's status is the aggregate the annotations give, its stated figures are
+    /// the annotations' figures, and every alias it names is one a <c>Broiler-Human</c> line in the
+    /// product tree carries - with none of them left out.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// The four field names are a fixed enumeration, so a MISSING field is a violation. An earlier
-    /// attempt read whatever bullets happened to be present and failed only when the list was
-    /// empty, which made deleting the signature line as good as filling it - the cheapest possible
-    /// way to record a false approval was the one path the rule could not see.
+    /// <b>The risk this answers is the one it always answered.</b> The record used to end in a
+    /// four-state decision list and a four-field attestation, and the cheapest false approval was to
+    /// tick <c>APPROVED</c> over unfilled fields - or to delete the signature line, which the rule
+    /// could not see until its field set was fixed. There is no attestation now: a decision is the
+    /// <c>Broiler-Human</c> line on a declaration, and the record is computed from those lines. The
+    /// same false record is therefore reached differently - by a record that states a status the
+    /// states do not give, or that names somebody no line in the tree names - and that is what this
+    /// rule is now.
     /// </para>
     /// <para>
-    /// Both markdown italic forms count as placeholders. Only <c>_..._</c> was recognised before,
-    /// and <c>*not yet signed*</c> renders identically. A value carrying no letter and no digit -
-    /// a bare hyphen, say - is a placeholder too: the closed word list cannot enumerate every way
-    /// of writing nothing, and an approval attested with four hyphens is the outcome this rule
-    /// exists to refuse.
+    /// <b>Both directions, and the second one matters as much.</b> An alias in the record that the
+    /// tree does not carry is an invented reviewer. An alias in the tree that the record does not
+    /// carry is a decision the release record cannot see, which is how a person's work disappears
+    /// from the document that decides a publish. Neither is reported by rule J4, which reads human
+    /// LINES and says nothing about a document.
     /// </para>
     /// <para>
-    /// The decision section is required to be unique. A lookup that took its first match let a
-    /// decoy heading above the real one - <c>## Decision vocabulary</c>, carrying one ticked
-    /// PENDING box - become the section under test, so an APPROVED record with four unsigned
-    /// fields passed.
-    /// </para>
-    /// <para>
-    /// This is the false-approval risk ADR 0001 named when it deferred HUMAN_REVIEW.md to VM-6.
+    /// <b>What FILLED still does not mean.</b> An alias that reads plausibly and belongs to nobody
+    /// is accepted here exactly as an invented name in the old attestation was: this rule holds the
+    /// record to the tree, and nothing in this component holds the tree to a person. That is the
+    /// same limit ADR 0001 named when it deferred this file to VM-6, and EX-60 records what a lane
+    /// would have to do to close it.
     /// </para>
     /// </remarks>
     [Fact]
-    public void H4_An_Unsigned_Attestation_Cannot_Record_An_Approval()
+    public void H4_The_Record_States_No_Decision_The_Annotations_Do_Not_Hold()
     {
         AssertTheRegisterRowStatesItsLimits(
             "H4",
-            "fixed enumeration",
-            "at least one letter or digit");
+            "does not mean",
+            "EX-60");
 
-        Assert.Empty(AttestationViolations(HumanReview));
+        // The clean direction over this checkout: whatever the human lines say, the record says the
+        // same. The status word is derived rather than written out, because "the record says
+        // PENDING" is a fact about this milestone and the first alias anybody records would make it
+        // false - which is the shape of defect this whole change is repairing, so it must not be
+        // reintroduced in the rule that guards against it.
+        Assert.Empty(StatusViolations(HumanReview, AssuranceScanner.Units));
+        Assert.Empty(AliasViolations(HumanReview, AssuranceScanner.Units));
+        Assert.Contains(
+            $"**Status: {AssuranceHumanReview.Status(AssuranceScanner.Units)}.**",
+            HumanReview.Text,
+            StringComparison.Ordinal);
 
-        // The rule must not reject a complete approval, or it says nothing about an incomplete one.
-        Assert.Empty(AttestationViolations(Witness("H4-approved-with-a-complete-attestation.md.witness")));
+        // Non-vacuous, and this is the whole of the rule's subject: a tree two people have read.
+        // Nothing in this component is in that state, so the accepting direction has to be
+        // synthesized - and a rule about a record of decisions that has only ever seen a record of
+        // none is a rule nobody has watched work.
+        var read = AssuranceProbe.Source(
+            SourceWitness("J8-a-record-names-every-alias-in-the-tree.cs.witness"),
+            "H4-a-tree-two-people-have-read.cs");
 
-        // Clause: a field that is absent entirely.
-        var absent = Assert.Single(AttestationViolations(Witness("H4-approved-with-a-missing-field.md.witness")));
-        Assert.Contains("attestation field 'Signature or attributable commit' is missing", absent, StringComparison.Ordinal);
-        Assert.Contains("APPROVED FOR PREVIEW", absent, StringComparison.Ordinal);
+        var units = AssuranceScanner.Scan(read);
+        var record = new ReviewDocument(
+            HumanReviewName, AssuranceHumanReview.Render([read], units));
 
-        // Clause: the enumeration's second member, which every other H4 witness fills.
-        var alias = Assert.Single(AttestationViolations(Witness("H4-approved-with-no-reviewer-alias.md.witness")));
-        Assert.Contains("attestation field 'Reviewer alias' is missing", alias, StringComparison.Ordinal);
+        Assert.Empty(StatusViolations(record, units));
+        Assert.Empty(AliasViolations(record, units));
+        Assert.Contains("| WITNESS-ONLY | 1 | 1 | 1 | 0 |", record.Text, StringComparison.Ordinal);
+        Assert.Contains("| WITNESS-TWO | 1 | 1 | 0 | 1 |", record.Text, StringComparison.Ordinal);
 
-        // Clause: a field present with no value.
-        var empty = Assert.Single(AttestationViolations(Witness("H4-approved-with-an-empty-field.md.witness")));
-        Assert.Contains("attestation field 'Date' is empty", empty, StringComparison.Ordinal);
+        // Clause: a status the states do not give. This is the old ticked APPROVED box, reached
+        // through the one line that now carries the decision.
+        var overstated = StatusViolations(
+            Doctored(record, "**Status: PARTIAL.**", "**Status: COMPLETE.**"), units);
 
-        // Clause: a field whose value carries no letter and no digit.
-        var hyphens = AttestationViolations(Witness("H4-approved-with-hyphens-for-fields.md.witness"));
-        Assert.Equal(4, hyphens.Count);
-        foreach (var field in AttestationFields)
-        {
-            Assert.Single(hyphens.Where(violation => violation.Contains(
-                $"attestation field '{field}' has no letter or digit in it: -", StringComparison.Ordinal)));
-        }
+        Assert.Single(overstated.Where(static violation => violation.Contains(
+            "records the decision COMPLETE; the annotations give PARTIAL", StringComparison.Ordinal)));
 
-        // Clause: the underscore italic form.
-        var underscore = Assert.Single(AttestationViolations(Witness("H4-approved-with-an-underscore-placeholder.md.witness")));
-        Assert.Contains("attestation field 'Name' is a placeholder: _Maik Ratzmer_", underscore, StringComparison.Ordinal);
+        // Clause: a figure the annotations do not give, beside a status word that does.
+        var miscounted = StatusViolations(
+            Doctored(record, "Human-reviewed: 1 of 3", "Human-reviewed: 2 of 3"), units);
 
-        // Clause: the asterisk italic form, which renders identically.
-        var asterisk = Assert.Single(AttestationViolations(Witness("H4-approved-with-an-asterisk-placeholder.md.witness")));
-        Assert.Contains("attestation field 'Name' is a placeholder: *Maik Ratzmer*", asterisk, StringComparison.Ordinal);
+        Assert.Single(miscounted.Where(static violation => violation.Contains(
+            "states 2 units carrying a decision; the annotations give 1", StringComparison.Ordinal)));
 
-        // Clause: the placeholder word list, case-insensitively - one assertion per word, because
-        // an unexercised word can be deleted from the array with the suite green, and the word
-        // most likely to appear in a false approval is the one the live document already uses.
-        AssertPlaceholderWord("H4-approved-with-a-word-placeholder.md.witness", "Date", "TBD");
-        AssertPlaceholderWord("H4-approved-with-word-placeholders.md.witness", "Name", "None");
-        AssertPlaceholderWord("H4-approved-with-word-placeholders.md.witness", "Reviewer alias", "N/A");
-        AssertPlaceholderWord("H4-approved-with-word-placeholders.md.witness", "Signature or attributable commit", "Pending");
-        AssertPlaceholderWord("H4-approved-with-word-placeholders.md.witness", "Date", "not yet signed");
-        AssertPlaceholderWord("H4-approved-with-more-word-placeholders.md.witness", "Name", "Not yet performed");
-        AssertPlaceholderWord("H4-approved-with-more-word-placeholders.md.witness", "Reviewer alias", "not yet assigned");
-        AssertPlaceholderWord(
-            "H4-approved-with-more-word-placeholders.md.witness",
-            "Signature or attributable commit",
-            "To be recorded by the reviewer");
+        // Clause: exactly one status line, so a decoy above the real one is not the line under test.
+        var twoStatuses = StatusViolations(
+            Doctored(record, "> **Status: PARTIAL.**", "> **Status: COMPLETE.** Human-reviewed: 3 of 3 relevant units.\n> **Status: PARTIAL.**"),
+            units);
 
-        // Clause: at most one decision is recorded.
-        var two = Assert.Single(AttestationViolations(Witness("H4-two-decisions-are-recorded.md.witness")));
-        Assert.Contains("ticks 2 decision boxes; exactly one is required", two, StringComparison.Ordinal);
+        Assert.Single(twoStatuses.Where(static violation => violation.Contains(
+            "states 2 status lines; exactly one is required", StringComparison.Ordinal)));
 
-        // Clause: at least one decision is recorded.
-        var none = Assert.Single(AttestationViolations(Witness("H4-no-decision-is-recorded.md.witness")));
-        Assert.Contains("ticks 0 decision boxes; exactly one is required", none, StringComparison.Ordinal);
+        // Clause: an invented alias. Nobody in the tree is called this, and the record says they
+        // read one unit.
+        var invented = AliasViolations(
+            Doctored(record, "| WITNESS-ONLY | 1 | 1 | 1 | 0 |", "| WITNESS-ONLY | 1 | 1 | 1 | 0 |\n| NOBODY | 1 | 1 | 1 | 0 |"),
+            units);
 
-        // Clause: exactly one decision section. A decoy heading above the real one carrying a
-        // ticked PENDING box was enough to make an APPROVED, wholly unsigned record pass.
-        var twoDecisions = AttestationViolations(Witness("H4-decision-section-appears-twice.md.witness"));
-        Assert.Single(twoDecisions.Where(static violation =>
-            violation.Contains("carries 2 'decision' headings", StringComparison.Ordinal)));
+        Assert.Single(invented.Where(static violation => violation.Contains(
+            "names the alias NOBODY, and no human line in the product tree carries it",
+            StringComparison.Ordinal)));
 
-        // Clause: exactly one attestation section.
-        var twoAttestations = Assert.Single(AttestationViolations(
-            Witness("H4-attestation-section-appears-twice.md.witness")));
-        Assert.Contains("carries 2 'human attestation' headings", twoAttestations, StringComparison.Ordinal);
+        // Clause: the other direction. An alias dropped from the record is a decision the release
+        // record cannot see, and deleting a row is cheaper than inventing one.
+        var lost = AliasViolations(
+            Doctored(record, "| WITNESS-TWO | 1 | 1 | 0 | 1 |\n", string.Empty), units);
+
+        Assert.Single(lost.Where(static violation => violation.Contains(
+            "does not name the alias WITNESS-TWO, which a human line in the product tree carries",
+            StringComparison.Ordinal)));
+
+        // Clause: a row whose counts are not the lines' counts - the shape that keeps an alias in
+        // the record while overstating what they read.
+        var inflated = AliasViolations(
+            Doctored(record, "| WITNESS-ONLY | 1 | 1 | 1 | 0 |", "| WITNESS-ONLY | 9 | 1 | 1 | 0 |"),
+            units);
+
+        Assert.Single(inflated.Where(static violation => violation.Contains(
+            "gives WITNESS-ONLY 9 units; the tree gives 1", StringComparison.Ordinal)));
+
+        // Clause: exactly one alias section.
+        var twoSections = AliasViolations(
+            Doctored(record, "## 5. Aliases In The Tree", "## 5. Aliases In The Tree\n\n## 5. Aliases In The Tree"),
+            units);
+
+        Assert.Single(twoSections.Where(static violation => violation.Contains(
+            "carries 2 'section 5 alias' headings", StringComparison.Ordinal)));
     }
 
-    private static void AssertPlaceholderWord(string witness, string field, string value)
-    {
-        var violations = AttestationViolations(Witness(witness));
-
-        Assert.Single(violations.Where(violation => violation.Contains(
-            $"attestation field '{field}' is a placeholder: {value}", StringComparison.Ordinal)));
-    }
-
-    /// <summary>The four attestation field names, as a fixed enumeration.</summary>
-    private static readonly string[] AttestationFields =
-        ["Name", "Reviewer alias", "Signature or attributable commit", "Date"];
+    private static readonly Regex AliasSection = new(@"^##\s+5\.\s", RegexOptions.Compiled);
 
     /// <summary>
-    /// The placeholder words, matched case-insensitively against the field value once markdown
-    /// emphasis and backticks are stripped from it.
+    /// The record's headline: the status word and the two figures beside it. The block-quote marker
+    /// is optional because the document reader strips it, and the corpus writes the line quoted.
     /// </summary>
-    private static readonly string[] PlaceholderWords =
-    [
-        "not yet signed", "not yet performed", "not yet assigned", "none",
-        "n/a", "tbd", "to be recorded by the reviewer", "pending",
-    ];
+    private static readonly Regex StatusLine = new(
+        @"^(?:>\s*)?\*\*Status:\s*(?<status>[A-Z]+)\.\*\*\s*Human-reviewed:\s*(?<reviewed>\d+)\s+of\s+(?<relevant>\d+)\s+relevant units\b",
+        RegexOptions.Compiled);
 
-    private static readonly Regex DecisionSection =
-        new(@"^##\s+\d*\.?\s*Decision\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    /// <summary>
+    /// Every disagreement between the record's headline and the states the annotations give.
+    /// </summary>
+    private static List<string> StatusViolations(
+        ReviewDocument document,
+        IReadOnlyList<AssuranceUnit> units)
+    {
+        var stated = document.Lines
+            .Select(static line => StatusLine.Match(line.Text))
+            .Where(static match => match.Success)
+            .ToArray();
 
-    private static readonly Regex AttestationSection =
-        new(@"^##\s+\d*\.?\s*Human Attestation\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        if (stated.Length != 1)
+        {
+            return [$"{document.Name} states {stated.Length} status lines; exactly one is required"];
+        }
 
-    private static readonly Regex DecisionBox =
-        new(@"^(?:[-*+]|\d+[.)])\s+\[(?<box>[ xX])\]\s*(?<label>.*)$", RegexOptions.Compiled);
+        var violations = new List<string>();
+        var relevant = units.Count(static unit => unit.IsRelevant);
+        var reviewed = units.Count(static unit =>
+            unit.IsRelevant && unit.State == AssuranceReviewState.Verified);
 
-    private static readonly Regex AttestationField =
-        new(@"^(?:[-*+]|\d+[.)])\s+\*\*(?<field>[^*:]+):\*\*(?<value>.*)$", RegexOptions.Compiled);
+        var expected = reviewed == 0
+            ? "PENDING"
+            : reviewed < relevant ? "PARTIAL" : "COMPLETE";
 
-    private static readonly Regex BoldLabel = new(@"\*\*(?<label>[^*]+)\*\*", RegexOptions.Compiled);
+        var recorded = stated[0].Groups["status"].Value;
 
-    private static List<string> AttestationViolations(ReviewDocument document)
+        if (!string.Equals(recorded, expected, StringComparison.Ordinal))
+        {
+            violations.Add(
+                $"{document.Name} records the decision {recorded}; the annotations give {expected}");
+        }
+
+        var statedReviewed = int.Parse(stated[0].Groups["reviewed"].Value, CultureInfo.InvariantCulture);
+        var statedRelevant = int.Parse(stated[0].Groups["relevant"].Value, CultureInfo.InvariantCulture);
+
+        if (statedReviewed != reviewed)
+        {
+            violations.Add(
+                $"{document.Name} states {statedReviewed} units carrying a decision; the " +
+                $"annotations give {reviewed}");
+        }
+
+        if (statedRelevant != relevant)
+        {
+            violations.Add(
+                $"{document.Name} states {statedRelevant} relevant units; the tree declares {relevant}");
+        }
+
+        return violations;
+    }
+
+    /// <summary>
+    /// Every disagreement between the aliases the record names and the aliases the human lines
+    /// carry, in both directions and including the per-alias counts.
+    /// </summary>
+    private static List<string> AliasViolations(
+        ReviewDocument document,
+        IReadOnlyList<AssuranceUnit> units)
     {
         var violations = new List<string>();
-        var ticked = TickedDecisions(document, violations);
 
-        if (ticked.Count != 1)
+        var inTree = units
+            .Select(AssuranceHumanReview.AliasOn)
+            .Where(static alias => alias is not null)
+            .Select(static alias => alias!)
+            .ToHashSet(StringComparer.Ordinal);
+
+        var declared = new Dictionary<string, int>(StringComparer.Ordinal);
+
+        foreach (var line in Section(document, AliasSection, "section 5 alias", violations))
         {
-            violations.Add($"{document.Name} ticks {ticked.Count} decision boxes; exactly one is required");
+            if (!line.IsTableRow || IsDelimiterRow(line.Text))
+            {
+                continue;
+            }
+
+            var cells = TableCells(line.Text).ToArray();
+
+            if (cells.Length != 5)
+            {
+                continue;
+            }
+
+            var alias = Unquote(cells[0]);
+
+            if (alias.Length == 0 ||
+                string.Equals(alias, "Alias", StringComparison.Ordinal) ||
+                ParseCount(cells[1]) is not { } stated)
+            {
+                continue;
+            }
+
+            declared[alias] = stated;
         }
 
-        // The field requirement is conditional: PENDING is the true current decision and is not an
-        // approval, so an unfilled attestation under PENDING is honest rather than false.
-        if (ticked.Count != 1 || IsPending(ticked[0]))
+        violations.AddRange(declared.Keys
+            .Where(alias => !inTree.Contains(alias))
+            .OrderBy(static alias => alias, StringComparer.Ordinal)
+            .Select(alias =>
+                $"{document.Name} section 5 names the alias {alias}, and no human line in the " +
+                "product tree carries it"));
+
+        violations.AddRange(inTree
+            .Where(alias => !declared.ContainsKey(alias))
+            .OrderBy(static alias => alias, StringComparer.Ordinal)
+            .Select(alias =>
+                $"{document.Name} section 5 does not name the alias {alias}, which a human line " +
+                "in the product tree carries"));
+
+        foreach (var (alias, stated) in declared.Where(entry => inTree.Contains(entry.Key)))
         {
-            return violations;
-        }
+            var carried = units.Count(unit => string.Equals(
+                AssuranceHumanReview.AliasOn(unit), alias, StringComparison.Ordinal));
 
-        var decision = ticked[0];
-        var fields = AttestationFieldValues(document, violations);
-
-        foreach (var field in AttestationFields)
-        {
-            if (!fields.TryGetValue(field, out var value))
-            {
-                violations.Add($"{document.Name} records decision {decision} but attestation field '{field}' is missing");
-                continue;
-            }
-
-            var trimmed = value.Trim();
-
-            if (trimmed.Length == 0)
-            {
-                violations.Add($"{document.Name} records decision {decision} but attestation field '{field}' is empty");
-                continue;
-            }
-
-            if (!Plain(trimmed).Any(char.IsLetterOrDigit))
+            if (stated != carried)
             {
                 violations.Add(
-                    $"{document.Name} records decision {decision} but attestation field '{field}' has no letter " +
-                    $"or digit in it: {trimmed}");
-                continue;
-            }
-
-            if (IsPlaceholder(trimmed))
-            {
-                violations.Add(
-                    $"{document.Name} records decision {decision} but attestation field '{field}' is a placeholder: {trimmed}");
+                    $"{document.Name} section 5 gives {alias} {stated} units; the tree gives {carried}");
             }
         }
 
         return violations;
     }
 
-    private static List<string> TickedDecisions(ReviewDocument document, List<string> violations)
-    {
-        var ticked = new List<string>();
-
-        foreach (var line in Section(document, DecisionSection, "decision", violations))
-        {
-            var box = DecisionBox.Match(line.Text);
-
-            if (!box.Success || box.Groups["box"].Value == " ")
-            {
-                continue;
-            }
-
-            var label = box.Groups["label"].Value.Trim();
-            var bold = BoldLabel.Match(label);
-
-            ticked.Add((bold.Success ? bold.Groups["label"].Value : label).Trim().TrimEnd('.').Trim());
-        }
-
-        return ticked;
-    }
-
-    private static Dictionary<string, string> AttestationFieldValues(
-        ReviewDocument document,
-        List<string> violations)
-    {
-        var fields = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-        foreach (var line in Section(document, AttestationSection, "human attestation", violations))
-        {
-            var field = AttestationField.Match(line.Text);
-
-            if (field.Success)
-            {
-                fields[field.Groups["field"].Value.Trim()] = field.Groups["value"].Value.Trim();
-            }
-        }
-
-        return fields;
-    }
-
     /// <summary>
-    /// The decision is PENDING only when the label IS the word, not when it merely contains it.
-    /// A substring test let "APPROVED FOR PREVIEW - conditions PENDING" take the early exit and
-    /// skip every attestation check, which recorded an approval over four unsigned fields with
-    /// the suite green - the exact false approval this rule exists to refuse.
+    /// A source witness under <c>witnesses/assurance/</c>, read as text.
     /// </summary>
-    private static bool IsPending(string decision) =>
-        string.Equals(Plain(decision).Trim(), "PENDING", StringComparison.OrdinalIgnoreCase);
-
-    private static bool IsPlaceholder(string value)
+    /// <remarks>
+    /// Group H's own witnesses are markdown fragments, because its rules read documents. This one
+    /// rule reads a document against a TREE, so its input has to be a tree - and the tree it needs
+    /// already exists as rule J8's alias witness. One input, two rules, exactly as A7 and A8 share
+    /// one project file: the same synthesized tree violates neither rule and both rules need it to
+    /// have anything to say.
+    /// </remarks>
+    private static string SourceWitness(string fileName)
     {
-        // Both markdown italic forms, and only the italic forms: **bold** is not emphasis-as-excuse
-        // and a bolded real name must not be read as an unfilled field.
-        if (IsItalic(value, '_') || IsItalic(value, '*'))
-        {
-            return true;
-        }
+        var path = Path.Combine(
+            ComponentGraph.Root, "src", "tests", "Broiler.VM.Architecture.Tests",
+            "witnesses", "assurance", fileName);
 
-        return PlaceholderWords.Contains(Plain(value).TrimEnd('.').Trim(), StringComparer.OrdinalIgnoreCase);
+        Assert.True(File.Exists(path), $"Missing witness input {path}.");
+
+        return File.ReadAllText(path);
     }
-
-    private static bool IsItalic(string value, char marker) =>
-        value.Length >= 3 &&
-        value[0] == marker &&
-        value[^1] == marker &&
-        value[1] != marker &&
-        value[^2] != marker;
 
     // =====================================================================================
     // H5 - quoted figures match the retained logs
