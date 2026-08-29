@@ -57,6 +57,7 @@ COMPOSITIONS = (
 )
 FUZZ_HOST = local("src", "tests", "Broiler.VM.Fuzz.Host", "Broiler.VM.Fuzz.Host.csproj")
 SOAK_HOST = local("src", "tests", "Broiler.VM.Soak.Host", "Broiler.VM.Soak.Host.csproj")
+BENCH_HOST = local("src", "tests", "Broiler.VM.Bench.Host", "Broiler.VM.Bench.Host.csproj")
 
 # The soak run VM-4 retains. Long enough that a plateau is a measurement rather than a snapshot,
 # and short enough that a person collecting the bundle will actually wait for it.
@@ -176,6 +177,24 @@ CONTROLS = [
         local("src", "Broiler.VM.Runtime", "VmRuntime.cs"),
         "            if (state is not VmRuntimeState.Ready)\n            {\n                return false;",
         "            if (false)\n            {\n                return false;",
+    ),
+    (
+        "the guest-load mediator stops resetting its per-operation counters",
+        local("src", "Broiler.VM.Runtime", "VmInstanceImplementation.cs"),
+        "mediator?.EnterScope(operation.Baseline, operation.ObjectId);",
+        "mediator?.EnterScope(operation.Baseline, default);",
+    ),
+    (
+        "a runtime stores a capability depth of zero instead of releasing it",
+        local("src", "Broiler.VM.Runtime", "VmRuntime.cs"),
+        "            inCapabilityDepth.Value = depth > 0 ? depth : null;",
+        "            inCapabilityDepth.Value = depth;",
+    ),
+    (
+        "the baseline register quotes a figure the retained log contradicts",
+        local("docs", "baselines.md"),
+        None,  # resolved at run time: change the first lane figure of the first measurement row
+        None,
     ),
 ]
 
@@ -408,6 +427,62 @@ def soak_run(arguments):
     return "\n".join(lines) + "\n"
 
 
+def bench_run(arguments):
+    """
+    Run the baselines on JIT and on Native AOT, retaining every repetition of both.
+
+    Two lanes because the gate asks for two, and they answer different questions. The JIT lane is
+    what a host running from a framework-dependent deployment pays; the Native AOT lane is what a
+    published single-file image pays, and it is the one whose startup figure means anything - the
+    JIT lane's includes the SDK host that launched it.
+
+    Nothing here decides whether a figure is acceptable. The host exits non-zero if any A/A lane
+    exceeded its effect, and that exit code is retained rather than acted on: a measurement the
+    harness refused to publish is a fact about the run, and the bundle's job is to record it.
+    """
+    # Retained unless re-measuring was asked for, and that default is load-bearing. Rule L1 binds
+    # docs/baselines.md to this log by value, and a benchmark - unlike a test count or an image
+    # size - produces different numbers every run. Re-measuring on every collection would leave the
+    # register permanently one collection behind its own log, with no state in which both are true.
+    # So the figures move when someone decides to move them, and the register moves in the same
+    # change. Pass --rebench to re-measure.
+    existing = os.path.join(ROOT, arguments.out, "bench.log")
+
+    if os.path.exists(existing) and not arguments.rebench:
+        print("      retained: pass --rebench to re-measure")
+        return io.open(existing, encoding="utf-8").read()
+
+    lines = ["=== BENCH: baselines on JIT and Native AOT ==="]
+
+    lines.append("")
+    lines.append("--- JIT: dotnet run ---")
+    code, output = run(["dotnet", "run", "--project", BENCH_HOST, "-c", "Release"])
+    lines.append(output.strip())
+    lines.append("exit code: %d" % code)
+
+    out_directory = os.path.join("artifacts", "publish-bench-aot")
+
+    lines.append("")
+    lines.append("--- NATIVE AOT: dotnet publish -r %s -p:PublishAot=true ---" % arguments.rid)
+    _, published = publish(BENCH_HOST, out_directory, arguments, aot=True)
+    lines.append(published.strip())
+
+    binary = published_binary(out_directory, "Broiler.VM.Bench.Host")
+
+    if binary is None:
+        lines.append("no native binary to run")
+        return "\n".join(lines) + "\n"
+
+    lines.append("")
+    lines.append("--- running the native binary ---")
+    lines.append("native image size: %d bytes" % os.path.getsize(binary))
+    code, output = run([binary])
+    lines.append(output.strip())
+    lines.append("exit code: %d" % code)
+
+    return "\n".join(lines) + "\n"
+
+
 def collect_controls(out):
     """Inject, run, revert, re-run. Both runs are retained for every control."""
     log = []
@@ -463,6 +538,16 @@ def collect_controls(out):
         elif index == 3:
             struck = "\n\npublic sealed class VmHandle\n{\n}\n"
             mutated = text.rstrip() + (struck.replace("\n", "\r\n") if crlf else struck)
+        elif relative.endswith("baselines.md"):
+            # The register's figures are rewritten every time the bench is re-run, so an injection
+            # point written as a literal would go stale with the first collection that moved a
+            # number. The first measurement row's JIT figure is found by shape instead, and the
+            # digit before the decimal point is changed - a difference rule L1 must see and a
+            # reader might not.
+            match = re.search(r"(\r?\n\|\s*`[a-z][a-z0-9-]*`\s*\|[^\r\n]*\|\s*)(\d+)(\.\d+\s*\|)", text)
+            assert match, "no measurement row to falsify in the baseline register"
+            mutated = (text[: match.start()] + match.group(1) +
+                       str(int(match.group(2)) + 1) + match.group(3) + text[match.end():])
         else:
             assert old in text, "control %d: injection point not found in %s" % (index, relative)
             mutated = text.replace(old, new, 1)
@@ -618,6 +703,7 @@ def main():
     parser.add_argument("--vcvars", default=DEFAULT_VCVARS)
     parser.add_argument("--rid", default=DEFAULT_RID)
     parser.add_argument("--skip-controls", action="store_true")
+    parser.add_argument("--rebench", action="store_true")
     arguments = parser.parse_args()
 
     out = os.path.join(ROOT, arguments.out)
@@ -756,6 +842,9 @@ def main():
 
     print("  8c soak: a long lifecycle run, sampled")
     write(os.path.join(out, "soak.log"), soak_run(arguments))
+
+    print("  8d bench: the baselines, on JIT and on Native AOT")
+    write(os.path.join(out, "bench.log"), bench_run(arguments))
 
     if not arguments.skip_controls:
         print("  9 negative controls")

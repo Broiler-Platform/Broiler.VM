@@ -1,0 +1,8 @@
+# Witness: a figure the retained log contradicts
+
+The unit is right, the measurement was run on both lanes, and the number is simply not the one the
+log records.
+
+| Measurement | Unit | Candidate | Control | JIT | Native AOT |
+|---|---|---|---|---|---|
+| `catalog-lookup` | lookup | Resolving a profile by identity | Comparing the same identity | 999.9999 | 999.9999 |

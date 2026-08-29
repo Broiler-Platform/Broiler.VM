@@ -146,7 +146,7 @@ internal static class VmInstantiation
         }
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=C04083
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=67B1EA
     // Broiler-Falsified-If: the scope is entered with no owning operation, or the switch tests no host failure or poll bound
     // Broiler-Human:        PENDING
     private static VmInstantiationResult Instantiate(
@@ -200,7 +200,12 @@ internal static class VmInstantiation
         // The scope is what the executor's meter, capability table and mediator resolve through,
         // and it answers only inside the dynamic extent of this step.
         profileState.Scope.Enter(meter);
-        mediator?.EnterScope(identified);
+
+        // Instantiation has no VmOperation of its own, so it mints the identity the mediator keys
+        // its per-operation counters on. A fresh one each time is the honest answer: two
+        // instantiations are two operations, and they no more share a fan-out allowance than two
+        // invocations do.
+        mediator?.EnterScope(identified, VmObjectId.Mint());
 
         try
         {

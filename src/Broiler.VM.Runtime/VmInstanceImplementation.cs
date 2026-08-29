@@ -400,7 +400,7 @@ internal sealed class VmInstanceImplementation : VmInstance
         }
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=5; Fingerprint=3CEABF
+    // Broiler-AI:           Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=5; Fingerprint=A3C1CE
     // Broiler-Human:        PENDING
     private VmResumeResult RunResume(VmOperation operation, IVmProfileContinuation continuation)
     {
@@ -410,7 +410,7 @@ internal sealed class VmInstanceImplementation : VmInstance
         // meter or its mediator during an earlier step and uses it now is refused rather than
         // charged against whatever operation happens to be running.
         scope.Enter(operation.Meter, operation);
-        mediator?.EnterScope(operation.Baseline);
+        mediator?.EnterScope(operation.Baseline, operation.ObjectId);
 
         try
         {
@@ -501,14 +501,14 @@ internal sealed class VmInstanceImplementation : VmInstance
         }
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=D5B463
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=5D2AA9
     // Broiler-Human:        PENDING
     private VmInvocationResult RunInvocation(VmOperation operation, in VmInvocationRequest request)
     {
         VmExecutionStep step;
 
         scope.Enter(operation.Meter, operation);
-        mediator?.EnterScope(operation.Baseline);
+        mediator?.EnterScope(operation.Baseline, operation.ObjectId);
 
         try
         {

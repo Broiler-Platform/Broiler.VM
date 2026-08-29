@@ -1,0 +1,9 @@
+=== BENCH: a lane the harness refused to publish ===
+
+--- JIT: dotnet run ---
+measurement catalog-lookup unit=lookup candidate-ns=11.6 control-ns=5.6 difference-ns=6.0 per-lookup-ns=5.9660 aa-ns=9.4 valid=no candidate-alloc=0 control-alloc=0 gen0=0 gen1=0 gen2=0 iterations=200000 repetitions=7
+exit code: 1
+
+--- running the native binary ---
+measurement catalog-lookup unit=lookup candidate-ns=9.5 control-ns=3.9 difference-ns=5.6 per-lookup-ns=5.6100 aa-ns=0.1 valid=yes candidate-alloc=0 control-alloc=0 gen0=0 gen1=0 gen2=0 iterations=200000 repetitions=7
+exit code: 0

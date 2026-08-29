@@ -1,0 +1,9 @@
+# Witness: a measurement the log carries and the register does not declare
+
+The one direction a rule written the obvious way round misses. `host-call` is measured on both
+lanes and has no row here, which is how a register quietly becomes a highlight reel: the way to
+stop publishing a figure that got worse is to delete its row.
+
+| Measurement | Unit | Candidate | Control | JIT | Native AOT |
+|---|---|---|---|---|---|
+| `catalog-lookup` | lookup | Resolving a profile by identity | Comparing the same identity | 0.0000 | 0.0000 |

@@ -853,3 +853,37 @@ whether the numbers are a plateau is the bundle's reading, and whether that
 plateau is acceptable is a release decision ADR 0012 owns. A host that decided
 for itself would be a benchmark with an opinion, and VM-5 is the milestone that
 owns baselines.
+
+## Revision 3 - 2026-08-29 - the VM-5 benchmark host
+
+VM-5's gate asks for **uninstrumented decision-grade baselines** of what the core
+costs a profile, each with a predeclared rule, a comparable control, an A/A lane
+validity check and retained repetitions. None of those is expressible in the
+behavioural suite: a test asserts a property and a measurement reports a number,
+and a suite that failed when a number moved would be a performance regression
+gate, which is a different instrument with a different failure mode.
+
+**The budget.** VM-5 adds one project and no packable assembly:
+
+| Project | Path | Kind | Why |
+|---|---|---|---|
+| `Broiler.VM.Bench.Host` | `src/tests/Broiler.VM.Bench.Host/` | test-only | The measurement harness: candidate against control, two lanes, retained repetitions |
+
+The graph goes from 13 projects to 14, and test-only projects from 8 to 9. **The
+packable set is unchanged at exactly three.**
+
+**Uninstrumented means what it says.** The harness times a delegate and reads
+`GC.GetAllocatedBytesForCurrentThread` and the collection counts around it. It
+installs no profiler, no ETW session and no interception, and it references no
+benchmarking package - so the thing measured is the product assemblies as they
+ship, and the measurement apparatus is thirty lines a reader can check. A
+benchmarking framework would be a better instrument and a worse artefact: its
+own warmup, pilot and outlier policies would be part of every number, and none
+of them would be visible in this repository.
+
+**Why the harness judges nothing but its own validity.** A measurement host that
+compared against a threshold would be asserting a performance claim, and section
+16's stop condition is a claim without a predeclared rule. It reports the
+candidate, the control, their difference, the A/A lane difference and every
+repetition, and it exits non-zero only when its own A/A check fails - which is
+the one thing it can decide without an opinion about what the numbers should be.

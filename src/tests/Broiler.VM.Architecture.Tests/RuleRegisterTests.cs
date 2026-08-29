@@ -11,7 +11,12 @@ namespace Broiler.VM.Architecture.Tests;
 /// </summary>
 public sealed class RuleRegisterTests
 {
-    private static readonly Register Loaded = Load();
+    /// <summary>
+    /// The register, loaded once. Internal because a rule whose subject is a document of its own -
+    /// group L's baseline register, for one - has to hold its own row to what it proves, and
+    /// reloading the file in each such test would give two readers of one file that could disagree.
+    /// </summary>
+    internal static readonly Register Loaded = Load();
 
     [Fact]
     public void Every_Registered_Rule_Has_A_Test_That_Asserts_It()
@@ -257,10 +262,10 @@ public sealed class RuleRegisterTests
             .GroupBy(static rule => rule.Status, StringComparer.Ordinal)
             .ToDictionary(static group => group.Key, static group => group.Count(), StringComparer.Ordinal);
 
-        Assert.Equal(56, byStatus["Active"]);
+        Assert.Equal(57, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(4, byStatus["Deferred"]);
-        Assert.Equal(61, Loaded.Rules.Count);
+        Assert.Equal(62, Loaded.Rules.Count);
     }
 
     private static Register Load()

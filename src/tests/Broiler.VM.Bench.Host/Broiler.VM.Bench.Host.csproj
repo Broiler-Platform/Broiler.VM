@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Bench.Host</RootNamespace>
+    <AssemblyName>Broiler.VM.Bench.Host</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+
+    <!-- ADR 0001 revision 3 authorises this as the one project VM-5 adds. It references no
+         benchmarking package on purpose: a framework's own warmup, pilot and outlier policies
+         would be part of every number this component publishes, and none of them would be
+         visible in this repository. -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <IsAotCompatible>true</IsAotCompatible>
+
+    <!-- The same GC configuration the soak host measures under, for the same reason: a figure
+         that depended on the collector's heap-count heuristics would be a measurement of the
+         collecting machine. -->
+    <ServerGarbageCollection>false</ServerGarbageCollection>
+    <ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
+
+    <!-- Tiered compilation off, so a JIT measurement is of steady-state code rather than of
+         whichever tier the loop happened to reach. The AOT lane has no tiers at all, and the
+         two lanes are meant to be comparable. -->
+    <TieredCompilation>false</TieredCompilation>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Fixtures\Broiler.VM.Fixtures.csproj" />
+  </ItemGroup>
+
+</Project>

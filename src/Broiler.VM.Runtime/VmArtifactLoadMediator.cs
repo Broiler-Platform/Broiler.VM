@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   7
-// Annotated:        7/7
+// Relevant units:   6
+// Annotated:        6/6
 // Exempt:           11
-// Human-reviewed:   0/7
+// Human-reviewed:   0/6
 // IP risk:          Low
 // Security risk:    Medium
-// Criteria:         0/0
+// Criteria:         1/0
 // Resource impact:  7/10 max
-// Unverified:       7
+// Unverified:       6
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -69,15 +69,28 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
     }
 
     /// <summary>
-    /// Opens the mediator for one executor step, binding it to that step's meter so nested work is
-    /// charged to the operation that will actually request it.
+    /// Opens the mediator for one step of the named operation, binding it to that step's meter so
+    /// nested work is charged to the operation that will actually request it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=1; Fingerprint=C5DB65
-    // Broiler-Human:        PENDING
-    internal void EnterScope(VmDiagnostics baseline) => EnterScope(baseline, default);
-
-    /// <summary>Opens the mediator for one step of the named operation.</summary>
+    /// <remarks>
+    /// <para>
+    /// The operation's identity is a required argument and there is deliberately no overload that
+    /// omits it. There was one, and every call site used it: it passed <c>default</c>, every step
+    /// therefore compared equal to the last, and the reset below never ran once. The counters it
+    /// guards are the fan-out, cumulative-bytes and nested-verifier-work bounds, so what was
+    /// documented as a per-operation bound behaved as a lifetime bound on a mediator shared by
+    /// every instance of one profile in one runtime - a profile could request its fan-out limit
+    /// worth of loads in total and never another. Removing the overload is what makes that
+    /// unrepeatable; a caller with no operation of its own mints an identity rather than passing
+    /// nothing.
+    /// </para>
+    /// <para>
+    /// VM-5's baseline work found this: the guest-load lane measured how many mediated loads one
+    /// runtime admits and got the fan-out limit instead of a number in the thousands.
+    /// </para>
+    /// </remarks>
     // Broiler-AI:           Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=1; Fingerprint=20F004
+    // Broiler-Falsified-If: two steps of two different operations share a fan-out, byte or verifier-work count
     // Broiler-Human:        PENDING
     internal void EnterScope(VmDiagnostics baseline, VmObjectId operationId)
     {

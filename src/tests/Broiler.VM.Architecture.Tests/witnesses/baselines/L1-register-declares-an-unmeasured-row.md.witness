@@ -1,0 +1,8 @@
+# Witness: a row for a measurement nothing ever ran
+
+The register grows a row for a measurement the benchmark host does not have. Nothing in the
+checkout would stop the row being written; the log is what says it was never run.
+
+| Measurement | Unit | Candidate | Control | JIT | Native AOT |
+|---|---|---|---|---|---|
+| `verify-under-moonlight` | byte | Verification, romantically | A checksum pass over the same bytes | 12.0000 | 11.0000 |

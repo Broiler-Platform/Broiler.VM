@@ -139,11 +139,11 @@ lines below say which milestone each figure belongs to rather than merging them,
 needs to know what a number is about before it is worth anything.
 
 - `[MET]` **Build and tests, as the tree stands:** `dotnet build Broiler.VM.slnx -c Release`
-  completes with 0 warnings and 0 errors across thirteen projects; `dotnet test Broiler.VM.slnx
-  -c Release` reports 293 tests passed, 0 failed, 0 skipped - 99 architecture and 194
-  behavioural. At VM-3 the same commands reported 262 passed over twelve projects, of which 97
-  architecture and 165 behavioural; VM-4 adds twenty-nine behavioural tests and two architecture
-  rules, which is the shape of a milestone whose subject is behaviour under concurrency.
+  completes with 0 warnings and 0 errors across fourteen projects; `dotnet test Broiler.VM.slnx
+  -c Release` reports 304 tests passed, 0 failed, 0 skipped - 107 architecture and 197
+  behavioural. At VM-4 the same commands reported 293 passed over thirteen projects, of which 99
+  architecture and 194 behavioural; VM-5 adds eight architecture tests and three behavioural ones,
+  which is the shape of a milestone that mints one rule and finds two defects.
   **Read that number with section 5's VM-3 line: the two consumer profiles VM-3 added are
   referenced by no test project at all, by rule, so what exercises them is two published binaries
   and not the suite.**
@@ -315,6 +315,27 @@ condition.
   into *the invoking runtime* - is about a call stack. If a reviewer prefers the literal reading, the
   fix is to amend the sentence rather than to restore the behaviour, because the behaviour it
   produced is an availability failure with no compensating safety property.
+- **AT-16 - A milestone whose subject was measurement found two defects that eleven milestones of
+  testing had not, and a reviewer should ask why.** Neither is a performance finding. One is a
+  bound that did not bound what it says: the guest-load mediator's per-operation counters were
+  never reset, because `EnterScope` had an overload that omitted the operation's identity and every
+  call site used it. Three fan-out tests passed throughout, because all three invoke exactly once -
+  the defect lived in the gap between "one operation" and "the next one", which no test crossed.
+  The other is a resource never released: an `AsyncLocal<int>` cannot be set to null, so a
+  runtime's capability-depth entry stayed on the thread for the life of the process. **Nothing
+  observable failed** - what grew was allocation, and no assertion in this component looks at
+  allocation. The useful question is not whether the two fixes are right but what class of defect
+  is invisible to a suite that only ever asserts outcomes, and whether a baseline is the cheapest
+  instrument for finding it or merely the one that happened to.
+- **AT-17 - The baselines are absolute times from one machine, and they will be read as more than
+  that.** Every figure in `docs/baselines.md` was collected on one four-processor `linux-x64`
+  machine with workstation GC. The register says so, the bundle says so, and the recertification
+  triggers are deliberately wider than any earlier bundle's - but a table of nanoseconds invites a
+  comparison that a pass/fail result does not, and the first person to quote one of these numbers
+  outside this repository will not carry the caveat with it. A reviewer should decide whether the
+  register's framing is strong enough, and in particular whether publishing per-byte verification
+  throughput at all is wise when the figure is dominated by the metering discipline rather than by
+  any decoder.
 - **AT-13 - VM-3's two consumer profiles are exercised by published binaries and by no test
   project.** Rule A11 forbids a project outside a composition root to reference a profile
   assembly, and demonstrating that rule is part of what VM-3 is for, so the suite cannot reach
