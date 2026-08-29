@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   19
-// Annotated:        19/19
+// Relevant units:   21
+// Annotated:        21/21
 // Exempt:           14
-// Human-reviewed:   0/19
+// Human-reviewed:   0/21
 // IP risk:          Low
 // Security risk:    Medium
-// Criteria:         3/0
+// Criteria:         4/0
 // Resource impact:  5/10 max
-// Unverified:       19
+// Unverified:       21
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -97,18 +97,38 @@ internal sealed class VmInstanceImplementation : VmInstance
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=F1A56E
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=BAA561
     // Broiler-Human:        PENDING
     public override VmInvocationResult Invoke(
         in VmInvocationRequest request,
         System.Threading.CancellationToken cancellationToken) =>
-        Invoke(in request, cancellationToken, out _);
+        Invoke(in request, VmLimitOverrides.None, cancellationToken, out _);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=250702
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=D380BC
     // Broiler-Human:        PENDING
     public override VmInvocationResult Invoke(
         in VmInvocationRequest request,
+        System.Threading.CancellationToken cancellationToken,
+        out VmOperationControlHandle controlHandle) =>
+        Invoke(in request, VmLimitOverrides.None, cancellationToken, out controlHandle);
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=5; Fingerprint=ED65D9
+    // Broiler-Human:        PENDING
+    public override VmInvocationResult Invoke(
+        in VmInvocationRequest request,
+        VmLimitOverrides limitOverrides,
+        System.Threading.CancellationToken cancellationToken) =>
+        Invoke(in request, limitOverrides, cancellationToken, out _);
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=5; Fingerprint=2B8D0F
+    // Broiler-Falsified-If: a refused override leaves the operation running, or one dimension of it applied
+    // Broiler-Human:        PENDING
+    public override VmInvocationResult Invoke(
+        in VmInvocationRequest request,
+        VmLimitOverrides limitOverrides,
         System.Threading.CancellationToken cancellationToken,
         out VmOperationControlHandle controlHandle)
     {
@@ -136,10 +156,26 @@ internal sealed class VmInstanceImplementation : VmInstance
                         VmRuntime.Invalid(identified, VmStage.Invocation, instanceFailure, VmObjectKind.Instance, VmAttemptedCall.Invoke));
                 }
 
+                // P4, inside the admission lock and before the operation exists: a refused
+                // override must leave no operation, no linked token source and no meter behind.
+                if (!VmLimitPrecedence.TryApply(
+                        VmBudgetScope.Invocation,
+                        instanceLevel.CeilingsCopy(),
+                        limitOverrides,
+                        out var operationCeilings,
+                        out var offending,
+                        out var overrideFailure))
+                {
+                    return VmInvocationResult.HostFailure(
+                        overrideFailure,
+                        identified
+                            .WithOutcome(VmStage.Invocation, VmOutcome.HostFailure, overrideFailure, VmInitiator.Caller)
+                            .WithExhaustion(offending, VmBudgetScope.Invocation));
+                }
+
                 var linked = System.Threading.CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-                var invocationLevel = new VmBudgetLevel(
-                    VmBudgetScope.Invocation, instanceLevel.CeilingsCopy());
+                var invocationLevel = new VmBudgetLevel(VmBudgetScope.Invocation, operationCeilings);
 
                 var meter = new VmMeter(
                     runtime.Gate, invocationLevel, instanceLevel, runtime.RuntimeLevel, runtime.Parent,

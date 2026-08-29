@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   32
-// Annotated:        32/32
+// Relevant units:   33
+// Annotated:        33/33
 // Exempt:           23
-// Human-reviewed:   0/32
+// Human-reviewed:   0/33
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         7/2
+// Criteria:         8/2
 // Resource impact:  8/10 max
-// Unverified:       32
+// Unverified:       33
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -225,10 +225,29 @@ public sealed partial class VmRuntime : System.IDisposable
     }
 
     /// <summary>Instantiates a verified artifact into profile-owned mutable state.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=7; Fingerprint=370EDD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=7; Fingerprint=C9F945
     // Broiler-Human:        PENDING
     public VmInstantiationResult Instantiate(
         VmVerifiedArtifact artifact,
+        System.Threading.CancellationToken cancellationToken) =>
+        Instantiate(artifact, VmLimitOverrides.None, cancellationToken);
+
+    /// <summary>
+    /// Instantiates a verified artifact under stated instance limits.
+    /// </summary>
+    /// <remarks>
+    /// An omitted dimension inherits the handle's materialized instantiation ceiling. A stated one
+    /// may only tighten it: an override that would raise a bound is refused as a host failure
+    /// naming the dimension, and no part of the set is applied. Raising a ceiling is not something
+    /// an override can do at all - it requires verifying the artifact again under a runtime whose
+    /// own ceiling permits it, which produces a handle with a different identity.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=7; Fingerprint=1DB9D3
+    // Broiler-Falsified-If: a refused override leaves any dimension of the instance ceiling changed
+    // Broiler-Human:        PENDING
+    public VmInstantiationResult Instantiate(
+        VmVerifiedArtifact artifact,
+        VmLimitOverrides limitOverrides,
         System.Threading.CancellationToken cancellationToken)
     {
         var baseline = VmDiagnostics.Create(
@@ -249,7 +268,7 @@ public sealed partial class VmRuntime : System.IDisposable
 
         try
         {
-            return VmInstantiation.Run(this, artifact, cancellationToken, baseline);
+            return VmInstantiation.Run(this, artifact, limitOverrides, cancellationToken, baseline);
         }
         finally
         {

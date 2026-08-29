@@ -60,11 +60,12 @@ internal sealed class VmExecutionEnvironment : IVmExecutionEnvironment
 // Broiler-Human:        PENDING
 internal static class VmInstantiation
 {
-    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=34BDC0
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=3E6067
     // Broiler-Human:        PENDING
     internal static VmInstantiationResult Run(
         VmRuntime runtime,
         VmVerifiedArtifact artifact,
+        VmLimitOverrides limitOverrides,
         System.Threading.CancellationToken cancellationToken,
         VmDiagnostics baseline)
     {
@@ -96,6 +97,30 @@ internal static class VmInstantiation
                 VmRuntime.Invalid(identified, VmStage.Instantiation, handleFailure, VmObjectKind.VerifiedArtifact, VmAttemptedCall.Instantiate));
         }
 
+        // P3, and before the lease: an override the runtime is going to refuse should not first
+        // pin a handle it will then have to release. The inherited value is the handle's own
+        // materialized instantiation ceiling, so an override is measured against what verification
+        // established rather than against the runtime's wider ceiling.
+        if (!VmLimitPrecedence.TryApply(
+                VmBudgetScope.Instance,
+                VmRuntime.ToArray(artifact.Identity.EffectiveCeilings.InstantiationCeilings),
+                limitOverrides,
+                out var instanceCeilings,
+                out var offending,
+                out var overrideFailure))
+        {
+            // A host failure, emphatically not a resource exhaustion: nothing was exhausted, and
+            // reporting a composition mistake as exhaustion is the same diagnostic error that
+            // separating an unsupported profile from an invalid artifact exists to prevent. The
+            // dimension travels in the one group that can name one; the category is what says
+            // whether anything ran out.
+            return VmInstantiationResult.HostFailure(
+                overrideFailure,
+                identified
+                    .WithOutcome(VmStage.Instantiation, VmOutcome.HostFailure, overrideFailure, VmInitiator.Caller)
+                    .WithExhaustion(offending, VmBudgetScope.Instance));
+        }
+
         // The instance pins the handle for as long as it lives, so a concurrent disposal drains
         // rather than cutting the ground from under a live instance.
         if (artifact.TryAcquireLease(out var lease).Kind is not VmControlOutcome.Accepted)
@@ -109,7 +134,8 @@ internal static class VmInstantiation
 
         try
         {
-            return Instantiate(runtime, artifact, lease, profile, cancellationToken, identified, ref succeeded);
+            return Instantiate(
+                runtime, artifact, lease, profile, instanceCeilings, cancellationToken, identified, ref succeeded);
         }
         finally
         {
@@ -120,7 +146,7 @@ internal static class VmInstantiation
         }
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=4D0672
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=C17AC2
     // Broiler-Falsified-If: the scope is entered with no owning operation, or the switch tests no host failure or poll bound
     // Broiler-Human:        PENDING
     private static VmInstantiationResult Instantiate(
@@ -128,15 +154,14 @@ internal static class VmInstantiation
         VmVerifiedArtifact artifact,
         VmArtifactLease lease,
         VmProfileDescriptor profile,
+        ulong[] instanceCeilings,
         System.Threading.CancellationToken cancellationToken,
         VmDiagnostics identified,
         ref bool succeeded)
     {
         var profileState = runtime.GetProfileState(profile);
 
-        var instanceLevel = new VmBudgetLevel(
-            VmBudgetScope.Instance,
-            VmRuntime.ToArray(artifact.Identity.EffectiveCeilings.InstantiationCeilings));
+        var instanceLevel = new VmBudgetLevel(VmBudgetScope.Instance, instanceCeilings);
 
         var invocationLevel = new VmBudgetLevel(
             VmBudgetScope.Invocation, instanceLevel.CeilingsCopy());

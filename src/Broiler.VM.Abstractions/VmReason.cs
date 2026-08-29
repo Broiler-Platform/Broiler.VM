@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   8
 // Annotated:        8/8
-// Exempt:           86
+// Exempt:           87
 // Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    Low
@@ -43,7 +43,7 @@ namespace Broiler.VM;
 /// catalog reason from a load-path API or a load-path reason from a catalog API.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=2A85D1
+// Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=0; Fingerprint=2C5352
 // Broiler-Human:        PENDING
 public enum VmReason
 {
@@ -326,6 +326,13 @@ public enum VmReason
     /// <summary>The runtime options carry no finite maximum live-suspended-operation count.</summary>
     SuspendedOperationLimitUnbounded = 918,
 
+    /// <summary>
+    /// An instance or invocation override named a dimension the scope table does not admit at that
+    /// scope, or named one dimension twice. It is a host mistake rather than an exhaustion, so it
+    /// is reported here and never as <see cref="AllowanceExhausted"/>.
+    /// </summary>
+    BudgetDimensionNotDeclarableAtScope = 919,
+
     // ---- Control-only (1000) -----------------------------------------------------------------
 
     /// <summary>
@@ -359,9 +366,9 @@ public static class VmReasonRegistry
     /// The reason-registry revision. It increases when a reason is added inside an existing
     /// category; it is not the core contract version and must never be wired to it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0005; IP=None; Security=Low; Resources=0; Fingerprint=51281C
+    // Broiler-AI:           Origin=AI; Spec=ADR-0005; IP=None; Security=Low; Resources=0; Fingerprint=FCD1F3
     // Broiler-Human:        PENDING
-    public const int Revision = 1;
+    public const int Revision = 2;
 
     /// <summary>
     /// The outcome category <paramref name="reason"/> belongs to, or <see cref="VmOutcome.None"/>

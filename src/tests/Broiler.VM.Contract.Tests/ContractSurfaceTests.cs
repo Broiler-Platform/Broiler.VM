@@ -296,7 +296,12 @@ public sealed class ContractSurfaceTests
         var registry = typeof(VmReasonRegistry).GetField(nameof(VmReasonRegistry.Revision))!;
 
         Assert.True(registry.IsLiteral);
-        Assert.Equal(1, VmReasonRegistry.Revision);
+
+        // VM-2 added one reason inside an existing category - BudgetDimensionNotDeclarableAtScope,
+        // in the host-failure block - which is additive and moves this number alone. The contract
+        // version is untouched by it, and that difference is the whole point of the assertion.
+        Assert.Equal(2, VmReasonRegistry.Revision);
+        Assert.Equal(1, VmCoreContract.Version);
     }
 
     [Fact]

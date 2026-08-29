@@ -164,7 +164,7 @@ public sealed partial class VmRuntime
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=8; Fingerprint=543091
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=8; Fingerprint=40CE34
     // Broiler-Falsified-If: an escaping verifier exception is answered as a category, or both effective ceilings are one vector
     // Broiler-Human:        PENDING
     private VmVerificationResult RunVerifier(
@@ -186,9 +186,17 @@ public sealed partial class VmRuntime
             ? RuntimeLevel.AsCeilingVector()
             : requestingMeter.RemainingSnapshot;
 
+        // P2 in two steps rather than one, so the clamp is observable. The bound is what the host
+        // and the profile agreed before the artifact spoke; the intersection with the request can
+        // only tighten it, and every dimension where the request asked for more is recorded on the
+        // handle rather than being silently discarded.
+        var bound = VmLimitVector.Intersect(hostCeilings, profile.ProfileHardMaxima);
+
         var effective = VmLimitVector.Intersect(
-            VmLimitVector.Intersect(hostCeilings, profile.ProfileHardMaxima),
+            bound,
             descriptor.RequestedLimits.IsEmpty ? VmLimitVector.Unconstrained : descriptor.RequestedLimits);
+
+        var clamps = VmLimitPrecedence.Clamps(bound, descriptor.RequestedLimits);
 
         var ceilings = new VmEffectiveCeilings(effective, effective);
 
@@ -295,6 +303,7 @@ public sealed partial class VmRuntime
             Parent?.Id.ObjectId ?? default,
             (ulong)payload.Length,
             outcome.State,
+            clamps,
             identified.WithArtifact(artifactId, (ulong)payload.Length, descriptor.CallerIdentity));
 
         return VmVerificationResult.Normal(

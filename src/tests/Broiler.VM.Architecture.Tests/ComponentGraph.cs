@@ -23,6 +23,19 @@ internal static class ComponentGraph
     /// <summary>The component root: the directory holding Broiler.VM.slnx.</summary>
     internal static string Root { get; } = FindRoot();
 
+    /// <summary>
+    /// The milestone the rule register declares itself to be at, lowercased into the directory
+    /// name its evidence bundle uses.
+    /// </summary>
+    /// <remarks>
+    /// A suite that writes an outcome into a bundle has to write it into the CURRENT one. Naming
+    /// the directory literally meant a VM-2 run overwrote a line in VM-0's retained bundle with a
+    /// path from whichever machine happened to run last, which is the opposite of what "retained"
+    /// means: ledger update rule 1 keeps earlier evidence as dated history, and history a later
+    /// run edits is not history.
+    /// </remarks>
+    internal static string CurrentEvidenceDirectory { get; } = ReadCurrentMilestone();
+
     /// <summary>Every real project file in the component.</summary>
     internal static IReadOnlyList<ProjectFile> Projects { get; } = LoadProjects();
 
@@ -49,6 +62,16 @@ internal static class ComponentGraph
         Witnesses.SingleOrDefault(witness =>
             string.Equals(Path.GetFileName(witness.Path), fileName, StringComparison.Ordinal))
         ?? throw new InvalidOperationException($"No witness input named {fileName}.");
+
+    private static string ReadCurrentMilestone()
+    {
+        var register = Path.Combine(
+            Root, "src", "tests", "Broiler.VM.Architecture.Tests", "rules.register.json");
+
+        using var document = System.Text.Json.JsonDocument.Parse(File.ReadAllText(register));
+
+        return document.RootElement.GetProperty("milestone").GetString()!.ToLowerInvariant();
+    }
 
     private static string FindRoot()
     {
