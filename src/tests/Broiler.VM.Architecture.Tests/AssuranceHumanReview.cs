@@ -198,7 +198,7 @@ internal static class AssuranceHumanReview
         record.Append(DecisionSection(units));
         record.Append(OutrunSection(units));
         record.Append(RequiredFirstSection(units));
-        record.Append(WhatThisRecordDoesNotSay());
+        record.Append(WhatThisRecordDoesNotSay(units));
 
         return record.ToString();
     }
@@ -281,8 +281,32 @@ internal static class AssuranceHumanReview
         "date, any annotation is malformed or any generated artefact is stale.\n" +
         "\n";
 
+    /// <summary>
+    /// How much of the assessment a machine wrote, counted from the <c>Origin</c> field.
+    /// </summary>
+    /// <remarks>
+    /// The record this replaced carried the same caveat as prose, in an attention item a reader had
+    /// to be pointed at. It is a fact the annotations already state, so it is counted here instead:
+    /// a caveat that is derived cannot go stale, and it stops being a sentence somebody has to
+    /// remember to keep true.
+    /// </remarks>
+    internal static (int Machine, int Assessed) Provenance(IReadOnlyList<AssuranceUnit> units)
+    {
+        var assessed = units
+            .Where(static unit => unit.IsRelevant && unit.Annotation is { ExemptReason: null })
+            .Select(static unit => unit.Annotation!)
+            .ToArray();
+
+        return (assessed.Count(static annotation =>
+            string.Equals(annotation.Field("Origin"), "AI", StringComparison.Ordinal)), assessed.Length);
+    }
+
     /// <summary>Section 10: the limits, which no generation can remove.</summary>
-    private static string WhatThisRecordDoesNotSay() =>
+    private static string WhatThisRecordDoesNotSay(IReadOnlyList<AssuranceUnit> units)
+    {
+        var (machine, assessed) = Provenance(units);
+
+        return
         "## 10. What This Record Does Not Say\n" +
         "\n" +
         "It is not an approval of the component, and a full table above would not be one either. It\n" +
@@ -302,7 +326,14 @@ internal static class AssuranceHumanReview
         "\n" +
         "The assessments the decisions are recorded beside are machine-written and unread: an\n" +
         "assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions\n" +
-        "EX-65 and EX-76 record.\n";
+        "EX-65 and EX-76 record.\n" +
+        "\n" +
+        $"That is not a figure of speech. {machine} of the {assessed} assessed units declare\n" +
+        "`Origin=AI`, and the records this component implements were drafted the same way. An\n" +
+        "adversarial pass over the work confirmed findings and they were corrected, which is a check\n" +
+        "on it and not an independent judgement of it. Reading a declaration is the only thing that\n" +
+        "makes it read.\n";
+    }
 
     // ---- The derived sections --------------------------------------------------------------------
 
@@ -445,9 +476,15 @@ internal static class AssuranceHumanReview
 
         foreach (var unit in required)
         {
+            // The Spec field is where the old hand-written review route's "where to start" column
+            // ends up: it names the record the unit was built against, read off the annotation
+            // rather than written into a table that a moved decision would leave pointing at the
+            // wrong record. It is optional, so a unit that cites none says so.
             section.Append(
                 $"- `{unit.Name}` in `{unit.File.RelativePath}` - " +
-                $"Security={unit.Annotation!.Field("Security")}, `{unit.Fingerprint}`, {HumanLine(unit)}\n");
+                $"Security={unit.Annotation!.Field("Security")}, " +
+                $"Spec={unit.Annotation!.Field("Spec") ?? "none cited"}, " +
+                $"`{unit.Fingerprint}`, {HumanLine(unit)}\n");
 
             section.Append($"  - Falsified if: {unit.Annotation!.FalsifiedIf ?? "no criterion is stated"}\n");
         }

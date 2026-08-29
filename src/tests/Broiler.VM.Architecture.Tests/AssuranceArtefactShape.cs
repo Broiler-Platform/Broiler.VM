@@ -903,7 +903,9 @@ internal static class AssuranceArtefactShape
                 Line(
                     record,
                     $"- `{unit.Name}` in `{unit.File.RelativePath}` - " +
-                    $"Security={unit.Annotation!.Field("Security")}, `{unit.Fingerprint}`, " +
+                    $"Security={unit.Annotation!.Field("Security")}, " +
+                    $"Spec={unit.Annotation!.Field("Spec") ?? "none cited"}, " +
+                    $"`{unit.Fingerprint}`, " +
                     $"{AssuranceHumanReview.HumanLine(unit)}");
 
                 Line(
@@ -934,7 +936,22 @@ internal static class AssuranceArtefactShape
             "",
             "The assessments the decisions are recorded beside are machine-written and unread: an",
             "assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions",
-            "EX-65 and EX-76 record.");
+            "EX-65 and EX-76 record.",
+            "");
+
+        // The provenance figure is derived here from the Origin field directly, where the generator
+        // asks AssuranceHumanReview.Provenance. It is the caveat the old record carried as an
+        // attention item a reader had to be pointed at, and a caveat nobody has to remember to keep
+        // true is worth two derivations.
+        Line(
+            record,
+            $"That is not a figure of speech. {units.Count(static unit => !unit.IsExempt && unit.Annotation is { ExemptReason: null } annotation && string.Equals(annotation.Field("Origin"), "AI", StringComparison.Ordinal))} of the {assessed} assessed units declare");
+
+        Fixed(record,
+            "`Origin=AI`, and the records this component implements were drafted the same way. An",
+            "adversarial pass over the work confirmed findings and they were corrected, which is a check",
+            "on it and not an independent judgement of it. Reading a declaration is the only thing that",
+            "makes it read.");
 
         return record.ToString();
     }
