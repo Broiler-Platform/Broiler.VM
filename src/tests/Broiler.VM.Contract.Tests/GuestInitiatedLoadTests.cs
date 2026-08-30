@@ -278,6 +278,88 @@ public sealed class GuestInitiatedLoadTests
     }
 
     [Fact]
+    public void Fan_Out_Is_Refreshed_By_A_New_Invocation()
+    {
+        // The complement of Fan_Out_Is_Not_Refreshed_By_A_Suspension, and the one direction nothing
+        // asserted. A resumed operation is the same operation and keeps its counters; a NEW
+        // invocation is a new operation and starts from a fresh allowance.
+        //
+        // It did not. Every call site passed no operation identity, so the mediator compared each
+        // step against the last and reset nothing, and the mediator is one object per profile per
+        // runtime - so a per-operation fan-out bound behaved as a lifetime bound shared by every
+        // instance of that profile. Six loads in one invocation passed and the seventh load of the
+        // runtime's life was refused, whichever invocation it belonged to.
+        var provider = new FixtureArtifactProvider(FixtureVmProfile.Id, FixtureArtifactWriter.Constant(1));
+
+        // Two different mechanisms bound a nested load and only one of them is under test here. The
+        // per-operation bound is the mediator's own count against the profile's declared fan-out
+        // maximum, and it is what must refresh. The budget dimension of the same name is charged at
+        // instance and runtime scope as well, where it is a lifetime total by design and refreshes
+        // for nothing. Raising that ceiling to the profile's maximum takes the lifetime total out of
+        // the way so a failure here can only be the per-operation bound.
+        using var runtime = FixtureComposition.Runtime(
+            DeclaringCatalog(),
+            FixtureComposition.Options(
+                ceilings: FixtureComposition.CeilingsWith(VmBudgetDimension.NestedLoadFanOut, 64),
+                capabilities: FixtureComposition.WithProvider(provider)));
+
+        var artifact = FixtureComposition.Verify(runtime, Loading(loads: 6));
+        using var instance = FixtureComposition.Instantiate(runtime, artifact);
+
+        // Three invocations of six loads each: eighteen in total against a per-operation bound of
+        // eight, which only passes if the bound really is per operation.
+        for (var invocation = 0; invocation < 3; invocation++)
+        {
+            var result = FixtureComposition.Invoke(instance);
+
+            Assert.Equal(VmOutcome.Normal, result.Outcome);
+            Assert.Equal(6 * (invocation + 1), provider.RequestCount);
+        }
+    }
+
+    [Fact]
+    public void Fan_Out_Is_Not_Shared_Between_Two_Instances_Of_One_Profile()
+    {
+        // The mediator is one object per profile per runtime, which is what made the missing reset
+        // reach further than the instance that caused it: two instances of one profile shared a
+        // single fan-out count, so a load requested by one could exhaust the other's allowance.
+        var provider = new FixtureArtifactProvider(FixtureVmProfile.Id, FixtureArtifactWriter.Constant(1));
+
+        using var runtime = FixtureComposition.Runtime(
+            DeclaringCatalog(),
+            FixtureComposition.Options(
+                ceilings: FixtureComposition.CeilingsWith(VmBudgetDimension.NestedLoadFanOut, 64),
+                capabilities: FixtureComposition.WithProvider(provider)));
+
+        var artifact = FixtureComposition.Verify(runtime, Loading(loads: 6));
+
+        using var first = FixtureComposition.Instantiate(runtime, artifact);
+        using var second = FixtureComposition.Instantiate(runtime, artifact);
+
+        Assert.Equal(VmOutcome.Normal, FixtureComposition.Invoke(first).Outcome);
+        Assert.Equal(VmOutcome.Normal, FixtureComposition.Invoke(second).Outcome);
+        Assert.Equal(12, provider.RequestCount);
+    }
+
+    /// <summary>An artifact that requests <paramref name="loads"/> guest loads and returns.</summary>
+    private static byte[] Loading(int loads)
+    {
+        var code = new List<byte>();
+
+        for (var index = 0; index < loads; index++)
+        {
+            code.Add(FixtureFormat.OpLoad);
+            code.Add(0);
+        }
+
+        code.Add(FixtureFormat.OpPushConst);
+        code.Add(0);
+        code.Add(FixtureFormat.OpReturn);
+
+        return FixtureArtifactWriter.Write([3], code.ToArray());
+    }
+
+    [Fact]
     public void A_Guest_Load_Adds_No_Core_Result_Category()
     {
         // A nested load reports through the same ten categories as everything else. The stage row

@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 689 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 720 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -78,13 +78,13 @@ date, any annotation is malformed or any generated artefact is stale.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 45 |
-| Code units | 1592 |
-| Relevant | 689 |
-| Exempt | 903 |
-| Assessed | 689 of 689 (100%) |
-| Human reviewed | 0 of 689 (0%) |
-| Unverified | 689 |
+| Files scanned | 47 |
+| Code units | 1645 |
+| Relevant | 720 |
+| Exempt | 925 |
+| Assessed | 720 of 720 (100%) |
+| Human reviewed | 0 of 720 (0%) |
+| Unverified | 720 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 689 |
+| HUMAN_PENDING | 720 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 903 |
+| EXEMPT | 925 |
 
 ## 5. Aliases In The Tree
 
@@ -124,16 +124,17 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Abstractions/VmGuestLoad.cs` | 31 | 11 | 20 | 11 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Abstractions/VmHostCapabilityDescriptor.cs` | 56 | 19 | 37 | 19 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Abstractions/VmIdentityPrimitives.cs` | 97 | 47 | 50 | 47 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Abstractions/VmLifecycleObjects.cs` | 64 | 21 | 43 | 21 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Abstractions/VmLifecycleObjects.cs` | 66 | 23 | 43 | 23 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Abstractions/VmLimitPolicy.cs` | 34 | 18 | 16 | 18 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Abstractions/VmLimitVector.cs` | 51 | 27 | 24 | 27 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Abstractions/VmOutcome.cs` | 25 | 7 | 18 | 7 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Abstractions/VmProfileContracts.cs` | 72 | 39 | 33 | 39 | Low | High | 9/8 |
 | `src/Broiler.VM.Abstractions/VmProfileDescriptor.cs` | 35 | 3 | 32 | 3 | None | Medium | 0/0 |
 | `src/Broiler.VM.Abstractions/VmProfileId.cs` | 30 | 23 | 7 | 23 | Low | High | 9/7 |
-| `src/Broiler.VM.Abstractions/VmReason.cs` | 94 | 8 | 86 | 8 | Low | Low | 0/0 |
+| `src/Broiler.VM.Abstractions/VmReason.cs` | 95 | 8 | 87 | 8 | Low | Low | 0/0 |
 | `src/Broiler.VM.Abstractions/VmStageResults.cs` | 106 | 65 | 41 | 65 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Abstractions/VmTransferTypes.cs` | 24 | 8 | 16 | 8 | Low | Low | 0/0 |
-| `src/Broiler.VM.Abstractions/VmVerifiedArtifact.cs` | 54 | 17 | 37 | 17 | Low | Medium | 4/0 |
+| `src/Broiler.VM.Abstractions/VmVerifiedArtifact.cs` | 55 | 17 | 38 | 17 | Low | Medium | 4/0 |
 | `src/Broiler.VM.Binary/IVmBoundedAllocationMeter.cs` | 5 | 5 | 0 | 5 | Low | High | 3/3 |
 | `src/Broiler.VM.Binary/VmBoundedAllocator.cs` | 3 | 3 | 0 | 3 | Low | High | 3/3 |
 | `src/Broiler.VM.Binary/VmBoundedReadStatus.cs` | 10 | 1 | 9 | 1 | Low | Low | 0/0 |
@@ -141,7 +142,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Binary/VmReadBounds.cs` | 11 | 3 | 8 | 3 | Low | Low | 0/0 |
 | `src/Broiler.VM.Binary/VmSectionFrame.cs` | 10 | 3 | 7 | 3 | Low | Low | 0/0 |
 | `src/Broiler.VM.Runtime/VmAggregateBudget.cs` | 42 | 23 | 19 | 23 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Runtime/VmArtifactLoadMediator.cs` | 17 | 7 | 10 | 7 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Runtime/VmArtifactLoadMediator.cs` | 17 | 6 | 11 | 6 | Low | Medium | 1/0 |
 | `src/Broiler.VM.Runtime/VmBudgetLevel.cs` | 15 | 11 | 4 | 11 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Runtime/VmCanonicalCatalogEncoding.cs` | 5 | 5 | 0 | 5 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Runtime/VmCapabilityBinding.cs` | 22 | 10 | 12 | 10 | Low | Medium | 0/0 |
@@ -150,12 +151,13 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Runtime/VmCeilingResolution.cs` | 5 | 5 | 0 | 5 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Runtime/VmDescriptorValidation.cs` | 10 | 10 | 0 | 10 | Low | Low | 0/0 |
 | `src/Broiler.VM.Runtime/VmExecutionScope.cs` | 26 | 16 | 10 | 16 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` | 33 | 19 | 14 | 19 | Low | Medium | 3/0 |
+| `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` | 40 | 24 | 16 | 24 | Low | High | 6/2 |
 | `src/Broiler.VM.Runtime/VmInstantiation.cs` | 15 | 9 | 6 | 9 | Low | Medium | 2/0 |
-| `src/Broiler.VM.Runtime/VmMeter.cs` | 35 | 17 | 18 | 17 | Low | Medium | 7/0 |
-| `src/Broiler.VM.Runtime/VmOperation.cs` | 52 | 24 | 28 | 24 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Runtime/VmLimitPrecedence.cs` | 3 | 3 | 0 | 3 | Low | High | 1/1 |
+| `src/Broiler.VM.Runtime/VmMeter.cs` | 36 | 18 | 18 | 18 | Low | Medium | 8/0 |
+| `src/Broiler.VM.Runtime/VmOperation.cs` | 54 | 25 | 29 | 25 | Low | Medium | 1/0 |
 | `src/Broiler.VM.Runtime/VmProfileRuntimeState.cs` | 15 | 6 | 9 | 6 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Runtime/VmRuntime.cs` | 55 | 32 | 23 | 32 | Low | High | 7/2 |
+| `src/Broiler.VM.Runtime/VmRuntime.cs` | 57 | 34 | 23 | 34 | Low | High | 10/2 |
 | `src/Broiler.VM.Runtime/VmRuntimeCreationOptions.cs` | 55 | 22 | 33 | 22 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Runtime/VmRuntimeState.cs` | 18 | 8 | 10 | 8 | Low | Low | 0/0 |
 | `src/Broiler.VM.Runtime/VmVerification.cs` | 12 | 8 | 4 | 8 | Low | High | 3/3 |
@@ -253,6 +255,12 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: an over-long encoding is accepted: a group past maxBits, an overflowing tail, a zero continuation
 - `Broiler.VM.VmBoundedReader.ChargeWork(ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `183D6C`, PENDING
   - Falsified if: WorkBudgetExhausted is latched for a Poll that returned false under cancellation, not exhaustion
+- `Broiler.VM.VmInstanceImplementation.Dispose(System.TimeSpan)` in `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` - Security=High, Spec=ADR-0004, `3B4D81`, PENDING
+  - Falsified if: disposal returns while stepsInFlight is above zero and still releases the lease
+- `Broiler.VM.VmInstanceImplementation.LeaveStep()` in `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` - Security=High, Spec=ADR-0004, `E8A45C`, PENDING
+  - Falsified if: a step returns without decrementing, so a later disposal waits its whole budget
+- `Broiler.VM.VmLimitPrecedence.TryApply(VmBudgetScope, ulong[], VmLimitOverrides, out ulong[], out VmBudgetDimension, out VmReason)` in `src/Broiler.VM.Runtime/VmLimitPrecedence.cs` - Security=High, Spec=ADR-0007, `C06726`, PENDING
+  - Falsified if: a refused set leaves one dimension of the caller's inherited array changed
 - `Broiler.VM.VmRuntime` in `src/Broiler.VM.Runtime/VmRuntime.cs` - Security=High, Spec=none cited, `C1CA36`, PENDING
   - Falsified if: a second member verifies bytes into a handle, or a member here returns a task or awaitable
 - `Broiler.VM.VmRuntime.Verify(in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken)` in `src/Broiler.VM.Runtime/VmRuntime.cs` - Security=High, Spec=none cited, `D50EA5`, PENDING
@@ -261,7 +269,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a guest-initiated load is admitted while a profile verifier frame is on the stack
 - `Broiler.VM.VmRuntime.VerifyCore(in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken, VmDiagnostics, VmArtifactOrigin, VmMeter?)` in `src/Broiler.VM.Runtime/VmVerification.cs` - Security=High, Spec=none cited, `4166AF`, PENDING
   - Falsified if: cancellation is decided after an input is examined, or an unknown profile answers InvalidArtifact
-- `Broiler.VM.VmRuntime.RunVerifier(VmProfileDescriptor, in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken, VmDiagnostics, VmArtifactOrigin, VmMeter?)` in `src/Broiler.VM.Runtime/VmVerification.cs` - Security=High, Spec=none cited, `543091`, PENDING
+- `Broiler.VM.VmRuntime.RunVerifier(VmProfileDescriptor, in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken, VmDiagnostics, VmArtifactOrigin, VmMeter?)` in `src/Broiler.VM.Runtime/VmVerification.cs` - Security=High, Spec=none cited, `40CE34`, PENDING
   - Falsified if: an escaping verifier exception is answered as a category, or both effective ceilings are one vector
 
 ## 10. What This Record Does Not Say
@@ -285,7 +293,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 689 of the 689 assessed units declare
+That is not a figure of speech. 720 of the 720 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

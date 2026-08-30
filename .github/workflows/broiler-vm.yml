@@ -1,0 +1,149 @@
+# The component's own CI, deferred to VM-6 by ADR 0001 and recorded as exclusion EX-06 until now.
+#
+# What this workflow is FOR: the checks that a laptop cannot honestly run. The suites, the graph
+# rules, the catalog and API drift baselines and the assurance generator all run in `dotnet test`
+# and a contributor runs them before pushing; what a contributor cannot do is prove the component
+# builds on a machine that is not theirs, restores from a feed rather than from their own project
+# graph, or publishes a Native AOT image on a runtime identifier they do not own.
+#
+# WHAT IT DOES NOT DO. It does not collect an evidence bundle. Bundles are collected deliberately,
+# by a person, into `docs/evidence/`, and a workflow that regenerated them on every push would
+# make the retained figures a function of whichever runner happened to answer - which for the
+# baselines in `docs/baselines.md` would be actively false. The gate asks for drift checks in CI
+# and for evidence in bundles, and those are different things.
+#
+# HONESTY NOTE, and it belongs at the top rather than in a footnote: at the time this file was
+# written it had NEVER RUN. No hosted runner has executed it, the RID matrix below is aspirational
+# for every entry except linux-x64, and `docs/support.md` claims no platform on the strength of
+# this file existing. A workflow that has not run is a plan, and the support table says so.
+
+name: broiler-vm
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+jobs:
+  # Everything that is a property of the source rather than of the machine. It runs once, because
+  # running it per platform would multiply the cost without multiplying the evidence: a rule about
+  # the project graph has the same answer everywhere.
+  checks:
+    name: build, suites, graph and drift
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      # No global.json exists, so no SDK is pinned and the runner's own is used. That is
+      # exclusion EX-03 and it is deliberate at preview: pinning an SDK the component has never
+      # been recertified against would be a claim, and the evidence bundles record which SDK each
+      # collection actually resolved.
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build with warnings as errors
+        run: dotnet build Broiler.VM.slnx -c Release -warnaserror
+
+      # One command, and it carries more than its name suggests. The architecture suite is where
+      # the graph rules, the API baseline (M1), the catalog-drift baselines (K3), the composition
+      # register (K1, K2), the Code Assurance generator (J1-J7), the review-record bindings (H1-H5)
+      # and the baseline register (L1) all live, so "drift checks wired into CI" is this line.
+      - name: Test
+        run: dotnet test Broiler.VM.slnx -c Release --no-build
+
+      # Asserted here as well as in the suite, because rule C1 reads a RETAINED pack log and this
+      # reads the pack that just happened. The two can disagree, and the day they do is the day the
+      # bundle went stale.
+      - name: Pack, and check the package count
+        run: |
+          set -euo pipefail
+          rm -rf artifacts/ci-pack && mkdir -p artifacts/ci-pack
+          dotnet pack Broiler.VM.slnx -c Release -o artifacts/ci-pack
+          nupkg=$(ls artifacts/ci-pack/*.nupkg | wc -l)
+          snupkg=$(ls artifacts/ci-pack/*.snupkg | wc -l)
+          echo "nupkg=$nupkg snupkg=$snupkg"
+          test "$nupkg" -eq 3
+          test "$snupkg" -eq 3
+
+      # The one check that cannot be done from inside the solution: a consumer with no project
+      # reference, restoring from a feed whose only source is the packages just built.
+      - name: Restore and run the pristine feed consumer
+        run: |
+          set -euo pipefail
+          rm -rf artifacts/feed && mkdir -p artifacts/feed
+          dotnet pack Broiler.VM.slnx -c Release -o artifacts/feed -p:VersionSuffix=preview.1
+          cd samples/Broiler.VM.Sample.FeedConsumer
+          dotnet run -c Release -p:BroilerVmVersion=0.1.0-preview.1
+
+      # Rollback, exercised. Two package sets on one feed; the consumer runs against the newer and
+      # is then rolled back to the older, and prints which one it actually loaded.
+      - name: Roll back and run again
+        run: |
+          set -euo pipefail
+          dotnet pack Broiler.VM.slnx -c Release -o artifacts/feed -p:VersionSuffix=preview.2
+          cd samples/Broiler.VM.Sample.FeedConsumer
+          dotnet run -c Release -p:BroilerVmVersion=0.1.0-preview.2
+          dotnet run -c Release -p:BroilerVmVersion=0.1.0-preview.1
+
+  # Publish and run every advertised composition on every claimed RID, with trim and AOT warnings
+  # as errors. Roadmap section 15 gate 5 asks for exactly this, and gate 2 asks that the closure
+  # match its claim - which is why each composition is RUN and not merely published: a linker
+  # annotation without execution is insufficient.
+  publish:
+    name: publish and run (${{ matrix.rid }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, rid: linux-x64 }
+          - { os: windows-latest, rid: win-x64 }
+          - { os: macos-latest, rid: osx-arm64 }
+    steps:
+      - uses: actions/checkout@v4
+
+      # No global.json exists, so no SDK is pinned and the runner's own is used. That is
+      # exclusion EX-03 and it is deliberate at preview: pinning an SDK the component has never
+      # been recertified against would be a claim, and the evidence bundles record which SDK each
+      # collection actually resolved.
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish and run the composition roots as Native AOT
+        shell: bash
+        run: |
+          set -euo pipefail
+          for composition in Calculator Workbench; do
+            out="artifacts/ci-aot-$composition"
+            dotnet publish "src/compositions/Broiler.VM.Composition.$composition" \
+              -c Release -r ${{ matrix.rid }} -p:PublishAot=true -o "$out"
+            binary="$out/Broiler.VM.Composition.$composition"
+            [ -f "$binary.exe" ] && binary="$binary.exe"
+            "$binary"
+          done
+
+      - name: Publish and run the package consumer as Native AOT
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf artifacts/feed && mkdir -p artifacts/feed
+          dotnet pack Broiler.VM.slnx -c Release -o artifacts/feed -p:VersionSuffix=preview.1
+          cd samples/Broiler.VM.Sample.FeedConsumer
+          dotnet publish -c Release -r ${{ matrix.rid }} -p:PublishAot=true \
+            -p:BroilerVmVersion=0.1.0-preview.1 -o ../../artifacts/ci-sample-aot
+          binary="../../artifacts/ci-sample-aot/Broiler.VM.Sample.FeedConsumer"
+          [ -f "$binary.exe" ] && binary="$binary.exe"
+          "$binary"

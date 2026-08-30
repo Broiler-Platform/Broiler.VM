@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Com.Example.Calculator</RootNamespace>
+    <AssemblyName>Com.Example.Calculator</AssemblyName>
+    <Description>An application-local Broiler.VM profile, written against the public source contract only. It is not a Broiler-owned package: its identity is com.example.calculator, outside the reserved namespace, and nothing here is advertised or supported.</Description>
+    <IsPackable>false</IsPackable>
+
+    <!-- The consumer's own choice, not the core's. A profile author who wants warnings as errors
+         gets them by writing this line, which is the point: nothing in the reference set imposes
+         it, and nothing here is inherited from a Broiler-owned build file that a consumer outside
+         this repository would not have. -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <!-- ADR 0011's obligation P1: a profile's Broiler.VM reference set is EXACTLY these two. No
+       reference to Broiler.VM.Runtime, to a fixture, or to a test project; no InternalsVisibleTo
+       grant in either direction; no package reference at all. If this list grew, the promise the
+       whole milestone exists to demonstrate would be the weaker one nobody was asked for. -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+  </ItemGroup>
+
+</Project>

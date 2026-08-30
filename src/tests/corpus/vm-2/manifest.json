@@ -1,0 +1,2386 @@
+{
+  "$comment": [
+    "The retained VM-2 malformed-input corpus. Every entry is a file of artifact bytes plus the",
+    "answer verification must give for it.",
+    "",
+    "TWO FIELDS, AND THEY ARE NOT THE SAME FIELD. `expected` is written by a person, beside the",
+    "bytes, in FixtureCorpus.cs. `recorded` is what the last regeneration observed. A row pinned",
+    "Exact is held to `expected`; a row pinned Recorded is held to `recorded`, which is an",
+    "observation under version control rather than an expectation - it cannot prove the answer is",
+    "right, and it does prove the answer has not moved without somebody accepting the diff.",
+    "",
+    "Recorded rows exist for the systematic sweeps: truncate the canonical artifact at every",
+    "offset, invert every one of its bytes. Hand-computing an answer for each would be a second",
+    "implementation of the verifier written by the same hand, which is not an oracle. What every",
+    "row is held to regardless of pinning is the closed set: the outcome is one the load stage may",
+    "produce, a failure yields no handle, and a success yields one.",
+    "",
+    "Some inverted-byte entries verify successfully, and that is deliberate. A corpus in which",
+    "everything fails cannot distinguish a verifier that classifies correctly from one that",
+    "rejects whatever it is handed, and the three `control` entries plus those successes are what",
+    "make the corpus able to fail in both directions.",
+    "",
+    "PROVENANCE. `Seeded` rows are rewritten from FixtureCorpus.cs whenever the corpus is",
+    "regenerated. `Minimized` rows are regressions a fuzz run found and reduced; their bytes are",
+    "the artefact, nothing regenerates them, and the writer never rewrites or removes one.",
+    "",
+    "Regenerate with BROILER_CORPUS_WRITE=1 dotnet test Broiler.VM.slnx -c Release. Without the",
+    "variable the same code asserts every file, every hash and every answer instead of writing",
+    "them."
+  ],
+  "milestone": "VM-2",
+  "coreContractVersion": 1,
+  "profile": "Broiler.VM.Fixture.Alpha",
+  "featureManifest": "Broiler.VM.Fixture.Alpha.Base",
+  "entries": [
+    {
+      "id": "control-sum",
+      "family": "control",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "control-sum.bin",
+      "bytes": 20,
+      "sha256": "f5ee915fe8b0a332424f9019a8971b63c6fb4b8752f6e81a949ca1620f4216ea",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "Normal",
+        "reason": "NormalCompleted",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "Normal",
+        "reason": "NormalCompleted",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "A well-formed artifact. A corpus in which everything fails cannot detect a verifier that rejects everything."
+    },
+    {
+      "id": "control-constant",
+      "family": "control",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "control-constant.bin",
+      "bytes": 16,
+      "sha256": "ef5d81923a94349989fe487615e4d5bd8dd8d1953a51a4bc023ebc2407d71647",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "Normal",
+        "reason": "NormalCompleted",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "Normal",
+        "reason": "NormalCompleted",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "The smallest well-formed artifact that returns a value."
+    },
+    {
+      "id": "control-empty-code",
+      "family": "control",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "control-empty-code.bin",
+      "bytes": 13,
+      "sha256": "1aee7f94134969358d312af1d06cff48f807847dbfe568d012e55605ae602da2",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "Normal",
+        "reason": "NormalCompleted",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "Normal",
+        "reason": "NormalCompleted",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Zero instructions is a well-formed program, not a malformed artifact. Rejecting it would be a verifier inventing a rule."
+    },
+    {
+      "id": "prefix-empty",
+      "family": "prefix",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "prefix-empty.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Zero bytes. The first read is bounded, so this is a truncation and never an index."
+    },
+    {
+      "id": "prefix-one-byte",
+      "family": "prefix",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "prefix-one-byte.bin",
+      "bytes": 1,
+      "sha256": "df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "One byte, short of the four-byte magic."
+    },
+    {
+      "id": "prefix-magic-only",
+      "family": "prefix",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "prefix-magic-only.bin",
+      "bytes": 4,
+      "sha256": "06758e6ccc7be610cadefae7c508e07b8682a060928eb1bea8ff1454c2a36af5",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "The magic and nothing after it: the format version read runs off the end."
+    },
+    {
+      "id": "prefix-dangling-continuation",
+      "family": "prefix",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "prefix-dangling-continuation.bin",
+      "bytes": 5,
+      "sha256": "f573f6ec77502a4e9f23b1010fc949f7bdc34740131cca96f6cdbdc8a88663e8",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "A variable-length integer whose continuation bit promises a byte the artifact does not contain."
+    },
+    {
+      "id": "magic-byte-0-inverted",
+      "family": "magic",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "magic-byte-0-inverted.bin",
+      "bytes": 20,
+      "sha256": "34f6134f6390e99bdf6a2b411f8ac906237f41865840cf0b7e700843242cf2c1",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 1001,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 1001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Byte 0 of the magic inverted. A wrong magic is the profile's own rejection, not a truncation."
+    },
+    {
+      "id": "magic-byte-1-inverted",
+      "family": "magic",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "magic-byte-1-inverted.bin",
+      "bytes": 20,
+      "sha256": "67c133a5c85443e4bc915afadea10607907c38e31ba1c4826f76c66752688fa2",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 1001,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 1001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Byte 1 of the magic inverted. A wrong magic is the profile's own rejection, not a truncation."
+    },
+    {
+      "id": "magic-byte-2-inverted",
+      "family": "magic",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "magic-byte-2-inverted.bin",
+      "bytes": 20,
+      "sha256": "3880299c1b6f9e0b5bf3fcc7ad076780416e3ff0fbf8b501541b883d10eade6d",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 1001,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 1001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Byte 2 of the magic inverted. A wrong magic is the profile's own rejection, not a truncation."
+    },
+    {
+      "id": "magic-byte-3-inverted",
+      "family": "magic",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "magic-byte-3-inverted.bin",
+      "bytes": 20,
+      "sha256": "54a8b07e4896b13e3f0f2088d136fd3cfb90758c121107b925e76070a76c284b",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 1001,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 1001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Byte 3 of the magic inverted. A wrong magic is the profile's own rejection, not a truncation."
+    },
+    {
+      "id": "magic-lowercased",
+      "family": "magic",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "magic-lowercased.bin",
+      "bytes": 20,
+      "sha256": "b4fcfb5edda585ed208cd2abeb5042e72f680ff8bde42be7ceb366978901f5e1",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 1001,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 1001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "The magic in lower case. Matching is over the raw bytes, so it is not a near miss but a miss."
+    },
+    {
+      "id": "format-version-0",
+      "family": "format-version",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "format-version-0.bin",
+      "bytes": 16,
+      "sha256": "8c14a130e6c94bb1b22c1b61227a3aea971080102e2b40f3a7acbc2afa74ad26",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "UnknownFormatVersion",
+        "profileDiagnosticCode": 1002,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "UnknownFormatVersion",
+        "profileDiagnosticCode": 1002,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "A payload declaring profile-format version 0, which this profile does not know."
+    },
+    {
+      "id": "format-version-2",
+      "family": "format-version",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "format-version-2.bin",
+      "bytes": 16,
+      "sha256": "d66af3e0869acf38e82eb92affd568ab23365938f7c47a3e665b41f035cc7552",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "UnknownFormatVersion",
+        "profileDiagnosticCode": 1002,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "UnknownFormatVersion",
+        "profileDiagnosticCode": 1002,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "A payload declaring profile-format version 2, which this profile does not know."
+    },
+    {
+      "id": "format-version-99",
+      "family": "format-version",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "format-version-99.bin",
+      "bytes": 16,
+      "sha256": "e30e94b8702e67d1421ff2e9a4bcf0c8a8dafde908297f2668bc10c1829362e8",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "UnknownFormatVersion",
+        "profileDiagnosticCode": 1002,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "UnknownFormatVersion",
+        "profileDiagnosticCode": 1002,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "A payload declaring profile-format version 99, which this profile does not know."
+    },
+    {
+      "id": "format-version-65536",
+      "family": "format-version",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "format-version-65536.bin",
+      "bytes": 18,
+      "sha256": "9110d27a399beb48f7bd7c4af98fa11c6c881f76b51ef9f6478cc3df77b064ff",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "UnknownFormatVersion",
+        "profileDiagnosticCode": 1002,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "UnknownFormatVersion",
+        "profileDiagnosticCode": 1002,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "A payload declaring profile-format version 65536, which this profile does not know."
+    },
+    {
+      "id": "format-version-4294967295",
+      "family": "format-version",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "format-version-4294967295.bin",
+      "bytes": 20,
+      "sha256": "adaa2b27a8f2242c59c8e2ab0325dd381d5db2bb189667e2f32b85dd4d1f41ac",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "UnknownFormatVersion",
+        "profileDiagnosticCode": 1002,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "UnknownFormatVersion",
+        "profileDiagnosticCode": 1002,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "A payload declaring profile-format version 4294967295, which this profile does not know."
+    },
+    {
+      "id": "format-version-non-canonical",
+      "family": "format-version",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "format-version-non-canonical.bin",
+      "bytes": 7,
+      "sha256": "a574ccc2172b6c2375b8967230af1b44e40db2977a43213c901ecb9ad2f7997b",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 2002,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 2002,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Version 1 written with a redundant continuation group. Two encodings of one value would make a byte-identical artifact check meaningless."
+    },
+    {
+      "id": "descriptor-format-version-2",
+      "family": "format-version",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "descriptor-format-version-2.bin",
+      "bytes": 20,
+      "sha256": "f5ee915fe8b0a332424f9019a8971b63c6fb4b8752f6e81a949ca1620f4216ea",
+      "descriptorFormatVersion": 2,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "UnsupportedProfileFormatVersion",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "UnsupportedProfileFormatVersion",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Well-formed bytes presented under a descriptor naming a profile-format version the catalog entry does not support. The core answers before the verifier is entered."
+    },
+    {
+      "id": "sections-declared-none",
+      "family": "framing",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "sections-declared-none.bin",
+      "bytes": 6,
+      "sha256": "e623e243439dc0032439b7b638d9a210adeb7dbb7fc7bf78f7f26f44f9233ee9",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "InconsistentStructure",
+        "profileDiagnosticCode": 1005,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "InconsistentStructure",
+        "profileDiagnosticCode": 1005,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Zero sections declared, so neither a constant pool nor code is present."
+    },
+    {
+      "id": "sections-constants-only",
+      "family": "framing",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "sections-constants-only.bin",
+      "bytes": 10,
+      "sha256": "959634728e1a3c1c88d37919f8117dd0a3d60dc35c57a460812e74ac19f34656",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "InconsistentStructure",
+        "profileDiagnosticCode": 1005,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "InconsistentStructure",
+        "profileDiagnosticCode": 1005,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "A constant pool with no code section."
+    },
+    {
+      "id": "sections-code-only",
+      "family": "framing",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "sections-code-only.bin",
+      "bytes": 10,
+      "sha256": "d8665f00bb0c773fb6ba1631c528fbc7d96408a6581c59e31f383cbe3bccd266",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "InconsistentStructure",
+        "profileDiagnosticCode": 1005,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "InconsistentStructure",
+        "profileDiagnosticCode": 1005,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Code with no constant pool."
+    },
+    {
+      "id": "sections-over-declared",
+      "family": "framing",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "sections-over-declared.bin",
+      "bytes": 16,
+      "sha256": "fc5dd533972150f96b183092b68b724e1684df8d8fb391564c13c7ac55795eb6",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Nine sections declared and two present: the third section header runs off the end."
+    },
+    {
+      "id": "sections-count-above-declared-count-bound",
+      "family": "framing",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "sections-count-above-declared-count-bound.bin",
+      "bytes": 18,
+      "sha256": "0000703fda66072857a6c73daad1e847984ed0df3dc8bc0af612ae933342a165",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "ResourceExhaustion",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "DeclaredCount",
+        "scope": "Artifact",
+        "namesDimension": true
+      },
+      "recorded": {
+        "outcome": "ResourceExhaustion",
+        "reason": "AllowanceExhausted",
+        "profileDiagnosticCode": 0,
+        "dimension": "DeclaredCount",
+        "scope": "Artifact"
+      },
+      "note": "A section count above the declared-count ceiling is refused before it can drive a loop."
+    },
+    {
+      "id": "sections-beyond-section-ceiling",
+      "family": "framing",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "sections-beyond-section-ceiling.bin",
+      "bytes": 201,
+      "sha256": "1feea04153ae1b413fefd69a1d88707ba794b33bbe111570cec2153822026296",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "InconsistentStructure",
+        "profileDiagnosticCode": 2003,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "InconsistentStructure",
+        "profileDiagnosticCode": 2003,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Sixty-five sections against a sixty-four section ceiling: entering the sixty-fifth is refused."
+    },
+    {
+      "id": "section-kind-0",
+      "family": "framing",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "section-kind-0.bin",
+      "bytes": 14,
+      "sha256": "0a0e74e937c32a48b40f7e6daf5d28bf0422f897f2e29dfb0b75a20c6b4bb19d",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "UnknownFeature",
+        "profileDiagnosticCode": 1004,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "UnknownFeature",
+        "profileDiagnosticCode": 1004,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "A section of unknown kind 0. An unknown section is a deterministic rejection, not a skip: skipping would let an artifact carry content nothing looked at."
+    },
+    {
+      "id": "section-kind-3",
+      "family": "framing",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "section-kind-3.bin",
+      "bytes": 14,
+      "sha256": "56d90e48d6a8cc426aec938713a4cbe1cb1dd89b921c93ab14d6b02311ea9df2",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "UnknownFeature",
+        "profileDiagnosticCode": 1004,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "UnknownFeature",
+        "profileDiagnosticCode": 1004,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "A section of unknown kind 3. An unknown section is a deterministic rejection, not a skip: skipping would let an artifact carry content nothing looked at."
+    },
+    {
+      "id": "section-kind-9",
+      "family": "framing",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "section-kind-9.bin",
+      "bytes": 14,
+      "sha256": "512b399971001c7427b7f53f70f1e0212088d5f5a532a03e64872619329ba8c1",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "UnknownFeature",
+        "profileDiagnosticCode": 1004,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "UnknownFeature",
+        "profileDiagnosticCode": 1004,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "A section of unknown kind 9. An unknown section is a deterministic rejection, not a skip: skipping would let an artifact carry content nothing looked at."
+    },
+    {
+      "id": "section-kind-255",
+      "family": "framing",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "section-kind-255.bin",
+      "bytes": 14,
+      "sha256": "a2a78db2d6c45383e477321adceda34fc9d27a13891f0462d16a6e8219a32ad9",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "UnknownFeature",
+        "profileDiagnosticCode": 1004,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "UnknownFeature",
+        "profileDiagnosticCode": 1004,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "A section of unknown kind 255. An unknown section is a deterministic rejection, not a skip: skipping would let an artifact carry content nothing looked at."
+    },
+    {
+      "id": "section-length-over-by-three",
+      "family": "framing",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "section-length-over-by-three.bin",
+      "bytes": 16,
+      "sha256": "96658f2edadc4f503edf7e3c6fa7dec6fff76f6ad6967bdc2d157c2901fb5830",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 2002,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 2002,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "A section declaring three bytes more than its body. Consuming less than declared is as structural an error as consuming more."
+    },
+    {
+      "id": "section-length-under-by-one",
+      "family": "framing",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "section-length-under-by-one.bin",
+      "bytes": 14,
+      "sha256": "38f0f40e6510ed830dd76bb4f790abdf05be5fa36c8a9b9c0a1a5cbc43ef3b21",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 2002,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 2002,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "A section declaring one byte less than its body, so the next section header would start inside it."
+    },
+    {
+      "id": "section-length-beyond-the-artifact",
+      "family": "framing",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "section-length-beyond-the-artifact.bin",
+      "bytes": 19,
+      "sha256": "de08e26ede7c4e39a6e8bef7f63309a566b87a740f7977de84174e2a0f017d16",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "A section declaring a terabyte inside a twenty-byte artifact. The length is compared with what remains before a frame exists."
+    },
+    {
+      "id": "section-length-maximum",
+      "family": "framing",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "section-length-maximum.bin",
+      "bytes": 23,
+      "sha256": "d1298dd92a885130398fb2f2886edebeb2f7585531fbf7b081a0f52fbde6e75a",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "A section length of 2^64-1. The comparison is against the remainder, so the arithmetic never has to hold the sum."
+    },
+    {
+      "id": "constants-count-four-billion",
+      "family": "constants",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "constants-count-four-billion.bin",
+      "bytes": 20,
+      "sha256": "6104406751cb465a20e21c5be49f844a6e678e8ba61bc8d5672cefef4f6c5c79",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "ResourceExhaustion",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "DeclaredCount",
+        "scope": "Artifact",
+        "namesDimension": true
+      },
+      "recorded": {
+        "outcome": "ResourceExhaustion",
+        "reason": "AllowanceExhausted",
+        "profileDiagnosticCode": 0,
+        "dimension": "DeclaredCount",
+        "scope": "Artifact"
+      },
+      "note": "Four billion constants declared. The count is refused before anything proportional to it is allocated, which is the ordering the whole guard exists for."
+    },
+    {
+      "id": "constants-count-just-over-the-bound",
+      "family": "constants",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "constants-count-just-over-the-bound.bin",
+      "bytes": 16,
+      "sha256": "518c350b611c84e17a5a8273e3e2c35b54bb2e8937bba317b1a9769488502406",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "ResourceExhaustion",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "DeclaredCount",
+        "scope": "Artifact",
+        "namesDimension": true
+      },
+      "recorded": {
+        "outcome": "ResourceExhaustion",
+        "reason": "AllowanceExhausted",
+        "profileDiagnosticCode": 0,
+        "dimension": "DeclaredCount",
+        "scope": "Artifact"
+      },
+      "note": "One more than the declared-count ceiling. The interesting case is the boundary, not the absurd number."
+    },
+    {
+      "id": "constants-count-at-the-bound",
+      "family": "constants",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "constants-count-at-the-bound.bin",
+      "bytes": 16,
+      "sha256": "b7be8834223221332c8e6c0ec8bc96bc13c9a65783eac5ce967156190e60eb7c",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Exactly at the declared-count ceiling, so the count is admitted and the pool is allocated - and then the artifact runs out of bytes long before it has 65,536 values. Resource-hostile and in bounds at once."
+    },
+    {
+      "id": "constants-count-exceeds-body",
+      "family": "constants",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "constants-count-exceeds-body.bin",
+      "bytes": 15,
+      "sha256": "abf0a633713c8377fb7165aacb5c99de0122143c088e012d44998c38c51ec05e",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 2002,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 2002,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Three constants declared and two present, so the third is read out of the next section's header and the frame no longer closes where it said it would."
+    },
+    {
+      "id": "constants-non-canonical-varint",
+      "family": "constants",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "constants-non-canonical-varint.bin",
+      "bytes": 17,
+      "sha256": "1c3f4ba90efba1e7770a1cb9792465d5bda61c105bd48b8de3e2600e48fa31b6",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 2002,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 2002,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "A constant encoded with a redundant continuation group."
+    },
+    {
+      "id": "constants-overlong-varint",
+      "family": "constants",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "constants-overlong-varint.bin",
+      "bytes": 24,
+      "sha256": "16491ea4df7b83abfb5469d2754ab855f3fb0f6226f208d34059a3e4dd35d3e7",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 2002,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 2002,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "A constant whose encoding carries more groups than sixty-four bits can hold."
+    },
+    {
+      "id": "code-length-above-the-bound",
+      "family": "code",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "code-length-above-the-bound.bin",
+      "bytes": 16,
+      "sha256": "496236fc733d36042026f58bdd71103793827601061c73542d26c73e51c172dc",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "ResourceExhaustion",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "DeclaredCount",
+        "scope": "Artifact",
+        "namesDimension": true
+      },
+      "recorded": {
+        "outcome": "ResourceExhaustion",
+        "reason": "AllowanceExhausted",
+        "profileDiagnosticCode": 0,
+        "dimension": "DeclaredCount",
+        "scope": "Artifact"
+      },
+      "note": "A code length above the declared-count ceiling."
+    },
+    {
+      "id": "code-length-exceeds-body",
+      "family": "code",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "code-length-exceeds-body.bin",
+      "bytes": 14,
+      "sha256": "c23bfc60e34898e07de379d6641f01cae91c5bd6cac9292f228479294be4ee00",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Sixty-four bytes of code declared and one present."
+    },
+    {
+      "id": "code-unknown-opcode",
+      "family": "code",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "code-unknown-opcode.bin",
+      "bytes": 14,
+      "sha256": "ec53a41bc8928e5967942dace4a20620875507cc2324f698792dae3e41379736",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "SemanticValidationFailed",
+        "profileDiagnosticCode": 1006,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "SemanticValidationFailed",
+        "profileDiagnosticCode": 1006,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "An opcode outside the fixture's instruction set. Nothing unverified may be reachable by the executor."
+    },
+    {
+      "id": "code-operand-missing",
+      "family": "code",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "code-operand-missing.bin",
+      "bytes": 14,
+      "sha256": "de5b292ddfdbc61e76bff7b3564db7cc8b029352b172feed45752a0651822175",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "SemanticValidationFailed",
+        "profileDiagnosticCode": 1006,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "SemanticValidationFailed",
+        "profileDiagnosticCode": 1006,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "An instruction whose operand byte is not there."
+    },
+    {
+      "id": "code-constant-index-out-of-range",
+      "family": "code",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "code-constant-index-out-of-range.bin",
+      "bytes": 16,
+      "sha256": "cbca293c4831002513396d10e713dedf52b00d4ad903cd29f401c9fb08135ec3",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "SemanticValidationFailed",
+        "profileDiagnosticCode": 1006,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "SemanticValidationFailed",
+        "profileDiagnosticCode": 1006,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "A constant index past the end of a pool of one."
+    },
+    {
+      "id": "code-operand-index-at-the-boundary",
+      "family": "code",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "code-operand-index-at-the-boundary.bin",
+      "bytes": 17,
+      "sha256": "accbe9535125688d3a2f06033ee59e84b3c82b9ee0b7baef5ba5dfae9364ad29",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "InvalidArtifact",
+        "reason": "SemanticValidationFailed",
+        "profileDiagnosticCode": 1006,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "SemanticValidationFailed",
+        "profileDiagnosticCode": 1006,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "An index exactly one past a pool of two. Off-by-one is the case an index check is most likely to get wrong."
+    },
+    {
+      "id": "oversized-against-a-requested-ceiling",
+      "family": "ceiling",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "oversized-against-a-requested-ceiling.bin",
+      "bytes": 20,
+      "sha256": "f5ee915fe8b0a332424f9019a8971b63c6fb4b8752f6e81a949ca1620f4216ea",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 19,
+      "expected": {
+        "outcome": "ResourceExhaustion",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "ArtifactBytes",
+        "scope": "Artifact",
+        "namesDimension": true
+      },
+      "recorded": {
+        "outcome": "ResourceExhaustion",
+        "reason": "CeilingReached",
+        "profileDiagnosticCode": 0,
+        "dimension": "ArtifactBytes",
+        "scope": "Artifact"
+      },
+      "note": "Well-formed bytes presented under a descriptor that tightens the artifact-bytes ceiling below their own length. The refusal happens before the first byte is read."
+    },
+    {
+      "id": "oversized-against-a-zero-ceiling",
+      "family": "ceiling",
+      "provenance": "Seeded",
+      "pinning": "Exact",
+      "file": "oversized-against-a-zero-ceiling.bin",
+      "bytes": 20,
+      "sha256": "f5ee915fe8b0a332424f9019a8971b63c6fb4b8752f6e81a949ca1620f4216ea",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 1,
+      "expected": {
+        "outcome": "ResourceExhaustion",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "ArtifactBytes",
+        "scope": "Artifact",
+        "namesDimension": true
+      },
+      "recorded": {
+        "outcome": "ResourceExhaustion",
+        "reason": "CeilingReached",
+        "profileDiagnosticCode": 0,
+        "dimension": "ArtifactBytes",
+        "scope": "Artifact"
+      },
+      "note": "The same artifact under a request of zero. A ceiling of nothing admits nothing, which is what a bound of zero has to mean."
+    },
+    {
+      "id": "truncated-at-00",
+      "family": "truncation-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "truncated-at-00.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "The canonical artifact cut to 0 bytes. No prefix of a valid artifact may verify."
+    },
+    {
+      "id": "truncated-at-01",
+      "family": "truncation-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "truncated-at-01.bin",
+      "bytes": 1,
+      "sha256": "df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "The canonical artifact cut to 1 bytes. No prefix of a valid artifact may verify."
+    },
+    {
+      "id": "truncated-at-02",
+      "family": "truncation-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "truncated-at-02.bin",
+      "bytes": 2,
+      "sha256": "0802da3248903913a8ee6955cfff4c12759cdcb59ed5b0568702e7d4939a8f36",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "The canonical artifact cut to 2 bytes. No prefix of a valid artifact may verify."
+    },
+    {
+      "id": "truncated-at-03",
+      "family": "truncation-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "truncated-at-03.bin",
+      "bytes": 3,
+      "sha256": "b976298756256a88c29a26820c2e27f3f700ac6cccf2df291aaee4e908a33192",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "The canonical artifact cut to 3 bytes. No prefix of a valid artifact may verify."
+    },
+    {
+      "id": "truncated-at-04",
+      "family": "truncation-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "truncated-at-04.bin",
+      "bytes": 4,
+      "sha256": "06758e6ccc7be610cadefae7c508e07b8682a060928eb1bea8ff1454c2a36af5",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "The canonical artifact cut to 4 bytes. No prefix of a valid artifact may verify."
+    },
+    {
+      "id": "truncated-at-05",
+      "family": "truncation-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "truncated-at-05.bin",
+      "bytes": 5,
+      "sha256": "e0c65fc175e6eeca38ac264922a61bd5ecd292fdbd4276a64e06d9227cb345d3",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "The canonical artifact cut to 5 bytes. No prefix of a valid artifact may verify."
+    },
+    {
+      "id": "truncated-at-06",
+      "family": "truncation-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "truncated-at-06.bin",
+      "bytes": 6,
+      "sha256": "45d94b477b7dbd7fffdba0d3020d9e87959b20097d3a4b35b070903198d21f44",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "The canonical artifact cut to 6 bytes. No prefix of a valid artifact may verify."
+    },
+    {
+      "id": "truncated-at-07",
+      "family": "truncation-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "truncated-at-07.bin",
+      "bytes": 7,
+      "sha256": "84212103cc7de75910428faec8edef2869c2b95f798674a7f47009dfcd48ff8c",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "The canonical artifact cut to 7 bytes. No prefix of a valid artifact may verify."
+    },
+    {
+      "id": "truncated-at-08",
+      "family": "truncation-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "truncated-at-08.bin",
+      "bytes": 8,
+      "sha256": "4f6d0e6494d764f247e47544f9d99d02f615cd34b0194b8d93ff1386d8994a97",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "The canonical artifact cut to 8 bytes. No prefix of a valid artifact may verify."
+    },
+    {
+      "id": "truncated-at-09",
+      "family": "truncation-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "truncated-at-09.bin",
+      "bytes": 9,
+      "sha256": "03a0c71eb99aaec43577912fa4c29de05ede899fdae1f8652946f283e746ae03",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "The canonical artifact cut to 9 bytes. No prefix of a valid artifact may verify."
+    },
+    {
+      "id": "truncated-at-10",
+      "family": "truncation-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "truncated-at-10.bin",
+      "bytes": 10,
+      "sha256": "b8fe6ae57c0276ba49a1295c928e4b92debc4279ec5016dd87b0e8657536918a",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "The canonical artifact cut to 10 bytes. No prefix of a valid artifact may verify."
+    },
+    {
+      "id": "truncated-at-11",
+      "family": "truncation-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "truncated-at-11.bin",
+      "bytes": 11,
+      "sha256": "c6e6b1d9ae5c9705dfb512a2328ce491192d75daf50964b058ada86e37ab45d8",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "The canonical artifact cut to 11 bytes. No prefix of a valid artifact may verify."
+    },
+    {
+      "id": "truncated-at-12",
+      "family": "truncation-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "truncated-at-12.bin",
+      "bytes": 12,
+      "sha256": "38394e71019a89a206175a8d2fabfc1eb2fdcdefedce01fb0f444b4156386f02",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "The canonical artifact cut to 12 bytes. No prefix of a valid artifact may verify."
+    },
+    {
+      "id": "truncated-at-13",
+      "family": "truncation-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "truncated-at-13.bin",
+      "bytes": 13,
+      "sha256": "c7b2bb9147967aa45a805c9b27eea0b7066bcf32cd5246974785e9f662c887c8",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "The canonical artifact cut to 13 bytes. No prefix of a valid artifact may verify."
+    },
+    {
+      "id": "truncated-at-14",
+      "family": "truncation-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "truncated-at-14.bin",
+      "bytes": 14,
+      "sha256": "8340a5a5c09952a8d6768d9b8c299a12d55bb4327c76c7d736eaa79f4ebe08fb",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "The canonical artifact cut to 14 bytes. No prefix of a valid artifact may verify."
+    },
+    {
+      "id": "truncated-at-15",
+      "family": "truncation-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "truncated-at-15.bin",
+      "bytes": 15,
+      "sha256": "ebedbad3a500ee137e1dffb3223ae7aba1deb373fa5570b90b3f51f868ffa241",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "The canonical artifact cut to 15 bytes. No prefix of a valid artifact may verify."
+    },
+    {
+      "id": "truncated-at-16",
+      "family": "truncation-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "truncated-at-16.bin",
+      "bytes": 16,
+      "sha256": "b37a349675ce2137b1794815bf181552351e851b08487ec719d662378dabecb8",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "The canonical artifact cut to 16 bytes. No prefix of a valid artifact may verify."
+    },
+    {
+      "id": "truncated-at-17",
+      "family": "truncation-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "truncated-at-17.bin",
+      "bytes": 17,
+      "sha256": "23624d5ba991298abdf03ac55e61e60c9edc8a008b9388607ba79e4c939f014f",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "The canonical artifact cut to 17 bytes. No prefix of a valid artifact may verify."
+    },
+    {
+      "id": "truncated-at-18",
+      "family": "truncation-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "truncated-at-18.bin",
+      "bytes": 18,
+      "sha256": "e6126f7d0c7a41a76e4666854be0c2bd7909e8b4b814c3e48124d102de495eac",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "The canonical artifact cut to 18 bytes. No prefix of a valid artifact may verify."
+    },
+    {
+      "id": "truncated-at-19",
+      "family": "truncation-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "truncated-at-19.bin",
+      "bytes": 19,
+      "sha256": "0edf40800d0ccbe4a961d26d9a1aefcaeb461654b1d54156af874b3f9a6fb27f",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "The canonical artifact cut to 19 bytes. No prefix of a valid artifact may verify."
+    },
+    {
+      "id": "inverted-byte-00",
+      "family": "corruption-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "inverted-byte-00.bin",
+      "bytes": 20,
+      "sha256": "34f6134f6390e99bdf6a2b411f8ac906237f41865840cf0b7e700843242cf2c1",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 1001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Byte 0 of the canonical artifact inverted. Some of these are still valid artifacts, and that is the point: the sweep asserts a closed set of answers, not that everything fails."
+    },
+    {
+      "id": "inverted-byte-01",
+      "family": "corruption-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "inverted-byte-01.bin",
+      "bytes": 20,
+      "sha256": "67c133a5c85443e4bc915afadea10607907c38e31ba1c4826f76c66752688fa2",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 1001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Byte 1 of the canonical artifact inverted. Some of these are still valid artifacts, and that is the point: the sweep asserts a closed set of answers, not that everything fails."
+    },
+    {
+      "id": "inverted-byte-02",
+      "family": "corruption-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "inverted-byte-02.bin",
+      "bytes": 20,
+      "sha256": "3880299c1b6f9e0b5bf3fcc7ad076780416e3ff0fbf8b501541b883d10eade6d",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 1001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Byte 2 of the canonical artifact inverted. Some of these are still valid artifacts, and that is the point: the sweep asserts a closed set of answers, not that everything fails."
+    },
+    {
+      "id": "inverted-byte-03",
+      "family": "corruption-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "inverted-byte-03.bin",
+      "bytes": 20,
+      "sha256": "54a8b07e4896b13e3f0f2088d136fd3cfb90758c121107b925e76070a76c284b",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 1001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Byte 3 of the canonical artifact inverted. Some of these are still valid artifacts, and that is the point: the sweep asserts a closed set of answers, not that everything fails."
+    },
+    {
+      "id": "inverted-byte-04",
+      "family": "corruption-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "inverted-byte-04.bin",
+      "bytes": 20,
+      "sha256": "6ee1c5e9442949ad521aaf0d474dd8979d7d6379b0b7191d7478743c47d06a10",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "UnknownFormatVersion",
+        "profileDiagnosticCode": 1002,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Byte 4 of the canonical artifact inverted. Some of these are still valid artifacts, and that is the point: the sweep asserts a closed set of answers, not that everything fails."
+    },
+    {
+      "id": "inverted-byte-05",
+      "family": "corruption-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "inverted-byte-05.bin",
+      "bytes": 20,
+      "sha256": "112ea1708d4c9d959357a7415a7763f9b0393650ec2f73353a509502a016eb92",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "UnknownFeature",
+        "profileDiagnosticCode": 1004,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Byte 5 of the canonical artifact inverted. Some of these are still valid artifacts, and that is the point: the sweep asserts a closed set of answers, not that everything fails."
+    },
+    {
+      "id": "inverted-byte-06",
+      "family": "corruption-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "inverted-byte-06.bin",
+      "bytes": 20,
+      "sha256": "56f5d63724cd673960f0a253cc54a8f2a1cc37c23de436ff91e29ef33c48203a",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "UnknownFeature",
+        "profileDiagnosticCode": 1004,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Byte 6 of the canonical artifact inverted. Some of these are still valid artifacts, and that is the point: the sweep asserts a closed set of answers, not that everything fails."
+    },
+    {
+      "id": "inverted-byte-07",
+      "family": "corruption-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "inverted-byte-07.bin",
+      "bytes": 20,
+      "sha256": "9c26a0a3230850a78f093ab34406573661e408b72d85b23e4249d5a0e52d41e2",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Byte 7 of the canonical artifact inverted. Some of these are still valid artifacts, and that is the point: the sweep asserts a closed set of answers, not that everything fails."
+    },
+    {
+      "id": "inverted-byte-08",
+      "family": "corruption-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "inverted-byte-08.bin",
+      "bytes": 20,
+      "sha256": "f8f69c6ae20cef25d13214ae4a6a06f229fc01e81fe0a641da565700a2ab65da",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Byte 8 of the canonical artifact inverted. Some of these are still valid artifacts, and that is the point: the sweep asserts a closed set of answers, not that everything fails."
+    },
+    {
+      "id": "inverted-byte-09",
+      "family": "corruption-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "inverted-byte-09.bin",
+      "bytes": 20,
+      "sha256": "29110fb4ff7e20699465a6ee9415b633ca363080b3fa8e209a0f9a1d99f07ef2",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 2002,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Byte 9 of the canonical artifact inverted. Some of these are still valid artifacts, and that is the point: the sweep asserts a closed set of answers, not that everything fails."
+    },
+    {
+      "id": "inverted-byte-10",
+      "family": "corruption-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "inverted-byte-10.bin",
+      "bytes": 20,
+      "sha256": "ea2826d6745285af39d0e90f4b938b66844555daa7f46453f72584d0e822a6c3",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "MalformedEncoding",
+        "profileDiagnosticCode": 2002,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Byte 10 of the canonical artifact inverted. Some of these are still valid artifacts, and that is the point: the sweep asserts a closed set of answers, not that everything fails."
+    },
+    {
+      "id": "inverted-byte-11",
+      "family": "corruption-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "inverted-byte-11.bin",
+      "bytes": 20,
+      "sha256": "a0bfdab7e09eb61bc4c68353631a9c2ef439960532e07495d46c074d3950c8da",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "UnknownFeature",
+        "profileDiagnosticCode": 1004,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Byte 11 of the canonical artifact inverted. Some of these are still valid artifacts, and that is the point: the sweep asserts a closed set of answers, not that everything fails."
+    },
+    {
+      "id": "inverted-byte-12",
+      "family": "corruption-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "inverted-byte-12.bin",
+      "bytes": 20,
+      "sha256": "979242d2e88822d652619ae3ede0b187cff62ab1b46861572e58d51530410598",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Byte 12 of the canonical artifact inverted. Some of these are still valid artifacts, and that is the point: the sweep asserts a closed set of answers, not that everything fails."
+    },
+    {
+      "id": "inverted-byte-13",
+      "family": "corruption-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "inverted-byte-13.bin",
+      "bytes": 20,
+      "sha256": "abdf887ae66c2243e17f0b2b2e12a7fc7cb06fa64a5d900cf8ef0c0cd452d01c",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "Truncated",
+        "profileDiagnosticCode": 2001,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Byte 13 of the canonical artifact inverted. Some of these are still valid artifacts, and that is the point: the sweep asserts a closed set of answers, not that everything fails."
+    },
+    {
+      "id": "inverted-byte-14",
+      "family": "corruption-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "inverted-byte-14.bin",
+      "bytes": 20,
+      "sha256": "d68d0eb93f12af83191d72f5340f76f88224dda64819508b3526774af94f47f5",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "SemanticValidationFailed",
+        "profileDiagnosticCode": 1006,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Byte 14 of the canonical artifact inverted. Some of these are still valid artifacts, and that is the point: the sweep asserts a closed set of answers, not that everything fails."
+    },
+    {
+      "id": "inverted-byte-15",
+      "family": "corruption-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "inverted-byte-15.bin",
+      "bytes": 20,
+      "sha256": "a31f735218ada81a686a963c1da2dbf5c5c57961adae84f60d6b08c87f97aa95",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "SemanticValidationFailed",
+        "profileDiagnosticCode": 1006,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Byte 15 of the canonical artifact inverted. Some of these are still valid artifacts, and that is the point: the sweep asserts a closed set of answers, not that everything fails."
+    },
+    {
+      "id": "inverted-byte-16",
+      "family": "corruption-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "inverted-byte-16.bin",
+      "bytes": 20,
+      "sha256": "bf9561e460a4aa6fd5dcfbebaf1a9e737bf9115f7902035ce931eabcd8f6121e",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "SemanticValidationFailed",
+        "profileDiagnosticCode": 1006,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Byte 16 of the canonical artifact inverted. Some of these are still valid artifacts, and that is the point: the sweep asserts a closed set of answers, not that everything fails."
+    },
+    {
+      "id": "inverted-byte-17",
+      "family": "corruption-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "inverted-byte-17.bin",
+      "bytes": 20,
+      "sha256": "355a923cb2260c4a10f5b3553809bd75f12a0e4bd2744db10e15226bede3ba6e",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "SemanticValidationFailed",
+        "profileDiagnosticCode": 1006,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Byte 17 of the canonical artifact inverted. Some of these are still valid artifacts, and that is the point: the sweep asserts a closed set of answers, not that everything fails."
+    },
+    {
+      "id": "inverted-byte-18",
+      "family": "corruption-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "inverted-byte-18.bin",
+      "bytes": 20,
+      "sha256": "e2a40c32451b4ed9f430a5722d3de3288f105dbe3a439edab7ad2d649f9f5bc8",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "SemanticValidationFailed",
+        "profileDiagnosticCode": 1006,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Byte 18 of the canonical artifact inverted. Some of these are still valid artifacts, and that is the point: the sweep asserts a closed set of answers, not that everything fails."
+    },
+    {
+      "id": "inverted-byte-19",
+      "family": "corruption-sweep",
+      "provenance": "Seeded",
+      "pinning": "Recorded",
+      "file": "inverted-byte-19.bin",
+      "bytes": 20,
+      "sha256": "98de5592cdaac9d818cefb4526e9f95c469c4826da69d36b26873c3f79bd037c",
+      "descriptorFormatVersion": 1,
+      "artifactBytesRequest": 0,
+      "expected": {
+        "outcome": "None",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "Fuel",
+        "scope": "Artifact",
+        "namesDimension": false
+      },
+      "recorded": {
+        "outcome": "InvalidArtifact",
+        "reason": "SemanticValidationFailed",
+        "profileDiagnosticCode": 1006,
+        "dimension": "Fuel",
+        "scope": "Invocation"
+      },
+      "note": "Byte 19 of the canonical artifact inverted. Some of these are still valid artifacts, and that is the point: the sweep asserts a closed set of answers, not that everything fails."
+    }
+  ]
+}

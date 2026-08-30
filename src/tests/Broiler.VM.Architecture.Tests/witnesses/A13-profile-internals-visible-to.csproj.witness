@@ -1,0 +1,16 @@
+<!-- Violates A13: a consumer profile opening its internals. An InternalsVisibleTo grant in either
+     direction would let the profile and the core share a surface no other consumer has, which is
+     exactly the arrangement the closure claim is meant to exclude. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Com.Example.Witness</AssemblyName>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Broiler.VM.Runtime" />
+  </ItemGroup>
+</Project>

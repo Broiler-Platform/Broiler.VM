@@ -115,9 +115,16 @@ public sealed class LegacyBoundaryTests
     /// collapsed into the first. The file is part of the retained bundle rather than console
     /// output because the bundle is what a reviewer reads.
     /// </remarks>
+    /// <remarks>
+    /// It goes into the bundle of the milestone the rule register declares, not into a literal
+    /// <c>vm-0</c>. The literal meant every later run rewrote a retained VM-0 line with the path
+    /// of whichever machine ran last - so the bundle a reviewer reads for VM-0 recorded a machine
+    /// that collected nothing for it.
+    /// </remarks>
     private static void RecordOutcome(string outcome)
     {
-        var directory = Path.Combine(ComponentGraph.Root, "docs", "evidence", "vm-0");
+        var directory = Path.Combine(
+            ComponentGraph.Root, "docs", "evidence", ComponentGraph.CurrentEvidenceDirectory);
 
         if (!Directory.Exists(directory))
         {

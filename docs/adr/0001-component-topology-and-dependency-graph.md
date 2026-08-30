@@ -578,8 +578,8 @@ section 8's extraction gate forbids, so VM-0 does not.
 | `assurance.manifest.json` | exists since VM-1: `assurance.manifest.json` | **Generated.** One entry per code unit in the three product assemblies, exempt and relevant alike, and one per covered file, each with a fingerprint. A change-detection record and not a review: an entry says what a declaration hashed to, never that anyone read it. Rule J7 holds it to the tree. |
 | `.gitattributes` | not created (VM-0 decision on paper; no file at VM-0) | The component contains no shell script, so there is no line-ending rule to fix yet. |
 | `global.json` | not created (VM-0 decision on paper; no file at VM-0) | No SDK pin; see Exclusion EX-03. |
-| `.github/workflows/` | exists since VM-1: `.github/workflows/` | Two lanes, and neither publishes. `review.yml` regenerates every assurance artefact on a pull request, commits what moved, and then asserts that what is on disk is what the generator would write. `release.yml` runs that same gate and then the release gate - Rule J11 - before it packs, and stops at `dotnet pack`: pushing to a feed needs a credential this repository does not hold. The component ran no CI of its own at VM-0, which Exclusion EX-06 records; these lanes discharge that early and only in part, because they fire on a pull request and on a tag and nothing else. |
-| `docs/compositions.md` | deferred to VM-3 | The composition and RID register. Until it exists, the composition-root allow-list is an empty constant in the test project; see Exclusion EX-08. |
+| `.github/workflows/` | exists since VM-1: `.github/workflows/` | Three lanes, and none publishes. `review.yml` regenerates every assurance artefact on a pull request, commits what moved, and then asserts that what is on disk is what the generator would write. `release.yml` runs that same gate and then the release gate - Rule J11 - before it packs, and stops at `dotnet pack`: pushing to a feed needs a credential this repository does not hold. The component ran no CI of its own at VM-0, which Exclusion EX-06 records; these lanes discharge that early and only in part, because they fire on a pull request and on a tag and nothing else. `broiler-vm.yml` was added at VM-6 to run the graph, catalog, AOT and drift checks, and has never run on a hosted runner; revision 2026-08-30 records that a workflow which has not run is a plan. |
+| `docs/compositions.md` | exists at VM-3: docs/compositions.md | The composition and RID register. It carries the schema, the advertised set - empty at core contract version 1 - the two demonstration compositions, and what each was published and run for. Rule A11's allow-list is a path rather than a constant now, and group K holds the register to the checkout. Exclusion EX-08 is closed; revision 1 records it. |
 | `docs/platform-references.md` | not created (VM-0 decision on paper; no file at VM-0) | The section 17 pinned-revision table. ADR 0012 records why it is absent and what closes it. |
 | `docs/support.md` | deferred to VM-6 | The public support table. ADR 0012 records that none is published at VM-0. |
 | `THIRD_PARTY_NOTICES.md` | deferred to VM-6 | Broiler.VM has zero third-party runtime dependencies at VM-0 - SourceLink is `PrivateAssets=all` and xunit is test-only - and an empty notices file would assert a license pass that has not happened. Required at VM-6 or on the day a runtime dependency first lands, whichever comes first. |
@@ -670,7 +670,10 @@ Exclusion EX-08: the composition-root allow-list Rule A11 reads is an empty
 constant inside the architecture-test project rather than a reviewable register,
 so relaxing it at VM-3 will be a code change rather than a documented row.
 Reason: `docs/compositions.md` is VM-3's artefact and creating it now would
-publish a schema for compositions that do not exist. Closed by: VM-3.
+publish a schema for compositions that do not exist. Closed by: VM-3. **CLOSED at
+VM-3**: the register exists, the allow-list is the path `src/compositions/`, and
+rules K1 to K4 hold the register, the reference sets, the catalogs and the
+published closures to each other. Revision 1 of this record states what changed.
 
 ## Consequences
 
@@ -758,3 +761,263 @@ VM-0 and a later lane does not make it retroactively false.
 are. The lanes discharge Exclusion EX-06 only in part, and nothing in them binds
 a reviewer alias to a hosting identity - the record holds an alias to appearing
 in the tree, and no rule can tell a real person from a plausible string.
+
+### 2026-08-29 - the VM-3 project budget and the compositions directory
+
+This record's budget section stops at VM-2 and says the project set "may not
+grow silently at any point". VM-3's gate requires a separate consumer project
+and named composition roots, so the growth has to be recorded here before it
+happens. This is that record. It changes no decision above; it extends one
+budget and settles three readings that the sections above left open because
+nothing existed to read them against.
+
+**The budget.** VM-3 adds four projects and no packable assembly:
+
+| Project | Path | Kind | Why |
+|---|---|---|---|
+| `Com.Example.Calculator` | `src/tests/Com.Example.Calculator/` | test-only | The application-local consumer profile ADR 0011 asks for |
+| `Com.Example.Ledger` | `src/tests/Com.Example.Ledger/` | test-only | A second one, so a two-profile composition exists whose closure is not the single-profile one |
+| `Broiler.VM.Composition.Calculator` | `src/compositions/Broiler.VM.Composition.Calculator/` | composition root | The single-profile composition |
+| `Broiler.VM.Composition.Workbench` | `src/compositions/Broiler.VM.Composition.Workbench/` | composition root | The two-profile composition |
+
+The graph goes from 8 projects to 12, and test-only projects from 5 to 7. **The
+packable set is unchanged at exactly three** - `Broiler.VM.Abstractions`,
+`Broiler.VM.Binary` and `Broiler.VM.Runtime` - so the clause requiring a dated
+revision for a fourth packable assembly is not exercised by this one. The
+composition roots are non-packable, which the section above already requires of
+any root the composition register does not list as advertised, and the register
+`docs/compositions.md` lists neither as advertised: core contract version 1
+ships no composition.
+
+**Which boundary `src/compositions/` enforces.** Section 5's DEPLOYMENT
+boundary, and only that one. A composition root is the one project kind
+permitted to reference a profile assembly, so the directory is where the
+reference graph is allowed to fan out and everywhere else it is not. It is not a
+package boundary - nothing there packs - and not an ownership boundary, because
+both roots are owned by the same person as everything else here.
+
+**Why the consumer profiles live under `src/tests/`.** The path decision above
+admits exactly two shapes plus this reserved third, and none of them is "an
+application project". A consumer profile is not a Broiler product package - it
+must not be, since its identity is deliberately outside the reserved namespace -
+and it is not a composition root. `src/tests/` is therefore the only shape that
+fits, and the profiles are non-packable for the same reason every project there
+is. Adding a fourth path shape was rejected: it would exist to hold two projects
+that already have a shape that fits, and every path expression in the group A
+rules would have to learn about it.
+
+**How "no fixture or test assembly" is read in a closure report.** VM-3's gate
+asks that each closure report contain "exactly the declared profiles and no
+fixture or test assembly", and the consumer profiles live at a test-only path,
+so the sentence read literally forbids the closure from containing the profile
+the composition declares. The reading this record fixes is the one that makes
+the clause do its job: a closure report is accepted when it contains exactly the
+profile assemblies its register row declares, **no** `Broiler.VM.Fixtures`, no
+testing-framework assembly, and no reflection or dynamic-code assembly. The
+consumer profile is one of the declared profiles and belongs there; what the
+clause exists to catch is a composition that drags the fixture profile or a test
+harness into a shipped image, and both are still caught.
+
+**What this revision moves, and what it does not.** It moves no packable
+boundary: the three product assemblies are unchanged across this milestone, the
+API baseline they export is unchanged, and their published image sizes are
+byte-identical to VM-2's, which is the claim VM-3 exists to make rather than a
+side effect of it.
+
+It does change the project partition the group A rules read, and that is a real
+change rather than a clarification, so it is written down here rather than only
+in the test project. Two of the three partitions were exhaustive - a project was
+test-only or it was product - and a composition root is neither. Product it
+cannot be: nothing there packs, and rule A4 would forbid the reference to a
+consumer profile that this record exists to permit. Test-only it is not: it is
+published and run rather than collected by a runner. So there are three
+partitions now, and three rules moved with it:
+
+- **A4** gains an exemption for a composition root, and the register row says so.
+  The exemption is not a hole, because the rule that replaces it is stricter than
+  A4 was.
+- **A12** is new: a composition root's references are exactly the three core
+  packages plus one or more profile assemblies, it composes at least one profile,
+  and it declares no package reference. `Broiler.VM.Fixtures` and every test
+  project are forbidden by name.
+- **A13** is new: ADR 0011's obligation P1 as a rule. A consumer profile
+  references exactly `Broiler.VM.Abstractions` and `Broiler.VM.Binary`, declares
+  no package reference, and opens its internals to nobody.
+
+**Exclusion EX-08 is closed.** The composition-root allow-list rule A11 reads is
+no longer an empty constant inside the test project. It is a path - every project
+under `src/compositions/` - and what each of those projects may contain is
+`docs/compositions.md` (exists at VM-3: `docs/compositions.md`), the register
+this record deferred. Group K holds the register and the checkout to each other
+in both directions, holds each row to the composition's own reference set and to
+the catalog its published binary prints, and holds each published closure to
+exactly what its row declares. A11's scope widened with it: it now covers
+consumer profiles as well as `Broiler.VM.Profile.*`, and its allow-list has real
+members rather than being empty.
+
+**One finding, recorded because it is a property of the contract rather than of
+these two profiles.** A runtime ceiling is clamped to the tightest profile hard
+maximum in the CATALOG, across every profile in it, and adopting a profile
+default resolves to the tightest default in the catalog. Both are catalog-wide
+facts. A profile that declares its own usage as its hard maximum therefore caps
+every profile composed beside it, and the failure surfaces as a resource refusal
+inside somebody else's verifier. The two consumer profiles were written that way
+first and the two-profile composition could not verify a ledger artifact until
+they were corrected. Nothing in the core changed; what changed is what a profile
+author should declare, and `docs/compositions.md` section 5 records it where a
+profile author will look.
+
+### 2026-08-29 - the VM-4 soak host
+
+VM-4's gate asks for a **declared memory plateau**. The behavioural suite already
+asserts the metered plateau - the live-bytes counter returns to where it started
+after a load-run-evict cycle - and that is a different claim from the one the
+gate makes. A metered counter says the core's accounting balances; it says
+nothing about whether the process grows. A plateau is a measurement of the
+running image, and a measurement needs something that runs long enough to
+measure.
+
+**The budget.** VM-4 adds one project and no packable assembly:
+
+| Project | Path | Kind | Why |
+|---|---|---|---|
+| `Broiler.VM.Soak.Host` | `src/tests/Broiler.VM.Soak.Host/` | test-only | The long-running lifecycle host whose managed heap and working set are sampled |
+
+The graph goes from 12 projects to 13, and test-only projects from 7 to 8. **The
+packable set is unchanged at exactly three**, so the clause requiring a dated
+revision for a fourth packable assembly is not exercised by this one either.
+
+**Why a host rather than a test.** Three reasons, and the third is the one that
+decides it. A test process is shared with a runner whose own allocations are
+indistinguishable from the component's in any working-set figure. A test that ran
+long enough to plateau would dominate the suite's wall-clock, and a suite people
+skip proves nothing. And a plateau is a property of a PUBLISHED image: the
+figure a host actually cares about is what the trimmed or Native AOT binary does
+over an hour, which a JIT-hosted test cannot report at all. The fuzz host exists
+for the same reason and the same shape is reused deliberately.
+
+**What it does not do.** It declares no threshold and passes no judgement. It
+runs the cycles it was asked for, samples at intervals, and prints what it saw;
+whether the numbers are a plateau is the bundle's reading, and whether that
+plateau is acceptable is a release decision ADR 0012 owns. A host that decided
+for itself would be a benchmark with an opinion, and VM-5 is the milestone that
+owns baselines.
+
+### 2026-08-29 - the VM-5 benchmark host
+
+VM-5's gate asks for **uninstrumented decision-grade baselines** of what the core
+costs a profile, each with a predeclared rule, a comparable control, an A/A lane
+validity check and retained repetitions. None of those is expressible in the
+behavioural suite: a test asserts a property and a measurement reports a number,
+and a suite that failed when a number moved would be a performance regression
+gate, which is a different instrument with a different failure mode.
+
+**The budget.** VM-5 adds one project and no packable assembly:
+
+| Project | Path | Kind | Why |
+|---|---|---|---|
+| `Broiler.VM.Bench.Host` | `src/tests/Broiler.VM.Bench.Host/` | test-only | The measurement harness: candidate against control, two lanes, retained repetitions |
+
+The graph goes from 13 projects to 14, and test-only projects from 8 to 9. **The
+packable set is unchanged at exactly three.**
+
+**Uninstrumented means what it says.** The harness times a delegate and reads
+`GC.GetAllocatedBytesForCurrentThread` and the collection counts around it. It
+installs no profiler, no ETW session and no interception, and it references no
+benchmarking package - so the thing measured is the product assemblies as they
+ship, and the measurement apparatus is thirty lines a reader can check. A
+benchmarking framework would be a better instrument and a worse artefact: its
+own warmup, pilot and outlier policies would be part of every number, and none
+of them would be visible in this repository.
+
+**Why the harness judges nothing but its own validity.** A measurement host that
+compared against a threshold would be asserting a performance claim, and section
+16's stop condition is a claim without a predeclared rule. It reports the
+candidate, the control, their difference, the A/A lane difference and every
+repetition, and it exits non-zero only when its own A/A check fails - which is
+the one thing it can decide without an opinion about what the numbers should be.
+
+---
+
+### 2026-08-30 - the VM-6 package boundary, samples and CI
+
+VM-6's gate asks that the package boundaries be finalized, that pristine feed
+consumers and samples use public APIs only, that the public API be frozen
+against a baseline, and that graph, catalog, AOT and contract drift checks be
+wired into CI. Three of those need something this record has so far forbidden,
+so it is revised rather than worked around.
+
+**The budget does not grow, and this is the milestone where that sentence
+finally means something.** The graph stays at fourteen projects and the packable
+set stays at exactly three. What VM-6 adds is a project that is **not in the
+graph at all**:
+
+| Project | Path | In `Broiler.VM.slnx` | Why not |
+|---|---|---|---|
+| `Broiler.VM.Sample.FeedConsumer` | `samples/` | **No** | It cannot be. Restoring it requires a `dotnet pack` to have already happened, so a solution containing it would not restore from a clean checkout |
+
+That exclusion is the point rather than a workaround. A sample inside the
+solution would acquire the component's `Directory.Build.props`, its vendored
+packaging metadata, its analyzer level and its warning policy, and would resolve
+Broiler.VM through the project graph like everything else - so it would prove
+that our packages work inside our build, which is not the claim VM-6 makes.
+`samples/Directory.Build.props` is deliberately empty and exists only to stop the
+component's own properties reaching anything under it, and `samples/NuGet.config`
+lists exactly one source: a directory of `.nupkg` files.
+
+**Rule A7 therefore reads the solution and not the directory tree.** A project
+outside the solution is outside the frozen graph by construction, and
+`graph.manifest.json` continues to describe fourteen projects and forty-one
+edges. A reader who counts `.csproj` files finds fifteen, and this paragraph is
+why.
+
+**One restore source, and it is an assertion.** The samples' `NuGet.config`
+clears every configured source and adds back only the local feed. nuget.org is
+not reachable from a sample. That is not caution about supply chain - it is how
+the claim "these three packages depend on nothing" is made falsifiable, because
+a package that depended on anything at all would fail the restore outright
+rather than resolve it quietly from the internet. Rule C2 asserts the same
+property from the other side, against the produced `.nuspec` files.
+
+**The API baseline is a file and not a set of properties.** Group V has fixed
+named properties of the public surface since VM-1 - that a frozen name is
+exported, that no member returns a task, that no member is called `Grant` - and
+every one of them is a claim about what must or must not be there. None is a
+claim about what IS there, so a member added tomorrow that breaks no V rule is
+an addition nothing in this repository notices, and a member deleted tomorrow is
+a breaking change nothing notices either. VM-6 mints rule group **M**, whose
+single rule compares `docs/api/public-api.txt` against the built assemblies in
+both directions.
+
+It is regenerated by `BROILER_API_WRITE=1`, the same shape the Code Assurance
+generator uses and for the same reason: a baseline that regenerated itself on
+every run would agree with every change, and one that could only be hand-edited
+would be hand-edited wrongly. The switch makes the update an act, and the diff
+is what a reviewer reads. A reviewer who regenerates without reading has
+defeated it, which is exclusion EX-99.
+
+**C1, C2 and C3 are promoted, and B3 is not.** The three pack rules were minted
+at VM-0 with activation milestone VM-6 and were Deferred ever since for the
+honest reason that no pack step existed. VM-6 runs one, so they are asserted -
+against the pack log and the `.nuspec` files the collection now retains, which
+carries rule K3's limit that the comparison is with the last collection rather
+than the working tree. B3 stays **Vacuous**, and its row now says why that did
+not change: rules A1 and A2 stop a Broiler assembly reference being constructed
+at all, so nothing in the graph can violate it however many milestones pass.
+
+**A third lane, and it has never run.** `.github/workflows/broiler-vm.yml`
+joins the two lanes the 2026-08-29 revision above records. Those already
+discharged exclusion EX-06 in part, so this one narrows what is left rather
+than closing it. The workflow's
+own header says it has not run on a hosted runner, its RID matrix is
+aspirational for every entry except `linux-x64`, and `docs/support.md` claims no
+platform on the strength of the file existing. A workflow that has not run is a
+plan, and a support table that treated one as evidence would be the untruthful
+claim roadmap section 16 stops a release for.
+
+**What VM-6 does not finalize.** The package boundary is unchanged from VM-0's
+hypothesis because nothing since has justified changing it: three packages, one
+of which depends on the other two, and no evidence in five milestones has argued
+for a fourth or for a merge. "Finalize only the boundaries justified by VM-0
+evidence" is satisfied by leaving them alone, and saying so is more useful than
+a revision that moves something to look decisive.

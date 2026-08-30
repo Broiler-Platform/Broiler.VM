@@ -20,18 +20,36 @@ reference.
 ## Status
 
 [The status ledger](docs/roadmap.status.md) is the authority for accepted evidence. It records
-**VM-0 and VM-1 as in progress and unaccepted, and VM-2 through VM-6 as not started.**
+**VM-0 through VM-4 as in progress and unaccepted, and VM-5 and VM-6 as not started.**
 
 What exists is [twelve boundary records](docs/adr/README.md) and an implementation of core
 contract version 1: the profile-neutral contracts, the bounded binary primitives, the immutable
-catalog, the runtime and its lifecycle, resource authority including shared aggregate budgets,
-guest-initiated-load mediation, external suspension, and two test-only fixture profiles that prove
-the contract. A composition-root host publishes and runs under JIT, trimming and Native AOT on
-`win-x64`.
+catalog, the runtime and its lifecycle, resource authority including shared aggregate budgets and
+the full limit-precedence algorithm, guest-initiated-load mediation with its bounds, external
+suspension, and two test-only fixture profiles that prove the contract. A composition-root host
+publishes and runs under JIT, trimming and Native AOT.
 
-What does not exist is a language. There is no product profile, no persisted envelope, no
-malformed-input corpus, no fuzz target, no concurrency evidence, no second RID, and no performance
-measurement.
+The verification boundary is exercised by a retained malformed-input corpus of eighty-seven
+artifacts, each with its hash and its expected answer, and by a deterministic fuzz target seeded
+from it. Nothing about that is a claim that the component is safe: nobody has reviewed any of it,
+and `HUMAN_REVIEW.md` records that absence rather than a decision.
+
+The lifecycle is exercised under concurrency rather than described. Disposal drains a step that is
+inside the profile before it releases anything, an operation a profile pinned to its starting thread
+is refused on any other, a shared aggregate budget is spent once between concurrent runtimes rather
+than once each, and a soak host runs four hundred thousand lifecycle cycles across a hundred
+recycled runtimes and reports where the managed heap settles. Four rules that were frozen at VM-0
+and implemented at VM-1 were being enforced nowhere until a suite could reach a second thread.
+
+The composition claim is demonstrated rather than asserted. Two application-local consumer
+profiles - written against `Broiler.VM.Abstractions` and `Broiler.VM.Binary` and nothing else -
+are composed by two named roots listed in [the composition register](docs/compositions.md), each
+of which publishes and runs under JIT, trimming and Native AOT. The closure of each published
+image is read off the published output and contains exactly the profiles its register row
+declares. Adding the second profile changed no file in any product project.
+
+What does not exist is a language. There is no product profile, no advertised composition, no
+persisted envelope, no concurrency evidence, no second RID, and no performance measurement.
 
 And **nothing here is accepted**: no human has reviewed the records or the code, so no capability
 should be inferred from a passing test suite, a green publish, or this paragraph. Human review

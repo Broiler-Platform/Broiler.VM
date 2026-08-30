@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   7
-// Annotated:        7/7
-// Exempt:           10
-// Human-reviewed:   0/7
+// Relevant units:   6
+// Annotated:        6/6
+// Exempt:           11
+// Human-reviewed:   0/6
 // IP risk:          Low
 // Security risk:    Medium
-// Criteria:         0/0
+// Criteria:         1/0
 // Resource impact:  7/10 max
-// Unverified:       7
+// Unverified:       6
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -59,6 +59,7 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
     private int depth;
     private ulong fanOut;
     private ulong bytes;
+    private ulong verifierWork;
 
     internal VmArtifactLoadMediator(VmRuntime runtime, VmProfileDescriptor profile, VmExecutionScope scope)
     {
@@ -68,15 +69,28 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
     }
 
     /// <summary>
-    /// Opens the mediator for one executor step, binding it to that step's meter so nested work is
-    /// charged to the operation that will actually request it.
+    /// Opens the mediator for one step of the named operation, binding it to that step's meter so
+    /// nested work is charged to the operation that will actually request it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=1; Fingerprint=C5DB65
-    // Broiler-Human:        PENDING
-    internal void EnterScope(VmDiagnostics baseline) => EnterScope(baseline, default);
-
-    /// <summary>Opens the mediator for one step of the named operation.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=1; Fingerprint=550E12
+    /// <remarks>
+    /// <para>
+    /// The operation's identity is a required argument and there is deliberately no overload that
+    /// omits it. There was one, and every call site used it: it passed <c>default</c>, every step
+    /// therefore compared equal to the last, and the reset below never ran once. The counters it
+    /// guards are the fan-out, cumulative-bytes and nested-verifier-work bounds, so what was
+    /// documented as a per-operation bound behaved as a lifetime bound on a mediator shared by
+    /// every instance of one profile in one runtime - a profile could request its fan-out limit
+    /// worth of loads in total and never another. Removing the overload is what makes that
+    /// unrepeatable; a caller with no operation of its own mints an identity rather than passing
+    /// nothing.
+    /// </para>
+    /// <para>
+    /// VM-5's baseline work found this: the guest-load lane measured how many mediated loads one
+    /// runtime admits and got the fan-out limit instead of a number in the thousands.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=1; Fingerprint=20F004
+    // Broiler-Falsified-If: two steps of two different operations share a fan-out, byte or verifier-work count
     // Broiler-Human:        PENDING
     internal void EnterScope(VmDiagnostics baseline, VmObjectId operationId)
     {
@@ -93,12 +107,13 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
                 currentOperation = operationId;
                 fanOut = 0;
                 bytes = 0;
+                verifierWork = 0;
             }
         }
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=7; Fingerprint=1C2A09
+    // Broiler-AI:           Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=7; Fingerprint=C04C88
     // Broiler-Human:        PENDING
     public VmGuestLoadResult RequestLoad(scoped in VmArtifactRequest request)
     {
@@ -149,6 +164,16 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
             {
                 return Exhausted(meter, identified, VmBudgetDimension.NestedLoadFanOut);
             }
+
+            // The cumulative nested verifier-work bound, checked before the provider is asked.
+            // It is a separate bound from the operation's own verifier-work allowance and it is
+            // the tighter of the two by construction, which is what makes it worth having: an
+            // operation may spend its whole allowance on the artifact it was given, and only this
+            // bounds how much of it the loads it requests may consume.
+            if (verifierWork >= bounds.VerifierWork)
+            {
+                return Exhausted(meter, identified, VmBudgetDimension.VerifierWork);
+            }
         }
 
         // Charged before the provider is asked, so a request that cannot be paid for never reaches
@@ -184,7 +209,7 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
         }
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=7; Fingerprint=37279E
+    // Broiler-AI:           Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=7; Fingerprint=9DC2AB
     // Broiler-Human:        PENDING
     private VmGuestLoadResult Answer(
         IVmArtifactProvider provider,
@@ -273,6 +298,8 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
 
         // The nested bytes take the ordinary verification path, under the requesting operation's
         // remaining allowance rather than under a runtime ceiling.
+        var before = meter.RemainingSnapshot[VmBudgetDimension.VerifierWork];
+
         var verification = runtime.VerifyCore(
             answer.Descriptor,
             answer.Payload,
@@ -280,6 +307,24 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
             identified,
             VmArtifactOrigin.GuestInitiated,
             meter);
+
+        // Measured rather than predicted, because how much verifier work an artifact costs is a
+        // property of the artifact and the profile's verifier, and the core cannot know it in
+        // advance. The pre-check above refuses a request once nothing is left; this one is what
+        // makes the total a bound rather than a suggestion, and it terminates the operation whose
+        // loads spent it.
+        var after = meter.RemainingSnapshot[VmBudgetDimension.VerifierWork];
+        var spent = before > after ? before - after : 0;
+
+        lock (gate)
+        {
+            verifierWork = verifierWork > ulong.MaxValue - spent ? ulong.MaxValue : verifierWork + spent;
+
+            if (verifierWork > bounds.VerifierWork)
+            {
+                return Exhausted(meter, identified, VmBudgetDimension.VerifierWork);
+            }
+        }
 
         return Project(verification, identified);
     }

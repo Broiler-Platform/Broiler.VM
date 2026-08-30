@@ -115,9 +115,16 @@ internal static class ArchitectureRules
     }
 
     /// <summary>A4: no product project references a test-only project.</summary>
+    /// <remarks>
+    /// A composition root is exempt because it is not a product project - ADR 0001 revision 1 puts
+    /// it in its own partition - and because the reference it needs is to a consumer profile, which
+    /// lives at a test-only path for want of any other shape that fits. The exemption is not a hole:
+    /// A12 states what a composition root may reference, and it forbids the fixture profile and
+    /// every test project by name.
+    /// </remarks>
     internal static IEnumerable<string> A4(ComponentGraph.ProjectFile project)
     {
-        if (project.IsTestOnly)
+        if (project.IsTestOnly || project.IsComposition)
         {
             return [];
         }
@@ -225,13 +232,143 @@ internal static class ArchitectureRules
 
     /// <summary>
     /// A11: no project outside the composition-root allow-list references a profile assembly.
-    /// The allow-list is empty at VM-0 because the component declares no composition, so every
-    /// profile reference violates the rule.
     /// </summary>
-    internal static IEnumerable<string> A11(ComponentGraph.ProjectFile project) =>
-        project.ReferencedAssemblyNames
-            .Where(static name => name.StartsWith("Broiler.VM.Profile.", StringComparison.Ordinal))
+    /// <remarks>
+    /// <para>
+    /// The allow-list was empty at VM-0 because the component declared no composition. VM-3 fills
+    /// it with the two named roots under <c>src/compositions/</c>, and widens what counts as a
+    /// profile assembly to the consumer profiles - so the rule now has real subjects on both sides
+    /// rather than only a witness.
+    /// </para>
+    /// <para>
+    /// The fixture profile is deliberately NOT in scope here. It is a profile by shape, but what
+    /// keeps it out of a shipped image is its test-only path, which A4 and A5 already hold; folding
+    /// it in would make every test project that uses a fixture a violation and force the allow-list
+    /// to name them, which is the opposite of what this rule is for. A12 forbids the fixture inside
+    /// a composition root, which is where it would actually do harm.
+    /// </para>
+    /// </remarks>
+    internal static IEnumerable<string> A11(ComponentGraph.ProjectFile project)
+    {
+        if (project.IsComposition)
+        {
+            return [];
+        }
+
+        return project.ReferencedAssemblyNames
+            .Where(IsComposableProfile)
             .Select(name => $"{project.RelativePath} -> {name}");
+    }
+
+    /// <summary>
+    /// A12: a composition root references exactly the three core projects and one or more profile
+    /// assemblies, and nothing else at all.
+    /// </summary>
+    /// <remarks>
+    /// This is the project-file half of the exact-closure claim, and it is the half that can be
+    /// checked without publishing anything. The published closure is the other half: a root whose
+    /// reference set is clean here can still drag something in through a package, so both are
+    /// asserted and neither is taken for the other.
+    /// </remarks>
+    internal static IEnumerable<string> A12(ComponentGraph.ProjectFile project)
+    {
+        var isCompositionShaped = project.IsComposition ||
+            (project.IsWitness && project.AssemblyName.StartsWith("Broiler.VM.Composition.", StringComparison.Ordinal));
+
+        if (!isCompositionShaped)
+        {
+            yield break;
+        }
+
+        var profiles = 0;
+
+        foreach (var name in project.ReferencedAssemblyNames)
+        {
+            if (DeclaredPackageIds.Contains(name, StringComparer.Ordinal))
+            {
+                continue;
+            }
+
+            if (IsComposableProfile(name))
+            {
+                profiles++;
+                continue;
+            }
+
+            yield return $"{project.RelativePath} -> {name}, which is neither a core package nor a composable profile";
+        }
+
+        if (profiles == 0)
+        {
+            yield return $"{project.RelativePath} composes no profile";
+        }
+
+        foreach (var package in project.PackageReferences)
+        {
+            yield return $"{project.RelativePath} declares PackageReference {package}";
+        }
+    }
+
+    /// <summary>
+    /// A13: a consumer profile's project references are exactly Abstractions and Binary, it
+    /// declares no package reference, and it opens its internals to nobody.
+    /// </summary>
+    /// <remarks>
+    /// ADR 0011's obligation P1 as a rule rather than as a sentence. The promise the milestone
+    /// exists to demonstrate is that a profile is written against the public source contract and
+    /// nothing else, and that promise is a property of the reference set: a profile that could name
+    /// a runtime type would be relying on something no consumer outside this repository has.
+    /// </remarks>
+    internal static IEnumerable<string> A13(ComponentGraph.ProjectFile project)
+    {
+        var isProfileShaped = project.IsWitness
+            ? IsComposableProfile(project.AssemblyName)
+            : project.IsTestOnly && IsComposableProfile(project.AssemblyName);
+
+        if (!isProfileShaped)
+        {
+            yield break;
+        }
+
+        var referenced = project.ReferencedAssemblyNames
+            .OrderBy(static name => name, StringComparer.Ordinal)
+            .ToArray();
+
+        if (!referenced.SequenceEqual(ConsumerProfileReferences, StringComparer.Ordinal))
+        {
+            yield return
+                $"{project.RelativePath} references [{string.Join(", ", referenced)}] rather than " +
+                $"[{string.Join(", ", ConsumerProfileReferences)}]";
+        }
+
+        foreach (var package in project.PackageReferences)
+        {
+            yield return $"{project.RelativePath} declares PackageReference {package}";
+        }
+
+        foreach (var target in project.InternalsVisibleTo)
+        {
+            yield return $"{project.RelativePath} opens internals to {target}";
+        }
+    }
+
+    /// <summary>The exact reference set ADR 0011's obligation P1 allows a profile package.</summary>
+    internal static readonly string[] ConsumerProfileReferences =
+        ["Broiler.VM.Abstractions", "Broiler.VM.Binary"];
+
+    /// <summary>
+    /// Whether an assembly name is a profile a composition may name: a Broiler-owned language
+    /// profile, or an application-local consumer profile under the documentation-reserved domain.
+    /// </summary>
+    /// <remarks>
+    /// The consumer half is an enumeration of what this component actually contains rather than a
+    /// general test for "someone's profile", because there is no general test: a profile is a
+    /// profile by what it implements, and a project file does not say. Adding a third consumer
+    /// profile therefore means adding it here, which is the review this list exists to force.
+    /// </remarks>
+    private static bool IsComposableProfile(string assemblyName) =>
+        assemblyName.StartsWith("Broiler.VM.Profile.", StringComparison.Ordinal) ||
+        assemblyName.StartsWith("Com.Example.", StringComparison.Ordinal);
 
     // ---- Group B: compiled metadata ---------------------------------------------------------
 
@@ -387,7 +524,18 @@ internal static class ArchitectureRules
                 StringComparison.Ordinal))
             .Select(attribute => $"{assembly.Name} applies {attribute}");
 
+    /// <summary>
+    /// Whether an assembly is profile-shaped for the purposes of A8: anything that implements the
+    /// profile contract, whoever owns it and wherever it lives.
+    /// </summary>
+    /// <remarks>
+    /// Wider than <see cref="IsComposableProfile"/>, and deliberately so. A8 says a profile never
+    /// references the runtime, which is true of the fixture profile as much as of a consumer one -
+    /// it is the claim that a verifier and an executor can be written against the contract alone.
+    /// A11 is about what may be linked into a shipped image, where the fixture's test-only path is
+    /// the mechanism that answers instead.
+    /// </remarks>
     private static bool IsProfileShaped(string assemblyName) =>
-        assemblyName.StartsWith("Broiler.VM.Profile.", StringComparison.Ordinal) ||
+        IsComposableProfile(assemblyName) ||
         string.Equals(assemblyName, "Broiler.VM.Fixtures", StringComparison.Ordinal);
 }

@@ -563,6 +563,78 @@ public sealed class ReviewRegressionTests
         }
     }
 
+    private static readonly System.Threading.AsyncLocal<object?> AmbientProbe = new();
+
+    [Fact]
+    public void A_Disposed_Runtime_Leaves_No_Per_Thread_State_Behind()
+    {
+        // A runtime kept its capability depth in an async-local, and an async-local entry is
+        // released only when it is set to null. A value-typed one never can be: returning the depth
+        // to zero stores a boxed zero, which is a present value, so the entry stayed on the thread
+        // for the life of the process - one per runtime that ever ran a capability there, released
+        // by nothing, not even disposing the runtime.
+        //
+        // Nothing observable failed, which is why no other test here catches it. What grew was the
+        // COST of every later async-local write on that thread, because each one copies the whole
+        // map: an operation that allocated ten kilobytes early in a process allocated a megabyte
+        // once seventy thousand runtimes had come and gone, and VM-5's benchmark took twelve times
+        // as long as it does now. This test is the invariant, not the symptom - a disposed runtime
+        // leaves nothing of itself on the thread that used it.
+        var baseline = AmbientWriteCost();
+
+        for (var index = 0; index < 500; index++)
+        {
+            using var runtime = FixtureComposition.Runtime(
+                FixtureComposition.AlphaCatalog(),
+                FixtureComposition.Options(capabilities: FixtureComposition.ValueCapabilities()));
+
+            var artifact = FixtureComposition.Verify(
+                runtime, FixtureArtifactWriter.HostCall(21, FixtureHostCapabilities.DoubleBinding));
+
+            using var instance = FixtureComposition.Instantiate(runtime, artifact);
+
+            Assert.Equal(VmOutcome.Normal, FixtureComposition.Invoke(instance).Outcome);
+        }
+
+        var after = AmbientWriteCost();
+
+        // A quadruple, against a defect that multiplied the figure by five thousand at this scale.
+        // The generous factor is deliberate: the failure this guards is unbounded growth, so any
+        // threshold that catches it at all catches it enormously, and a tight one would only buy
+        // false alarms from a machine having a bad moment.
+        Assert.True(
+            after <= baseline * 4,
+            $"five hundred disposed runtimes left per-thread state behind: an async-local write " +
+            $"cost {baseline} bytes before them and {after} bytes after");
+    }
+
+    /// <summary>What one async-local write costs on this thread, in bytes.</summary>
+    /// <remarks>
+    /// The measure is allocation rather than time because the growth is a map copy, and a copy is
+    /// exactly as many bytes as the map is large however fast the machine is. Repeated so a single
+    /// write's fixed cost does not dominate the difference being looked for.
+    /// </remarks>
+    private static long AmbientWriteCost()
+    {
+        const int Writes = 64;
+
+        var marker = new object();
+
+        // Warm, so the first write's one-off costs are not counted as growth.
+        AmbientProbe.Value = marker;
+        AmbientProbe.Value = null;
+
+        var before = GC.GetAllocatedBytesForCurrentThread();
+
+        for (var write = 0; write < Writes; write++)
+        {
+            AmbientProbe.Value = marker;
+            AmbientProbe.Value = null;
+        }
+
+        return (GC.GetAllocatedBytesForCurrentThread() - before) / Writes;
+    }
+
     private static VmAggregateBudget Parent(
         ulong fuel = 10_000_000,
         ulong liveBytes = 1_000_000_000,

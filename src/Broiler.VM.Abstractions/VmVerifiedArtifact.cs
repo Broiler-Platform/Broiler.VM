@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   17
 // Annotated:        17/17
-// Exempt:           37
+// Exempt:           38
 // Human-reviewed:   0/17
 // IP risk:          Low
 // Security risk:    Medium
@@ -297,7 +297,7 @@ public sealed class VmVerifiedArtifact : System.IDisposable
     /// could in principle mint one; what is kept is that the one-construction-site property stays
     /// mechanically testable.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s2; IP=Low; Security=Medium; Resources=1; Fingerprint=69AA1B
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s2; IP=Low; Security=Medium; Resources=1; Fingerprint=88576A
     // Broiler-Falsified-If: a handle for a Snapshot profile is built over the caller's bytes rather than a core-owned copy
     // Broiler-Human:        PENDING
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
@@ -312,11 +312,12 @@ public sealed class VmVerifiedArtifact : System.IDisposable
         VmObjectId aggregateBudgetId,
         ulong byteLength,
         IVmVerifiedState state,
+        System.Collections.Immutable.ImmutableArray<VmLimitClamp> clampedLimitRequests,
         VmDiagnostics diagnosticsBase) =>
         new(objectId, identity, representationKind, lifetimeKind, sharing, origin,
-            owningRuntimeId, aggregateBudgetId, byteLength, state, diagnosticsBase);
+            owningRuntimeId, aggregateBudgetId, byteLength, state, clampedLimitRequests, diagnosticsBase);
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s2; IP=Low; Security=Low; Resources=1; Fingerprint=AE38A6
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s2; IP=Low; Security=Low; Resources=1; Fingerprint=EBD7DC
     // Broiler-Human:        PENDING
     private VmVerifiedArtifact(
         VmObjectId objectId,
@@ -329,6 +330,7 @@ public sealed class VmVerifiedArtifact : System.IDisposable
         VmObjectId aggregateBudgetId,
         ulong byteLength,
         IVmVerifiedState state,
+        System.Collections.Immutable.ImmutableArray<VmLimitClamp> clampedLimitRequests,
         VmDiagnostics diagnosticsBase)
     {
         ObjectId = objectId;
@@ -342,6 +344,9 @@ public sealed class VmVerifiedArtifact : System.IDisposable
         AggregateBudgetId = aggregateBudgetId;
         ByteLength = byteLength;
         this.state = state;
+        ClampedLimitRequests = clampedLimitRequests.IsDefault
+            ? System.Collections.Immutable.ImmutableArray<VmLimitClamp>.Empty
+            : clampedLimitRequests;
         DiagnosticsBase = diagnosticsBase;
         currentState = VmVerifiedArtifactState.Ready;
     }
@@ -379,6 +384,19 @@ public sealed class VmVerifiedArtifact : System.IDisposable
 
     /// <summary>How many bytes were verified.</summary>
     public ulong ByteLength { get; }
+
+    /// <summary>
+    /// Non-compared: every artifact-requested limit the host and profile intersection tightened,
+    /// in the frozen dimension order. Empty when the descriptor requested nothing, and empty when
+    /// everything it requested fitted.
+    /// </summary>
+    /// <remarks>
+    /// It is deliberately outside <see cref="Identity"/>. The clamped values are already implied by
+    /// the effective ceilings identity does carry, so including them would let two handles that
+    /// verified to the same policy compare unequal because their descriptors asked differently -
+    /// which would refuse a share for a difference the verification erased.
+    /// </remarks>
+    public System.Collections.Immutable.ImmutableArray<VmLimitClamp> ClampedLimitRequests { get; }
 
     /// <summary>The identity groups every result about this handle starts from.</summary>
     public VmDiagnostics DiagnosticsBase { get; }

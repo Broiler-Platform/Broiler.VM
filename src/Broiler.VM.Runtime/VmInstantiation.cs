@@ -60,11 +60,12 @@ internal sealed class VmExecutionEnvironment : IVmExecutionEnvironment
 // Broiler-Human:        PENDING
 internal static class VmInstantiation
 {
-    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=34BDC0
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=3E6067
     // Broiler-Human:        PENDING
     internal static VmInstantiationResult Run(
         VmRuntime runtime,
         VmVerifiedArtifact artifact,
+        VmLimitOverrides limitOverrides,
         System.Threading.CancellationToken cancellationToken,
         VmDiagnostics baseline)
     {
@@ -96,6 +97,30 @@ internal static class VmInstantiation
                 VmRuntime.Invalid(identified, VmStage.Instantiation, handleFailure, VmObjectKind.VerifiedArtifact, VmAttemptedCall.Instantiate));
         }
 
+        // P3, and before the lease: an override the runtime is going to refuse should not first
+        // pin a handle it will then have to release. The inherited value is the handle's own
+        // materialized instantiation ceiling, so an override is measured against what verification
+        // established rather than against the runtime's wider ceiling.
+        if (!VmLimitPrecedence.TryApply(
+                VmBudgetScope.Instance,
+                VmRuntime.ToArray(artifact.Identity.EffectiveCeilings.InstantiationCeilings),
+                limitOverrides,
+                out var instanceCeilings,
+                out var offending,
+                out var overrideFailure))
+        {
+            // A host failure, emphatically not a resource exhaustion: nothing was exhausted, and
+            // reporting a composition mistake as exhaustion is the same diagnostic error that
+            // separating an unsupported profile from an invalid artifact exists to prevent. The
+            // dimension travels in the one group that can name one; the category is what says
+            // whether anything ran out.
+            return VmInstantiationResult.HostFailure(
+                overrideFailure,
+                identified
+                    .WithOutcome(VmStage.Instantiation, VmOutcome.HostFailure, overrideFailure, VmInitiator.Caller)
+                    .WithExhaustion(offending, VmBudgetScope.Instance));
+        }
+
         // The instance pins the handle for as long as it lives, so a concurrent disposal drains
         // rather than cutting the ground from under a live instance.
         if (artifact.TryAcquireLease(out var lease).Kind is not VmControlOutcome.Accepted)
@@ -109,7 +134,8 @@ internal static class VmInstantiation
 
         try
         {
-            return Instantiate(runtime, artifact, lease, profile, cancellationToken, identified, ref succeeded);
+            return Instantiate(
+                runtime, artifact, lease, profile, instanceCeilings, cancellationToken, identified, ref succeeded);
         }
         finally
         {
@@ -120,7 +146,7 @@ internal static class VmInstantiation
         }
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=4D0672
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=67B1EA
     // Broiler-Falsified-If: the scope is entered with no owning operation, or the switch tests no host failure or poll bound
     // Broiler-Human:        PENDING
     private static VmInstantiationResult Instantiate(
@@ -128,15 +154,14 @@ internal static class VmInstantiation
         VmVerifiedArtifact artifact,
         VmArtifactLease lease,
         VmProfileDescriptor profile,
+        ulong[] instanceCeilings,
         System.Threading.CancellationToken cancellationToken,
         VmDiagnostics identified,
         ref bool succeeded)
     {
         var profileState = runtime.GetProfileState(profile);
 
-        var instanceLevel = new VmBudgetLevel(
-            VmBudgetScope.Instance,
-            VmRuntime.ToArray(artifact.Identity.EffectiveCeilings.InstantiationCeilings));
+        var instanceLevel = new VmBudgetLevel(VmBudgetScope.Instance, instanceCeilings);
 
         var invocationLevel = new VmBudgetLevel(
             VmBudgetScope.Invocation, instanceLevel.CeilingsCopy());
@@ -175,7 +200,12 @@ internal static class VmInstantiation
         // The scope is what the executor's meter, capability table and mediator resolve through,
         // and it answers only inside the dynamic extent of this step.
         profileState.Scope.Enter(meter);
-        mediator?.EnterScope(identified);
+
+        // Instantiation has no VmOperation of its own, so it mints the identity the mediator keys
+        // its per-operation counters on. A fresh one each time is the honest answer: two
+        // instantiations are two operations, and they no more share a fan-out allowance than two
+        // invocations do.
+        mediator?.EnterScope(identified, VmObjectId.Mint());
 
         try
         {
@@ -222,7 +252,20 @@ internal static class VmInstantiation
                     runtime, profile, executor, step.State, instanceLevel, identified,
                     profileState.Scope, mediator, lease);
 
-                runtime.RegisterInstance(instance);
+                if (!runtime.RegisterInstance(instance))
+                {
+                    // The runtime began disposing while this instantiation was inside the profile.
+                    // The instance exists and holds a lease and an allowance, and nothing else can
+                    // reach it, so this is the only place it can be given back.
+                    instance.Dispose();
+
+                    return VmInstantiationResult.InvalidState(
+                        VmReason.ObjectDisposing,
+                        VmRuntime.Invalid(
+                            identified, VmStage.Instantiation, VmReason.ObjectDisposing,
+                            VmObjectKind.Runtime, VmAttemptedCall.Instantiate));
+                }
+
                 succeeded = true;
 
                 return VmInstantiationResult.Normal(
@@ -281,7 +324,20 @@ internal static class VmInstantiation
                             VmObjectKind.Operation, VmAttemptedCall.Instantiate));
                 }
 
-                runtime.RegisterInstance(pending);
+                if (!runtime.RegisterInstance(pending))
+                {
+                    // Same race, on the asynchronous-instantiation path: the operation is parked
+                    // and the placeholder instance is live, and neither is reachable by anyone but
+                    // this frame.
+                    operation.Abandon(VmReason.ObjectDisposing);
+                    pending.Dispose();
+
+                    return VmInstantiationResult.InvalidState(
+                        VmReason.ObjectDisposing,
+                        VmRuntime.Invalid(
+                            identified, VmStage.Instantiation, VmReason.ObjectDisposing,
+                            VmObjectKind.Runtime, VmAttemptedCall.Instantiate));
+                }
                 succeeded = true;
 
                 return VmInstantiationResult.Suspension(

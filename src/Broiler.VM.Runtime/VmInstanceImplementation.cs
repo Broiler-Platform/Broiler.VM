@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   19
-// Annotated:        19/19
-// Exempt:           14
-// Human-reviewed:   0/19
+// Relevant units:   24
+// Annotated:        24/24
+// Exempt:           16
+// Human-reviewed:   0/24
 // IP risk:          Low
-// Security risk:    Medium
-// Criteria:         3/0
-// Resource impact:  5/10 max
-// Unverified:       19
+// Security risk:    High
+// Criteria:         6/2
+// Resource impact:  6/10 max
+// Unverified:       24
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -45,6 +45,27 @@ internal sealed class VmInstanceImplementation : VmInstance
 
     private VmInstanceState currentState = VmInstanceState.Live;
     private VmOperation? active;
+
+    /// <summary>How many steps are inside the profile right now.</summary>
+    /// <remarks>
+    /// One instance admits one step at a time, so this is zero or one - but it is a count rather
+    /// than a flag because disposal WAITS on it, and a flag would say whether a step is running
+    /// while a count says when the last one left. Guarded by <c>gate</c> and pulsed on every
+    /// decrement, so the waiter wakes as soon as the profile returns rather than at a poll.
+    /// </remarks>
+    private int stepsInFlight;
+
+    /// <summary>
+    /// Set when disposal gave up waiting for a step, so the step releases the lease as it leaves.
+    /// </summary>
+    /// <remarks>
+    /// The alternative was to release the lease anyway, which is the use-after-dispose this whole
+    /// mechanism exists to prevent: the verified state the executor is still reading would be
+    /// disposed under it. Handing the release to the departing step is what ADR 0006's Draining
+    /// state is for - the handle drains when its last lease goes, and here that is a moment later
+    /// than disposal returns.
+    /// </remarks>
+    private bool releaseLeaseOnExit;
 
     // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Low; Resources=1; Fingerprint=17A728
     // Broiler-Human:        PENDING
@@ -97,18 +118,38 @@ internal sealed class VmInstanceImplementation : VmInstance
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=F1A56E
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=BAA561
     // Broiler-Human:        PENDING
     public override VmInvocationResult Invoke(
         in VmInvocationRequest request,
         System.Threading.CancellationToken cancellationToken) =>
-        Invoke(in request, cancellationToken, out _);
+        Invoke(in request, VmLimitOverrides.None, cancellationToken, out _);
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=250702
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=D380BC
     // Broiler-Human:        PENDING
     public override VmInvocationResult Invoke(
         in VmInvocationRequest request,
+        System.Threading.CancellationToken cancellationToken,
+        out VmOperationControlHandle controlHandle) =>
+        Invoke(in request, VmLimitOverrides.None, cancellationToken, out controlHandle);
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=5; Fingerprint=ED65D9
+    // Broiler-Human:        PENDING
+    public override VmInvocationResult Invoke(
+        in VmInvocationRequest request,
+        VmLimitOverrides limitOverrides,
+        System.Threading.CancellationToken cancellationToken) =>
+        Invoke(in request, limitOverrides, cancellationToken, out _);
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=5; Fingerprint=A72EEA
+    // Broiler-Falsified-If: a refused override leaves the operation running, or one dimension of it applied
+    // Broiler-Human:        PENDING
+    public override VmInvocationResult Invoke(
+        in VmInvocationRequest request,
+        VmLimitOverrides limitOverrides,
         System.Threading.CancellationToken cancellationToken,
         out VmOperationControlHandle controlHandle)
     {
@@ -136,10 +177,26 @@ internal sealed class VmInstanceImplementation : VmInstance
                         VmRuntime.Invalid(identified, VmStage.Invocation, instanceFailure, VmObjectKind.Instance, VmAttemptedCall.Invoke));
                 }
 
+                // P4, inside the admission lock and before the operation exists: a refused
+                // override must leave no operation, no linked token source and no meter behind.
+                if (!VmLimitPrecedence.TryApply(
+                        VmBudgetScope.Invocation,
+                        instanceLevel.CeilingsCopy(),
+                        limitOverrides,
+                        out var operationCeilings,
+                        out var offending,
+                        out var overrideFailure))
+                {
+                    return VmInvocationResult.HostFailure(
+                        overrideFailure,
+                        identified
+                            .WithOutcome(VmStage.Invocation, VmOutcome.HostFailure, overrideFailure, VmInitiator.Caller)
+                            .WithExhaustion(offending, VmBudgetScope.Invocation));
+                }
+
                 var linked = System.Threading.CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-                var invocationLevel = new VmBudgetLevel(
-                    VmBudgetScope.Invocation, instanceLevel.CeilingsCopy());
+                var invocationLevel = new VmBudgetLevel(VmBudgetScope.Invocation, operationCeilings);
 
                 var meter = new VmMeter(
                     runtime.Gate, invocationLevel, instanceLevel, runtime.RuntimeLevel, runtime.Parent,
@@ -151,11 +208,19 @@ internal sealed class VmInstanceImplementation : VmInstance
 
                 active = operation;
                 currentState = VmInstanceState.Executing;
+                stepsInFlight++;
             }
 
             controlHandle = new VmOperationControlHandleImplementation(operation);
 
-            return RunInvocation(operation, in request);
+            try
+            {
+                return RunInvocation(operation, in request);
+            }
+            finally
+            {
+                LeaveStep();
+            }
         }
         finally
         {
@@ -179,11 +244,38 @@ internal sealed class VmInstanceImplementation : VmInstance
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=2; Fingerprint=7E9A92
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=2; Fingerprint=2C9D03
     // Broiler-Human:        PENDING
-    public override VmControlResult Dispose()
+    public override VmControlResult Dispose() => Dispose(runtime.Options.DisposeDrainBudget);
+
+    /// <summary>
+    /// Disposes the instance, waiting up to <paramref name="drainBudget"/> for a step that is
+    /// inside the profile to leave it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The wait is the point, and its bound is the point of the bound. Disposal that returned while
+    /// the executor was still running would release the artifact lease and give back the instance's
+    /// retained bytes under a profile that is still reading the verified state - a use-after-dispose
+    /// the core would have performed on itself, on a path no single-threaded test can reach. So
+    /// disposal cancels the operation, then waits for the step to return.
+    /// </para>
+    /// <para>
+    /// It cannot wait forever: a profile that ignores its cancellation token would otherwise wedge
+    /// the disposing thread, which ADR 0004 names as a release blocker. The wait is therefore
+    /// bounded by the host's own <c>DisposeDrainBudget</c> - the core's bound on its own waiting,
+    /// which is a promise the core can keep, unlike a bound on the profile's work. When it expires
+    /// the instance is disposed anyway and the lease release is handed to the departing step, so
+    /// the handle drains a moment later instead of being disposed under its reader.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=High; Resources=6; Fingerprint=3B4D81
+    // Broiler-Falsified-If: disposal returns while stepsInFlight is above zero and still releases the lease
+    // Broiler-Human:        PENDING
+    internal VmControlResult Dispose(System.TimeSpan drainBudget)
     {
         VmOperation? operation;
+        bool drained;
 
         lock (gate)
         {
@@ -202,7 +294,27 @@ internal sealed class VmInstanceImplementation : VmInstance
             active = null;
         }
 
+        // Cancellation first, outside the lock, because the step that must observe it may be inside
+        // the profile on another thread and the lock is what its exit path needs.
         operation?.Abandon(VmReason.Cancelled);
+
+        lock (gate)
+        {
+            var deadline = System.DateTime.UtcNow + drainBudget;
+
+            while (stepsInFlight > 0)
+            {
+                var remaining = deadline - System.DateTime.UtcNow;
+
+                if (remaining <= System.TimeSpan.Zero || !System.Threading.Monitor.Wait(gate, remaining))
+                {
+                    break;
+                }
+            }
+
+            drained = stepsInFlight == 0;
+            releaseLeaseOnExit = !drained;
+        }
 
         ReleaseRetained();
 
@@ -213,14 +325,53 @@ internal sealed class VmInstanceImplementation : VmInstance
 
         // The handle is pinned for as long as the instance lives, so releasing the lease is the
         // last thing disposal does. A handle whose last lease goes with its last instance completes
-        // its drain here rather than being left half-disposed.
-        lease.Release();
+        // its drain here rather than being left half-disposed - unless a step outstayed the drain
+        // budget, in which case the lease is that step's to release as it leaves.
+        if (drained)
+        {
+            lease.Release();
+        }
 
         runtime.ForgetInstance(this);
         return VmControlResult.Accepted;
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=5; Fingerprint=41155D
+    /// <summary>
+    /// Records that a step has left the profile, and wakes a disposal that is waiting for it.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=High; Resources=2; Fingerprint=E8A45C
+    // Broiler-Falsified-If: a step returns without decrementing, so a later disposal waits its whole budget
+    // Broiler-Human:        PENDING
+    private void LeaveStep()
+    {
+        var release = false;
+
+        lock (gate)
+        {
+            if (stepsInFlight > 0)
+            {
+                stepsInFlight--;
+            }
+
+            if (stepsInFlight == 0 && releaseLeaseOnExit)
+            {
+                releaseLeaseOnExit = false;
+                release = true;
+            }
+
+            System.Threading.Monitor.PulseAll(gate);
+        }
+
+        if (release)
+        {
+            // The disposal that gave up waiting left this behind. Releasing it here rather than
+            // there is what keeps the verified state alive for exactly as long as the profile was
+            // still reading it.
+            lease.Release();
+        }
+    }
+
+    // Broiler-AI:           Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=5; Fingerprint=51DB74
     // Broiler-Human:        PENDING
     internal VmResumeResult ResumeOperation(VmOperation operation, IVmProfileContinuation continuation)
     {
@@ -236,15 +387,30 @@ internal sealed class VmInstanceImplementation : VmInstance
 
             active = operation;
             currentState = VmInstanceState.Executing;
+            stepsInFlight++;
         }
 
+        try
+        {
+            return RunResume(operation, continuation);
+        }
+        finally
+        {
+            LeaveStep();
+        }
+    }
+
+    // Broiler-AI:           Origin=AI; Spec=ADR-0009; IP=Low; Security=Medium; Resources=5; Fingerprint=A3C1CE
+    // Broiler-Human:        PENDING
+    private VmResumeResult RunResume(VmOperation operation, IVmProfileContinuation continuation)
+    {
         VmExecutionStep step;
 
         // The scope answers only inside the dynamic extent of this step. A profile that stashed its
         // meter or its mediator during an earlier step and uses it now is refused rather than
         // charged against whatever operation happens to be running.
         scope.Enter(operation.Meter, operation);
-        mediator?.EnterScope(operation.Baseline);
+        mediator?.EnterScope(operation.Baseline, operation.ObjectId);
 
         try
         {
@@ -335,14 +501,14 @@ internal sealed class VmInstanceImplementation : VmInstance
         }
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=D5B463
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=5D2AA9
     // Broiler-Human:        PENDING
     private VmInvocationResult RunInvocation(VmOperation operation, in VmInvocationRequest request)
     {
         VmExecutionStep step;
 
         scope.Enter(operation.Meter, operation);
-        mediator?.EnterScope(operation.Baseline);
+        mediator?.EnterScope(operation.Baseline, operation.ObjectId);
 
         try
         {

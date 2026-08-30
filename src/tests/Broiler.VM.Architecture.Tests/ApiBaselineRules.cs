@@ -475,6 +475,148 @@ internal static class ApiBaselineRules
         }
     }
 
+    /// <summary>
+    /// V11: no diagnostics field can carry free text, so no host secret can reach one.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// VM-4's gate asks that diagnostics identify profile, version and artifact locations "without
+    /// leaking host secrets", which is a claim about what a record CAN hold rather than about what
+    /// this implementation happens to put in one. A record with a message field would be one
+    /// exception handler away from carrying a connection string, a path or a token, and no test over
+    /// today's call sites would notice the day it did.
+    /// </para>
+    /// <para>
+    /// So the shape is asserted instead: every member of the record is an enum, a number, or one of
+    /// the validated identity types, and the ONE member that carries text is the caller identity the
+    /// caller itself supplied. The core cannot leak what it has nowhere to put.
+    /// </para>
+    /// </remarks>
+    internal static IEnumerable<string> V11(Type diagnostics)
+    {
+        foreach (var property in diagnostics.GetProperties(
+            System.Reflection.BindingFlags.Public |
+            System.Reflection.BindingFlags.Instance |
+            System.Reflection.BindingFlags.DeclaredOnly))
+        {
+            var type = property.PropertyType;
+
+            if (TextBearingIdentities.Contains(type) || type.IsEnum || type.IsPrimitive)
+            {
+                continue;
+            }
+
+            if (type.IsValueType && !CarriesText(type))
+            {
+                continue;
+            }
+
+            yield return $"VmDiagnostics.{property.Name} is a {type.Name}, which can carry free text";
+        }
+    }
+
+    /// <summary>
+    /// The four members of a diagnostics record that carry text, and why each is admitted.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Three are IDENTITIES under a closed grammar: dot-separated ASCII labels, bounded in length,
+    /// no control characters, validated at parse. Their values come from the descriptor a
+    /// composition wrote, which is the thing the record exists to identify - a diagnostics record
+    /// that could not name the profile would fail the other half of the same gate clause.
+    /// </para>
+    /// <para>
+    /// The fourth is the caller identity, whose content is the caller's own. A host that wants
+    /// nothing of its own recorded passes nothing, and nothing is then carried. That is a different
+    /// admission from the other three and it is worth naming as such: this rule cannot stop a host
+    /// putting a secret in its own caller identity. What it stops is the core acquiring somewhere
+    /// to put one.
+    /// </para>
+    /// </remarks>
+    internal static readonly Type[] TextBearingIdentities =
+    [
+        typeof(VmCallerIdentity),
+        typeof(VmProfileId),
+        typeof(VmFeatureManifestId),
+        typeof(VmCapabilityId),
+    ];
+
+    /// <summary>
+    /// Whether a value type holds a string field of its own.
+    /// </summary>
+    /// <remarks>
+    /// One level, which is what the record's shape needs: every group it carries is a flat struct
+    /// of numbers, enums and validated identities, and a group that nested another struct to hide a
+    /// string would be caught by the same walk one call down.
+    /// </remarks>
+    private static bool CarriesText(Type type) =>
+        type.GetFields(
+            System.Reflection.BindingFlags.NonPublic |
+            System.Reflection.BindingFlags.Public |
+            System.Reflection.BindingFlags.Instance)
+            .Any(static field =>
+                field.FieldType == typeof(string) ||
+                (field.FieldType.IsValueType &&
+                 !field.FieldType.IsPrimitive &&
+                 !field.FieldType.IsEnum &&
+                 field.FieldType != field.DeclaringType &&
+                 CarriesText(field.FieldType)));
+
+    /// <summary>
+    /// V12: nothing a profile is handed can reach CLR reflection, a delegate, or an untyped object.
+    /// </summary>
+    /// <remarks>
+    /// The gate's last sentence: host imports cannot reach undeclared CLR surface. What a profile
+    /// is handed at execution is an environment, a meter, a capability table and possibly a load
+    /// mediator, and every member of all four is asserted here to traffic only in the contract's own
+    /// types and primitives. A single member returning <c>object</c> or a <c>Type</c> would turn the
+    /// capability table into an ambient platform surface, which is exactly what addressing
+    /// capabilities by index rather than by name exists to prevent.
+    /// </remarks>
+    internal static IEnumerable<string> V12(IEnumerable<Type> profileFacing)
+    {
+        Type[] banned =
+        [
+            typeof(object), typeof(Type), typeof(Delegate), typeof(MulticastDelegate),
+            typeof(System.Reflection.MemberInfo), typeof(System.Reflection.MethodInfo),
+            typeof(System.Reflection.Assembly), typeof(System.Reflection.FieldInfo),
+            typeof(System.Reflection.PropertyInfo), typeof(System.Runtime.Loader.AssemblyLoadContext),
+            typeof(System.IntPtr), typeof(System.UIntPtr),
+        ];
+
+        foreach (var type in profileFacing)
+        {
+            foreach (var method in type.GetMethods(
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.Static |
+                System.Reflection.BindingFlags.DeclaredOnly))
+            {
+                foreach (var used in method.GetParameters()
+                             .Select(static parameter => parameter.ParameterType)
+                             .Append(method.ReturnType))
+                {
+                    var bare = used.IsByRef ? used.GetElementType()! : used;
+
+                    if (banned.Contains(bare))
+                    {
+                        yield return $"{type.Name}.{method.Name} traffics in {bare.Name}";
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>The four things a profile is handed while it executes.</summary>
+    internal static Type[] ProfileFacingContracts =>
+    [
+        typeof(IVmExecutionEnvironment),
+        typeof(IVmHostCapabilityInvoker),
+        typeof(IVmMeter),
+        typeof(IVmVerificationContext),
+        typeof(IVmArtifactLoadMediator),
+    ];
+
     private static IEnumerable<string> MemberNames(Type type) =>
         type.GetMembers(
             System.Reflection.BindingFlags.Public |

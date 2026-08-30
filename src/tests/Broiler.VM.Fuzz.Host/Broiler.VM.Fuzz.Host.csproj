@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Fuzz.Host</RootNamespace>
+    <AssemblyName>Broiler.VM.Fuzz.Host</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+
+    <!-- ADR 0001's budget permits VM-2 exactly one new test-only project, named there as a fuzz
+         target host. This is it, and it is the whole of what VM-2 spends that budget on: the
+         mutation engine and the invariants live in Broiler.VM.Fixtures, so a session driven from
+         here and a session driven from the behavioural suite look for the same counterexample. -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Fixtures\Broiler.VM.Fixtures.csproj" />
+  </ItemGroup>
+
+</Project>

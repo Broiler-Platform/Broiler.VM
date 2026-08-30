@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Composition.Workbench</RootNamespace>
+    <AssemblyName>Broiler.VM.Composition.Workbench</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <!-- The two-profile closure. It differs from the single-profile root's by exactly one assembly,
+       which is the comparison VM-3's gate rests on: a composition contains the profiles it names
+       and nothing else, so naming a second profile adds exactly that second profile. -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+    <ProjectReference Include="..\..\tests\Com.Example.Calculator\Com.Example.Calculator.csproj" />
+    <ProjectReference Include="..\..\tests\Com.Example.Ledger\Com.Example.Ledger.csproj" />
+  </ItemGroup>
+
+</Project>

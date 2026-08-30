@@ -1,0 +1,60 @@
+=== FUZZ: 250000 iterations per seed, seeds 1, 2, 3, 4, 5, 6, 7, 8 ===
+--- seed 1 exit=0 ---
+Broiler.VM fuzz target: 250000 iterations, seed 1, 87 seed artifacts.
+No counterexample found. Outcome histogram:
+  InvalidArtifact: 242698
+  Normal: 2419
+  ResourceExhaustion: 4883
+
+--- seed 2 exit=0 ---
+Broiler.VM fuzz target: 250000 iterations, seed 2, 87 seed artifacts.
+No counterexample found. Outcome histogram:
+  InvalidArtifact: 242655
+  Normal: 2437
+  ResourceExhaustion: 4908
+
+--- seed 3 exit=0 ---
+Broiler.VM fuzz target: 250000 iterations, seed 3, 87 seed artifacts.
+No counterexample found. Outcome histogram:
+  InvalidArtifact: 242673
+  Normal: 2420
+  ResourceExhaustion: 4907
+
+--- seed 4 exit=0 ---
+Broiler.VM fuzz target: 250000 iterations, seed 4, 87 seed artifacts.
+No counterexample found. Outcome histogram:
+  InvalidArtifact: 242730
+  Normal: 2373
+  ResourceExhaustion: 4897
+
+--- seed 5 exit=0 ---
+Broiler.VM fuzz target: 250000 iterations, seed 5, 87 seed artifacts.
+No counterexample found. Outcome histogram:
+  InvalidArtifact: 242584
+  Normal: 2489
+  ResourceExhaustion: 4927
+
+--- seed 6 exit=0 ---
+Broiler.VM fuzz target: 250000 iterations, seed 6, 87 seed artifacts.
+No counterexample found. Outcome histogram:
+  InvalidArtifact: 242523
+  Normal: 2443
+  ResourceExhaustion: 5034
+
+--- seed 7 exit=0 ---
+Broiler.VM fuzz target: 250000 iterations, seed 7, 87 seed artifacts.
+No counterexample found. Outcome histogram:
+  InvalidArtifact: 242569
+  Normal: 2551
+  ResourceExhaustion: 4880
+
+--- seed 8 exit=0 ---
+Broiler.VM fuzz target: 250000 iterations, seed 8, 87 seed artifacts.
+No counterexample found. Outcome histogram:
+  InvalidArtifact: 242638
+  Normal: 2438
+  ResourceExhaustion: 4924
+
+sessions: 8
+iterations: 2000000
+sessions reporting a finding: 0

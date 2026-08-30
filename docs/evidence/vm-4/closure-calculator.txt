@@ -1,0 +1,10 @@
+# closure Broiler.VM.Composition.Calculator rid=linux-x64
+
+[trimmed] 5 non-framework assemblies
+Broiler.VM.Abstractions
+Broiler.VM.Binary
+Broiler.VM.Composition.Calculator
+Broiler.VM.Runtime
+Com.Example.Calculator
+
+[aot] 0 non-framework assemblies

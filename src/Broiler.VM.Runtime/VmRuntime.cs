@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   32
-// Annotated:        32/32
+// Relevant units:   34
+// Annotated:        34/34
 // Exempt:           23
-// Human-reviewed:   0/32
+// Human-reviewed:   0/34
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         7/2
+// Criteria:         10/2
 // Resource impact:  8/10 max
-// Unverified:       32
+// Unverified:       34
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -51,7 +51,41 @@ public sealed partial class VmRuntime : System.IDisposable
     private readonly System.Collections.Generic.Dictionary<ulong, VmOperation> suspended = new();
 
     private VmRuntimeState state = VmRuntimeState.Ready;
-    private int inCapabilityDepth;
+    /// <summary>
+    /// How deep the CURRENT CALL STACK is inside a non-reentrant host capability.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Call-stack scoped, not runtime-wide, and the difference is the whole of what this field
+    /// records. Non-reentrancy is a statement about a call stack: the capability must not call back
+    /// into the runtime that invoked it. A runtime-wide counter answered a different question -
+    /// "is any capability running anywhere in this runtime right now" - and refused every other
+    /// thread's ordinary call for the duration, so a capability that took a lock, read a file or
+    /// waited on anything stopped the whole runtime for every caller. The refusal looked like a
+    /// contract being enforced and was availability being lost.
+    /// </para>
+    /// <para>
+    /// <strong>Why the depth is boxed rather than an <c>AsyncLocal&lt;int&gt;</c>.</strong> An
+    /// async-local entry is removed from the thread's execution context when it is set to
+    /// <c>null</c>, and only then. A value-typed one can never be set to null: returning the depth
+    /// to zero stores a boxed <c>0</c>, which is a present value, so the entry stays on the thread
+    /// for as long as the thread lives - one per runtime object that ever ran a capability or a
+    /// provider call there, never released, not even by disposing the runtime.
+    /// </para>
+    /// <para>
+    /// That is not a slow leak of a few bytes. Every async-local write on a thread copies the whole
+    /// map, so the cost of entering any scope grows linearly with the number of runtimes that
+    /// thread has ever used, and a host that creates runtimes in a loop pays quadratically. VM-5's
+    /// baseline measured it: the same instantiate-and-invoke allocated 9,960 bytes early in a run
+    /// and 1,188,872 bytes after seventy thousand runtimes, with a bare async-local write on the
+    /// same thread going from 72 bytes to 393,072.
+    /// </para>
+    /// <para>
+    /// So zero is represented by the absence of a value. Depth one and above box an int, which is a
+    /// transient allocation on a path that is already calling out to a host.
+    /// </para>
+    /// </remarks>
+    private readonly System.Threading.AsyncLocal<object?> inCapabilityDepth = new();
     private int entryDepth;
     private int activeVerifications;
 
@@ -225,10 +259,29 @@ public sealed partial class VmRuntime : System.IDisposable
     }
 
     /// <summary>Instantiates a verified artifact into profile-owned mutable state.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=7; Fingerprint=370EDD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=7; Fingerprint=C9F945
     // Broiler-Human:        PENDING
     public VmInstantiationResult Instantiate(
         VmVerifiedArtifact artifact,
+        System.Threading.CancellationToken cancellationToken) =>
+        Instantiate(artifact, VmLimitOverrides.None, cancellationToken);
+
+    /// <summary>
+    /// Instantiates a verified artifact under stated instance limits.
+    /// </summary>
+    /// <remarks>
+    /// An omitted dimension inherits the handle's materialized instantiation ceiling. A stated one
+    /// may only tighten it: an override that would raise a bound is refused as a host failure
+    /// naming the dimension, and no part of the set is applied. Raising a ceiling is not something
+    /// an override can do at all - it requires verifying the artifact again under a runtime whose
+    /// own ceiling permits it, which produces a handle with a different identity.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=7; Fingerprint=1DB9D3
+    // Broiler-Falsified-If: a refused override leaves any dimension of the instance ceiling changed
+    // Broiler-Human:        PENDING
+    public VmInstantiationResult Instantiate(
+        VmVerifiedArtifact artifact,
+        VmLimitOverrides limitOverrides,
         System.Threading.CancellationToken cancellationToken)
     {
         var baseline = VmDiagnostics.Create(
@@ -249,7 +302,7 @@ public sealed partial class VmRuntime : System.IDisposable
 
         try
         {
-            return VmInstantiation.Run(this, artifact, cancellationToken, baseline);
+            return VmInstantiation.Run(this, artifact, limitOverrides, cancellationToken, baseline);
         }
         finally
         {
@@ -261,7 +314,7 @@ public sealed partial class VmRuntime : System.IDisposable
     /// Resumes a suspended operation. The single resume entry point: there is no second path, so
     /// there is no second admission check and no race between two of them.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=7; Fingerprint=4EBED8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=7; Fingerprint=111567
     // Broiler-Falsified-If: the parent admits the resumption after the operation resumed or after the token was spent
     // Broiler-Human:        PENDING
     public VmResumeResult Resume(VmSuspension suspension)
@@ -310,6 +363,20 @@ public sealed partial class VmRuntime : System.IDisposable
                     suspension.SuspendedStage,
                     VmReason.ResumeTokenConsumed,
                     Invalid(baseline, VmStage.Resume, VmReason.ResumeTokenConsumed, VmObjectKind.Suspension, VmAttemptedCall.Resume));
+            }
+
+            // The declared thread affinity, before anything is consumed. A profile that pins its
+            // operations to their starting thread is refused here rather than inside the operation,
+            // because the resume token is single-use: checking after it was consumed would turn a
+            // refusal into a lost operation, and the caller would have no way to retry on the right
+            // thread. Cancellation and disposal stay callable from any thread whatever the affinity
+            // says, which is ADR 0009's guarantee G1.
+            if (!operation.AffinityAdmitsCurrentThread)
+            {
+                return VmResumeResult.InvalidState(
+                    suspension.SuspendedStage,
+                    VmReason.ThreadAffinityViolation,
+                    Invalid(baseline, VmStage.Resume, VmReason.ThreadAffinityViolation, VmObjectKind.Operation, VmAttemptedCall.Resume));
             }
 
             // The parent is asked before the operation is resumed, not after. Once a shared parent
@@ -444,7 +511,7 @@ public sealed partial class VmRuntime : System.IDisposable
     /// the tighter of its declared abandon budget and the runtime's unwind budget, so a parked
     /// operation can never block disposal indefinitely.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=5C4C40
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=DA7B60
     // Broiler-Falsified-If: the configured drain budget is read nowhere here, so disposal never waits for an operation
     // Broiler-Human:        PENDING
     public VmControlResult Dispose()
@@ -475,9 +542,16 @@ public sealed partial class VmRuntime : System.IDisposable
             operation.Abandon();
         }
 
+        // One budget for the whole disposal, not one per instance. A runtime with twenty instances
+        // and a five-second budget would otherwise take a hundred seconds to dispose, which is a
+        // bound in name only: the host asked how long ITS call may take.
+        var deadline = System.DateTime.UtcNow + options.DisposeDrainBudget;
+
         foreach (var instance in live)
         {
-            instance.Dispose();
+            var remaining = deadline - System.DateTime.UtcNow;
+
+            instance.Dispose(remaining > System.TimeSpan.Zero ? remaining : System.TimeSpan.Zero);
         }
 
         lock (gate)
@@ -536,27 +610,37 @@ public sealed partial class VmRuntime : System.IDisposable
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=E2FF9B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=D6C22C
     // Broiler-Human:        PENDING
     internal void EnterCapability(VmCapabilityReentrancy reentrancy)
     {
         if (reentrancy is VmCapabilityReentrancy.NonReentrant)
         {
-            System.Threading.Interlocked.Increment(ref inCapabilityDepth);
+            inCapabilityDepth.Value = CapabilityDepth + 1;
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=399E57
+    /// <summary>The current call stack's capability depth, where absent means zero.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=D9E0F2
+    // Broiler-Falsified-If: a depth of zero is ever STORED rather than absent, which retains the entry
+    // Broiler-Human:        PENDING
+    private int CapabilityDepth => inCapabilityDepth.Value is int depth ? depth : 0;
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C6168B
     // Broiler-Human:        PENDING
     internal void LeaveCapability(VmCapabilityReentrancy reentrancy)
     {
         if (reentrancy is VmCapabilityReentrancy.NonReentrant)
         {
-            System.Threading.Interlocked.Decrement(ref inCapabilityDepth);
+            var depth = CapabilityDepth - 1;
+
+            // Null, not zero. Storing zero would leave the entry on this thread forever; storing
+            // nothing is what actually releases it, and releasing it is the whole point.
+            inCapabilityDepth.Value = depth > 0 ? depth : null;
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=465575
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=C794E0
     // Broiler-Falsified-If: Dispose, RequestCancel or PollDeadlines reaches its body without passing this gate
     // Broiler-Human:        PENDING
     internal bool TryBeginCall(out VmReason failure)
@@ -581,7 +665,7 @@ public sealed partial class VmRuntime : System.IDisposable
             // A public call reached from inside a non-reentrant host capability is refused rather
             // than admitted: the capability declared that it would not re-enter, and enforcing that
             // is the difference between a declaration and a comment.
-            if (System.Threading.Volatile.Read(ref inCapabilityDepth) > 0)
+            if (CapabilityDepth > 0)
             {
                 failure = VmReason.ReentrantRuntimeCallFromCapability;
                 return false;
@@ -635,13 +719,30 @@ public sealed partial class VmRuntime : System.IDisposable
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=7DEDC2
+    /// <summary>
+    /// Publishes a newly created instance, or refuses when the runtime is no longer taking any.
+    /// </summary>
+    /// <remarks>
+    /// An instantiation that was in flight when disposal began would otherwise be registered into a
+    /// runtime that had already walked its instance list: the instance would never be disposed, its
+    /// lease would pin its handle for the life of the process, and its retained bytes would stay
+    /// charged to a runtime nobody can read any more. Refusing here lets the instantiation path
+    /// dispose what it just built, which is the only party that can.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=2; Fingerprint=84FBAC
+    // Broiler-Falsified-If: an instance is registered after Dispose has taken its snapshot of the list
     // Broiler-Human:        PENDING
-    internal void RegisterInstance(VmInstanceImplementation instance)
+    internal bool RegisterInstance(VmInstanceImplementation instance)
     {
         lock (gate)
         {
+            if (state is not VmRuntimeState.Ready)
+            {
+                return false;
+            }
+
             instances.Add(instance);
+            return true;
         }
     }
 

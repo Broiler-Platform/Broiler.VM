@@ -23,6 +23,19 @@ internal static class ComponentGraph
     /// <summary>The component root: the directory holding Broiler.VM.slnx.</summary>
     internal static string Root { get; } = FindRoot();
 
+    /// <summary>
+    /// The milestone the rule register declares itself to be at, lowercased into the directory
+    /// name its evidence bundle uses.
+    /// </summary>
+    /// <remarks>
+    /// A suite that writes an outcome into a bundle has to write it into the CURRENT one. Naming
+    /// the directory literally meant a VM-2 run overwrote a line in VM-0's retained bundle with a
+    /// path from whichever machine happened to run last, which is the opposite of what "retained"
+    /// means: ledger update rule 1 keeps earlier evidence as dated history, and history a later
+    /// run edits is not history.
+    /// </remarks>
+    internal static string CurrentEvidenceDirectory { get; } = ReadCurrentMilestone();
+
     /// <summary>Every real project file in the component.</summary>
     internal static IReadOnlyList<ProjectFile> Projects { get; } = LoadProjects();
 
@@ -50,6 +63,16 @@ internal static class ComponentGraph
             string.Equals(Path.GetFileName(witness.Path), fileName, StringComparison.Ordinal))
         ?? throw new InvalidOperationException($"No witness input named {fileName}.");
 
+    private static string ReadCurrentMilestone()
+    {
+        var register = Path.Combine(
+            Root, "src", "tests", "Broiler.VM.Architecture.Tests", "rules.register.json");
+
+        using var document = System.Text.Json.JsonDocument.Parse(File.ReadAllText(register));
+
+        return document.RootElement.GetProperty("milestone").GetString()!.ToLowerInvariant();
+    }
+
     private static string FindRoot()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
@@ -68,13 +91,76 @@ internal static class ComponentGraph
             $"No Broiler.VM.slnx above {AppContext.BaseDirectory}; the component root could not be located.");
     }
 
+    /// <summary>
+    /// The projects in the frozen graph: the ones <c>Broiler.VM.slnx</c> lists, and no others.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Read from the SOLUTION rather than globbed from the tree, and ADR 0001 revision 4 is where
+    /// that changed. VM-6 adds a pristine feed consumer under <c>samples/</c> which cannot be a
+    /// solution project - restoring it requires a <c>dotnet pack</c> to have already happened, so
+    /// a solution containing it would not restore from a clean checkout - and which deliberately
+    /// carries a <c>PackageReference</c> to all three Broiler.VM packages, because reaching them
+    /// through a feed is the entire claim it exists to make.
+    /// </para>
+    /// <para>
+    /// Globbed, that sample is a group A violation of exactly the kind group A is right to catch:
+    /// rule A2 forbids a Broiler package reference and would have found one. The rules are not
+    /// weakened to admit it. Their SUBJECT is narrowed to what it always meant - the frozen graph,
+    /// which is what the solution enumerates and what <c>graph.manifest.json</c> describes - and
+    /// the sample is held to its own rules instead, by the feed-consumer evidence and by rule C2.
+    /// </para>
+    /// <para>
+    /// A project file that is in neither the solution nor <c>samples/</c> is a project nothing
+    /// governs, so it is reported rather than ignored: that is the loophole this narrowing would
+    /// otherwise open, and it is closed one line further down.
+    /// </para>
+    /// </remarks>
     private static IReadOnlyList<ProjectFile> LoadProjects() =>
-        Directory
-            .EnumerateFiles(Root, "*.csproj", SearchOption.AllDirectories)
-            .Where(static path => !IsUnderBuildOutput(path))
+        SolutionProjectPaths()
             .OrderBy(static path => path, StringComparer.Ordinal)
             .Select(static path => Parse(path, isWitness: false))
             .ToArray();
+
+    /// <summary>Every project file on disk that the solution does not list.</summary>
+    /// <remarks>
+    /// The complement of <see cref="Projects"/>, so that narrowing the graph to the solution
+    /// cannot become a way to hide a project from the group A rules. A rule asserts that every
+    /// entry here sits under <c>samples/</c>, which is the one place ADR 0001 revision 4
+    /// authorises a project outside the graph.
+    /// </remarks>
+    internal static IReadOnlyList<string> ProjectsOutsideTheSolution { get; } = LoadUnlisted();
+
+    private static IReadOnlyList<string> LoadUnlisted()
+    {
+        var listed = SolutionProjectPaths().ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        return Directory
+            .EnumerateFiles(Root, "*.csproj", SearchOption.AllDirectories)
+            .Where(static path => !IsUnderBuildOutput(path))
+            .Where(path => !listed.Contains(Path.GetFullPath(path)))
+            .Select(static path => Path.GetRelativePath(Root, path).Replace('\\', '/'))
+            .OrderBy(static path => path, StringComparer.Ordinal)
+            .ToArray();
+    }
+
+    private static IEnumerable<string> SolutionProjectPaths()
+    {
+        var solution = Path.Combine(Root, "Broiler.VM.slnx");
+
+        if (!File.Exists(solution))
+        {
+            throw new FileNotFoundException(
+                "Broiler.VM.slnx is the frozen project graph and the architecture rules read it. " +
+                "Without it there is nothing to hold the checkout to.", solution);
+        }
+
+        return System.Text.RegularExpressions.Regex
+            .Matches(File.ReadAllText(solution), @"<Project\s+Path=""(?<path>[^""]+)""")
+            .Select(match => Path.GetFullPath(
+                Path.Combine(Root, match.Groups["path"].Value.Replace('\\', Path.DirectorySeparatorChar))))
+            .Where(File.Exists);
+    }
 
     private static IReadOnlyList<ProjectFile> LoadWitnesses()
     {
@@ -261,7 +347,22 @@ internal static class ComponentGraph
         internal bool IsTestOnly =>
             !IsWitness && RelativePath.StartsWith("src/tests/", StringComparison.Ordinal);
 
-        internal bool IsProduct => !IsTestOnly && !IsWitness;
+        /// <summary>
+        /// A named composition root: the one project kind ADR 0001 permits to reference a profile
+        /// assembly.
+        /// </summary>
+        /// <remarks>
+        /// A third partition rather than a flag on either of the other two, because a composition
+        /// root is neither. It is not a product project - nothing there packs, no rule about
+        /// product packages applies to it, and A4 would otherwise forbid the reference the record
+        /// exists to permit - and it is not test-only, because it is published and run rather than
+        /// collected by a test runner. ADR 0001 revision 1 records the directory and what boundary
+        /// it enforces.
+        /// </remarks>
+        internal bool IsComposition =>
+            !IsWitness && RelativePath.StartsWith("src/compositions/", StringComparison.Ordinal);
+
+        internal bool IsProduct => !IsTestOnly && !IsComposition && !IsWitness;
 
         internal IEnumerable<string> ReferencedAssemblyNames =>
             ProjectReferences.Select(static reference =>

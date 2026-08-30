@@ -1,0 +1,89 @@
+=== COMPOSITION Broiler.VM.Composition.Workbench ===
+project: src/compositions/Broiler.VM.Composition.Workbench/Broiler.VM.Composition.Workbench.csproj
+
+--- JIT: dotnet run -- --verbose ---
+ok   two-profile-catalog: 2 profiles, 1 core contract version
+ok   formats-stay-separate: cross-fed artifact rejected as InvalidArtifact/MalformedEncoding
+ok   entry-point-bytes: cash=130 rent=-70
+ok   optional-import-bound: balance 130 stamped 131
+ok   optional-import-unbound: balance 130 unstamped
+ok   unsupported-profile: UnsupportedProfile/ProfileNotInCatalog
+ok   faults-stay-separate: "division by zero" and "no such account"
+broiler-vm-composition-workbench: 7 checks passed, core contract version 1
+exit code: 0
+
+--- TRIMMED: dotnet publish -r linux-x64 ---
+Determining projects to restore...
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 361 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 361 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/tests/Com.Example.Ledger/Com.Example.Ledger.csproj (in 361 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 361 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/tests/Com.Example.Calculator/Com.Example.Calculator.csproj (in 6 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/compositions/Broiler.VM.Composition.Workbench/Broiler.VM.Composition.Workbench.csproj (in 7 ms).
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Com.Example.Ledger -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Com.Example.Ledger/bin/Release/net10.0/Com.Example.Ledger.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Com.Example.Calculator -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Com.Example.Calculator/bin/Release/net10.0/Com.Example.Calculator.dll
+  Broiler.VM.Composition.Workbench -> /home/user/Broiler.Browser/Broiler.VM/src/compositions/Broiler.VM.Composition.Workbench/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.Workbench.dll
+  Optimizing assemblies for size. This process might take a while.
+  Broiler.VM.Composition.Workbench -> /home/user/Broiler.Browser/Broiler.VM/artifacts/publish-workbench-trimmed/
+image size: 78256 bytes
+ok   two-profile-catalog: 2 profiles, 1 core contract version
+ok   formats-stay-separate: cross-fed artifact rejected as InvalidArtifact/MalformedEncoding
+ok   entry-point-bytes: cash=130 rent=-70
+ok   optional-import-bound: balance 130 stamped 131
+ok   optional-import-unbound: balance 130 unstamped
+ok   unsupported-profile: UnsupportedProfile/ProfileNotInCatalog
+ok   faults-stay-separate: "division by zero" and "no such account"
+broiler-vm-composition-workbench: 7 checks passed, core contract version 1
+exit code: 0
+
+--- AOT: dotnet publish -r linux-x64 ---
+Determining projects to restore...
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 378 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/tests/Com.Example.Ledger/Com.Example.Ledger.csproj (in 378 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 378 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/compositions/Broiler.VM.Composition.Workbench/Broiler.VM.Composition.Workbench.csproj (in 378 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 10 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/tests/Com.Example.Calculator/Com.Example.Calculator.csproj (in 10 ms).
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Com.Example.Ledger -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Com.Example.Ledger/bin/Release/net10.0/Com.Example.Ledger.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Com.Example.Calculator -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Com.Example.Calculator/bin/Release/net10.0/Com.Example.Calculator.dll
+  Broiler.VM.Composition.Workbench -> /home/user/Broiler.Browser/Broiler.VM/src/compositions/Broiler.VM.Composition.Workbench/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.Workbench.dll
+  Generating native code
+  Broiler.VM.Composition.Workbench -> /home/user/Broiler.Browser/Broiler.VM/artifacts/publish-workbench-aot/
+native image size: 1495424 bytes
+ok   two-profile-catalog: 2 profiles, 1 core contract version
+ok   formats-stay-separate: cross-fed artifact rejected as InvalidArtifact/MalformedEncoding
+ok   entry-point-bytes: cash=130 rent=-70
+ok   optional-import-bound: balance 130 stamped 131
+ok   optional-import-unbound: balance 130 unstamped
+ok   unsupported-profile: UnsupportedProfile/ProfileNotInCatalog
+ok   faults-stay-separate: "division by zero" and "no such account"
+broiler-vm-composition-workbench: 7 checks passed, core contract version 1
+exit code: 0
+
+--- catalog table, compared across modes ---
+[jit]
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.Workbench
+profiles 2
+profile com.example.calculator Com.Example.Calculator 1 0
+profile com.example.ledger Com.Example.Ledger 1 1
+[trimmed]
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.Workbench
+profiles 2
+profile com.example.calculator Com.Example.Calculator 1 0
+profile com.example.ledger Com.Example.Ledger 1 1
+[aot]
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.Workbench
+profiles 2
+profile com.example.calculator Com.Example.Calculator 1 0
+profile com.example.ledger Com.Example.Ledger 1 1
+
+modes captured: 3; identical: yes

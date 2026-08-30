@@ -1,0 +1,75 @@
+=== SOAK: 400000 cycles across 4 workers ===
+
+--- JIT ---
+# broiler-vm-soak core-contract-version=1 cycles=400000 workers=4 sample-every=20000
+# gc server=False latency=Batch
+cycles heap-bytes allocated-bytes working-set-bytes gen0 gen1 gen2 elapsed-ms
+0 127096 126784 31068160 0 0 0 0
+21434 105223648 105199312 145870848 0 0 0 239
+40131 62232792 196839360 176365568 1 0 0 380
+62308 36011104 305514592 177012736 2 0 0 561
+80487 125128208 394599416 177270784 2 0 0 702
+102358 97414008 501791848 177455104 3 0 0 885
+122889 63156648 602442768 177774592 4 0 0 1046
+142219 23006440 697173616 177852416 5 0 0 1169
+163038 125091640 799227376 178311168 5 0 0 1270
+180422 75401632 884419384 178352128 6 0 0 1350
+200569 39238024 983148752 178372608 7 0 0 1431
+220144 697824 1079504848 178483200 8 0 0 1512
+241319 101076960 1179834112 180568064 8 0 0 1594
+264375 75730416 1289524584 180838400 9 1 0 1675
+283654 32563432 1381231040 180842496 10 1 0 1735
+303320 126154720 1474775152 180858880 10 1 0 1796
+321706 78735536 1562215264 180883456 11 1 0 1856
+343318 46662328 1665025064 180883456 12 1 0 1937
+362615 3452256 1756797904 180887552 13 1 0 2017
+380069 86742368 1839833640 181002240 13 1 0 2118
+400000 45505240 1934630592 181030912 14 1 0 2240
+400000 90768 1934630592 181026816 16 3 2 2243 settled
+# totals cycles=400000 runtimes=100 invocations=400000 suspensions=100000 resumptions=90908 cancellations=42856 refusals=0 faults=0
+broiler-vm-soak: 400000 cycles completed, 21 samples retained
+exit code: 0
+
+--- TRIMMED: dotnet publish -r linux-x64 ---
+Determining projects to restore...
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 372 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 372 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 372 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Soak.Host/Broiler.VM.Soak.Host.csproj (in 372 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/Broiler.VM.Fixtures.csproj (in 5 ms).
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Fixtures -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/bin/Release/net10.0/Broiler.VM.Fixtures.dll
+  Broiler.VM.Soak.Host -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Soak.Host/bin/Release/net10.0/linux-x64/Broiler.VM.Soak.Host.dll
+  Optimizing assemblies for size. This process might take a while.
+  Broiler.VM.Soak.Host -> /home/user/Broiler.Browser/Broiler.VM/artifacts/publish-soak-trimmed/
+image size: 78256 bytes
+# broiler-vm-soak core-contract-version=1 cycles=400000 workers=4 sample-every=20000
+# gc server=False latency=Batch
+cycles heap-bytes allocated-bytes working-set-bytes gen0 gen1 gen2 elapsed-ms
+0 102424 102136 21995520 0 0 0 0
+22368 109921248 109894776 139649024 0 0 0 259
+42527 73926864 208544304 165253120 1 0 0 403
+60328 26285272 295797184 166068224 2 0 0 546
+82522 135168 404538624 166084608 3 0 0 668
+103348 102278408 506637416 168919040 3 0 0 769
+123880 65775504 605041704 169144320 4 0 0 851
+145427 33369424 707530016 169193472 5 0 0 932
+162689 115545352 789657464 169193472 5 0 0 992
+185587 89560144 898588784 169385984 6 0 0 1073
+203279 38887280 982749720 169435136 7 0 0 1133
+222140 128639344 1072468232 169435136 7 0 0 1193
+245067 102860704 1181522952 169467904 8 0 0 1274
+262042 48725960 1262273792 169537536 9 0 0 1334
+280218 311472 1348725672 169603072 10 0 0 1396
+305621 121205024 1469571608 169598976 10 0 0 1477
+324616 76532064 1559942760 169680896 11 1 0 1539
+342725 27735976 1646052792 169725952 12 1 0 1599
+362209 120653016 1738740624 169721856 12 1 0 1700
+383047 84209168 1837852240 169766912 13 1 0 1821
+400000 28771464 1918479776 169787392 14 1 0 1922
+400000 66216 1918483632 169791488 16 3 2 1924 settled
+# totals cycles=400000 runtimes=100 invocations=400000 suspensions=100000 resumptions=90908 cancellations=42856 refusals=0 faults=0
+broiler-vm-soak: 400000 cycles completed, 21 samples retained
+exit code: 0

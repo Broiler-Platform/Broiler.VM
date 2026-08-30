@@ -1,0 +1,582 @@
+=== CONTROL 1: Broiler.VM.Runtime references the test-only Broiler.VM.Fixtures ===
+file: src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj
+Determining projects to restore...
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures.Host/Broiler.VM.Fixtures.Host.csproj (in 323 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/Broiler.VM.Architecture.Tests.csproj (in 256 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fuzz.Host/Broiler.VM.Fuzz.Host.csproj (in 259 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/Broiler.VM.Contract.Tests.csproj (in 323 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 4 ms).
+  3 of 8 projects are up-to-date for restore.
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Fixtures -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/bin/Release/net10.0/Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Contract.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:   165, Skipped:     0, Total:   165, Duration: 468 ms - Broiler.VM.Contract.Tests.dll (net10.0)
+  Broiler.VM.Architecture.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Failed Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A4_No_Product_Project_References_A_Test_Only_Project [2 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj -"···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A4_No_Product_Project_References_A_Test_Only_Project() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/ProjectFileRuleTests.cs:line 48
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A7_Declared_Edges_Match_The_Graph_Manifest_Exactly [13 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["checkout has 1 more: Broiler.VM.Runtime -> Broiler"···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A7_Declared_Edges_Match_The_Graph_Manifest_Exactly() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/ProjectFileRuleTests.cs:line 102
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     2, Passed:    88, Skipped:     0, Total:    90, Duration: 1 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+[xUnit.net 00:00:00.30]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A4_No_Product_Project_References_A_Test_Only_Project [FAIL]
+[xUnit.net 00:00:00.31]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A7_Declared_Edges_Match_The_Graph_Manifest_Exactly [FAIL]
+
+--- after revert ---
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Fixtures -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/bin/Release/net10.0/Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Contract.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:   165, Skipped:     0, Total:   165, Duration: 459 ms - Broiler.VM.Contract.Tests.dll (net10.0)
+  Broiler.VM.Architecture.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    90, Skipped:     0, Total:    90, Duration: 1 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+
+=== CONTROL 2: an edge the checkout HAS is deleted from graph.manifest.json ===
+file: src/tests/Broiler.VM.Architecture.Tests/graph.manifest.json
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Fixtures -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/bin/Release/net10.0/Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Contract.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+  Broiler.VM.Architecture.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:   165, Skipped:     0, Total:   165, Duration: 678 ms - Broiler.VM.Contract.Tests.dll (net10.0)
+  Failed Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A7_Declared_Edges_Match_The_Graph_Manifest_Exactly [22 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["checkout has 1 more: Broiler.VM.Runtime -> Broiler"···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A7_Declared_Edges_Match_The_Graph_Manifest_Exactly() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/ProjectFileRuleTests.cs:line 102
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     1, Passed:    89, Skipped:     0, Total:    90, Duration: 2 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+[xUnit.net 00:00:01.70]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A7_Declared_Edges_Match_The_Graph_Manifest_Exactly [FAIL]
+
+--- after revert ---
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Fixtures -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/bin/Release/net10.0/Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Contract.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:   165, Skipped:     0, Total:   165, Duration: 529 ms - Broiler.VM.Contract.Tests.dll (net10.0)
+  Broiler.VM.Architecture.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    90, Skipped:     0, Total:    90, Duration: 1 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+
+=== CONTROL 3: a retired name is exported from a product assembly ===
+file: src/Broiler.VM.Abstractions/VmCoreContract.cs
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Fixtures -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/bin/Release/net10.0/Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Contract.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:   165, Skipped:     0, Total:   165, Duration: 638 ms - Broiler.VM.Contract.Tests.dll (net10.0)
+  Broiler.VM.Architecture.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Failed Broiler.VM.Architecture.Tests.ApiBaselineRuleTests.V3_No_Retired_Or_Banned_Name_Is_Exported [3 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["the surface exports the retired name VmHandle"]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.ApiBaselineRuleTests.V3_No_Retired_Or_Banned_Name_Is_Exported() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/ApiBaselineRuleTests.cs:line 37
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Architecture.Tests.AssuranceRuleTests.J7_The_Manifest_Covers_Every_Unit_In_The_Product_Tree [698 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["src/Broiler.VM.Abstractions/VmCoreContract.cs: Bro"···, "src/Broiler.VM.Abstractions/VmCoreContract.cs is r"···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.AssuranceRuleTests.J7_The_Manifest_Covers_Every_Unit_In_The_Product_Tree() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/AssuranceRuleTests.cs:line 1783
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Architecture.Tests.AssuranceGeneratorTests.The_Generated_Artefacts_Are_Written_In_Write_Mode_And_Asserted_Otherwise [548 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["src/Broiler.VM.Abstractions/VmCoreContract.cs(6) i"···, "CODE-ASSURANCE.md(17) is not what the generator wo"···, "assurance.manifest.json(29) is not what the genera"···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.AssuranceGeneratorTests.The_Generated_Artefacts_Are_Written_In_Write_Mode_And_Asserted_Otherwise() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/AssuranceGeneratorTests.cs:line 49
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Architecture.Tests.AssuranceRuleTests.J5_Every_Generated_Artefact_Is_What_The_Generator_Would_Write [5 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["src/Broiler.VM.Abstractions/VmCoreContract.cs(6) i"···, "CODE-ASSURANCE.md(17) is not what the generator wo"···, "assurance.manifest.json(29) is not what the genera"···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.AssuranceRuleTests.J5_Every_Generated_Artefact_Is_What_The_Generator_Would_Write() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/AssuranceRuleTests.cs:line 1185
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Architecture.Tests.AssuranceRuleTests.J1_Every_Relevant_Unit_Carries_An_Annotation [2 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["src/Broiler.VM.Abstractions/VmCoreContract.cs(56):"···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.AssuranceRuleTests.J1_Every_Relevant_Unit_Carries_An_Annotation() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/AssuranceRuleTests.cs:line 178
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     5, Passed:    85, Skipped:     0, Total:    90, Duration: 1 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+[xUnit.net 00:00:00.74]     Broiler.VM.Architecture.Tests.ApiBaselineRuleTests.V3_No_Retired_Or_Banned_Name_Is_Exported [FAIL]
+[xUnit.net 00:00:00.86]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J7_The_Manifest_Covers_Every_Unit_In_The_Product_Tree [FAIL]
+[xUnit.net 00:00:01.31]     Broiler.VM.Architecture.Tests.AssuranceGeneratorTests.The_Generated_Artefacts_Are_Written_In_Write_Mode_And_Asserted_Otherwise [FAIL]
+[xUnit.net 00:00:01.34]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J5_Every_Generated_Artefact_Is_What_The_Generator_Would_Write [FAIL]
+[xUnit.net 00:00:01.91]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J1_Every_Relevant_Unit_Carries_An_Annotation [FAIL]
+
+--- after revert ---
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Fixtures -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/bin/Release/net10.0/Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Contract.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Broiler.VM.Architecture.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:   165, Skipped:     0, Total:   165, Duration: 651 ms - Broiler.VM.Contract.Tests.dll (net10.0)
+
+Passed!  - Failed:     0, Passed:    90, Skipped:     0, Total:    90, Duration: 2 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+
+=== CONTROL 4: the deterministic no-provider refusal is removed ===
+file: src/Broiler.VM.Runtime/VmArtifactLoadMediator.cs
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Fixtures -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/bin/Release/net10.0/Broiler.VM.Fixtures.dll
+/home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/VmArtifactLoadMediator.cs(186,27): warning CS8604: Possible null reference argument for parameter 'provider' in 'VmGuestLoadResult VmArtifactLoadMediator.Answer(IVmArtifactProvider provider, VmMeter meter, scoped in VmArtifactRequest request, VmDiagnostics identified, VmGuestLoadBounds bounds)'. [/home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj]
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Contract.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+  Broiler.VM.Architecture.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+  Failed Broiler.VM.Contract.Tests.GuestInitiatedLoadTests.A_Composition_With_No_Provider_Refuses_Every_Request_Deterministically [9 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 906
+Actual:   901
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.GuestInitiatedLoadTests.A_Composition_With_No_Provider_Refuses_Every_Request_Deterministically() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/GuestInitiatedLoadTests.cs:line 61
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     1, Passed:   164, Skipped:     0, Total:   165, Duration: 826 ms - Broiler.VM.Contract.Tests.dll (net10.0)
+  Failed Broiler.VM.Architecture.Tests.AssuranceRuleTests.J7_The_Manifest_Covers_Every_Unit_In_The_Product_Tree [966 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["src/Broiler.VM.Runtime/VmArtifactLoadMediator.cs: "···, "src/Broiler.VM.Runtime/VmArtifactLoadMediator.cs i"···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.AssuranceRuleTests.J7_The_Manifest_Covers_Every_Unit_In_The_Product_Tree() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/AssuranceRuleTests.cs:line 1783
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Architecture.Tests.AssuranceGeneratorTests.The_Generated_Artefacts_Are_Written_In_Write_Mode_And_Asserted_Otherwise [1 s]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["src/Broiler.VM.Runtime/VmArtifactLoadMediator.cs(1"···, "assurance.manifest.json(54) is not what the genera"···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.AssuranceGeneratorTests.The_Generated_Artefacts_Are_Written_In_Write_Mode_And_Asserted_Otherwise() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/AssuranceGeneratorTests.cs:line 49
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Architecture.Tests.AssuranceRuleTests.J5_Every_Generated_Artefact_Is_What_The_Generator_Would_Write [5 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["src/Broiler.VM.Runtime/VmArtifactLoadMediator.cs(1"···, "assurance.manifest.json(54) is not what the genera"···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.AssuranceRuleTests.J5_Every_Generated_Artefact_Is_What_The_Generator_Would_Write() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/AssuranceRuleTests.cs:line 1185
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Architecture.Tests.AssuranceRuleTests.J3_Every_Recorded_Fingerprint_Is_The_One_The_Code_Produces [3 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["src/Broiler.VM.Runtime/VmArtifactLoadMediator.cs(1"···]
+  Stack Trace:
+     at Broiler.VM.Architecture.Tests.AssuranceRuleTests.J3_Every_Recorded_Fingerprint_Is_The_One_The_Code_Produces() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/AssuranceRuleTests.cs:line 745
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     4, Passed:    86, Skipped:     0, Total:    90, Duration: 2 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+[xUnit.net 00:00:00.69]     Broiler.VM.Contract.Tests.GuestInitiatedLoadTests.A_Composition_With_No_Provider_Refuses_Every_Request_Deterministically [FAIL]
+[xUnit.net 00:00:01.60]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J7_The_Manifest_Covers_Every_Unit_In_The_Product_Tree [FAIL]
+[xUnit.net 00:00:02.12]     Broiler.VM.Architecture.Tests.AssuranceGeneratorTests.The_Generated_Artefacts_Are_Written_In_Write_Mode_And_Asserted_Otherwise [FAIL]
+[xUnit.net 00:00:02.15]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J5_Every_Generated_Artefact_Is_What_The_Generator_Would_Write [FAIL]
+[xUnit.net 00:00:02.75]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J3_Every_Recorded_Fingerprint_Is_The_One_The_Code_Produces [FAIL]
+
+--- after revert ---
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Fixtures -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/bin/Release/net10.0/Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Contract.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:   165, Skipped:     0, Total:   165, Duration: 636 ms - Broiler.VM.Contract.Tests.dll (net10.0)
+  Broiler.VM.Architecture.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    90, Skipped:     0, Total:    90, Duration: 1 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+
+=== CONTROL 5: the verifier reserves an allocation before reading a byte ===
+file: src/tests/Broiler.VM.Fixtures/FixtureVmVerifier.cs
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Fixtures -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/bin/Release/net10.0/Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Contract.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+  Broiler.VM.Architecture.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+  Failed Broiler.VM.Contract.Tests.ArtifactBoundaryTests.A_Bounded_Fuzz_Session_Finds_No_Counterexample [34 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["iteration 0: an allocation was reserved before any"···]
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.ArtifactBoundaryTests.A_Bounded_Fuzz_Session_Finds_No_Counterexample() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/ArtifactBoundaryTests.cs:line 308
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.MalformedCorpusTests.No_Corpus_Artifact_Allocates_Before_The_Policy_That_Bounds_It_Exists [10 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["control-sum: an allocation was reserved before any"···, "control-constant: an allocation was reserved befor"···, "control-empty-code: an allocation was reserved bef"···, "prefix-empty: an allocation was reserved before an"···, "prefix-one-byte: an allocation was reserved before"···, ···]
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.MalformedCorpusTests.No_Corpus_Artifact_Allocates_Before_The_Policy_That_Bounds_It_Exists() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/MalformedCorpusTests.cs:line 302
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     2, Passed:   163, Skipped:     0, Total:   165, Duration: 509 ms - Broiler.VM.Contract.Tests.dll (net10.0)
+
+Passed!  - Failed:     0, Passed:    90, Skipped:     0, Total:    90, Duration: 2 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+[xUnit.net 00:00:00.72]     Broiler.VM.Contract.Tests.ArtifactBoundaryTests.A_Bounded_Fuzz_Session_Finds_No_Counterexample [FAIL]
+[xUnit.net 00:00:00.92]     Broiler.VM.Contract.Tests.MalformedCorpusTests.No_Corpus_Artifact_Allocates_Before_The_Policy_That_Bounds_It_Exists [FAIL]
+
+--- after revert ---
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Fixtures -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/bin/Release/net10.0/Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Contract.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+  Broiler.VM.Architecture.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:   165, Skipped:     0, Total:   165, Duration: 585 ms - Broiler.VM.Contract.Tests.dll (net10.0)
+
+Passed!  - Failed:     0, Passed:    90, Skipped:     0, Total:    90, Duration: 2 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+
+=== CONTROL 6: the verifier escapes instead of answering ===
+file: src/tests/Broiler.VM.Fixtures/FixtureVmVerifier.cs
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Fixtures -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/bin/Release/net10.0/Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Contract.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+  Broiler.VM.Architecture.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+  Failed Broiler.VM.Contract.Tests.MalformedCorpusTests.Every_Recorded_Artifact_Still_Answers_What_Was_Recorded [14 ms]
+  Error Message:
+   System.InvalidOperationException : negative control
+  Stack Trace:
+     at Broiler.VM.Fixtures.FixtureVmVerifier.Verify(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, IVmVerificationContext context, CancellationToken cancellationToken) in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/FixtureVmVerifier.cs:line 119
+   at Broiler.VM.Fixtures.FixtureVmVerifier.Broiler.VM.IVmProfileVerifier.Verify(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, IVmVerificationContext context, CancellationToken cancellationToken)
+   at Broiler.VM.VmRuntime.RunVerifier(VmProfileDescriptor profile, VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, CancellationToken cancellationToken, VmDiagnostics identified, VmArtifactOrigin origin, VmMeter requestingMeter) in /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/VmVerification.cs:line 225
+   at Broiler.VM.VmRuntime.VerifyCore(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, CancellationToken cancellationToken, VmDiagnostics baseline, VmArtifactOrigin origin, VmMeter requestingMeter) in /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/VmVerification.cs:line 159
+   at Broiler.VM.VmRuntime.Verify(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, CancellationToken cancellationToken) in /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/VmRuntime.cs:line 219
+   at Broiler.VM.Contract.Tests.CorpusRunner.Run(Byte[] payload, UInt32 descriptorFormatVersion, UInt64 artifactBytesRequest) in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/CorpusRunner.cs:line 82
+   at Broiler.VM.Contract.Tests.MalformedCorpusTests.Observe(FixtureCorpusRecord row) in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/MalformedCorpusTests.cs:line 415
+   at Broiler.VM.Contract.Tests.MalformedCorpusTests.Every_Recorded_Artifact_Still_Answers_What_Was_Recorded() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/MalformedCorpusTests.cs:line 243
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.MalformedCorpusTests.Every_Exactly_Pinned_Artifact_Answers_What_Its_Declaration_Says [24 ms]
+  Error Message:
+   System.InvalidOperationException : negative control
+  Stack Trace:
+     at Broiler.VM.Fixtures.FixtureVmVerifier.Verify(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, IVmVerificationContext context, CancellationToken cancellationToken) in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/FixtureVmVerifier.cs:line 119
+   at Broiler.VM.Fixtures.FixtureVmVerifier.Broiler.VM.IVmProfileVerifier.Verify(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, IVmVerificationContext context, CancellationToken cancellationToken)
+   at Broiler.VM.VmRuntime.RunVerifier(VmProfileDescriptor profile, VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, CancellationToken cancellationToken, VmDiagnostics identified, VmArtifactOrigin origin, VmMeter requestingMeter) in /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/VmVerification.cs:line 225
+   at Broiler.VM.VmRuntime.VerifyCore(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, CancellationToken cancellationToken, VmDiagnostics baseline, VmArtifactOrigin origin, VmMeter requestingMeter) in /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/VmVerification.cs:line 159
+   at Broiler.VM.VmRuntime.Verify(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, CancellationToken cancellationToken) in /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/VmRuntime.cs:line 219
+   at Broiler.VM.Contract.Tests.CorpusRunner.Run(Byte[] payload, UInt32 descriptorFormatVersion, UInt64 artifactBytesRequest) in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/CorpusRunner.cs:line 82
+   at Broiler.VM.Contract.Tests.MalformedCorpusTests.Observe(FixtureCorpusRecord row) in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/MalformedCorpusTests.cs:line 415
+   at Broiler.VM.Contract.Tests.MalformedCorpusTests.Every_Exactly_Pinned_Artifact_Answers_What_Its_Declaration_Says() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/MalformedCorpusTests.cs:line 189
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.MalformedCorpusTests.The_Corpus_On_Disk_Is_What_The_Declaration_Describes [34 ms]
+  Error Message:
+   System.InvalidOperationException : negative control
+  Stack Trace:
+     at Broiler.VM.Fixtures.FixtureVmVerifier.Verify(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, IVmVerificationContext context, CancellationToken cancellationToken) in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/FixtureVmVerifier.cs:line 119
+   at Broiler.VM.Fixtures.FixtureVmVerifier.Broiler.VM.IVmProfileVerifier.Verify(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, IVmVerificationContext context, CancellationToken cancellationToken)
+   at Broiler.VM.VmRuntime.RunVerifier(VmProfileDescriptor profile, VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, CancellationToken cancellationToken, VmDiagnostics identified, VmArtifactOrigin origin, VmMeter requestingMeter) in /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/VmVerification.cs:line 225
+   at Broiler.VM.VmRuntime.VerifyCore(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, CancellationToken cancellationToken, VmDiagnostics baseline, VmArtifactOrigin origin, VmMeter requestingMeter) in /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/VmVerification.cs:line 159
+   at Broiler.VM.VmRuntime.Verify(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, CancellationToken cancellationToken) in /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/VmRuntime.cs:line 219
+   at Broiler.VM.Contract.Tests.CorpusRunner.Run(Byte[] payload, UInt32 descriptorFormatVersion, UInt64 artifactBytesRequest) in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/CorpusRunner.cs:line 82
+   at Broiler.VM.Contract.Tests.MalformedCorpusTests.Rows(IReadOnlyList`1 seeded, IReadOnlyList`1 existing) in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/MalformedCorpusTests.cs:line 431
+   at Broiler.VM.Contract.Tests.MalformedCorpusTests.The_Corpus_On_Disk_Is_What_The_Declaration_Describes() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/MalformedCorpusTests.cs:line 43
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.MalformedCorpusTests.The_Effective_Policy_The_Verifier_Receives_Is_The_Intersection_And_Never_Above_The_Host_Ceiling [22 ms]
+  Error Message:
+   System.InvalidOperationException : negative control
+  Stack Trace:
+     at Broiler.VM.Fixtures.FixtureVmVerifier.Verify(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, IVmVerificationContext context, CancellationToken cancellationToken) in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/FixtureVmVerifier.cs:line 119
+   at Broiler.VM.Fixtures.FixtureVmVerifier.Broiler.VM.IVmProfileVerifier.Verify(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, IVmVerificationContext context, CancellationToken cancellationToken)
+   at Broiler.VM.VmRuntime.RunVerifier(VmProfileDescriptor profile, VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, CancellationToken cancellationToken, VmDiagnostics identified, VmArtifactOrigin origin, VmMeter requestingMeter) in /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/VmVerification.cs:line 225
+   at Broiler.VM.VmRuntime.VerifyCore(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, CancellationToken cancellationToken, VmDiagnostics baseline, VmArtifactOrigin origin, VmMeter requestingMeter) in /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/VmVerification.cs:line 159
+   at Broiler.VM.VmRuntime.Verify(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, CancellationToken cancellationToken) in /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/VmRuntime.cs:line 219
+   at Broiler.VM.Contract.Tests.CorpusRunner.Run(Byte[] payload, UInt32 descriptorFormatVersion, UInt64 artifactBytesRequest) in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/CorpusRunner.cs:line 82
+   at Broiler.VM.Contract.Tests.MalformedCorpusTests.Observe(FixtureCorpusRecord row) in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/MalformedCorpusTests.cs:line 415
+   at Broiler.VM.Contract.Tests.MalformedCorpusTests.The_Effective_Policy_The_Verifier_Receives_Is_The_Intersection_And_Never_Above_The_Host_Ceiling() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/MalformedCorpusTests.cs:line 323
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.MalformedCorpusTests.The_Corpus_Can_Fail_In_Both_Directions [39 ms]
+  Error Message:
+   System.InvalidOperationException : negative control
+  Stack Trace:
+     at Broiler.VM.Fixtures.FixtureVmVerifier.Verify(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, IVmVerificationContext context, CancellationToken cancellationToken) in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/FixtureVmVerifier.cs:line 119
+   at Broiler.VM.Fixtures.FixtureVmVerifier.Broiler.VM.IVmProfileVerifier.Verify(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, IVmVerificationContext context, CancellationToken cancellationToken)
+   at Broiler.VM.VmRuntime.RunVerifier(VmProfileDescriptor profile, VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, CancellationToken cancellationToken, VmDiagnostics identified, VmArtifactOrigin origin, VmMeter requestingMeter) in /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/VmVerification.cs:line 225
+   at Broiler.VM.VmRuntime.VerifyCore(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, CancellationToken cancellationToken, VmDiagnostics baseline, VmArtifactOrigin origin, VmMeter requestingMeter) in /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/VmVerification.cs:line 159
+   at Broiler.VM.VmRuntime.Verify(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, CancellationToken cancellationToken) in /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/VmRuntime.cs:line 219
+   at Broiler.VM.Contract.Tests.CorpusRunner.Run(Byte[] payload, UInt32 descriptorFormatVersion, UInt64 artifactBytesRequest) in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/CorpusRunner.cs:line 82
+   at Broiler.VM.Contract.Tests.MalformedCorpusTests.Observe(FixtureCorpusRecord row) in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/MalformedCorpusTests.cs:line 415
+   at Broiler.VM.Contract.Tests.MalformedCorpusTests.<>c.<The_Corpus_Can_Fail_In_Both_Directions>b__10_0(FixtureCorpusRecord row) in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/MalformedCorpusTests.cs:line 403
+   at System.Linq.Enumerable.ListSelectIterator`2.Fill(ReadOnlySpan`1 source, Span`1 destination, Func`2 func)
+   at System.Linq.Enumerable.ListSelectIterator`2.ToArray()
+   at System.Linq.Enumerable.ToArray[TSource](IEnumerable`1 source)
+   at Broiler.VM.Contract.Tests.MalformedCorpusTests.The_Corpus_Can_Fail_In_Both_Directions() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/MalformedCorpusTests.cs:line 402
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.MalformedCorpusTests.No_Corpus_Artifact_Allocates_Before_The_Policy_That_Bounds_It_Exists [23 ms]
+  Error Message:
+   System.InvalidOperationException : negative control
+  Stack Trace:
+     at Broiler.VM.Fixtures.FixtureVmVerifier.Verify(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, IVmVerificationContext context, CancellationToken cancellationToken) in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/FixtureVmVerifier.cs:line 119
+   at Broiler.VM.Fixtures.FixtureVmVerifier.Broiler.VM.IVmProfileVerifier.Verify(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, IVmVerificationContext context, CancellationToken cancellationToken)
+   at Broiler.VM.VmRuntime.RunVerifier(VmProfileDescriptor profile, VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, CancellationToken cancellationToken, VmDiagnostics identified, VmArtifactOrigin origin, VmMeter requestingMeter) in /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/VmVerification.cs:line 225
+   at Broiler.VM.VmRuntime.VerifyCore(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, CancellationToken cancellationToken, VmDiagnostics baseline, VmArtifactOrigin origin, VmMeter requestingMeter) in /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/VmVerification.cs:line 159
+   at Broiler.VM.VmRuntime.Verify(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, CancellationToken cancellationToken) in /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/VmRuntime.cs:line 219
+   at Broiler.VM.Contract.Tests.CorpusRunner.Run(Byte[] payload, UInt32 descriptorFormatVersion, UInt64 artifactBytesRequest) in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/CorpusRunner.cs:line 82
+   at Broiler.VM.Contract.Tests.MalformedCorpusTests.Observe(FixtureCorpusRecord row) in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/MalformedCorpusTests.cs:line 415
+   at Broiler.VM.Contract.Tests.MalformedCorpusTests.No_Corpus_Artifact_Allocates_Before_The_Policy_That_Bounds_It_Exists() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/MalformedCorpusTests.cs:line 280
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.MalformedCorpusTests.Every_Corpus_Artifact_Answers_Inside_The_Closed_Set_And_Produces_No_Handle_Unless_It_Verified [20 ms]
+  Error Message:
+   System.InvalidOperationException : negative control
+  Stack Trace:
+     at Broiler.VM.Fixtures.FixtureVmVerifier.Verify(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, IVmVerificationContext context, CancellationToken cancellationToken) in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/FixtureVmVerifier.cs:line 119
+   at Broiler.VM.Fixtures.FixtureVmVerifier.Broiler.VM.IVmProfileVerifier.Verify(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, IVmVerificationContext context, CancellationToken cancellationToken)
+   at Broiler.VM.VmRuntime.RunVerifier(VmProfileDescriptor profile, VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, CancellationToken cancellationToken, VmDiagnostics identified, VmArtifactOrigin origin, VmMeter requestingMeter) in /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/VmVerification.cs:line 225
+   at Broiler.VM.VmRuntime.VerifyCore(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, CancellationToken cancellationToken, VmDiagnostics baseline, VmArtifactOrigin origin, VmMeter requestingMeter) in /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/VmVerification.cs:line 159
+   at Broiler.VM.VmRuntime.Verify(VmArtifactDescriptor& descriptor, ReadOnlySpan`1 payload, CancellationToken cancellationToken) in /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/VmRuntime.cs:line 219
+   at Broiler.VM.Contract.Tests.CorpusRunner.Run(Byte[] payload, UInt32 descriptorFormatVersion, UInt64 artifactBytesRequest) in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/CorpusRunner.cs:line 82
+   at Broiler.VM.Contract.Tests.MalformedCorpusTests.Observe(FixtureCorpusRecord row) in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/MalformedCorpusTests.cs:line 415
+   at Broiler.VM.Contract.Tests.MalformedCorpusTests.Every_Corpus_Artifact_Answers_Inside_The_Closed_Set_And_Produces_No_Handle_Unless_It_Verified() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/MalformedCorpusTests.cs:line 152
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.ArtifactBoundaryTests.A_Bounded_Fuzz_Session_Finds_No_Counterexample [46 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["iteration 132: an exception escaped verification: "···, "iteration 132: the load stage answered None, which"···]
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.ArtifactBoundaryTests.A_Bounded_Fuzz_Session_Finds_No_Counterexample() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/ArtifactBoundaryTests.cs:line 308
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     8, Passed:   157, Skipped:     0, Total:   165, Duration: 391 ms - Broiler.VM.Contract.Tests.dll (net10.0)
+
+Passed!  - Failed:     0, Passed:    90, Skipped:     0, Total:    90, Duration: 2 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+[xUnit.net 00:00:00.49]     Broiler.VM.Contract.Tests.MalformedCorpusTests.Every_Recorded_Artifact_Still_Answers_What_Was_Recorded [FAIL]
+[xUnit.net 00:00:00.52]     Broiler.VM.Contract.Tests.MalformedCorpusTests.Every_Exactly_Pinned_Artifact_Answers_What_Its_Declaration_Says [FAIL]
+[xUnit.net 00:00:00.67]     Broiler.VM.Contract.Tests.MalformedCorpusTests.The_Corpus_On_Disk_Is_What_The_Declaration_Describes [FAIL]
+[xUnit.net 00:00:00.68]     Broiler.VM.Contract.Tests.MalformedCorpusTests.The_Effective_Policy_The_Verifier_Receives_Is_The_Intersection_And_Never_Above_The_Host_Ceiling [FAIL]
+[xUnit.net 00:00:00.69]     Broiler.VM.Contract.Tests.MalformedCorpusTests.The_Corpus_Can_Fail_In_Both_Directions [FAIL]
+[xUnit.net 00:00:00.69]     Broiler.VM.Contract.Tests.MalformedCorpusTests.No_Corpus_Artifact_Allocates_Before_The_Policy_That_Bounds_It_Exists [FAIL]
+[xUnit.net 00:00:00.70]     Broiler.VM.Contract.Tests.MalformedCorpusTests.Every_Corpus_Artifact_Answers_Inside_The_Closed_Set_And_Produces_No_Handle_Unless_It_Verified [FAIL]
+[xUnit.net 00:00:00.80]     Broiler.VM.Contract.Tests.ArtifactBoundaryTests.A_Bounded_Fuzz_Session_Finds_No_Counterexample [FAIL]
+
+--- after revert ---
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Fixtures -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/bin/Release/net10.0/Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Contract.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+  Broiler.VM.Architecture.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:   165, Skipped:     0, Total:   165, Duration: 709 ms - Broiler.VM.Contract.Tests.dll (net10.0)
+
+Passed!  - Failed:     0, Passed:    90, Skipped:     0, Total:    90, Duration: 2 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+
+=== CONTROL 7: one declared corpus expectation is changed to a wrong reason ===
+file: src/tests/Broiler.VM.Fixtures/FixtureCorpus.cs
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Fixtures -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/bin/Release/net10.0/Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Contract.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+  Broiler.VM.Architecture.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+  Failed Broiler.VM.Contract.Tests.MalformedCorpusTests.The_Corpus_On_Disk_Is_What_The_Declaration_Describes [117 ms]
+  Error Message:
+   src/tests/corpus/vm-2/manifest.json is not what the corpus would write.
+  Run: BROILER_CORPUS_WRITE=1 dotnet test Broiler.VM.slnx -c Release
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.MalformedCorpusTests.The_Corpus_On_Disk_Is_What_The_Declaration_Describes() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/MalformedCorpusTests.cs:line 54
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     1, Passed:   164, Skipped:     0, Total:   165, Duration: 623 ms - Broiler.VM.Contract.Tests.dll (net10.0)
+
+Passed!  - Failed:     0, Passed:    90, Skipped:     0, Total:    90, Duration: 2 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+[xUnit.net 00:00:00.94]     Broiler.VM.Contract.Tests.MalformedCorpusTests.The_Corpus_On_Disk_Is_What_The_Declaration_Describes [FAIL]
+
+--- after revert ---
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Fixtures -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/bin/Release/net10.0/Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Contract.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:   165, Skipped:     0, Total:   165, Duration: 464 ms - Broiler.VM.Contract.Tests.dll (net10.0)
+  Broiler.VM.Architecture.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    90, Skipped:     0, Total:    90, Duration: 1 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+
+=== CONTROL 8: one byte of one retained corpus artifact is changed ===
+file: src/tests/corpus/vm-2/control-sum.bin
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Fixtures -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/bin/Release/net10.0/Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Contract.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+  Failed Broiler.VM.Contract.Tests.MalformedCorpusTests.Every_Manifest_Row_Names_A_File_That_Hashes_To_What_It_Records [48 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["control-sum: hashes to 98de5592cdaac9d818cefb4526e"···]
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.MalformedCorpusTests.Every_Manifest_Row_Names_A_File_That_Hashes_To_What_It_Records() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/MalformedCorpusTests.cs:line 106
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Broiler.VM.Contract.Tests.MalformedCorpusTests.Every_Exactly_Pinned_Artifact_Answers_What_Its_Declaration_Says [11 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["control-sum: expected Normal, answered InvalidArti"···]
+  Stack Trace:
+     at Broiler.VM.Contract.Tests.MalformedCorpusTests.Every_Exactly_Pinned_Artifact_Answers_What_Its_Declaration_Says() in /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/MalformedCorpusTests.cs:line 219
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     2, Passed:   163, Skipped:     0, Total:   165, Duration: 532 ms - Broiler.VM.Contract.Tests.dll (net10.0)
+  Broiler.VM.Architecture.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    90, Skipped:     0, Total:    90, Duration: 1 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+[xUnit.net 00:00:00.65]     Broiler.VM.Contract.Tests.MalformedCorpusTests.Every_Manifest_Row_Names_A_File_That_Hashes_To_What_It_Records [FAIL]
+[xUnit.net 00:00:00.67]     Broiler.VM.Contract.Tests.MalformedCorpusTests.Every_Exactly_Pinned_Artifact_Answers_What_Its_Declaration_Says [FAIL]
+
+--- after revert ---
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Fixtures -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/bin/Release/net10.0/Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Contract.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll (.NETCoreApp,Version=v10.0)
+  Broiler.VM.Architecture.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll
+Test run for /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:   165, Skipped:     0, Total:   165, Duration: 901 ms - Broiler.VM.Contract.Tests.dll (net10.0)
+
+Passed!  - Failed:     0, Passed:    90, Skipped:     0, Total:    90, Duration: 2 s - Broiler.VM.Architecture.Tests.dll (net10.0)

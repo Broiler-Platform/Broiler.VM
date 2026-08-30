@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   17
-// Annotated:        17/17
+// Relevant units:   18
+// Annotated:        18/18
 // Exempt:           18
-// Human-reviewed:   0/17
+// Human-reviewed:   0/18
 // IP risk:          Low
 // Security risk:    Medium
-// Criteria:         7/0
+// Criteria:         8/0
 // Resource impact:  1/10 max
-// Unverified:       17
+// Unverified:       18
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -118,6 +118,31 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
         }
     }
 
+    /// <summary>
+    /// Whether a charge against <paramref name="dimension"/> counts toward the uncharged-work bound.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Two dimensions do, and they are the two denominated in work units: the profile's own
+    /// <c>Fuel</c> and the verifier's <c>VerifierWork</c>. The bound is on <em>work performed between
+    /// two polls</em>, and the other thirteen dimensions count bytes, milliseconds, calls, depths and
+    /// live objects. Adding a byte count to a work counter says one allocated byte is one unit of
+    /// work, which is not a conversion anything in the contract defines.
+    /// </para>
+    /// <para>
+    /// It is not a cosmetic distinction. Summing every dimension made one correctly metered,
+    /// in-bounds allocation of half a megabyte breach a poll bound of a thousand instantly - and the
+    /// poll-bound path reports a profile fault and poisons the runtime, so a core unit conflation
+    /// was billed to the profile as a broken metering contract. The corpus entry that reads a
+    /// constant pool at exactly the declared-count ceiling is what found it.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=0; Fingerprint=2336EA
+    // Broiler-Falsified-If: a dimension counting bytes, time or objects reaches the uncharged-work counter
+    // Broiler-Human:        PENDING
+    private static bool IsWork(VmBudgetDimension dimension) =>
+        dimension is VmBudgetDimension.Fuel or VmBudgetDimension.VerifierWork;
+
     /// <summary>The invocation level's remaining allowance, for a nested load's request snapshot.</summary>
     // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Low; Resources=1; Fingerprint=E3117F
     // Broiler-Falsified-If: a ceiling-class dimension is handed on as ceiling minus consumed, not as its effective ceiling
@@ -134,7 +159,7 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=A8AE14
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=7A8087
     // Broiler-Falsified-If: one level commits while another refuses, or a refusal names Invocation where an outer level would
     // Broiler-Human:        PENDING
     public bool TryCharge(VmBudgetDimension dimension, ulong amount)
@@ -190,7 +215,11 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
             instance?.Commit(dimension, amount);
             invocation.Commit(dimension, amount);
 
-            sinceLastPoll += amount;
+            if (IsWork(dimension))
+            {
+                sinceLastPoll += amount;
+            }
+
             return true;
         }
     }

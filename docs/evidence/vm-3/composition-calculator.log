@@ -1,0 +1,76 @@
+=== COMPOSITION Broiler.VM.Composition.Calculator ===
+project: src/compositions/Broiler.VM.Composition.Calculator/Broiler.VM.Composition.Calculator.csproj
+
+--- JIT: dotnet run -- --verbose ---
+ok   arithmetic: evaluated to 42
+ok   language-fault: ProfileFault/ProfileFaultUnspecified: division by zero
+ok   unknown-entry-point: ProfileFault/ProfileFaultUnspecified
+ok   refused-before-execution: InvalidArtifact/SemanticValidationFailed
+ok   registration-implies-no-provider: one capability registered, zero bindings offered
+broiler-vm-composition-calculator: 5 checks passed, core contract version 1
+exit code: 0
+
+--- TRIMMED: dotnet publish -r linux-x64 ---
+Determining projects to restore...
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 364 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 364 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/tests/Com.Example.Calculator/Com.Example.Calculator.csproj (in 364 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/compositions/Broiler.VM.Composition.Calculator/Broiler.VM.Composition.Calculator.csproj (in 364 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 5 ms).
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Com.Example.Calculator -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Com.Example.Calculator/bin/Release/net10.0/Com.Example.Calculator.dll
+  Broiler.VM.Composition.Calculator -> /home/user/Broiler.Browser/Broiler.VM/src/compositions/Broiler.VM.Composition.Calculator/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.Calculator.dll
+  Optimizing assemblies for size. This process might take a while.
+  Broiler.VM.Composition.Calculator -> /home/user/Broiler.Browser/Broiler.VM/artifacts/publish-calculator-trimmed/
+image size: 78256 bytes
+ok   arithmetic: evaluated to 42
+ok   language-fault: ProfileFault/ProfileFaultUnspecified: division by zero
+ok   unknown-entry-point: ProfileFault/ProfileFaultUnspecified
+ok   refused-before-execution: InvalidArtifact/SemanticValidationFailed
+ok   registration-implies-no-provider: one capability registered, zero bindings offered
+broiler-vm-composition-calculator: 5 checks passed, core contract version 1
+exit code: 0
+
+--- AOT: dotnet publish -r linux-x64 ---
+Determining projects to restore...
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/tests/Com.Example.Calculator/Com.Example.Calculator.csproj (in 407 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 407 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 407 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/compositions/Broiler.VM.Composition.Calculator/Broiler.VM.Composition.Calculator.csproj (in 407 ms).
+  Restored /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 7 ms).
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Com.Example.Calculator -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Com.Example.Calculator/bin/Release/net10.0/Com.Example.Calculator.dll
+  Broiler.VM.Composition.Calculator -> /home/user/Broiler.Browser/Broiler.VM/src/compositions/Broiler.VM.Composition.Calculator/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.Calculator.dll
+  Generating native code
+  Broiler.VM.Composition.Calculator -> /home/user/Broiler.Browser/Broiler.VM/artifacts/publish-calculator-aot/
+native image size: 1445920 bytes
+ok   arithmetic: evaluated to 42
+ok   language-fault: ProfileFault/ProfileFaultUnspecified: division by zero
+ok   unknown-entry-point: ProfileFault/ProfileFaultUnspecified
+ok   refused-before-execution: InvalidArtifact/SemanticValidationFailed
+ok   registration-implies-no-provider: one capability registered, zero bindings offered
+broiler-vm-composition-calculator: 5 checks passed, core contract version 1
+exit code: 0
+
+--- catalog table, compared across modes ---
+[jit]
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.Calculator
+profiles 1
+profile com.example.calculator Com.Example.Calculator 1 0
+[trimmed]
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.Calculator
+profiles 1
+profile com.example.calculator Com.Example.Calculator 1 0
+[aot]
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.Calculator
+profiles 1
+profile com.example.calculator Com.Example.Calculator 1 0
+
+modes captured: 3; identical: yes

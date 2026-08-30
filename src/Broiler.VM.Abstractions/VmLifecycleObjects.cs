@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   21
-// Annotated:        21/21
+// Relevant units:   23
+// Annotated:        23/23
 // Exempt:           43
-// Human-reviewed:   0/21
+// Human-reviewed:   0/23
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  7/10 max
-// Unverified:       21
+// Unverified:       23
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -366,6 +366,30 @@ public abstract class VmInstance : System.IDisposable
     // Broiler-Human:        PENDING
     public abstract VmInvocationResult Invoke(
         in VmInvocationRequest request,
+        System.Threading.CancellationToken cancellationToken,
+        out VmOperationControlHandle controlHandle);
+
+    /// <summary>Invokes an entry point under stated operation limits.</summary>
+    /// <remarks>
+    /// An omitted dimension inherits the instance's materialized policy. A stated one may only
+    /// tighten it, and an override that would raise a bound is refused as a host failure naming the
+    /// dimension rather than clamped, because it was stated from inside the trust boundary.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=7; Fingerprint=B4D2B2
+    // Broiler-Human:        PENDING
+    public abstract VmInvocationResult Invoke(
+        in VmInvocationRequest request,
+        VmLimitOverrides limitOverrides,
+        System.Threading.CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Invokes an entry point under stated operation limits, also returning the control handle.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=7; Fingerprint=7FA926
+    // Broiler-Human:        PENDING
+    public abstract VmInvocationResult Invoke(
+        in VmInvocationRequest request,
+        VmLimitOverrides limitOverrides,
         System.Threading.CancellationToken cancellationToken,
         out VmOperationControlHandle controlHandle);
 

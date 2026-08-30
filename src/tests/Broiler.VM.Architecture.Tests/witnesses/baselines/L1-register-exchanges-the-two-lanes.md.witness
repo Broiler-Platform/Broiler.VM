@@ -1,0 +1,10 @@
+# Witness: the two lane figures written the wrong way round
+
+Both numbers are real and both are in the log; each is simply in the other's column. This is the
+likeliest way this table goes wrong - two figures of the same magnitude, two columns apart - and it
+is why each figure is checked against its own lane rather than against the set of figures for its
+row. A membership check passes this input. The rule fails it twice.
+
+| Measurement | Unit | Candidate | Control | JIT | Native AOT |
+|---|---|---|---|---|---|
+| `diagnostics-capture` | record | A fully identified diagnostics record | Its minimal form | 86.2510 | 90.5790 |

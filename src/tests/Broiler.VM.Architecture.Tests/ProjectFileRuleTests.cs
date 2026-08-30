@@ -196,6 +196,49 @@ public sealed class ProjectFileRuleTests
     }
 
     [Fact]
+    public void A12_A_Composition_Root_References_Only_Core_Packages_And_Profiles()
+    {
+        Assert.Empty(Sweep(ArchitectureRules.A12));
+
+        // Three witnesses, because A12 makes three independent claims and a single non-empty
+        // assertion would pin only whichever fires first. A root that drags the fixture profile
+        // into a shipped image is the failure the exit gate names by name; a root that composes
+        // nothing is a composition in name only; and a package reference is the way a closure
+        // grows without any project reference changing.
+        Assert.Contains(
+            ArchitectureRules.A12(ComponentGraph.Witness("A12-composition-references-fixtures.csproj.witness")),
+            message => message.Contains("Broiler.VM.Fixtures", StringComparison.Ordinal));
+
+        Assert.Contains(
+            ArchitectureRules.A12(ComponentGraph.Witness("A12-composition-composes-no-profile.csproj.witness")),
+            message => message.Contains("composes no profile", StringComparison.Ordinal));
+
+        Assert.Contains(
+            ArchitectureRules.A12(ComponentGraph.Witness("A12-composition-package-reference.csproj.witness")),
+            message => message.Contains("PackageReference", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void A13_A_Consumer_Profile_References_Exactly_Abstractions_And_Binary()
+    {
+        Assert.Empty(Sweep(ArchitectureRules.A13));
+
+        // The reference set, the package surface and the internals grant are three separate
+        // promises, so each has its own violating input naming its own content.
+        Assert.Contains(
+            ArchitectureRules.A13(ComponentGraph.Witness("A13-profile-references-runtime.csproj.witness")),
+            message => message.Contains("Broiler.VM.Runtime", StringComparison.Ordinal));
+
+        Assert.Contains(
+            ArchitectureRules.A13(ComponentGraph.Witness("A13-profile-package-reference.csproj.witness")),
+            message => message.Contains("PackageReference", StringComparison.Ordinal));
+
+        Assert.Contains(
+            ArchitectureRules.A13(ComponentGraph.Witness("A13-profile-internals-visible-to.csproj.witness")),
+            message => message.Contains("opens internals", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void The_Graph_Manifest_Describes_The_Checkout()
     {
         // A7 compares only the edge multiset, so the manifest's other columns were description
@@ -255,7 +298,14 @@ public sealed class ProjectFileRuleTests
                 var shapeIsProduct = segments is ["src", _, _];
                 var shapeIsTest = segments is ["src", "tests", _, _];
 
-                if (!shapeIsProduct && !shapeIsTest)
+                // The third shape, reserved by ADR 0001 at VM-0 and occupied at VM-3. It is
+                // written out rather than folded into the product shape because the partition is
+                // what makes A4, A5, A10 and A11 decidable: a composition root is permitted a
+                // reference a product project is not, and a rule cannot tell them apart from a
+                // path expression that treats both as "src/<name>/".
+                var shapeIsComposition = segments is ["src", "compositions", _, _];
+
+                if (!shapeIsProduct && !shapeIsTest && !shapeIsComposition)
                 {
                     return true;
                 }

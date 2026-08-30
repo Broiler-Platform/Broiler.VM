@@ -1,0 +1,1244 @@
+# Witness: a baseline naming an assembly no package carries
+#
+# Broiler.VM.Fixtures has public types and is not packable. Freezing a surface no package
+# ships is worse than freezing nothing, because it reads as coverage.
+#
+type Broiler.VM.Abstractions Broiler.VM.IVmArtifactLoadMediator : interface
+  Broiler.VM.Abstractions Broiler.VM.IVmArtifactLoadMediator.RequestLoad(in Broiler.VM.VmArtifactRequest request) : abstract Broiler.VM.VmGuestLoadResult
+type Broiler.VM.Abstractions Broiler.VM.IVmArtifactProvider : interface
+  Broiler.VM.Abstractions Broiler.VM.IVmArtifactProvider.Answer(in Broiler.VM.VmArtifactRequest request) : abstract Broiler.VM.VmArtifactProviderAnswer
+  Broiler.VM.Abstractions Broiler.VM.IVmArtifactProvider.CapabilityId : abstract Broiler.VM.VmCapabilityId { get; }
+  Broiler.VM.Abstractions Broiler.VM.IVmArtifactProvider.Version : abstract System.Int32 { get; }
+type Broiler.VM.Abstractions Broiler.VM.IVmExecutionEnvironment : interface
+  Broiler.VM.Abstractions Broiler.VM.IVmExecutionEnvironment.Capabilities : abstract Broiler.VM.IVmHostCapabilityInvoker { get; }
+  Broiler.VM.Abstractions Broiler.VM.IVmExecutionEnvironment.Meter : abstract Broiler.VM.IVmMeter { get; }
+  Broiler.VM.Abstractions Broiler.VM.IVmExecutionEnvironment.ProfileId : abstract Broiler.VM.VmProfileId { get; }
+  Broiler.VM.Abstractions Broiler.VM.IVmExecutionEnvironment.TryGetArtifactLoadMediator(out Broiler.VM.IVmArtifactLoadMediator mediator) : abstract System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.IVmHostCapabilityInvoker : interface
+  Broiler.VM.Abstractions Broiler.VM.IVmHostCapabilityInvoker.BindingCount : abstract System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.IVmHostCapabilityInvoker.Invoke(System.Int32 bindingIndex, System.ReadOnlySpan<System.Int64> arguments, out System.Int64 result) : abstract Broiler.VM.VmHostCallOutcome
+  Broiler.VM.Abstractions Broiler.VM.IVmHostCapabilityInvoker.InvokeBytes(System.Int32 bindingIndex, Broiler.VM.VmBytes argument, out Broiler.VM.VmOpaqueRef result) : abstract Broiler.VM.VmHostCallOutcome
+  Broiler.VM.Abstractions Broiler.VM.IVmHostCapabilityInvoker.IsBound(System.Int32 bindingIndex) : abstract System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.IVmInstanceState : interface
+type Broiler.VM.Abstractions Broiler.VM.IVmMeter : interface
+  Broiler.VM.Abstractions Broiler.VM.IVmMeter.Poll() : abstract System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.IVmMeter.ReportReleased(Broiler.VM.VmBudgetDimension dimension, System.UInt64 amount) : abstract System.Void
+  Broiler.VM.Abstractions Broiler.VM.IVmMeter.ReportRetained(Broiler.VM.VmBudgetDimension dimension, System.UInt64 amount) : abstract System.Void
+  Broiler.VM.Abstractions Broiler.VM.IVmMeter.TryCharge(Broiler.VM.VmBudgetDimension dimension, System.UInt64 amount) : abstract System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.IVmOperationResult : interface
+  Broiler.VM.Abstractions Broiler.VM.IVmOperationResult.Diagnostics : abstract Broiler.VM.VmDiagnostics { get; }
+  Broiler.VM.Abstractions Broiler.VM.IVmOperationResult.IsSuccess : abstract System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.IVmOperationResult.IsSuspended : abstract System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.IVmOperationResult.Outcome : abstract Broiler.VM.VmOutcome { get; }
+  Broiler.VM.Abstractions Broiler.VM.IVmOperationResult.Reason : abstract Broiler.VM.VmReason { get; }
+type Broiler.VM.Abstractions Broiler.VM.IVmProfileContinuation : interface
+type Broiler.VM.Abstractions Broiler.VM.IVmProfileExecutor : interface
+  Broiler.VM.Abstractions Broiler.VM.IVmProfileExecutor.Instantiate(Broiler.VM.VmVerifiedArtifact artifact, System.Threading.CancellationToken cancellationToken) : abstract Broiler.VM.VmExecutionStep
+  Broiler.VM.Abstractions Broiler.VM.IVmProfileExecutor.Invoke(Broiler.VM.IVmInstanceState state, in Broiler.VM.VmInvocationRequest request, System.Threading.CancellationToken cancellationToken) : abstract Broiler.VM.VmExecutionStep
+  Broiler.VM.Abstractions Broiler.VM.IVmProfileExecutor.ProfileId : abstract Broiler.VM.VmProfileId { get; }
+  Broiler.VM.Abstractions Broiler.VM.IVmProfileExecutor.Resume(Broiler.VM.IVmInstanceState state, Broiler.VM.IVmProfileContinuation continuation, System.Threading.CancellationToken cancellationToken) : abstract Broiler.VM.VmExecutionStep
+  Broiler.VM.Abstractions Broiler.VM.IVmProfileExecutor.Unwind(Broiler.VM.IVmProfileContinuation continuation, System.UInt64 effectiveUnwindAllowance) : abstract System.Void
+type Broiler.VM.Abstractions Broiler.VM.IVmProfilePayload : interface
+  Broiler.VM.Abstractions Broiler.VM.IVmProfilePayload.Identity : abstract Broiler.VM.VmPayloadIdentity { get; }
+type Broiler.VM.Abstractions Broiler.VM.IVmProfileVerifier : interface
+  Broiler.VM.Abstractions Broiler.VM.IVmProfileVerifier.AuthoredCoreContractVersion : abstract System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.IVmProfileVerifier.BuiltAgainstCoreContractVersion : abstract System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.IVmProfileVerifier.ProfileId : abstract Broiler.VM.VmProfileId { get; }
+  Broiler.VM.Abstractions Broiler.VM.IVmProfileVerifier.VerifierSemanticVersion : abstract System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.IVmProfileVerifier.Verify(in Broiler.VM.VmArtifactDescriptor descriptor, System.ReadOnlySpan<System.Byte> payload, Broiler.VM.IVmVerificationContext context, System.Threading.CancellationToken cancellationToken) : abstract Broiler.VM.VmVerifierOutcome
+type Broiler.VM.Abstractions Broiler.VM.IVmVerificationContext : interface
+  Broiler.VM.Abstractions Broiler.VM.IVmVerificationContext.Ceilings : abstract Broiler.VM.VmEffectiveCeilings { get; }
+  Broiler.VM.Abstractions Broiler.VM.IVmVerificationContext.Meter : abstract Broiler.VM.IVmMeter { get; }
+  Broiler.VM.Abstractions Broiler.VM.IVmVerificationContext.RegisteredCapabilities : abstract System.Collections.Immutable.ImmutableArray<Broiler.VM.VmHostCapabilityDescriptor> { get; }
+  Broiler.VM.Abstractions Broiler.VM.IVmVerificationContext.TryGetCapabilityDescriptor(Broiler.VM.VmCapabilityId capabilityId, System.Int32 version, out Broiler.VM.VmHostCapabilityDescriptor descriptor) : abstract System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.IVmVerifiedState : interface
+type Broiler.VM.Abstractions Broiler.VM.VmArtifactDescriptor : struct System.IEquatable<Broiler.VM.VmArtifactDescriptor>
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactDescriptor..ctor(Broiler.VM.VmProfileId profileId, System.UInt32 formatVersion, Broiler.VM.VmFeatureManifestId featureManifestId, Broiler.VM.VmLimitVector requestedLimits, Broiler.VM.VmCallerIdentity callerIdentity) : void
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactDescriptor.CallerIdentity : Broiler.VM.VmCallerIdentity { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactDescriptor.Equals(Broiler.VM.VmArtifactDescriptor other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactDescriptor.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactDescriptor.FeatureManifestId : Broiler.VM.VmFeatureManifestId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactDescriptor.FormatVersion : System.UInt32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactDescriptor.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactDescriptor.IsWellFormed : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactDescriptor.ProfileId : Broiler.VM.VmProfileId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactDescriptor.RequestedLimits : Broiler.VM.VmLimitVector { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactDescriptor.op_Equality(Broiler.VM.VmArtifactDescriptor left, Broiler.VM.VmArtifactDescriptor right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactDescriptor.op_Inequality(Broiler.VM.VmArtifactDescriptor left, Broiler.VM.VmArtifactDescriptor right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmArtifactLease : sealed class System.IDisposable
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactLease.Artifact : Broiler.VM.VmVerifiedArtifact { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactLease.IsReleased : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactLease.Release() : Broiler.VM.VmControlResult
+type Broiler.VM.Abstractions Broiler.VM.VmArtifactLifetimeKind : enum
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactLifetimeKind.Disposable : const Broiler.VM.VmArtifactLifetimeKind = 1
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactLifetimeKind.Managed : const Broiler.VM.VmArtifactLifetimeKind = 0
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactLifetimeKind.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmArtifactOrigin : enum
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactOrigin.Caller : const Broiler.VM.VmArtifactOrigin = 0
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactOrigin.GuestInitiated : const Broiler.VM.VmArtifactOrigin = 1
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactOrigin.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmArtifactProviderAnswer : ref struct
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactProviderAnswer.Descriptor : Broiler.VM.VmArtifactDescriptor { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactProviderAnswer.Kind : Broiler.VM.VmArtifactProviderAnswerKind { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactProviderAnswer.NotFound(Broiler.VM.VmReason reason) : static Broiler.VM.VmArtifactProviderAnswer
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactProviderAnswer.Payload : System.ReadOnlySpan<System.Byte> { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactProviderAnswer.Provided(in Broiler.VM.VmArtifactDescriptor descriptor, System.ReadOnlySpan<System.Byte> payload) : static Broiler.VM.VmArtifactProviderAnswer
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactProviderAnswer.Reason : Broiler.VM.VmReason { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactProviderAnswer.Refused(Broiler.VM.VmReason reason) : static Broiler.VM.VmArtifactProviderAnswer
+type Broiler.VM.Abstractions Broiler.VM.VmArtifactProviderAnswerKind : enum
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactProviderAnswerKind.NotFound : const Broiler.VM.VmArtifactProviderAnswerKind = 2
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactProviderAnswerKind.Provided : const Broiler.VM.VmArtifactProviderAnswerKind = 0
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactProviderAnswerKind.Refused : const Broiler.VM.VmArtifactProviderAnswerKind = 1
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactProviderAnswerKind.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmArtifactRepresentationKind : enum
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactRepresentationKind.Decoded : const Broiler.VM.VmArtifactRepresentationKind = 1
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactRepresentationKind.Snapshot : const Broiler.VM.VmArtifactRepresentationKind = 0
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactRepresentationKind.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmArtifactRequest : ref struct
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactRequest..ctor(Broiler.VM.VmProfileId requestingProfileId, Broiler.VM.VmObjectId requestingRuntimeId, Broiler.VM.VmObjectId requestingOperationId, System.Int32 nestingDepth, Broiler.VM.VmLimitVector remainingAllowanceSnapshot, System.Threading.CancellationToken cancellationToken, Broiler.VM.VmBytes requestPayload) : void
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactRequest.CancellationToken : System.Threading.CancellationToken { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactRequest.NestingDepth : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactRequest.RemainingAllowanceSnapshot : Broiler.VM.VmLimitVector { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactRequest.RequestPayload : Broiler.VM.VmBytes { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactRequest.RequestingOperationId : Broiler.VM.VmObjectId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactRequest.RequestingProfileId : Broiler.VM.VmProfileId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactRequest.RequestingRuntimeId : Broiler.VM.VmObjectId { get; }
+type Broiler.VM.Abstractions Broiler.VM.VmArtifactSharing : enum
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactSharing.RuntimeScoped : const Broiler.VM.VmArtifactSharing = 0
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactSharing.Shareable : const Broiler.VM.VmArtifactSharing = 1
+  Broiler.VM.Abstractions Broiler.VM.VmArtifactSharing.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmAttemptedCall : enum
+  Broiler.VM.Abstractions Broiler.VM.VmAttemptedCall.CatalogAdd : const Broiler.VM.VmAttemptedCall = 15
+  Broiler.VM.Abstractions Broiler.VM.VmAttemptedCall.CatalogBuild : const Broiler.VM.VmAttemptedCall = 16
+  Broiler.VM.Abstractions Broiler.VM.VmAttemptedCall.Dispose : const Broiler.VM.VmAttemptedCall = 5
+  Broiler.VM.Abstractions Broiler.VM.VmAttemptedCall.GuestLoad : const Broiler.VM.VmAttemptedCall = 14
+  Broiler.VM.Abstractions Broiler.VM.VmAttemptedCall.Instantiate : const Broiler.VM.VmAttemptedCall = 2
+  Broiler.VM.Abstractions Broiler.VM.VmAttemptedCall.Invoke : const Broiler.VM.VmAttemptedCall = 3
+  Broiler.VM.Abstractions Broiler.VM.VmAttemptedCall.LeaseAcquire : const Broiler.VM.VmAttemptedCall = 11
+  Broiler.VM.Abstractions Broiler.VM.VmAttemptedCall.LeaseRelease : const Broiler.VM.VmAttemptedCall = 12
+  Broiler.VM.Abstractions Broiler.VM.VmAttemptedCall.None : const Broiler.VM.VmAttemptedCall = 0
+  Broiler.VM.Abstractions Broiler.VM.VmAttemptedCall.PollDeadlines : const Broiler.VM.VmAttemptedCall = 10
+  Broiler.VM.Abstractions Broiler.VM.VmAttemptedCall.ProjectPayload : const Broiler.VM.VmAttemptedCall = 13
+  Broiler.VM.Abstractions Broiler.VM.VmAttemptedCall.QueryState : const Broiler.VM.VmAttemptedCall = 9
+  Broiler.VM.Abstractions Broiler.VM.VmAttemptedCall.RequestCancel : const Broiler.VM.VmAttemptedCall = 6
+  Broiler.VM.Abstractions Broiler.VM.VmAttemptedCall.RequestSuspend : const Broiler.VM.VmAttemptedCall = 7
+  Broiler.VM.Abstractions Broiler.VM.VmAttemptedCall.Resume : const Broiler.VM.VmAttemptedCall = 4
+  Broiler.VM.Abstractions Broiler.VM.VmAttemptedCall.TryTakeSuspension : const Broiler.VM.VmAttemptedCall = 8
+  Broiler.VM.Abstractions Broiler.VM.VmAttemptedCall.Verify : const Broiler.VM.VmAttemptedCall = 1
+  Broiler.VM.Abstractions Broiler.VM.VmAttemptedCall.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmBudgetApplicability : enum
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetApplicability.Charged : const Broiler.VM.VmBudgetApplicability = 0
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetApplicability.NotApplicable : const Broiler.VM.VmBudgetApplicability = 1
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetApplicability.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmBudgetClass : enum
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetClass.Allowance : const Broiler.VM.VmBudgetClass = 0
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetClass.Ceiling : const Broiler.VM.VmBudgetClass = 1
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetClass.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmBudgetDeclarationMatrix : struct System.IEquatable<Broiler.VM.VmBudgetDeclarationMatrix>
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDeclarationMatrix.Equals(Broiler.VM.VmBudgetDeclarationMatrix other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDeclarationMatrix.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDeclarationMatrix.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDeclarationMatrix.IsComplete : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDeclarationMatrix.Item[Broiler.VM.VmBudgetDimension dimension] : Broiler.VM.VmBudgetApplicability { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDeclarationMatrix.TryCreate(System.ReadOnlySpan<Broiler.VM.VmBudgetApplicability> perDimension, out Broiler.VM.VmBudgetDeclarationMatrix matrix) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDeclarationMatrix.op_Equality(Broiler.VM.VmBudgetDeclarationMatrix left, Broiler.VM.VmBudgetDeclarationMatrix right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDeclarationMatrix.op_Inequality(Broiler.VM.VmBudgetDeclarationMatrix left, Broiler.VM.VmBudgetDeclarationMatrix right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmBudgetDimension : enum
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDimension.AllocatedBytes : const Broiler.VM.VmBudgetDimension = 2
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDimension.ArtifactBytes : const Broiler.VM.VmBudgetDimension = 10
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDimension.CallDepth : const Broiler.VM.VmBudgetDimension = 8
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDimension.DeclaredCount : const Broiler.VM.VmBudgetDimension = 12
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDimension.Fuel : const Broiler.VM.VmBudgetDimension = 0
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDimension.HostCalls : const Broiler.VM.VmBudgetDimension = 3
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDimension.LiveBytes : const Broiler.VM.VmBudgetDimension = 7
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDimension.LiveRuntimes : const Broiler.VM.VmBudgetDimension = 14
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDimension.NestedLoadBytes : const Broiler.VM.VmBudgetDimension = 5
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDimension.NestedLoadDepth : const Broiler.VM.VmBudgetDimension = 9
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDimension.NestedLoadFanOut : const Broiler.VM.VmBudgetDimension = 4
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDimension.SectionCount : const Broiler.VM.VmBudgetDimension = 11
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDimension.StructuralDepth : const Broiler.VM.VmBudgetDimension = 13
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDimension.VerifierWork : const Broiler.VM.VmBudgetDimension = 6
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDimension.WallClock : const Broiler.VM.VmBudgetDimension = 1
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDimension.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmBudgetDimensions : static class
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDimensions.All : static System.ReadOnlySpan<Broiler.VM.VmBudgetDimension> { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDimensions.CarriesAggregateScope(Broiler.VM.VmBudgetDimension dimension) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDimensions.ClassOf(Broiler.VM.VmBudgetDimension dimension) : static Broiler.VM.VmBudgetClass
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDimensions.Count : const System.Int32 = 15
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDimensions.IsDeclarableAt(Broiler.VM.VmBudgetDimension dimension, Broiler.VM.VmBudgetScope scope) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetDimensions.IsDefined(Broiler.VM.VmBudgetDimension dimension) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmBudgetScope : enum
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetScope.Aggregate : const Broiler.VM.VmBudgetScope = 4
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetScope.Artifact : const Broiler.VM.VmBudgetScope = 2
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetScope.Instance : const Broiler.VM.VmBudgetScope = 1
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetScope.Invocation : const Broiler.VM.VmBudgetScope = 0
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetScope.Runtime : const Broiler.VM.VmBudgetScope = 3
+  Broiler.VM.Abstractions Broiler.VM.VmBudgetScope.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmBytes : ref struct
+  Broiler.VM.Abstractions Broiler.VM.VmBytes..ctor(System.ReadOnlySpan<System.Byte> bytes) : void
+  Broiler.VM.Abstractions Broiler.VM.VmBytes.IsEmpty : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmBytes.Length : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmBytes.Span : System.ReadOnlySpan<System.Byte> { get; }
+type Broiler.VM.Abstractions Broiler.VM.VmCallerIdentity : struct System.IEquatable<Broiler.VM.VmCallerIdentity>
+  Broiler.VM.Abstractions Broiler.VM.VmCallerIdentity.Equals(Broiler.VM.VmCallerIdentity other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmCallerIdentity.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmCallerIdentity.FromCanonicalIdentity(System.ReadOnlySpan<System.Char> identity) : static Broiler.VM.VmCallerIdentity
+  Broiler.VM.Abstractions Broiler.VM.VmCallerIdentity.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmCallerIdentity.IsCallerSupplied : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmCallerIdentity.IsEmpty : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmCallerIdentity.None : static Broiler.VM.VmCallerIdentity { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmCallerIdentity.ToString() : virtual System.String
+  Broiler.VM.Abstractions Broiler.VM.VmCallerIdentity.op_Equality(Broiler.VM.VmCallerIdentity left, Broiler.VM.VmCallerIdentity right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmCallerIdentity.op_Inequality(Broiler.VM.VmCallerIdentity left, Broiler.VM.VmCallerIdentity right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmCapabilityId : struct System.IComparable<Broiler.VM.VmCapabilityId>, System.IEquatable<Broiler.VM.VmCapabilityId>
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityId.AsSpan() : System.ReadOnlySpan<System.Char>
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityId.CompareTo(Broiler.VM.VmCapabilityId other) : System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityId.Equals(Broiler.VM.VmCapabilityId other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityId.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityId.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityId.IsEmpty : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityId.IsReservedNamespace : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityId.Parse(System.ReadOnlySpan<System.Char> candidate) : static Broiler.VM.VmCapabilityId
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityId.ToString() : virtual System.String
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityId.TryParse(System.ReadOnlySpan<System.Char> candidate, out Broiler.VM.VmCapabilityId id) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityId.op_Equality(Broiler.VM.VmCapabilityId left, Broiler.VM.VmCapabilityId right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityId.op_Inequality(Broiler.VM.VmCapabilityId left, Broiler.VM.VmCapabilityId right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmCapabilityImport : struct System.IEquatable<Broiler.VM.VmCapabilityImport>
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityImport..ctor(Broiler.VM.VmHostCapabilityDescriptor descriptor, Broiler.VM.VmCapabilityImportKind importKind) : void
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityImport.Descriptor : Broiler.VM.VmHostCapabilityDescriptor { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityImport.Equals(Broiler.VM.VmCapabilityImport other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityImport.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityImport.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityImport.ImportKind : Broiler.VM.VmCapabilityImportKind { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityImport.op_Equality(Broiler.VM.VmCapabilityImport left, Broiler.VM.VmCapabilityImport right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityImport.op_Inequality(Broiler.VM.VmCapabilityImport left, Broiler.VM.VmCapabilityImport right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmCapabilityImportKind : enum
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityImportKind.Optional : const Broiler.VM.VmCapabilityImportKind = 1
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityImportKind.Required : const Broiler.VM.VmCapabilityImportKind = 0
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityImportKind.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmCapabilityKind : enum
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityKind.ArtifactProvider : const Broiler.VM.VmCapabilityKind = 1
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityKind.Value : const Broiler.VM.VmCapabilityKind = 0
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityKind.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmCapabilityReentrancy : enum
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityReentrancy.NonReentrant : const Broiler.VM.VmCapabilityReentrancy = 0
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityReentrancy.ReentrantIntoInvokingRuntime : const Broiler.VM.VmCapabilityReentrancy = 1
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityReentrancy.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmCapabilitySignatureId : struct System.IEquatable<Broiler.VM.VmCapabilitySignatureId>
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilitySignatureId.Equals(Broiler.VM.VmCapabilitySignatureId other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilitySignatureId.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilitySignatureId.FromCanonicalDescription(System.ReadOnlySpan<System.Char> canonical) : static Broiler.VM.VmCapabilitySignatureId
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilitySignatureId.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilitySignatureId.IsEmpty : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilitySignatureId.ToString() : virtual System.String
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilitySignatureId.op_Equality(Broiler.VM.VmCapabilitySignatureId left, Broiler.VM.VmCapabilitySignatureId right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilitySignatureId.op_Inequality(Broiler.VM.VmCapabilitySignatureId left, Broiler.VM.VmCapabilitySignatureId right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmCapabilityThreadAffinity : enum
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityThreadAffinity.CallerThread : const Broiler.VM.VmCapabilityThreadAffinity = 0
+  Broiler.VM.Abstractions Broiler.VM.VmCapabilityThreadAffinity.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmConformanceManifestId : struct System.IEquatable<Broiler.VM.VmConformanceManifestId>
+  Broiler.VM.Abstractions Broiler.VM.VmConformanceManifestId.Create(System.ReadOnlySpan<System.Char> token) : static Broiler.VM.VmConformanceManifestId
+  Broiler.VM.Abstractions Broiler.VM.VmConformanceManifestId.Equals(Broiler.VM.VmConformanceManifestId other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmConformanceManifestId.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmConformanceManifestId.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmConformanceManifestId.IsEmpty : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmConformanceManifestId.ToString() : virtual System.String
+  Broiler.VM.Abstractions Broiler.VM.VmConformanceManifestId.op_Equality(Broiler.VM.VmConformanceManifestId left, Broiler.VM.VmConformanceManifestId right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmConformanceManifestId.op_Inequality(Broiler.VM.VmConformanceManifestId left, Broiler.VM.VmConformanceManifestId right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmControlOutcome : enum
+  Broiler.VM.Abstractions Broiler.VM.VmControlOutcome.Accepted : const Broiler.VM.VmControlOutcome = 0
+  Broiler.VM.Abstractions Broiler.VM.VmControlOutcome.InvalidState : const Broiler.VM.VmControlOutcome = 2
+  Broiler.VM.Abstractions Broiler.VM.VmControlOutcome.NoOp : const Broiler.VM.VmControlOutcome = 1
+  Broiler.VM.Abstractions Broiler.VM.VmControlOutcome.Unsupported : const Broiler.VM.VmControlOutcome = 3
+  Broiler.VM.Abstractions Broiler.VM.VmControlOutcome.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmControlResult : struct System.IEquatable<Broiler.VM.VmControlResult>
+  Broiler.VM.Abstractions Broiler.VM.VmControlResult.Accepted : static Broiler.VM.VmControlResult { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmControlResult.Equals(Broiler.VM.VmControlResult other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmControlResult.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmControlResult.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmControlResult.InvalidState(Broiler.VM.VmReason reason) : static Broiler.VM.VmControlResult
+  Broiler.VM.Abstractions Broiler.VM.VmControlResult.IsSuccess : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmControlResult.Kind : Broiler.VM.VmControlOutcome { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmControlResult.NoOp : static Broiler.VM.VmControlResult { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmControlResult.Reason : Broiler.VM.VmReason { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmControlResult.ToString() : virtual System.String
+  Broiler.VM.Abstractions Broiler.VM.VmControlResult.Unsupported(Broiler.VM.VmReason missingDeclaration) : static Broiler.VM.VmControlResult
+  Broiler.VM.Abstractions Broiler.VM.VmControlResult.op_Equality(Broiler.VM.VmControlResult left, Broiler.VM.VmControlResult right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmControlResult.op_Inequality(Broiler.VM.VmControlResult left, Broiler.VM.VmControlResult right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmCoreContract : static class
+  Broiler.VM.Abstractions Broiler.VM.VmCoreContract.MinimumSupportedVersion : const System.Int32 = 1
+  Broiler.VM.Abstractions Broiler.VM.VmCoreContract.Version : const System.Int32 = 1
+type Broiler.VM.Abstractions Broiler.VM.VmCoreDefectException : sealed class System.Exception
+  Broiler.VM.Abstractions Broiler.VM.VmCoreDefectException..ctor(System.String message) : void
+  Broiler.VM.Abstractions Broiler.VM.VmCoreDefectException..ctor(System.String message, Broiler.VM.VmObjectId runtimeId) : void
+  Broiler.VM.Abstractions Broiler.VM.VmCoreDefectException.RuntimeId : Broiler.VM.VmObjectId { get; }
+type Broiler.VM.Abstractions Broiler.VM.VmDeclaration : enum
+  Broiler.VM.Abstractions Broiler.VM.VmDeclaration.Declared : const Broiler.VM.VmDeclaration = 1
+  Broiler.VM.Abstractions Broiler.VM.VmDeclaration.NotDeclared : const Broiler.VM.VmDeclaration = 0
+  Broiler.VM.Abstractions Broiler.VM.VmDeclaration.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmDiagnostics : struct System.IEquatable<Broiler.VM.VmDiagnostics>
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics..ctor(Broiler.VM.VmStage stage, Broiler.VM.VmOutcome outcome, Broiler.VM.VmReason reason, Broiler.VM.VmObjectId runtimeId, Broiler.VM.VmObjectId operationId, Broiler.VM.VmObjectId requestingOperationId, System.Int32 nestingDepth, Broiler.VM.VmProfileId profileId, System.UInt32 profileFormatVersion, Broiler.VM.VmFeatureManifestId featureManifestId, System.Int32 verifierSemanticVersion, Broiler.VM.VmObjectId artifactId, System.UInt64 artifactByteLength, Broiler.VM.VmCallerIdentity callerIdentity, Broiler.VM.VmSourcePosition sourcePosition, Broiler.VM.VmBudgetDimension exhaustedDimension, Broiler.VM.VmBudgetScope exhaustedScope, Broiler.VM.VmCapabilityId capabilityId, System.Int32 capabilityVersion, Broiler.VM.VmHostCorrelationToken hostCorrelation, System.Int32 profileDiagnosticCode, Broiler.VM.VmObjectKind objectKind, Broiler.VM.VmObjectState objectState, Broiler.VM.VmAttemptedCall attemptedCall, Broiler.VM.VmInitiator initiator) : void
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.ArtifactByteLength : System.UInt64 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.ArtifactId : Broiler.VM.VmObjectId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.AttemptedCall : Broiler.VM.VmAttemptedCall { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.CallerIdentity : Broiler.VM.VmCallerIdentity { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.CapabilityId : Broiler.VM.VmCapabilityId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.CapabilityVersion : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.CoreContractVersion : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.Create(Broiler.VM.VmStage stage, Broiler.VM.VmOutcome outcome, Broiler.VM.VmReason reason, Broiler.VM.VmObjectId runtimeId, Broiler.VM.VmInitiator initiator, Broiler.VM.VmAttemptedCall attemptedCall) : static Broiler.VM.VmDiagnostics
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.Equals(Broiler.VM.VmDiagnostics other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.ExhaustedDimension : Broiler.VM.VmBudgetDimension { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.ExhaustedScope : Broiler.VM.VmBudgetScope { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.FeatureManifestId : Broiler.VM.VmFeatureManifestId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.HostCorrelation : Broiler.VM.VmHostCorrelationToken { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.Initiator : Broiler.VM.VmInitiator { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.NestingDepth : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.ObjectKind : Broiler.VM.VmObjectKind { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.ObjectState : Broiler.VM.VmObjectState { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.OperationId : Broiler.VM.VmObjectId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.Outcome : Broiler.VM.VmOutcome { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.ProfileDiagnosticCode : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.ProfileFormatVersion : System.UInt32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.ProfileId : Broiler.VM.VmProfileId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.Reason : Broiler.VM.VmReason { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.ReasonRegistryRevision : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.RequestingOperationId : Broiler.VM.VmObjectId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.RuntimeId : Broiler.VM.VmObjectId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.SourcePosition : Broiler.VM.VmSourcePosition { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.Stage : Broiler.VM.VmStage { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.VerifierSemanticVersion : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.WithArtifact(Broiler.VM.VmObjectId artifactId, System.UInt64 artifactByteLength, Broiler.VM.VmCallerIdentity callerIdentity) : Broiler.VM.VmDiagnostics
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.WithCapability(Broiler.VM.VmCapabilityId capabilityId, System.Int32 capabilityVersion, Broiler.VM.VmHostCorrelationToken correlation) : Broiler.VM.VmDiagnostics
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.WithExhaustion(Broiler.VM.VmBudgetDimension dimension, Broiler.VM.VmBudgetScope scope) : Broiler.VM.VmDiagnostics
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.WithObject(Broiler.VM.VmObjectKind kind, System.Int32 observedState, Broiler.VM.VmAttemptedCall attemptedCall) : Broiler.VM.VmDiagnostics
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.WithOperation(Broiler.VM.VmObjectId operationId, Broiler.VM.VmObjectId requestingOperationId, System.Int32 nestingDepth) : Broiler.VM.VmDiagnostics
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.WithOutcome(Broiler.VM.VmStage stage, Broiler.VM.VmOutcome outcome, Broiler.VM.VmReason reason, Broiler.VM.VmInitiator initiator) : Broiler.VM.VmDiagnostics
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.WithPosition(Broiler.VM.VmSourcePosition position, System.Int32 profileDiagnosticCode) : Broiler.VM.VmDiagnostics
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.WithProfile(Broiler.VM.VmProfileId profileId, System.UInt32 profileFormatVersion, Broiler.VM.VmFeatureManifestId featureManifestId, System.Int32 verifierSemanticVersion) : Broiler.VM.VmDiagnostics
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.op_Equality(Broiler.VM.VmDiagnostics left, Broiler.VM.VmDiagnostics right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnostics.op_Inequality(Broiler.VM.VmDiagnostics left, Broiler.VM.VmDiagnostics right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmDiagnosticsIdentity : struct System.IEquatable<Broiler.VM.VmDiagnosticsIdentity>
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnosticsIdentity.Equals(Broiler.VM.VmDiagnosticsIdentity other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnosticsIdentity.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnosticsIdentity.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnosticsIdentity.IsEmpty : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnosticsIdentity.ToString() : virtual System.String
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnosticsIdentity.TryCreate(Broiler.VM.VmProfileId owner, System.ReadOnlySpan<System.Char> token, out Broiler.VM.VmDiagnosticsIdentity identity) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnosticsIdentity.op_Equality(Broiler.VM.VmDiagnosticsIdentity left, Broiler.VM.VmDiagnosticsIdentity right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmDiagnosticsIdentity.op_Inequality(Broiler.VM.VmDiagnosticsIdentity left, Broiler.VM.VmDiagnosticsIdentity right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmEffectiveCeilings : struct System.IEquatable<Broiler.VM.VmEffectiveCeilings>
+  Broiler.VM.Abstractions Broiler.VM.VmEffectiveCeilings..ctor(Broiler.VM.VmLimitVector verificationCeilings, Broiler.VM.VmLimitVector instantiationCeilings) : void
+  Broiler.VM.Abstractions Broiler.VM.VmEffectiveCeilings.Equals(Broiler.VM.VmEffectiveCeilings other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmEffectiveCeilings.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmEffectiveCeilings.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmEffectiveCeilings.InstantiationCeilings : Broiler.VM.VmLimitVector { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmEffectiveCeilings.VerificationCeilings : Broiler.VM.VmLimitVector { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmEffectiveCeilings.op_Equality(Broiler.VM.VmEffectiveCeilings left, Broiler.VM.VmEffectiveCeilings right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmEffectiveCeilings.op_Inequality(Broiler.VM.VmEffectiveCeilings left, Broiler.VM.VmEffectiveCeilings right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmEnvelopeReadResult : struct Broiler.VM.IVmOperationResult
+  Broiler.VM.Abstractions Broiler.VM.VmEnvelopeReadResult.Diagnostics : Broiler.VM.VmDiagnostics { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmEnvelopeReadResult.IsSuccess : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmEnvelopeReadResult.IsSuspended : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmEnvelopeReadResult.Outcome : Broiler.VM.VmOutcome { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmEnvelopeReadResult.Reason : Broiler.VM.VmReason { get; }
+type Broiler.VM.Abstractions Broiler.VM.VmExceptionTranslation : enum
+  Broiler.VM.Abstractions Broiler.VM.VmExceptionTranslation.ObservableFault : const Broiler.VM.VmExceptionTranslation = 1
+  Broiler.VM.Abstractions Broiler.VM.VmExceptionTranslation.TerminateOperation : const Broiler.VM.VmExceptionTranslation = 0
+  Broiler.VM.Abstractions Broiler.VM.VmExceptionTranslation.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmExecutionStep : struct
+  Broiler.VM.Abstractions Broiler.VM.VmExecutionStep.Completed(Broiler.VM.IVmProfilePayload payload) : static Broiler.VM.VmExecutionStep
+  Broiler.VM.Abstractions Broiler.VM.VmExecutionStep.Continuation : Broiler.VM.IVmProfileContinuation { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmExecutionStep.ContractViolation(Broiler.VM.VmReason reason) : static Broiler.VM.VmExecutionStep
+  Broiler.VM.Abstractions Broiler.VM.VmExecutionStep.Faulted(Broiler.VM.IVmProfilePayload payload) : static Broiler.VM.VmExecutionStep
+  Broiler.VM.Abstractions Broiler.VM.VmExecutionStep.Instantiated(Broiler.VM.IVmInstanceState state, Broiler.VM.IVmProfilePayload payload) : static Broiler.VM.VmExecutionStep
+  Broiler.VM.Abstractions Broiler.VM.VmExecutionStep.Kind : Broiler.VM.VmExecutionStepKind { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmExecutionStep.Payload : Broiler.VM.IVmProfilePayload { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmExecutionStep.Reason : Broiler.VM.VmReason { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmExecutionStep.State : Broiler.VM.IVmInstanceState { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmExecutionStep.Suspended(Broiler.VM.IVmProfileContinuation continuation, Broiler.VM.IVmProfilePayload projection) : static Broiler.VM.VmExecutionStep
+type Broiler.VM.Abstractions Broiler.VM.VmExecutionStepKind : enum
+  Broiler.VM.Abstractions Broiler.VM.VmExecutionStepKind.Completed : const Broiler.VM.VmExecutionStepKind = 0
+  Broiler.VM.Abstractions Broiler.VM.VmExecutionStepKind.ContractViolation : const Broiler.VM.VmExecutionStepKind = 4
+  Broiler.VM.Abstractions Broiler.VM.VmExecutionStepKind.Faulted : const Broiler.VM.VmExecutionStepKind = 3
+  Broiler.VM.Abstractions Broiler.VM.VmExecutionStepKind.Instantiated : const Broiler.VM.VmExecutionStepKind = 1
+  Broiler.VM.Abstractions Broiler.VM.VmExecutionStepKind.Suspended : const Broiler.VM.VmExecutionStepKind = 2
+  Broiler.VM.Abstractions Broiler.VM.VmExecutionStepKind.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmExecutorFactory : sealed class System.MulticastDelegate
+  Broiler.VM.Abstractions Broiler.VM.VmExecutorFactory..ctor(System.Object object, System.IntPtr method) : void
+  Broiler.VM.Abstractions Broiler.VM.VmExecutorFactory.BeginInvoke(Broiler.VM.IVmExecutionEnvironment environment, System.AsyncCallback callback, System.Object object) : virtual System.IAsyncResult
+  Broiler.VM.Abstractions Broiler.VM.VmExecutorFactory.EndInvoke(System.IAsyncResult result) : virtual Broiler.VM.IVmProfileExecutor
+  Broiler.VM.Abstractions Broiler.VM.VmExecutorFactory.Invoke(Broiler.VM.IVmExecutionEnvironment environment) : virtual Broiler.VM.IVmProfileExecutor
+type Broiler.VM.Abstractions Broiler.VM.VmFaultRecovery : enum
+  Broiler.VM.Abstractions Broiler.VM.VmFaultRecovery.InstanceFatal : const Broiler.VM.VmFaultRecovery = 1
+  Broiler.VM.Abstractions Broiler.VM.VmFaultRecovery.InstanceRecoverable : const Broiler.VM.VmFaultRecovery = 0
+  Broiler.VM.Abstractions Broiler.VM.VmFaultRecovery.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmFeatureManifestId : struct System.IComparable<Broiler.VM.VmFeatureManifestId>, System.IEquatable<Broiler.VM.VmFeatureManifestId>
+  Broiler.VM.Abstractions Broiler.VM.VmFeatureManifestId.AsSpan() : System.ReadOnlySpan<System.Char>
+  Broiler.VM.Abstractions Broiler.VM.VmFeatureManifestId.CompareTo(Broiler.VM.VmFeatureManifestId other) : System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmFeatureManifestId.Equals(Broiler.VM.VmFeatureManifestId other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmFeatureManifestId.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmFeatureManifestId.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmFeatureManifestId.IsEmpty : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmFeatureManifestId.Length : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmFeatureManifestId.MaximumLabelCount : const System.Int32 = 12
+  Broiler.VM.Abstractions Broiler.VM.VmFeatureManifestId.MaximumLength : const System.Int32 = 256
+  Broiler.VM.Abstractions Broiler.VM.VmFeatureManifestId.MinimumLabelCount : const System.Int32 = 3
+  Broiler.VM.Abstractions Broiler.VM.VmFeatureManifestId.Parse(System.ReadOnlySpan<System.Char> candidate) : static Broiler.VM.VmFeatureManifestId
+  Broiler.VM.Abstractions Broiler.VM.VmFeatureManifestId.StartsWithProfileNamespace(Broiler.VM.VmProfileId profileId) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmFeatureManifestId.ToString() : virtual System.String
+  Broiler.VM.Abstractions Broiler.VM.VmFeatureManifestId.TryParse(System.ReadOnlySpan<System.Char> candidate, out Broiler.VM.VmFeatureManifestId id) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmFeatureManifestId.op_Equality(Broiler.VM.VmFeatureManifestId left, Broiler.VM.VmFeatureManifestId right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmFeatureManifestId.op_Inequality(Broiler.VM.VmFeatureManifestId left, Broiler.VM.VmFeatureManifestId right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmFormatVersionRange : struct System.IEquatable<Broiler.VM.VmFormatVersionRange>
+  Broiler.VM.Abstractions Broiler.VM.VmFormatVersionRange..ctor(System.UInt32 min, System.UInt32 max) : void
+  Broiler.VM.Abstractions Broiler.VM.VmFormatVersionRange.Contains(System.UInt32 formatVersion) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmFormatVersionRange.Equals(Broiler.VM.VmFormatVersionRange other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmFormatVersionRange.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmFormatVersionRange.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmFormatVersionRange.IsWellFormed : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmFormatVersionRange.Max : System.UInt32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmFormatVersionRange.Min : System.UInt32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmFormatVersionRange.ToString() : virtual System.String
+  Broiler.VM.Abstractions Broiler.VM.VmFormatVersionRange.op_Equality(Broiler.VM.VmFormatVersionRange left, Broiler.VM.VmFormatVersionRange right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmFormatVersionRange.op_Inequality(Broiler.VM.VmFormatVersionRange left, Broiler.VM.VmFormatVersionRange right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmGuestLoadBounds : struct System.IEquatable<Broiler.VM.VmGuestLoadBounds>
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadBounds..ctor(System.UInt64 nestedLoadDepth, System.UInt64 nestedLoadFanOut, System.UInt64 nestedLoadBytes, System.UInt64 verifierWork) : void
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadBounds.Equals(Broiler.VM.VmGuestLoadBounds other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadBounds.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadBounds.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadBounds.IsFinite : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadBounds.IsPositive : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadBounds.NestedLoadBytes : System.UInt64 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadBounds.NestedLoadDepth : System.UInt64 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadBounds.NestedLoadFanOut : System.UInt64 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadBounds.None : static Broiler.VM.VmGuestLoadBounds { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadBounds.VerifierWork : System.UInt64 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadBounds.op_Equality(Broiler.VM.VmGuestLoadBounds left, Broiler.VM.VmGuestLoadBounds right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadBounds.op_Inequality(Broiler.VM.VmGuestLoadBounds left, Broiler.VM.VmGuestLoadBounds right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmGuestLoadDeclaration : sealed class
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadDeclaration.Declared(System.Int32 minimumProviderCapabilityVersion, Broiler.VM.VmGuestLoadBounds profileHardMaxima, System.UInt32 verifierWorkToFuelRate) : static Broiler.VM.VmGuestLoadDeclaration
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadDeclaration.IsWellFormed : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadDeclaration.Kind : Broiler.VM.VmDeclaration { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadDeclaration.MinimumProviderCapabilityVersion : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadDeclaration.NotDeclared : static Broiler.VM.VmGuestLoadDeclaration { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadDeclaration.ProfileHardMaxima : Broiler.VM.VmGuestLoadBounds { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadDeclaration.VerifierWorkToFuelRate : System.UInt32 { get; }
+type Broiler.VM.Abstractions Broiler.VM.VmGuestLoadResult : struct Broiler.VM.IVmOperationResult
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadResult.Cancellation(Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmGuestLoadResult
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadResult.Diagnostics : Broiler.VM.VmDiagnostics { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadResult.HostFailure(Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmGuestLoadResult
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadResult.InvalidArtifact(Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmGuestLoadResult
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadResult.InvalidState(Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmGuestLoadResult
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadResult.IsSuccess : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadResult.IsSuspended : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadResult.Normal(Broiler.VM.VmVerifiedArtifact artifact, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmGuestLoadResult
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadResult.Outcome : Broiler.VM.VmOutcome { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadResult.Reason : Broiler.VM.VmReason { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadResult.ResourceExhaustion(Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmGuestLoadResult
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadResult.TryGetArtifact(out Broiler.VM.VmVerifiedArtifact verifiedArtifact) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmGuestLoadResult.UnsupportedProfile(Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmGuestLoadResult
+type Broiler.VM.Abstractions Broiler.VM.VmHostCallOutcome : enum
+  Broiler.VM.Abstractions Broiler.VM.VmHostCallOutcome.Completed : const Broiler.VM.VmHostCallOutcome = 0
+  Broiler.VM.Abstractions Broiler.VM.VmHostCallOutcome.Refused : const Broiler.VM.VmHostCallOutcome = 1
+  Broiler.VM.Abstractions Broiler.VM.VmHostCallOutcome.Unavailable : const Broiler.VM.VmHostCallOutcome = 2
+  Broiler.VM.Abstractions Broiler.VM.VmHostCallOutcome.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmHostCapabilityDescriptor : struct System.IEquatable<Broiler.VM.VmHostCapabilityDescriptor>
+  Broiler.VM.Abstractions Broiler.VM.VmHostCapabilityDescriptor..ctor(Broiler.VM.VmCapabilityId capabilityId, System.Int32 version, Broiler.VM.VmCapabilitySignatureId signatureId, Broiler.VM.VmCapabilityKind kind, Broiler.VM.VmCapabilityReentrancy reentrancy, Broiler.VM.VmCapabilityThreadAffinity threadAffinity, Broiler.VM.VmExceptionTranslation exceptionTranslation) : void
+  Broiler.VM.Abstractions Broiler.VM.VmHostCapabilityDescriptor.CapabilityId : Broiler.VM.VmCapabilityId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmHostCapabilityDescriptor.Equals(Broiler.VM.VmHostCapabilityDescriptor other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmHostCapabilityDescriptor.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmHostCapabilityDescriptor.ExceptionTranslation : Broiler.VM.VmExceptionTranslation { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmHostCapabilityDescriptor.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmHostCapabilityDescriptor.IsWellFormed : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmHostCapabilityDescriptor.Kind : Broiler.VM.VmCapabilityKind { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmHostCapabilityDescriptor.Reentrancy : Broiler.VM.VmCapabilityReentrancy { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmHostCapabilityDescriptor.SignatureId : Broiler.VM.VmCapabilitySignatureId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmHostCapabilityDescriptor.ThreadAffinity : Broiler.VM.VmCapabilityThreadAffinity { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmHostCapabilityDescriptor.Version : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmHostCapabilityDescriptor.op_Equality(Broiler.VM.VmHostCapabilityDescriptor left, Broiler.VM.VmHostCapabilityDescriptor right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmHostCapabilityDescriptor.op_Inequality(Broiler.VM.VmHostCapabilityDescriptor left, Broiler.VM.VmHostCapabilityDescriptor right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmHostCorrelationToken : struct System.IEquatable<Broiler.VM.VmHostCorrelationToken>
+  Broiler.VM.Abstractions Broiler.VM.VmHostCorrelationToken..ctor(System.UInt64 high, System.UInt64 low) : void
+  Broiler.VM.Abstractions Broiler.VM.VmHostCorrelationToken.Equals(Broiler.VM.VmHostCorrelationToken other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmHostCorrelationToken.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmHostCorrelationToken.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmHostCorrelationToken.IsEmpty : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmHostCorrelationToken.op_Equality(Broiler.VM.VmHostCorrelationToken left, Broiler.VM.VmHostCorrelationToken right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmHostCorrelationToken.op_Inequality(Broiler.VM.VmHostCorrelationToken left, Broiler.VM.VmHostCorrelationToken right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmHostSignatureAssumption : struct System.IEquatable<Broiler.VM.VmHostSignatureAssumption>
+  Broiler.VM.Abstractions Broiler.VM.VmHostSignatureAssumption..ctor(Broiler.VM.VmCapabilityId capabilityId, System.Int32 version, Broiler.VM.VmCapabilitySignatureId signatureId, Broiler.VM.VmCapabilityKind kind, Broiler.VM.VmCapabilityReentrancy reentrancy, Broiler.VM.VmExceptionTranslation exceptionTranslation, System.Boolean optionalImportBound) : void
+  Broiler.VM.Abstractions Broiler.VM.VmHostSignatureAssumption.CapabilityId : Broiler.VM.VmCapabilityId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmHostSignatureAssumption.Equals(Broiler.VM.VmHostSignatureAssumption other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmHostSignatureAssumption.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmHostSignatureAssumption.ExceptionTranslation : Broiler.VM.VmExceptionTranslation { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmHostSignatureAssumption.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmHostSignatureAssumption.Kind : Broiler.VM.VmCapabilityKind { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmHostSignatureAssumption.OptionalImportBound : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmHostSignatureAssumption.Reentrancy : Broiler.VM.VmCapabilityReentrancy { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmHostSignatureAssumption.SignatureId : Broiler.VM.VmCapabilitySignatureId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmHostSignatureAssumption.Version : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmHostSignatureAssumption.op_Equality(Broiler.VM.VmHostSignatureAssumption left, Broiler.VM.VmHostSignatureAssumption right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmHostSignatureAssumption.op_Inequality(Broiler.VM.VmHostSignatureAssumption left, Broiler.VM.VmHostSignatureAssumption right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmInitiator : enum
+  Broiler.VM.Abstractions Broiler.VM.VmInitiator.Caller : const Broiler.VM.VmInitiator = 0
+  Broiler.VM.Abstractions Broiler.VM.VmInitiator.Core : const Broiler.VM.VmInitiator = 3
+  Broiler.VM.Abstractions Broiler.VM.VmInitiator.Guest : const Broiler.VM.VmInitiator = 1
+  Broiler.VM.Abstractions Broiler.VM.VmInitiator.Host : const Broiler.VM.VmInitiator = 2
+  Broiler.VM.Abstractions Broiler.VM.VmInitiator.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmInstance : abstract class System.IDisposable
+  Broiler.VM.Abstractions Broiler.VM.VmInstance..ctor() : void
+  Broiler.VM.Abstractions Broiler.VM.VmInstance.Dispose() : abstract Broiler.VM.VmControlResult
+  Broiler.VM.Abstractions Broiler.VM.VmInstance.Invoke(in Broiler.VM.VmInvocationRequest request, Broiler.VM.VmLimitOverrides limitOverrides, System.Threading.CancellationToken cancellationToken) : abstract Broiler.VM.VmInvocationResult
+  Broiler.VM.Abstractions Broiler.VM.VmInstance.Invoke(in Broiler.VM.VmInvocationRequest request, Broiler.VM.VmLimitOverrides limitOverrides, System.Threading.CancellationToken cancellationToken, out Broiler.VM.VmOperationControlHandle controlHandle) : abstract Broiler.VM.VmInvocationResult
+  Broiler.VM.Abstractions Broiler.VM.VmInstance.Invoke(in Broiler.VM.VmInvocationRequest request, System.Threading.CancellationToken cancellationToken) : abstract Broiler.VM.VmInvocationResult
+  Broiler.VM.Abstractions Broiler.VM.VmInstance.Invoke(in Broiler.VM.VmInvocationRequest request, System.Threading.CancellationToken cancellationToken, out Broiler.VM.VmOperationControlHandle controlHandle) : abstract Broiler.VM.VmInvocationResult
+  Broiler.VM.Abstractions Broiler.VM.VmInstance.ObjectId : abstract Broiler.VM.VmObjectId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmInstance.ProfileId : abstract Broiler.VM.VmProfileId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmInstance.RequestCancel() : abstract Broiler.VM.VmControlResult
+  Broiler.VM.Abstractions Broiler.VM.VmInstance.State : abstract Broiler.VM.VmInstanceState { get; }
+type Broiler.VM.Abstractions Broiler.VM.VmInstanceState : enum
+  Broiler.VM.Abstractions Broiler.VM.VmInstanceState.Disposed : const Broiler.VM.VmInstanceState = 6
+  Broiler.VM.Abstractions Broiler.VM.VmInstanceState.Disposing : const Broiler.VM.VmInstanceState = 5
+  Broiler.VM.Abstractions Broiler.VM.VmInstanceState.Executing : const Broiler.VM.VmInstanceState = 2
+  Broiler.VM.Abstractions Broiler.VM.VmInstanceState.Faulted : const Broiler.VM.VmInstanceState = 4
+  Broiler.VM.Abstractions Broiler.VM.VmInstanceState.Instantiating : const Broiler.VM.VmInstanceState = 0
+  Broiler.VM.Abstractions Broiler.VM.VmInstanceState.Live : const Broiler.VM.VmInstanceState = 1
+  Broiler.VM.Abstractions Broiler.VM.VmInstanceState.Suspended : const Broiler.VM.VmInstanceState = 3
+  Broiler.VM.Abstractions Broiler.VM.VmInstanceState.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmInstantiationResult : struct Broiler.VM.IVmOperationResult
+  Broiler.VM.Abstractions Broiler.VM.VmInstantiationResult.Cancellation(Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmInstantiationResult
+  Broiler.VM.Abstractions Broiler.VM.VmInstantiationResult.Diagnostics : Broiler.VM.VmDiagnostics { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmInstantiationResult.HostFailure(Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmInstantiationResult
+  Broiler.VM.Abstractions Broiler.VM.VmInstantiationResult.InvalidState(Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmInstantiationResult
+  Broiler.VM.Abstractions Broiler.VM.VmInstantiationResult.IsSuccess : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmInstantiationResult.IsSuspended : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmInstantiationResult.Normal(Broiler.VM.VmInstance instance, Broiler.VM.IVmProfilePayload payload, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmInstantiationResult
+  Broiler.VM.Abstractions Broiler.VM.VmInstantiationResult.Outcome : Broiler.VM.VmOutcome { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmInstantiationResult.PayloadIdentity : Broiler.VM.VmPayloadIdentity { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmInstantiationResult.ProfileFault(Broiler.VM.VmReason reason, Broiler.VM.IVmProfilePayload payload, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmInstantiationResult
+  Broiler.VM.Abstractions Broiler.VM.VmInstantiationResult.Reason : Broiler.VM.VmReason { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmInstantiationResult.ResourceExhaustion(Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmInstantiationResult
+  Broiler.VM.Abstractions Broiler.VM.VmInstantiationResult.Suspension(Broiler.VM.VmSuspension suspension, Broiler.VM.IVmProfilePayload projection, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmInstantiationResult
+  Broiler.VM.Abstractions Broiler.VM.VmInstantiationResult.TryGetInstance(out Broiler.VM.VmInstance createdInstance) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmInstantiationResult.TryGetPayload<TPayload>(out TPayload typedPayload) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmInstantiationResult.TryGetSuspension(out Broiler.VM.VmSuspension pending) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmInstantiationResult.UnsupportedProfile(Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmInstantiationResult
+type Broiler.VM.Abstractions Broiler.VM.VmInvocationRequest : ref struct
+  Broiler.VM.Abstractions Broiler.VM.VmInvocationRequest..ctor(Broiler.VM.VmUtf8Text entryPoint) : void
+  Broiler.VM.Abstractions Broiler.VM.VmInvocationRequest.EntryPoint : Broiler.VM.VmUtf8Text { get; }
+type Broiler.VM.Abstractions Broiler.VM.VmInvocationResult : struct Broiler.VM.IVmOperationResult
+  Broiler.VM.Abstractions Broiler.VM.VmInvocationResult.Cancellation(Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmInvocationResult
+  Broiler.VM.Abstractions Broiler.VM.VmInvocationResult.Diagnostics : Broiler.VM.VmDiagnostics { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmInvocationResult.HostFailure(Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmInvocationResult
+  Broiler.VM.Abstractions Broiler.VM.VmInvocationResult.InvalidState(Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmInvocationResult
+  Broiler.VM.Abstractions Broiler.VM.VmInvocationResult.IsSuccess : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmInvocationResult.IsSuspended : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmInvocationResult.Normal(Broiler.VM.IVmProfilePayload payload, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmInvocationResult
+  Broiler.VM.Abstractions Broiler.VM.VmInvocationResult.Outcome : Broiler.VM.VmOutcome { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmInvocationResult.PayloadIdentity : Broiler.VM.VmPayloadIdentity { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmInvocationResult.ProfileFault(Broiler.VM.VmReason reason, Broiler.VM.IVmProfilePayload payload, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmInvocationResult
+  Broiler.VM.Abstractions Broiler.VM.VmInvocationResult.Reason : Broiler.VM.VmReason { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmInvocationResult.ResourceExhaustion(Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmInvocationResult
+  Broiler.VM.Abstractions Broiler.VM.VmInvocationResult.Suspension(Broiler.VM.VmSuspension suspension, Broiler.VM.IVmProfilePayload projection, Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmInvocationResult
+  Broiler.VM.Abstractions Broiler.VM.VmInvocationResult.TryGetPayload<TPayload>(out TPayload typedPayload) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmInvocationResult.TryGetSuspension(out Broiler.VM.VmSuspension pending) : System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmLimitClamp : struct System.IEquatable<Broiler.VM.VmLimitClamp>
+  Broiler.VM.Abstractions Broiler.VM.VmLimitClamp..ctor(Broiler.VM.VmBudgetDimension dimension, System.UInt64 requested, System.UInt64 effective) : void
+  Broiler.VM.Abstractions Broiler.VM.VmLimitClamp.Dimension : Broiler.VM.VmBudgetDimension { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmLimitClamp.Effective : System.UInt64 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmLimitClamp.Equals(Broiler.VM.VmLimitClamp other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmLimitClamp.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmLimitClamp.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmLimitClamp.Requested : System.UInt64 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmLimitClamp.op_Equality(Broiler.VM.VmLimitClamp left, Broiler.VM.VmLimitClamp right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmLimitClamp.op_Inequality(Broiler.VM.VmLimitClamp left, Broiler.VM.VmLimitClamp right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmLimitOverride : struct System.IEquatable<Broiler.VM.VmLimitOverride>
+  Broiler.VM.Abstractions Broiler.VM.VmLimitOverride..ctor(Broiler.VM.VmBudgetDimension dimension, System.UInt64 value) : void
+  Broiler.VM.Abstractions Broiler.VM.VmLimitOverride.Dimension : Broiler.VM.VmBudgetDimension { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmLimitOverride.Equals(Broiler.VM.VmLimitOverride other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmLimitOverride.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmLimitOverride.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmLimitOverride.Value : System.UInt64 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmLimitOverride.op_Equality(Broiler.VM.VmLimitOverride left, Broiler.VM.VmLimitOverride right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmLimitOverride.op_Inequality(Broiler.VM.VmLimitOverride left, Broiler.VM.VmLimitOverride right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmLimitOverrides : struct System.IEquatable<Broiler.VM.VmLimitOverrides>
+  Broiler.VM.Abstractions Broiler.VM.VmLimitOverrides.Count : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmLimitOverrides.Create(System.ReadOnlySpan<Broiler.VM.VmLimitOverride> overrides) : static Broiler.VM.VmLimitOverrides
+  Broiler.VM.Abstractions Broiler.VM.VmLimitOverrides.Equals(Broiler.VM.VmLimitOverrides other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmLimitOverrides.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmLimitOverrides.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmLimitOverrides.IsEmpty : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmLimitOverrides.Item[System.Int32 index] : Broiler.VM.VmLimitOverride { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmLimitOverrides.None : static Broiler.VM.VmLimitOverrides { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmLimitOverrides.Of(Broiler.VM.VmBudgetDimension dimension, System.UInt64 value) : static Broiler.VM.VmLimitOverrides
+  Broiler.VM.Abstractions Broiler.VM.VmLimitOverrides.TryGetValue(Broiler.VM.VmBudgetDimension dimension, out System.UInt64 value) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmLimitOverrides.op_Equality(Broiler.VM.VmLimitOverrides left, Broiler.VM.VmLimitOverrides right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmLimitOverrides.op_Inequality(Broiler.VM.VmLimitOverrides left, Broiler.VM.VmLimitOverrides right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmLimitVector : struct System.IEquatable<Broiler.VM.VmLimitVector>
+  Broiler.VM.Abstractions Broiler.VM.VmLimitVector.CopyTo(System.Span<System.UInt64> destination) : System.Void
+  Broiler.VM.Abstractions Broiler.VM.VmLimitVector.Equals(Broiler.VM.VmLimitVector other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmLimitVector.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmLimitVector.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmLimitVector.HasAnyUnconstrained() : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmLimitVector.Intersect(Broiler.VM.VmLimitVector left, Broiler.VM.VmLimitVector right) : static Broiler.VM.VmLimitVector
+  Broiler.VM.Abstractions Broiler.VM.VmLimitVector.IsEmpty : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmLimitVector.IsNoLooserThan(Broiler.VM.VmLimitVector candidate, Broiler.VM.VmLimitVector bound) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmLimitVector.IsUnconstrained(Broiler.VM.VmBudgetDimension dimension) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmLimitVector.Item[Broiler.VM.VmBudgetDimension dimension] : System.UInt64 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmLimitVector.TryCreate(System.ReadOnlySpan<System.UInt64> perDimension, out Broiler.VM.VmLimitVector vector) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmLimitVector.Unconstrained : static Broiler.VM.VmLimitVector { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmLimitVector.op_Equality(Broiler.VM.VmLimitVector left, Broiler.VM.VmLimitVector right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmLimitVector.op_Inequality(Broiler.VM.VmLimitVector left, Broiler.VM.VmLimitVector right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmObjectId : struct System.IEquatable<Broiler.VM.VmObjectId>
+  Broiler.VM.Abstractions Broiler.VM.VmObjectId.Equals(Broiler.VM.VmObjectId other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmObjectId.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmObjectId.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmObjectId.IsEmpty : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmObjectId.Mint() : static Broiler.VM.VmObjectId
+  Broiler.VM.Abstractions Broiler.VM.VmObjectId.ToString() : virtual System.String
+  Broiler.VM.Abstractions Broiler.VM.VmObjectId.op_Equality(Broiler.VM.VmObjectId left, Broiler.VM.VmObjectId right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmObjectId.op_Inequality(Broiler.VM.VmObjectId left, Broiler.VM.VmObjectId right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmObjectKind : enum
+  Broiler.VM.Abstractions Broiler.VM.VmObjectKind.AggregateBudget : const Broiler.VM.VmObjectKind = 8
+  Broiler.VM.Abstractions Broiler.VM.VmObjectKind.Catalog : const Broiler.VM.VmObjectKind = 2
+  Broiler.VM.Abstractions Broiler.VM.VmObjectKind.CatalogBuilder : const Broiler.VM.VmObjectKind = 1
+  Broiler.VM.Abstractions Broiler.VM.VmObjectKind.ControlHandle : const Broiler.VM.VmObjectKind = 9
+  Broiler.VM.Abstractions Broiler.VM.VmObjectKind.Instance : const Broiler.VM.VmObjectKind = 5
+  Broiler.VM.Abstractions Broiler.VM.VmObjectKind.None : const Broiler.VM.VmObjectKind = 0
+  Broiler.VM.Abstractions Broiler.VM.VmObjectKind.Operation : const Broiler.VM.VmObjectKind = 6
+  Broiler.VM.Abstractions Broiler.VM.VmObjectKind.Runtime : const Broiler.VM.VmObjectKind = 3
+  Broiler.VM.Abstractions Broiler.VM.VmObjectKind.Suspension : const Broiler.VM.VmObjectKind = 7
+  Broiler.VM.Abstractions Broiler.VM.VmObjectKind.VerifiedArtifact : const Broiler.VM.VmObjectKind = 4
+  Broiler.VM.Abstractions Broiler.VM.VmObjectKind.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmObjectState : struct System.IEquatable<Broiler.VM.VmObjectState>
+  Broiler.VM.Abstractions Broiler.VM.VmObjectState..ctor(Broiler.VM.VmObjectKind kind, System.Int32 value) : void
+  Broiler.VM.Abstractions Broiler.VM.VmObjectState.Equals(Broiler.VM.VmObjectState other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmObjectState.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmObjectState.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmObjectState.Kind : Broiler.VM.VmObjectKind { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmObjectState.Value : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmObjectState.op_Equality(Broiler.VM.VmObjectState left, Broiler.VM.VmObjectState right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmObjectState.op_Inequality(Broiler.VM.VmObjectState left, Broiler.VM.VmObjectState right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmOpaqueRef : struct System.IEquatable<Broiler.VM.VmOpaqueRef>
+  Broiler.VM.Abstractions Broiler.VM.VmOpaqueRef..ctor(System.UInt64 runtime, System.UInt64 generation, System.UInt64 slot) : void
+  Broiler.VM.Abstractions Broiler.VM.VmOpaqueRef.Equals(Broiler.VM.VmOpaqueRef other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmOpaqueRef.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmOpaqueRef.Generation : System.UInt64 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmOpaqueRef.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmOpaqueRef.IsEmpty : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmOpaqueRef.OwningRuntime : System.UInt64 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmOpaqueRef.Slot : System.UInt64 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmOpaqueRef.op_Equality(Broiler.VM.VmOpaqueRef left, Broiler.VM.VmOpaqueRef right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmOpaqueRef.op_Inequality(Broiler.VM.VmOpaqueRef left, Broiler.VM.VmOpaqueRef right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmOperationControlHandle : abstract class System.IDisposable
+  Broiler.VM.Abstractions Broiler.VM.VmOperationControlHandle..ctor() : void
+  Broiler.VM.Abstractions Broiler.VM.VmOperationControlHandle.Dispose() : abstract Broiler.VM.VmControlResult
+  Broiler.VM.Abstractions Broiler.VM.VmOperationControlHandle.QueryState() : abstract Broiler.VM.VmOperationStateSnapshot
+  Broiler.VM.Abstractions Broiler.VM.VmOperationControlHandle.RequestCancel() : abstract Broiler.VM.VmControlResult
+  Broiler.VM.Abstractions Broiler.VM.VmOperationControlHandle.RequestSuspend() : abstract Broiler.VM.VmControlResult
+  Broiler.VM.Abstractions Broiler.VM.VmOperationControlHandle.TryTakeSuspension(out Broiler.VM.VmSuspension suspension) : abstract Broiler.VM.VmControlResult
+type Broiler.VM.Abstractions Broiler.VM.VmOperationKind : enum
+  Broiler.VM.Abstractions Broiler.VM.VmOperationKind.Instantiate : const Broiler.VM.VmOperationKind = 1
+  Broiler.VM.Abstractions Broiler.VM.VmOperationKind.Invoke : const Broiler.VM.VmOperationKind = 2
+  Broiler.VM.Abstractions Broiler.VM.VmOperationKind.Verify : const Broiler.VM.VmOperationKind = 0
+  Broiler.VM.Abstractions Broiler.VM.VmOperationKind.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmOperationState : enum
+  Broiler.VM.Abstractions Broiler.VM.VmOperationState.Completed : const Broiler.VM.VmOperationState = 4
+  Broiler.VM.Abstractions Broiler.VM.VmOperationState.Completing : const Broiler.VM.VmOperationState = 3
+  Broiler.VM.Abstractions Broiler.VM.VmOperationState.Disposed : const Broiler.VM.VmOperationState = 6
+  Broiler.VM.Abstractions Broiler.VM.VmOperationState.Orphaned : const Broiler.VM.VmOperationState = 5
+  Broiler.VM.Abstractions Broiler.VM.VmOperationState.Running : const Broiler.VM.VmOperationState = 0
+  Broiler.VM.Abstractions Broiler.VM.VmOperationState.SuspendedByGuest : const Broiler.VM.VmOperationState = 1
+  Broiler.VM.Abstractions Broiler.VM.VmOperationState.SuspendedByHost : const Broiler.VM.VmOperationState = 2
+  Broiler.VM.Abstractions Broiler.VM.VmOperationState.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmOperationStateSnapshot : struct
+  Broiler.VM.Abstractions Broiler.VM.VmOperationStateSnapshot..ctor(Broiler.VM.VmObjectId operationId, Broiler.VM.VmOperationKind kind, Broiler.VM.VmOperationState state, Broiler.VM.VmSuspensionOrigin origin, System.Boolean hasSuspensionOrigin, System.Boolean cancellationRequested, System.Boolean externalSuspendRequested) : void
+  Broiler.VM.Abstractions Broiler.VM.VmOperationStateSnapshot.CancellationRequested : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmOperationStateSnapshot.ExternalSuspendRequested : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmOperationStateSnapshot.HasSuspensionOrigin : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmOperationStateSnapshot.Kind : Broiler.VM.VmOperationKind { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmOperationStateSnapshot.OperationId : Broiler.VM.VmObjectId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmOperationStateSnapshot.Origin : Broiler.VM.VmSuspensionOrigin { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmOperationStateSnapshot.State : Broiler.VM.VmOperationState { get; }
+type Broiler.VM.Abstractions Broiler.VM.VmOutcome : enum
+  Broiler.VM.Abstractions Broiler.VM.VmOutcome.Cancellation : const Broiler.VM.VmOutcome = 7
+  Broiler.VM.Abstractions Broiler.VM.VmOutcome.HostFailure : const Broiler.VM.VmOutcome = 9
+  Broiler.VM.Abstractions Broiler.VM.VmOutcome.InvalidArtifact : const Broiler.VM.VmOutcome = 3
+  Broiler.VM.Abstractions Broiler.VM.VmOutcome.InvalidState : const Broiler.VM.VmOutcome = 4
+  Broiler.VM.Abstractions Broiler.VM.VmOutcome.None : const Broiler.VM.VmOutcome = 0
+  Broiler.VM.Abstractions Broiler.VM.VmOutcome.Normal : const Broiler.VM.VmOutcome = 1
+  Broiler.VM.Abstractions Broiler.VM.VmOutcome.ProfileFault : const Broiler.VM.VmOutcome = 5
+  Broiler.VM.Abstractions Broiler.VM.VmOutcome.ResourceExhaustion : const Broiler.VM.VmOutcome = 8
+  Broiler.VM.Abstractions Broiler.VM.VmOutcome.Suspension : const Broiler.VM.VmOutcome = 6
+  Broiler.VM.Abstractions Broiler.VM.VmOutcome.UnsupportedProfile : const Broiler.VM.VmOutcome = 2
+  Broiler.VM.Abstractions Broiler.VM.VmOutcome.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmPackageIdentity : struct System.IEquatable<Broiler.VM.VmPackageIdentity>
+  Broiler.VM.Abstractions Broiler.VM.VmPackageIdentity..ctor(System.String packageId, System.String packageVersion, System.String ownerTag) : void
+  Broiler.VM.Abstractions Broiler.VM.VmPackageIdentity.Equals(Broiler.VM.VmPackageIdentity other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmPackageIdentity.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmPackageIdentity.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmPackageIdentity.IsComplete : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmPackageIdentity.OwnerTag : System.String { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmPackageIdentity.PackageId : System.String { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmPackageIdentity.PackageVersion : System.String { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmPackageIdentity.op_Equality(Broiler.VM.VmPackageIdentity left, Broiler.VM.VmPackageIdentity right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmPackageIdentity.op_Inequality(Broiler.VM.VmPackageIdentity left, Broiler.VM.VmPackageIdentity right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmPayloadIdentity : struct System.IEquatable<Broiler.VM.VmPayloadIdentity>
+  Broiler.VM.Abstractions Broiler.VM.VmPayloadIdentity..ctor(Broiler.VM.VmProfileId profileId, System.Int32 payloadKindId, System.Int32 payloadSchemaVersion) : void
+  Broiler.VM.Abstractions Broiler.VM.VmPayloadIdentity.Equals(Broiler.VM.VmPayloadIdentity other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmPayloadIdentity.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmPayloadIdentity.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmPayloadIdentity.PayloadKindId : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmPayloadIdentity.PayloadSchemaVersion : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmPayloadIdentity.ProfileId : Broiler.VM.VmProfileId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmPayloadIdentity.op_Equality(Broiler.VM.VmPayloadIdentity left, Broiler.VM.VmPayloadIdentity right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmPayloadIdentity.op_Inequality(Broiler.VM.VmPayloadIdentity left, Broiler.VM.VmPayloadIdentity right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmPayloadKindIdRange : struct System.IEquatable<Broiler.VM.VmPayloadKindIdRange>
+  Broiler.VM.Abstractions Broiler.VM.VmPayloadKindIdRange..ctor(System.Int32 minInclusive, System.Int32 maxInclusive) : void
+  Broiler.VM.Abstractions Broiler.VM.VmPayloadKindIdRange.Contains(System.Int32 payloadKindId) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmPayloadKindIdRange.Equals(Broiler.VM.VmPayloadKindIdRange other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmPayloadKindIdRange.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmPayloadKindIdRange.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmPayloadKindIdRange.IsWellFormed : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmPayloadKindIdRange.MaxInclusive : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmPayloadKindIdRange.MinInclusive : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmPayloadKindIdRange.op_Equality(Broiler.VM.VmPayloadKindIdRange left, Broiler.VM.VmPayloadKindIdRange right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmPayloadKindIdRange.op_Inequality(Broiler.VM.VmPayloadKindIdRange left, Broiler.VM.VmPayloadKindIdRange right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor : sealed class
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor..ctor(Broiler.VM.VmProfileId profileId, System.String displayName, System.Int32 descriptorRevision, Broiler.VM.VmFormatVersionRange supportedFormatVersions, System.Collections.Immutable.ImmutableArray<Broiler.VM.VmFeatureManifestId> acceptedFeatureManifests, Broiler.VM.IVmProfileVerifier verifier, Broiler.VM.VmExecutorFactory executorFactory, Broiler.VM.VmArtifactRepresentationKind artifactRepresentationKind, Broiler.VM.VmArtifactLifetimeKind artifactLifetimeKind, System.Boolean supportsConcurrentVerification, Broiler.VM.VmThreadAffinity threadAffinity, System.UInt64 cancellationPollBound, System.UInt64 abandonBudget, Broiler.VM.VmLimitVector limitDefaults, Broiler.VM.VmLimitVector profileHardMaxima, Broiler.VM.VmBudgetDeclarationMatrix budgetDeclarationMatrix, System.Collections.Immutable.ImmutableArray<Broiler.VM.VmCapabilityImport> hostCapabilityDescriptors, Broiler.VM.VmGuestLoadDeclaration guestInitiatedLoads, Broiler.VM.VmDeclaration asynchronousInstantiation, Broiler.VM.VmDeclaration externalSuspension, Broiler.VM.VmPayloadKindIdRange payloadKindIdRange, System.Int32 authoredCoreContractVersion, Broiler.VM.VmConformanceManifestId conformanceManifestId, System.Int32 conformanceManifestVersion, Broiler.VM.VmDiagnosticsIdentity diagnosticsIdentity, Broiler.VM.VmPackageIdentity packageIdentity, Broiler.VM.VmFaultRecovery faultRecovery, System.UInt32 maxUnchargedWork, System.UInt32 chargingGranularity, Broiler.VM.VmArtifactSharing artifactSharing, System.Int32 builtAgainstCoreContractVersion) : void
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.AbandonBudget : System.UInt64 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.AcceptedFeatureManifests : System.Collections.Immutable.ImmutableArray<Broiler.VM.VmFeatureManifestId> { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.ArtifactLifetimeKind : Broiler.VM.VmArtifactLifetimeKind { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.ArtifactRepresentationKind : Broiler.VM.VmArtifactRepresentationKind { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.ArtifactSharing : Broiler.VM.VmArtifactSharing { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.AsynchronousInstantiation : Broiler.VM.VmDeclaration { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.AuthoredCoreContractVersion : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.BudgetDeclarationMatrix : Broiler.VM.VmBudgetDeclarationMatrix { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.BuiltAgainstCoreContractVersion : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.CancellationPollBound : System.UInt64 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.ChargingGranularity : System.UInt32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.ConformanceManifestId : Broiler.VM.VmConformanceManifestId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.ConformanceManifestVersion : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.DescriptorRevision : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.DiagnosticsIdentity : Broiler.VM.VmDiagnosticsIdentity { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.DisplayName : System.String { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.ExecutorFactory : Broiler.VM.VmExecutorFactory { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.ExternalSuspension : Broiler.VM.VmDeclaration { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.FaultRecovery : Broiler.VM.VmFaultRecovery { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.GuestInitiatedLoads : Broiler.VM.VmGuestLoadDeclaration { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.HostCapabilityDescriptors : System.Collections.Immutable.ImmutableArray<Broiler.VM.VmCapabilityImport> { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.LimitDefaults : Broiler.VM.VmLimitVector { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.MaxUnchargedWork : System.UInt32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.MaximumAcceptedFeatureManifests : const System.Int32 = 64
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.MaximumDisplayNameLength : const System.Int32 = 64
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.PackageIdentity : Broiler.VM.VmPackageIdentity { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.PayloadKindIdRange : Broiler.VM.VmPayloadKindIdRange { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.ProfileHardMaxima : Broiler.VM.VmLimitVector { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.ProfileId : Broiler.VM.VmProfileId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.SupportedFormatVersions : Broiler.VM.VmFormatVersionRange { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.SupportsConcurrentVerification : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.ThreadAffinity : Broiler.VM.VmThreadAffinity { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileDescriptor.Verifier : Broiler.VM.IVmProfileVerifier { get; }
+type Broiler.VM.Abstractions Broiler.VM.VmProfileId : struct System.IComparable<Broiler.VM.VmProfileId>, System.IEquatable<Broiler.VM.VmProfileId>
+  Broiler.VM.Abstractions Broiler.VM.VmProfileId.AsSpan() : System.ReadOnlySpan<System.Char>
+  Broiler.VM.Abstractions Broiler.VM.VmProfileId.CompareTo(Broiler.VM.VmProfileId other) : System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmProfileId.Equals(Broiler.VM.VmProfileId other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmProfileId.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmProfileId.EqualsUnderAsciiFold(Broiler.VM.VmProfileId left, Broiler.VM.VmProfileId right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmProfileId.FoldAscii(System.Char value) : static System.Char
+  Broiler.VM.Abstractions Broiler.VM.VmProfileId.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmProfileId.IsEmpty : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileId.IsReservedNamespace : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileId.LabelCount : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileId.Length : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmProfileId.MaximumLabelCount : const System.Int32 = 8
+  Broiler.VM.Abstractions Broiler.VM.VmProfileId.MaximumLabelLength : const System.Int32 = 64
+  Broiler.VM.Abstractions Broiler.VM.VmProfileId.MaximumLength : const System.Int32 = 128
+  Broiler.VM.Abstractions Broiler.VM.VmProfileId.MinimumLabelCount : const System.Int32 = 2
+  Broiler.VM.Abstractions Broiler.VM.VmProfileId.MinimumLength : const System.Int32 = 3
+  Broiler.VM.Abstractions Broiler.VM.VmProfileId.Parse(System.ReadOnlySpan<System.Char> candidate) : static Broiler.VM.VmProfileId
+  Broiler.VM.Abstractions Broiler.VM.VmProfileId.ToString() : virtual System.String
+  Broiler.VM.Abstractions Broiler.VM.VmProfileId.TryParse(System.ReadOnlySpan<System.Char> candidate, out Broiler.VM.VmProfileId id) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmProfileId.op_Equality(Broiler.VM.VmProfileId left, Broiler.VM.VmProfileId right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmProfileId.op_Inequality(Broiler.VM.VmProfileId left, Broiler.VM.VmProfileId right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmReason : enum
+  Broiler.VM.Abstractions Broiler.VM.VmReason.AggregateBudgetDisposed : const Broiler.VM.VmReason = 418
+  Broiler.VM.Abstractions Broiler.VM.VmReason.AggregateBudgetHasLiveRuntimes : const Broiler.VM.VmReason = 419
+  Broiler.VM.Abstractions Broiler.VM.VmReason.AllowanceExhausted : const Broiler.VM.VmReason = 804
+  Broiler.VM.Abstractions Broiler.VM.VmReason.AlreadyCompleted : const Broiler.VM.VmReason = 405
+  Broiler.VM.Abstractions Broiler.VM.VmReason.BudgetDimensionNotDeclarableAtScope : const Broiler.VM.VmReason = 919
+  Broiler.VM.Abstractions Broiler.VM.VmReason.BudgetDimensionNotRuntimeScoped : const Broiler.VM.VmReason = 916
+  Broiler.VM.Abstractions Broiler.VM.VmReason.BudgetDimensionUnresolved : const Broiler.VM.VmReason = 914
+  Broiler.VM.Abstractions Broiler.VM.VmReason.BudgetRaiseRefused : const Broiler.VM.VmReason = 915
+  Broiler.VM.Abstractions Broiler.VM.VmReason.CancellationPollBoundExceeded : const Broiler.VM.VmReason = 502
+  Broiler.VM.Abstractions Broiler.VM.VmReason.CancellationUnspecified : const Broiler.VM.VmReason = 700
+  Broiler.VM.Abstractions Broiler.VM.VmReason.Cancelled : const Broiler.VM.VmReason = 701
+  Broiler.VM.Abstractions Broiler.VM.VmReason.CapabilityNotRegistered : const Broiler.VM.VmReason = 902
+  Broiler.VM.Abstractions Broiler.VM.VmReason.CapabilitySignatureMismatch : const Broiler.VM.VmReason = 903
+  Broiler.VM.Abstractions Broiler.VM.VmReason.CeilingReached : const Broiler.VM.VmReason = 805
+  Broiler.VM.Abstractions Broiler.VM.VmReason.DescriptorMismatch : const Broiler.VM.VmReason = 310
+  Broiler.VM.Abstractions Broiler.VM.VmReason.DuplicateArtifactProvider : const Broiler.VM.VmReason = 907
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ExceedsParentRemaining : const Broiler.VM.VmReason = 803
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ExecutorIdentityMismatch : const Broiler.VM.VmReason = 503
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ExternalSuspensionAbandoned : const Broiler.VM.VmReason = 704
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ExternalSuspensionNotDeclared : const Broiler.VM.VmReason = 1000
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ExternalSuspensionNotEnabled : const Broiler.VM.VmReason = 1001
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ExternallySuspended : const Broiler.VM.VmReason = 602
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ForeignHandle : const Broiler.VM.VmReason = 411
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ForeignOpaqueRef : const Broiler.VM.VmReason = 904
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ForeignPayload : const Broiler.VM.VmReason = 412
+  Broiler.VM.Abstractions Broiler.VM.VmReason.GuestLoadBoundExceedsProfileMaximum : const Broiler.VM.VmReason = 913
+  Broiler.VM.Abstractions Broiler.VM.VmReason.GuestLoadBoundsNotConfigured : const Broiler.VM.VmReason = 912
+  Broiler.VM.Abstractions Broiler.VM.VmReason.GuestSuspended : const Broiler.VM.VmReason = 601
+  Broiler.VM.Abstractions Broiler.VM.VmReason.HandleDisposed : const Broiler.VM.VmReason = 410
+  Broiler.VM.Abstractions Broiler.VM.VmReason.HandleDraining : const Broiler.VM.VmReason = 409
+  Broiler.VM.Abstractions Broiler.VM.VmReason.HostCapabilityFaulted : const Broiler.VM.VmReason = 901
+  Broiler.VM.Abstractions Broiler.VM.VmReason.HostFailureUnspecified : const Broiler.VM.VmReason = 900
+  Broiler.VM.Abstractions Broiler.VM.VmReason.InconsistentStructure : const Broiler.VM.VmReason = 308
+  Broiler.VM.Abstractions Broiler.VM.VmReason.InstantiationSuspended : const Broiler.VM.VmReason = 603
+  Broiler.VM.Abstractions Broiler.VM.VmReason.InvalidArtifactUnspecified : const Broiler.VM.VmReason = 300
+  Broiler.VM.Abstractions Broiler.VM.VmReason.InvalidStateUnspecified : const Broiler.VM.VmReason = 400
+  Broiler.VM.Abstractions Broiler.VM.VmReason.LiveRuntimeCeilingReached : const Broiler.VM.VmReason = 802
+  Broiler.VM.Abstractions Broiler.VM.VmReason.MalformedArtifactDescriptor : const Broiler.VM.VmReason = 301
+  Broiler.VM.Abstractions Broiler.VM.VmReason.MalformedEncoding : const Broiler.VM.VmReason = 306
+  Broiler.VM.Abstractions Broiler.VM.VmReason.MediatorOutOfScope : const Broiler.VM.VmReason = 413
+  Broiler.VM.Abstractions Broiler.VM.VmReason.NestedFailureNotConverted : const Broiler.VM.VmReason = 504
+  Broiler.VM.Abstractions Broiler.VM.VmReason.NestedHandleNotShareable : const Broiler.VM.VmReason = 415
+  Broiler.VM.Abstractions Broiler.VM.VmReason.None : const Broiler.VM.VmReason = 0
+  Broiler.VM.Abstractions Broiler.VM.VmReason.NormalCompleted : const Broiler.VM.VmReason = 100
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ObjectDisposed : const Broiler.VM.VmReason = 401
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ObjectDisposing : const Broiler.VM.VmReason = 402
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ParentExhausted : const Broiler.VM.VmReason = 801
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ProfileContractViolation : const Broiler.VM.VmReason = 501
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ProfileFaultUnspecified : const Broiler.VM.VmReason = 500
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ProfileNotInCatalog : const Broiler.VM.VmReason = 201
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ProviderArtifactNotFound : const Broiler.VM.VmReason = 909
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ProviderContractViolation : const Broiler.VM.VmReason = 910
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ProviderNotRegistered : const Broiler.VM.VmReason = 906
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ProviderProfileMismatch : const Broiler.VM.VmReason = 911
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ProviderRefused : const Broiler.VM.VmReason = 908
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ReentrancyRefused : const Broiler.VM.VmReason = 406
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ReentrantRuntimeCallFromCapability : const Broiler.VM.VmReason = 414
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ResourceExhaustionUnspecified : const Broiler.VM.VmReason = 800
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ResumeTokenConsumed : const Broiler.VM.VmReason = 408
+  Broiler.VM.Abstractions Broiler.VM.VmReason.SemanticValidationFailed : const Broiler.VM.VmReason = 309
+  Broiler.VM.Abstractions Broiler.VM.VmReason.SharedHandleAggregateBudgetMismatch : const Broiler.VM.VmReason = 428
+  Broiler.VM.Abstractions Broiler.VM.VmReason.SharedHandleCapabilityAssumptionMismatch : const Broiler.VM.VmReason = 426
+  Broiler.VM.Abstractions Broiler.VM.VmReason.SharedHandleCeilingMismatch : const Broiler.VM.VmReason = 425
+  Broiler.VM.Abstractions Broiler.VM.VmReason.SharedHandleCoreContractVersionMismatch : const Broiler.VM.VmReason = 420
+  Broiler.VM.Abstractions Broiler.VM.VmReason.SharedHandleDescriptorRevisionMismatch : const Broiler.VM.VmReason = 421
+  Broiler.VM.Abstractions Broiler.VM.VmReason.SharedHandleFeatureManifestMismatch : const Broiler.VM.VmReason = 423
+  Broiler.VM.Abstractions Broiler.VM.VmReason.SharedHandleFormatVersionMismatch : const Broiler.VM.VmReason = 422
+  Broiler.VM.Abstractions Broiler.VM.VmReason.SharedHandleNotShareable : const Broiler.VM.VmReason = 427
+  Broiler.VM.Abstractions Broiler.VM.VmReason.SharedHandleVerifierVersionMismatch : const Broiler.VM.VmReason = 424
+  Broiler.VM.Abstractions Broiler.VM.VmReason.StaleOpaqueRef : const Broiler.VM.VmReason = 905
+  Broiler.VM.Abstractions Broiler.VM.VmReason.SuspendedOperationLimitReached : const Broiler.VM.VmReason = 416
+  Broiler.VM.Abstractions Broiler.VM.VmReason.SuspendedOperationLimitUnbounded : const Broiler.VM.VmReason = 918
+  Broiler.VM.Abstractions Broiler.VM.VmReason.SuspendedResidencyExpired : const Broiler.VM.VmReason = 703
+  Broiler.VM.Abstractions Broiler.VM.VmReason.SuspendedResidencyUnbounded : const Broiler.VM.VmReason = 917
+  Broiler.VM.Abstractions Broiler.VM.VmReason.SuspensionUnspecified : const Broiler.VM.VmReason = 600
+  Broiler.VM.Abstractions Broiler.VM.VmReason.TerminalFault : const Broiler.VM.VmReason = 403
+  Broiler.VM.Abstractions Broiler.VM.VmReason.ThreadAffinityViolation : const Broiler.VM.VmReason = 407
+  Broiler.VM.Abstractions Broiler.VM.VmReason.Truncated : const Broiler.VM.VmReason = 305
+  Broiler.VM.Abstractions Broiler.VM.VmReason.UndeclaredAsynchronousInstantiation : const Broiler.VM.VmReason = 417
+  Broiler.VM.Abstractions Broiler.VM.VmReason.UnknownFeature : const Broiler.VM.VmReason = 304
+  Broiler.VM.Abstractions Broiler.VM.VmReason.UnknownFormatVersion : const Broiler.VM.VmReason = 307
+  Broiler.VM.Abstractions Broiler.VM.VmReason.UnsatisfiedHostAssumption : const Broiler.VM.VmReason = 311
+  Broiler.VM.Abstractions Broiler.VM.VmReason.UnsupportedFeatureManifest : const Broiler.VM.VmReason = 303
+  Broiler.VM.Abstractions Broiler.VM.VmReason.UnsupportedProfileFormatVersion : const Broiler.VM.VmReason = 302
+  Broiler.VM.Abstractions Broiler.VM.VmReason.UnsupportedProfileUnspecified : const Broiler.VM.VmReason = 200
+  Broiler.VM.Abstractions Broiler.VM.VmReason.UnwindTimedOut : const Broiler.VM.VmReason = 702
+  Broiler.VM.Abstractions Broiler.VM.VmReason.WrongState : const Broiler.VM.VmReason = 404
+  Broiler.VM.Abstractions Broiler.VM.VmReason.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmReasonRegistry : static class
+  Broiler.VM.Abstractions Broiler.VM.VmReasonRegistry.All() : static Broiler.VM.VmReason[]
+  Broiler.VM.Abstractions Broiler.VM.VmReasonRegistry.CategoryOf(Broiler.VM.VmReason reason) : static Broiler.VM.VmOutcome
+  Broiler.VM.Abstractions Broiler.VM.VmReasonRegistry.GenericFor(Broiler.VM.VmOutcome outcome) : static Broiler.VM.VmReason
+  Broiler.VM.Abstractions Broiler.VM.VmReasonRegistry.IsControlOnly(Broiler.VM.VmReason reason) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmReasonRegistry.IsLegal(Broiler.VM.VmOutcome outcome, Broiler.VM.VmReason reason) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmReasonRegistry.Revision : const System.Int32 = 2
+type Broiler.VM.Abstractions Broiler.VM.VmResumeResult : struct Broiler.VM.IVmOperationResult
+  Broiler.VM.Abstractions Broiler.VM.VmResumeResult.Cancellation(Broiler.VM.VmStage suspendedStage, Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmResumeResult
+  Broiler.VM.Abstractions Broiler.VM.VmResumeResult.Diagnostics : Broiler.VM.VmDiagnostics { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmResumeResult.HostFailure(Broiler.VM.VmStage suspendedStage, Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmResumeResult
+  Broiler.VM.Abstractions Broiler.VM.VmResumeResult.InvalidState(Broiler.VM.VmStage suspendedStage, Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmResumeResult
+  Broiler.VM.Abstractions Broiler.VM.VmResumeResult.IsSuccess : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmResumeResult.IsSuspended : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmResumeResult.Normal(Broiler.VM.VmStage suspendedStage, Broiler.VM.VmInstance instance, Broiler.VM.IVmProfilePayload payload, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmResumeResult
+  Broiler.VM.Abstractions Broiler.VM.VmResumeResult.Outcome : Broiler.VM.VmOutcome { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmResumeResult.PayloadIdentity : Broiler.VM.VmPayloadIdentity { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmResumeResult.ProfileFault(Broiler.VM.VmStage suspendedStage, Broiler.VM.VmReason reason, Broiler.VM.IVmProfilePayload payload, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmResumeResult
+  Broiler.VM.Abstractions Broiler.VM.VmResumeResult.Reason : Broiler.VM.VmReason { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmResumeResult.ResourceExhaustion(Broiler.VM.VmStage suspendedStage, Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmResumeResult
+  Broiler.VM.Abstractions Broiler.VM.VmResumeResult.SuspendedStage : Broiler.VM.VmStage { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmResumeResult.Suspension(Broiler.VM.VmStage suspendedStage, Broiler.VM.VmSuspension suspension, Broiler.VM.IVmProfilePayload projection, Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmResumeResult
+  Broiler.VM.Abstractions Broiler.VM.VmResumeResult.TryGetInstance(out Broiler.VM.VmInstance createdInstance) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmResumeResult.TryGetPayload<TPayload>(out TPayload typedPayload) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmResumeResult.TryGetSuspension(out Broiler.VM.VmSuspension pending) : System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmSourcePosition : struct System.IEquatable<Broiler.VM.VmSourcePosition>
+  Broiler.VM.Abstractions Broiler.VM.VmSourcePosition..ctor(System.Int32 sectionIndex, System.UInt64 byteOffset, System.Int32 profileCoordinate0, System.Int32 profileCoordinate1) : void
+  Broiler.VM.Abstractions Broiler.VM.VmSourcePosition.ByteOffset : System.UInt64 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmSourcePosition.Equals(Broiler.VM.VmSourcePosition other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmSourcePosition.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmSourcePosition.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmSourcePosition.ProfileCoordinate0 : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmSourcePosition.ProfileCoordinate1 : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmSourcePosition.SectionIndex : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmSourcePosition.op_Equality(Broiler.VM.VmSourcePosition left, Broiler.VM.VmSourcePosition right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmSourcePosition.op_Inequality(Broiler.VM.VmSourcePosition left, Broiler.VM.VmSourcePosition right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmStage : enum
+  Broiler.VM.Abstractions Broiler.VM.VmStage.EnvelopePreprocessing : const Broiler.VM.VmStage = 2
+  Broiler.VM.Abstractions Broiler.VM.VmStage.GuestInitiatedLoad : const Broiler.VM.VmStage = 4
+  Broiler.VM.Abstractions Broiler.VM.VmStage.Instantiation : const Broiler.VM.VmStage = 5
+  Broiler.VM.Abstractions Broiler.VM.VmStage.Invocation : const Broiler.VM.VmStage = 6
+  Broiler.VM.Abstractions Broiler.VM.VmStage.None : const Broiler.VM.VmStage = 0
+  Broiler.VM.Abstractions Broiler.VM.VmStage.Resume : const Broiler.VM.VmStage = 7
+  Broiler.VM.Abstractions Broiler.VM.VmStage.RuntimeCreation : const Broiler.VM.VmStage = 1
+  Broiler.VM.Abstractions Broiler.VM.VmStage.Verification : const Broiler.VM.VmStage = 3
+  Broiler.VM.Abstractions Broiler.VM.VmStage.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmStageMatrix : static class
+  Broiler.VM.Abstractions Broiler.VM.VmStageMatrix.IsLegal(Broiler.VM.VmStage stage, Broiler.VM.VmOutcome outcome) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmStageMatrix.LegalCategoriesAt(Broiler.VM.VmStage stage) : static Broiler.VM.VmOutcome[]
+type Broiler.VM.Abstractions Broiler.VM.VmSuspension : sealed class
+  Broiler.VM.Abstractions Broiler.VM.VmSuspension.Create(Broiler.VM.VmObjectId objectId, Broiler.VM.VmObjectId operationId, Broiler.VM.VmObjectId runtimeId, Broiler.VM.VmSuspensionOrigin origin, Broiler.VM.VmStage suspendedStage, Broiler.VM.IVmProfilePayload projection) : static Broiler.VM.VmSuspension
+  Broiler.VM.Abstractions Broiler.VM.VmSuspension.IsConsumed : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmSuspension.ObjectId : Broiler.VM.VmObjectId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmSuspension.OperationId : Broiler.VM.VmObjectId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmSuspension.Origin : Broiler.VM.VmSuspensionOrigin { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmSuspension.RuntimeId : Broiler.VM.VmObjectId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmSuspension.SuspendedStage : Broiler.VM.VmStage { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmSuspension.TryConsume() : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmSuspension.TryGetProjection(out Broiler.VM.IVmProfilePayload payload) : System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmSuspensionOrigin : enum
+  Broiler.VM.Abstractions Broiler.VM.VmSuspensionOrigin.External : const Broiler.VM.VmSuspensionOrigin = 1
+  Broiler.VM.Abstractions Broiler.VM.VmSuspensionOrigin.Guest : const Broiler.VM.VmSuspensionOrigin = 0
+  Broiler.VM.Abstractions Broiler.VM.VmSuspensionOrigin.Instantiation : const Broiler.VM.VmSuspensionOrigin = 2
+  Broiler.VM.Abstractions Broiler.VM.VmSuspensionOrigin.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmThreadAffinity : enum
+  Broiler.VM.Abstractions Broiler.VM.VmThreadAffinity.Agile : const Broiler.VM.VmThreadAffinity = 0
+  Broiler.VM.Abstractions Broiler.VM.VmThreadAffinity.OperationThreadPinned : const Broiler.VM.VmThreadAffinity = 1
+  Broiler.VM.Abstractions Broiler.VM.VmThreadAffinity.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmUtf8Text : ref struct
+  Broiler.VM.Abstractions Broiler.VM.VmUtf8Text..ctor(System.ReadOnlySpan<System.Byte> bytes) : void
+  Broiler.VM.Abstractions Broiler.VM.VmUtf8Text.IsEmpty : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmUtf8Text.Length : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmUtf8Text.Utf8 : System.ReadOnlySpan<System.Byte> { get; }
+type Broiler.VM.Abstractions Broiler.VM.VmVerificationResult : struct Broiler.VM.IVmOperationResult
+  Broiler.VM.Abstractions Broiler.VM.VmVerificationResult.Cancellation(Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmVerificationResult
+  Broiler.VM.Abstractions Broiler.VM.VmVerificationResult.Diagnostics : Broiler.VM.VmDiagnostics { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerificationResult.InvalidArtifact(Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmVerificationResult
+  Broiler.VM.Abstractions Broiler.VM.VmVerificationResult.InvalidState(Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmVerificationResult
+  Broiler.VM.Abstractions Broiler.VM.VmVerificationResult.IsSuccess : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerificationResult.IsSuspended : System.Boolean { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerificationResult.Normal(Broiler.VM.VmVerifiedArtifact artifact, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmVerificationResult
+  Broiler.VM.Abstractions Broiler.VM.VmVerificationResult.Outcome : Broiler.VM.VmOutcome { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerificationResult.Reason : Broiler.VM.VmReason { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerificationResult.ResourceExhaustion(Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmVerificationResult
+  Broiler.VM.Abstractions Broiler.VM.VmVerificationResult.TryGetArtifact(out Broiler.VM.VmVerifiedArtifact verifiedArtifact) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmVerificationResult.UnsupportedProfile(Broiler.VM.VmReason reason, Broiler.VM.VmDiagnostics diagnostics) : static Broiler.VM.VmVerificationResult
+type Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifact : sealed class System.IDisposable
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifact.AggregateBudgetId : Broiler.VM.VmObjectId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifact.ByteLength : System.UInt64 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifact.ClampedLimitRequests : System.Collections.Immutable.ImmutableArray<Broiler.VM.VmLimitClamp> { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifact.Create(Broiler.VM.VmObjectId objectId, Broiler.VM.VmVerifiedArtifactIdentity identity, Broiler.VM.VmArtifactRepresentationKind representationKind, Broiler.VM.VmArtifactLifetimeKind lifetimeKind, Broiler.VM.VmArtifactSharing sharing, Broiler.VM.VmArtifactOrigin origin, Broiler.VM.VmObjectId owningRuntimeId, Broiler.VM.VmObjectId aggregateBudgetId, System.UInt64 byteLength, Broiler.VM.IVmVerifiedState state, System.Collections.Immutable.ImmutableArray<Broiler.VM.VmLimitClamp> clampedLimitRequests, Broiler.VM.VmDiagnostics diagnosticsBase) : static Broiler.VM.VmVerifiedArtifact
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifact.DiagnosticsBase : Broiler.VM.VmDiagnostics { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifact.Dispose() : Broiler.VM.VmControlResult
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifact.Identity : Broiler.VM.VmVerifiedArtifactIdentity { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifact.LeaseCount : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifact.LifetimeKind : Broiler.VM.VmArtifactLifetimeKind { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifact.ObjectId : Broiler.VM.VmObjectId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifact.Origin : Broiler.VM.VmArtifactOrigin { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifact.OwningRuntimeId : Broiler.VM.VmObjectId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifact.RepresentationKind : Broiler.VM.VmArtifactRepresentationKind { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifact.Sharing : Broiler.VM.VmArtifactSharing { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifact.State : Broiler.VM.VmVerifiedArtifactState { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifact.TryAcquireLease(out Broiler.VM.VmArtifactLease lease) : Broiler.VM.VmControlResult
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifact.TryGetState(out Broiler.VM.IVmVerifiedState verifiedState) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifact.VerifiedArtifactInstanceId : Broiler.VM.VmObjectId { get; }
+type Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifactIdentity : struct System.IEquatable<Broiler.VM.VmVerifiedArtifactIdentity>
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifactIdentity..ctor(Broiler.VM.VmProfileId profileId, System.Int32 descriptorRevision, System.UInt32 acceptedProfileFormatVersion, Broiler.VM.VmFeatureManifestId manifestId, System.Int32 manifestVersion, System.Int32 verifierSemanticVersion, System.Int32 coreContractVersion, Broiler.VM.VmEffectiveCeilings effectiveCeilings, System.Collections.Immutable.ImmutableArray<Broiler.VM.VmHostSignatureAssumption> hostSignatureAssumptions) : void
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifactIdentity.AcceptedProfileFormatVersion : System.UInt32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifactIdentity.CoreContractVersion : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifactIdentity.DescriptorRevision : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifactIdentity.EffectiveCeilings : Broiler.VM.VmEffectiveCeilings { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifactIdentity.Equals(Broiler.VM.VmVerifiedArtifactIdentity other) : System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifactIdentity.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifactIdentity.FirstMismatch(Broiler.VM.VmVerifiedArtifactIdentity other) : Broiler.VM.VmReason
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifactIdentity.GetHashCode() : virtual System.Int32
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifactIdentity.HostSignatureAssumptions : System.Collections.Immutable.ImmutableArray<Broiler.VM.VmHostSignatureAssumption> { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifactIdentity.ManifestId : Broiler.VM.VmFeatureManifestId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifactIdentity.ManifestVersion : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifactIdentity.ProfileId : Broiler.VM.VmProfileId { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifactIdentity.VerifierSemanticVersion : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifactIdentity.op_Equality(Broiler.VM.VmVerifiedArtifactIdentity left, Broiler.VM.VmVerifiedArtifactIdentity right) : static System.Boolean
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifactIdentity.op_Inequality(Broiler.VM.VmVerifiedArtifactIdentity left, Broiler.VM.VmVerifiedArtifactIdentity right) : static System.Boolean
+type Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifactState : enum
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifactState.Disposed : const Broiler.VM.VmVerifiedArtifactState = 2
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifactState.Draining : const Broiler.VM.VmVerifiedArtifactState = 1
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifactState.Ready : const Broiler.VM.VmVerifiedArtifactState = 0
+  Broiler.VM.Abstractions Broiler.VM.VmVerifiedArtifactState.value__ : System.Int32
+type Broiler.VM.Abstractions Broiler.VM.VmVerifierOutcome : struct
+  Broiler.VM.Abstractions Broiler.VM.VmVerifierOutcome.Cancellation() : static Broiler.VM.VmVerifierOutcome
+  Broiler.VM.Abstractions Broiler.VM.VmVerifierOutcome.Category : Broiler.VM.VmOutcome { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifierOutcome.ExhaustedDimension : Broiler.VM.VmBudgetDimension { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifierOutcome.ExhaustedScope : Broiler.VM.VmBudgetScope { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifierOutcome.InvalidArtifact(Broiler.VM.VmReason reason, System.Int32 profileDiagnosticCode, Broiler.VM.VmSourcePosition position) : static Broiler.VM.VmVerifierOutcome
+  Broiler.VM.Abstractions Broiler.VM.VmVerifierOutcome.NarrowedSharing : Broiler.VM.VmArtifactSharing { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifierOutcome.Position : Broiler.VM.VmSourcePosition { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifierOutcome.ProfileDiagnosticCode : System.Int32 { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifierOutcome.Reason : Broiler.VM.VmReason { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifierOutcome.ResourceExhaustion(Broiler.VM.VmBudgetDimension dimension, Broiler.VM.VmBudgetScope scope) : static Broiler.VM.VmVerifierOutcome
+  Broiler.VM.Abstractions Broiler.VM.VmVerifierOutcome.State : Broiler.VM.IVmVerifiedState { get; }
+  Broiler.VM.Abstractions Broiler.VM.VmVerifierOutcome.UnsupportedProfile() : static Broiler.VM.VmVerifierOutcome
+  Broiler.VM.Abstractions Broiler.VM.VmVerifierOutcome.Verified(Broiler.VM.IVmVerifiedState state, Broiler.VM.VmArtifactSharing narrowedSharing) : static Broiler.VM.VmVerifierOutcome
+type Broiler.VM.Binary Broiler.VM.IVmBoundedAllocationMeter : interface
+  Broiler.VM.Binary Broiler.VM.IVmBoundedAllocationMeter.Poll() : abstract System.Boolean
+  Broiler.VM.Binary Broiler.VM.IVmBoundedAllocationMeter.Release(System.UInt64 byteCount) : abstract System.Void
+  Broiler.VM.Binary Broiler.VM.IVmBoundedAllocationMeter.TryChargeWork(System.UInt64 workUnits) : abstract System.Boolean
+  Broiler.VM.Binary Broiler.VM.IVmBoundedAllocationMeter.TryReserve(System.UInt64 byteCount) : abstract System.Boolean
+type Broiler.VM.Binary Broiler.VM.VmBoundedAllocator : static class
+  Broiler.VM.Binary Broiler.VM.VmBoundedAllocator.TryAllocate<T>(in Broiler.VM.VmReadBounds bounds, Broiler.VM.IVmBoundedAllocationMeter meter, System.UInt32 declaredCount, out T[] buffer) : static System.Boolean
+  Broiler.VM.Binary Broiler.VM.VmBoundedAllocator.TryAllocateExact<T>(in Broiler.VM.VmReadBounds bounds, Broiler.VM.IVmBoundedAllocationMeter meter, System.UInt64 byteCount, out T[] buffer) : static System.Boolean
+type Broiler.VM.Binary Broiler.VM.VmBoundedReadStatus : enum
+  Broiler.VM.Binary Broiler.VM.VmBoundedReadStatus.AllocationRefused : const Broiler.VM.VmBoundedReadStatus = 7
+  Broiler.VM.Binary Broiler.VM.VmBoundedReadStatus.ArtifactBytesExceeded : const Broiler.VM.VmBoundedReadStatus = 6
+  Broiler.VM.Binary Broiler.VM.VmBoundedReadStatus.DeclaredCountExceeded : const Broiler.VM.VmBoundedReadStatus = 3
+  Broiler.VM.Binary Broiler.VM.VmBoundedReadStatus.MalformedEncoding : const Broiler.VM.VmBoundedReadStatus = 2
+  Broiler.VM.Binary Broiler.VM.VmBoundedReadStatus.Ok : const Broiler.VM.VmBoundedReadStatus = 0
+  Broiler.VM.Binary Broiler.VM.VmBoundedReadStatus.SectionCountExceeded : const Broiler.VM.VmBoundedReadStatus = 4
+  Broiler.VM.Binary Broiler.VM.VmBoundedReadStatus.StructuralDepthExceeded : const Broiler.VM.VmBoundedReadStatus = 5
+  Broiler.VM.Binary Broiler.VM.VmBoundedReadStatus.Truncated : const Broiler.VM.VmBoundedReadStatus = 1
+  Broiler.VM.Binary Broiler.VM.VmBoundedReadStatus.WorkBudgetExhausted : const Broiler.VM.VmBoundedReadStatus = 8
+  Broiler.VM.Binary Broiler.VM.VmBoundedReadStatus.value__ : System.Int32
+type Broiler.VM.Binary Broiler.VM.VmBoundedReader : ref struct
+  Broiler.VM.Binary Broiler.VM.VmBoundedReader..ctor(System.ReadOnlySpan<System.Byte> source, in Broiler.VM.VmReadBounds readBounds, Broiler.VM.IVmBoundedAllocationMeter allocationMeter) : void
+  Broiler.VM.Binary Broiler.VM.VmBoundedReader.Bounds : Broiler.VM.VmReadBounds { get; }
+  Broiler.VM.Binary Broiler.VM.VmBoundedReader.IsOk : System.Boolean { get; }
+  Broiler.VM.Binary Broiler.VM.VmBoundedReader.Position : System.UInt64 { get; }
+  Broiler.VM.Binary Broiler.VM.VmBoundedReader.Remaining : System.UInt64 { get; }
+  Broiler.VM.Binary Broiler.VM.VmBoundedReader.SectionsEntered : System.UInt64 { get; }
+  Broiler.VM.Binary Broiler.VM.VmBoundedReader.Status : Broiler.VM.VmBoundedReadStatus { get; }
+  Broiler.VM.Binary Broiler.VM.VmBoundedReader.StructuralDepth : System.UInt32 { get; }
+  Broiler.VM.Binary Broiler.VM.VmBoundedReader.TryChargeWork(System.UInt64 workUnits) : System.Boolean
+  Broiler.VM.Binary Broiler.VM.VmBoundedReader.TryEnterSection(System.UInt64 declaredLength, out Broiler.VM.VmSectionFrame frame) : System.Boolean
+  Broiler.VM.Binary Broiler.VM.VmBoundedReader.TryExitSection(in Broiler.VM.VmSectionFrame frame) : System.Boolean
+  Broiler.VM.Binary Broiler.VM.VmBoundedReader.TryReadByte(out System.Byte value) : System.Boolean
+  Broiler.VM.Binary Broiler.VM.VmBoundedReader.TryReadBytes(System.UInt64 length, out System.ReadOnlySpan<System.Byte> window) : System.Boolean
+  Broiler.VM.Binary Broiler.VM.VmBoundedReader.TryReadDeclaredCount(out System.UInt32 count) : System.Boolean
+  Broiler.VM.Binary Broiler.VM.VmBoundedReader.TryReadUInt32LittleEndian(out System.UInt32 value) : System.Boolean
+  Broiler.VM.Binary Broiler.VM.VmBoundedReader.TryReadUInt64LittleEndian(out System.UInt64 value) : System.Boolean
+  Broiler.VM.Binary Broiler.VM.VmBoundedReader.TryReadVarUInt32(out System.UInt32 value) : System.Boolean
+  Broiler.VM.Binary Broiler.VM.VmBoundedReader.TryReadVarUInt64(out System.UInt64 value) : System.Boolean
+  Broiler.VM.Binary Broiler.VM.VmBoundedReader.TrySkipSectionBody(in Broiler.VM.VmSectionFrame frame) : System.Boolean
+type Broiler.VM.Binary Broiler.VM.VmReadBounds : struct System.IEquatable<Broiler.VM.VmReadBounds>
+  Broiler.VM.Binary Broiler.VM.VmReadBounds..ctor(System.UInt64 maxArtifactBytes, System.UInt64 maxSectionCount, System.UInt64 maxDeclaredCount, System.UInt64 maxStructuralDepth) : void
+  Broiler.VM.Binary Broiler.VM.VmReadBounds.Equals(Broiler.VM.VmReadBounds other) : System.Boolean
+  Broiler.VM.Binary Broiler.VM.VmReadBounds.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Binary Broiler.VM.VmReadBounds.GetHashCode() : virtual System.Int32
+  Broiler.VM.Binary Broiler.VM.VmReadBounds.MaxArtifactBytes : System.UInt64 { get; }
+  Broiler.VM.Binary Broiler.VM.VmReadBounds.MaxDeclaredCount : System.UInt64 { get; }
+  Broiler.VM.Binary Broiler.VM.VmReadBounds.MaxSectionCount : System.UInt64 { get; }
+  Broiler.VM.Binary Broiler.VM.VmReadBounds.MaxStructuralDepth : System.UInt64 { get; }
+  Broiler.VM.Binary Broiler.VM.VmReadBounds.op_Equality(Broiler.VM.VmReadBounds left, Broiler.VM.VmReadBounds right) : static System.Boolean
+  Broiler.VM.Binary Broiler.VM.VmReadBounds.op_Inequality(Broiler.VM.VmReadBounds left, Broiler.VM.VmReadBounds right) : static System.Boolean
+type Broiler.VM.Binary Broiler.VM.VmSectionFrame : struct System.IEquatable<Broiler.VM.VmSectionFrame>
+  Broiler.VM.Binary Broiler.VM.VmSectionFrame.DeclaredLength : System.UInt64 { get; }
+  Broiler.VM.Binary Broiler.VM.VmSectionFrame.Depth : System.UInt32 { get; }
+  Broiler.VM.Binary Broiler.VM.VmSectionFrame.Equals(Broiler.VM.VmSectionFrame other) : System.Boolean
+  Broiler.VM.Binary Broiler.VM.VmSectionFrame.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Binary Broiler.VM.VmSectionFrame.GetHashCode() : virtual System.Int32
+  Broiler.VM.Binary Broiler.VM.VmSectionFrame.Start : System.UInt64 { get; }
+  Broiler.VM.Binary Broiler.VM.VmSectionFrame.op_Equality(Broiler.VM.VmSectionFrame left, Broiler.VM.VmSectionFrame right) : static System.Boolean
+  Broiler.VM.Binary Broiler.VM.VmSectionFrame.op_Inequality(Broiler.VM.VmSectionFrame left, Broiler.VM.VmSectionFrame right) : static System.Boolean
+type Broiler.VM.Runtime Broiler.VM.VmAggregateBudget : sealed class System.IDisposable
+  Broiler.VM.Runtime Broiler.VM.VmAggregateBudget.Create(System.Collections.Immutable.ImmutableArray<Broiler.VM.VmCeilingSpec> aggregateCeilings) : static Broiler.VM.VmAggregateBudget
+  Broiler.VM.Runtime Broiler.VM.VmAggregateBudget.Dispose() : Broiler.VM.VmControlResult
+  Broiler.VM.Runtime Broiler.VM.VmAggregateBudget.GetSnapshot() : Broiler.VM.VmBudgetSnapshot
+  Broiler.VM.Runtime Broiler.VM.VmAggregateBudget.Id : Broiler.VM.VmAggregateBudgetId { get; }
+  Broiler.VM.Runtime Broiler.VM.VmAggregateBudget.IsSealed : System.Boolean { get; }
+  Broiler.VM.Runtime Broiler.VM.VmAggregateBudget.LiveRuntimeCountValue : System.Int32 { get; }
+  Broiler.VM.Runtime Broiler.VM.VmAggregateBudget.Seal() : Broiler.VM.VmControlResult
+type Broiler.VM.Runtime Broiler.VM.VmAggregateBudgetId : struct System.IEquatable<Broiler.VM.VmAggregateBudgetId>
+  Broiler.VM.Runtime Broiler.VM.VmAggregateBudgetId.Equals(Broiler.VM.VmAggregateBudgetId other) : System.Boolean
+  Broiler.VM.Runtime Broiler.VM.VmAggregateBudgetId.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Runtime Broiler.VM.VmAggregateBudgetId.GetHashCode() : virtual System.Int32
+  Broiler.VM.Runtime Broiler.VM.VmAggregateBudgetId.IsEmpty : System.Boolean { get; }
+  Broiler.VM.Runtime Broiler.VM.VmAggregateBudgetId.ObjectId : Broiler.VM.VmObjectId { get; }
+  Broiler.VM.Runtime Broiler.VM.VmAggregateBudgetId.op_Equality(Broiler.VM.VmAggregateBudgetId left, Broiler.VM.VmAggregateBudgetId right) : static System.Boolean
+  Broiler.VM.Runtime Broiler.VM.VmAggregateBudgetId.op_Inequality(Broiler.VM.VmAggregateBudgetId left, Broiler.VM.VmAggregateBudgetId right) : static System.Boolean
+type Broiler.VM.Runtime Broiler.VM.VmAllowanceMode : enum
+  Broiler.VM.Runtime Broiler.VM.VmAllowanceMode.Pooled : const Broiler.VM.VmAllowanceMode = 0
+  Broiler.VM.Runtime Broiler.VM.VmAllowanceMode.Replenishing : const Broiler.VM.VmAllowanceMode = 1
+  Broiler.VM.Runtime Broiler.VM.VmAllowanceMode.value__ : System.Int32
+type Broiler.VM.Runtime Broiler.VM.VmBudgetSnapshot : struct
+  Broiler.VM.Runtime Broiler.VM.VmBudgetSnapshot.Consumed(Broiler.VM.VmBudgetDimension dimension) : System.UInt64
+  Broiler.VM.Runtime Broiler.VM.VmBudgetSnapshot.EffectiveCeiling(Broiler.VM.VmBudgetDimension dimension) : System.UInt64
+  Broiler.VM.Runtime Broiler.VM.VmBudgetSnapshot.Remaining(Broiler.VM.VmBudgetDimension dimension) : System.UInt64
+  Broiler.VM.Runtime Broiler.VM.VmBudgetSnapshot.Scope : Broiler.VM.VmBudgetScope { get; }
+type Broiler.VM.Runtime Broiler.VM.VmCapabilityRegistration : struct
+  Broiler.VM.Runtime Broiler.VM.VmCapabilityRegistration.ArtifactProvider(Broiler.VM.VmHostCapabilityDescriptor descriptor, Broiler.VM.IVmArtifactProvider provider) : static Broiler.VM.VmCapabilityRegistration
+  Broiler.VM.Runtime Broiler.VM.VmCapabilityRegistration.Descriptor : Broiler.VM.VmHostCapabilityDescriptor { get; }
+  Broiler.VM.Runtime Broiler.VM.VmCapabilityRegistration.Kind : Broiler.VM.VmCapabilityKind { get; }
+  Broiler.VM.Runtime Broiler.VM.VmCapabilityRegistration.Value(Broiler.VM.VmHostCapabilityDescriptor descriptor, Broiler.VM.VmHostBytesCapabilityHandler handler) : static Broiler.VM.VmCapabilityRegistration
+  Broiler.VM.Runtime Broiler.VM.VmCapabilityRegistration.Value(Broiler.VM.VmHostCapabilityDescriptor descriptor, Broiler.VM.VmHostCapabilityHandler handler) : static Broiler.VM.VmCapabilityRegistration
+type Broiler.VM.Runtime Broiler.VM.VmCatalog : sealed class
+  Broiler.VM.Runtime Broiler.VM.VmCatalog.Count : System.Int32 { get; }
+  Broiler.VM.Runtime Broiler.VM.VmCatalog.CreateBuilder() : static Broiler.VM.VmCatalogBuilder
+  Broiler.VM.Runtime Broiler.VM.VmCatalog.GetListing() : Broiler.VM.VmProfileCatalogListing
+  Broiler.VM.Runtime Broiler.VM.VmCatalog.Identity : Broiler.VM.VmCatalogIdentity { get; }
+  Broiler.VM.Runtime Broiler.VM.VmCatalog.TryGetEntry(Broiler.VM.VmProfileId profileId, out Broiler.VM.VmProfileCatalogEntry entry) : System.Boolean
+type Broiler.VM.Runtime Broiler.VM.VmCatalogBuilder : sealed class
+  Broiler.VM.Runtime Broiler.VM.VmCatalogBuilder.Add(Broiler.VM.VmProfileDescriptor descriptor) : Broiler.VM.VmCatalogBuilder
+  Broiler.VM.Runtime Broiler.VM.VmCatalogBuilder.Build() : Broiler.VM.VmCatalog
+  Broiler.VM.Runtime Broiler.VM.VmCatalogBuilder.MaximumEntries : const System.Int32 = 64
+type Broiler.VM.Runtime Broiler.VM.VmCatalogIdentity : sealed class System.IEquatable<Broiler.VM.VmCatalogIdentity>
+  Broiler.VM.Runtime Broiler.VM.VmCatalogIdentity.CopyEncodingTo(System.Span<System.Byte> destination) : System.Void
+  Broiler.VM.Runtime Broiler.VM.VmCatalogIdentity.EncodedLength : System.Int32 { get; }
+  Broiler.VM.Runtime Broiler.VM.VmCatalogIdentity.Equals(Broiler.VM.VmCatalogIdentity other) : System.Boolean
+  Broiler.VM.Runtime Broiler.VM.VmCatalogIdentity.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Runtime Broiler.VM.VmCatalogIdentity.GetHashCode() : virtual System.Int32
+type Broiler.VM.Runtime Broiler.VM.VmCatalogValidationException : sealed class System.Exception
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationException..ctor(Broiler.VM.VmCatalogValidationReason reason, Broiler.VM.VmProfileId offendingProfileId, System.String offendingField) : void
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationException..ctor(Broiler.VM.VmCatalogValidationReason reason, System.Int32 offendingOrdinalPosition, System.String offendingField) : void
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationException.HasOffendingProfileId : System.Boolean { get; }
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationException.OffendingField : System.String { get; }
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationException.OffendingOrdinalPosition : System.Int32 { get; }
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationException.OffendingProfileId : Broiler.VM.VmProfileId { get; }
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationException.Reason : Broiler.VM.VmCatalogValidationReason { get; }
+type Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason : enum
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.BudgetDeclarationMatrixIncomplete : const Broiler.VM.VmCatalogValidationReason = 26
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.BuilderConsumed : const Broiler.VM.VmCatalogValidationReason = 21
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.CatalogTooLarge : const Broiler.VM.VmCatalogValidationReason = 20
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.ChargingGranularityInvalid : const Broiler.VM.VmCatalogValidationReason = 33
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.ConformanceIdentityMissing : const Broiler.VM.VmCatalogValidationReason = 17
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.CoreContractAuthoredExceedsBuiltAgainst : const Broiler.VM.VmCatalogValidationReason = 25
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.CoreContractBuiltAgainstMismatch : const Broiler.VM.VmCatalogValidationReason = 24
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.CoreContractVersionNotYetSupported : const Broiler.VM.VmCatalogValidationReason = 22
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.CoreContractVersionRetired : const Broiler.VM.VmCatalogValidationReason = 23
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.DescriptorMissing : const Broiler.VM.VmCatalogValidationReason = 36
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.DescriptorRevisionInvalid : const Broiler.VM.VmCatalogValidationReason = 35
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.DiagnosticsIdentityMalformed : const Broiler.VM.VmCatalogValidationReason = 18
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.DisplayNameMalformed : const Broiler.VM.VmCatalogValidationReason = 4
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.DuplicateFeatureManifestId : const Broiler.VM.VmCatalogValidationReason = 10
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.DuplicateHostCapabilityId : const Broiler.VM.VmCatalogValidationReason = 16
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.DuplicateProfileId : const Broiler.VM.VmCatalogValidationReason = 2
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.FeatureManifestIdMalformed : const Broiler.VM.VmCatalogValidationReason = 8
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.FeatureManifestIdOutOfNamespace : const Broiler.VM.VmCatalogValidationReason = 9
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.FeatureManifestSetEmpty : const Broiler.VM.VmCatalogValidationReason = 6
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.FeatureManifestSetTooLarge : const Broiler.VM.VmCatalogValidationReason = 7
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.FormatVersionRangeInvalid : const Broiler.VM.VmCatalogValidationReason = 5
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.GuestLoadDeclarationIncomplete : const Broiler.VM.VmCatalogValidationReason = 29
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.GuestLoadMaximumUnbounded : const Broiler.VM.VmCatalogValidationReason = 30
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.HostCapabilityDescriptorInvalid : const Broiler.VM.VmCatalogValidationReason = 15
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.LimitDefaultsInvalid : const Broiler.VM.VmCatalogValidationReason = 14
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.MaxUnchargedWorkInvalid : const Broiler.VM.VmCatalogValidationReason = 34
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.MissingExecutorFactory : const Broiler.VM.VmCatalogValidationReason = 12
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.MissingVerifier : const Broiler.VM.VmCatalogValidationReason = 11
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.PackageIdentityMissing : const Broiler.VM.VmCatalogValidationReason = 19
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.PayloadKindIdRangeInvalid : const Broiler.VM.VmCatalogValidationReason = 32
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.ProfileDefaultExceedsProfileMaximum : const Broiler.VM.VmCatalogValidationReason = 28
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.ProfileIdAliasCollision : const Broiler.VM.VmCatalogValidationReason = 3
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.ProfileIdMalformed : const Broiler.VM.VmCatalogValidationReason = 0
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.ProfileIdReservedNamespace : const Broiler.VM.VmCatalogValidationReason = 1
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.VerifierIdentityMismatch : const Broiler.VM.VmCatalogValidationReason = 13
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.VerifierWorkNotApplicable : const Broiler.VM.VmCatalogValidationReason = 27
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.VerifierWorkToFuelRateInvalid : const Broiler.VM.VmCatalogValidationReason = 31
+  Broiler.VM.Runtime Broiler.VM.VmCatalogValidationReason.value__ : System.Int32
+type Broiler.VM.Runtime Broiler.VM.VmCeilingSource : enum
+  Broiler.VM.Runtime Broiler.VM.VmCeilingSource.AdoptParentRemaining : const Broiler.VM.VmCeilingSource = 2
+  Broiler.VM.Runtime Broiler.VM.VmCeilingSource.AdoptProfileDefault : const Broiler.VM.VmCeilingSource = 1
+  Broiler.VM.Runtime Broiler.VM.VmCeilingSource.Explicit : const Broiler.VM.VmCeilingSource = 0
+  Broiler.VM.Runtime Broiler.VM.VmCeilingSource.value__ : System.Int32
+type Broiler.VM.Runtime Broiler.VM.VmCeilingSpec : struct System.IEquatable<Broiler.VM.VmCeilingSpec>
+  Broiler.VM.Runtime Broiler.VM.VmCeilingSpec.AdoptParentRemaining(Broiler.VM.VmBudgetDimension dimension, Broiler.VM.VmAllowanceMode mode) : static Broiler.VM.VmCeilingSpec
+  Broiler.VM.Runtime Broiler.VM.VmCeilingSpec.AdoptProfileDefault(Broiler.VM.VmBudgetDimension dimension, Broiler.VM.VmAllowanceMode mode) : static Broiler.VM.VmCeilingSpec
+  Broiler.VM.Runtime Broiler.VM.VmCeilingSpec.AllowanceMode : Broiler.VM.VmAllowanceMode { get; }
+  Broiler.VM.Runtime Broiler.VM.VmCeilingSpec.Dimension : Broiler.VM.VmBudgetDimension { get; }
+  Broiler.VM.Runtime Broiler.VM.VmCeilingSpec.Equals(Broiler.VM.VmCeilingSpec other) : System.Boolean
+  Broiler.VM.Runtime Broiler.VM.VmCeilingSpec.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Runtime Broiler.VM.VmCeilingSpec.ExplicitValue : System.UInt64 { get; }
+  Broiler.VM.Runtime Broiler.VM.VmCeilingSpec.GetHashCode() : virtual System.Int32
+  Broiler.VM.Runtime Broiler.VM.VmCeilingSpec.Source : Broiler.VM.VmCeilingSource { get; }
+  Broiler.VM.Runtime Broiler.VM.VmCeilingSpec.Value(Broiler.VM.VmBudgetDimension dimension, System.UInt64 value, Broiler.VM.VmAllowanceMode mode) : static Broiler.VM.VmCeilingSpec
+  Broiler.VM.Runtime Broiler.VM.VmCeilingSpec.op_Equality(Broiler.VM.VmCeilingSpec left, Broiler.VM.VmCeilingSpec right) : static System.Boolean
+  Broiler.VM.Runtime Broiler.VM.VmCeilingSpec.op_Inequality(Broiler.VM.VmCeilingSpec left, Broiler.VM.VmCeilingSpec right) : static System.Boolean
+type Broiler.VM.Runtime Broiler.VM.VmExternalSuspensionMode : enum
+  Broiler.VM.Runtime Broiler.VM.VmExternalSuspensionMode.Disabled : const Broiler.VM.VmExternalSuspensionMode = 0
+  Broiler.VM.Runtime Broiler.VM.VmExternalSuspensionMode.Enabled : const Broiler.VM.VmExternalSuspensionMode = 1
+  Broiler.VM.Runtime Broiler.VM.VmExternalSuspensionMode.value__ : System.Int32
+type Broiler.VM.Runtime Broiler.VM.VmGuestLoadBoundsSpec : struct
+  Broiler.VM.Runtime Broiler.VM.VmGuestLoadBoundsSpec.AdoptProfileMaxima : static Broiler.VM.VmGuestLoadBoundsSpec { get; }
+  Broiler.VM.Runtime Broiler.VM.VmGuestLoadBoundsSpec.AdoptsProfileMaxima : System.Boolean { get; }
+  Broiler.VM.Runtime Broiler.VM.VmGuestLoadBoundsSpec.Bounds : Broiler.VM.VmGuestLoadBounds { get; }
+  Broiler.VM.Runtime Broiler.VM.VmGuestLoadBoundsSpec.Explicit(Broiler.VM.VmGuestLoadBounds bounds) : static Broiler.VM.VmGuestLoadBoundsSpec
+type Broiler.VM.Runtime Broiler.VM.VmHostBytesCapabilityHandler : sealed class System.MulticastDelegate
+  Broiler.VM.Runtime Broiler.VM.VmHostBytesCapabilityHandler..ctor(System.Object object, System.IntPtr method) : void
+  Broiler.VM.Runtime Broiler.VM.VmHostBytesCapabilityHandler.BeginInvoke(Broiler.VM.VmBytes argument, out Broiler.VM.VmOpaqueRef result, System.AsyncCallback callback, System.Object object) : virtual System.IAsyncResult
+  Broiler.VM.Runtime Broiler.VM.VmHostBytesCapabilityHandler.EndInvoke(out Broiler.VM.VmOpaqueRef result, System.IAsyncResult __result) : virtual Broiler.VM.VmHostCallOutcome
+  Broiler.VM.Runtime Broiler.VM.VmHostBytesCapabilityHandler.Invoke(Broiler.VM.VmBytes argument, out Broiler.VM.VmOpaqueRef result) : virtual Broiler.VM.VmHostCallOutcome
+type Broiler.VM.Runtime Broiler.VM.VmHostCapabilityHandler : sealed class System.MulticastDelegate
+  Broiler.VM.Runtime Broiler.VM.VmHostCapabilityHandler..ctor(System.Object object, System.IntPtr method) : void
+  Broiler.VM.Runtime Broiler.VM.VmHostCapabilityHandler.BeginInvoke(System.ReadOnlySpan<System.Int64> arguments, out System.Int64 result, System.AsyncCallback callback, System.Object object) : virtual System.IAsyncResult
+  Broiler.VM.Runtime Broiler.VM.VmHostCapabilityHandler.EndInvoke(out System.Int64 result, System.IAsyncResult __result) : virtual Broiler.VM.VmHostCallOutcome
+  Broiler.VM.Runtime Broiler.VM.VmHostCapabilityHandler.Invoke(System.ReadOnlySpan<System.Int64> arguments, out System.Int64 result) : virtual Broiler.VM.VmHostCallOutcome
+type Broiler.VM.Runtime Broiler.VM.VmProfileCatalogEntry : struct
+  Broiler.VM.Runtime Broiler.VM.VmProfileCatalogEntry.AcceptedFeatureManifests : System.Collections.Immutable.ImmutableArray<Broiler.VM.VmFeatureManifestId> { get; }
+  Broiler.VM.Runtime Broiler.VM.VmProfileCatalogEntry.AsynchronousInstantiation : Broiler.VM.VmDeclaration { get; }
+  Broiler.VM.Runtime Broiler.VM.VmProfileCatalogEntry.AuthoredCoreContractVersion : System.Int32 { get; }
+  Broiler.VM.Runtime Broiler.VM.VmProfileCatalogEntry.BuiltAgainstCoreContractVersion : System.Int32 { get; }
+  Broiler.VM.Runtime Broiler.VM.VmProfileCatalogEntry.ConformanceManifestId : Broiler.VM.VmConformanceManifestId { get; }
+  Broiler.VM.Runtime Broiler.VM.VmProfileCatalogEntry.ConformanceManifestVersion : System.Int32 { get; }
+  Broiler.VM.Runtime Broiler.VM.VmProfileCatalogEntry.DiagnosticsIdentity : Broiler.VM.VmDiagnosticsIdentity { get; }
+  Broiler.VM.Runtime Broiler.VM.VmProfileCatalogEntry.DisplayName : System.String { get; }
+  Broiler.VM.Runtime Broiler.VM.VmProfileCatalogEntry.ExternalSuspension : Broiler.VM.VmDeclaration { get; }
+  Broiler.VM.Runtime Broiler.VM.VmProfileCatalogEntry.GuestInitiatedLoads : Broiler.VM.VmDeclaration { get; }
+  Broiler.VM.Runtime Broiler.VM.VmProfileCatalogEntry.PackageId : System.String { get; }
+  Broiler.VM.Runtime Broiler.VM.VmProfileCatalogEntry.ProfileId : Broiler.VM.VmProfileId { get; }
+  Broiler.VM.Runtime Broiler.VM.VmProfileCatalogEntry.SupportedFormatVersions : Broiler.VM.VmFormatVersionRange { get; }
+type Broiler.VM.Runtime Broiler.VM.VmProfileCatalogListing : struct
+  Broiler.VM.Runtime Broiler.VM.VmProfileCatalogListing.Count : System.Int32 { get; }
+  Broiler.VM.Runtime Broiler.VM.VmProfileCatalogListing.Entries : System.Collections.Immutable.ImmutableArray<Broiler.VM.VmProfileCatalogEntry> { get; }
+  Broiler.VM.Runtime Broiler.VM.VmProfileCatalogListing.Item[System.Int32 index] : Broiler.VM.VmProfileCatalogEntry { get; }
+type Broiler.VM.Runtime Broiler.VM.VmRuntime : sealed class System.IDisposable
+  Broiler.VM.Runtime Broiler.VM.VmRuntime.Catalog : Broiler.VM.VmCatalog { get; }
+  Broiler.VM.Runtime Broiler.VM.VmRuntime.Create(Broiler.VM.VmCatalog catalog, Broiler.VM.VmRuntimeCreationOptions options) : static Broiler.VM.VmRuntimeCreationResult
+  Broiler.VM.Runtime Broiler.VM.VmRuntime.Dispose() : Broiler.VM.VmControlResult
+  Broiler.VM.Runtime Broiler.VM.VmRuntime.ExternalSuspension : Broiler.VM.VmExternalSuspensionMode { get; }
+  Broiler.VM.Runtime Broiler.VM.VmRuntime.GetBudgetSnapshot() : Broiler.VM.VmBudgetSnapshot
+  Broiler.VM.Runtime Broiler.VM.VmRuntime.Instantiate(Broiler.VM.VmVerifiedArtifact artifact, Broiler.VM.VmLimitOverrides limitOverrides, System.Threading.CancellationToken cancellationToken) : Broiler.VM.VmInstantiationResult
+  Broiler.VM.Runtime Broiler.VM.VmRuntime.Instantiate(Broiler.VM.VmVerifiedArtifact artifact, System.Threading.CancellationToken cancellationToken) : Broiler.VM.VmInstantiationResult
+  Broiler.VM.Runtime Broiler.VM.VmRuntime.ObjectId : Broiler.VM.VmObjectId { get; }
+  Broiler.VM.Runtime Broiler.VM.VmRuntime.PollDeadlines() : Broiler.VM.VmControlResult
+  Broiler.VM.Runtime Broiler.VM.VmRuntime.RequestCancel() : Broiler.VM.VmControlResult
+  Broiler.VM.Runtime Broiler.VM.VmRuntime.Resume(Broiler.VM.VmSuspension suspension) : Broiler.VM.VmResumeResult
+  Broiler.VM.Runtime Broiler.VM.VmRuntime.State : Broiler.VM.VmRuntimeState { get; }
+  Broiler.VM.Runtime Broiler.VM.VmRuntime.Verify(in Broiler.VM.VmArtifactDescriptor descriptor, System.ReadOnlySpan<System.Byte> payload, System.Threading.CancellationToken cancellationToken) : Broiler.VM.VmVerificationResult
+type Broiler.VM.Runtime Broiler.VM.VmRuntimeCreationOptions : sealed class
+  Broiler.VM.Runtime Broiler.VM.VmRuntimeCreationOptions..ctor(Broiler.VM.VmAggregateBudget aggregateBudget, System.Collections.Immutable.ImmutableArray<Broiler.VM.VmCeilingSpec> ceilings, System.TimeSpan maxSuspendedResidency, System.Int32 maxLiveSuspendedOperations, Broiler.VM.VmGuestLoadBoundsSpec guestLoadBounds, Broiler.VM.VmExternalSuspensionMode externalSuspension, System.Collections.Immutable.ImmutableArray<Broiler.VM.VmCapabilityRegistration> capabilities, System.Int32 maxConcurrentVerifications, System.Nullable<System.TimeSpan> disposeDrainBudget, System.UInt64 unwindBudget) : void
+  Broiler.VM.Runtime Broiler.VM.VmRuntimeCreationOptions.AggregateBudget : Broiler.VM.VmAggregateBudget { get; }
+  Broiler.VM.Runtime Broiler.VM.VmRuntimeCreationOptions.Capabilities : System.Collections.Immutable.ImmutableArray<Broiler.VM.VmCapabilityRegistration> { get; }
+  Broiler.VM.Runtime Broiler.VM.VmRuntimeCreationOptions.Ceilings : System.Collections.Immutable.ImmutableArray<Broiler.VM.VmCeilingSpec> { get; }
+  Broiler.VM.Runtime Broiler.VM.VmRuntimeCreationOptions.DefaultUnwindBudget : const System.UInt64 = 1000000
+  Broiler.VM.Runtime Broiler.VM.VmRuntimeCreationOptions.DisposeDrainBudget : System.TimeSpan { get; }
+  Broiler.VM.Runtime Broiler.VM.VmRuntimeCreationOptions.ExternalSuspension : Broiler.VM.VmExternalSuspensionMode { get; }
+  Broiler.VM.Runtime Broiler.VM.VmRuntimeCreationOptions.GuestLoadBounds : Broiler.VM.VmGuestLoadBoundsSpec { get; }
+  Broiler.VM.Runtime Broiler.VM.VmRuntimeCreationOptions.MaxConcurrentVerifications : System.Int32 { get; }
+  Broiler.VM.Runtime Broiler.VM.VmRuntimeCreationOptions.MaxLiveSuspendedOperations : System.Int32 { get; }
+  Broiler.VM.Runtime Broiler.VM.VmRuntimeCreationOptions.MaxSuspendedResidency : System.TimeSpan { get; }
+  Broiler.VM.Runtime Broiler.VM.VmRuntimeCreationOptions.UnwindBudget : System.UInt64 { get; }
+type Broiler.VM.Runtime Broiler.VM.VmRuntimeCreationResult : struct Broiler.VM.IVmOperationResult
+  Broiler.VM.Runtime Broiler.VM.VmRuntimeCreationResult.Diagnostics : Broiler.VM.VmDiagnostics { get; }
+  Broiler.VM.Runtime Broiler.VM.VmRuntimeCreationResult.IsSuccess : System.Boolean { get; }
+  Broiler.VM.Runtime Broiler.VM.VmRuntimeCreationResult.IsSuspended : System.Boolean { get; }
+  Broiler.VM.Runtime Broiler.VM.VmRuntimeCreationResult.Outcome : Broiler.VM.VmOutcome { get; }
+  Broiler.VM.Runtime Broiler.VM.VmRuntimeCreationResult.Reason : Broiler.VM.VmReason { get; }
+  Broiler.VM.Runtime Broiler.VM.VmRuntimeCreationResult.TryGetRuntime(out Broiler.VM.VmRuntime created) : System.Boolean
+type Broiler.VM.Runtime Broiler.VM.VmRuntimeState : enum
+  Broiler.VM.Runtime Broiler.VM.VmRuntimeState.Disposed : const Broiler.VM.VmRuntimeState = 3
+  Broiler.VM.Runtime Broiler.VM.VmRuntimeState.Disposing : const Broiler.VM.VmRuntimeState = 2
+  Broiler.VM.Runtime Broiler.VM.VmRuntimeState.Poisoned : const Broiler.VM.VmRuntimeState = 1
+  Broiler.VM.Runtime Broiler.VM.VmRuntimeState.Ready : const Broiler.VM.VmRuntimeState = 0
+  Broiler.VM.Runtime Broiler.VM.VmRuntimeState.value__ : System.Int32
+type Broiler.VM.Fixtures Broiler.VM.Fixtures.FixtureVmProfile : static class

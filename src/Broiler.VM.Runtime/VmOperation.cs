@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   24
-// Annotated:        24/24
-// Exempt:           28
-// Human-reviewed:   0/24
+// Relevant units:   25
+// Annotated:        25/25
+// Exempt:           29
+// Human-reviewed:   0/25
 // IP risk:          Low
 // Security risk:    Medium
-// Criteria:         0/0
+// Criteria:         1/0
 // Resource impact:  5/10 max
-// Unverified:       24
+// Unverified:       25
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -53,7 +53,7 @@ internal sealed class VmOperation
     private bool cancellationRequested;
     private bool externalSuspendRequested;
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Low; Resources=1; Fingerprint=023894
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Low; Resources=1; Fingerprint=A838B0
     // Broiler-Human:        PENDING
     internal VmOperation(
         VmRuntime runtime,
@@ -75,7 +75,42 @@ internal sealed class VmOperation
         Baseline = baseline;
         ObjectId = VmObjectId.Mint();
         Key = unchecked((ulong)ObjectId.GetHashCode());
+        StartingThreadId = System.Environment.CurrentManagedThreadId;
     }
+
+    /// <summary>The managed thread this operation was started on.</summary>
+    /// <remarks>
+    /// Recorded for every operation and read only for a profile that declares
+    /// <see cref="VmThreadAffinity.OperationThreadPinned"/>. Recording it unconditionally costs one
+    /// integer and keeps the affinity check a comparison rather than a branch on a descriptor field
+    /// at the moment it matters.
+    /// </remarks>
+    internal int StartingThreadId { get; }
+
+    /// <summary>
+    /// Whether a call arriving on the current thread satisfies the profile's declared affinity.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <c>Agile</c> admits any thread, one at a time, which the instance's execution slot already
+    /// enforces. <c>OperationThreadPinned</c> admits only the thread the operation started on, which
+    /// is what a profile with thread-affine state - a native interpreter with a thread-local stack,
+    /// an interop context, a UI-owned object - declares when it cannot be resumed elsewhere.
+    /// </para>
+    /// <para>
+    /// It is asked on RESUME and on nothing else. An invocation runs start to finish on its
+    /// caller's thread, so there is no second thread to check; cancellation and disposal must stay
+    /// callable from any thread, because ADR 0009's guarantee G1 is that a parked operation can
+    /// always be cancelled and disposed - a pinned profile whose thread has gone would otherwise
+    /// be undisposable, which is a worse failure than the one the pin prevents.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0002; IP=Low; Security=Medium; Resources=1; Fingerprint=B078FE
+    // Broiler-Falsified-If: a pinned operation is resumed from a thread other than the one that started it
+    // Broiler-Human:        PENDING
+    internal bool AffinityAdmitsCurrentThread =>
+        profile.ThreadAffinity is not VmThreadAffinity.OperationThreadPinned ||
+        StartingThreadId == System.Environment.CurrentManagedThreadId;
 
     internal VmObjectId ObjectId { get; }
 
@@ -341,6 +376,7 @@ internal sealed class VmOperation
                         .WithOutcome(VmStage.Resume, VmOutcome.InvalidState, VmReason.WrongState, VmInitiator.Caller)
                         .WithObject(VmObjectKind.Operation, (int)state, VmAttemptedCall.Resume));
             }
+
 
             // The cancellation latch is monotonic, so an operation cancelled while parked stays
             // cancelled. Resuming it would re-enter profile state that has already been abandoned.

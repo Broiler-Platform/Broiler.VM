@@ -4,5 +4,5 @@ Swapping them is the likeliest form of this error, because the two numbers sit t
 in one sentence. A set-membership check over both publish logs passes on this input; binding
 each figure to the log that records it does not.
 
-The fixtures host publishes and runs as a Native AOT binary of 162,816 bytes, and as a
-1,279,488-byte trimmed binary.
+The fixtures host publishes and runs as a Native AOT binary of 78,256 bytes, and as a
+1,565,576-byte trimmed binary.

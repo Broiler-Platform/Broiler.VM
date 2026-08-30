@@ -1,0 +1,8 @@
+# Witness: a unit the lane did not measure per
+
+Per instruction is what the log says and per cycle is what the register claims. A per-operation
+attribution divided by the wrong operation is a different figure wearing the same number.
+
+| Measurement | Unit | Candidate | Control | JIT | Native AOT |
+|---|---|---|---|---|---|
+| `meter-per-instruction` | cycle | One invocation with fuel charging on | The same executor with charging off | 0.0000 | 0.0000 |

@@ -1,0 +1,101 @@
+=== CORPUS REPLAY: one table per publish mode, compared byte for byte ===
+--- jit (dotnet run) exit=0 ---
+--- trimmed exit=0 ---
+--- aot exit=0 ---
+aot      rows=87   sha256=da53028deeb89ba859ffe87d052078ad42a3d167ed0c946012182daa1c56daa8
+jit      rows=87   sha256=da53028deeb89ba859ffe87d052078ad42a3d167ed0c946012182daa1c56daa8
+trimmed  rows=87   sha256=da53028deeb89ba859ffe87d052078ad42a3d167ed0c946012182daa1c56daa8
+
+modes compared: 3
+distinct tables: 1
+IDENTICAL
+
+--- the table, as every mode produced it ---
+# broiler-vm-corpus-replay core-contract-version=1 artifacts=87
+code-constant-index-out-of-range InvalidArtifact SemanticValidationFailed 1006 Fuel Invocation no-handle
+code-length-above-the-bound ResourceExhaustion AllowanceExhausted 0 DeclaredCount Artifact no-handle
+code-length-exceeds-body InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+code-operand-index-at-the-boundary InvalidArtifact SemanticValidationFailed 1006 Fuel Invocation no-handle
+code-operand-missing InvalidArtifact SemanticValidationFailed 1006 Fuel Invocation no-handle
+code-unknown-opcode InvalidArtifact SemanticValidationFailed 1006 Fuel Invocation no-handle
+constants-count-at-the-bound InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+constants-count-exceeds-body InvalidArtifact MalformedEncoding 2002 Fuel Invocation no-handle
+constants-count-four-billion ResourceExhaustion AllowanceExhausted 0 DeclaredCount Artifact no-handle
+constants-count-just-over-the-bound ResourceExhaustion AllowanceExhausted 0 DeclaredCount Artifact no-handle
+constants-non-canonical-varint InvalidArtifact MalformedEncoding 2002 Fuel Invocation no-handle
+constants-overlong-varint InvalidArtifact MalformedEncoding 2002 Fuel Invocation no-handle
+control-constant Normal NormalCompleted 0 Fuel Invocation handle
+control-empty-code Normal NormalCompleted 0 Fuel Invocation handle
+control-sum Normal NormalCompleted 0 Fuel Invocation handle
+descriptor-format-version-2 Normal NormalCompleted 0 Fuel Invocation handle
+format-version-0 InvalidArtifact UnknownFormatVersion 1002 Fuel Invocation no-handle
+format-version-2 InvalidArtifact UnknownFormatVersion 1002 Fuel Invocation no-handle
+format-version-4294967295 InvalidArtifact UnknownFormatVersion 1002 Fuel Invocation no-handle
+format-version-65536 InvalidArtifact UnknownFormatVersion 1002 Fuel Invocation no-handle
+format-version-99 InvalidArtifact UnknownFormatVersion 1002 Fuel Invocation no-handle
+format-version-non-canonical InvalidArtifact MalformedEncoding 2002 Fuel Invocation no-handle
+inverted-byte-00 InvalidArtifact MalformedEncoding 1001 Fuel Invocation no-handle
+inverted-byte-01 InvalidArtifact MalformedEncoding 1001 Fuel Invocation no-handle
+inverted-byte-02 InvalidArtifact MalformedEncoding 1001 Fuel Invocation no-handle
+inverted-byte-03 InvalidArtifact MalformedEncoding 1001 Fuel Invocation no-handle
+inverted-byte-04 InvalidArtifact UnknownFormatVersion 1002 Fuel Invocation no-handle
+inverted-byte-05 InvalidArtifact UnknownFeature 1004 Fuel Invocation no-handle
+inverted-byte-06 InvalidArtifact UnknownFeature 1004 Fuel Invocation no-handle
+inverted-byte-07 InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+inverted-byte-08 InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+inverted-byte-09 InvalidArtifact MalformedEncoding 2002 Fuel Invocation no-handle
+inverted-byte-10 InvalidArtifact MalformedEncoding 2002 Fuel Invocation no-handle
+inverted-byte-11 InvalidArtifact UnknownFeature 1004 Fuel Invocation no-handle
+inverted-byte-12 InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+inverted-byte-13 InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+inverted-byte-14 InvalidArtifact SemanticValidationFailed 1006 Fuel Invocation no-handle
+inverted-byte-15 InvalidArtifact SemanticValidationFailed 1006 Fuel Invocation no-handle
+inverted-byte-16 InvalidArtifact SemanticValidationFailed 1006 Fuel Invocation no-handle
+inverted-byte-17 InvalidArtifact SemanticValidationFailed 1006 Fuel Invocation no-handle
+inverted-byte-18 InvalidArtifact SemanticValidationFailed 1006 Fuel Invocation no-handle
+inverted-byte-19 InvalidArtifact SemanticValidationFailed 1006 Fuel Invocation no-handle
+magic-byte-0-inverted InvalidArtifact MalformedEncoding 1001 Fuel Invocation no-handle
+magic-byte-1-inverted InvalidArtifact MalformedEncoding 1001 Fuel Invocation no-handle
+magic-byte-2-inverted InvalidArtifact MalformedEncoding 1001 Fuel Invocation no-handle
+magic-byte-3-inverted InvalidArtifact MalformedEncoding 1001 Fuel Invocation no-handle
+magic-lowercased InvalidArtifact MalformedEncoding 1001 Fuel Invocation no-handle
+oversized-against-a-requested-ceiling Normal NormalCompleted 0 Fuel Invocation handle
+oversized-against-a-zero-ceiling Normal NormalCompleted 0 Fuel Invocation handle
+prefix-dangling-continuation InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+prefix-empty InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+prefix-magic-only InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+prefix-one-byte InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+section-kind-0 InvalidArtifact UnknownFeature 1004 Fuel Invocation no-handle
+section-kind-255 InvalidArtifact UnknownFeature 1004 Fuel Invocation no-handle
+section-kind-3 InvalidArtifact UnknownFeature 1004 Fuel Invocation no-handle
+section-kind-9 InvalidArtifact UnknownFeature 1004 Fuel Invocation no-handle
+section-length-beyond-the-artifact InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+section-length-maximum InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+section-length-over-by-three InvalidArtifact MalformedEncoding 2002 Fuel Invocation no-handle
+section-length-under-by-one InvalidArtifact MalformedEncoding 2002 Fuel Invocation no-handle
+sections-beyond-section-ceiling InvalidArtifact InconsistentStructure 2003 Fuel Invocation no-handle
+sections-code-only InvalidArtifact InconsistentStructure 1005 Fuel Invocation no-handle
+sections-constants-only InvalidArtifact InconsistentStructure 1005 Fuel Invocation no-handle
+sections-count-above-declared-count-bound ResourceExhaustion AllowanceExhausted 0 DeclaredCount Artifact no-handle
+sections-declared-none InvalidArtifact InconsistentStructure 1005 Fuel Invocation no-handle
+sections-over-declared InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+truncated-at-00 InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+truncated-at-01 InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+truncated-at-02 InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+truncated-at-03 InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+truncated-at-04 InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+truncated-at-05 InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+truncated-at-06 InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+truncated-at-07 InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+truncated-at-08 InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+truncated-at-09 InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+truncated-at-10 InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+truncated-at-11 InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+truncated-at-12 InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+truncated-at-13 InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+truncated-at-14 InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+truncated-at-15 InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+truncated-at-16 InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+truncated-at-17 InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+truncated-at-18 InvalidArtifact Truncated 2001 Fuel Invocation no-handle
+truncated-at-19 InvalidArtifact Truncated 2001 Fuel Invocation no-handle

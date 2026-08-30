@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Sample.FeedConsumer</RootNamespace>
+    <AssemblyName>Broiler.VM.Sample.FeedConsumer</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+
+    <!-- A consumer's own warning policy, not the component's. If a Broiler.VM package emits an
+         analyzer or trimmer warning into a consumer's build, that is the package's defect and it
+         should stop this sample rather than scroll past. -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <!--
+    PackageReference, never ProjectReference. There is no path from this project to the
+    repository's own projects, which is the single thing this sample exists to prove: the packages
+    on a feed are sufficient to write a profile and run it.
+
+    The version is supplied by the build, so the same sample can be pointed at a rolled-back
+    package set without editing a file - which is how the rollback evidence is collected.
+  -->
+  <ItemGroup>
+    <PackageReference Include="Broiler.VM.Abstractions" Version="$(BroilerVmVersion)" />
+    <PackageReference Include="Broiler.VM.Binary" Version="$(BroilerVmVersion)" />
+    <PackageReference Include="Broiler.VM.Runtime" Version="$(BroilerVmVersion)" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,14 @@
+<!-- Violates A13: a consumer profile referencing the runtime. ADR 0011's obligation P1 fixes the
+     reference set at exactly Abstractions and Binary; a profile that could name a runtime type
+     would be relying on something no consumer outside this repository has. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Com.Example.Witness</AssemblyName>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+  </ItemGroup>
+</Project>

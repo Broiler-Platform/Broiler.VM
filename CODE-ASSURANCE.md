@@ -13,14 +13,14 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 45 |
-| Files carrying an annotation | 45 |
-| Code units | 1592 |
-| Relevant | 689 |
-| Exempt by predicate | 903 |
-| Annotated | 689 of 689 (100%) |
-| Human reviewed | 0 of 689 (0%) |
-| Unverified | 689 |
+| Files scanned | 47 |
+| Files carrying an annotation | 47 |
+| Code units | 1645 |
+| Relevant | 720 |
+| Exempt by predicate | 925 |
+| Annotated | 720 of 720 (100%) |
+| Human reviewed | 0 of 720 (0%) |
+| Unverified | 720 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 689 |
+| HUMAN_PENDING | 720 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 903 |
+| EXEMPT | 925 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
 | None | 21 |
-| Low | 668 |
+| Low | 699 |
 | Medium | 0 |
 | High | 0 |
 | Unknown | 0 |
@@ -50,9 +50,9 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 2 |
-| Low | 385 |
-| Medium | 258 |
-| High | 44 |
+| Low | 398 |
+| Medium | 273 |
+| High | 47 |
 | Critical | 0 |
 | *not annotated* | 0 |
 
@@ -61,8 +61,8 @@ figures below are the measurement of how far from that claim the component is.
 | Metric | Value |
 |---|---:|
 | Maximum | 8 / 10 |
-| Average over annotated units | 0.7 / 10 |
-| Units scored | 689 |
+| Average over annotated units | 0.8 / 10 |
+| Units scored | 720 |
 
 ## High-security review areas
 
@@ -105,6 +105,9 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.VmBoundedReader.TryConsume(ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, human line PENDING
 - `Broiler.VM.VmBoundedReader.TryReadVarUInt64Core(int, out ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, human line PENDING
 - `Broiler.VM.VmBoundedReader.ChargeWork(ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.VmInstanceImplementation.Dispose(System.TimeSpan)` in `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` - Security=High, human line PENDING
+- `Broiler.VM.VmInstanceImplementation.LeaveStep()` in `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` - Security=High, human line PENDING
+- `Broiler.VM.VmLimitPrecedence.TryApply(VmBudgetScope, ulong[], VmLimitOverrides, out ulong[], out VmBudgetDimension, out VmReason)` in `src/Broiler.VM.Runtime/VmLimitPrecedence.cs` - Security=High, human line PENDING
 - `Broiler.VM.VmRuntime` in `src/Broiler.VM.Runtime/VmRuntime.cs` - Security=High, human line PENDING
 - `Broiler.VM.VmRuntime.Verify(in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken)` in `src/Broiler.VM.Runtime/VmRuntime.cs` - Security=High, human line PENDING
 - `Broiler.VM.VmRuntime` in `src/Broiler.VM.Runtime/VmVerification.cs` - Security=High, human line PENDING
@@ -115,8 +118,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 69 |
-| Units required to carry one | 44 |
+| Units carrying a criterion | 79 |
+| Units required to carry one | 47 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -143,14 +146,14 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 324 |
-| ParameterAssigningConstructor | 63 |
-| TrivialExpressionBodiedMember | 16 |
+| TrivialPropertyOrAccessor | 331 |
+| ParameterAssigningConstructor | 66 |
+| TrivialExpressionBodiedMember | 17 |
 | CompilerSuppliedRecordOrEnumMember | 0 |
-| DelegatingOverrideOrOperator | 88 |
+| DelegatingOverrideOrOperator | 94 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 135 |
-| EnumMemberOfADeclaredVocabulary | 277 |
+| FieldDeclaringStorage | 139 |
+| EnumMemberOfADeclaredVocabulary | 278 |
 | DeclaredInSource | 0 |
 
 ## Per-unit exemptions
@@ -170,7 +173,7 @@ No unit in this component states a per-unit exemption.
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-1592 of them, exempt and relevant alike - with the fingerprint of its declaration.
+1645 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
@@ -178,7 +181,7 @@ this component has moved off `PENDING`. What the manifest adds is that a unit th
 predicate treats as trivial is no longer invisible: a semantic change to one moves a value
 in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
 
-Beside the units it lists **every covered file** - 45 of them - with a
+Beside the units it lists **every covered file** - 47 of them - with a
 fingerprint over the complete token stream of its compilation unit. A unit entry exists only
 for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an
 `[assembly: ...]` attribute is a member of nothing and can be in no unit at all.

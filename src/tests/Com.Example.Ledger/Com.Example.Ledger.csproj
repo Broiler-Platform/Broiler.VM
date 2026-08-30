@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Com.Example.Ledger</RootNamespace>
+    <AssemblyName>Com.Example.Ledger</AssemblyName>
+    <Description>A second application-local Broiler.VM profile, written against the public source contract only. Its identity is com.example.ledger, outside the reserved namespace, and nothing here is advertised or supported.</Description>
+    <IsPackable>false</IsPackable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <!-- ADR 0011's obligation P1 again, and the reason there are two of these projects rather than
+       one: a closure report over a two-profile composition is only sharp when each profile is its
+       own assembly with its own reference set. This one imports a host capability and the
+       calculator imports none, so the two closures differ in what they must contain as well as in
+       what they must not. -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+  </ItemGroup>
+
+</Project>

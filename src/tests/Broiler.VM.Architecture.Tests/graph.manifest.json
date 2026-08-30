@@ -9,65 +9,16 @@
     "VM-1 adds the two test-only projects ADR 0001's budget permits - the composition-root host",
     "and the behavioural contract suite - taking the graph from 5 projects and 8 edges to 7 and",
     "16. It adds ZERO packable assemblies: the packable set stays exactly the three product",
-    "packages, and a fourth PackageId before VM-3 requires a dated revision of ADR 0001."
+    "packages, and a fourth PackageId before VM-3 requires a dated revision of ADR 0001.",
+    "",
+    "VM-2 adds the one test-only project ADR 0001's budget permits it - a fuzz target host - taking the graph from 7 projects and 16 edges to 8 and 20. That is the ceiling the record names: 5 test-only projects and 8 in total. It adds ZERO packable assemblies, so the packable set is still exactly the three product packages.",
+    "VM-3 adds the four projects ADR 0001 revision 1 authorises - two application-local consumer profiles and two named composition roots - taking the graph from 8 projects and 20 edges to 12 and 33, and test-only projects from 5 to 7. It adds ZERO packable assemblies: the packable set is still exactly the three product packages. The composition roots are the only projects permitted to reference a profile assembly, which is the deployment boundary src/compositions/ exists to enforce.",
+    "VM-4 adds the one test-only project ADR 0001 revision 2 authorises - a soak host whose managed heap and working set are sampled over a long lifecycle run - taking the graph from 12 projects and 33 edges to 13 and 37, and test-only projects from 7 to 8. It adds ZERO packable assemblies, so the packable set is still exactly the three product packages.",
+    "VM-5 adds the one test-only project ADR 0001 revision 3 authorises - an uninstrumented benchmark host that publishes what the core costs a profile - taking the graph from 13 projects and 37 edges to 14 and 41, and test-only projects from 8 to 9. It adds ZERO packable assemblies, so the packable set is still exactly the three product packages. It references no benchmarking package: a framework's own warmup, pilot and outlier policies would be part of every figure the component publishes and none of them would be visible in this repository."
   ],
-  "milestone": "VM-1",
+  "milestone": "VM-5",
   "coreContractVersion": 1,
   "projects": [
-    {
-      "path": "src/tests/Broiler.VM.Architecture.Tests/Broiler.VM.Architecture.Tests.csproj",
-      "assemblyName": "Broiler.VM.Architecture.Tests",
-      "rootNamespace": "Broiler.VM.Architecture.Tests",
-      "packageId": null,
-      "isPackable": false,
-      "isTestProject": true,
-      "projectReferences": [
-        "Broiler.VM.Abstractions",
-        "Broiler.VM.Binary",
-        "Broiler.VM.Fixtures",
-        "Broiler.VM.Runtime"
-      ]
-    },
-    {
-      "path": "src/tests/Broiler.VM.Contract.Tests/Broiler.VM.Contract.Tests.csproj",
-      "assemblyName": "Broiler.VM.Contract.Tests",
-      "rootNamespace": "Broiler.VM.Contract.Tests",
-      "packageId": null,
-      "isPackable": false,
-      "isTestProject": true,
-      "projectReferences": [
-        "Broiler.VM.Abstractions",
-        "Broiler.VM.Binary",
-        "Broiler.VM.Fixtures",
-        "Broiler.VM.Runtime"
-      ]
-    },
-    {
-      "path": "src/tests/Broiler.VM.Fixtures/Broiler.VM.Fixtures.csproj",
-      "assemblyName": "Broiler.VM.Fixtures",
-      "rootNamespace": "Broiler.VM.Fixtures",
-      "packageId": null,
-      "isPackable": false,
-      "isTestProject": false,
-      "projectReferences": [
-        "Broiler.VM.Abstractions",
-        "Broiler.VM.Binary"
-      ]
-    },
-    {
-      "path": "src/tests/Broiler.VM.Fixtures.Host/Broiler.VM.Fixtures.Host.csproj",
-      "assemblyName": "Broiler.VM.Fixtures.Host",
-      "rootNamespace": "Broiler.VM.Fixtures.Host",
-      "packageId": null,
-      "isPackable": false,
-      "isTestProject": false,
-      "projectReferences": [
-        "Broiler.VM.Abstractions",
-        "Broiler.VM.Binary",
-        "Broiler.VM.Fixtures",
-        "Broiler.VM.Runtime"
-      ]
-    },
     {
       "path": "src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj",
       "assemblyName": "Broiler.VM.Abstractions",
@@ -97,7 +48,155 @@
         "Broiler.VM.Abstractions",
         "Broiler.VM.Binary"
       ]
+    },
+    {
+      "path": "src/compositions/Broiler.VM.Composition.Calculator/Broiler.VM.Composition.Calculator.csproj",
+      "assemblyName": "Broiler.VM.Composition.Calculator",
+      "rootNamespace": "Broiler.VM.Composition.Calculator",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Runtime",
+        "Com.Example.Calculator"
+      ]
+    },
+    {
+      "path": "src/compositions/Broiler.VM.Composition.Workbench/Broiler.VM.Composition.Workbench.csproj",
+      "assemblyName": "Broiler.VM.Composition.Workbench",
+      "rootNamespace": "Broiler.VM.Composition.Workbench",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Runtime",
+        "Com.Example.Calculator",
+        "Com.Example.Ledger"
+      ]
+    },
+    {
+      "path": "src/tests/Broiler.VM.Architecture.Tests/Broiler.VM.Architecture.Tests.csproj",
+      "assemblyName": "Broiler.VM.Architecture.Tests",
+      "rootNamespace": "Broiler.VM.Architecture.Tests",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": true,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Fixtures",
+        "Broiler.VM.Runtime"
+      ]
+    },
+    {
+      "path": "src/tests/Broiler.VM.Bench.Host/Broiler.VM.Bench.Host.csproj",
+      "assemblyName": "Broiler.VM.Bench.Host",
+      "rootNamespace": "Broiler.VM.Bench.Host",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Fixtures",
+        "Broiler.VM.Runtime"
+      ]
+    },
+    {
+      "path": "src/tests/Broiler.VM.Contract.Tests/Broiler.VM.Contract.Tests.csproj",
+      "assemblyName": "Broiler.VM.Contract.Tests",
+      "rootNamespace": "Broiler.VM.Contract.Tests",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": true,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Fixtures",
+        "Broiler.VM.Runtime"
+      ]
+    },
+    {
+      "path": "src/tests/Broiler.VM.Fixtures.Host/Broiler.VM.Fixtures.Host.csproj",
+      "assemblyName": "Broiler.VM.Fixtures.Host",
+      "rootNamespace": "Broiler.VM.Fixtures.Host",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Fixtures",
+        "Broiler.VM.Runtime"
+      ]
+    },
+    {
+      "path": "src/tests/Broiler.VM.Fixtures/Broiler.VM.Fixtures.csproj",
+      "assemblyName": "Broiler.VM.Fixtures",
+      "rootNamespace": "Broiler.VM.Fixtures",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary"
+      ]
+    },
+    {
+      "path": "src/tests/Broiler.VM.Fuzz.Host/Broiler.VM.Fuzz.Host.csproj",
+      "assemblyName": "Broiler.VM.Fuzz.Host",
+      "rootNamespace": "Broiler.VM.Fuzz.Host",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Fixtures",
+        "Broiler.VM.Runtime"
+      ]
+    },
+    {
+      "path": "src/tests/Broiler.VM.Soak.Host/Broiler.VM.Soak.Host.csproj",
+      "assemblyName": "Broiler.VM.Soak.Host",
+      "rootNamespace": "Broiler.VM.Soak.Host",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Fixtures",
+        "Broiler.VM.Runtime"
+      ]
+    },
+    {
+      "path": "src/tests/Com.Example.Calculator/Com.Example.Calculator.csproj",
+      "assemblyName": "Com.Example.Calculator",
+      "rootNamespace": "Com.Example.Calculator",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary"
+      ]
+    },
+    {
+      "path": "src/tests/Com.Example.Ledger/Com.Example.Ledger.csproj",
+      "assemblyName": "Com.Example.Ledger",
+      "rootNamespace": "Com.Example.Ledger",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary"
+      ]
     }
   ]
 }
-
