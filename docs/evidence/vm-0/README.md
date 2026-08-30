@@ -29,7 +29,7 @@ and no reviewer has set one in this file.
 | Environment | 4 | [PART] | No RID, and no trimming or Native AOT mode. VM-0 claims none; roadmap invariant 7 requires publish-and-run evidence for such a claim and none was collected. |
 | Procedure | 5 | [PART] | The step 4 injection is described rather than scripted, and no injection script is retained. The bundle states the edge is described precisely enough to recreate by hand. |
 | Outputs | 6 | [PART] | The three packages are not retained, only the log that records them, and no retention policy is stated. |
-| Decision | 7 | [PART] | No reviewer verdict. None exists to record: `HUMAN_REVIEW.md` is unsigned and `PENDING`. |
+| Decision | 7 | [PART] | No reviewer verdict. None exists to record: no code unit carries a decision on its `// Broiler-Human:` line, so the generated `HUMAN_REVIEW.md` states `PENDING`. |
 | Validity | 8 | [MET] | - |
 
 Exclusions belong to the Decision field. They are carried in section 9 for length, not as a ninth
@@ -164,12 +164,12 @@ stated in full in its owning record. The ones that most limit this bundle are li
 **Unexplained failures:** none. **Deviations:** none beyond the discarded controls recorded in
 section 5.
 
-**Reviewer verdict:** none recorded. The reviewer is named in
-[HUMAN_REVIEW.md](../../../HUMAN_REVIEW.md), where the decision is `PENDING` and the attestation is
-unsigned.
+**Reviewer verdict:** none recorded. No code unit carries a decision on its `// Broiler-Human:`
+line, so the generated [HUMAN_REVIEW.md](../../../HUMAN_REVIEW.md) names no alias and states
+`PENDING`.
 
 **Follow-up owner:** MaiRat. The next action is not technical: it is reading the twelve records
-and signing or rejecting them in [HUMAN_REVIEW.md](../../../HUMAN_REVIEW.md).
+and recording a decision, unit by unit, on the declarations themselves.
 
 ## 8. Validity
 

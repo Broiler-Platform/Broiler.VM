@@ -26,8 +26,9 @@ publish and run under trimming and Native AOT, a soak host whose long lifecycle 
 a memory plateau, an uninstrumented benchmark host that publishes what the core costs a profile on
 the JIT and Native AOT lanes, and 318 tests passed: 121 architecture and 197 behavioural.
 
-**No milestone is accepted, and none can be until a human signs.** VM-0 through VM-6 are all
-unaccepted because `HUMAN_REVIEW.md` is unsigned and `PENDING`. At VM-6 that stops being a
+**No milestone is accepted, and none can be until a human reads the work.** VM-0 through VM-6 are
+all unaccepted because no relevant code unit carries a decision on its `// Broiler-Human:` line, so
+the generated [`HUMAN_REVIEW.md`](../HUMAN_REVIEW.md) states `PENDING`. At VM-6 that stops being a
 formality: the milestone's own gate asks that reviews be complete, so the last milestone in the
 roadmap cannot be met by anyone who wrote it.
 
@@ -100,9 +101,10 @@ milestone claims nothing at this snapshot.
 
 ### Where the review stands
 
-No area has been reviewed, so no verdict below is set. Each one is recorded in
-[HUMAN_REVIEW.md section 8](../HUMAN_REVIEW.md#8-area-verdicts); this table mirrors that
-one and does not replace it.
+No area has been reviewed, so no verdict below is set. **This table is a reader's summary and is
+not the record.** The record is per code unit, in the `// Broiler-Human:` line on each declaration,
+and [HUMAN_REVIEW.md](../HUMAN_REVIEW.md) is generated from those lines; the areas below are a
+risk ordering a reader may find useful and are not bound to anything mechanical.
 
 | Verdict | ID | Area |
 |---|---|---|
@@ -115,14 +117,15 @@ one and does not replace it.
 | [ ] | RA-7 | The records themselves |
 | [ ] | RA-8 | The evidence and the rule register |
 
-The immediate programme action is still **the review decision itself**, and it now covers three
-milestones rather than one. VM-0's records, VM-1's implementation and VM-2's boundary are all
-written, all have retained evidence, and all six roles recorded in
+The immediate programme action is still **the review decision itself**, and it now covers seven
+milestones rather than one. VM-0's records, VM-1's implementation, VM-2's boundary, VM-3's
+compositions, VM-4's lifecycle hardening, VM-5's baselines and VM-6's packaging are all written,
+all have retained evidence, and all six roles recorded in
 [ADR 0012](adr/0012-security-ownership-and-support-matrix.md) are held. What remains is a human
 reading the twelve records *and* the contract surface that implements them *and* the corpus and
-fuzz target that bound it, and signing or rejecting them in
-[HUMAN_REVIEW.md](../HUMAN_REVIEW.md). With a single maintainer that confirmation is not
-independent, which EX-30 records rather than resolves.
+fuzz target that bound it, and recording a decision on the declarations themselves, which
+regenerates [HUMAN_REVIEW.md](../HUMAN_REVIEW.md). With a single maintainer that confirmation is
+not independent, which EX-30 records rather than resolves.
 
 Reviewing them together is easier than reviewing VM-0 alone was: a decision that was paper in
 August can now be read against code that either honours it or does not, and the five places where
@@ -208,8 +211,10 @@ claimed RID; analyzer success alone is not a publish-and-run result.
    and release owner. Development work - implementing a milestone, landing it, and collecting its
    evidence - may proceed and merge without a review decision. A **release** may not: no package is
    published, no RID is claimed, no support table is issued, and no milestone moves to `Accepted`
-   until a named human has read the work and signed
-   [HUMAN_REVIEW.md](../HUMAN_REVIEW.md) for the revision under review.
+   until a named human has read the work and recorded a decision on every relevant code unit, which
+   the publish lane checks and [HUMAN_REVIEW.md](../HUMAN_REVIEW.md) reports. The decision is bound
+   to the fingerprint of each declaration rather than to a revision, so a unit that changes
+   afterwards is reported as `STALE` rather than silently carried.
 
    This settles the question Exclusion EX-43 recorded rather than answering. Roadmap section 13
    sequences each milestone "after VM-*n* acceptance"; under this ruling that sequencing binds the

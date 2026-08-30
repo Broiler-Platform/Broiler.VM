@@ -29,9 +29,10 @@ internal sealed record AssurancePlan(
 /// <remarks>
 /// <para>
 /// <b>Why one function and not two.</b> The policy gives fingerprint maintenance and summary
-/// generation to CI. This component has no CI lane - exclusion EX-45 records one RID, one machine
-/// and no lane - so the same code runs in both roles. <see cref="Plan"/> computes what every
-/// generated artefact should contain and is pure; <see cref="Apply"/> writes it. With
+/// generation to CI, and the review lane under <c>.github/workflows/</c> is that CI - but it runs
+/// this same code in both roles rather than carrying a second implementation of it.
+/// <see cref="Plan"/> computes what every generated artefact should contain and is pure;
+/// <see cref="Apply"/> writes it. With
 /// <c>BROILER_ASSURANCE_WRITE=1</c> the test applies the plan; without it, the test asserts every
 /// artefact already equals it. A gate that verified a different computation from the one that
 /// generated would be a gate over nothing, which is why there is only one.
@@ -70,6 +71,13 @@ internal sealed record AssurancePlan(
 /// </remarks>
 internal static class AssuranceGenerator
 {
+    /// <summary>
+    /// The fields a human line may carry beside the reviewer. Fingerprint is machine-maintained;
+    /// the other three are the reviewer's own assessment and the generator never writes them.
+    /// </summary>
+    private static readonly string[] HumanFieldMarkers =
+        ["Fingerprint=", "IP=", "Security=", "Resources="];
+
     /// <summary>Set to <c>1</c> to make the run write rather than assert.</summary>
     internal const string WriteVariable = "BROILER_ASSURANCE_WRITE";
 
@@ -192,6 +200,19 @@ internal static class AssuranceGenerator
             manifest,
             File.Exists(manifest) ? File.ReadAllText(manifest) : string.Empty,
             AssuranceManifest.Render(rewritten, after)));
+
+        // The human-review record is in the plan for the same reason, and it is the reason the plan
+        // is worth having: the record a release is decided from is now derived from the annotations
+        // rather than written beside them, so J5 holds it to the tree, J8 holds its sentences to a
+        // declared shape and J9 refuses it a review claim the human lines do not carry. A record
+        // maintained by hand had none of those three.
+        var humanReview = Path.Combine(ComponentGraph.Root, AssuranceHumanReview.RelativePath);
+
+        artefacts.Add(new AssuranceArtefact(
+            AssuranceHumanReview.RelativePath,
+            humanReview,
+            File.Exists(humanReview) ? File.ReadAllText(humanReview) : string.Empty,
+            AssuranceHumanReview.Render(rewritten, after)));
 
         return new AssurancePlan(artefacts, rewritten, after);
     }
@@ -460,18 +481,29 @@ internal static class AssuranceGenerator
         var reviewer = annotation.Reviewer;
         var approved = annotation.HumanFingerprint;
 
+        // Whatever the reviewer wrote beside their name, carried through untouched. Rebuilding
+        // the line as "<reviewer>; Fingerprint=<x>" DELETED a reviewer's own IP, Security and
+        // Resources assessment, which is precisely what the policy's CI mutation rules forbid:
+        // the machine may fill the machine field and may never edit a human decision.
+        var assessment = string.Concat(
+            annotation.HumanBody
+                .Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                .Skip(1)
+                .Where(static part => !part.StartsWith("Fingerprint=", StringComparison.Ordinal))
+                .Select(static part => "; " + part));
+
         // A human approved and left the machine field for the machine: fill it. This is the only
         // transition the generator performs into VERIFIED, and the approval was already there.
         if (approved is null ||
             string.Equals(approved, AssuranceFingerprint.ToBeFilled, StringComparison.Ordinal))
         {
-            return $"{reviewer}; Fingerprint={currentFingerprint}";
+            return $"{reviewer}{assessment}; Fingerprint={currentFingerprint}";
         }
 
         // The reviewed version is still the version here.
         if (string.Equals(approved, currentFingerprint, StringComparison.Ordinal))
         {
-            return $"{reviewer}; Fingerprint={approved}";
+            return $"{reviewer}{assessment}; Fingerprint={approved}";
         }
 
         // The code has moved since the review. The reviewer and what they approved are preserved
@@ -568,14 +600,30 @@ internal static class AssuranceGenerator
             return false;
         }
 
-        return parts.Length == 1 ||
-            (parts.Length == 2 && parts[1].StartsWith("Fingerprint=", StringComparison.Ordinal));
+        // A reviewer may state their OWN assessment beside their name. The policy's CI mutation
+        // rules name "human IP assessment, human security assessment, human resource assessment"
+        // among the things CI must never create, which only means anything if a human may write
+        // them. It is also the one mechanical answer to EX-76 and EX-65: an AI assessment is a
+        // comment that moves no fingerprint, so a reviewer who disagrees with Security=High has
+        // nowhere to say so unless the human line can carry it.
+        for (var index = 1; index < parts.Length; index++)
+        {
+            if (!HumanFieldMarkers.Any(marker =>
+                    parts[index].StartsWith(marker, StringComparison.Ordinal)))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /// <summary>
     /// The reviewer identifiers a human line carries. Only the exact body <c>PENDING</c> carries
     /// none.
     /// </summary>
+    internal static HashSet<string> ReviewerNames(string body) => Names(body);
+
     private static HashSet<string> Names(string body)
     {
         var names = new HashSet<string>(StringComparer.Ordinal);
@@ -809,10 +857,20 @@ internal static class AssuranceGenerator
         report.Append("# Broiler.VM Code Assurance\n\n");
         report.Append("GENERATED - DO NOT EDIT MANUALLY. Regenerate with\n");
         report.Append("`BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release`, which rewrites this file,\n");
-        report.Append($"`{AssuranceManifest.RelativePath}` and every generated source header from the product tree.\n\n");
-        report.Append("**Nothing in this component has been reviewed by a human.** This report records that\n");
-        report.Append("absence precisely. It is not a claim that the code is reviewed, assured or safe, and the\n");
-        report.Append("figures below are the measurement of how far from that claim the component is.\n\n");
+        report.Append($"`{AssuranceHumanReview.RelativePath}`, `{AssuranceManifest.RelativePath}` and every generated source header from the\n");
+        report.Append("product tree.\n\n");
+        // The opening sentence is DERIVED, and that is not a stylistic choice. Written as a fixed
+        // statement of absence it becomes false on the day somebody records a decision, and nothing
+        // would report it: rule J9 accepts a review term standing behind a negation, so a report
+        // still saying nothing had been read while units were VERIFIED would pass every rule in the
+        // suite. A record that cannot describe its own success is a record nobody may use.
+        report.Append(summary.Verified == 0
+            ? "**Nothing in this component has been reviewed by a human.** This report records that\n" +
+                "absence precisely. It is not a claim that the code is reviewed, assured or safe, and the\n" +
+                "figures below are the measurement of how far from that claim the component is.\n\n"
+            : $"**Human-reviewed: {summary.Verified} of {summary.Relevant} relevant units.** This report records what the\n" +
+                "annotations state and no more. A decision recorded here is one person's, bound to one\n" +
+                "version of one declaration, and it is not a claim that the code is assured or safe.\n\n");
 
         report.Append("## Summary\n\n");
         report.Append("| Metric | Value |\n|---|---:|\n");
@@ -849,12 +907,18 @@ internal static class AssuranceGenerator
         // is two declarations, and `VmRuntime` appeared twice here with nothing to tell a reader
         // which of the two they were looking at. A manifest entry is addressed by file and name for
         // the same reason, and this is the section a reader turns to first.
+        // The human line as the source states it, and not the state machine's name for what it made
+        // of that line. Two reasons, and the second is a defect this list carried until a unit was
+        // reviewed: the line is what a reader can go and check, and `state VERIFIED` is the bare
+        // review term standing in generated prose with no count beside it, which rule J9 reports the
+        // moment the first High unit is read - so the honest rendering is also the only one that
+        // survives the system being used.
         var high = units
             .Where(static unit => unit.Annotation?.Field("Security") is "High" or "Critical")
             .Select(static unit =>
                 $"- `{unit.Name}` in `{unit.File.RelativePath}` - " +
                 $"Security={unit.Annotation!.Field("Security")}, " +
-                $"state {AssuranceStateMachine.Name(unit.State)}")
+                $"human line {AssuranceHumanReview.HumanLine(unit)}")
             .ToArray();
 
         report.Append(high.Length == 0
@@ -932,12 +996,16 @@ internal static class AssuranceGenerator
         report.Append("no file fingerprint - which is what lets one generation be a fixed point.\n\n");
 
         report.Append("## Verification\n\n");
-        report.Append("There is no CI lane in this component - exclusion EX-45 records one RID, one machine and no\n");
-        report.Append("CI - so no external process compels this check. The generator and the gate are the same\n");
-        report.Append("code, run as a test in the architecture suite:\n\n");
+        report.Append("The generator and the gate are the same code, run as a test in the architecture suite. Two\n");
+        report.Append("lanes under `.github/workflows/` compel it rather than leaving it to whoever remembers: the\n");
+        report.Append("review lane regenerates every artefact on a pull request and commits what moved, and the\n");
+        report.Append("publish lane runs the release mode below and refuses to pack while anything is unresolved.\n");
+        report.Append("Exclusion EX-45 still records one RID and one machine for the Native AOT evidence, which no\n");
+        report.Append("lane reproduces.\n\n");
         report.Append("| Mode | Command | Effect |\n|---|---|---|\n");
-        report.Append($"| Generate | `{WriteVariable}=1 dotnet test Broiler.VM.slnx -c Release` | Fills every `Fingerprint=TBF`, refreshes a review the code has outrun into `STALE; Previous=...`, rewrites the generated headers, `{AssuranceManifest.RelativePath}` and this file. |\n");
-        report.Append("| Gate | `dotnet test Broiler.VM.slnx -c Release` | Asserts every generated artefact is byte-identical to what the generator would produce. This is the mode a release and a read of this record run. |\n\n");
+        report.Append($"| Generate | `{WriteVariable}=1 dotnet test Broiler.VM.slnx -c Release` | Fills every `Fingerprint=TBF`, refreshes a decision the code has outrun into `STALE; Previous=...`, rewrites the generated headers, `{AssuranceHumanReview.RelativePath}`, `{AssuranceManifest.RelativePath}` and this file. |\n");
+        report.Append("| Gate | `dotnet test Broiler.VM.slnx -c Release` | Asserts every generated artefact is byte-identical to what the generator would produce. |\n");
+        report.Append($"| Release | `{AssuranceRelease.GateVariable}=1 dotnet test Broiler.VM.slnx -c Release` | The gate, and additionally: no relevant unit left in a state that blocks a release, no annotation this system cannot read, no fingerprint out of date, no unit at the top of the security vocabulary without a criterion. |\n\n");
         report.Append("The fingerprint is six hex characters - 24 bits - of SHA-256 over the declaration's token\n");
         report.Append("texts, joined by single spaces. Trivia is excluded because a token's text is its own\n");
         report.Append("characters and never the comments or whitespace around it, so `dotnet format` moves no\n");

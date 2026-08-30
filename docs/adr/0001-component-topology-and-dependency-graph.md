@@ -574,14 +574,16 @@ section 8's extraction gate forbids, so VM-0 does not.
 | `README.md` | exists at VM-0: README.md | Packed into each package by the props when present. |
 | `docs/adr/0001` to `docs/adr/0012` | exists at VM-0: docs/adr/ | This record set. The index is `docs/adr/README.md`. |
 | `docs/evidence/vm-0/` | exists at VM-0: docs/evidence/vm-0/ | The VM-0 evidence bundle. Its fields and its Decision text are owned by ADR 0012. |
+| `CODE-ASSURANCE.md` | exists since VM-1: `CODE-ASSURANCE.md` | **Generated.** The component's code-assurance report: how many units are relevant, how many exempt, the risk distribution, the units at the top of the security vocabulary, and how much of that surface carries a falsification criterion. It is a measurement and not a decision; `HUMAN_REVIEW.md` is where a decision is recorded. |
+| `assurance.manifest.json` | exists since VM-1: `assurance.manifest.json` | **Generated.** One entry per code unit in the three product assemblies, exempt and relevant alike, and one per covered file, each with a fingerprint. A change-detection record and not a review: an entry says what a declaration hashed to, never that anyone read it. Rule J7 holds it to the tree. |
 | `.gitattributes` | not created (VM-0 decision on paper; no file at VM-0) | The component contains no shell script, so there is no line-ending rule to fix yet. |
 | `global.json` | not created (VM-0 decision on paper; no file at VM-0) | No SDK pin; see Exclusion EX-03. |
-| `.github/workflows/` | deferred to VM-6 | The component runs no CI of its own at VM-0; see Exclusion EX-06. |
+| `.github/workflows/` | exists since VM-1: `.github/workflows/` | Three lanes, and none publishes. `review.yml` regenerates every assurance artefact on a pull request, commits what moved, and then asserts that what is on disk is what the generator would write. `release.yml` runs that same gate and then the release gate - Rule J11 - before it packs, and stops at `dotnet pack`: pushing to a feed needs a credential this repository does not hold. The component ran no CI of its own at VM-0, which Exclusion EX-06 records; these lanes discharge that early and only in part, because they fire on a pull request and on a tag and nothing else. `broiler-vm.yml` was added at VM-6 to run the graph, catalog, AOT and drift checks, and has never run on a hosted runner; revision 2026-08-30 records that a workflow which has not run is a plan. |
 | `docs/compositions.md` | exists at VM-3: docs/compositions.md | The composition and RID register. It carries the schema, the advertised set - empty at core contract version 1 - the two demonstration compositions, and what each was published and run for. Rule A11's allow-list is a path rather than a constant now, and group K holds the register to the checkout. Exclusion EX-08 is closed; revision 1 records it. |
 | `docs/platform-references.md` | not created (VM-0 decision on paper; no file at VM-0) | The section 17 pinned-revision table. ADR 0012 records why it is absent and what closes it. |
 | `docs/support.md` | deferred to VM-6 | The public support table. ADR 0012 records that none is published at VM-0. |
 | `THIRD_PARTY_NOTICES.md` | deferred to VM-6 | Broiler.VM has zero third-party runtime dependencies at VM-0 - SourceLink is `PrivateAssets=all` and xunit is test-only - and an empty notices file would assert a license pass that has not happened. Required at VM-6 or on the day a runtime dependency first lands, whichever comes first. |
-| `HUMAN_REVIEW.md` | exists at VM-0: `HUMAN_REVIEW.md` | A scoped attestation of a reviewed revision with build, test, dependency and security evidence. Originally deferred to VM-6 because there was nothing to review and a template with unfilled fields invites a false approval record; created at VM-0 once a maintainer was named and the records and shell graph gave a reviewer something to look at. It is unsigned and its decision is `PENDING`, which is what keeps the original concern answered. Binding rule: no Broiler.VM package is published without a completed review naming the reviewed commit. |
+| `HUMAN_REVIEW.md` | exists at VM-0, generated since VM-1: `HUMAN_REVIEW.md` | The component's review record. **Generated** from the `// Broiler-Human:` line on each code declaration and from the per-file assurance headers, and edited by nobody: a reviewer records a decision on the declaration they read, and this file is computed from those lines. It therefore carries a row for every alias the tree names rather than one signature block, which is what lets more than one person review. Originally deferred to VM-6 because there was nothing to review and a template with unfilled fields invites a false approval record; created at VM-0 once a maintainer was named, and generated from VM-1 once there was code to bind a decision to. Binding rule: no Broiler.VM package is published while any relevant code unit is unresolved, which Rule J11 asserts and the publish lane runs. The record names no commit - each decision names the fingerprint of the declaration it was made against, which says whether that unit changed rather than whether the tree did. |
 
 Three of these are boundary decisions rather than hygiene.
 
@@ -634,7 +636,10 @@ Exclusion EX-04: packaging is not gated at VM-0; C1, C2 and C3 are Deferred to
 VM-6, so the fourth fixture-containment mechanism and the language-token check
 on package metadata assert nothing here. Reason: those rules run in a component
 CI pack step, and VM-0 creates no CI workflow; the hand-executed pack log is
-observed repository state, not a rule result. Closed by: VM-6.
+observed repository state, not a rule result. Closed by: VM-6. Revised
+2026-08-29: a pack step exists in the publish lane from VM-1, so the reason
+above no longer holds; C1, C2 and C3 remain Deferred on their own merits and
+this record does not promote them.
 
 Exclusion EX-05: 9 of 28 rules await their subject and assert nothing about
 anything real at VM-0 - the Vacuous rules B2, B3, B4, B5b, B6 and B7, and the
@@ -649,7 +654,11 @@ because the component has no CI workflow at VM-0; every VM-0 rule result comes
 from a manually executed build and test run, on whichever platforms the evidence
 bundle records. Reason: a component CI workflow is VM-6's, and the group A rules
 do path handling whose cross-platform behaviour therefore has no automated
-second-platform check here. Closed by: VM-6.
+second-platform check here. Closed by: VM-6. Revised 2026-08-29: two lanes
+landed at VM-1 and run every rule in the register on `ubuntu-latest`, which
+discharges the second-platform half and leaves the rest - a lane fires on a
+pull request and on a tag, so a commit pushed to a branch nobody opens a pull
+request for is examined by nothing until the next one.
 
 Exclusion EX-07: the SHA-256 of `eng/Broiler.Packaging.props` is recorded in
 this record and in the evidence bundle, but no automated check asserts it, so
@@ -713,7 +722,47 @@ published closures to each other. Revision 1 of this record states what changed.
   package; ADR 0012 owns the roles, the support position and the evidence bundle
   in which every exclusion identifier above is repeated verbatim.
 
-## Revision 1 - 2026-08-29 - the VM-3 project budget and the compositions directory
+## Revisions
+
+This record is `not contract-bearing`, so it changes without the amendment
+procedure ADR 0003 section 6 fixes for the contract-bearing ten - that procedure
+mints a core contract version, which is not what a component-shape record needs.
+What it is held to instead is ledger update rule 1: earlier decisions are
+preserved as dated history rather than overwritten. Each revision below states
+what the record said before, so a reader of an evidence bundle collected against
+the earlier text can still see what it was quoting.
+
+### 2026-08-29 - the review record is generated, and the component has CI
+
+Driven by the owner's ruling that a reviewer fills in the source comment and
+nothing else. Four rows of the component-level file table and two exclusions are
+affected. No decision elsewhere in this record changes: the graph, the package
+budget, the containment mechanisms and the legacy boundary are untouched.
+
+| Row | What it said | What it says now |
+|---|---|---|
+| `HUMAN_REVIEW.md` | *A scoped attestation of a reviewed revision with build, test, dependency and security evidence* ... *It is unsigned and its decision is `PENDING`* ... *Binding rule: no Broiler.VM package is published without a completed review naming the reviewed commit.* | Generated from the annotations, carrying a row per alias and naming no commit. The binding rule is now that no package is published while any relevant unit is unresolved, which Rule J11 asserts. |
+| `.github/workflows/` | *deferred to VM-6* - *The component runs no CI of its own at VM-0; see Exclusion EX-06.* | Two lanes exist from VM-1: one produces the review record on a pull request, one gates and packs. |
+| `CODE-ASSURANCE.md` | absent from the table | Added. |
+| `assurance.manifest.json` | absent from the table | Added. Both landed at VM-1 and are component-level generated files this table did not list, which made it an incomplete register of exactly the artefacts it exists to register. |
+
+**Why this is a revision and not an erratum.** The three deviations the VM-1
+bundle records are cases where the implementation could not honour a record, and
+there the record was left standing. This is the opposite: the owner changed the
+decision, so the record is what moves. Filing it as an erratum would have left
+this table describing a document the component does not produce.
+
+**What did not change.** No package boundary, no project edge, no rule statement
+and no exclusion identifier. Exclusions EX-04 and EX-06 keep their VM-0
+statements and gain a dated line each, because what they recorded was true at
+VM-0 and a later lane does not make it retroactively false.
+
+**Still open.** Nobody has approved this record; it is `Proposed`, as all twelve
+are. The lanes discharge Exclusion EX-06 only in part, and nothing in them binds
+a reviewer alias to a hosting identity - the record holds an alias to appearing
+in the tree, and no rule can tell a real person from a plausible string.
+
+### 2026-08-29 - the VM-3 project budget and the compositions directory
 
 This record's budget section stops at VM-2 and says the project set "may not
 grow silently at any point". VM-3's gate requires a separate consumer project
@@ -818,7 +867,7 @@ they were corrected. Nothing in the core changed; what changed is what a profile
 author should declare, and `docs/compositions.md` section 5 records it where a
 profile author will look.
 
-## Revision 2 - 2026-08-29 - the VM-4 soak host
+### 2026-08-29 - the VM-4 soak host
 
 VM-4's gate asks for a **declared memory plateau**. The behavioural suite already
 asserts the metered plateau - the live-bytes counter returns to where it started
@@ -854,7 +903,7 @@ plateau is acceptable is a release decision ADR 0012 owns. A host that decided
 for itself would be a benchmark with an opinion, and VM-5 is the milestone that
 owns baselines.
 
-## Revision 3 - 2026-08-29 - the VM-5 benchmark host
+### 2026-08-29 - the VM-5 benchmark host
 
 VM-5's gate asks for **uninstrumented decision-grade baselines** of what the core
 costs a profile, each with a predeclared rule, a comparable control, an A/A lane
@@ -890,7 +939,7 @@ the one thing it can decide without an opinion about what the numbers should be.
 
 ---
 
-## Revision 4 - 2026-08-30 - the VM-6 package boundary, samples and CI
+### 2026-08-30 - the VM-6 package boundary, samples and CI
 
 VM-6's gate asks that the package boundaries be finalized, that pristine feed
 consumers and samples use public APIs only, that the public API be frozen
@@ -956,8 +1005,10 @@ than the working tree. B3 stays **Vacuous**, and its row now says why that did
 not change: rules A1 and A2 stop a Broiler assembly reference being constructed
 at all, so nothing in the graph can violate it however many milestones pass.
 
-**CI exists and has never run.** `.github/workflows/broiler-vm.yml` closes
-exclusion EX-06's absence and opens a narrower one in its place. The workflow's
+**A third lane, and it has never run.** `.github/workflows/broiler-vm.yml`
+joins the two lanes the 2026-08-29 revision above records. Those already
+discharged exclusion EX-06 in part, so this one narrows what is left rather
+than closing it. The workflow's
 own header says it has not run on a hosted runner, its RID matrix is
 aspirational for every entry except `linux-x64`, and `docs/support.md` claims no
 platform on the strength of the file existing. A workflow that has not run is a

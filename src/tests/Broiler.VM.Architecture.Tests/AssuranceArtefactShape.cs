@@ -301,11 +301,29 @@ internal static class AssuranceArtefactShape
             "",
             "GENERATED - DO NOT EDIT MANUALLY. Regenerate with",
             "`BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release`, which rewrites this file,",
-            "`assurance.manifest.json` and every generated source header from the product tree.",
-            "",
-            "**Nothing in this component has been reviewed by a human.** This report records that",
-            "absence precisely. It is not a claim that the code is reviewed, assured or safe, and the",
-            "figures below are the measurement of how far from that claim the component is.",
+            "`HUMAN_REVIEW.md`, `assurance.manifest.json` and every generated source header from the",
+            "product tree.",
+            "");
+
+        if (verified == 0)
+        {
+            Fixed(report,
+                "**Nothing in this component has been reviewed by a human.** This report records that",
+                "absence precisely. It is not a claim that the code is reviewed, assured or safe, and the",
+                "figures below are the measurement of how far from that claim the component is.");
+        }
+        else
+        {
+            Line(
+                report,
+                $"**Human-reviewed: {verified} of {relevant.Length} relevant units.** This report records what the");
+
+            Fixed(report,
+                "annotations state and no more. A decision recorded here is one person's, bound to one",
+                "version of one declaration, and it is not a claim that the code is assured or safe.");
+        }
+
+        Fixed(report,
             "",
             "## Summary",
             "",
@@ -377,7 +395,7 @@ internal static class AssuranceArtefactShape
                     report,
                     $"- `{unit.Name}` in `{unit.File.RelativePath}` - " +
                     $"Security={unit.Annotation!.Field("Security")}, " +
-                    $"state {AssuranceStateMachine.Name(unit.State)}");
+                    $"human line {AssuranceHumanReview.HumanLine(unit)}");
             }
 
             Line(report, string.Empty);
@@ -503,19 +521,28 @@ internal static class AssuranceArtefactShape
             "",
             "## Verification",
             "",
-            "There is no CI lane in this component - exclusion EX-45 records one RID, one machine and no",
-            "CI - so no external process compels this check. The generator and the gate are the same",
-            "code, run as a test in the architecture suite:",
+            "The generator and the gate are the same code, run as a test in the architecture suite. Two",
+            "lanes under `.github/workflows/` compel it rather than leaving it to whoever remembers: the",
+            "review lane regenerates every artefact on a pull request and commits what moved, and the",
+            "publish lane runs the release mode below and refuses to pack while anything is unresolved.",
+            "Exclusion EX-45 still records one RID and one machine for the Native AOT evidence, which no",
+            "lane reproduces.",
             "",
             "| Mode | Command | Effect |",
             "|---|---|---|");
 
         Line(
             report,
-            $"| Generate | `{AssuranceGenerator.WriteVariable}=1 dotnet test Broiler.VM.slnx -c Release` | Fills every `Fingerprint=TBF`, refreshes a review the code has outrun into `STALE; Previous=...`, rewrites the generated headers, `{AssuranceManifest.RelativePath}` and this file. |");
+            $"| Generate | `{AssuranceGenerator.WriteVariable}=1 dotnet test Broiler.VM.slnx -c Release` | Fills every `Fingerprint=TBF`, refreshes a decision the code has outrun into `STALE; Previous=...`, rewrites the generated headers, `{AssuranceHumanReview.RelativePath}`, `{AssuranceManifest.RelativePath}` and this file. |");
 
         Fixed(report,
-            "| Gate | `dotnet test Broiler.VM.slnx -c Release` | Asserts every generated artefact is byte-identical to what the generator would produce. This is the mode a release and a read of this record run. |",
+            "| Gate | `dotnet test Broiler.VM.slnx -c Release` | Asserts every generated artefact is byte-identical to what the generator would produce. |");
+
+        Line(
+            report,
+            $"| Release | `{AssuranceRelease.GateVariable}=1 dotnet test Broiler.VM.slnx -c Release` | The gate, and additionally: no relevant unit left in a state that blocks a release, no annotation this system cannot read, no fingerprint out of date, no unit at the top of the security vocabulary without a criterion. |");
+
+        Fixed(report,
             "",
             "The fingerprint is six hex characters - 24 bits - of SHA-256 over the declaration's token",
             "texts, joined by single spaces. Trivia is excluded because a token's text is its own",
@@ -577,6 +604,397 @@ internal static class AssuranceArtefactShape
     private static string Portion(int part, int whole) => whole == 0
         ? $"{part}"
         : $"{part} of {whole} ({(int)Math.Round(100.0 * part / whole)}%)";
+
+    // =============================================================================================
+    // HUMAN_REVIEW.md
+    // =============================================================================================
+
+    /// <summary>
+    /// The human-review record this shape declares for these files and these units.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The same mechanism as the report above, applied to the document that decides a release. It
+    /// matters more here than anywhere else in this file: <c>CODE-ASSURANCE.md</c> is a measurement
+    /// and this is the record a publish is refused on, so a sentence invented in the generator would
+    /// be a sentence about who has read what, standing in the one place a reader goes to find out.
+    /// </para>
+    /// <para>
+    /// Every count below is derived again rather than copied, and by a different expression: the
+    /// generator asks <see cref="AssuranceSummary"/>, and this counts the units directly. The alias
+    /// rows are rebuilt here from the human lines rather than read from
+    /// <see cref="AssuranceHumanReview.Reviewers"/>, because those rows ARE the claim this document
+    /// makes about people and they are the last thing that should have one author.
+    /// </para>
+    /// </remarks>
+    internal static string ExpectedHumanReview(
+        IReadOnlyList<AssuranceSourceFile> files,
+        IReadOnlyList<AssuranceUnit> units)
+    {
+        var relevant = units.Count(static unit => !unit.IsExempt);
+        var exempt = units.Count(static unit => unit.Exemption != AssuranceExemption.None);
+        var assessed = units.Count(static unit =>
+            !unit.IsExempt && unit.Annotation is { ExemptReason: null });
+        var reviewed = units.Count(static unit =>
+            !unit.IsExempt && unit.State == AssuranceReviewState.Verified);
+        // AssuranceStateMachine.BlocksRelease written out rather than called, so the two
+        // derivations stay two. The second half is redundant today and is kept deliberately: a
+        // relevant unit cannot be in state EXEMPT, because the one thing that produces that state
+        // for an annotated unit - a per-unit `EXEMPT=` reason - is also what makes
+        // AssuranceScanner.ExemptionFor answer DeclaredInSource. Writing only the first half would
+        // be relying on that coincidence between two files, which is the kind of agreement this
+        // shape exists to stop depending on.
+        var unverified = units.Count(static unit =>
+            !unit.IsExempt && unit.State is not (AssuranceReviewState.Verified or AssuranceReviewState.Exempt));
+        var aliases = Aliases(units);
+        var record = new StringBuilder();
+
+        Fixed(record,
+            "# Human Review: Broiler.VM",
+            "",
+            "GENERATED - DO NOT EDIT MANUALLY. Regenerate with",
+            "`BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release`, which rewrites this file,",
+            "`CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the",
+            "product tree.",
+            "");
+
+        Line(
+            record,
+            $"> **Status: {Status(reviewed, relevant)}.** Human-reviewed: {reviewed} of {relevant} relevant units. No package");
+
+        Fixed(record,
+            "> may be published from this component, no RID claimed and no milestone accepted until every",
+            "> relevant unit carries a decision, which is update rule 8 in the status ledger.",
+            "",
+            "## 1. How To Use This File",
+            "",
+            "This section is the canonical mark legend for the component. The evidence bundles and the",
+            "status ledger link here rather than repeating the tables. There are two vocabularies, they are",
+            "different kinds of thing, and they must never be mixed. Both are closed sets, and rule H1",
+            "refuses a mark in any review document that this section does not publish.",
+            "",
+            "### Evidence verdicts - stated about a piece of evidence",
+            "",
+            "| Mark | Meaning |",
+            "|---|---|",
+            "| `[MET]` | Demonstrated. An execution, artefact or log in a retained bundle shows it. |",
+            "| `[PART]` | Partly demonstrated. What is not shown is named on the same row. |",
+            "| `[UNMET]` | Not discharged. The condition is stated and not satisfied. |",
+            "| `[N/A]` | Not claimed at this milestone. The milestone that owns it is named. |",
+            "",
+            "### Review verdicts - stated in an evidence bundle about a gate clause",
+            "",
+            "| Mark | Meaning |",
+            "|---|---|",
+            "| `[ ]` | Not yet read. |",
+            "| `[A]` | Accepted as stated. |",
+            "| `[C]` | Accepted with a condition. The condition is recorded beside it. |",
+            "| `[R]` | Rejected. The defect is recorded. |",
+            "| `[?]` | Cannot be judged from what is here. What is missing is named. |",
+            "",
+            "**No verdict in this file is a mark.** A decision about a code unit is the",
+            "`// Broiler-Human:` line on that unit's declaration, and every table below is read out of",
+            "those lines. There is nothing here to fill in and nothing here to leave blank.",
+            "",
+            "## 2. How A Review Is Recorded",
+            "",
+            "In one place: the `// Broiler-Human:` line of the assurance annotation that sits on the",
+            "declaration being read. Nothing in this file is edited by hand, no second document carries a",
+            "per-item checklist, and no list of permitted aliases exists to be added to.",
+            "",
+            "```csharp",
+            "// Broiler-AI:           Origin=AI; Spec=ADR-0007 s6; IP=Low; Security=High; Resources=7; Fingerprint=630EF7",
+            "// Broiler-Falsified-If: new T[] is reached before TryReserve returns true",
+            "// Broiler-Human:        PENDING",
+            "```",
+            "",
+            "The last line has four shapes. A human writes three of them; the generator writes the fourth",
+            "and may never invent an alias, which rule J4 asserts in both directions.",
+            "",
+            "| Line | Meaning |",
+            "|---|---|",
+            "| `PENDING` | Nobody has recorded a decision for this unit. The generator leaves it exactly as it stands. |",
+            "| `<alias>` | A human states their own alias and leaves the machine field to the generator, which fills it with the declaration's fingerprint at the next run. |",
+            "| `<alias>; Fingerprint=<six hex>` | A decision bound to one exact version of one declaration. |",
+            "| `STALE; Previous=<alias>@<fingerprint>` | Written by the generator when the code moved after a decision. Only a human clears it, by stating their alias again. |",
+            "",
+            "A human may state their own `IP=`, `Security=` and `Resources=` assessment beside their alias,",
+            "which is how a reader disagrees with the machine assessment on the line above: an assessment is",
+            "a comment and moves no fingerprint, so there is nowhere else to say it.",
+            "",
+            "**No branch, commit or tag is recorded in this file.** Each decision names the fingerprint of",
+            "the declaration it was made against, and the state machine compares that value with the",
+            "declaration as it now stands. A commit says a tree moved; a fingerprint says whether this unit",
+            "did, which is the narrower and the more useful of the two.",
+            "",
+            "This file is produced on every pull request by the review lane in `.github/workflows/`, and the",
+            "publish lane refuses to run while any relevant unit is unresolved, any fingerprint is out of",
+            "date, any annotation is malformed or any generated artefact is stale.",
+            "",
+            "## 3. Summary",
+            "",
+            "| Metric | Value |",
+            "|---|---:|");
+
+        Line(record, $"| Files scanned | {files.Count} |");
+        Line(record, $"| Code units | {units.Count} |");
+        Line(record, $"| Relevant | {relevant} |");
+        Line(record, $"| Exempt | {exempt} |");
+        Line(record, $"| Assessed | {Portion(assessed, relevant)} |");
+        Line(record, $"| Human reviewed | {Portion(reviewed, relevant)} |");
+        Line(record, $"| Unverified | {unverified} |");
+        Line(record, $"| Aliases naming a decision | {aliases.Count} |");
+
+        Fixed(record,
+            "",
+            "## 4. Review States",
+            "",
+            "One row per state of the machine that reads the two lines. The states are computed from the",
+            "annotations and the current fingerprints; nothing stores them.",
+            "",
+            "| State | Units |",
+            "|---|---:|");
+
+        foreach (var state in Enum.GetValues<AssuranceReviewState>())
+        {
+            Line(record, $"| {AssuranceStateMachine.Name(state)} | {units.Count(unit => unit.State == state)} |");
+        }
+
+        Fixed(record, "", "## 5. Aliases In The Tree", "");
+
+        if (aliases.Count == 0)
+        {
+            Fixed(record,
+                "No alias appears on a human line anywhere in the product tree. Nobody has recorded a",
+                "decision about any unit of this component.",
+                "");
+        }
+        else
+        {
+            Fixed(record,
+                "Read out of the human lines, never registered. `Current` counts the units whose decision",
+                "names the fingerprint the declaration carries now; `Outrun` counts the units whose",
+                "declaration has changed since.",
+                "",
+                "| Alias | Units | Files | Current | Outrun |",
+                "|---|---:|---:|---:|---:|");
+
+            foreach (var alias in aliases)
+            {
+                var owned = units.Where(unit => string.Equals(
+                    AssuranceHumanReview.AliasOn(unit), alias, StringComparison.Ordinal)).ToArray();
+
+                Line(
+                    record,
+                    $"| {alias} | {owned.Length} | " +
+                    $"{owned.Select(static unit => unit.File.RelativePath).Distinct(StringComparer.Ordinal).Count()} | " +
+                    $"{owned.Count(static unit => unit.State == AssuranceReviewState.Verified)} | " +
+                    $"{owned.Count(static unit => unit.State == AssuranceReviewState.Stale)} |");
+            }
+
+            Line(record, string.Empty);
+        }
+
+        Fixed(record,
+            "## 6. Coverage By File",
+            "",
+            "One row per covered file, carrying that file's generated header. `Unverified` counts the",
+            "relevant units in a state that blocks a release.",
+            "",
+            "| File | Units | Relevant | Exempt | Unverified | IP risk | Security risk | Criteria |",
+            "|---|---:|---:|---:|---:|---|---|---:|");
+
+        foreach (var file in files)
+        {
+            var owned = units
+                .Where(unit => string.Equals(unit.File.RelativePath, file.RelativePath, StringComparison.Ordinal))
+                .ToArray();
+
+            var scored = owned
+                .Where(static unit => !unit.IsExempt && unit.Annotation is { ExemptReason: null })
+                .Select(static unit => unit.Annotation!)
+                .ToArray();
+
+            Line(
+                record,
+                $"| `{file.RelativePath}` | {owned.Length} | " +
+                $"{owned.Count(static unit => !unit.IsExempt)} | " +
+                $"{owned.Count(static unit => unit.IsExempt)} | " +
+                $"{owned.Count(static unit => !unit.IsExempt && unit.State is not (AssuranceReviewState.Verified or AssuranceReviewState.Exempt))} | " +
+                $"{Weakest(scored, "IP", AssuranceAnnotation.IpRiskValues) ?? "not assessed"} | " +
+                $"{Weakest(scored, "Security", AssuranceAnnotation.SecurityRiskValues) ?? "not assessed"} | " +
+                $"{Criteria(owned)}/{RequiringACriterion(owned)} |");
+        }
+
+        Fixed(record, "", "## 7. Decisions Recorded", "");
+
+        var decided = units
+            .Where(static unit => unit.State is AssuranceReviewState.Verified
+                or AssuranceReviewState.HumanApprovedPendingFingerprint)
+            .ToArray();
+
+        if (decided.Length == 0)
+        {
+            Fixed(record,
+                "No unit in this component carries a decision on its human line. Every one of them reads",
+                "`PENDING`.",
+                "");
+        }
+        else
+        {
+            Fixed(record,
+                "One entry per unit whose human line names an alias, with the line exactly as the source",
+                "states it.",
+                "");
+
+            foreach (var unit in decided)
+            {
+                Line(
+                    record,
+                    $"- `{unit.Name}` in `{unit.File.RelativePath}` - {AssuranceHumanReview.HumanLine(unit)}");
+            }
+
+            Line(record, string.Empty);
+        }
+
+        Fixed(record, "## 8. Decisions The Code Has Outrun", "");
+
+        var outrun = units.Where(static unit => unit.State == AssuranceReviewState.Stale).ToArray();
+
+        if (outrun.Length == 0)
+        {
+            Fixed(record, "No unit carries a decision that the code has since moved past.", "");
+        }
+        else
+        {
+            Fixed(record,
+                "The declaration changed after the decision was recorded. The alias and the version it was",
+                "recorded against are preserved rather than deleted, because that is more useful than a",
+                "blank line. Only a human clears one.",
+                "");
+
+            foreach (var unit in outrun)
+            {
+                Line(
+                    record,
+                    $"- `{unit.Name}` in `{unit.File.RelativePath}` - " +
+                    $"{AssuranceHumanReview.HumanLine(unit)}, now `{unit.Fingerprint}`");
+            }
+
+            Line(record, string.Empty);
+        }
+
+        Fixed(record, "## 9. Where A Decision Is Required First", "");
+
+        var required = units
+            .Where(static unit => unit.Annotation?.Field("Security") is "High" or "Critical")
+            .ToArray();
+
+        if (required.Length == 0)
+        {
+            Fixed(record,
+                "No unit is assessed `High` or `Critical`. This says nothing about the units nothing has",
+                "assessed.",
+                "");
+        }
+        else
+        {
+            Fixed(record,
+                "The units at the top of the security vocabulary, with the observation that would show each",
+                "one wrong and the human line it carries. The set is read from the assessments rather than",
+                "written out, so a unit that becomes `High` joins it at the next generation.",
+                "");
+
+            foreach (var unit in required)
+            {
+                Line(
+                    record,
+                    $"- `{unit.Name}` in `{unit.File.RelativePath}` - " +
+                    $"Security={unit.Annotation!.Field("Security")}, " +
+                    $"Spec={unit.Annotation!.Field("Spec") ?? "none cited"}, " +
+                    $"`{unit.Fingerprint}`, " +
+                    $"{AssuranceHumanReview.HumanLine(unit)}");
+
+                Line(
+                    record,
+                    $"  - Falsified if: {unit.Annotation!.FalsifiedIf ?? "no criterion is stated"}");
+            }
+
+            Line(record, string.Empty);
+        }
+
+        Fixed(record,
+            "## 10. What This Record Does Not Say",
+            "",
+            "It is not an approval of the component, and a full table above would not be one either. It",
+            "records which declarations somebody stated a decision about, and against which version of",
+            "each. It does not record what they read, how long they spent, or whether they were right.",
+            "",
+            "Broiler.VM has one person in every role: architecture owner, core-contract owner, security",
+            "owner and reader are the same individual, so **no second pair of eyes has seen this work.**",
+            "That is a property of the project's size rather than a defect in this component, and it is why",
+            "the tables above have room for as many aliases as the tree names rather than one signature",
+            "line.",
+            "",
+            "A fingerprint is six hex characters of SHA-256 over a declaration's token texts. It answers",
+            "whether a unit changed since a decision was recorded against it. It is not a collision-free",
+            "identifier across units and it is not a cryptographic commitment, so it detects a change and",
+            "does not resist a forger with commit access.",
+            "",
+            "The assessments the decisions are recorded beside are machine-written and unread: an",
+            "assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions",
+            "EX-65 and EX-76 record.",
+            "");
+
+        // The provenance figure is derived here from the Origin field directly, where the generator
+        // asks AssuranceHumanReview.Provenance. It is the caveat the old record carried as an
+        // attention item a reader had to be pointed at, and a caveat nobody has to remember to keep
+        // true is worth two derivations.
+        Line(
+            record,
+            $"That is not a figure of speech. {units.Count(static unit => !unit.IsExempt && unit.Annotation is { ExemptReason: null } annotation && string.Equals(annotation.Field("Origin"), "AI", StringComparison.Ordinal))} of the {assessed} assessed units declare");
+
+        Fixed(record,
+            "`Origin=AI`, and the records this component implements were drafted the same way. An",
+            "adversarial pass over the work confirmed findings and they were corrected, which is a check",
+            "on it and not an independent judgement of it. Reading a declaration is the only thing that",
+            "makes it read.");
+
+        return record.ToString();
+    }
+
+    /// <summary>
+    /// The status word the states give, derived here by comparison rather than by the generator's
+    /// conditional chain.
+    /// </summary>
+    private static string Status(int reviewed, int relevant)
+    {
+        if (reviewed == 0)
+        {
+            return "PENDING";
+        }
+
+        return reviewed == relevant ? "COMPLETE" : "PARTIAL";
+    }
+
+    /// <summary>Every alias any human line names, in ordinal order, counted from the lines.</summary>
+    private static IReadOnlyList<string> Aliases(IEnumerable<AssuranceUnit> units) => units
+        .Select(AssuranceHumanReview.AliasOn)
+        .Where(static alias => alias is not null)
+        .Select(static alias => alias!)
+        .Distinct(StringComparer.Ordinal)
+        .OrderBy(static alias => alias, StringComparer.Ordinal)
+        .ToArray();
+
+    /// <summary>Every line of the human-review record that is not the line this shape carries.</summary>
+    internal static List<string> HumanReviewViolations(
+        string record,
+        IReadOnlyList<AssuranceSourceFile> files,
+        IReadOnlyList<AssuranceUnit> units) =>
+        Compare(
+            AssuranceHumanReview.RelativePath,
+            new AssuranceTextLines(ExpectedHumanReview(files, units)),
+            new AssuranceTextLines(record));
 
     // =============================================================================================
     // The comparison

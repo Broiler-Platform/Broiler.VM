@@ -1,16 +1,22 @@
 # Human Review: Broiler.VM
 
-> **Status: PENDING.** No human reviewer has yet attested to this component. Until
-> the attestation below is completed and signed, Broiler.VM must not be described as
-> human-approved, and no package may be published from it.
+GENERATED - DO NOT EDIT MANUALLY. Regenerate with
+`BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release`, which rewrites this file,
+`CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
+product tree.
+
+> **Status: PENDING.** Human-reviewed: 0 of 720 relevant units. No package
+> may be published from this component, no RID claimed and no milestone accepted until every
+> relevant unit carries a decision, which is update rule 8 in the status ledger.
 
 ## 1. How To Use This File
 
-This section is the canonical mark legend for the component. Every other review
-document links here rather than repeating the tables. There are two vocabularies, they
-are different kinds of thing, and they must never be mixed. Both are closed sets.
+This section is the canonical mark legend for the component. The evidence bundles and the
+status ledger link here rather than repeating the tables. There are two vocabularies, they are
+different kinds of thing, and they must never be mixed. Both are closed sets, and rule H1
+refuses a mark in any review document that this section does not publish.
 
-### Evidence verdicts - set by the author, about evidence
+### Evidence verdicts - stated about a piece of evidence
 
 | Mark | Meaning |
 |---|---|
@@ -19,440 +25,276 @@ are different kinds of thing, and they must never be mixed. Both are closed sets
 | `[UNMET]` | Not discharged. The condition is stated and not satisfied. |
 | `[N/A]` | Not claimed at this milestone. The milestone that owns it is named. |
 
-### Review verdicts - set by the reviewer, about their own reading
+### Review verdicts - stated in an evidence bundle about a gate clause
 
 | Mark | Meaning |
 |---|---|
-| `[ ]` | Not yet reviewed. |
+| `[ ]` | Not yet read. |
 | `[A]` | Accepted as stated. |
-| `[C]` | Accepted with a condition. The condition is recorded in the decision section. |
+| `[C]` | Accepted with a condition. The condition is recorded beside it. |
 | `[R]` | Rejected. The defect is recorded. |
 | `[?]` | Cannot be judged from what is here. What is missing is named. |
 
-Every review verdict in this file and in the worksheet is `[ ]`. None has been
-pre-filled, because nothing in this repository has been read by a human reviewer and a
-filled mark would be a false record.
+**No verdict in this file is a mark.** A decision about a code unit is the
+`// Broiler-Human:` line on that unit's declaration, and every table below is read out of
+those lines. There is nothing here to fill in and nothing here to leave blank.
 
-Section 9's decision list is not a review verdict and does not use this vocabulary. It
-is one four-state choice - approved, approved with conditions, not approved, or pending
-- written as ordinary markdown checkboxes. `PENDING` is checked there because pending is
-the true current decision, which is the opposite of a pre-filled verdict.
+## 2. How A Review Is Recorded
 
-**Identifiers.** Anything a reviewer might want to cite has a stable ID. `RA-n` is one
-of the eight review areas, risk-ordered, listed in section 4 and given a verdict row in
-section 8. `RC-nn` is a checklist item in the per-item worksheet at
-[docs/review/vm-0-vm-1.md](docs/review/vm-0-vm-1.md). `AT-n` is an item flagged for the
-reviewer's attention in section 6. `G-nn` is a gate clause in an evidence bundle, and
-`EX-nn` is an exclusion; both live in the bundles under `docs/evidence/`. IDs are
-stable, and an existing `EX-nn` is never renumbered.
+In one place: the `// Broiler-Human:` line of the assurance annotation that sits on the
+declaration being read. Nothing in this file is edited by hand, no second document carries a
+per-item checklist, and no list of permitted aliases exists to be added to.
 
-**To record a verdict:** edit the mark in the area's row in section 8, add any condition
-to section 10, and sign section 11.
+```csharp
+// Broiler-AI:           Origin=AI; Spec=ADR-0007 s6; IP=Low; Security=High; Resources=7; Fingerprint=630EF7
+// Broiler-Falsified-If: new T[] is reached before TryReserve returns true
+// Broiler-Human:        PENDING
+```
 
-## 2. When This Review Is Required
+The last line has four shapes. A human writes three of them; the generator writes the fourth
+and may never invent an alias, which rule J4 asserts in both directions.
 
-Ruled 2026-08-28 by the architecture and release owner, and recorded as update rule 8
-in [the status ledger](docs/roadmap.status.md):
-
-| Activity | Review |
+| Line | Meaning |
 |---|---|
-| Implementing a milestone, landing it, collecting its evidence | **Optional.** Development proceeds against frozen records whether or not they are approved. |
-| Publishing a package, claiming a RID, issuing a support table, moving a milestone to `Accepted` | **Mandatory.** None of them happens without a signature below for the revision in question. |
+| `PENDING` | Nobody has recorded a decision for this unit. The generator leaves it exactly as it stands. |
+| `<alias>` | A human states their own alias and leaves the machine field to the generator, which fills it with the declaration's fingerprint at the next run. |
+| `<alias>; Fingerprint=<six hex>` | A decision bound to one exact version of one declaration. |
+| `STALE; Previous=<alias>@<fingerprint>` | Written by the generator when the code moved after a decision. Only a human clears it, by stating their alias again. |
 
-The split is deliberate and it is not a relaxation: it moves the gate to where the
-irreversible act is. Nothing published, nothing claimed, and no milestone marked
-complete without a human having read the revision. What it permits is building.
+A human may state their own `IP=`, `Security=` and `Resources=` assessment beside their alias,
+which is how a reader disagrees with the machine assessment on the line above: an assessment is
+a comment and moves no fingerprint, so there is nowhere else to say it.
 
-It also has a cost the owner should keep in view. Unreviewed work accumulates, and
-review effort does not scale linearly with it: the VM-1 adversarial pass found
-sixteen blocking contract violations in a single milestone, behind a suite that was
-entirely green. Deferring review to the release makes that pile larger, not smaller.
+**No branch, commit or tag is recorded in this file.** Each decision names the fingerprint of
+the declaration it was made against, and the state machine compares that value with the
+declaration as it now stands. A commit says a tree moved; a fingerprint says whether this unit
+did, which is the narrower and the more useful of the two.
 
-This file exists so the review decision has somewhere to live and cannot be inferred
-from anything else. It is deliberately unsigned:
-[ADR 0001](docs/adr/0001-component-topology-and-dependency-graph.md) originally
-deferred this file to VM-6 on the grounds that a template with unfilled fields invites
-a false approval record, and that risk is real. Nothing here is an approval, and the
-evidence section records what was collected, not what was reviewed.
+This file is produced on every pull request by the review lane in `.github/workflows/`, and the
+publish lane refuses to run while any relevant unit is unresolved, any fingerprint is out of
+date, any annotation is malformed or any generated artefact is stale.
 
-## 3. Review Target
+## 3. Summary
 
-- **Component:** Broiler.VM
-- **Scope:** Milestones VM-0 and VM-1 - the twelve boundary records under `docs/adr/`,
-  the seven-project graph under `src/`, the architecture rules and their witnesses, the
-  implementation of core contract version 1, the two test-only fixture profiles, the
-  composition-root host, and the evidence bundles under `docs/evidence/vm-0/` and
-  `docs/evidence/vm-1/`. There is no product language profile to review; none exists.
-- **Release:** None. Broiler.VM has never been published and claims no RID.
-- **Commit under review:** _to be recorded by the reviewer_
-- **Reviewer:** MaiRat / Maik Ratzmer
-- **Review date:** _not yet performed_
+| Metric | Value |
+|---|---:|
+| Files scanned | 47 |
+| Code units | 1645 |
+| Relevant | 720 |
+| Exempt | 925 |
+| Assessed | 720 of 720 (100%) |
+| Human reviewed | 0 of 720 (0%) |
+| Unverified | 720 |
+| Aliases naming a decision | 0 |
 
-Any source change after the reviewed commit invalidates the approval until the changed
-revision is reviewed again.
+## 4. Review States
 
-## 4. Review Route
+One row per state of the machine that reads the two lines. The states are computed from the
+annotations and the current fingerprints; nothing stores them.
 
-The eight areas are ordered by risk, highest first. A reviewer who works down the table
-and stops when the time runs out has still spent that time where a defect would cost
-the most; the ordering exists so that stopping early is a defensible outcome rather than
-a gap. The per-item checklist for each area is the worksheet at
-[docs/review/vm-0-vm-1.md](docs/review/vm-0-vm-1.md); the times below are suggestions,
-not budgets anyone is held to. The worksheet carries 35 items, numbered contiguously from
-`RC-01`, with at least one for each of the eight areas; that count is stated here as well as
-there so that neither document can shed an item on its own. It carried fifty-three until the
-code-facing falsification criteria moved onto the declarations themselves, as a third
-annotation line; the worksheet header records what moved and why, and each of the four code
-areas keeps one item asking the reviewer to judge those criteria.
+| State | Units |
+|---|---:|
+| NEW | 0 |
+| AI_ASSESSED | 0 |
+| HUMAN_PENDING | 720 |
+| HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
+| VERIFIED | 0 |
+| STALE | 0 |
+| EXEMPT | 925 |
 
-| ID | Area | What a defect here would cost | Suggested time | Where to start |
-|---|---|---|---|---|
-| RA-1 | Bounded reading of untrusted bytes | A memory-safety or denial-of-service defect, not a contract disagreement. `Broiler.VM.Binary` is the only code that touches attacker-controlled input. | 60 min | `src/Broiler.VM.Binary/VmBoundedReader.cs`, then `VmBoundedAllocator.cs` and `VmReadBounds.cs`; assertions in `src/tests/Broiler.VM.Contract.Tests/VerificationAndReaderTests.cs` |
-| RA-2 | Resource authority and budgets | A budget that does not bound. This is where the adversarial review found the most blockers, including an aggregate live measure that could be driven to zero while memory was live. | 90 min | [ADR 0007](docs/adr/0007-resource-authority-and-budgets.md), then `src/Broiler.VM.Runtime/VmAggregateBudget.cs`, `VmMeter.cs`, `VmCeilingResolution.cs`; `src/tests/Broiler.VM.Contract.Tests/SuspensionAndBudgetTests.cs` |
-| RA-3 | Lifecycle and state machine | An instance left usable after its stack was abandoned. Covers the mandatory outcome-to-state mapping, the precedence order, disposal and reentrancy. | 60 min | [ADR 0004](docs/adr/0004-lifecycle-and-state-machine.md) and [ADR 0005](docs/adr/0005-operation-result-envelope.md), then `src/Broiler.VM.Runtime/VmInstanceImplementation.cs`, `VmRuntimeState.cs`, `VmOperation.cs`; `LifecycleTests.cs` and `ReclamationTests.cs` |
-| RA-4 | Verified-artifact ownership | Execution over bytes that were never verified, or over bytes a caller mutated after verification. Covers verification being separable from execution, the single construction site, leases and draining. | 45 min | [ADR 0006](docs/adr/0006-verified-artifact-ownership.md), then `src/Broiler.VM.Abstractions/VmVerifiedArtifact.cs` and `src/Broiler.VM.Runtime/VmVerification.cs`; `VerificationAndReaderTests.cs` |
-| RA-5 | Guest-initiated loads and external suspension | Mediation escaped, or an operation resumed under a spent parent. Covers mediation bounds, the deterministic no-provider refusal, the double gate and resume admission. | 45 min | [ADR 0008](docs/adr/0008-guest-initiated-loads.md) and [ADR 0009](docs/adr/0009-external-suspension-and-async-instantiation.md), then `src/Broiler.VM.Runtime/VmArtifactLoadMediator.cs` and `VmInstantiation.cs`, `src/Broiler.VM.Abstractions/VmGuestLoad.cs`; `GuestInitiatedLoadTests.cs` |
-| RA-6 | The public contract surface | A frozen public name that has to change after publication. This is the hardest thing here to change later. Covers the frozen public-name table, the three errata, the stage matrix, and what a profile package can name. | 45 min | [ADR 0003](docs/adr/0003-core-contract-v1-and-amendments.md) and [ADR 0011](docs/adr/0011-source-level-profile-contract.md), then `src/Broiler.VM.Abstractions/VmCoreContract.cs`, `VmStageResults.cs`, `VmControlResult.cs`; the baseline in `src/tests/Broiler.VM.Architecture.Tests/ApiBaselineRules.cs` and the errata in the VM-1 bundle |
-| RA-7 | The records themselves | A boundary record, invariant resolution or unapplied amendment that the implementation was built against is itself wrong. Covers the twelve boundary records, the four invariant resolutions, and the seventeen proposed and unapplied roadmap amendments. | 60 min | [docs/adr/README.md](docs/adr/README.md) and the twelve records beneath it; the amendment register in [ADR 0003](docs/adr/0003-core-contract-v1-and-amendments.md); [docs/roadmap.md](docs/roadmap.md) |
-| RA-8 | The evidence and the rule register | Bundles that do not show what they claim, or a negative control that passes and is not treated as a finding about the suite. Covers what each register status means. | 45 min | [the VM-0 bundle](docs/evidence/vm-0/README.md) and [the VM-1 bundle](docs/evidence/vm-1/README.md) with their `negative-control.log`; `src/tests/Broiler.VM.Architecture.Tests/rules.register.json` and `RuleRegisterTests.cs` |
+## 5. Aliases In The Tree
 
-## 5. Evidence Available To The Reviewer
+No alias appears on a human line anywhere in the product tree. Nobody has recorded a
+decision about any unit of this component.
 
-Collected by automation and retained in
-[the VM-0 evidence bundle](docs/evidence/vm-0/README.md),
-[the VM-1 evidence bundle](docs/evidence/vm-1/README.md),
-[the VM-2 evidence bundle](docs/evidence/vm-2/README.md),
-[the VM-3 evidence bundle](docs/evidence/vm-3/README.md) and
-[the VM-4 evidence bundle](docs/evidence/vm-4/README.md). It is input to a review, not
-a substitute for one. Each line carries an evidence verdict as defined in section 1;
-these are the author's marks about evidence, not review verdicts.
+## 6. Coverage By File
 
-**Four milestones are now waiting on one reading.** This file was written for VM-0's records
-and VM-1's implementation. VM-2 has since landed - the limit-precedence layers, a retained
-malformed-input corpus, a fuzz target, and the guest-load bounds that were carried in a
-descriptor and read nowhere - and VM-3 after it: two consumer profiles written against the
-public contract alone, two named composition roots, and the register and closure reports that
-say what each of them contains. VM-4 has landed after it, and it is the one a reviewer should
-start with: it changed the product assemblies for the first time since VM-1, and it changed them
-because four rules the records froze were being enforced nowhere. Nobody has read any of it. The
-lines below say which milestone each figure belongs to rather than merging them, because a reviewer
-needs to know what a number is about before it is worth anything.
+One row per covered file, carrying that file's generated header. `Unverified` counts the
+relevant units in a state that blocks a release.
 
-- `[MET]` **Build and tests, as the tree stands:** `dotnet build Broiler.VM.slnx -c Release`
-  completes with 0 warnings and 0 errors across fourteen projects; `dotnet test Broiler.VM.slnx
-  -c Release` reports 318 tests passed, 0 failed, 0 skipped - 121 architecture and 197
-  behavioural. VM-5 retained a suite fourteen architecture tests smaller and identical in its
-  behavioural half; VM-6 adds no behavioural test at all, which is the right shape for a milestone
-  that changes no product assembly. **The checkout contains a fifteenth
-  project file that the solution does not list** - the pristine feed consumer, which cannot be a
-  solution project because restoring it requires a pack to have happened. It builds separately and
-  rule A14 governs it.
-  **Read that number with section 5's VM-3 line: the two consumer profiles VM-3 added are
-  referenced by no test project at all, by rule, so what exercises them is two published binaries
-  and not the suite.**
-- `[PART]` **An adversarial review has been run, and it found a great deal.** Six reviewers
-  against the frozen records, every finding put to two independent refuters: 45
-  findings survived, sixteen of them blockers, several confirmed by executing the
-  code. All sixteen are corrected and regression-tested; twenty-nine majors and
-  minors are recorded and unaddressed (EX-52). The first evidence bundle is
-  superseded because it reported a green suite over a tree that contained all
-  sixteen.
-- `[MET]` **Negative controls:** four, each injected, run, reverted and re-run. One of the four
-  did not fail on its first run; that episode is AT-4, and it is about what the suite proved
-  rather than whether the control ran. A forbidden
-  project edge fails A4 and A7; a deleted manifest edge fails A7; a struck name on the
-  public surface fails V3; and removing the mediator's no-provider refusal fails the
-  behavioural suite. Every run is retained in `negative-control.log`.
-- `[PART]` **Native AOT:** the composition-root host publishes and **runs** as a 1,279,488-byte
-  self-contained native binary on `win-x64`, and as a 162,816-byte trimmed binary,
-  composing two fixture profiles through the generic contract with no trim or AOT
-  warnings. It builds with `TreatWarningsAsErrors`. What is not shown is a reproduction
-  by automation: see AT-8.
-- `[MET]` **Packaging:** `dotnet pack` still produces exactly three `.nupkg` and three
-  `.snupkg`. None of the seven test-only projects packs, and neither composition root does:
-  the advertised composition set is empty at core contract version 1, and
-  [the composition register](docs/compositions.md) says so in its first section.
-- `[MET]` **Runtime dependencies:** the three product projects have no package references and
-  no project references outside the component. Test packages are confined to the two
-  test projects.
-- `[PART]` **Security-sensitive behaviour:** this is the part that changed most, and it is where
-  a reviewer's time is best spent. The product graph now decodes untrusted bytes. Every
-  length, count, offset and allocation goes through the bounded reader and the
-  allocation guard, which refuse before allocating; verification produces an immutable
-  handle and execution consumes only that handle; a caller's buffer may be mutated
-  afterwards without effect. There is still no file, network, process, native-interop,
-  unsafe or code-execution path, and rule B5 asserts the absence of dynamic-loading
-  APIs over compiled metadata. VM-2 adds the retained malformed-input corpus and the fuzz
-  target that VM-1 recorded as absent: eighty-seven artifacts with their hashes and their
-  expected answers, and two million seeded iterations that found nothing. What has still
-  **not** been done is any concurrency testing, which is VM-4's.
-- `[PART]` **VM-2's own boundary work.** The precedence algorithm's artifact-request clamp and
-  its instance and invocation overrides are implemented, where VM-1 left them as a reason no
-  code path could produce; the materialization ordering is asserted for every corpus artifact
-  including every failing one; the caller's buffer is now overwritten concurrently as well as
-  mutated; and the fourth guest-load bound is enforced. Two clauses of the VM-2 gate are
-  `[PART]` rather than `[MET]` and the bundle names both: no fuzz session has found a
-  regression to retain (EX-79), and the nesting-depth bound is unreachable at contract
-  version 1 (EX-78).
-- `[PART]` **VM-3's own composition work.** Two application-local consumer profiles were written
-  against `Broiler.VM.Abstractions` and `Broiler.VM.Binary` and nothing else - no runtime
-  reference, no `InternalsVisibleTo` in either direction, no package reference, no reflection -
-  and composed by direct typed registration into two named roots that publish and run under JIT,
-  trimming and Native AOT. The closure of each published image is listed off the published
-  output: five non-framework assemblies for the single-profile composition, six for the
-  two-profile one, differing by exactly the second profile. **No file under any of the three
-  product project directories changed, and both published image sizes are byte-identical to
-  VM-2's**, which is the gate's central clause in numeric form. It is `[PART]` rather than
-  `[MET]` for one reason worth a reviewer's attention: neither consumer profile is fuzzed, and
-  neither is reachable from the test suite, so everything true of them is demonstrated by two
-  transcripts rather than by assertions a suite re-runs.
-- `[PART]` **VM-4's corrections, and why they are where a reviewer should start.** Four rules that
-  were frozen at VM-0, implemented at VM-1 and enforced nowhere are now enforced, and each was found
-  by a test that could reach a second thread rather than by anyone reading the code. A running host
-  capability refused every *other* thread's call into the runtime; disposal returned while a profile
-  was still executing and then released the artifact lease under it; the declared thread affinity
-  was carried in every descriptor and read by nothing; and an instantiation racing disposal
-  registered its instance into a runtime that had already walked its list. The pattern is the same
-  one VM-2 found three times - a bound that is declared, carried and read nowhere - and a reviewer
-  should ask what else is in that category rather than reading these four as isolated slips. It is
-  `[PART]` because the evidence was collected on four processors (EX-88) and because affinity is
-  enforced only where the core can see a thread (EX-89).
-- `[MET]` **A declared memory plateau, measured rather than metered.** 400,000 lifecycle cycles
-  across four workers, sampled throughout, with the settled managed heap returning to within tens of
-  kilobytes of its starting figure after gigabytes of allocation. The behavioural suite already
-  asserted the *metered* plateau, which says the core's accounting balances and nothing about
-  whether the process grows; this is the other claim.
-- `[MET]` **License:** Apache-2.0, byte-identical to the other Broiler components. No
-  third-party runtime dependency was introduced, so no notices file is carried.
+| File | Units | Relevant | Exempt | Unverified | IP risk | Security risk | Criteria |
+|---|---:|---:|---:|---:|---|---|---:|
+| `src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs` | 13 | 4 | 9 | 4 | Low | Low | 0/0 |
+| `src/Broiler.VM.Abstractions/VmBudgetVocabulary.cs` | 38 | 14 | 24 | 14 | Low | Low | 0/0 |
+| `src/Broiler.VM.Abstractions/VmControlResult.cs` | 24 | 12 | 12 | 12 | Low | Low | 0/0 |
+| `src/Broiler.VM.Abstractions/VmCoreContract.cs` | 3 | 3 | 0 | 3 | None | Medium | 0/0 |
+| `src/Broiler.VM.Abstractions/VmDescriptorValues.cs` | 38 | 14 | 24 | 14 | Low | Low | 0/0 |
+| `src/Broiler.VM.Abstractions/VmDiagnostics.cs` | 120 | 36 | 84 | 36 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Abstractions/VmFeatureManifestId.cs` | 19 | 14 | 5 | 14 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Abstractions/VmGuestLoad.cs` | 31 | 11 | 20 | 11 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Abstractions/VmHostCapabilityDescriptor.cs` | 56 | 19 | 37 | 19 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Abstractions/VmIdentityPrimitives.cs` | 97 | 47 | 50 | 47 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Abstractions/VmLifecycleObjects.cs` | 66 | 23 | 43 | 23 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Abstractions/VmLimitPolicy.cs` | 34 | 18 | 16 | 18 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Abstractions/VmLimitVector.cs` | 51 | 27 | 24 | 27 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Abstractions/VmOutcome.cs` | 25 | 7 | 18 | 7 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Abstractions/VmProfileContracts.cs` | 72 | 39 | 33 | 39 | Low | High | 9/8 |
+| `src/Broiler.VM.Abstractions/VmProfileDescriptor.cs` | 35 | 3 | 32 | 3 | None | Medium | 0/0 |
+| `src/Broiler.VM.Abstractions/VmProfileId.cs` | 30 | 23 | 7 | 23 | Low | High | 9/7 |
+| `src/Broiler.VM.Abstractions/VmReason.cs` | 95 | 8 | 87 | 8 | Low | Low | 0/0 |
+| `src/Broiler.VM.Abstractions/VmStageResults.cs` | 106 | 65 | 41 | 65 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Abstractions/VmTransferTypes.cs` | 24 | 8 | 16 | 8 | Low | Low | 0/0 |
+| `src/Broiler.VM.Abstractions/VmVerifiedArtifact.cs` | 55 | 17 | 38 | 17 | Low | Medium | 4/0 |
+| `src/Broiler.VM.Binary/IVmBoundedAllocationMeter.cs` | 5 | 5 | 0 | 5 | Low | High | 3/3 |
+| `src/Broiler.VM.Binary/VmBoundedAllocator.cs` | 3 | 3 | 0 | 3 | Low | High | 3/3 |
+| `src/Broiler.VM.Binary/VmBoundedReadStatus.cs` | 10 | 1 | 9 | 1 | Low | Low | 0/0 |
+| `src/Broiler.VM.Binary/VmBoundedReader.cs` | 33 | 21 | 12 | 21 | Low | High | 19/18 |
+| `src/Broiler.VM.Binary/VmReadBounds.cs` | 11 | 3 | 8 | 3 | Low | Low | 0/0 |
+| `src/Broiler.VM.Binary/VmSectionFrame.cs` | 10 | 3 | 7 | 3 | Low | Low | 0/0 |
+| `src/Broiler.VM.Runtime/VmAggregateBudget.cs` | 42 | 23 | 19 | 23 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Runtime/VmArtifactLoadMediator.cs` | 17 | 6 | 11 | 6 | Low | Medium | 1/0 |
+| `src/Broiler.VM.Runtime/VmBudgetLevel.cs` | 15 | 11 | 4 | 11 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Runtime/VmCanonicalCatalogEncoding.cs` | 5 | 5 | 0 | 5 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Runtime/VmCapabilityBinding.cs` | 22 | 10 | 12 | 10 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Runtime/VmCatalog.cs` | 47 | 24 | 23 | 24 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Runtime/VmCatalogValidation.cs` | 47 | 5 | 42 | 5 | Low | Low | 0/0 |
+| `src/Broiler.VM.Runtime/VmCeilingResolution.cs` | 5 | 5 | 0 | 5 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Runtime/VmDescriptorValidation.cs` | 10 | 10 | 0 | 10 | Low | Low | 0/0 |
+| `src/Broiler.VM.Runtime/VmExecutionScope.cs` | 26 | 16 | 10 | 16 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` | 40 | 24 | 16 | 24 | Low | High | 6/2 |
+| `src/Broiler.VM.Runtime/VmInstantiation.cs` | 15 | 9 | 6 | 9 | Low | Medium | 2/0 |
+| `src/Broiler.VM.Runtime/VmLimitPrecedence.cs` | 3 | 3 | 0 | 3 | Low | High | 1/1 |
+| `src/Broiler.VM.Runtime/VmMeter.cs` | 36 | 18 | 18 | 18 | Low | Medium | 8/0 |
+| `src/Broiler.VM.Runtime/VmOperation.cs` | 54 | 25 | 29 | 25 | Low | Medium | 1/0 |
+| `src/Broiler.VM.Runtime/VmProfileRuntimeState.cs` | 15 | 6 | 9 | 6 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Runtime/VmRuntime.cs` | 57 | 34 | 23 | 34 | Low | High | 10/2 |
+| `src/Broiler.VM.Runtime/VmRuntimeCreationOptions.cs` | 55 | 22 | 33 | 22 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Runtime/VmRuntimeState.cs` | 18 | 8 | 10 | 8 | Low | Low | 0/0 |
+| `src/Broiler.VM.Runtime/VmVerification.cs` | 12 | 8 | 4 | 8 | Low | High | 3/3 |
 
-## 6. For The Reviewer's Attention
+## 7. Decisions Recorded
 
-Offered because a reviewer's time is better spent where the risk is, not because these
-are known defects. Each item has a stable ID so it can be cited in a note or a
-condition.
+No unit in this component carries a decision on its human line. Every one of them reads
+`PENDING`.
 
-- **AT-1 - Three places where the implementation could not honour a record verbatim.** They
-  are filed as errata in the VM-1 bundle, not as amendments, and each is a decision a
-  reviewer may reverse. `VmControlResult` is a struct rather than the enum ADR 0003's
-  name table records, because ADR 0004 and ADR 0009 both require it to carry a reason
-  and a bare enum cannot. Stage results are constructed through hidden public factories
-  rather than internal constructors, because rule A10 forbids `InternalsVisibleTo`
-  while a profile package must be able to name them - an illegal stage/category cell
-  still has no factory anywhere, so the matrix remains a compile-time fact. And
-  `VmOperation` is a frozen public name that is used internally but not exported.
-- **AT-2 - The four invariant resolutions.** In
-  [ADR 0007](docs/adr/0007-resource-authority-and-budgets.md) and
-  [ADR 0009](docs/adr/0009-external-suspension-and-async-instantiation.md), now with
-  code to read them against. In particular, whether `TryTakeSuspension` gives the party
-  entitled to resume a path to resume in every origin case, without reintroducing the
-  second admission check it was designed to remove.
-- **AT-3 - A passing suite proved much less than it looked like it proved.** The first
-  implementation passed 150 tests with no warnings and published a working Native
-  AOT binary while an aggregate budget could be driven to zero with memory still
-  live, an operation resumed under a spent parent, and a capability declaring that
-  a fault terminates the operation terminated nothing. If a reviewer reads one
-  thing besides the records, it should be the review section of the VM-1 bundle.
-- **AT-4 - One negative control initially failed to fail.** Removing the mediator's
-  no-provider refusal did not break the suite, because a null provider then threw and
-  was translated, and the fixture still reported a profile fault - so tests asserting
-  only the outcome category passed. Four assertions were strengthened to name the
-  core's reason. The episode is retained in the bundle because it is evidence about how
-  much the other assertions are worth, and a reviewer should ask the same question of
-  them.
-- **AT-5 - Five of fifty-two architecture rules assert nothing.** One is Vacuous and four
-  are Deferred, which is the count VM-0 reported the same way when it said nine rules awaited
-  their subject. Rule B3 stays Vacuous
-  with its activation milestone moved to VM-3: its subject exists, but a violation is
-  unreachable by construction rather than merely absent (Exclusion EX-40). Rule E5 is
-  superseded by V1 and V2 and retained as a Deferred row so the supersession is
-  auditable.
-- **AT-6 - The inbound half of the legacy-boundary rule is environment-conditional**
-  (Exclusion EX-01). Rule D1 scans an aggregate checkout when one is present above the
-  component, and records an explicit inconclusive result when it is not.
-- **AT-7 - Seventeen roadmap amendments are proposed and unapplied** (Exclusion EX-11). The
-  records and `docs/roadmap.md` therefore disagree in the places ADR 0003's register
-  lists. VM-1 implements the records.
-- **AT-8 - The Native AOT result is not reproducible by automation** (Exclusion EX-42). It
-  needs a `vcvars64` shell and `IlcUseEnvironmentalTools=true`, because the ILCompiler
-  package's own toolchain discovery fails on the collecting machine.
-- **AT-10 - Three of VM-2's corrections were found by its own corpus and suite rather than by a
-  reviewer.** The uncharged-work counter summed every budget dimension, so one correctly
-  metered in-bounds allocation breached a poll bound instantly and a core unit conflation was
-  billed to the profile as a broken metering contract; the cumulative nested verifier-work
-  bound was validated at runtime creation and read nowhere; and the artifact-limit clamp the
-  precedence algorithm requires was computed and discarded. None was found by reading. A
-  reviewer should ask what else is in the same category, since the mechanism that found these
-  three is the mechanism VM-2 added rather than one that was already looking.
-- **AT-11 - The review worksheet covers VM-0 and VM-1 and has no VM-2 or VM-3 items.**
-  `docs/review/vm-0-vm-1.md` is the checklist a reviewer walks, and it was written before
-  VM-2 existed. Its items are still true and none of them covers the corpus, the fuzz target,
-  the precedence layers or the guest-load bounds VM-2 added, nor the consumer profiles, the
-  composition register or the closure reports VM-3 added. Rule H3 holds the
-  worksheet's own counts and its area coverage and cannot notice that the component has
-  outgrown it.
-- **AT-12 - VM-3 found a contract property nobody had written down, and it was found by
-  composing rather than by reading.** A runtime ceiling is clamped to the tightest profile hard
-  maximum in the CATALOG, and adopting a profile default resolves to the tightest default in the
-  catalog; both are catalog-wide facts rather than per-profile ones. So a profile that declares
-  its own usage as its hard maximum silently caps every profile composed beside it, and the
-  failure surfaces as a resource refusal inside an innocent verifier. The two consumer profiles
-  were written that way first and the two-profile composition could not verify a ledger artifact
-  until both were corrected. Nothing in the core changed and nothing here is proposed as a
-  defect; what a reviewer should decide is whether the core should be able to say so - a
-  catalog-construction diagnostic when one profile's maxima bind another's defaults would turn a
-  confusing runtime refusal into a composition-time message. `docs/compositions.md` section 5
-  is where a profile author currently finds this out, which is documentation rather than a
-  mechanism.
-- **AT-14 - The four VM-4 corrections were all record-versus-implementation gaps, not design
-  errors.** Every one of them is a case where a frozen record says a thing is enforced and nothing
-  enforced it, and all four survived three milestones and an adversarial review. Two of them -
-  `DisposeDrainBudget` and `VmThreadAffinity.OperationThreadPinned` - were carried in the public
-  surface the whole time, so a host could configure them and a profile could declare them, and
-  neither did anything. A reviewer's most useful question is not whether these four fixes are right
-  but what mechanism would have found them earlier: the answer this component has is the unused-
-  reason sweep that found `ThreadAffinityViolation`, and it is a script rather than a rule.
-- **AT-15 - The in-capability scope change is a deviation from ADR 0011 F5 and a reviewer may
-  reverse it.** The record says "per-runtime in-capability flag". Read literally that is what was
-  implemented, and it made any blocking host capability stop the whole runtime for every other
-  thread. The reading taken here is that the record's own sentence - a capability must not call back
-  into *the invoking runtime* - is about a call stack. If a reviewer prefers the literal reading, the
-  fix is to amend the sentence rather than to restore the behaviour, because the behaviour it
-  produced is an availability failure with no compensating safety property.
-- **AT-18 - The gate you are being asked to close includes closing yourself, and it cannot.**
-  VM-6's exit gate asks that "notices and reviews are complete". The notices are. The review is
-  this document, it is `PENDING`, all eight area verdicts are unset, and the only person who has
-  read the work is the person who wrote it. That is not a step that was skipped for time; it is
-  structurally unavailable to the author, and it is why the ledger's VM-6 row says the last
-  milestone in the roadmap cannot be met by anyone who wrote it. A reviewer's first decision is
-  whether that framing is honest or whether it is an excuse.
-- **AT-19 - The public API is frozen by a file that an environment variable rewrites.**
-  `docs/api/public-api.txt` enumerates 1,251 members and rule M1 holds the assemblies to it in both
-  directions, which is a real gate: before VM-6, a member added or removed broke no rule at all.
-  But it is regenerated by `BROILER_API_WRITE=1`, so the gate is only as strong as the reading of
-  the diff, and a reviewer who regenerates without reading has defeated it (EX-99). The alternative
-  considered was a hand-maintained file, which is hand-maintained wrongly. A reviewer should decide
-  whether the diff being small and mechanical is enough, and whether any change to it being a
-  recertification trigger is enforced by anything other than this sentence.
-  **It also compares text and not semantics** (EX-100): a default value, an attribute or a
-  nullability change that leaves signatures identical is a real breaking change this rule cannot
-  see.
-- **AT-20 - "Wired into required CI" is the one gate clause marked UNMET, and it is marked so
-  deliberately.** The workflow exists, runs the drift rules, packs, restores the feed consumer,
-  rolls it back and publishes on three RIDs. It has never executed, no branch protection makes it
-  required, and its matrix is aspirational for two of its three entries. It would have been easy to
-  mark this `[PART]` and point at the file. A reviewer should check that the distinction between
-  "exists" and "required" has been drawn the same way everywhere it appears - `docs/support.md`
-  claims no platform on the strength of the file, and EX-102 says a workflow that has not run is a
-  plan.
-- **AT-21 - A rule caught a false claim in this milestone's own support table, which is the
-  strongest and the most worrying evidence here.** The first draft of `docs/support.md` and
-  `THIRD_PARTY_NOTICES.md` said the three packages "declare no package dependency at all";
-  `Broiler.VM.Runtime` declares the other two, which is the whole shape of the graph. Rule C2,
-  reading the produced `.nuspec` files, failed. The system worked. The worrying half is that the
-  sentence was written, read and committed to two documents before a rule caught it, and the rules
-  only cover claims someone thought to bind - so a reviewer's question is not whether this one was
-  caught but how many claims in these documents have no rule behind them at all.
-- **AT-16 - A milestone whose subject was measurement found two defects that eleven milestones of
-  testing had not, and a reviewer should ask why.** Neither is a performance finding. One is a
-  bound that did not bound what it says: the guest-load mediator's per-operation counters were
-  never reset, because `EnterScope` had an overload that omitted the operation's identity and every
-  call site used it. Three fan-out tests passed throughout, because all three invoke exactly once -
-  the defect lived in the gap between "one operation" and "the next one", which no test crossed.
-  The other is a resource never released: an `AsyncLocal<int>` cannot be set to null, so a
-  runtime's capability-depth entry stayed on the thread for the life of the process. **Nothing
-  observable failed** - what grew was allocation, and no assertion in this component looks at
-  allocation. The useful question is not whether the two fixes are right but what class of defect
-  is invisible to a suite that only ever asserts outcomes, and whether a baseline is the cheapest
-  instrument for finding it or merely the one that happened to.
-- **AT-17 - The baselines are absolute times from one machine, and they will be read as more than
-  that.** Every figure in `docs/baselines.md` was collected on one four-processor `linux-x64`
-  machine with workstation GC. The register says so, the bundle says so, and the recertification
-  triggers are deliberately wider than any earlier bundle's - but a table of nanoseconds invites a
-  comparison that a pass/fail result does not, and the first person to quote one of these numbers
-  outside this repository will not carry the caveat with it. A reviewer should decide whether the
-  register's framing is strong enough, and in particular whether publishing per-byte verification
-  throughput at all is wise when the figure is dominated by the metering discipline rather than by
-  any decoder.
-- **AT-13 - VM-3's two consumer profiles are exercised by published binaries and by no test
-  project.** Rule A11 forbids a project outside a composition root to reference a profile
-  assembly, and demonstrating that rule is part of what VM-3 is for, so the suite cannot reach
-  either profile. Twelve checks across two composition roots run in three publish modes each and
-  their transcripts are retained, but nothing re-runs them in `dotnet test`, and neither profile
-  is fuzzed. A reviewer should decide whether that trade is right: the alternative is a weaker
-  A11 and a larger suite.
-- **AT-9 - The records and the implementation were drafted with AI assistance and reviewed the
-  same way.** The adversarial review that produced the VM-0 revision confirmed 24
-  findings, four of them blockers. That is a check on the work, not an independent
-  verdict on it, and the same caveat applies to VM-1.
+## 8. Decisions The Code Has Outrun
 
-## 7. Residual Risk This Review Cannot Remove
+No unit carries a decision that the code has since moved past.
 
-Broiler.VM has one person in every role: architecture owner, core-contract owner,
-security owner and reviewer are the same individual. The status ledger's update rule 7
-asks for an owner and a reviewer to confirm every exit condition, and with a single
-maintainer those are not independent. That is a property of the project's size rather
-than a defect in this component, but it belongs on the record rather than glossed:
-**no second pair of eyes has seen this work.**
+## 9. Where A Decision Is Required First
 
-That matters more at VM-1 than it did at VM-0. VM-0 froze decisions on paper, where a
-mistake is cheap to reverse. VM-1 decodes untrusted bytes, and the component is now
-carrying an unreviewed parser and an unreviewed budget enforcer.
+The units at the top of the security vocabulary, with the observation that would show each
+one wrong and the human line it carries. The set is read from the assessments rather than
+written out, so a unit that becomes `High` joins it at the next generation.
 
-It matters more again at VM-2, and in a way worth stating plainly rather than leaving to be
-inferred, and VM-3 adds a third turn of the same screw: the two consumer profiles are the
-component's own demonstration that its contract is usable by someone outside it, and they were
-written by the same person who wrote the contract. A profile author who did not already know
-what the core expects is exactly the reader they were meant to stand in for. VM-2's corpus and fuzz target are exactly the mechanisms that make an unreviewed
-parser bearable, and they are themselves unreviewed: the corpus's expectations are one
-person's reading of what the verifier ought to answer, the fuzz target's invariants are the
-same person's list of what must never happen, and the negative controls show only that each
-mechanism rejects the defect it was written to reject. Two million iterations finding nothing
-is worth what the invariants are worth. Ledger update rule 8's second consequence is the one
-being observed here: unreviewed work accumulates, and there is now more of it to read in one
-sitting than there was.
+- `Broiler.VM.IVmVerifiedState` in `src/Broiler.VM.Abstractions/VmProfileContracts.cs` - Security=High, Spec=none cited, `9B3EE1`, PENDING
+  - Falsified if: the core calls anything on a stored state, or a state reachable from a shared handle can be mutated
+- `Broiler.VM.IVmInstanceState` in `src/Broiler.VM.Abstractions/VmProfileContracts.cs` - Security=High, Spec=none cited, `FC8DAD`, PENDING
+  - Falsified if: the core reads an instance state, or one reaches an executor other than the profile that made it
+- `Broiler.VM.IVmProfileContinuation` in `src/Broiler.VM.Abstractions/VmProfileContracts.cs` - Security=High, Spec=none cited, `9DB83C`, PENDING
+  - Falsified if: the core inspects a continuation, or one is handed back to an operation it was not captured from
+- `Broiler.VM.VmInvocationRequest` in `src/Broiler.VM.Abstractions/VmProfileContracts.cs` - Security=High, Spec=none cited, `B2651B`, PENDING
+  - Falsified if: the core decodes, re-encodes or trims the entry-point bytes rather than carrying them verbatim
+- `Broiler.VM.IVmProfileVerifier` in `src/Broiler.VM.Abstractions/VmProfileContracts.cs` - Security=High, Spec=none cited, `8ED829`, PENDING
+  - Falsified if: a verifier whose declared identity differs from the descriptor naming it is admitted to a catalog
+- `Broiler.VM.IVmProfileVerifier.Verify(in VmArtifactDescriptor, System.ReadOnlySpan<byte>, IVmVerificationContext, System.Threading.CancellationToken)` in `src/Broiler.VM.Abstractions/VmProfileContracts.cs` - Security=High, Spec=ADR-0006 s6, `ED6BA8`, PENDING
+  - Falsified if: the payload arrives as anything but a span, or a second member here can answer a verification
+- `Broiler.VM.VmExecutionStepKind` in `src/Broiler.VM.Abstractions/VmProfileContracts.cs` - Security=High, Spec=none cited, `15A717`, PENDING
+  - Falsified if: a member's numeric value changes, or a kind exists the core's step-to-stage mapping has no arm for
+- `Broiler.VM.VmExecutorFactory` in `src/Broiler.VM.Abstractions/VmProfileContracts.cs` - Security=High, Spec=none cited, `CC8727`, PENDING
+  - Falsified if: an executor is created on a path that does not instantiate, or its type is rooted by reflection
+- `Broiler.VM.VmProfileId` in `src/Broiler.VM.Abstractions/VmProfileId.cs` - Security=High, Spec=none cited, `CB7A1C`, PENDING
+  - Falsified if: Equals, ==, CompareTo or GetHashCode folds case, or a stored id is not the text the caller supplied
+- `Broiler.VM.VmProfileId.TryParse(System.ReadOnlySpan<char>, out VmProfileId)` in `src/Broiler.VM.Abstractions/VmProfileId.cs` - Security=High, Spec=ADR-0002 s1, `745304`, PENDING
+  - Falsified if: an id is returned for a candidate the grammar rejects, or it stores anything but the candidate
+- `Broiler.VM.VmProfileId.Parse(System.ReadOnlySpan<char>)` in `src/Broiler.VM.Abstractions/VmProfileId.cs` - Security=High, Spec=ADR-0002 s1, `AA7040`, PENDING
+  - Falsified if: it accepts a candidate TryParse refuses, or its message names bounds the constants above do not
+- `Broiler.VM.VmProfileId.TryValidateGrammar(System.ReadOnlySpan<char>, int, int, int, int, out byte)` in `src/Broiler.VM.Abstractions/VmProfileId.cs` - Security=High, Spec=ADR-0002 s1, `A4118A`, PENDING
+  - Falsified if: a label count, label length or total length outside its bound validates, or an empty label does
+- `Broiler.VM.VmProfileId.TryValidate(System.ReadOnlySpan<char>, out byte)` in `src/Broiler.VM.Abstractions/VmProfileId.cs` - Security=High, Spec=ADR-0002 s1, `7D6A16`, PENDING
+  - Falsified if: it passes bounds other than the five constants above, or the label count is not dots plus one
+- `Broiler.VM.VmProfileId.IsAsciiLetter(char)` in `src/Broiler.VM.Abstractions/VmProfileId.cs` - Security=High, Spec=ADR-0002 s1, `C1992B`, PENDING
+  - Falsified if: true is returned for a character outside A-Z and a-z - try the neighbours '@', '[', '`' and '{'
+- `Broiler.VM.VmProfileId.IsAsciiAlphanumeric(char)` in `src/Broiler.VM.Abstractions/VmProfileId.cs` - Security=High, Spec=ADR-0002 s1, `204317`, PENDING
+  - Falsified if: it accepts a non-ASCII letter or digit, or rejects one of 0-9; the neighbours are '/' and ':'
+- `Broiler.VM.IVmBoundedAllocationMeter` in `src/Broiler.VM.Binary/IVmBoundedAllocationMeter.cs` - Security=High, Spec=none cited, `A95709`, PENDING
+  - Falsified if: a member that can refuse has no way to say so in its return value, so refusal must be thrown
+- `Broiler.VM.IVmBoundedAllocationMeter.TryReserve(ulong)` in `src/Broiler.VM.Binary/IVmBoundedAllocationMeter.cs` - Security=High, Spec=none cited, `612753`, PENDING
+  - Falsified if: a false return has already charged the allowance, or a true one reserves nothing
+- `Broiler.VM.IVmBoundedAllocationMeter.TryChargeWork(ulong)` in `src/Broiler.VM.Binary/IVmBoundedAllocationMeter.cs` - Security=High, Spec=none cited, `E14B16`, PENDING
+  - Falsified if: false is returned here for a cancellation, which the caller latches as a spent work allowance
+- `Broiler.VM.VmBoundedAllocator` in `src/Broiler.VM.Binary/VmBoundedAllocator.cs` - Security=High, Spec=none cited, `30CDFD`, PENDING
+  - Falsified if: a member here allocates without taking both a bounds value and a meter
+- `Broiler.VM.VmBoundedAllocator.TryAllocate<T>(in VmReadBounds, IVmBoundedAllocationMeter, uint, out T[])` in `src/Broiler.VM.Binary/VmBoundedAllocator.cs` - Security=High, Spec=ADR-0007 s6, `630EF7`, PENDING
+  - Falsified if: the count is sized before its bound comparison, or the element-size product is not checked
+- `Broiler.VM.VmBoundedAllocator.TryAllocateExact<T>(in VmReadBounds, IVmBoundedAllocationMeter, ulong, out T[])` in `src/Broiler.VM.Binary/VmBoundedAllocator.cs` - Security=High, Spec=ADR-0007 s6, `5185F6`, PENDING
+  - Falsified if: new T[] is reached before TryReserve returns true, or a failed allocation keeps its reservation
+- `Broiler.VM.VmBoundedReader` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `CCF177`, PENDING
+  - Falsified if: a public member examines bytes or advances position while Status is not Ok
+- `Broiler.VM.VmBoundedReader.VmBoundedReader(System.ReadOnlySpan<byte>, in VmReadBounds, IVmBoundedAllocationMeter)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `97DF17`, PENDING
+  - Falsified if: a source longer than MaxArtifactBytes leaves Status Ok, so the excess truncates silently
+- `Broiler.VM.VmBoundedReader.Remaining` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `D3559E`, PENDING
+  - Falsified if: position can exceed bytes.Length, so the subtraction wraps to a remainder larger than the span
+- `Broiler.VM.VmBoundedReader.TryReadByte(out byte)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `EADE4A`, PENDING
+  - Falsified if: bytes is indexed on a path where TryConsume(1) returned false, or the (int) index leaves the span
+- `Broiler.VM.VmBoundedReader.TryReadUInt32LittleEndian(out uint)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `E8E77F`, PENDING
+  - Falsified if: a window shorter than four bytes reaches the shifts, or the assembly is not little-endian
+- `Broiler.VM.VmBoundedReader.TryReadUInt64LittleEndian(out ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `BF1BC9`, PENDING
+  - Falsified if: a window shorter than eight bytes reaches the loop, or the descending loop is not little-endian
+- `Broiler.VM.VmBoundedReader.TryReadVarUInt32(out uint)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `A13073`, PENDING
+  - Falsified if: two distinct byte sequences both return true with the same value, or the (uint) cast drops bits
+- `Broiler.VM.VmBoundedReader.TryReadVarUInt64(out ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `69F550`, PENDING
+  - Falsified if: two distinct byte sequences both return true with one value; shift 63 is the case to try
+- `Broiler.VM.VmBoundedReader.TryReadDeclaredCount(out uint)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `D8A056`, PENDING
+  - Falsified if: a count is returned before its comparison with MaxDeclaredCount, or no path here calls TryReserve
+- `Broiler.VM.VmBoundedReader.TryReadBytes(ulong, out System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `58DE6E`, PENDING
+  - Falsified if: window is set on a path where TryTake returned false, or its length is not the length asked for
+- `Broiler.VM.VmBoundedReader.TryEnterSection(ulong, out VmSectionFrame)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `2E1BF5`, PENDING
+  - Falsified if: a frame is minted before the length, section-count and depth bounds have all been compared
+- `Broiler.VM.VmBoundedReader.TryExitSection(in VmSectionFrame)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `D4F2B9`, PENDING
+  - Falsified if: a frame this reader never minted reaches here and Start + DeclaredLength wraps
+- `Broiler.VM.VmBoundedReader.TrySkipSectionBody(in VmSectionFrame)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `E174C9`, PENDING
+  - Falsified if: the end sum wraps past the bytes.Length test, or position advances on a refused ChargeWork
+- `Broiler.VM.VmBoundedReader.TryChargeWork(ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `D3A8E1`, PENDING
+  - Falsified if: the meter is charged while Status is not Ok, so a spent reader keeps spending the allowance
+- `Broiler.VM.VmBoundedReader.TryTake(ulong, out System.ReadOnlySpan<byte>)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `6D9975`, PENDING
+  - Falsified if: the (int) casts narrow an index or length TryConsume allowed, so the slice leaves the span
+- `Broiler.VM.VmBoundedReader.TryConsume(ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `7DE9F2`, PENDING
+  - Falsified if: position advances past a failed bound test or a refused ChargeWork, or the addition is unchecked
+- `Broiler.VM.VmBoundedReader.TryReadVarUInt64Core(int, out ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `DE9CB5`, PENDING
+  - Falsified if: an over-long encoding is accepted: a group past maxBits, an overflowing tail, a zero continuation
+- `Broiler.VM.VmBoundedReader.ChargeWork(ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `183D6C`, PENDING
+  - Falsified if: WorkBudgetExhausted is latched for a Poll that returned false under cancellation, not exhaustion
+- `Broiler.VM.VmInstanceImplementation.Dispose(System.TimeSpan)` in `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` - Security=High, Spec=ADR-0004, `3B4D81`, PENDING
+  - Falsified if: disposal returns while stepsInFlight is above zero and still releases the lease
+- `Broiler.VM.VmInstanceImplementation.LeaveStep()` in `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` - Security=High, Spec=ADR-0004, `E8A45C`, PENDING
+  - Falsified if: a step returns without decrementing, so a later disposal waits its whole budget
+- `Broiler.VM.VmLimitPrecedence.TryApply(VmBudgetScope, ulong[], VmLimitOverrides, out ulong[], out VmBudgetDimension, out VmReason)` in `src/Broiler.VM.Runtime/VmLimitPrecedence.cs` - Security=High, Spec=ADR-0007, `C06726`, PENDING
+  - Falsified if: a refused set leaves one dimension of the caller's inherited array changed
+- `Broiler.VM.VmRuntime` in `src/Broiler.VM.Runtime/VmRuntime.cs` - Security=High, Spec=none cited, `C1CA36`, PENDING
+  - Falsified if: a second member verifies bytes into a handle, or a member here returns a task or awaitable
+- `Broiler.VM.VmRuntime.Verify(in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken)` in `src/Broiler.VM.Runtime/VmRuntime.cs` - Security=High, Spec=none cited, `D50EA5`, PENDING
+  - Falsified if: a call from inside a bound non-reentrant capability is refused, though the record permits it
+- `Broiler.VM.VmRuntime` in `src/Broiler.VM.Runtime/VmVerification.cs` - Security=High, Spec=none cited, `910045`, PENDING
+  - Falsified if: a guest-initiated load is admitted while a profile verifier frame is on the stack
+- `Broiler.VM.VmRuntime.VerifyCore(in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken, VmDiagnostics, VmArtifactOrigin, VmMeter?)` in `src/Broiler.VM.Runtime/VmVerification.cs` - Security=High, Spec=none cited, `4166AF`, PENDING
+  - Falsified if: cancellation is decided after an input is examined, or an unknown profile answers InvalidArtifact
+- `Broiler.VM.VmRuntime.RunVerifier(VmProfileDescriptor, in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken, VmDiagnostics, VmArtifactOrigin, VmMeter?)` in `src/Broiler.VM.Runtime/VmVerification.cs` - Security=High, Spec=none cited, `40CE34`, PENDING
+  - Falsified if: an escaping verifier exception is answered as a category, or both effective ceilings are one vector
 
-## 8. Area Verdicts
+## 10. What This Record Does Not Say
 
-One row per review area from section 4, filled in by the reviewer using the review
-verdicts in section 1. A row left at `[ ]` means that area was not reviewed; it does not
-mean the area was accepted.
+It is not an approval of the component, and a full table above would not be one either. It
+records which declarations somebody stated a decision about, and against which version of
+each. It does not record what they read, how long they spent, or whether they were right.
 
-| ID | Area | Verdict | Reviewer note |
-|---|---|---|---|
-| RA-1 | Bounded reading of untrusted bytes | `[ ]` | |
-| RA-2 | Resource authority and budgets | `[ ]` | |
-| RA-3 | Lifecycle and state machine | `[ ]` | |
-| RA-4 | Verified-artifact ownership | `[ ]` | |
-| RA-5 | Guest-initiated loads and external suspension | `[ ]` | |
-| RA-6 | The public contract surface | `[ ]` | |
-| RA-7 | The records themselves | `[ ]` | |
-| RA-8 | The evidence and the rule register | `[ ]` | |
+Broiler.VM has one person in every role: architecture owner, core-contract owner, security
+owner and reader are the same individual, so **no second pair of eyes has seen this work.**
+That is a property of the project's size rather than a defect in this component, and it is why
+the tables above have room for as many aliases as the tree names rather than one signature
+line.
 
-## 9. Decision
+A fingerprint is six hex characters of SHA-256 over a declaration's token texts. It answers
+whether a unit changed since a decision was recorded against it. It is not a collision-free
+identifier across units and it is not a cryptographic commitment, so it detects a change and
+does not resist a forger with commit access.
 
-- [ ] **APPROVED FOR PREVIEW** within the intended-use scope above.
-- [ ] **APPROVED WITH CONDITIONS** listed below.
-- [ ] **NOT APPROVED.**
-- [x] **PENDING** - not yet reviewed.
+The assessments the decisions are recorded beside are machine-written and unread: an
+assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
+EX-65 and EX-76 record.
 
-## 10. Conditions
-
-Every area marked `[C]` in section 8 records its condition here.
-
-_None recorded; the review has not been performed._
-
-## 11. Human Attestation
-
-_Unsigned. To be completed by the reviewer named above, who confirms that they are a
-human developer, that they personally reviewed the revision and evidence identified
-above, and that the decision is their own. The attestation is a scoped engineering
-review, not a warranty or a claim that the component is free of defects or
-vulnerabilities._
-
-- **Name:** _not yet signed_
-- **Reviewer alias:** _not yet signed_
-- **Signature or attributable commit:** _not yet signed_
-- **Date:** _not yet signed_
-
-AI tools may help assemble evidence, but the review decision, reviewer identity, and
-attestation are attributable to the human reviewer alone.
+That is not a figure of speech. 720 of the 720 assessed units declare
+`Origin=AI`, and the records this component implements were drafted the same way. An
+adversarial pass over the work confirmed findings and they were corrected, which is a check
+on it and not an independent judgement of it. Reading a declaration is the only thing that
+makes it read.

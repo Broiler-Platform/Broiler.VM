@@ -52,11 +52,25 @@ What does not exist is a language. There is no product profile, no advertised co
 persisted envelope, no concurrency evidence, no second RID, and no performance measurement.
 
 And **nothing here is accepted**: no human has reviewed the records or the code, so no capability
-should be inferred from a passing test suite, a green publish, or this paragraph. `HUMAN_REVIEW.md`
-is unsigned. Human review gates a **release** rather than a development step - so this work is
-allowed to exist and to be built on, and none of it may be published, claimed for a RID, or marked
-accepted until someone signs. The rule and its cost are recorded as update rule 8 in
+should be inferred from a passing test suite, a green publish, or this paragraph. Human review
+gates a **release** rather than a development step - so this work is allowed to exist and to be
+built on, and none of it may be published, claimed for a RID, or marked accepted until every
+relevant unit carries a decision. The rule and its cost are recorded as update rule 8 in
 [the status ledger](docs/roadmap.status.md).
+
+## Recording a review
+
+A review is written in one place: the `// Broiler-Human:` line of the assurance annotation on the
+declaration being read. Nothing else is filled in, and there is no checklist document to keep in
+step with the code.
+
+[`HUMAN_REVIEW.md`](HUMAN_REVIEW.md) is **generated** from those lines and from the per-file
+headers, so it carries a row for every alias the tree names rather than one signature block, and it
+records no branch or commit: each decision names the fingerprint of the declaration it was made
+against, which says whether *this unit* changed rather than whether the tree did. The review lane
+under `.github/workflows/` regenerates it on every pull request, and the publish lane refuses to
+pack while any relevant unit is unresolved, any fingerprint is out of date, any annotation is
+malformed or any generated artefact is stale.
 
 ## Component boundary
 
