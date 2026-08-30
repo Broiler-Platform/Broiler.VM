@@ -1,3 +1,12 @@
+// xUnit1031 says to make the test async and await instead of blocking. That advice is wrong for
+// this file, and narrowly so: the subject here is THREAD IDENTITY. An operation pinned to the
+// thread that started it must be refused on every other thread and still resume on its own, so the
+// assertion after the refusal has to run on the thread that opened the operation. An await hands
+// the continuation to the pool - there is no synchronization context under xUnit to hand it back -
+// which would run that assertion somewhere else and invert the result. Blocking is what keeps the
+// test on one thread, and it is bounded rather than indefinite: every wait carries a patience.
+#pragma warning disable xUnit1031
+
 using Broiler.VM;
 using Broiler.VM.Fixtures;
 

@@ -1,3 +1,11 @@
+// xUnit1031 says to make the test async and await instead of blocking. It is suppressed here for
+// the same reason as in ConcurrencyTests, and for one more. A bounded wait that TIMES OUT is the
+// assertion in this file: `Assert.False(disposal.Wait(250ms))` is how "disposal has not returned
+// while a step is still in flight" is stated, and an await cannot express a wait that is required
+// not to finish. The waits that are expected to succeed carry a patience rather than blocking
+// indefinitely, so a broken drain fails the test instead of hanging the suite.
+#pragma warning disable xUnit1031
+
 using Broiler.VM;
 using Broiler.VM.Fixtures;
 

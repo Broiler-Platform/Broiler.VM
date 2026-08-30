@@ -840,8 +840,14 @@ def main():
 
     print("collecting %s into %s" % (arguments.bundle, arguments.out))
 
+    # --no-incremental is not a preference. A warning is emitted by the COMPILER, so a project
+    # MSBuild considers up to date is not recompiled and its warnings are not re-emitted: an
+    # incremental build over a warm tree writes a log that says 0 warnings because nothing was
+    # compiled, not because nothing was wrong. Bundle VM-6-001 retained exactly that log while a
+    # cold build of the same commit produced nineteen. -warnaserror is what CI runs, so the
+    # collection and the lane now agree on what a clean build means.
     print("  1 build")
-    _, build = run(["dotnet", "build", SOLUTION, "-c", "Release"])
+    _, build = run(["dotnet", "build", SOLUTION, "-c", "Release", "--no-incremental", "-warnaserror"])
     write(os.path.join(out, "build.log"), build.strip() + "\n")
 
     print("  2 test")

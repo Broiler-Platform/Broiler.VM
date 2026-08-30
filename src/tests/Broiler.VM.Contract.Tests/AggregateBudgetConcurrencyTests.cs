@@ -199,7 +199,7 @@ public sealed class AggregateBudgetConcurrencyTests
     /// is a live runtime the parent counts, or it was refused.
     /// </remarks>
     [Fact]
-    public void Sealing_A_Parent_Under_Contention_Admits_Or_Refuses_And_Never_Both()
+    public async Task Sealing_A_Parent_Under_Contention_Admits_Or_Refuses_And_Never_Both()
     {
         var parent = Parent(fuel: 10_000_000);
         var catalog = FixtureComposition.AlphaCatalog();
@@ -227,7 +227,7 @@ public sealed class AggregateBudgetConcurrencyTests
         })).ToArray();
 
         parent.Seal();
-        Task.WaitAll(creators);
+        await Task.WhenAll(creators);
 
         // Every attempt did exactly one of the two things, and the parent's own count agrees with
         // the number that succeeded.
