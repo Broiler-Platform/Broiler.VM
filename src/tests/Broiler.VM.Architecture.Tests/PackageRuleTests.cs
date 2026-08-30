@@ -1,0 +1,243 @@
+using System.Text.RegularExpressions;
+
+namespace Broiler.VM.Architecture.Tests;
+
+/// <summary>
+/// Group C: the rules about what a pack produces, promoted at VM-6 against a real pack.
+/// </summary>
+/// <remarks>
+/// <para>
+/// C1, C2 and C3 were minted at VM-0 with activation milestone VM-6 and were Deferred ever since,
+/// for the honest reason that the component ran no pack step: a rule about produced packages
+/// cannot be asserted where no package is produced. VM-6 produces them, so the three are asserted
+/// here and their register rows move to Active.
+/// </para>
+/// <para>
+/// They read the evidence bundle rather than running a pack. That is the same shape as rules K3
+/// and K4, and it is chosen for the same reason: a pack inside a test would be a second build with
+/// its own properties, and what a consumer restores is what the retained collection produced.
+/// The limit that comes with it is the limit those rules carry - the comparison is against the
+/// last collection and not against the working tree - and it is EX-86, restated here as EX-101.
+/// </para>
+/// <para>
+/// The nuspecs are retained by the collection script precisely so C2 and C3 have something to
+/// read. A pack transcript says a package was created; it says nothing about what the package
+/// promises, and the promise is the part that matters.
+/// </para>
+/// </remarks>
+public sealed class PackageRuleTests
+{
+    /// <summary>The three package identities, written out rather than derived.</summary>
+    /// <remarks>
+    /// A list derived from the pack output would agree with any pack output, which is the defect
+    /// the whole rule register exists to prevent. ADR 0001's budget section fixes these three and
+    /// says a fourth requires a dated revision, so this is that number in the one place a test can
+    /// see it.
+    /// </remarks>
+    private static readonly string[] Packages =
+    [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Runtime",
+    ];
+
+    [Fact]
+    public void C1_A_Pack_Produces_Exactly_The_Three_Declared_Packages()
+    {
+        var log = Retained("pack.log");
+
+        var produced = Regex.Matches(log, @"^(?<name>[A-Za-z][A-Za-z0-9]*(?:\.[A-Za-z][A-Za-z0-9]*)*)\.(?<version>\d[^\s]*)\.(?<kind>s?nupkg)$",
+                RegexOptions.Multiline)
+            .Select(match => (Name: match.Groups["name"].Value, Kind: match.Groups["kind"].Value))
+            .ToArray();
+
+        Assert.Equal(
+            Packages.OrderBy(static name => name, StringComparer.Ordinal),
+            produced.Where(static entry => entry.Kind == "nupkg")
+                .Select(static entry => entry.Name)
+                .OrderBy(static name => name, StringComparer.Ordinal));
+
+        // A symbol package for each, and one apiece. A package without symbols is a package a
+        // consumer cannot step into, and the pack step is the only place that can be noticed.
+        Assert.Equal(
+            Packages.OrderBy(static name => name, StringComparer.Ordinal),
+            produced.Where(static entry => entry.Kind == "snupkg")
+                .Select(static entry => entry.Name)
+                .OrderBy(static name => name, StringComparer.Ordinal));
+
+        // And nothing else packed. Nine test-only projects and two composition roots are in the
+        // solution, and every one of them would be a package here if IsPackable had been
+        // forgotten. The counts the pack step wrote out are read rather than recomputed from the
+        // names above, so the two halves of this test can disagree.
+        Assert.Equal(3, Count(log, "nupkg: "));
+        Assert.Equal(3, Count(log, "snupkg: "));
+    }
+
+    [Fact]
+    public void C2_No_Produced_Package_Declares_A_Broiler_Dependency_Outside_The_Three()
+    {
+        var manifests = Retained("nuspecs.txt");
+
+        var dependencies = Regex.Matches(manifests, @"<dependency\s+id=""(?<id>[^""]+)""")
+            .Select(static match => match.Groups["id"].Value)
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+
+        var stray = dependencies
+            .Where(static id => id.StartsWith("Broiler.", StringComparison.Ordinal))
+            .Where(id => !Packages.Contains(id, StringComparer.Ordinal))
+            .ToArray();
+
+        Assert.Empty(stray);
+
+        // Stronger than the rule states, and it is the property the pristine feed consumer relies
+        // on: EVERY declared dependency is one of the three, so nothing outside this component has
+        // to be reachable for a restore to succeed. That is what lets the sample clear every
+        // package source and add back only a directory holding these packages.
+        //
+        // The first version of this assertion claimed the packages declare no dependency AT ALL,
+        // and that was simply false - Broiler.VM.Runtime depends on Abstractions and Binary, which
+        // is the whole shape of the graph. It was written into the support table and the notices
+        // too, and this rule is what found it. Worth recording rather than quietly fixing: an
+        // untruthful support claim is a stop condition, and the claim was mine.
+        Assert.All(dependencies, dependency =>
+            Assert.Contains(dependency, Packages, StringComparer.Ordinal));
+    }
+
+    [Fact]
+    public void C3_No_Produced_Package_Names_A_Language_In_Its_Text()
+    {
+        var manifests = Retained("nuspecs.txt");
+
+        // The core ships no language profile, and roadmap section 14 makes "a language capability
+        // implied by package or API" a packaging failure. A package whose description mentioned
+        // one would be implying exactly that to everyone who reads a feed listing.
+        string[] languages =
+        [
+            "javascript", "ecmascript", "typescript", "python", "lua", "ruby", "wasm",
+            "webassembly", "java", "c#", "csharp", "php", "perl",
+        ];
+
+        var text = string.Join(
+            "\n",
+            Regex.Matches(manifests, @"<(?<tag>id|title|description|tags|releaseNotes)>(?<text>[^<]*)</\k<tag>>")
+                .Select(static match => match.Groups["text"].Value));
+
+        Assert.NotEqual(0, text.Length);
+
+        var named = languages
+            .Where(language => text.Contains(language, StringComparison.OrdinalIgnoreCase))
+            .ToArray();
+
+        Assert.Empty(named);
+    }
+
+    [Fact]
+    public void B3_No_Product_Assembly_Names_A_Broiler_Assembly_Outside_The_Component()
+    {
+        // Vacuous since VM-0 with activation milestone VM-6, and it stays Vacuous: nothing in the
+        // graph can violate it, because ADR 0001's rule A1 stops a Broiler.* PROJECT reference
+        // arriving in the first place and rule A2 stops a Broiler.* PACKAGE reference. What VM-6
+        // adds is not a way to break it but a place it could have been broken - the packages
+        // themselves - and C2 above is that half. The register row keeps saying Vacuous, which is
+        // the honest state of a rule whose subject cannot yet be broken.
+        foreach (var assembly in AssemblyFacts.Product)
+        {
+            var stray = assembly.AssemblyReferences
+                .Where(static reference => reference.StartsWith("Broiler.", StringComparison.Ordinal))
+                .Where(reference => !Packages.Contains(reference, StringComparer.Ordinal))
+                .ToArray();
+
+            Assert.Empty(stray);
+        }
+    }
+
+    [Fact]
+    public void A14_Every_Project_Outside_The_Solution_Is_A_Sample()
+    {
+        // The loophole that narrowing group A to the solution would otherwise open. The graph
+        // rules now read Broiler.VM.slnx rather than globbing the tree, so a project file that is
+        // in neither the solution nor samples/ is a project NOTHING governs - not A1's reference
+        // rules, not A5's packability rule, not A7's manifest equality. It would be invisible
+        // rather than allowed, which is worse.
+        //
+        // ADR 0001 revision 4 authorises exactly one place for a project outside the graph, and it
+        // authorises it for one reason: a pristine feed consumer cannot be a solution project,
+        // because restoring it requires a pack to have already happened.
+        var stray = ComponentGraph.ProjectsOutsideTheSolution
+            .Where(static path => !path.StartsWith("samples/", StringComparison.Ordinal))
+            .ToArray();
+
+        Assert.Empty(stray);
+
+        // And samples/ is not an empty exemption someone could hide behind: the consumer that
+        // justifies it is really there.
+        Assert.Contains(
+            "samples/Broiler.VM.Sample.FeedConsumer/Broiler.VM.Sample.FeedConsumer.csproj",
+            ComponentGraph.ProjectsOutsideTheSolution,
+            StringComparer.Ordinal);
+    }
+
+    [Fact]
+    public void A14_Every_Sample_Reaches_The_Component_Only_Through_Packages()
+    {
+        // The other half. A sample is outside the graph so that it can carry a PackageReference;
+        // the price of that exemption is that it may carry NOTHING ELSE - a project reference back
+        // into the repository would make it a consumer of the build rather than of the packages,
+        // and the whole feed claim with it.
+        foreach (var relative in ComponentGraph.ProjectsOutsideTheSolution)
+        {
+            var text = File.ReadAllText(Path.Combine(ComponentGraph.Root, relative));
+
+            Assert.DoesNotContain("<ProjectReference", text, StringComparison.Ordinal);
+
+            var referenced = Regex.Matches(text, @"<PackageReference\s+Include=""(?<id>[^""]+)""")
+                .Select(static match => match.Groups["id"].Value)
+                .Where(static id => id.StartsWith("Broiler.", StringComparison.Ordinal))
+                .OrderBy(static id => id, StringComparer.Ordinal)
+                .ToArray();
+
+            Assert.Equal(Packages.OrderBy(static name => name, StringComparer.Ordinal), referenced);
+        }
+    }
+
+    [Fact]
+    public void The_Pack_Rules_Hold_Their_Own_Register_Rows_To_What_They_Prove()
+    {
+        foreach (var id in new[] { "C1", "C2", "C3" })
+        {
+            var row = RuleRegisterTests.Loaded.Rules.Single(
+                rule => string.Equals(rule.Id, id, StringComparison.Ordinal));
+
+            Assert.Equal("Active", row.Status);
+
+            // A promoted rule may not still name its activation milestone: a row that is Active
+            // and says "activates at VM-6" is a row nobody finished promoting.
+            Assert.Null(row.ActivationMilestone);
+        }
+
+        var vacuous = RuleRegisterTests.Loaded.Rules.Single(
+            rule => string.Equals(rule.Id, "B3", StringComparison.Ordinal));
+
+        Assert.Equal("Vacuous", vacuous.Status);
+    }
+
+    private static int Count(string log, string prefix) =>
+        int.TryParse(
+            log.Split('\n')
+                .First(line => line.Trim().StartsWith(prefix, StringComparison.Ordinal))
+                .Trim()[prefix.Length..],
+            out var count)
+            ? count
+            : -1;
+
+    private static string Retained(string fileName)
+    {
+        var path = Path.Combine(
+            ComponentGraph.Root, "docs", "evidence",
+            ComponentGraph.CurrentEvidenceDirectory, fileName);
+
+        Assert.True(File.Exists(path), $"The current evidence bundle retains no {fileName} at {path}.");
+        return File.ReadAllText(path);
+    }
+}

@@ -67,16 +67,16 @@ absolute values do not.
 
 | Measurement | Unit | Candidate | Control | JIT | Native AOT |
 |---|---|---|---|---|---|
-| `verify-throughput` | byte | Verifying a 4,000-constant artifact | A checksum pass over the same bytes | 185.0068 | 192.3073 |
-| `verify-per-declared-count` | constant | Verifying a 4,000-constant pool | Verifying a 2,000-constant pool | 360.6190 | 393.8490 |
-| `catalog-construction` | profile | Building a two-profile catalog | Building the same two descriptors into an array | 1149.7000 | 1163.7250 |
-| `catalog-lookup` | lookup | Resolving a profile by identity | Comparing the same identity | 4.8260 | 5.8095 |
-| `runtime-create-dispose` | profile | Creating and disposing a two-profile runtime | The same for one profile | 1111.0000 | 708.0000 |
-| `meter-per-instruction` | instruction | One invocation with fuel charging on | The same executor with charging off | 98.1888 | 98.2258 |
-| `host-call` | call | An artifact making one host call | The same shape with a second push instead | 298.0850 | 249.3250 |
-| `diagnostics-capture` | record | A fully identified diagnostics record | Its minimal form | 106.1610 | 100.8870 |
-| `guest-load-mediation` | load | A mediated guest-initiated load | The same load performed by the host itself | 2050.3333 | 1004.6667 |
-| `envelope-read` | projection | Projecting a typed payload out of a result | Reading its category alone | 14.3595 | 15.9860 |
+| `verify-throughput` | byte | Verifying a 4,000-constant artifact | A checksum pass over the same bytes | 157.6276 | 129.0454 |
+| `verify-per-declared-count` | constant | Verifying a 4,000-constant pool | Verifying a 2,000-constant pool | 320.5245 | 289.3392 |
+| `catalog-construction` | profile | Building a two-profile catalog | Building the same two descriptors into an array | 925.9000 | 1086.2000 |
+| `catalog-lookup` | lookup | Resolving a profile by identity | Comparing the same identity | 5.0020 | 6.8290 |
+| `runtime-create-dispose` | profile | Creating and disposing a two-profile runtime | The same for one profile | 1282.3500 | 627.9500 |
+| `meter-per-instruction` | instruction | One invocation with fuel charging on | The same executor with charging off | 84.2966 | 83.5324 |
+| `host-call` | call | An artifact making one host call | The same shape with a second push instead | 200.9300 | 245.7100 |
+| `diagnostics-capture` | record | A fully identified diagnostics record | Its minimal form | 90.5790 | 86.2510 |
+| `guest-load-mediation` | load | A mediated guest-initiated load | The same load performed by the host itself | 1795.3333 | 940.0000 |
+| `envelope-read` | projection | Projecting a typed payload out of a result | Reading its category alone | 13.9380 | 10.9580 |
 
 All figures are nanoseconds per unit. Every one is the **difference** between the two lanes divided
 by the units in one iteration, so each is what the core adds and not what the operation costs
@@ -84,12 +84,12 @@ end to end.
 
 ### Reading the four that surprise
 
-**`verify-throughput` is not a throughput number for a real format.** 185 ns per byte is roughly
+**`verify-throughput` is not a throughput number for a real format.** 158 ns per byte is roughly
 5 MB/s, which sounds alarming until you see what it is measuring: the fixture's constant pool is
 read one LEB128 varint at a time through `VmBoundedReader`, and **every byte consumed** is charged
 through two interface calls into the core meter, each of which takes a lock and walks four budget
 scopes. The per-byte figure is the metering discipline, not a decoder. `verify-per-declared-count`
-corroborates it independently - 361 ns per constant marginal, against a 4,000-constant
+corroborates it independently - 321 ns per constant marginal, against a 4,000-constant
 verification whose whole difference from a raw pass is 1,459,519.0 ns, which is 365 ns each - and
 the agreement between a total and a marginal measured different ways is the reason both are here.
 
@@ -99,13 +99,13 @@ fixed cost of a verification - descriptor validation, handle creation, the lease
 this harness to resolve against the pool scan. That is a useful thing for a profile author to
 know: verification cost is what the profile's verifier reads, not what the core wraps around it.
 
-**`guest-load-mediation` is nearly free.** 2,050 ns is what routing a load through the mediator
+**`guest-load-mediation` is nearly free.** 1,795 ns is what routing a load through the mediator
 adds over performing the same nested verification directly: the provider dispatch, the request and
 answer marshalling, the depth and fan-out accounting, the charge against the requesting operation,
 and the intersection of the nested handle's ceilings with that operation's remaining allowance. The
 nested verification itself - which a caller pays either way - is in both lanes and cancels.
 
-**`meter-per-instruction` dominates everything else.** At 98 ns per instruction the metering is
+**`meter-per-instruction` dominates everything else.** At 84 ns per instruction the metering is
 the cost of executing bytecode in this core, by an order of magnitude over any per-operation
 figure here. A profile whose instructions do real work will amortise it; a profile of cheap
 instructions will not.
@@ -120,7 +120,7 @@ experiment.
 
 | Figure | JIT | Native AOT | What it means |
 |---|---|---|---|
-| `startup first-verification-ms` | 122.0 | 7.5 | Process start to the first verified artifact. The AOT figure is the one a host waits for; the JIT figure includes the SDK host that launched it. |
+| `startup first-verification-ms` | 112.2 | 9.8 | Process start to the first verified artifact. The AOT figure is the one a host waits for; the JIT figure includes the SDK host that launched it. |
 | `image process-bytes` | 78,256 | 1,890,912 | On the JIT lane this is the shared host executable; on the AOT lane it is the image itself. |
 | `image core-bytes` | 164,352 | 0 | The three packable assemblies as separate files. Native AOT links them in, so zero here reads as "not separable", never as "nothing". |
 | `headroom guest-loads-per-runtime` | 64 | 64 | How many mediated loads one runtime admits before an allowance stops it, and the number the guest-load lane is sized against. Counted rather than timed, so both lanes agree. |
@@ -141,13 +141,13 @@ therefore belong to no load at all.
 
 | Loads in one operation | JIT mediation (ns) | AOT mediation (ns) |
 |---|---|---|
-| 0 | 440 | -464 |
-| 1 | 1,478 | 678 |
-| 2 | 1,709 | 1,754 |
-| 3 | 4,157 | 4,821 |
-| 4 | 5,168 | 3,690 |
-| 6 | 8,559 | 1,711 |
-| 8 | 11,564 | 8,830 |
+| 0 | 12 | -216 |
+| 1 | 3,918 | 216 |
+| 2 | 3,084 | 2,332 |
+| 3 | 5,050 | 1,754 |
+| 4 | 6,758 | 2,178 |
+| 6 | 6,542 | 5,771 |
+| 8 | 7,336 | 5,878 |
 
 The row at zero loads is the control for the series itself: with no load to mediate, the two lanes
 are the same program and the difference is noise in both directions.

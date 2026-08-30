@@ -53,6 +53,7 @@ public sealed class RuleRegisterTests
 
         var violations = Loaded.Rules
             .Where(static rule => rule.Status is "Deferred" or "Vacuous")
+            .Where(static rule => !rule.IsPermanent)
             .Where(rule => rule.ActivationMilestone is null ||
                 string.CompareOrdinal(rule.ActivationMilestone, current) <= 0)
             .Select(rule => $"{rule.Id} is {rule.Status} but names activation milestone {rule.ActivationMilestone ?? "none"}, which is not later than {current}")
@@ -60,8 +61,31 @@ public sealed class RuleRegisterTests
 
         Assert.Empty(violations);
 
+        // The escape hatch, and the thing that stops it being one. A row may say it will NEVER
+        // activate - VM-6 is the last milestone, so "name a later one" is not always answerable -
+        // but only by carrying a reason in a field of its own. Prose in the statement would not do:
+        // the check has to be able to see it, and a row that could satisfy this by being worded
+        // carefully is a row that satisfies nothing.
+        var unexplained = Loaded.Rules
+            .Where(static rule => rule.IsPermanent)
+            .Where(static rule => string.IsNullOrWhiteSpace(rule.PermanenceReason))
+            .Select(static rule => $"{rule.Id} says it never activates and gives no reason")
+            .ToArray();
+
+        Assert.Empty(unexplained);
+
+        // And the hatch is closed to Active rows. A rule that is asserted has activated, so
+        // claiming permanence would be claiming both.
+        var contradictory = Loaded.Rules
+            .Where(static rule => rule.Status == "Active" && rule.IsPermanent)
+            .Select(static rule => $"{rule.Id} is Active and also says it never activates")
+            .ToArray();
+
+        Assert.Empty(contradictory);
+
         var activeWithMilestone = Loaded.Rules
             .Where(static rule => rule.Status == "Active" && rule.ActivationMilestone is not null)
+            .Where(static rule => !rule.IsPermanent)
             .Select(static rule => $"{rule.Id} is Active but still names an activation milestone")
             .ToArray();
 
@@ -262,10 +286,10 @@ public sealed class RuleRegisterTests
             .GroupBy(static rule => rule.Status, StringComparer.Ordinal)
             .ToDictionary(static group => group.Key, static group => group.Count(), StringComparer.Ordinal);
 
-        Assert.Equal(57, byStatus["Active"]);
+        Assert.Equal(62, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
-        Assert.Equal(4, byStatus["Deferred"]);
-        Assert.Equal(62, Loaded.Rules.Count);
+        Assert.Equal(1, byStatus["Deferred"]);
+        Assert.Equal(64, Loaded.Rules.Count);
     }
 
     private static Register Load()
@@ -320,5 +344,22 @@ public sealed class RuleRegisterTests
 
         [JsonPropertyName("witness")]
         public string? Witness { get; init; }
+
+        /// <summary>
+        /// Why this rule can never activate, for the rows whose activation milestone is "never".
+        /// </summary>
+        /// <remarks>
+        /// A separate field rather than a sentence in the statement, so the check that demands it
+        /// can see it. VM-6 is the last milestone in the roadmap, so the register's own rule -
+        /// a Deferred or Vacuous row must name a LATER milestone - has no answer for a rule whose
+        /// subject will never exist. This is that answer, and requiring a reason beside it is what
+        /// stops it becoming a way to retire an inconvenient row.
+        /// </remarks>
+        [JsonPropertyName("permanenceReason")]
+        public string? PermanenceReason { get; init; }
+
+        /// <summary>Whether this row claims it can never activate.</summary>
+        internal bool IsPermanent =>
+            string.Equals(ActivationMilestone, "never", StringComparison.Ordinal);
     }
 }

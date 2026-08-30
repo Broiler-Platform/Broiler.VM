@@ -1497,12 +1497,12 @@ public sealed class ReviewRecordRuleTests
         // Clause: the corpus must still quote the suite total, comparing the value.
         var noTotal = Assert.Single(RetainedFigureGuard(
             [Witness("H5-corpus-omits-the-suite-total.md.witness")], current));
-        Assert.Contains("no review document quotes the current suite total 304", noTotal, StringComparison.Ordinal);
+        Assert.Contains("no review document quotes the current suite total 318", noTotal, StringComparison.Ordinal);
 
         // Clause: the corpus must still quote the split, comparing the values.
         var noSplit = Assert.Single(RetainedFigureGuard(
             [Witness("H5-corpus-omits-the-split.md.witness")], current));
-        Assert.Contains("split of 107 architecture and 197 behavioural", noSplit, StringComparison.Ordinal);
+        Assert.Contains("split of 121 architecture and 197 behavioural", noSplit, StringComparison.Ordinal);
 
         // Clause: the corpus must still quote the Native AOT image size, comparing the value.
         var noNative = Assert.Single(RetainedFigureGuard(

@@ -1,0 +1,68 @@
+=== Broiler.VM.Abstractions.0.1.0-preview.1.nupkg :: Broiler.VM.Abstractions.nuspec ===
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Broiler.VM.Abstractions</id>
+    <version>0.1.0-preview.1</version>
+    <authors>Broiler contributors</authors>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <icon>icon.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/Broiler-Platform/Broiler.VM</projectUrl>
+    <description>Profile-neutral Broiler.VM contracts and the core contract version. VM-0 project shell: this assembly exports the core contract version and nothing else.</description>
+    <copyright>Copyright (c) Broiler contributors</copyright>
+    <tags>broiler vm bytecode execution native-aot</tags>
+    <repository type="git" url="https://github.com/Broiler-Platform/Broiler.VM.git" commit="e8a8cb7614a3999a58f79e8e27b8e9948de1f628" />
+    <dependencies>
+      <group targetFramework="net10.0" />
+    </dependencies>
+  </metadata>
+</package>
+
+=== Broiler.VM.Binary.0.1.0-preview.1.nupkg :: Broiler.VM.Binary.nuspec ===
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Broiler.VM.Binary</id>
+    <version>0.1.0-preview.1</version>
+    <authors>Broiler contributors</authors>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <icon>icon.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/Broiler-Platform/Broiler.VM</projectUrl>
+    <description>Bounded binary-reading and bounded-allocation primitives shared by the Broiler.VM core envelope and by every profile verifier. VM-0 project shell: no primitive is implemented yet.</description>
+    <copyright>Copyright (c) Broiler contributors</copyright>
+    <tags>broiler vm bytecode execution native-aot</tags>
+    <repository type="git" url="https://github.com/Broiler-Platform/Broiler.VM.git" commit="e8a8cb7614a3999a58f79e8e27b8e9948de1f628" />
+    <dependencies>
+      <group targetFramework="net10.0" />
+    </dependencies>
+  </metadata>
+</package>
+
+=== Broiler.VM.Runtime.0.1.0-preview.1.nupkg :: Broiler.VM.Runtime.nuspec ===
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Broiler.VM.Runtime</id>
+    <version>0.1.0-preview.1</version>
+    <authors>Broiler contributors</authors>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <icon>icon.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://github.com/Broiler-Platform/Broiler.VM</projectUrl>
+    <description>Broiler.VM builder, immutable profile catalog, bounded load and execute lifecycle, resource authority and diagnostics. VM-0 project shell: no runtime behaviour is implemented yet.</description>
+    <copyright>Copyright (c) Broiler contributors</copyright>
+    <tags>broiler vm bytecode execution native-aot</tags>
+    <repository type="git" url="https://github.com/Broiler-Platform/Broiler.VM.git" commit="e8a8cb7614a3999a58f79e8e27b8e9948de1f628" />
+    <dependencies>
+      <group targetFramework="net10.0">
+        <dependency id="Broiler.VM.Abstractions" version="0.1.0-preview.1" exclude="Build,Analyzers" />
+        <dependency id="Broiler.VM.Binary" version="0.1.0-preview.1" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

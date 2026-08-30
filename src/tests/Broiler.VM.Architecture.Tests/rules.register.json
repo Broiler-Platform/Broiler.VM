@@ -63,9 +63,11 @@
     "GROUP K, THE COMPOSITION-GOVERNANCE RULES. VM-3's exit gate asks that five things be detected: duplicate or reserved IDs, undocumented entries, missing factories, forbidden edges and catalog drift. Only the forbidden edges are decidable from project files, where group A already lives - A12 and A13 are the two rows minted there. The other four are facts about what a composition COMPOSED, so they are held against three independent statements of the same thing: the register docs/compositions.md, the reference set of the composition's own project, and the catalog table the published binary prints. K1 holds the register and the checkout to each other in both directions, K2 holds a row to the reference set and to the catalog, K3 is catalog drift against a checked-in baseline, and K4 holds each published closure to exactly what its row declares. The letter K was free: A-E, V, F, M, G, P, S and T are in use, H is group R's replacement, J is the assurance group, and R1..R6 is the reserved namespace ADR 0003 records for ADR 0012's six ownership roles.",
     "K3 AND K4 READ RETAINED EVIDENCE RATHER THAN RUNNING ANYTHING, and that is a consequence of the promise the milestone makes rather than a shortcut. Rule A11 forbids the architecture-test project to reference a profile assembly - that is one of the things VM-3 exists to demonstrate - so the suite cannot build a catalog of its own to compare against. What it does instead is stronger: the baseline is compared against what PUBLISHED binaries printed, in three modes, and the closure reports are read off published output rather than derived from project files. A reference set that looks right can still pull something in through a transitive package, and the linker is the only party that knows what shipped. The limits are recorded as exclusions rather than implied: EX-86, that the bundle is retained by a script a person runs, so K3 and K4 compare against the last collection rather than against the working tree; and EX-87, that the closure report excludes framework assemblies by name prefix, so a hypothetical System.*-named profile would not be seen (nothing in the checkout is named that way, and the exact-set clause of K4 catches everything else).",
     "WHAT VM-4 MINTS, AND WHAT IT DELIBERATELY DOES NOT. The milestone hardens the lifecycle under concurrency, and almost everything it establishes is BEHAVIOURAL - a disposal that drains, a capability that no longer refuses another thread, an operation pinned to the thread that started it, a shared aggregate budget under contention. Those live in the behavioural suite, where they can be arranged with an execution gate rather than raced, and writing second copies of them here would be two implementations of one rule. Two claims are STRUCTURAL and are minted as rows. V11 holds the diagnostics record to a shape with nowhere to put free text, which is how 'leaks no host secret' becomes a property of the type rather than of today's call sites. V12 holds every profile-facing contract to trafficking in the contract's own types, which is how 'host imports cannot reach undeclared CLR surface' becomes checkable rather than asserted.",
-    "VM-5 mints group L, which binds the baseline register to the benchmark run it reports. It is one rule because there is one document and one log; it is Active from the moment it is minted because both exist and both carry ten real entries. Rule A7's project count and the status counts below move with it."
+    "VM-5 mints group L, which binds the baseline register to the benchmark run it reports. It is one rule because there is one document and one log; it is Active from the moment it is minted because both exist and both carry ten real entries. Rule A7's project count and the status counts below move with it.",
+    "VM-6 mints group M, which freezes the public API by enumerating it rather than by asserting properties of it, and promotes C1, C2, C3 and B3, whose activation milestone was always VM-6 and whose subject - a pack step and the packages it produces - now exists.",
+    "VM-6 introduces activationMilestone 'never' and the permanenceReason that must accompany it. The register's own rule - a Deferred or Vacuous row names a LATER milestone - assumed there is always a later one, and at the last milestone there is not. Two rows need it: E5, superseded at VM-1 and never activatable, and B3, which nothing in the graph can violate because two Active rules already stop the reference being constructed."
   ],
-  "milestone": "VM-5",
+  "milestone": "VM-6",
   "coreContractVersion": 1,
   "rules": [
     {
@@ -224,9 +226,10 @@
       "status": "Vacuous",
       "statement": "No assembly in the product graph names a Broiler.* assembly outside the component's own set. The assembly-level twin of A1 and A2.",
       "evidence": "AssemblyRef table",
-      "activationMilestone": "VM-6",
-      "nonVacuousWhen": "A product assembly could name a foreign Broiler.* assembly. The subject exists - the product graph names non-framework assemblies - but a VIOLATION is still unreachable, and the VM-3 prediction this row used to carry did not come true. It said composition roots and profile packages would make one reachable; they did not, because the three mechanisms that exclude it are untouched by either. A1 forbids the outbound ProjectReference, A2 forbids the Broiler.* PackageReference, and the single-source NuGet.config leaves such a package unresolvable - and a composition root is bound by all three exactly as a product project is. VM-6 is named instead because that is when pristine feed consumers exist and a foreign Broiler package becomes resolvable at all. Exclusion EX-40 records the reasoning and the alternative that was rejected.",
-      "witness": "none - a witness needs a foreign Broiler assembly, and the graph is closed over its own seven. The project-file twins A1 and A2 are witnessed."
+      "activationMilestone": "never",
+      "nonVacuousWhen": "Still Vacuous, and VM-6 is where that was expected to change. It did not, and the honest reason is that nothing in the graph can violate it: rule A1 stops a Broiler.* PROJECT reference arriving and rule A2 stops a Broiler.* PACKAGE reference, so no assembly reference to another Broiler component can be constructed. What VM-6 adds is the other half of the surface it guards - the produced packages - and rule C2 asserts that half, finding not merely no stray Broiler dependency but no package dependency at all. A rule nothing can break is Vacuous however many milestones pass.",
+      "witness": "none - a witness needs a foreign Broiler assembly, and the graph is closed over its own seven. The project-file twins A1 and A2 are witnessed.",
+      "permanenceReason": "Nothing in the graph can violate it and nothing is planned that could. Rule A1 stops a Broiler.* PROJECT reference arriving and rule A2 stops a Broiler.* PACKAGE reference, so an assembly reference to another Broiler component cannot be constructed - the assembly-level claim is a consequence of two rules that are already Active rather than a claim with its own subject. VM-6 was its nominal activation milestone and produced the packages that were expected to give it one; rule C2 asserts that half and found not merely no stray Broiler dependency but no package dependency at all."
     },
     {
       "id": "B4",
@@ -281,32 +284,32 @@
     {
       "id": "C1",
       "owningAdr": "0001",
-      "status": "Deferred",
+      "status": "Active",
       "statement": "dotnet pack over Broiler.VM.slnx produces exactly three .nupkg and three .snupkg, named for the three product assemblies.",
-      "evidence": "Pack output",
-      "activationMilestone": "VM-6",
-      "nonVacuousWhen": "A component CI pack step exists. VM-0 creates no CI workflow; a manually executed pack log is retained in the evidence bundle as observed state, not as a rule assertion.",
-      "witness": null
+      "evidence": "The pack step the collection runs, retained as pack.log in the current evidence bundle",
+      "activationMilestone": null,
+      "nonVacuousWhen": "VM-6 runs a pack step, so the subject exists for the first time: three packages and three symbol packages are produced and their manifests are retained. Before VM-6 this row was Deferred because a rule about produced packages cannot be asserted where none is produced. The rule reads the retained EVIDENCE rather than running a pack of its own, which is the shape rules K3 and K4 take and carries their limit: the comparison is against the last collection and not against the working tree, which is EX-101.",
+      "witness": "PackageRuleTests"
     },
     {
       "id": "C2",
       "owningAdr": "0001",
-      "status": "Deferred",
+      "status": "Active",
       "statement": "No produced .nuspec declares a dependency on a Broiler.* package outside the declared three.",
-      "evidence": "Pack output",
-      "activationMilestone": "VM-6",
-      "nonVacuousWhen": "A component CI pack step exists.",
-      "witness": null
+      "evidence": "The .nuspec of every produced package, retained as nuspecs.txt in the current evidence bundle",
+      "activationMilestone": null,
+      "nonVacuousWhen": "VM-6 runs a pack step, so the subject exists for the first time: three packages and three symbol packages are produced and their manifests are retained. Before VM-6 this row was Deferred because a rule about produced packages cannot be asserted where none is produced. The rule reads the retained EVIDENCE rather than running a pack of its own, which is the shape rules K3 and K4 take and carries their limit: the comparison is against the last collection and not against the working tree, which is EX-101.",
+      "witness": "PackageRuleTests"
     },
     {
       "id": "C3",
       "owningAdr": "0001",
-      "status": "Deferred",
+      "status": "Active",
       "statement": "No produced .nuspec's id, title, description, tags or release notes names a language. Implements roadmap section 14's packaging failure 'a language capability implied by package or API'.",
-      "evidence": "Pack output",
-      "activationMilestone": "VM-6",
-      "nonVacuousWhen": "A component CI pack step exists.",
-      "witness": null
+      "evidence": "The .nuspec of every produced package, retained as nuspecs.txt in the current evidence bundle",
+      "activationMilestone": null,
+      "nonVacuousWhen": "VM-6 runs a pack step, so the subject exists for the first time: three packages and three symbol packages are produced and their manifests are retained. Before VM-6 this row was Deferred because a rule about produced packages cannot be asserted where none is produced. The rule reads the retained EVIDENCE rather than running a pack of its own, which is the shape rules K3 and K4 take and carries their limit: the comparison is against the last collection and not against the working tree, which is EX-101.",
+      "witness": "PackageRuleTests"
     },
     {
       "id": "D1",
@@ -364,9 +367,10 @@
       "status": "Deferred",
       "statement": "SUPERSEDED AT VM-1 by V1 and V2. As written it fused a cardinality claim about the graph (exactly one public type) with a member claim about one type (whose only members are the two contract-version constants). VM-1 necessarily falsifies the first and preserves the second. V1 replaces the cardinality half with an API baseline; V2 preserves the member half verbatim. The row is retained rather than removed so the supersession is auditable, and it asserts nothing.",
       "evidence": "TypeDef table, public visibility",
-      "activationMilestone": "VM-6",
+      "activationMilestone": "never",
       "nonVacuousWhen": "Never again in this form; VM-6 owns removing the row when it freezes the public API.",
-      "witness": null
+      "witness": null,
+      "permanenceReason": "Superseded at VM-1 by V1 and V2, which assert its two halves separately. There is no milestone that could activate it, because the thing it claimed - exactly one public type in the product graph - stopped being true the moment the contract surface existed, and stopped being desirable at the same moment. The row is retained rather than deleted so the supersession is visible; it is marked never rather than given a milestone, because naming one would be a promise nobody intends to keep."
     },
     {
       "id": "V1",
@@ -686,6 +690,26 @@
       "activationMilestone": null,
       "nonVacuousWhen": "Ten measurements are declared and both lanes ran all ten, so both directions are over real entries rather than over two empty lists. The two lane figures are POSITIONAL columns of one row and are checked each against its own lane, so exchanging them - two numbers of the same magnitude two columns apart, which is the likeliest way this table goes wrong - fails twice rather than passing a set-membership check. Figures are compared as NUMBERS, so a thousands separator is not a violation and a different number still is, and by exact equality rather than a tolerance: the register quotes one retained run, and a tolerance would quietly admit a figure from a different one. A row is recognised by its first cell being an identifier the log could carry rather than by which table it sits in, because the register has several tables and gains more as it is written. TWO LIMITS, STATED RATHER THAN IMPLIED. First, the rule reads document against LOG and not log against checkout: a stale log and a stale document agree with each other, and the bundle's expiry and recertification triggers are what cover that, which is EX-54. Second, only the measurement table is bound. The recorded figures of section 3 - startup, image sizes, the plateau and the independence verdict - are quoted from the same log and checked by nobody, because each is a single observation with no unit and no per-operation figure to compare against; that is EX-95.",
       "witness": "witnesses/baselines/L1-register-declares-an-unmeasured-row.md.witness, witnesses/baselines/L1-register-omits-a-measured-row.md.witness, witnesses/baselines/L1-register-quotes-a-wrong-figure.md.witness, witnesses/baselines/L1-register-exchanges-the-two-lanes.md.witness, witnesses/baselines/L1-register-renames-a-unit.md.witness, witnesses/baselines/L1-log-carries-a-refused-measurement.log.witness"
+    },
+    {
+      "id": "M1",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "The public surface the three packable assemblies export is exactly what docs/api/public-api.txt declares, compared in both directions: a type or member exported and not declared fails, a type or member declared and not exported fails, and a changed signature is both. Constants carry their values.",
+      "evidence": "The built product assemblies against docs/api/public-api.txt",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The three assemblies export a real surface and the baseline enumerates it, so both directions are over hundreds of real entries rather than over two empty lists. It is an ENUMERATION and not a property check, which is what group V already is: every V rule is a claim about a named property of the surface, so a member added tomorrow that breaks none of them is an addition nothing notices and a member removed tomorrow is a breaking change nothing notices. Protected and protected-internal members are in the surface because a derived type in another assembly can reach them, so sealing or unsealing a type is visible here; private protected is not. Compiler-generated public members of records are included because a consumer can call them and turning a record into a class removes them. Constants carry their VALUES, because a literal's value is part of the contract in a way a field's type is not - VmCoreContract.Version moving from 1 to 2 is the amendment ADR 0003 governs, and a baseline recording only its type would not see it happen. TWO LIMITS, STATED RATHER THAN IMPLIED. First, the baseline is regenerated by BROILER_API_WRITE=1, so a deliberate change is a diff a reviewer reads rather than a rule that fires; a reviewer who regenerates without reading has defeated it, which is the same trade the Code Assurance generator makes and is EX-99. Second, the rule compares text and not semantics: a change that leaves every signature identical - a default value, an attribute, a documented behaviour - is invisible to it, and EX-100 records that.",
+      "witness": "witnesses/api/M1-baseline-omits-an-exported-member.txt.witness, witnesses/api/M1-baseline-declares-a-member-that-is-gone.txt.witness, witnesses/api/M1-baseline-changes-a-signature.txt.witness, witnesses/api/M1-baseline-names-a-test-assembly.txt.witness"
+    },
+    {
+      "id": "A14",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "Every project file in the checkout that Broiler.VM.slnx does not list sits under samples/, carries no ProjectReference at all, and references exactly the three Broiler.VM packages.",
+      "evidence": "The checkout's project files against Broiler.VM.slnx",
+      "activationMilestone": null,
+      "nonVacuousWhen": "One project is outside the solution at VM-6 - the pristine feed consumer - so both halves are over a real entry rather than over an empty list. The rule exists because VM-6 narrowed the group A rules to read the SOLUTION rather than glob the tree, which they had to: the feed consumer deliberately carries a Broiler package reference that rule A2 forbids, and it cannot be a solution project because restoring it requires a pack to have already happened. Narrowing a rule's subject is how a rule quietly stops covering things, so this is the complement: a project in neither the solution nor samples/ is governed by NOTHING, and would be invisible rather than allowed. The second half is what keeps the exemption honest - a sample may carry a package reference precisely because it may carry no project reference, and a sample that reached back into the repository would be a consumer of the build rather than of the packages.",
+      "witness": "PackageRuleTests"
     }
   ]
 }

@@ -1,0 +1,16 @@
+<Project>
+
+  <!--
+    Deliberately empty, and deliberately here.
+
+    MSBuild stops at the first Directory.Build.props it finds walking up from a project, so this
+    file is what stops everything under samples/ from inheriting the component's own build
+    properties. That is the whole point of a PRISTINE consumer: a real consumer of these packages
+    has no Directory.Build.props of ours, no vendored packaging metadata, no analyzer level we
+    chose and no warning policy we set. A sample that built under the component's properties would
+    be proving that our packages work inside our build, which is not the claim.
+
+    Each sample sets what it needs for itself, in its own project file, where a reader can see it.
+  -->
+
+</Project>

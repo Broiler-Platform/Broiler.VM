@@ -33,7 +33,9 @@ import platform
 import re
 import subprocess
 import sys
+import shutil
 import tempfile
+import zipfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -70,6 +72,14 @@ DEFAULT_VCVARS = r"C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxi
 WINDOWS = os.name == "nt"
 DEFAULT_RID = "win-x64" if WINDOWS else ("osx-x64" if sys.platform == "darwin" else "linux-x64")
 HOST_BINARY = "Broiler.VM.Fixtures.Host" + (".exe" if WINDOWS else "")
+SAMPLE_DIRECTORY = os.path.join(ROOT, "samples", "Broiler.VM.Sample.FeedConsumer")
+
+# The two versions the rollback evidence needs. The prefix matches eng/Broiler.Packaging.props;
+# the suffixes are this script's, because the point is to have two package sets on one feed and
+# neither of them is what a release would be called.
+VERSION_PREFIX = "0.1.0"
+ROLLBACK_SUFFIX = "preview.2"
+CURRENT_SUFFIX = "preview.1"
 
 # Eight sessions rather than one long one. A session is a total function of its seed, so eight
 # seeds are eight independent walks of the same space, and a defect only one walk reaches is
@@ -196,15 +206,38 @@ CONTROLS = [
         None,  # resolved at run time: change the first lane figure of the first measurement row
         None,
     ),
+    (
+        "a public member is added without the API baseline being regenerated",
+        local("src", "Broiler.VM.Abstractions", "VmCoreContract.cs"),
+        None,  # resolved at run time: append a public type the baseline does not declare
+        None,
+    ),
+    (
+        "the pristine feed consumer gains a project reference into the repository",
+        local("samples", "Broiler.VM.Sample.FeedConsumer", "Broiler.VM.Sample.FeedConsumer.csproj"),
+        "  <ItemGroup>",
+        '  <ItemGroup>\n'
+        '    <ProjectReference Include="..\\..\\src\\Broiler.VM.Runtime\\Broiler.VM.Runtime.csproj" />\n'
+        '  </ItemGroup>\n\n'
+        "  <ItemGroup>",
+    ),
 ]
 
 
-def run(command, shell=False):
-    """Run a command from the component root and return (exit code, combined output)."""
+def run(command, shell=False, cwd=None):
+    """
+    Run a command and return (exit code, combined output).
+
+    From the component root unless a directory is named. The samples need to run from their own
+    directory and not from here: their NuGet.config and their Directory.Build.props are found by
+    walking up from the working directory, and running them from the root would silently give them
+    the component's sources and the component's build properties - which is the one thing a
+    pristine consumer must not have.
+    """
     environment = dict(os.environ, DOTNET_CLI_UI_LANGUAGE="en")
     completed = subprocess.run(
         command,
-        cwd=ROOT,
+        cwd=cwd or ROOT,
         shell=shell,
         capture_output=True,
         text=True,
@@ -483,6 +516,95 @@ def bench_run(arguments):
     return "\n".join(lines) + "\n"
 
 
+def nuspecs(directory):
+    """Every .nuspec inside every .nupkg the pack produced, concatenated in a readable order."""
+    lines = []
+
+    for name in sorted(os.listdir(directory)):
+        if not name.endswith(".nupkg"):
+            continue
+
+        with zipfile.ZipFile(os.path.join(directory, name)) as archive:
+            for entry in sorted(archive.namelist()):
+                if not entry.endswith(".nuspec"):
+                    continue
+
+                lines.append("=== %s :: %s ===" % (name, entry))
+                lines.append(archive.read(entry).decode("utf-8").strip())
+                lines.append("")
+
+    return "\n".join(lines).strip() + "\n"
+
+
+def feed_consumer(arguments):
+    """
+    Pack to a local feed, restore a consumer that has no project reference, run it, and roll back.
+
+    The whole VM-6 packaging claim in one procedure. The consumer's NuGet.config lists ONE source
+    and it is this feed - nuget.org is not reachable from it - so a restore that succeeds is also
+    evidence that the three packages depend on nothing, and one that fails says so loudly rather
+    than resolving something from the internet and looking fine.
+
+    Two versions are packed because rollback has to be exercised rather than described. The
+    consumer prints the informational version of each assembly it actually loaded, so the
+    transcript shows which package set answered rather than which one was asked for.
+    """
+    feed = os.path.join(ROOT, "artifacts", "feed")
+    lines = ["=== FEED CONSUMER: restore from a feed, run, and roll back ==="]
+
+    if os.path.isdir(feed):
+        shutil.rmtree(feed)
+
+    os.makedirs(feed)
+
+    for version in (CURRENT_SUFFIX, ROLLBACK_SUFFIX):
+        lines.append("")
+        lines.append("--- pack %s-%s to the feed ---" % (VERSION_PREFIX, version))
+        code, output = run(["dotnet", "pack", SOLUTION, "-c", "Release", "-o", feed,
+                            "-p:VersionSuffix=" + version])
+        lines.append(output.strip())
+        lines.append("exit code: %d" % code)
+
+    lines.append("")
+    lines.append("--- feed contents ---")
+    lines.extend(sorted(os.listdir(feed)))
+
+    # Newest first, then the rollback. The order is the point: a rollback that was never rolled
+    # forward from proves nothing.
+    for label, version in (("restore and run", ROLLBACK_SUFFIX), ("ROLL BACK and run", CURRENT_SUFFIX)):
+        full = "%s-%s" % (VERSION_PREFIX, version)
+
+        lines.append("")
+        lines.append("--- %s against %s ---" % (label, full))
+        code, output = run(["dotnet", "run", "-c", "Release", "-p:BroilerVmVersion=" + full],
+                           cwd=SAMPLE_DIRECTORY)
+        lines.append(output.strip())
+        lines.append("exit code: %d" % code)
+
+    lines.append("")
+    lines.append("--- publish the consumer as Native AOT and run it ---")
+    published = os.path.join("artifacts", "publish-sample-aot")
+    full = "%s-%s" % (VERSION_PREFIX, ROLLBACK_SUFFIX)
+
+    code, output = run(["dotnet", "publish", "-c", "Release", "-r", arguments.rid,
+                        "-p:PublishAot=true", "-p:BroilerVmVersion=" + full,
+                        "-o", os.path.join(ROOT, published)], cwd=SAMPLE_DIRECTORY)
+    lines.append(output.strip())
+
+    binary = published_binary(published, "Broiler.VM.Sample.FeedConsumer")
+
+    if binary is None:
+        lines.append("no native binary to run")
+        return "\n".join(lines) + "\n"
+
+    lines.append("native image size: %d bytes" % os.path.getsize(binary))
+    code, output = run([binary])
+    lines.append(output.strip())
+    lines.append("exit code: %d" % code)
+
+    return "\n".join(lines) + "\n"
+
+
 def collect_controls(out):
     """Inject, run, revert, re-run. Both runs are retained for every control."""
     log = []
@@ -538,6 +660,13 @@ def collect_controls(out):
         elif index == 3:
             struck = "\n\npublic sealed class VmHandle\n{\n}\n"
             mutated = text.rstrip() + (struck.replace("\n", "\r\n") if crlf else struck)
+        elif relative.endswith("VmCoreContract.cs") and "public sealed class VmHandle" not in text:
+            # A public type the API baseline does not declare. Rule M1 must see an ADDITION, which
+            # is the direction that matters for a frozen surface: a member reaches a package
+            # without anyone deciding it should. Struck names are control 3's job, so this one uses
+            # a name nothing else objects to.
+            added = "\n\npublic sealed class VmAddedWithoutADecision\n{\n}\n"
+            mutated = text.rstrip() + (added.replace("\n", "\r\n") if crlf else added)
         elif relative.endswith("baselines.md"):
             # The register's figures are rewritten every time the bench is re-run, so an injection
             # point written as a literal would go stale with the first collection that moved a
@@ -729,6 +858,13 @@ def main():
         sum(1 for p in produced if p.endswith(".snupkg")))
     write(os.path.join(out, "pack.log"), pack.strip() + "\n")
 
+    # Every .nuspec, extracted and retained. Rules C2 and C3 read declared dependencies and
+    # package text, and neither is in the pack transcript: a log says a package was created and
+    # says nothing about what it promises. The manifests are small, they are the actual contract a
+    # consumer's restore resolves against, and retaining them makes those two rules assertable
+    # against evidence rather than against a build that has already been thrown away.
+    write(os.path.join(out, "nuspecs.txt"), nuspecs(packed))
+
     print("  4-5 jit and trimmed")
     lines = ["=== JIT: dotnet run --project %s -c Release -- --verbose ===" % HOST]
     _, jit = run(["dotnet", "run", "--project", HOST, "-c", "Release", "--", "--verbose"])
@@ -845,6 +981,9 @@ def main():
 
     print("  8d bench: the baselines, on JIT and on Native AOT")
     write(os.path.join(out, "bench.log"), bench_run(arguments))
+
+    print("  8e feed consumer: pack, restore without a project reference, run, roll back")
+    write(os.path.join(out, "feed-consumer.log"), feed_consumer(arguments))
 
     if not arguments.skip_controls:
         print("  9 negative controls")

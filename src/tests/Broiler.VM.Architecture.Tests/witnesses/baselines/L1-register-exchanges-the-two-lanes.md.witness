@@ -7,4 +7,4 @@ row. A membership check passes this input. The rule fails it twice.
 
 | Measurement | Unit | Candidate | Control | JIT | Native AOT |
 |---|---|---|---|---|---|
-| `diagnostics-capture` | record | A fully identified diagnostics record | Its minimal form | 100.8870 | 106.1610 |
+| `diagnostics-capture` | record | A fully identified diagnostics record | Its minimal form | 86.2510 | 90.5790 |

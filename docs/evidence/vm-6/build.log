@@ -1,0 +1,22 @@
+Determining projects to restore...
+  All projects are up-to-date for restore.
+  Broiler.VM.Binary -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Com.Example.Calculator -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Com.Example.Calculator/bin/Release/net10.0/Com.Example.Calculator.dll
+  Broiler.VM.Fixtures -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures/bin/Release/net10.0/Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.Browser/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Com.Example.Ledger -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Com.Example.Ledger/bin/Release/net10.0/Com.Example.Ledger.dll
+  Broiler.VM.Soak.Host -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Soak.Host/bin/Release/net10.0/Broiler.VM.Soak.Host.dll
+  Broiler.VM.Architecture.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll
+  Broiler.VM.Composition.Workbench -> /home/user/Broiler.Browser/Broiler.VM/src/compositions/Broiler.VM.Composition.Workbench/bin/Release/net10.0/Broiler.VM.Composition.Workbench.dll
+  Broiler.VM.Contract.Tests -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Contract.Tests/bin/Release/net10.0/Broiler.VM.Contract.Tests.dll
+  Broiler.VM.Fixtures.Host -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fixtures.Host/bin/Release/net10.0/Broiler.VM.Fixtures.Host.dll
+  Broiler.VM.Bench.Host -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Bench.Host/bin/Release/net10.0/Broiler.VM.Bench.Host.dll
+  Broiler.VM.Composition.Calculator -> /home/user/Broiler.Browser/Broiler.VM/src/compositions/Broiler.VM.Composition.Calculator/bin/Release/net10.0/Broiler.VM.Composition.Calculator.dll
+  Broiler.VM.Fuzz.Host -> /home/user/Broiler.Browser/Broiler.VM/src/tests/Broiler.VM.Fuzz.Host/bin/Release/net10.0/Broiler.VM.Fuzz.Host.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.15
