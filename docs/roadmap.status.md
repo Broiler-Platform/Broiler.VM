@@ -231,7 +231,18 @@ claimed RID; analyzer success alone is not a publish-and-run result.
    true no matter how many green suites are collected over them.
 
 Until such updates are recorded, the table in section 2 remains the complete Broiler.VM status:
-VM-0 and VM-1 are in progress and unaccepted, VM-2 through VM-6 are not started, and no release
-capability is claimed. Core contract version 1 is implemented and runs; it is not accepted, no RID
-other than `win-x64` is claimed, no concurrency, corpus or performance result exists, and no
-language profile ships.
+**VM-0 through VM-6 are all in progress and unaccepted**, each with a retained evidence bundle, and
+no release capability is claimed. Core contract version 1 is implemented and runs; it is not
+accepted, no milestone has a review decision, and no language profile ships. `linux-x64` and
+`win-x64` have each published and run, on one machine each and with no CI lane that has ever
+executed, so neither is a claimed RID.
+
+*Corrected 2026-08-31.* This paragraph previously read "VM-0 and VM-1 are in progress and
+unaccepted, VM-2 through VM-6 are not started" and "no RID other than `win-x64` is claimed, no
+concurrency, corpus or performance result exists". It was written when that was true and was not
+revised as VM-2 through VM-6 collected bundles VM-2-001 through VM-6-001, so it contradicted the
+table it claims to summarise — an eighty-seven-artifact corpus, a four-hundred-thousand-cycle soak,
+and ten measurements per lane all existed while this paragraph said they did not. It is recorded as
+a correction rather than silently rewritten, because a summary that drifts from its own table is
+exactly the failure this ledger exists to prevent, and **a reader who skips the table quotes this
+paragraph.**

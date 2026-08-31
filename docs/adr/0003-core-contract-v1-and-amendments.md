@@ -574,7 +574,7 @@ an ADR set that anchors to sentences its own analysis found contradictory is not
 a freeze either, so the divergence is made auditable instead of tacit: every
 sentence a VM-0 decision supersedes is listed below with its verbatim current
 text and the text that would replace it. **Every row is `Proposed` and unapplied
-except row 1.**
+except rows 1 and 13.**
 
 Quoting convention. The old-text column is character-exact, with two departures
 forced by the ASCII-only house rule and by table layout: a line break inside a
@@ -596,12 +596,28 @@ outside ASCII.
 | 10 | 7 | unsupported-profile paragraph | ``Selecting a profile the composition does not contain is not an invalid artifact: it is a distinct `unsupported profile` outcome naming the requested ID and the catalog's contents.`` | ``Selecting a profile the composition does not contain is not an invalid artifact: it is a distinct `unsupported profile` outcome naming the requested ID and, to the host alone, the catalog's contents; a result crossing to guest code or returned from a guest-initiated load names the requested ID only.`` | 0002 | unsupported-profile-outcome-and-catalog-disclosure | Proposed |
 | 11 | 7 | Run-time requirements, aggregate bullet | `Where a host creates several runtimes under one shared aggregate budget, fuel, wall-clock, allocation, and live-runtime counts are metered against the parent as well as each runtime.` | `Where a host creates several runtimes under one shared aggregate budget, every dimension whose measure is summable across concurrently live runtimes under one parent is metered against the parent as well as each runtime, as ADR 0007's dimension table records.` | 0007 | aggregate-budget-core-object | Proposed |
 | 12 | 7 | Run-time requirements, aggregate bullet | ``Exhausting the parent is reported as `resource exhaustion` to whichever operation observes it, and no runtime may be created or resumed once the parent has no remaining allowance.`` | ``Exhausting the parent is reported as `resource exhaustion` to whichever operation observes it, and once the parent has no remaining allowance no runtime may be created and no operation may be resumed.`` | 0007 | aggregate-budgets-contract-level-constraints | Proposed |
-| 13 | 8 | The extraction gate | `A new shared component is opened only when all four hold: two or more profiles already implement the behavior; the implementations are compared and the shared part is identified from real code rather than anticipated; the shared part is expressible without naming any language concept; and extracting it does not create a profile-to-profile dependency.` | `A new shared component is opened only when all four hold: two or more product VM profiles already implement the behavior, the fixture profile and the application-local consumer profile counting toward neither; the implementations are compared and the shared part is identified from real code rather than anticipated; the shared part is expressible without naming any language concept; and extracting it does not create a profile-to-profile dependency.` | 0011 | sharing-and-extraction-gate-governance | Proposed |
+| 13 | 8 | The extraction gate | `A new shared component is opened only when all four hold: two or more profiles already implement the behavior; the implementations are compared and the shared part is identified from real code rather than anticipated; the shared part is expressible without naming any language concept; and extracting it does not create a profile-to-profile dependency.` | `A new shared component is opened only when all four hold: two or more product VM profiles already implement the behavior, the fixture profile and the application-local consumer profile counting toward neither; the implementations are compared and the shared part is identified from real code rather than anticipated; the shared part is expressible without naming any language concept; and extracting it does not create a profile-to-profile dependency.` | 0011 | sharing-and-extraction-gate-governance | Applied 2026-08-31, wording differs |
 | 14 | 14 | Artifact safety and policy, blocking-failure column | `unbounded allocation, crash, hang, or nondeterministic failure class` | `unbounded allocation, crash, hang, or a failure whose category, resource dimension and budget scope are not deterministic` | 0007 | resource-exhaustion-detail | Proposed |
 | 15 | 14 | Lifecycle/concurrency, blocking-failure column | `or unbounded cancellation latency` | `or a cancellation latency not bounded in declared work units` | 0004 | cancellation-contract | Proposed |
 | 16 | 15 | gate 1 | `**Support truth:** the public table names the core contract version, the compositions, host capabilities, guest-initiated-load and external-control support, RIDs, and deterministic exclusions separately, and states that no language profile ships with the core.` | `**Support truth:** the public table names the core contract version the release implements, the minimum core contract version it accepts, the deterministic failure returned for a descriptor outside that window, the compositions, host capabilities, guest-initiated-load and external-control support, RIDs, and deterministic exclusions separately, and states that no language profile ships with the core.` | 0003 | descriptor-and-envelope-contract-version-compatibility | Proposed |
 | 17 | 16 | risk: concurrent runtimes multiply a host ceiling | `Meter fuel, wall-clock, allocation, and live-runtime counts against a shared aggregate budget as well as each runtime, and refuse creation and resumption once the parent allowance is spent.` | `Meter every summable dimension in ADR 0007's table against a shared aggregate budget as well as each runtime, and refuse runtime creation and operation resumption once the parent allowance is spent.` | 0007 | aggregate-budget-core-object | Proposed |
 | 18 | 16 | risk: external pause becomes an unbounded or privileged side channel | `Declare who may request external suspension, keep it distinct from guest suspension and terminal cancellation, bound how long a paused operation may block disposal, and leave what a paused profile exposes to the profile.` | `Declare who may request external suspension, keep it distinct from guest suspension and terminal cancellation, bound how long a paused operation may block disposal with a mandatory finite MaxSuspendedResidency, latch an abandoned external suspension as cancelled, and leave what a paused profile exposes to the profile.` | 0009 | external-suspension-transitions-and-authority | Proposed |
+
+**Row 13 was applied on 2026-08-31 and its wording differs from the proposal.**
+The roadmap now restricts the gate to product profiles and excludes the fixture
+and consumer profiles by name, which is the substance this row proposed, but it
+says so in two sentences rather than one and adds the reason - that those
+profiles are core-owned and shaped to fit the contract, so agreement between
+them is evidence about the core's own tests. It also says "real merged code"
+where this row said "real code". The row is marked applied rather than
+re-proposed because no clause of it is unmet; a reader comparing the two should
+expect a paraphrase, not a quotation. The same edit added three things this row
+did not propose and that no row here covers: that a failed gate obliges a dated
+record and a source-level pointer rather than silence, that invocation belongs
+to the core architecture owner with a profile supplying only its half, and four
+further candidate rows in the sharing table. Those are recorded as Exclusion
+EX-104 below rather than as register rows, because this register runs from the
+ADR set to the roadmap and they run the other way.
 
 No row proposes a change to an engineering invariant, to a milestone gate, to
 section 13's delivery order, or to sections 14, 15 and 16 beyond the four
@@ -619,11 +635,25 @@ section cites those identifiers and does not restate their text.
 
 ### 12. The candidate-amendment register
 
-Section 2 states that at least one amendment should be planned for. Four
+Section 2 states that at least one amendment should be planned for. Nine
 candidates are recorded so that the sentence has named content and so that the
 shape of each is fixed while it is cheap. **The register records shape, not
 intent: no candidate is proposed, approved or scheduled, and none is admissible
 until it names a merged or approved profile capability.**
+
+Rows 5 to 9 were added on 2026-08-31, after both intended profiles had written
+roadmaps naming what they would ask for. Adding them changes no clause of this
+record and mints no version: a shape in this register is not a proposal, which
+is what the paragraph above says and what makes the register safe to extend
+under Exclusion EX-15. Two of the five are worth reading together rather than in
+order. **Row 5 is the only candidate both intended profiles independently rate
+general**, which is the strongest evidence this register carries about any of
+them, so it is listed first among the additions. And **row 6 is the only one the
+two profiles graded in opposite directions** - the profile with no parser, no
+text format and no dynamic loads calls it the strongest ask in its document,
+while the profile with all three calls it weak - which is precisely the
+disagreement section 6's counterweight step exists to surface, and it is
+unresolvable until both roadmaps state one scope for it.
 
 | # | Candidate | What would drive it | Classes touched | Clause it must clear | Owning ADR |
 |---|---|---|---|---|---|
@@ -631,11 +661,28 @@ until it names a merged or approved profile capability.**
 | 2 | Incremental or streaming verification of an artifact as it arrives | a latency budget that cannot wait for whole bytes; funded by VM-5's verification-throughput measurements | 4, 2 | AD5: it changes the load stage's input contract | 0010 |
 | 3 | An in-process producer input form that compiles straight to a verified handle | a runtime-compiling composition paying serialization on its critical path | 4 | AD3: minting it would be the amendment invariant 3 does not currently need | 0010 |
 | 4 | Lazy per-section verification, each section verified before its own first execution | a host that compiles function bodies on first call and will not verify a whole bundle to run one entry point | 4, 3 | AD3 and AD4: it must stay opt-in and must not weaken the pre-execution guarantee | 0010 |
+| 5 | A charging hook for work a host capability performs on a profile's behalf | wall clock bounds a slow capability and bounds nothing about one that allocates; **both intended profiles rate this general and neither has a profile-owned alternative** | 3, 7 | AD3: it adds a charging obligation and must not make any existing one optional | 0007 |
+| 6 | A typed argument channel on the invocation request | a module that is nothing but exported functions with typed signatures, whose conformance suite invokes them with arguments end to end; and a profile hosting another one, where an export call is a typed call whose arguments originate on the other side | 2 | AD2: the entry-point name is a request field, so widening it must not re-scope any existing category | 0005 |
+| 7 | Multiple results on a host capability | a calling convention admitting more than one result, whose second result has nowhere to go and is refused rather than truncated | 7 | AD3: a capability signature is a declared shape and widening it must not weaken the declaration rules | 0011 |
+| 8 | A wider value slot on the capability channel | one value type in one instruction family that does not fit the current slot; splitting works and needs a published encoding | 7 | AD5: a profile compiled against the narrow slot must still compile | 0011 |
+| 9 | A refusable retention member on the metering surface | a language whose guest must observe a refused growth and continue, where the retention report returns nothing and the refusal is latched for the next charge or poll | 3 | AD3: it must not let a profile learn a remaining value, which is the asymmetry the four-member surface exists to hold | 0007 |
 
 Candidates 1 and 2 are funded by VM-5 measurements, per section 16's
 critical-path risk row: a latency regression discovered after the contract is
 frozen costs an amendment, so the choice rests on numbers rather than on
 anticipation.
+
+Candidates 3 and 4 acquired a counterweight answer on 2026-08-31 that this
+register should carry, because it is the answer the procedure asks for and it
+points the other way from the drivers above: the profile that consumes a format
+an external toolchain produces **declines both**, having no in-process producer
+to bypass serialization for and no wish to see a deferred check reported as a
+trap. A refusal is recorded and is not blocking - a profile holding a veto over a
+core amendment would be a profile-to-profile dependency established by governance
+rather than by reference, which is what the extraction gate's fourth condition
+exists to prevent - but section 6 row 3 admits only "could use it" or
+"unaffected", and neither is what was said. Widening that row to admit a recorded
+refusal is item 6 of Exclusion EX-104.
 
 ### 13. Exclusions
 
@@ -685,6 +732,47 @@ exercises the window's lower bound.
 Exclusion EX-17: the "Implemented in core release 1" column of the
 admitted-versus-implemented table is a VM-0 decision and not evidence. Reason:
 no release exists and no capability has been demonstrated. Closed by: VM-6.
+
+Exclusion EX-104: the roadmap now states obligations that no record in this set
+carries, and this register cannot hold them. Reason: section 11 runs from the
+ADR set to the roadmap - it lists sentences a VM-0 decision supersedes - and on
+2026-08-31 the roadmap gained material running the other way, written after both
+intended profiles had roadmaps of their own and after their claims were checked
+against the shipped assemblies rather than against prose. Seven items, each
+named in the roadmap's own VM-0 next action:
+
+1. the bounded-read status mapping, ruled once for the whole set. The mapping is
+   asserted today in `VmBoundedReadStatus`'s own remarks, which attribute it to
+   ADR 0006 and ADR 0007; **neither record carries it**, and the three verifiers
+   in this graph do not agree on it;
+2. both catalog-wide ceiling terms - the tightest hard maximum and the tightest
+   adopted default - in the ordered precedence algorithm, together with the rule
+   that a dimension declared inapplicable still publishes an unconstrained
+   maximum. ADR 0002 assigns effective-ceiling materialization to ADR 0007, whose
+   algorithm reads a maximum from "the immutable profile descriptor", singular,
+   and has no catalog-wide term at all;
+3. the host-exception translation precedence, which both profile roadmaps
+   restated from the implementation because no record states it;
+4. whether a profile's own sibling assembly counts inside ADR 0011 P1's
+   two-assembly reference set, and the reconciliation of roadmap section 5 with
+   section 10 on where a format lives;
+5. who invokes the extraction gate and where the record is filed, including the
+   case where the first condition is unsatisfied - ADR 0011 delegates the first
+   invocation "to a profile roadmap" without naming one, and neither profile may
+   cite the other, so the record can only live here;
+6. this register's own section 12, brought level with what the profiles have
+   asked for; and
+7. that a retained-state dimension cannot carry a guest-observable refusal.
+
+None is applied. **Every one of them is a clarification of behaviour the
+implementation already has**, not a change to it, so none is an amendment under
+section 7's test - but section 7 also rules that "specifying a previously
+unspecified behaviour is not an available move", and section 13's own EX-15
+records the amendment procedure as currently unexecutable because the minting
+role and both co-signing roles are held by one person. Recording the gap is
+therefore the only move available, and it is recorded rather than left tacit for
+the same reason section 11 exists. Closed by: a second named maintainer, then a
+VM-0 pass that lands items 1 to 7 in the records that own them.
 
 ## Consequences
 
