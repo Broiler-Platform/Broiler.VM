@@ -733,63 +733,110 @@ Exclusion EX-17: the "Implemented in core release 1" column of the
 admitted-versus-implemented table is a VM-0 decision and not evidence. Reason:
 no release exists and no capability has been demonstrated. Closed by: VM-6.
 
-Exclusion EX-104: the roadmap now states obligations that no record in this set
-carries, and this register cannot hold them. Reason: section 11 runs from the
-ADR set to the roadmap - it lists sentences a VM-0 decision supersedes - and on
-2026-08-31 the roadmap gained material running the other way, written after both
-intended profiles had roadmaps of their own and after their claims were checked
-against the shipped assemblies rather than against prose. Seven items, each
-named in the roadmap's own VM-0 next action:
+Exclusion EX-104: the roadmap states obligations whose placement in this set was
+audited on 2026-08-31. **Six of the seven items it originally listed were wrong
+about the record, and they were wrong in the direction that costs most: they
+claimed a ruling was missing when it existed.** The audit and its corrections are
+below, because an exclusion that overstates a gap is worse than no exclusion - it
+sends the next reader to mint an amendment nothing needed.
 
-1. ~~the bounded-read status mapping, ruled once for the whole set~~ **- resolved
-   2026-08-31, and it did not need an amendment.** The premise was wrong in the
-   profile's favour: the remarks attributed the mapping to ADR 0006 and ADR 0007,
-   neither of which mentions either status, but **ADR 0005 rules it already** -
-   "a value that contradicts the format is `InvalidArtifact`; a value that is well
-   formed but exceeds a configured bound is `ResourceExhaustion`; where both apply
-   at one point, `InvalidArtifact` wins." Nothing was unspecified, so section 7's
-   bar on specifying-previously-unspecified never applied and no version is minted.
-   What existed was a false citation and four implementations that disagreed with
-   the record and with each other. The remarks now cite ADR 0005, and the
-   verifiers were corrected to match it. This item is closed; it is left in the
-   list, struck through, because the reason it was mis-filed is the same reason it
-   was worth finding - a wrong citation reads exactly like a missing ruling;
-2. both catalog-wide ceiling terms - the tightest hard maximum and the tightest
-   adopted default - in the ordered precedence algorithm, together with the rule
-   that a dimension declared inapplicable still publishes an unconstrained
-   maximum. ADR 0002 assigns effective-ceiling materialization to ADR 0007, whose
-   algorithm reads a maximum from "the immutable profile descriptor", singular,
-   and has no catalog-wide term at all;
-3. the host-exception translation precedence, which both profile roadmaps
-   restated from the implementation because no record states it;
-4. whether a profile's own sibling assembly counts inside ADR 0011 P1's
-   two-assembly reference set, and the reconciliation of roadmap section 5 with
-   section 10 on where a format lives;
-5. who invokes the extraction gate and where the record is filed, including the
-   case where the first condition is unsatisfied - ADR 0011 delegates the first
-   invocation "to a profile roadmap" without naming one, and neither profile may
-   cite the other, so the record can only live here;
-6. this register's own section 12, brought level with what the profiles have
-   asked for; and
-7. that a retained-state dimension cannot carry a guest-observable refusal.
+**Items 1, 3, 4b and 7 are closed. Items 4a, 5 and 6 are open and need no
+amendment. Item 2 is open, is the only genuinely blocked one, and is worse than
+originally described.**
 
-Item 1 is applied and closed; the remaining six are not. **Every one of them is a
-clarification of behaviour the implementation already has**, not a change to it,
-so none is an amendment under section 7's test - but section 7 also rules that "specifying a previously
-unspecified behaviour is not an available move", and section 13's own EX-15
-records the amendment procedure as currently unexecutable because the minting
-role and both co-signing roles are held by one person. Recording the gap is
-therefore the only move available, and it is recorded rather than left tacit for
-the same reason section 11 exists. Closed by: a second named maintainer, then a
-VM-0 pass that lands items 2 to 7 in the records that own them.
+1. ~~the bounded-read status mapping~~ **- closed 2026-08-31.** The remarks
+   attributed the mapping to ADR 0006 and ADR 0007, neither of which mentions
+   either status, but **ADR 0005 rules it already** - "a value that contradicts
+   the format is `InvalidArtifact`; a value that is well formed but exceeds a
+   configured bound is `ResourceExhaustion`; where both apply at one point,
+   `InvalidArtifact` wins." Nothing was unspecified, so section 7's bar never
+   applied and no version was minted. Four verifier implementations were corrected
+   to match the record.
 
-**One lesson from item 1 is worth carrying to the other six.** It was recorded
-here as a missing ruling and turned out to be a false citation, which is a much
-cheaper defect and a much more dangerous one: a missing ruling stops an
-implementer, and a wrong citation sends four of them confidently in three
-different directions. Before treating any remaining item as needing an amendment,
-check whether some record already rules it and is simply not the record the code
-cites.
+2. **OPEN, and the only genuinely blocked item - restated, because the original
+   description understated it.** The original text said ADR 0007's algorithm "has
+   no catalog-wide term at all", which implies a clarification would close it. It
+   is not a clarification. ADR 0007's P1 row carries a closed *"Inputs it may
+   read"* column naming the host's explicit value and the two markers, and places
+   the `ProfileMax` intersection at P2 against the artifact's own profile.
+   `VmCeilingResolution` clamps to the tightest maximum **across every descriptor
+   in the catalog, at P1**. Those produce different values: a catalog of two
+   profiles where one declares a tighter maximum refuses the other's ordinary
+   artifact, which is exactly what the VM-3 bundle recorded happening. The record
+   and the implementation therefore disagree observably, and writing the
+   catalog-wide terms into ADR 0007 would not document behaviour - it would
+   **change the value the record's algorithm produces**, which section 2 lists
+   among the changes that mint a version even when no identifier moves. The
+   `Unconstrained`-on-inapplicable obligation appears in no ADR and is enforced by
+   no code. Closed by: a second named maintainer, and then a decision about which
+   of the record and the code is wrong - not by an editorial pass.
+
+3. ~~the host-exception translation precedence, "which both profile roadmaps
+   restated from the implementation because no record states it"~~ **- closed
+   2026-08-31, and the quoted premise was false.** ADR 0011 states it, in the
+   record section 2 names as the owner of class 7: *"Translation precedence is
+   ordered and exhaustive. Evaluate in order; stop at the first match"*, with X1
+   cancellation, X2 exhausted meter, X3 host failure. The roadmaps cited nothing
+   because nobody looked, not because nothing existed.
+
+4. Split in two, and the halves ended differently.
+   - **4a, OPEN and recordable without an amendment.** Whether a profile's own
+     sibling assembly counts inside ADR 0011 P1's reference set is genuinely
+     unruled - the phrase appears in two ADRs and neither addresses siblings. But
+     P1's subject is package graph and assembly layout, which section 2 lists as
+     *explicitly outside version 1*, so the qualifier lands as a dated editorial
+     revision rather than an amendment. Note also that rule A13 cannot reach a
+     product profile - its subject test requires a test-only project - so it is a
+     repo-local tightening over the in-checkout consumer profiles, and the question
+     is not answered by enforcement either.
+   - **4b, ~~the reconciliation of roadmap section 5 with section 10 on where a
+     format lives~~ - closed, and it was already closed when this exclusion was
+     written.** Commit `4cb815e` reconciled both sections twenty-four minutes
+     before commit `462c746` recorded them here as unreconciled. A stale to-do,
+     filed by the same author in the same session.
+
+5. **OPEN, far narrower than described, and both named halves were false.** The
+   original text said ADR 0011 *"delegates the first invocation to a profile
+   roadmap without naming one"*. ADR 0011 names who - *"any profile owner or the
+   core architecture owner may invoke"* - names where the record is filed - *"in
+   this ADR set"* - and already carries the failed-gate filing and the
+   source-level pointer from each duplicated implementation. The genuine residue is
+   two things. The **unsatisfied-G1** state, which the roadmap now obliges a filing
+   for and which no record carries. And a **live conflict this component
+   introduced**: the roadmap says the first invocation *"belongs to the core
+   architecture owner, not to a profile"*, contradicting ADR 0011's *"any profile
+   owner or"*. The roadmap is the half that moved and is the half to correct.
+   Neither is an amendment - the extraction gate is not among the seven artefact
+   classes.
+
+6. **OPEN and mostly discharged.** Section 12 gained five rows on 2026-08-31 and
+   is level with the profiles on all but one candidate: nested instantiation of a
+   guest-loaded handle, which the JavaScript roadmap names and which the evidence
+   side has carried open since VM-2 as EX-78. Two residues remain. This record's
+   own section 12 prose about the two profiles grading the argument channel
+   oppositely is **now stale**, both having since fixed the scope at arguments
+   only. And section 6 row 3 still admits only *"could use the capability or is
+   unaffected"* while section 12 already rules that a refusal is recorded and not
+   blocking; widening row 3 is an editorial revision of the amendment *procedure*,
+   which section 2's closed list of seven classes does not contain.
+
+7. ~~that a retained-state dimension cannot carry a guest-observable refusal~~
+   **- closed 2026-08-31, and this is the least creditable of the four.** The fact
+   is stated in this record's own section 12 row 9, and the observation point is
+   ADR 0007's *"live operations fail at their next charge or poll"*. It was never
+   missing: **row 9 and this exclusion were added by the same commit.** One change
+   wrote the fact into section 12 and called it unrecorded in section 13. Recorded
+   as a reconciliation rather than a discovery, because the alternative is letting
+   a bookkeeping error read as a contract gap.
+
+**The generalisation, and the reason this exclusion is worth keeping now that most
+of it is struck.** Every closed item closed the same way: a record already ruled
+the matter, and the code, the roadmap or this exclusion cited a different record,
+an older draft, or nothing at all. Not one needed the amendment procedure EX-15
+records as unexecutable. Before any remaining item is treated as blocked, check
+that the claim *"no record carries it"* was tested against all twelve records
+rather than against the one the code happens to name - which is the check the
+original filing of items 3, 5 and 7 skipped.
 
 ## Consequences
 
