@@ -787,6 +787,150 @@ def corpus_controls(out, corpus, arguments):
     return passed, skipped
 
 
+# The fuzz sessions a bundle retains. Seeds and iteration budgets are STATED, because a session
+# is a total function of its seed and its seed corpus and a finding is reproduced by naming both.
+# There is no wall-clock budget and no thread count: either would make the same session behave
+# differently on two machines, which is the nondeterministic failure class this component's own
+# gates forbid.
+FUZZ_SESSIONS = ((1, 25_000), (2, 25_000), (3, 25_000), (4, 25_000))
+
+
+def fuzz(out, corpus):
+    """Run the retained fuzz sessions and keep everything they printed, findings included."""
+    log = [
+        "Coverage-guided fuzzing over the two of roadmap section 7's four surfaces that exist:",
+        "the verifier, and the executor over verified-but-adversarial artifacts. The source",
+        "tokenizer and parser and the regular-expression matcher are surfaces this profile has",
+        "not written, and a session may not be read as covering them.",
+        "",
+        "Each session is a total function of its seed and the seed corpus. A session that answers",
+        "the same way every time, or that never reaches the executor, exits NON-ZERO rather than",
+        "reporting clean iterations it did not earn.",
+        "",
+    ]
+
+    findings = 0
+
+    for seed, iterations in FUZZ_SESSIONS:
+        code, output = run([
+            "dotnet", "run", "--project", EXECUTION_ONLY, "-c", "Release", "--no-build",
+            "--", "--corpus", corpus, "--fuzz",
+            "--seed", str(seed), "--iterations", str(iterations)])
+
+        findings += 1 if code == 1 else 0
+
+        log.append(f"[seed {seed}, {iterations} iterations] exit {code}")
+        log.extend("    " + line for line in output.splitlines())
+        log.append("")
+
+    log.append(
+        f"sessions: {len(FUZZ_SESSIONS)}; sessions reporting a finding: {findings}")
+
+    if findings:
+        log.append(
+            "A FINDING IS NOT CLOSED BY THIS LOG. Roadmap section 7 requires a counterexample to "
+            "be closed by a named regression and never by an allow-list entry: the minimized "
+            "input becomes a corpus entry with a recorded answer, and the defect is fixed.")
+
+    write(os.path.join(out, "fuzz.log"), "\n".join(log) + "\n")
+    return findings
+
+
+# The fuzz controls: injections judged by a FUZZ SESSION rather than by the suite or the replay.
+# A session that finds nothing is worth exactly as much as the demonstration that it would have
+# found something, and this is that demonstration. Each one is a defect a hand-written corpus entry
+# also catches - that is what the corpus is for - and what these show is that a session reaches the
+# same class from bytes nobody wrote.
+FUZZ_CONTROLS = [
+    (
+        "the-constant-index-is-admitted-unchecked",
+        "The verifier stops checking a LoadConstant operand against the pool size. The artifact "
+        "then verifies and the executor indexes past the pool - the core catches the exception and "
+        "reports a fault the profile did not author, which is the executor-surface invariant. "
+        "TWENTY-FIVE THOUSAND UNDIRECTED ITERATIONS DID NOT FIND THIS, and the operand-targeting "
+        "mutation was written because of it; the session finds it in under two hundred now.",
+        PROFILE_VERIFIER,
+        lambda text: text.replace(
+            "            return index < constantCount\n                ? Ok",
+            "            return true\n                ? Ok"),
+    ),
+]
+
+
+def fuzz_controls(out, corpus):
+    """Each control is injected, judged by a fuzz session, and reverted."""
+    log = [
+        "These controls are judged by a FUZZ SESSION. A session that reports no counterexample is",
+        "worth what the demonstration that it would have reported one is worth, and nothing more.",
+        "",
+        "A control PASSES when the session exits 1 - a finding - while injected, and 0 after the",
+        "revert. Any other exit code is a session that failed for a reason unrelated to the",
+        "injection, and is not a pass.",
+        "",
+    ]
+
+    passed = 0
+    skipped = 0
+
+    for name, why, path, mutate in FUZZ_CONTROLS:
+        original = read(path)
+        mutated = mutate(original)
+
+        if mutated == original:
+            skipped += 1
+            log.append("[" + name + "] SKIPPED - the injection changed nothing; the anchor moved.")
+            log.append("    file: " + path)
+            log.append("")
+            continue
+
+        overwrite(path, mutated)
+        injected_code, injected_output = fuzz_session(corpus)
+        overwrite(path, original)
+
+        if read(path) != original:
+            raise SystemExit("control " + name + " did not restore " + path)
+
+        reverted_code, _ = fuzz_session(corpus)
+
+        verdict = "PASS" if injected_code == 1 and reverted_code == 0 else "FAIL"
+        passed += 1 if verdict == "PASS" else 0
+
+        log.append("[" + name + "] " + verdict)
+        log.append("    why:       " + why)
+        log.append("    file:      " + path)
+        log.append("    injected:  exit " + str(injected_code))
+        log.append("    reverted:  exit " + str(reverted_code))
+        log.extend(
+            "      " + line.strip()
+            for line in injected_output.splitlines()
+            if "FINDING" in line or "minimized" in line or line.strip().startswith("a verified"))
+        log.append("")
+
+    log.append(
+        "fuzz controls run: " + str(len(FUZZ_CONTROLS)) + "; passed: " + str(passed) +
+        "; SKIPPED: " + str(skipped))
+
+    if skipped:
+        log.append(
+            "A SKIPPED control is a GAP, not a smaller total: its anchor has moved, so the "
+            "injection it names was never made.")
+
+    write(os.path.join(out, "fuzz-controls.log"), "\n".join(log) + "\n")
+    return passed, skipped
+
+
+def fuzz_session(corpus, seed=1, iterations=25_000):
+    """Rebuild and run one fuzz session, returning its exit code and output."""
+    code, text = run(["dotnet", "build", SOLUTION, "-c", "Release", "--nologo"])
+
+    if code != 0:
+        return code, text
+
+    return run([
+        "dotnet", "run", "--project", EXECUTION_ONLY, "-c", "Release", "--no-build",
+        "--", "--corpus", corpus, "--fuzz", "--seed", str(seed), "--iterations", str(iterations)])
+
+
 def replay(corpus):
     """Rebuild and run the execution-only root against the retained corpus."""
     code, text = run(["dotnet", "build", SOLUTION, "-c", "Release", "--nologo"])
@@ -825,6 +969,7 @@ def main():
     parser.add_argument("--owner", default="profile architecture owner (unassigned identity)")
     parser.add_argument("--reviewer", default="NONE - nothing here has been reviewed")
     parser.add_argument("--skip-controls", action="store_true")
+    parser.add_argument("--skip-fuzz", action="store_true")
     parser.add_argument("--skip-publish", action="store_true")
     parser.add_argument("--rid", default="win-x64" if platform.system() == "Windows" else "linux-x64")
     parser.add_argument("--corpus", default=os.path.join("src", "tests", "corpus", "js-1"))
@@ -870,10 +1015,14 @@ def main():
 
     skipped = 0
 
+    if not arguments.skip_fuzz:
+        fuzz(out, corpus)
+
     if not arguments.skip_controls:
         _, suite_skipped = controls(out)
         _, corpus_skipped = corpus_controls(out, corpus, arguments)
-        skipped = suite_skipped + corpus_skipped
+        _, fuzz_skipped = fuzz_controls(out, corpus)
+        skipped = suite_skipped + corpus_skipped + fuzz_skipped
 
     hashes(out, [
         SOLUTION,

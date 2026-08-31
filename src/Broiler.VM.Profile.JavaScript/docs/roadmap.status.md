@@ -6,12 +6,13 @@
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
 gates; this ledger records whether those gates have accepted evidence.
 
-**At this snapshot, JS-0, JS-1 and JS-3a are `In progress`, JS-2 is blocked, and the remaining
-rows are `Not started`.** What exists is one feature manifest, one format version, a verifier, an
+**At this snapshot, JS-0, JS-1, JS-3a and JS-9 are `In progress`, JS-2 is blocked, and the
+remaining rows are `Not started`.** What exists is one feature manifest, one format version, a verifier, an
 executor, a descriptor admitted by a catalog, a hand-written lowering, two composition roots that
 publish and run on one RID under JIT, trimming and Native AOT, a 60-entry retained corpus, a
 published diagnostic-code registry, a frozen public-API baseline, twelve decision records, ten
-registered architecture rules, five evidence bundles and twenty-four negative controls. There is
+registered architecture rules, six evidence bundles, a fuzz target over two surfaces and
+twenty-five negative controls. There is
 **no tokenizer, no static-semantic stage, no object model, no standard library, no suspension, no
 guest-initiated load, no snapshot and no conformance harness**. No milestone is complete because
 its design appears in the roadmap, **nothing here has been reviewed by a human**, and nothing in
@@ -101,7 +102,7 @@ records the split.
 | `[PARTIAL]` | The row has a retained bundle that demonstrates some of its exit gate, with every unmet clause named in the bundle's own exclusions. **A `[PARTIAL]` row is not a qualified pass.** It is a row whose gate is open, and the named clauses are what is open. |
 | `[FULL]` | The row's bundle demonstrates every exit-gate clause. It is still not `Accepted`: acceptance additionally needs an owner and a reviewer decision, which nothing here has. |
 
-Three rows are `[PARTIAL]` and the remaining nine are `[NONE]`.
+Four rows are `[PARTIAL]` and the remaining eight are `[NONE]`.
 
 **The milestone set changed on 2026-08-31 and this table now carries the new shape.** What was one
 `JS-3` is now `JS-3a` and `JS-3b`, split by dependency rather than by size: the conformance harness
@@ -122,7 +123,7 @@ evidence claim — it changes what a reader is told is schedulable today.
 | [NONE] | **JS-6 — the standard library** | **Not started** | None. **Re-scoped on 2026-08-31, before it starts**, by [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md): the library is a **rewrite against this profile's value struct, not a copy re-typed**, because the seed's library is typed against a boxed value base type this profile does not adopt. The storage half of the copy table is untouched — shapes, the transition table, element arrays and the named-property store are about storage keyed by a value rather than about the value's representation. The satellite-acquisition dependency was opened at JS-0 and has a named owner. | The re-scope is the whole of what has changed here, and it changes the milestone's size rather than its order. What it must now carry that a copy would not: its own scope estimate, its own review budget — a rewrite is unreviewed code written here rather than unreviewed code copied here, and both count — and an exclusion list published on the day it lands, because a rewritten library is smaller than a copied one and the difference is a support claim. |
 | [NONE] | **JS-7 — suspension** | **Not started** | None. The continuation design needs no copied code and may be opened early. | After JS-5 and JS-6. |
 | [NONE] | **JS-8 — guest-initiated loads and the three compositions** | **Not started** | None. No guest-load declaration, no mediator adapter, no composition registers a provider or declines to. | After JS-7. |
-| [NONE] | **JS-9 — adversarial input, agents, soak** | **Not started** | None. No corpus, no fuzz target, no soak host, no aggregate-budget exercise. | After JS-8, though the corpus grows from JS-1 onward rather than starting here. |
+| [PARTIAL] | **JS-9 — adversarial input, agents, soak** | **In progress** | [Bundle JS-9-001](evidence/js-9/README.md): a **coverage-guided fuzz target over two of roadmap [section 7](roadmap.md#7-the-bytecode-format-and-the-verifier)'s four surfaces** — the verifier, and the executor over verified-but-adversarial artifacts. Four retained sessions of 25,000 iterations each, seeded from the 60-entry manifest, with **no counterexample**: about four thousand mutants verified and were instantiated and invoked, and every fault the executor produced carried this profile's own typed payload. A session is a total function of its seed and its seed corpus — no wall clock, no thread count — and **a session that answers the same way every time, or that never reaches the executor, exits non-zero** rather than reporting clean iterations it did not earn. One fuzz control: the verifier's constant-index check removed, found at a named iteration, reverted. | **Two of the four surfaces are not fuzzed because they do not exist** — the source tokenizer and parser, and the regular-expression matcher — and a session may not be read as covering them. **Nothing else of this milestone is started**: no soak host, no aggregate-budget exercise, no agents, no session budgets beyond the four retained. The corpus grows from JS-1 onward, which is why this could start before JS-8. |
 | [NONE] | **JS-10 — baselines, packaging, support table, release gate** | **Not started** | None. No measurement lane, no baseline register, no package, no support table, no human review decision on anything. Neither the language-specification edition nor the conformance-suite revision is pinned, and roadmap [section 24](roadmap.gates.md#24-specification-and-platform-references) requires a provisional pin to carry a named exclusion in this ledger until a human has retrieved, hashed, and archived it — see section 3. | After JS-9, and after a named human has read every relevant unit — which is the largest single-owner task in the programme and must be scheduled, not assumed. |
 
 ### What this component is not claiming

@@ -42,12 +42,28 @@ internal static class Program
                 return ReportClosure();
             }
 
+            var replay = Argument(args, "--replay");
+
+            if (replay is not null)
+            {
+                return Fuzzing.Replay(replay);
+            }
+
             var corpus = Argument(args, "--corpus");
 
             if (corpus is null)
             {
                 Console.WriteLine("broiler-js-execution-only: no --corpus <directory> was given");
                 return 2;
+            }
+
+            if (args.Contains("--fuzz", StringComparer.Ordinal))
+            {
+                return Fuzzing.Run(
+                    corpus,
+                    ulong.Parse(Argument(args, "--seed") ?? "1", System.Globalization.CultureInfo.InvariantCulture),
+                    int.Parse(Argument(args, "--iterations") ?? "20000", System.Globalization.CultureInfo.InvariantCulture),
+                    verbose);
             }
 
             var addition = File.ReadAllBytes(Path.Combine(corpus, "addition.bjsb"));
