@@ -325,7 +325,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a declared maximum is used before its ceiling comparison
 - `Broiler.VM.Profile.JavaScript.JavaScriptVerifier.ReadReserved(ref VmBoundedReader, JavaScriptDiagnosticCode)` in `src/Broiler.VM.Profile.JavaScript/JavaScriptVerifier.cs` - Security=High, Spec=none cited, `57B0F0`, PENDING
   - Falsified if: a reserved section carrying a non-zero count verifies
-- `Broiler.VM.Profile.JavaScript.JavaScriptVerifier.Link(ref SectionSet, in VmReadBounds, JavaScriptReadAdapter)` in `src/Broiler.VM.Profile.JavaScript/JavaScriptVerifier.cs` - Security=High, Spec=none cited, `6740E8`, PENDING
+- `Broiler.VM.Profile.JavaScript.JavaScriptVerifier.Link(ref SectionSet, in VmReadBounds, JavaScriptReadAdapter)` in `src/Broiler.VM.Profile.JavaScript/JavaScriptVerifier.cs` - Security=High, Spec=none cited, `B856CD`, PENDING
   - Falsified if: an artifact admitted here contains a jump to a non-boundary, a join whose two heights differ, an unreachable instruction, or a path that reaches the end of the code without returning
 - `Broiler.VM.Profile.JavaScript.JavaScriptVerifier.InvalidInCode(VmReason, JavaScriptDiagnosticCode, ulong, in SectionSet)` in `src/Broiler.VM.Profile.JavaScript/JavaScriptVerifier.cs` - Security=High, Spec=none cited, `B800EB`, PENDING
   - Falsified if: a code-section offset is reported with the artifact-relative section index, or a read-stage offset with a section index

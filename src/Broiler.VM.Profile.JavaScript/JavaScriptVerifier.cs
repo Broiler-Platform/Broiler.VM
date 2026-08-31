@@ -851,7 +851,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
     /// traversal rather than about the program.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=6740E8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=B856CD
     // Broiler-Falsified-If: an artifact admitted here contains a jump to a non-boundary, a join whose two heights differ, an unreachable instruction, or a path that reaches the end of the code without returning
     // Broiler-Human:        PENDING
     private VmVerifierOutcome Link(ref SectionSet sections, in VmReadBounds bounds, JavaScriptReadAdapter adapter)
@@ -870,8 +870,13 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
                 VmBudgetDimension.VerifierWork, VmBudgetScope.Artifact);
         }
 
+        // Three arrays over the code, and all three are charged. The entry map is the one added
+        // at JS-3a, and it goes through the same allocator as the other two for the same reason
+        // they do: an allocation proportional to an untrusted input that the meter never saw is a
+        // budget this profile does not actually hold, whatever the ratio.
         if (!VmBoundedAllocator.TryAllocate<byte>(in bounds, adapter, (uint)code.Length, out var boundary) ||
-            !VmBoundedAllocator.TryAllocate<int>(in bounds, adapter, (uint)code.Length, out var height))
+            !VmBoundedAllocator.TryAllocate<int>(in bounds, adapter, (uint)code.Length, out var height) ||
+            !VmBoundedAllocator.TryAllocate<byte>(in bounds, adapter, (uint)code.Length, out var isEntry))
         {
             return VmVerifierOutcome.ResourceExhaustion(
                 VmBudgetDimension.AllocatedBytes, VmBudgetScope.Artifact);
@@ -928,7 +933,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
             }
         }
 
-        var walk = Walk(in sections, code, boundary, height, constants.Length);
+        var walk = Walk(in sections, code, boundary, height, isEntry, constants.Length);
 
         if (walk.Outcome.Category != VmOutcome.Normal)
         {
@@ -958,13 +963,14 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
             VmArtifactSharing.Shareable);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=187EF7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F47A4B
     // Broiler-Human:        PENDING
     private (VmVerifierOutcome Outcome, int MaximumOperandStack) Walk(
         in SectionSet sections,
         byte[] code,
         byte[] boundary,
         int[] height,
+        byte[] isEntry,
         int constantCount)
     {
         var pending = new System.Collections.Generic.Stack<(int Offset, int Height)>();
@@ -975,12 +981,10 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
         // whichever of the two arrivals the worklist happens to pop second, so a program's
         // diagnostic would depend on a traversal order no artifact can see. Checking the edge
         // makes the answer a property of the program.
-        var isEntry = new bool[code.Length];
-
         foreach (var entry in sections.Entries)
         {
             pending.Push((entry.CodeOffset, 0));
-            isEntry[entry.CodeOffset] = true;
+            isEntry[entry.CodeOffset] = 1;
         }
 
         var observed = 0;
@@ -1072,7 +1076,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
                         in sections), 0);
                 }
 
-                if (isEntry[target] && after != 0)
+                if (isEntry[target] == 1 && after != 0)
                 {
                     return (InvalidInCode(
                         VmReason.SemanticValidationFailed,
@@ -1100,7 +1104,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
                     in sections), 0);
             }
 
-            if (isEntry[next] && after != 0)
+            if (isEntry[next] == 1 && after != 0)
             {
                 return (InvalidInCode(
                     VmReason.SemanticValidationFailed,

@@ -352,12 +352,14 @@ def controls(out):
     ]
 
     passed = 0
+    skipped = 0
 
     for name, why, path, mutate in CONTROLS:
         original = read(path)
         mutated = mutate(original)
 
         if mutated == original:
+            skipped += 1
             log.append(f"[{name}] SKIPPED - the injection changed nothing; the anchor has moved.")
             log.append(f"    file: {path}")
             log.append("")
@@ -387,7 +389,17 @@ def controls(out):
             if "[FAIL]" in line)
         log.append("")
 
-    log.append(f"controls run: {len(CONTROLS)}; controls passed: {passed}")
+    log.append(
+        f"controls run: {len(CONTROLS)}; controls passed: {passed}; controls SKIPPED: {skipped}")
+
+    if skipped:
+        # A skipped control is not a smaller control set, it is a control that was never run while
+        # the log still lists it - which is the shape of a bundle that reads stronger than it is.
+        # The run is finished and retained either way; main() answers non-zero.
+        log.append(
+            "A SKIPPED control is a GAP, not a smaller total. Its anchor has moved, so the "
+            "injection it names was never made and the row above is a name with nothing behind "
+            "it. This collection is not a complete control matrix.")
     log.append("")
     log.append(
         "STATED LIMIT. Rule N2 has a control for its INBOUND half and none for its cross-family "
@@ -398,7 +410,7 @@ def controls(out):
         "and it is named in this bundle's exclusions rather than left as a silent gap.")
 
     write(os.path.join(out, "negative-controls.log"), "\n".join(log) + "\n")
-    return passed
+    return passed, skipped
 
 
 def publish(project, out_directory, extra, environment=None):
@@ -621,8 +633,8 @@ CORPUS_CONTROLS = [
         "the traversal reaches first, which is the order-dependence JS-3a removed.",
         PROFILE_VERIFIER,
         lambda text: text.replace(
-            "            if (isEntry[next] && after != 0)",
-            "            if (false && isEntry[next] && after != 0)"),
+            "            if (isEntry[next] == 1 && after != 0)",
+            "            if (false && isEntry[next] == 1 && after != 0)"),
     ),
     (
         "the-verifier-stops-refusing-unreachable-code",
@@ -647,12 +659,14 @@ def corpus_controls(out, corpus, arguments):
     ]
 
     passed = 0
+    skipped = 0
 
     for name, why, path, mutate in CORPUS_CONTROLS:
         original = read(path)
         mutated = mutate(original)
 
         if mutated == original:
+            skipped += 1
             log.append("[" + name + "] SKIPPED - the injection changed nothing; the anchor moved.")
             log.append("    file: " + path)
             log.append("")
@@ -681,9 +695,17 @@ def corpus_controls(out, corpus, arguments):
             if line.strip().startswith("FAIL"))
         log.append("")
 
-    log.append("corpus controls run: " + str(len(CORPUS_CONTROLS)) + "; passed: " + str(passed))
+    log.append(
+        "corpus controls run: " + str(len(CORPUS_CONTROLS)) + "; passed: " + str(passed) +
+        "; SKIPPED: " + str(skipped))
+
+    if skipped:
+        log.append(
+            "A SKIPPED control is a GAP, not a smaller total: its anchor has moved, so the "
+            "injection it names was never made.")
+
     write(os.path.join(out, "corpus-controls.log"), "\n".join(log) + "\n")
-    return passed
+    return passed, skipped
 
 
 def replay(corpus):
@@ -767,9 +789,12 @@ def main():
     if not arguments.skip_publish:
         compositions(arguments, out, corpus)
 
+    skipped = 0
+
     if not arguments.skip_controls:
-        controls(out)
-        corpus_controls(out, corpus, arguments)
+        _, suite_skipped = controls(out)
+        _, corpus_skipped = corpus_controls(out, corpus, arguments)
+        skipped = suite_skipped + corpus_skipped
 
     hashes(out, [
         SOLUTION,
@@ -800,6 +825,18 @@ def main():
     ])
 
     print(f"collected {arguments.bundle} into {arguments.out}")
+
+    if skipped:
+        # Everything is written; the exit code is what stops a skipped control from being read as
+        # a control that passed. The JS-3a collection found this the hard way: a refactor moved an
+        # anchor, the log said SKIPPED, and nothing else did.
+        print(
+            f"broiler-js-evidence: {skipped} control(s) SKIPPED because their anchors have moved. "
+            "The bundle is retained and is NOT a complete control matrix.")
+
+        return 1
+
+    return 0
 
 
 if __name__ == "__main__":
