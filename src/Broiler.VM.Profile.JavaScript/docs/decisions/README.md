@@ -19,6 +19,7 @@ does not contain says so in its own text.
 | [JSD-0005](0005-the-seed-waited-on-set-and-snapshot-stop-condition.md) | Per-item dispositions on the seed's open work, the snapshot stop condition, the satellite dependency, and the nullable and unsafe positions | JS-0 |
 | [JSD-0006](0006-assurance-evidence-and-rules-adoption.md) | That this profile adopts the component's assurance system, rule register, API baseline and evidence contract rather than standing up its own, and what that costs | JS-0 |
 | [JSD-0007](0007-cross-profile-position-and-amendment-grading.md) | The `WebAssembly` host-object surface as a named exclusion, the refusal of a cross-profile value channel, and the re-grading of the amendment candidates | JS-0 |
+| [JSD-0008](0008-format-version-1-the-entry-point-and-what-js-1-corrected.md) | What format version 1 carries, the entry-point answer, and four things JS-1 corrected in earlier records | JS-1 |
 
 ## What a record must carry
 

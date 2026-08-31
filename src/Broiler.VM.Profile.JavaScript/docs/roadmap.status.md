@@ -6,14 +6,15 @@
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
 gates; this ledger records whether those gates have accepted evidence.
 
-**At this snapshot, JS-0 is `In progress` and JS-1 through JS-10 are `Not started`.** What exists
-is three product project shells carrying one assembly marker each, seven dated decision records,
-four registered architecture rules with nine witness inputs, one evidence bundle with eight
-negative controls, and this ledger. There is **no descriptor, no format, no verifier, no
-executor, no feature manifest, no composition root, no snapshot and no product code**. No
-milestone is complete because its design appears in the roadmap, **nothing here has been reviewed
-by a human**, and nothing in this component may be described as implemented, validated, accepted,
-supported or published.
+**At this snapshot, JS-0 and JS-1 are `In progress` and JS-2 through JS-10 are `Not started`.**
+What exists is one feature manifest, one format version, a verifier, an executor, a descriptor
+admitted by a catalog, a hand-written lowering, two composition roots that publish and run on one
+RID under JIT, trimming and Native AOT, a 51-entry retained corpus, eight decision records, four
+registered architecture rules, two evidence bundles and twelve negative controls. There is **no
+tokenizer, no static-semantic stage, no object model, no standard library, no suspension, no
+guest-initiated load, no snapshot and no conformance harness**. No milestone is complete because
+its design appears in the roadmap, **nothing here has been reviewed by a human**, and nothing in
+this component may be described as validated, accepted or supported.
 
 **The placement decision is taken.** This component is not a repository of its own and is not a
 component of its own: it is a family of product projects inside `Broiler.VM`, at
@@ -78,7 +79,7 @@ closed and has three members:
 - `[FULL]` — the row's bundle demonstrates every exit-gate clause. It is still not `Accepted`:
   acceptance additionally needs an owner and a reviewer decision, which nothing here has.
 
-One row is `[PARTIAL]` and the remaining eleven are `[NONE]`.
+Two rows are `[PARTIAL]` and the remaining ten are `[NONE]`.
 
 **The milestone set changed on 2026-08-31 and this table now carries the new shape.** What was one
 `JS-3` is now `JS-3a` and `JS-3b`, split by dependency rather than by size: the conformance harness
@@ -90,9 +91,9 @@ evidence claim — it changes what a reader is told is schedulable today.
 | Verdict | Milestone | State | Current evidence | Immediate evidence-producing action |
 |---|---|---|---|---|
 | [PARTIAL] | **JS-0 — boundary, placement, identity, assurance floor** | **In progress** | [Bundle JS-0-001](evidence/js-0/README.md): Release build of the whole solution with 0 warnings; the whole suite green; the assurance gate green and the assurance **release** mode refusing while naming each blocking declaration individually; **8 negative controls, each failing the suite when injected and passing after revert**; the candidate seed identity re-derived and matching on all four revisions. Seven decision records, [JSD-0001](decisions/0001-placement-identity-and-assembly-topology.md) through [JSD-0007](decisions/0007-cross-profile-position-and-amendment-grading.md). Rules N1–N4 registered Active with nine witness inputs. | **Two exit-gate clauses are open and neither may be read as passed.** (1) The two-profile catalog test needs this profile's descriptor and there is none until JS-1; its `eval`-refusal half needs guest loads and is carried to JS-8. (2) The public API baseline's subject is the packable set, so it does not cover the profile's assemblies; they export nothing public today, and **JS-1 lands a public surface and owns extending it**. Both are named in the bundle's exclusions. |
-| [NONE] | **JS-1 — the whole contract loop on a narrow slice** | **Not started** | None. No descriptor, no format, no verifier, no executor, no composition root. | After JS-0: mint the slice manifest, define format version 1, and drive one artifact through verify, instantiate, and invoke in a composition that publishes and runs under Native AOT. |
+| [PARTIAL] | **JS-1 — the whole contract loop on a narrow slice** | **In progress** | [Bundle JS-1-001](evidence/js-1/README.md). `broiler.javascript.slice` is minted and format version 1 defined, carrying framed sections, a tagged constant pool, fixed instruction boundaries, **exception regions and suspension targets reserved and refused**, a canonical position table and declared maxima checked before use. All seven core-facing types are implemented. The descriptor is filled in one full-arity construction, admitted by a catalog, and **four named negative cases each provoke a refusal**. **All five verifier outcomes** are produced by named entries of a 51-entry retained corpus which replays twice with no residue, contains 16 passing controls, and on which the verifier throws nothing. **Four of the five execution-step kinds** are produced by named checks. **Two composition roots publish AND run on `win-x64` under JIT, trimmed self-contained and Native AOT**, warnings as errors, closures read off the published output: six managed assemblies for the execution-only image and seven for the compiler-bearing one, **differing by exactly the lowering**. JS-0's carried two-profile catalog clause is discharged in both directions. **Twelve negative controls**, four of them judged by the corpus rather than by the suite. Decision [JSD-0008](decisions/0008-format-version-1-the-entry-point-and-what-js-1-corrected.md) records the entry-point answer and four corrections to earlier records. | **One exit-gate clause is open.** The public API baseline does not cover the profile's assemblies, and the reason is now known rather than pending: `ApiSurface` describes a surface by loading an assembly, which needs a project reference, which **rule A11 forbids a test project to have on a profile**. Two routes are named in the bundle — describe from metadata, or have a composition root print its own surface — and the clause is carried to JS-3b. `Suspended` is declared unreachable and produced at JS-7; five descriptor rows are provisional pending JS-5's measurements; one RID, one machine. |
 | [NONE] | **JS-2 — seeding snapshot and front-end ingest** | **Blocked** (recorded as `Not started` above the blocker, because no work has begun either) | None. No snapshot has been taken. The candidate identity in roadmap [section 4.1](roadmap.md#41-the-snapshot-identity) is a recorded candidate, not a taken snapshot. | **Blocked on two named external dependencies.** See section 3. |
-| [NONE] | **JS-3a — diagnostic registry, position encoding, pinned suite, the oracle** | **Not started** | None. No diagnostic registry, no position encoding, no harness, no pinned suite revision, no self-check fixture. | **Openable against JS-1 alone**, and this is the point of the split: nothing in the oracle method needs a copied line, so this milestone sits behind neither of the two blockers in section 3. Publish the registry bound in both directions, then stand the harness up and prove the self-check before scoring anything. |
+| [NONE] | **JS-3a — diagnostic registry, position encoding, pinned suite, the oracle** | **Not started** | None. No published registry, no harness, no pinned suite revision, no self-check fixture. The codes JS-1 emits exist and are grouped by emitting stage, and the position encoding JS-1 uses populates two of the record's four fields; neither is published or versioned. | **Openable now, and JS-1 has produced the scoring target the split was designed around**: five verifier outcomes each by a named corpus entry, and a corpus that replays twice with no residue. Publish the registry bound in both directions — including which half each code belongs to — then stand the harness up and prove the self-check before scoring anything. |
 | [NONE] | **JS-3b — static semantics as one verification stage, and the lowering** | **Not started** | None. No consolidated early-error stage, no strict-mode ruling, no lowering, no recorded answer for where the verification boundary falls. | After JS-2, and after JS-3a supplies the registry its diagnostics land in. Record the boundary decision of roadmap [section 9](roadmap.md#9-the-semantic-front-end-and-lowering) before writing the stage that depends on it. |
 | [NONE] | **JS-4 — value representation and object model** | **Not started** | None. The value-representation decision is **open**, and roadmap [section 23](roadmap.gates.md#23-risks-and-stop-conditions) makes copying standard-library source while it is open a stop condition. | Open the decision now — it needs no copied code and can be prepared against JS-1 rather than waiting on the acceptance gate. |
 | [NONE] | **JS-5 — executor, abrupt completion, budgets** | **Not started** | None. No interpreter, no charging model, no measured `CallDepth`. | After JS-4. |
@@ -106,9 +107,15 @@ evidence claim — it changes what a reader is told is schedulable today.
 
 Stated positively, because a table of empty rows invites a reader to fill them in:
 
-- **No language is supported.** No feature manifest exists, none is accepted, and a manifest name
-  would not be a conformance claim even if one did.
-- **No composition is advertised**, none is packable, and no runtime identifier is claimed.
+- **No language is supported.** One feature manifest exists and **none is accepted**: acceptance
+  needs a retained oracle run, there is no oracle, and a manifest name would not be a conformance
+  claim even if there were. `broiler.javascript.slice` admits numbers, arithmetic, comparison,
+  local variables and structured control flow, and admits no object, no string, no function and no
+  property access - which is deliberately not JavaScript anyone would ship.
+- **No composition is advertised** and none is packable. Two composition roots exist, both
+  registered as demonstrations. **One runtime identifier is recorded as published and run** -
+  `win-x64` - which is a record of what happened on one machine and not a supported-RID claim;
+  claiming a RID is a release act and JS-10 owns it.
 - **No conformance result exists.** The suite is not pinned and the harness is not built.
 - **No measurement exists**, and no figure from any other component stands in for one.
 - **Nothing is reviewed.** No human has read anything here, and nothing that will be copied
@@ -117,11 +124,15 @@ Stated positively, because a table of empty rows invites a reader to fill them i
   record has a shape; JS-2 records what was actually taken, and may differ. Bundle JS-0-001
   re-derives that candidate from the checkout and matches on all four revisions, which says the
   record is reproducible and says nothing about a snapshot having happened.
-- **No product code exists.** The three assemblies JS-0 creates hold one `AssemblyMarker` each.
-  A green suite over them proves the graph rules and the assurance floor; it proves nothing about
-  a verifier, an executor or a language, because there is none.
-- **JS-0 is not accepted.** Two of its exit-gate clauses are open, and acceptance would in any
-  case need a reviewer decision that nobody has made.
+- **The product code that exists is a slice and says so.** There is a verifier, an executor and a
+  hand-written lowering over about two thousand readable lines. There is no tokenizer, no static
+  semantics, no object model, no standard library, no suspension and no guest-initiated load, and
+  the value representation is provisional until JS-4.
+- **JS-1's hand-written encoder and lowering are scheduled for deletion at JS-4**, with a named
+  owner and a gate clause, because a second handle-producing path and a second lowering are
+  non-goals.
+- **Neither JS-0 nor JS-1 is accepted.** Each has an open exit-gate clause, and acceptance would
+  in any case need a reviewer decision that nobody has made.
 
 ---
 

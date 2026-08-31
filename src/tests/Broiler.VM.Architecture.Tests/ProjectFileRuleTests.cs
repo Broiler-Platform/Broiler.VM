@@ -325,8 +325,13 @@ public sealed class ProjectFileRuleTests
     {
         Assert.Empty(Sweep(ArchitectureRules.N4));
 
-        // The rule has real subjects: three family projects in the graph, none packable. A rule
-        // whose subject set is empty is witnessed and proves nothing about the checkout.
+        // The rule has real subjects: three family projects in the graph - the format, the profile
+        // and the lowering - none of them packable. The two JavaScript composition roots are NOT
+        // family projects and that is deliberate: they are named Broiler.VM.Composition.JavaScript.*
+        // rather than Broiler.VM.Profile.JavaScript.Composition.*, because the second shape makes
+        // a composition root indistinguishable from a profile assembly to every rule that
+        // identifies one by prefix - A8 fired on it, correctly, when it was tried. A12 and the
+        // composition register hold the roots instead.
         Assert.Equal(
             3,
             ComponentGraph.Projects.Count(project =>

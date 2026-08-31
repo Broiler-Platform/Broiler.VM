@@ -24,6 +24,7 @@ import hashlib
 import io
 import os
 import platform
+import shutil
 import subprocess
 import sys
 
@@ -37,8 +38,31 @@ FORMAT_PROJECT = os.path.join(
 COMPILER_PROJECT = os.path.join(
     "src", "Broiler.VM.Profile.JavaScript.Compiler", "Broiler.VM.Profile.JavaScript.Compiler.csproj")
 PROFILE_MARKER = os.path.join(PROFILE_ROOT, "AssemblyMarker.cs")
+PROFILE_VALUE = os.path.join(PROFILE_ROOT, "JavaScriptValue.cs")
+PROFILE_EXECUTOR = os.path.join(PROFILE_ROOT, "JavaScriptExecutor.cs")
+PROFILE_VERIFIER = os.path.join(PROFILE_ROOT, "JavaScriptVerifier.cs")
 FIXTURES_PROJECT = os.path.join(
     "src", "tests", "Broiler.VM.Fixtures", "Broiler.VM.Fixtures.csproj")
+
+# The two composition roots the register lists for this profile, with the slug rules K3 and K4 use
+# to find their retained artefacts: the last dot-separated segment, lowercased.
+EXECUTION_ONLY = os.path.join(
+    "src", "compositions", "Broiler.VM.Composition.JavaScript.ExecutionOnly",
+    "Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj")
+SLICE_COMPILER = os.path.join(
+    "src", "compositions", "Broiler.VM.Composition.JavaScript.SliceCompiler",
+    "Broiler.VM.Composition.JavaScript.SliceCompiler.csproj")
+COMPOSITIONS = (
+    ("executiononly", "Broiler.VM.Composition.JavaScript.ExecutionOnly", EXECUTION_ONLY),
+    ("slicecompiler", "Broiler.VM.Composition.JavaScript.SliceCompiler", SLICE_COMPILER),
+)
+
+# Native AOT on Windows needs vswhere.exe on PATH. The ILCompiler package's own findvcvarsall.bat
+# calls it unqualified, and when it is missing the batch file ERROR TEXT is substituted into the
+# property that becomes the linker path - so the publish fails with MSB3073 naming a command that
+# looks like a sentence. The core exclusion EX-42 records this as needing a vcvars64 shell; it does
+# not. It needs this directory on PATH, which is a narrower and more useful statement.
+VS_INSTALLER = "C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer"
 
 # The candidate snapshot identity JSD-0005 records. The script re-derives the four revisions from
 # an aggregate checkout and compares; it does not take a snapshot and does not judge the result.
@@ -322,6 +346,273 @@ def controls(out):
     return passed
 
 
+def publish(project, out_directory, extra, environment=None):
+    """Publish one project into a directory, returning the exit code and the log."""
+    command = [
+        "dotnet", "publish", project, "-c", "Release", "--nologo",
+        "-p:TreatWarningsAsErrors=true", "-o", out_directory] + extra
+
+    completed = subprocess.run(
+        command, cwd=ROOT, capture_output=True, text=True,
+        encoding="utf-8", errors="replace", env=environment)
+
+    return completed.returncode, " ".join(command) + "\n" + (completed.stdout or "") + (completed.stderr or "")
+
+
+def is_managed(path):
+    """
+    Whether a PE file carries a CLI header, which is what makes it a managed assembly.
+
+    The core's collection script filters a closure by NAME - anything System.* or Microsoft.* -
+    and that is enough on Linux, where the runtime's own native components are .so files a .dll
+    glob never sees. On Windows they are .dll files called coreclr, clrjit, hostfxr and so on, and
+    a name filter lets every one of them into the report. A closure report is a statement about
+    what the composition contributes, so the question it has to ask is whether a file is a managed
+    assembly at all - which the PE header answers exactly.
+    """
+    try:
+        with io.open(path, "rb") as handle:
+            data = handle.read(1024)
+    except OSError:
+        return False
+
+    if len(data) < 0x40 or data[:2] != b"MZ":
+        return False
+
+    header = int.from_bytes(data[0x3C:0x40], "little")
+
+    if len(data) < header + 24 or data[header:header + 4] != b"PE\0\0":
+        return False
+
+    magic = int.from_bytes(data[header + 24:header + 26], "little")
+    directories = header + 24 + (96 if magic == 0x10B else 112)
+    cli = directories + (14 * 8)
+
+    if len(data) < cli + 8:
+        return False
+
+    return int.from_bytes(data[cli + 4:cli + 8], "little") != 0
+
+
+def closure_of(directory):
+    """
+    The non-framework managed assemblies a published directory contains.
+
+    Read off the published output rather than derived from the project file, because a reference
+    set that looks right can still pull something in through a transitive package, and the linker
+    is the only party that knows what actually shipped.
+    """
+    if not os.path.isdir(directory):
+        return []
+
+    return sorted(
+        name[:-4] for name in os.listdir(directory)
+        if name.endswith(".dll")
+        and is_managed(os.path.join(directory, name))
+        and not name.startswith("System.")
+        and not name.startswith("Microsoft.")
+        and name not in ("netstandard.dll", "mscorlib.dll", "WindowsBase.dll"))
+
+
+def compositions(arguments, out, corpus):
+    """
+    Publish and run both roots in three modes, and retain what each composed and shipped.
+
+    Three artefacts per composition. The transcript says whether the checks passed in every mode;
+    the catalog table says which profiles were composed, compared across modes byte for byte so a
+    difference between JIT and Native AOT is a failure rather than a footnote; and the closure
+    report lists what the published image actually contains, which is the only form of Native AOT
+    evidence the roadmap admits - a linker annotation without execution is insufficient.
+    """
+    rid = arguments.rid
+    binary = ".exe" if platform.system() == "Windows" else ""
+    environment = dict(os.environ)
+
+    if platform.system() == "Windows" and os.path.isdir(VS_INSTALLER):
+        environment["PATH"] = VS_INSTALLER + os.pathsep + environment["PATH"]
+
+    log = []
+    ok = True
+
+    for slug, assembly, project in COMPOSITIONS:
+        catalogs = {}
+        closures = ["# closure " + assembly + " rid=" + rid, ""]
+
+        for mode, extra in (
+                ("jit", ["-r", rid, "--self-contained", "false", "-p:PublishTrimmed=false"]),
+                ("trimmed", ["-r", rid, "--self-contained", "true"]),
+                ("aot", ["-r", rid, "-p:PublishAot=true"])):
+
+            directory = os.path.join(ROOT, "artifacts", "js-publish", slug, mode)
+            shutil.rmtree(directory, ignore_errors=True)
+            code, text = publish(project, directory, extra, environment)
+            log.append("[" + slug + "/" + mode + "] publish exit " + str(code) + "\n" + text)
+
+            if code != 0:
+                ok = False
+                closures.append("[" + mode + "] publish failed")
+                closures.append("")
+                continue
+
+            executable = os.path.join(directory, assembly + binary)
+
+            catalog = subprocess.run(
+                [executable, "--closure"], capture_output=True, text=True,
+                encoding="utf-8", errors="replace")
+
+            catalogs[mode] = catalog.stdout or ""
+            log.append("[" + slug + "/" + mode + "] --closure exit " + str(catalog.returncode)
+                       + "\n" + catalogs[mode])
+
+            run_arguments = (
+                [executable, "--corpus", corpus, "--verbose"] if slug == "executiononly"
+                else [executable, "--checks", "--verbose"])
+
+            result = subprocess.run(
+                run_arguments, capture_output=True, text=True,
+                encoding="utf-8", errors="replace")
+
+            log.append("[" + slug + "/" + mode + "] run exit " + str(result.returncode) + "\n"
+                       + (result.stdout or "") + (result.stderr or ""))
+
+            if result.returncode != 0:
+                ok = False
+
+            names = closure_of(directory)
+            closures.append("[" + mode + "] " + str(len(names)) + " non-framework assemblies")
+            closures.extend(names)
+            closures.append("")
+
+        distinct = {text for text in catalogs.values()}
+        log.append("[" + slug + "] catalog tables identical across modes: " + str(len(distinct) <= 1))
+
+        if len(distinct) > 1:
+            ok = False
+
+        write(os.path.join(out, "catalog-" + slug + ".txt"), next(iter(catalogs.values()), ""))
+        write(os.path.join(out, "closure-" + slug + ".txt"), "\n".join(closures))
+
+    write(os.path.join(out, "publish-and-run.log"), "\n\n".join(log))
+    return ok
+
+
+# The corpus controls: injections the SUITE cannot see.
+#
+# Every control in CONTROLS above is judged by the test suite, which is right for a rule about the
+# graph or about an annotation. A language semantic is not in the suite at all - rule A11 forbids a
+# test project to reference a profile assembly, so the behavioural evidence is the composition
+# root's own run - and a corpus that could not detect a semantic regression would be a directory of
+# bytes rather than a gate. These four are judged by running the execution-only root against the
+# retained corpus, which is the thing that would have to notice.
+CORPUS_CONTROLS = [
+    (
+        "the-language-guards-division-by-zero",
+        "Division by zero is made a fault, which is what a calculator does and not what the "
+        "language does. The corpus entry recording Infinity must stop agreeing.",
+        PROFILE_EXECUTOR,
+        lambda text: text.replace(
+            "                    stack[top - 2] = JavaScriptValue.Number(\n"
+            "                        stack[top - 2].ToNumber() / stack[top - 1].ToNumber());",
+            "                    if (stack[top - 1].ToNumber() == 0)\n"
+            "                    {\n"
+            "                        return VmExecutionStep.Faulted(new JavaScriptFault(\n"
+            "                            ProfileId, JavaScriptErrorKind.RangeError, \"division by zero\"));\n"
+            "                    }\n\n"
+            "                    stack[top - 2] = JavaScriptValue.Number(\n"
+            "                        stack[top - 2].ToNumber() / stack[top - 1].ToNumber());"),
+    ),
+    (
+        "strict-equality-stops-comparing-kinds",
+        "Strict equality is made to compare numbers whatever the kinds are, so `1 === true` "
+        "becomes true. The entry recording false must stop agreeing.",
+        PROFILE_VALUE,
+        lambda text: text.replace(
+            "        if (Kind != other.Kind)\n        {\n            return false;\n        }",
+            "        if (Kind != other.Kind)\n        {\n            return ToNumber() == other.ToNumber();\n        }"),
+    ),
+    (
+        "to-uint32-becomes-a-cast",
+        "The ToUint32 conversion is replaced by a C# cast, which saturates instead of reducing "
+        "modulo 2^32. The bitwise-or entry recording -2147483648 must stop agreeing.",
+        PROFILE_VALUE,
+        lambda text: text.replace(
+            "        var truncated = System.Math.Truncate(value) % 4294967296.0;",
+            "        var truncated = (double)(uint)System.Math.Min(System.Math.Max(value, 0), 4294967295.0);"),
+    ),
+    (
+        "the-verifier-stops-refusing-unreachable-code",
+        "The unreachable-code check is removed, so an artifact carrying bytes no entry point "
+        "reaches would verify. The entry recording that rejection must stop agreeing.",
+        PROFILE_VERIFIER,
+        lambda text: text.replace(
+            "            if (boundary[offset] == 1 && height[offset] < 0)",
+            "            if (false && boundary[offset] == 1 && height[offset] < 0)"),
+    ),
+]
+
+
+def corpus_controls(out, corpus, arguments):
+    """Each control is injected, judged by the corpus replay, and reverted."""
+    log = [
+        "These controls are judged by running the execution-only composition against the retained",
+        "corpus, NOT by the test suite. A language semantic is in no test project - rule A11",
+        "forbids one to reference a profile assembly - so a corpus that could not detect a",
+        "semantic regression would be a directory of bytes rather than a gate.",
+        "",
+    ]
+
+    passed = 0
+
+    for name, why, path, mutate in CORPUS_CONTROLS:
+        original = read(path)
+        mutated = mutate(original)
+
+        if mutated == original:
+            log.append("[" + name + "] SKIPPED - the injection changed nothing; the anchor moved.")
+            log.append("    file: " + path)
+            log.append("")
+            continue
+
+        overwrite(path, mutated)
+        injected_code, injected_output = replay(corpus)
+        overwrite(path, original)
+
+        if read(path) != original:
+            raise SystemExit("control " + name + " did not restore " + path)
+
+        reverted_code, _ = replay(corpus)
+
+        verdict = "PASS" if injected_code != 0 and reverted_code == 0 else "FAIL"
+        passed += 1 if verdict == "PASS" else 0
+
+        log.append("[" + name + "] " + verdict)
+        log.append("    why:       " + why)
+        log.append("    file:      " + path)
+        log.append("    injected:  exit " + str(injected_code))
+        log.append("    reverted:  exit " + str(reverted_code))
+        log.extend(
+            "      " + line.strip()
+            for line in injected_output.splitlines()
+            if line.strip().startswith("FAIL"))
+        log.append("")
+
+    log.append("corpus controls run: " + str(len(CORPUS_CONTROLS)) + "; passed: " + str(passed))
+    write(os.path.join(out, "corpus-controls.log"), "\n".join(log) + "\n")
+    return passed
+
+
+def replay(corpus):
+    """Rebuild and run the execution-only root against the retained corpus."""
+    code, text = run(["dotnet", "build", SOLUTION, "-c", "Release", "--nologo"])
+
+    if code != 0:
+        return code, text
+
+    return run([
+        "dotnet", "run", "--project", EXECUTION_ONLY, "-c", "Release", "--no-build",
+        "--", "--corpus", corpus])
+
+
 def hashes(out, paths):
     lines = []
 
@@ -348,6 +639,9 @@ def main():
     parser.add_argument("--owner", default="profile architecture owner (unassigned identity)")
     parser.add_argument("--reviewer", default="NONE - nothing here has been reviewed")
     parser.add_argument("--skip-controls", action="store_true")
+    parser.add_argument("--skip-publish", action="store_true")
+    parser.add_argument("--rid", default="win-x64" if platform.system() == "Windows" else "linux-x64")
+    parser.add_argument("--corpus", default=os.path.join("src", "tests", "corpus", "js-1"))
     arguments = parser.parse_args()
 
     out = os.path.join(ROOT, arguments.out)
@@ -383,8 +677,14 @@ def main():
         "individually rather than counted.\n\n"
         f"exit {completed.returncode}\n\n{(completed.stdout or '') + (completed.stderr or '')}")
 
+    corpus = os.path.join(ROOT, arguments.corpus)
+
+    if not arguments.skip_publish:
+        compositions(arguments, out, corpus)
+
     if not arguments.skip_controls:
         controls(out)
+        corpus_controls(out, corpus, arguments)
 
     hashes(out, [
         SOLUTION,

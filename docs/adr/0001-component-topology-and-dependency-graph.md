@@ -1131,3 +1131,73 @@ assurance system's covered set grows to six product assemblies, which is the
 product/test partition applied unchanged rather than a new policy - decision
 JSD-0006 records why the profile adopts this component's assurance system rather
 than standing up a second one over the same tree.
+
+---
+
+### 2026-08-31 - the JavaScript profile's two composition roots
+
+Milestone JS-1 of the `Broiler.VM.Profile.JavaScript` roadmap closes the whole
+contract loop on one feature manifest, and it needs somewhere to run. This
+record authorises the projects; the profile's own JSD-0008 records what they are
+and why there are two.
+
+**The budget.** JS-1 adds two projects and no packable assembly:
+
+| Project | Path | Kind | Why |
+|---|---|---|---|
+| `Broiler.VM.Composition.JavaScript.ExecutionOnly` | `src/compositions/` | composition root | The execution-only image: format, verifier, executor and **no compiler**. It runs precompiled artifacts read as bytes |
+| `Broiler.VM.Composition.JavaScript.SliceCompiler` | `src/compositions/` | composition root | The producer: it carries the lowering, writes the retained corpus, and holds the checks that need a second profile in the catalog |
+
+The graph goes from 17 projects and 46 edges to 19 and 55. **The packable set is
+unchanged at exactly three**, and both roots carry the literal
+`<IsPackable>false</IsPackable>`.
+
+**Why two projects and not two modes of one binary.** They differ by exactly one
+reference - the lowering - and that difference *is* the `execution-only`
+composition label. A flag on one binary would have made the difference a run-time
+choice inside one closure, and a closure report cannot see a flag. The published
+closures are what settles it: six managed assemblies for the execution-only image
+and seven for the compiler-bearing one, differing by
+`Broiler.VM.Profile.JavaScript.Compiler` and nothing else.
+
+**A naming collision, recorded because it is a property of the rules rather than
+a preference.** The JavaScript roadmap proposes the name
+`Broiler.VM.Profile.JavaScript.Composition.*` for these roots. It cannot be used:
+every rule that identifies a profile assembly does so by the
+`Broiler.VM.Profile.` prefix, so a composition root under that prefix *is* a
+profile assembly to rules A8, A11 and A13 - and A8 fired on the first build,
+correctly, because a composition root must reference the runtime. The roots take
+this record's own `Broiler.VM.Composition.*` shape instead, which puts them where
+A12 and the composition register can hold them.
+
+**Three rules in group K changed, and each change is a widening the register
+needed rather than a relaxation.**
+
+- **K2 no longer forbids the reserved first label; it checks the pairing.** The
+  reserved `broiler` label is reserved FOR Broiler, and what the core refuses at
+  catalog construction is a profile claiming it without a `Broiler.*` package
+  identity. Forbidding the namespace outright was indistinguishable from the
+  pairing rule while every composed profile was a consumer one under a
+  documentation domain, and became wrong the moment a genuine Broiler-owned
+  profile was composed.
+- **K2's reference-set comparison is now two directions rather than one
+  equality.** Every non-core assembly a root references must be declared; every
+  declared PROFILE must be referenced. A declared SIBLING need not be, because a
+  profile's format assembly arrives transitively and appears in no composition's
+  project file while being unmistakably in every published closure.
+- **The register gains a sibling column and an evidence column.** The first
+  because the schema had no place for a lowering - an assembly in the closure
+  that no profile comes from - and the second because this repository now has two
+  milestone series, so rules K3 and K4 read the bundle each row names instead of
+  the core's current one. Without the second, a JavaScript closure would have
+  been compared against a file nobody wrote for it.
+
+**One measurement correction that is not this record's but is recorded where a
+reader will look.** Exclusion EX-42 says the Native AOT publish step needs a
+`vcvars64` shell on Windows. It does not. It needs `vswhere.exe` on `PATH`: the
+ILCompiler package's own `findvcvarsall.bat` calls it unqualified, and when it is
+missing the batch file's error text is substituted into the property that becomes
+the linker path, so the publish fails with MSB3073 naming a command that reads as
+a sentence. Adding the Visual Studio Installer directory to `PATH` publishes and
+runs; a `vcvars64` shell without it still fails. The JavaScript collection script
+does that and says so at the constant.

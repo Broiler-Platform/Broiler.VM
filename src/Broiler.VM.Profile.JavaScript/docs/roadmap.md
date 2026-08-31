@@ -2,11 +2,13 @@
 
 **Status:** Proposed roadmap for the JavaScript language profile of the Broiler.VM execution
 core. [The evidence ledger](roadmap.status.md) is the authority for what has been accepted; as of
-2026-08-31 it records **JS-0 as in progress with two named open gate clauses, and JS-1 through
-JS-10 as not started**. What exists is three product project shells, seven decision records, four
-registered rules and one evidence bundle; there is still **no descriptor, no format, no verifier,
-no executor, no manifest, no snapshot and no product code**, and nothing here is accepted. No
-milestone is complete because its design appears in this document.
+2026-08-31 it records **JS-0 and JS-1 as in progress, each with one named open gate clause, and
+JS-2 through JS-10 as not started**. What exists is one feature manifest, one format version, a
+verifier, an executor, a hand-written lowering, two composition roots that publish and run on one
+RID, a retained corpus and eight decision records; there is still **no tokenizer, no static
+semantics, no object model, no standard library, no suspension, no guest-initiated load, no
+snapshot and no conformance harness**, and nothing here is accepted. No milestone is complete
+because its design appears in this document.
 
 `Broiler.VM.Profile.JavaScript` is a **language profile**: one bytecode format, one verifier, one
 value and frame model, one executor, one set of host imports, and one conformance suite, compiled

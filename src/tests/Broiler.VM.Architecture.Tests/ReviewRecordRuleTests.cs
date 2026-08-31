@@ -670,11 +670,12 @@ public sealed class ReviewRecordRuleTests
         Assert.Empty(CoverageViolations(HumanReview, AssuranceSources.Files, AssuranceScanner.Units));
         Assert.Empty(FileCountViolations(HumanReview, AssuranceSources.Files));
 
-        // Non-vacuous: the table is 50 rows over a tree of 50 files, so a clean result is a
-        // comparison and not a quantifier over nothing. JS-0 adds three - one assembly marker per
-        // JavaScript profile project shell - and they are covered for the same reason every other
-        // product file is, which is that they compile into an assembly this component builds.
-        Assert.Equal(50, AssuranceSources.Files.Count);
+        // Non-vacuous: the table is 60 rows over a tree of 60 files, so a clean result is a
+        // comparison and not a quantifier over nothing. JS-0 added three assembly markers and JS-1
+        // adds seven more files - the format, the profile and the lowering - each covered for the
+        // same reason every other product file is, which is that it compiles into an assembly this
+        // component builds.
+        Assert.Equal(60, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

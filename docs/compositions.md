@@ -56,6 +56,37 @@ A row in the composition table declares, in this order:
 | Profile assemblies | The assemblies those profiles come from. This is what a closure report must contain beyond the three core assemblies, and nothing else. |
 | Host capabilities | The capability IDs the root registers, with whether the composed profiles import them. |
 | Guest-initiated loads | Whether the root registers an artifact provider. A composition that registers none refuses every guest-initiated load deterministically, which is what a content policy is. |
+| Sibling assemblies | Assemblies the root links that are neither core, nor the root, nor a profile - a profile's own siblings, of which a lowering is the first. `none` where there are none. |
+| Evidence | The bundle directory holding this composition's retained catalog table and closure report. Rules K3 and K4 read it. |
+
+**A sibling is in the image and need not be in the project file.** The format
+assembly arrives transitively through the profile and appears in no composition
+root's references, while being unmistakably in every published closure - so rule
+K2 requires every REFERENCED assembly to be declared and every declared PROFILE
+to be referenced, and does not require a declared sibling to be. The execution-only
+root's sibling cell therefore names the format and not the lowering, which is the
+distinction the whole label rests on.
+
+**The sibling column was added on 2026-08-31 because the schema had no place for
+a lowering.** A profile's lowering is in the closure of a compiler-bearing root
+and comes from no profile at all, so before this column the only way to make such
+a root pass rule K2 was to declare the lowering in the Profile-assemblies cell -
+as though a profile came from it - which would then have made the catalog table
+and the register disagree. The two claims are now separate: what a profile comes
+from, and what else is in the image. **The execution-only root's cell reads
+`none`, and that is the whole of the execution-only label.**
+
+**The evidence column was added on 2026-08-31 and it is not decoration.** K3 and
+K4 used to read one bundle - the core's current one - which was right while every
+composition belonged to the core. This repository now holds two milestone series,
+and the JavaScript profile's roots keep their evidence in the profile's own
+bundle tree; a rule that read the core's bundle for them would either fail or,
+worse, compare a JavaScript closure against a file nobody wrote for it. Naming
+the bundle per row keeps the two ledgers apart while one rule still holds every
+composition to its own evidence. **A core milestone bump has to move the two
+`docs/evidence/vm-6` cells**, and that is deliberate: the register is a reviewed
+document, and a cell that moved without anyone reading it is what a literal
+inside a test would have been.
 
 Two things the schema deliberately does not have. There is no "profiles
 available but not registered" column, because composition as a runtime option
@@ -69,10 +100,12 @@ the exact closure this register exists to describe.
 
 ## 3. The compositions
 
-| Composition | Kind | Profiles | Profile assemblies | Host capabilities | Guest-initiated loads |
-|---|---|---|---|---|---|
-| `Broiler.VM.Composition.Calculator` | demonstration | `com.example.calculator` | `Com.Example.Calculator` | `com.example.host.unreachable` (imported by no composed profile) | none registered |
-| `Broiler.VM.Composition.Workbench` | demonstration | `com.example.calculator`, `com.example.ledger` | `Com.Example.Calculator`, `Com.Example.Ledger` | `com.example.ledger.stamp` (optional import of `com.example.ledger`; the calculator imports nothing) | none registered |
+| Composition | Kind | Profiles | Profile assemblies | Sibling assemblies | Host capabilities | Guest-initiated loads | Evidence |
+|---|---|---|---|---|---|---|---|
+| `Broiler.VM.Composition.Calculator` | demonstration | `com.example.calculator` | `Com.Example.Calculator` | none | `com.example.host.unreachable` (imported by no composed profile) | none registered | `docs/evidence/vm-6` |
+| `Broiler.VM.Composition.Workbench` | demonstration | `com.example.calculator`, `com.example.ledger` | `Com.Example.Calculator`, `Com.Example.Ledger` | none | `com.example.ledger.stamp` (optional import of `com.example.ledger`; the calculator imports nothing) | none registered | `docs/evidence/vm-6` |
+| `Broiler.VM.Composition.JavaScript.ExecutionOnly` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format` | none registered | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-1` |
+| `Broiler.VM.Composition.JavaScript.SliceCompiler` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler` | none registered | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-1` |
 
 **Why the single-profile root registers a capability nothing imports.** It is
 the demonstration that registering a capability never implies a provider. The
@@ -93,6 +126,30 @@ calculator's limits - the effective ceiling for an operation is the intersection
 of the host's with **that profile's own** hard maxima, so the calculator is still
 held to one section and no host call - and the profile-authoring consequence is
 recorded in section 5.
+
+**Why the two JavaScript roots are two projects and not two modes of one.** They
+differ by exactly one reference - the lowering - and that difference is the whole
+of the `execution-only` composition label. The execution-only root names the
+profile and not the compiler, so it cannot turn source into an artifact however
+it is invoked, and every artifact it runs is precompiled and read as bytes from
+the retained corpus. The slice-compiler root names both, lowers the slice
+programs and writes that corpus. A flag on one binary would have made the
+difference a run-time choice inside one closure, and a closure report cannot see
+a flag.
+
+**Neither is `narrow-runtime-compiler`, and the slice-compiler root is only
+shaped like one.** That label belongs to a composition carrying a lowering for a
+named restricted SOURCE surface, and there is no source surface until JS-3b
+writes the tokenizer and the static semantics. What this root lowers is a
+programmatic builder, so it is recorded here as a demonstration and claims no
+label. JS-3b claims the label with a publish-and-run gate of its own.
+
+**The neighbour profile the slice-compiler root composes for its cross-profile
+checks is defined inside that root**, not referenced as an assembly, which is why
+its Profiles column names one profile. It exists so that a neighbour's maxima and
+a neighbour's adopted defaults can be shown to reach different things; putting it
+in the execution-only closure would have contradicted the single-profile claim
+that closure exists to make.
 
 *Corrected 2026-08-31, and this paragraph contradicted section 5 until it was.*
 It also said a runtime ceiling was "additionally clamped to the tightest profile
