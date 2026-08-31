@@ -881,15 +881,37 @@ never complete because its design appears here.
      records not carrying it. Every ceiling breach that names a budget dimension is `resource
      exhaustion` naming that dimension and scope, or it is not, but the four artifact-shaped
      ceilings are ruled together and not split arbitrarily.
-  2. **Both catalog-wide ceiling terms** — the tightest hard maximum and the tightest adopted
-     default — written into the ordered precedence algorithm that owns effective-ceiling
-     materialization, with the "publish an unconstrained maximum on a dimension you declare
-     inapplicable" rule stated as a profile obligation.
+  2. **The catalog-wide ceiling term** — the tightest adopted default — written into the ordered
+     precedence algorithm that owns effective-ceiling materialization, with the profile obligation
+     it carries stated: a stingy default on a dimension you never use is what reaches a neighbour,
+     and no default may be unconstrained.
+
+     *Narrowed 2026-08-31, and the narrowing is the point rather than a tidy-up.* This item used
+     to name **two** catalog-wide terms — the tightest hard maximum as well as the tightest
+     adopted default — and to require the "publish an unconstrained maximum on a dimension you
+     declare inapplicable" rule as a profile obligation. One term and the whole obligation were
+     retracted: the hard-maximum clamp was an implementation defect rather than a property of the
+     contract, ADR 0007 puts `ProfileMax` at P2 against the profile an artifact names, and
+     removing it takes the obligation with it. The section
+     [Which ceiling terms are catalog-wide, and which are not](#which-ceiling-terms-are-catalog-wide-and-which-are-not)
+     is the ruling. An instruction to write down a property the contract does not have is worse
+     than a missing instruction, which is why this reads as a correction rather than a deletion.
   3. **Host-exception translation precedence**, written down rather than left to be re-derived
      from the implementation.
-  4. **Whether a profile's own sibling assembly counts inside the frozen two-core-assembly
-     reference set**, and the reconciliation of section 5 with section 10 on where a format lives.
-     No profile can take its placement decision until this is answered.
+  4. ~~**Whether a profile's own sibling assembly counts inside the frozen two-core-assembly
+     reference set**, and the reconciliation of section 5 with section 10 on where a format
+     lives. No profile can take its placement decision until this is answered.~~
+
+     **Answered 2026-08-31: a profile's own siblings sit outside the set.** ADR 0011's obligation
+     P1 carries an editorial revision stating that the set it bounds is of *Broiler.VM-owned*
+     assemblies and that a profile component's own siblings — its format assembly, its lowering,
+     its composition roots — are not members of it; ADR 0001 carries the same qualifier, with the
+     reason that section 10's format pivot is incoherent unless a profile may reference its own
+     format assembly. One rule had to move with it: **A11** forbade any reference to a
+     `Broiler.VM.Profile.*` assembly from outside a composition root, and now exempts a sibling in
+     the same profile family, keyed on the language segment so that an edge between two profile
+     families is still a violation. The first profile has since taken its placement decision on
+     that answer, at ADR 0001 revision 5.
   5. **Who invokes the extraction gate, and where the record is filed** — including the case where
      the first condition is unsatisfied, and the fact that neither profile may cite the other, so
      the record can only live here.
