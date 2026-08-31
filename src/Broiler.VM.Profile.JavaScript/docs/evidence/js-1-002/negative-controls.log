@@ -1,0 +1,171 @@
+Every control below is an injection into the real checkout followed by a revert. A
+control PASSES when the suite fails while it is injected and passes after the revert.
+A control that does not restore its file byte for byte stops the run.
+
+[N1-profile-references-the-runtime] PASS
+    why:       The profile assembly is given an edge to Broiler.VM.Runtime. ADR 0011 P1 forbids it and rule N1 must report it; rule A7 must also report the edge the graph manifest does not have.
+    file:      src\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj
+    injected:  exit 1
+    reverted:  exit 0
+    failing tests while injected:
+      [xUnit.net 00:00:00.68]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A8_No_Profile_Project_References_The_Runtime [FAIL]
+      [xUnit.net 00:00:00.71]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A7_Declared_Edges_Match_The_Graph_Manifest_Exactly [FAIL]
+      [xUnit.net 00:00:00.72]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.N1_The_JavaScript_Profile_References_Abstractions_Binary_And_Its_Own_Format [FAIL]
+
+[N1-profile-references-the-lowering] PASS
+    why:       The profile assembly is given an edge to its own lowering. This is the violation the execution-only composition label exists to exclude, and N1 names it in its own words.
+    file:      src\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj
+    injected:  exit 1
+    reverted:  exit 0
+    failing tests while injected:
+      [xUnit.net 00:00:00.43]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A7_Declared_Edges_Match_The_Graph_Manifest_Exactly [FAIL]
+      [xUnit.net 00:00:00.43]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.N1_The_JavaScript_Profile_References_Abstractions_Binary_And_Its_Own_Format [FAIL]
+
+[N3-format-is-not-a-sink] PASS
+    why:       The format assembly is given one edge. It is the pivot two consumers depend on, so a single edge out of it puts one consumer on the other's graph.
+    file:      src\Broiler.VM.Profile.JavaScript.Format\Broiler.VM.Profile.JavaScript.Format.csproj
+    injected:  exit 1
+    reverted:  exit 0
+    failing tests while injected:
+      [xUnit.net 00:00:00.44]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.N3_The_JavaScript_Format_Assembly_Is_A_Sink [FAIL]
+      [xUnit.net 00:00:00.45]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A7_Declared_Edges_Match_The_Graph_Manifest_Exactly [FAIL]
+
+[N4-family-project-declares-a-package-id] PASS
+    why:       The lowering declares a PackageId. Packaging is JS-10's decision and the ledger's standing claim is that nothing here is packable.
+    file:      src\Broiler.VM.Profile.JavaScript.Compiler\Broiler.VM.Profile.JavaScript.Compiler.csproj
+    injected:  exit 1
+    reverted:  exit 0
+    failing tests while injected:
+      [xUnit.net 00:00:00.37]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A6_The_Package_Identity_Budget_Holds [FAIL]
+      [xUnit.net 00:00:00.41]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.The_Graph_Manifest_Describes_The_Checkout [FAIL]
+      [xUnit.net 00:00:00.42]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.N4_No_JavaScript_Profile_Project_Is_Packable [FAIL]
+
+[N4-family-project-omits-ispackable] PASS
+    why:       The lowering loses its literal IsPackable false. The vendored packaging props would then default it to packable, so an omission ships rather than defaulting to safe.
+    file:      src\Broiler.VM.Profile.JavaScript.Compiler\Broiler.VM.Profile.JavaScript.Compiler.csproj
+    injected:  exit 1
+    reverted:  exit 0
+    failing tests while injected:
+      [xUnit.net 00:00:00.43]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.N4_No_JavaScript_Profile_Project_Is_Packable [FAIL]
+
+[N2-a-non-family-project-references-the-profile] PASS
+    why:       The fixture profile, which is in no profile family, is given an edge into the JavaScript profile. This is the INBOUND half of the no-edge-to-another-profile rule, and it is the half that would otherwise be satisfied from the side that never changes.
+    file:      src\tests\Broiler.VM.Fixtures\Broiler.VM.Fixtures.csproj
+    injected:  exit 1
+    reverted:  exit 0
+    failing tests while injected:
+      [xUnit.net 00:00:00.37]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A11_No_Project_Outside_A_Composition_Root_References_A_Profile [FAIL]
+      [xUnit.net 00:00:00.39]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A7_Declared_Edges_Match_The_Graph_Manifest_Exactly [FAIL]
+      [xUnit.net 00:00:00.40]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.N2_No_Profile_Family_Reaches_Another_In_Either_Direction [FAIL]
+
+[N5-the-registry-omits-a-declared-code] PASS
+    why:       One published row is deleted while the code stays declared and emittable. This is the forward half of the registry binding, and the shape a real edit takes: a code retired from the registry and left in the vocabulary.
+    file:      src\Broiler.VM.Profile.JavaScript\docs\diagnostics\registry.txt
+    injected:  exit 1
+    reverted:  exit 0
+    failing tests while injected:
+      [xUnit.net 00:00:01.01]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N7_Every_Registry_Row_Is_Reachable_From_A_Named_Case [FAIL]
+      [xUnit.net 00:00:01.02]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N6_Every_Code_Maps_Onto_Exactly_One_Core_Reason [FAIL]
+      [xUnit.net 00:00:01.04]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N8_The_Restated_Codes_Agree_With_The_Registry [FAIL]
+      [xUnit.net 00:00:01.07]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N5_The_Registry_And_The_Code_Vocabulary_Are_The_Same_Set [FAIL]
+
+[N6-the-registry-names-a-reason-the-sites-do-not-carry] PASS
+    why:       One row's core reason is changed to another real core reason. Nothing about the file looks wrong afterwards, which is why the rule reads the emission sites rather than the row's plausibility.
+    file:      src\Broiler.VM.Profile.JavaScript\docs\diagnostics\registry.txt
+    injected:  exit 1
+    reverted:  exit 0
+    failing tests while injected:
+      [xUnit.net 00:00:00.97]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N6_Every_Code_Maps_Onto_Exactly_One_Core_Reason [FAIL]
+
+[N7-the-registry-names-a-case-the-corpus-does-not-have] PASS
+    why:       One row's case is renamed to an entry nobody wrote. The backward binding is the half a registry cannot satisfy by being internally consistent, so it is the half worth a control of its own.
+    file:      src\Broiler.VM.Profile.JavaScript\docs\diagnostics\registry.txt
+    injected:  exit 1
+    reverted:  exit 0
+    failing tests while injected:
+      [xUnit.net 00:00:01.01]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N7_Every_Registry_Row_Is_Reachable_From_A_Named_Case [FAIL]
+
+[N8-a-restated-code-drifts-from-the-registry] PASS
+    why:       The corpus producer's restated constant is renumbered. The duplication is deliberate - the producer must not read its codes from the profile it tests - and it only buys anything while the registry holds both halves.
+    file:      src\compositions\Broiler.VM.Composition.JavaScript.SliceCompiler\CorpusBuilder.cs
+    injected:  exit 1
+    reverted:  exit 0
+    failing tests while injected:
+      [xUnit.net 00:00:01.01]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N8_The_Restated_Codes_Agree_With_The_Registry [FAIL]
+
+[N9-a-position-is-built-outside-the-factory] PASS
+    why:       The verifier builds a position itself instead of going through the published encoding. This is the exact shape of the conflation JS-3a corrected, reintroduced: one call site answering with its own convention.
+    file:      src\Broiler.VM.Profile.JavaScript\JavaScriptVerifier.cs
+    injected:  exit 1
+    reverted:  exit 0
+    failing tests while injected:
+      [xUnit.net 00:00:01.02]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N9_A_Position_Is_Built_In_One_Place [FAIL]
+      [xUnit.net 00:00:01.23]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J7_The_Manifest_Covers_Every_Unit_In_The_Product_Tree [FAIL]
+      [xUnit.net 00:00:01.84]     Broiler.VM.Architecture.Tests.AssuranceGeneratorTests.The_Generated_Artefacts_Are_Written_In_Write_Mode_And_Asserted_Otherwise [FAIL]
+      [xUnit.net 00:00:01.88]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J5_Every_Generated_Artefact_Is_What_The_Generator_Would_Write [FAIL]
+      [xUnit.net 00:00:02.52]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J3_Every_Recorded_Fingerprint_Is_The_One_The_Code_Produces [FAIL]
+
+[H1-a-profile-ledger-uses-the-components-own-mark] PASS
+    why:       One milestone row's verdict is replaced by a mark from the component's nine-member legend. The two vocabularies are different claims about different subjects, and a reader meeting [MET] in a profile ledger would have to guess which one it came from.
+    file:      src\Broiler.VM.Profile.JavaScript\docs\roadmap.status.md
+    injected:  exit 1
+    reverted:  exit 0
+    failing tests while injected:
+      [xUnit.net 00:00:01.35]     Broiler.VM.Architecture.Tests.ReviewRecordRuleTests.H1_The_Mark_Vocabulary_Is_Closed [FAIL]
+
+[H1-a-profile-legend-drops-a-mark] PASS
+    why:       The legend stops publishing [FULL] while the vocabulary still has three members. A legend that may drop a member leaves a mark in the table above it that nothing defines - and this control is also what proves the rule reads THIS ledger, which until JS-3a it did not.
+    file:      src\Broiler.VM.Profile.JavaScript\docs\roadmap.status.md
+    injected:  exit 1
+    reverted:  exit 0
+    failing tests while injected:
+      [xUnit.net 00:00:01.36]     Broiler.VM.Architecture.Tests.ReviewRecordRuleTests.H1_The_Mark_Vocabulary_Is_Closed [FAIL]
+
+[N10-a-public-member-appears-without-a-baseline-entry] PASS
+    why:       A public constant is added to the format assembly and the frozen baseline is left alone. This is the direction that matters for a profile: these assemblies are referenced by composition roots, so a member added here is a member a composition can bind to without anyone deciding it should be bindable - and until JS-3a nothing in this component would have noticed.
+    file:      src\Broiler.VM.Profile.JavaScript.Format\JavaScriptFormat.cs
+    injected:  exit 1
+    reverted:  exit 0
+    failing tests while injected:
+      [xUnit.net 00:00:01.17]     Broiler.VM.Architecture.Tests.ReviewRecordRuleTests.H4_The_Record_States_No_Decision_The_Annotations_Do_Not_Hold [FAIL]
+      [xUnit.net 00:00:01.28]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J7_The_Manifest_Covers_Every_Unit_In_The_Product_Tree [FAIL]
+      [xUnit.net 00:00:01.30]     Broiler.VM.Architecture.Tests.ReviewRecordRuleTests.H3_No_Review_Document_Points_At_A_Line_And_The_Record_Covers_The_Tree [FAIL]
+      [xUnit.net 00:00:01.85]     Broiler.VM.Architecture.Tests.AssuranceGeneratorTests.The_Generated_Artefacts_Are_Written_In_Write_Mode_And_Asserted_Otherwise [FAIL]
+      [xUnit.net 00:00:01.89]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J5_Every_Generated_Artefact_Is_What_The_Generator_Would_Write [FAIL]
+      [xUnit.net 00:00:02.46]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J1_Every_Relevant_Unit_Carries_An_Annotation [FAIL]
+
+[J3-a-profile-fingerprint-is-stale] PASS
+    why:       The profile's assembly marker keeps its recorded fingerprint while its declaration changes. This is the control that proves the assurance system REACHES the three new assemblies rather than merely listing them.
+    file:      src\Broiler.VM.Profile.JavaScript\AssemblyMarker.cs
+    injected:  exit 1
+    reverted:  exit 0
+    failing tests while injected:
+      [xUnit.net 00:00:01.24]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J7_The_Manifest_Covers_Every_Unit_In_The_Product_Tree [FAIL]
+      [xUnit.net 00:00:01.81]     Broiler.VM.Architecture.Tests.AssuranceGeneratorTests.The_Generated_Artefacts_Are_Written_In_Write_Mode_And_Asserted_Otherwise [FAIL]
+      [xUnit.net 00:00:01.84]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J5_Every_Generated_Artefact_Is_What_The_Generator_Would_Write [FAIL]
+
+[J4-a-profile-unit-claims-a-reviewer] PASS
+    why:       The profile's assembly marker claims a human review nobody performed. The value of this system is that it records the ABSENCE of review, so a mechanism that could turn PENDING into a name would convert an honest record into a false one.
+    file:      src\Broiler.VM.Profile.JavaScript\AssemblyMarker.cs
+    injected:  exit 1
+    reverted:  exit 0
+    failing tests while injected:
+      [xUnit.net 00:00:01.14]     Broiler.VM.Architecture.Tests.ReviewRecordRuleTests.H4_The_Record_States_No_Decision_The_Annotations_Do_Not_Hold [FAIL]
+      [xUnit.net 00:00:01.36]     Broiler.VM.Architecture.Tests.AssuranceAnnotationTests.The_Generator_Fills_A_Human_Approval_That_A_Human_Already_Made [FAIL]
+      [xUnit.net 00:00:01.36]     Broiler.VM.Architecture.Tests.AssuranceGeneratorTests.The_Generated_Artefacts_Are_Written_In_Write_Mode_And_Asserted_Otherwise [FAIL]
+      [xUnit.net 00:00:01.36]     Broiler.VM.Architecture.Tests.AssuranceScannerTests.The_Units_That_Touch_Untrusted_Input_Are_Relevant_And_Annotated [FAIL]
+      [xUnit.net 00:00:01.37]     Broiler.VM.Architecture.Tests.AssuranceAnnotationTests.The_Generator_Refreshes_A_Review_The_Code_Has_Outrun_Into_Stale_With_Its_History [FAIL]
+      [xUnit.net 00:00:01.37]     Broiler.VM.Architecture.Tests.AssuranceAnnotationTests.The_Generator_Refuses_To_Write_A_Reviewer_The_Source_Does_Not_Carry [FAIL]
+      [xUnit.net 00:00:01.46]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J4_No_Approval_Exists_That_A_Human_Did_Not_Make [FAIL]
+      [xUnit.net 00:00:01.46]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J5_Every_Generated_Artefact_Is_What_The_Generator_Would_Write [FAIL]
+      [xUnit.net 00:00:01.63]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J8_Every_Generated_Artefact_Matches_Its_Declared_Shape [FAIL]
+      [xUnit.net 00:00:01.64]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J2_Every_Annotation_Parses_And_Every_Field_Is_In_Its_Vocabulary [FAIL]
+      [xUnit.net 00:00:01.64]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J3_Every_Recorded_Fingerprint_Is_The_One_The_Code_Produces [FAIL]
+      [xUnit.net 00:00:01.64]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J1_Every_Relevant_Unit_Carries_An_Annotation [FAIL]
+      [xUnit.net 00:00:01.64]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J9_No_Generated_Artefact_Claims_A_Review_The_Annotations_Do_Not_Support [FAIL]
+      [xUnit.net 00:00:01.66]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J11_A_Tree_May_Be_Published_Only_When_The_Record_Says_So [FAIL]
+      [xUnit.net 00:00:01.80]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J10_Every_High_Risk_Unit_Says_What_Would_Falsify_It [FAIL]
+
+controls run: 16; controls passed: 16; controls SKIPPED: 0
+
+STATED LIMIT. Rule N2 has a control for its INBOUND half and none for its cross-family half, because a second profile family does not exist in this graph: an injected edge would name a project that is not there and the build would fail before any rule ran, so the suite would go red for the wrong reason. That half has a witness input instead. The control becomes constructible when the WebAssembly profile's own JS-0 equivalent lands, and it is named in this bundle's exclusions rather than left as a silent gap.
