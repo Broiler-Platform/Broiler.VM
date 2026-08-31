@@ -1,0 +1,16 @@
+<!-- Violates N1: the JavaScript profile assembly referencing its own lowering. This is the
+     violation the execution-only composition label exists to exclude - a closure carrying a
+     compiler it was published to be free of - so it gets a witness of its own rather than being
+     folded into the reference-set message. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Profile.JavaScript</AssemblyName>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Profile.JavaScript.Compiler\Broiler.VM.Profile.JavaScript.Compiler.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Profile.JavaScript.Format\Broiler.VM.Profile.JavaScript.Format.csproj" />
+  </ItemGroup>
+</Project>

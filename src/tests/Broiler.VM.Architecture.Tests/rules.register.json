@@ -65,7 +65,9 @@
     "WHAT VM-4 MINTS, AND WHAT IT DELIBERATELY DOES NOT. The milestone hardens the lifecycle under concurrency, and almost everything it establishes is BEHAVIOURAL - a disposal that drains, a capability that no longer refuses another thread, an operation pinned to the thread that started it, a shared aggregate budget under contention. Those live in the behavioural suite, where they can be arranged with an execution gate rather than raced, and writing second copies of them here would be two implementations of one rule. Two claims are STRUCTURAL and are minted as rows. V11 holds the diagnostics record to a shape with nowhere to put free text, which is how 'leaks no host secret' becomes a property of the type rather than of today's call sites. V12 holds every profile-facing contract to trafficking in the contract's own types, which is how 'host imports cannot reach undeclared CLR surface' becomes checkable rather than asserted.",
     "VM-5 mints group L, which binds the baseline register to the benchmark run it reports. It is one rule because there is one document and one log; it is Active from the moment it is minted because both exist and both carry ten real entries. Rule A7's project count and the status counts below move with it.",
     "VM-6 mints group M, which freezes the public API by enumerating it rather than by asserting properties of it, and promotes C1, C2, C3 and B3, whose activation milestone was always VM-6 and whose subject - a pack step and the packages it produces - now exists.",
-    "VM-6 introduces activationMilestone 'never' and the permanenceReason that must accompany it. The register's own rule - a Deferred or Vacuous row names a LATER milestone - assumed there is always a later one, and at the last milestone there is not. Two rows need it: E5, superseded at VM-1 and never activatable, and B3, which nothing in the graph can violate because two Active rules already stop the reference being constructed."
+    "VM-6 introduces activationMilestone 'never' and the permanenceReason that must accompany it. The register's own rule - a Deferred or Vacuous row names a LATER milestone - assumed there is always a later one, and at the last milestone there is not. Two rows need it: E5, superseded at VM-1 and never activatable, and B3, which nothing in the graph can violate because two Active rules already stop the reference being constructed.",
+    "GROUP N, THE JAVASCRIPT PROFILE FAMILY. JS-0 puts three product project shells in this component - the JavaScript profile, its bytecode format and its lowering - and group N holds the shape of their graph. N1 fixes the profile's reference set at Abstractions, Binary and its own format sibling and refuses the runtime, the lowering, a package reference and an internals grant, each by its own witness naming its own content; N2 refuses an edge between two profile families in either direction; N3 keeps the format assembly a sink, which is what makes it the pivot the executor and the lowering may both depend on; and N4 keeps every family project unpackable while packaging is still JS-10's undecided question. Group N witnesses are per CLAUSE, like group H's and group J's, and for the same reason.",
+    "ONE CORE RULE CHANGED AND IT IS RECORDED RATHER THAN QUIETLY WIDENED. A11 forbade every reference to a Broiler.VM.Profile.* assembly from outside a composition root, which was written when no product profile existed and which makes the format pivot illegal: the profile and the lowering must both reference the format. A11 now exempts a SIBLING IN THE SAME PROFILE FAMILY, keyed on the language segment rather than on the Broiler.VM.Profile. prefix, so a JavaScript project referencing a WebAssembly one is still a violation and N2 asserts that half by its own witness. ADR 0011 P1's 2026-08-31 revision is the authority for the exemption and ADR 0001 revision 5 authorises the projects. A13 was NOT widened: its subject is a test-only consumer profile and it states a reference set of exactly two assemblies, so widening it to cover a product profile with three would have weakened the rule that holds the two consumer profiles. N1 states the stronger claim over its own subject instead."
   ],
   "milestone": "VM-6",
   "coreContractVersion": 1,
@@ -719,6 +721,46 @@
       "activationMilestone": null,
       "nonVacuousWhen": "One project is outside the solution at VM-6 - the pristine feed consumer - so both halves are over a real entry rather than over an empty list. The rule exists because VM-6 narrowed the group A rules to read the SOLUTION rather than glob the tree, which they had to: the feed consumer deliberately carries a Broiler package reference that rule A2 forbids, and it cannot be a solution project because restoring it requires a pack to have already happened. Narrowing a rule's subject is how a rule quietly stops covering things, so this is the complement: a project in neither the solution nor samples/ is governed by NOTHING, and would be invisible rather than allowed. The second half is what keeps the exemption honest - a sample may carry a package reference precisely because it may carry no project reference, and a sample that reached back into the repository would be a consumer of the build rather than of the packages.",
       "witness": "PackageRuleTests"
+    },
+    {
+      "id": "N1",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "The Broiler.VM.Profile.JavaScript project references exactly Broiler.VM.Abstractions, Broiler.VM.Binary and Broiler.VM.Profile.JavaScript.Format; it references neither the runtime nor its own lowering, declares no PackageReference, and opens its internals to nobody. ADR 0011's obligations P1 and P2 over a product-located profile, plus the execution-only property that the profile carries no compiler.",
+      "evidence": "Project files",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The profile project exists at JS-0 with a three-assembly reference set, so the rule decides a real set rather than an empty one. Rule A13 does not reach it: A13's subject is a test-only consumer profile whose set is exactly two assemblies.",
+      "witness": "witnesses/N1-profile-references-runtime.csproj.witness, witnesses/N1-profile-references-the-lowering.csproj.witness, witnesses/N1-profile-package-reference.csproj.witness, witnesses/N1-profile-internals-visible-to.csproj.witness"
+    },
+    {
+      "id": "N2",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "No project in one Broiler.VM.Profile.<Language> family references a project in another, and no project outside every family references into one, except a composition root, which A12 bounds instead. Both halves of the no-edge-to-another-profile rule.",
+      "evidence": "Project files",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Three JavaScript-family projects exist at JS-0 and a second profile family is named in the checkout, so the outbound half has a real subject; the inbound half is swept over every project in the graph.",
+      "witness": "witnesses/N2-family-references-another-profile.csproj.witness, witnesses/N2-non-family-project-references-the-profile.csproj.witness"
+    },
+    {
+      "id": "N3",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "Broiler.VM.Profile.JavaScript.Format declares no ProjectReference at all. It is the pivot the executor and the lowering both depend on, so it is a sink and that half of the profile's subgraph is acyclic by construction.",
+      "evidence": "Project files",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The format project exists at JS-0 and has two consumers in the graph, so a violating edge is constructible rather than hypothetical.",
+      "witness": "witnesses/N3-format-references-the-profile.csproj.witness"
+    },
+    {
+      "id": "N4",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "No project in a Broiler.VM.Profile.<Language> family declares a PackageId, and every one carries the literal element IsPackable false. The status ledger's claim that nothing in the profile is packable, held to the project files rather than left as prose, until JS-10 takes the packaging decision.",
+      "evidence": "Project file text, not the evaluated property",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Three family projects exist at JS-0, none matching a name-suffix rule in the vendored packaging props, so each would default to packable without the element.",
+      "witness": "witnesses/N4-family-project-declares-a-package-id.csproj.witness, witnesses/N4-family-project-omits-ispackable.csproj.witness"
     }
   ]
 }

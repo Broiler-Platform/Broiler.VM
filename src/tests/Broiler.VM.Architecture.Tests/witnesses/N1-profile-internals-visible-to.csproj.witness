@@ -1,0 +1,15 @@
+<!-- Violates N1: the JavaScript profile assembly opening its internals. ADR 0011's obligation P2
+     says there is no privileged surface; a profile written through a friend assembly is a
+     profile no consumer outside this repository could write. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Profile.JavaScript</AssemblyName>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Profile.JavaScript.Format\Broiler.VM.Profile.JavaScript.Format.csproj" />
+    <InternalsVisibleTo Include="Broiler.VM.Profile.JavaScript.Compiler" />
+  </ItemGroup>
+</Project>

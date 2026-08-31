@@ -14,9 +14,10 @@
     "VM-2 adds the one test-only project ADR 0001's budget permits it - a fuzz target host - taking the graph from 7 projects and 16 edges to 8 and 20. That is the ceiling the record names: 5 test-only projects and 8 in total. It adds ZERO packable assemblies, so the packable set is still exactly the three product packages.",
     "VM-3 adds the four projects ADR 0001 revision 1 authorises - two application-local consumer profiles and two named composition roots - taking the graph from 8 projects and 20 edges to 12 and 33, and test-only projects from 5 to 7. It adds ZERO packable assemblies: the packable set is still exactly the three product packages. The composition roots are the only projects permitted to reference a profile assembly, which is the deployment boundary src/compositions/ exists to enforce.",
     "VM-4 adds the one test-only project ADR 0001 revision 2 authorises - a soak host whose managed heap and working set are sampled over a long lifecycle run - taking the graph from 12 projects and 33 edges to 13 and 37, and test-only projects from 7 to 8. It adds ZERO packable assemblies, so the packable set is still exactly the three product packages.",
-    "VM-5 adds the one test-only project ADR 0001 revision 3 authorises - an uninstrumented benchmark host that publishes what the core costs a profile - taking the graph from 13 projects and 37 edges to 14 and 41, and test-only projects from 8 to 9. It adds ZERO packable assemblies, so the packable set is still exactly the three product packages. It references no benchmarking package: a framework's own warmup, pilot and outlier policies would be part of every figure the component publishes and none of them would be visible in this repository."
+    "VM-5 adds the one test-only project ADR 0001 revision 3 authorises - an uninstrumented benchmark host that publishes what the core costs a profile - taking the graph from 13 projects and 37 edges to 14 and 41, and test-only projects from 8 to 9. It adds ZERO packable assemblies, so the packable set is still exactly the three product packages. It references no benchmarking package: a framework's own warmup, pilot and outlier policies would be part of every figure the component publishes and none of them would be visible in this repository.",
+    "JS-0 adds the three project shells the JavaScript profile's own ADR-equivalent decision JSD-0001 authorises - the format assembly, the profile assembly and the lowering - taking the graph from 14 projects and 41 edges to 17 and 46, and product projects from 3 to 6. It adds ZERO packable assemblies: all three declare IsPackable false and no PackageId, so the packable set is still exactly the three core packages and rule A6 still counts three. The profile assembly references Abstractions, Binary and its own format sibling, which ADR 0011 P1's 2026-08-31 revision admits; the lowering references Abstractions and the format and never the profile, which is what makes an execution-only composition compiler-free. ADR 0001 revision 5 authorises the growth."
   ],
-  "milestone": "VM-5",
+  "milestone": "JS-0",
   "coreContractVersion": 1,
   "projects": [
     {
@@ -48,6 +49,40 @@
         "Broiler.VM.Abstractions",
         "Broiler.VM.Binary"
       ]
+    },
+    {
+      "path": "src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj",
+      "assemblyName": "Broiler.VM.Profile.JavaScript",
+      "rootNamespace": "Broiler.VM.Profile.JavaScript",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Profile.JavaScript.Format"
+      ]
+    },
+    {
+      "path": "src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj",
+      "assemblyName": "Broiler.VM.Profile.JavaScript.Compiler",
+      "rootNamespace": "Broiler.VM.Profile.JavaScript.Compiler",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Profile.JavaScript.Format"
+      ]
+    },
+    {
+      "path": "src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj",
+      "assemblyName": "Broiler.VM.Profile.JavaScript.Format",
+      "rootNamespace": "Broiler.VM.Profile.JavaScript.Format",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": []
     },
     {
       "path": "src/compositions/Broiler.VM.Composition.Calculator/Broiler.VM.Composition.Calculator.csproj",

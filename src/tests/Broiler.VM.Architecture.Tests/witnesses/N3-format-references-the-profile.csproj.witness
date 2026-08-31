@@ -1,0 +1,12 @@
+<!-- Violates N3: the format assembly referencing one of its two consumers. The format is the
+     pivot the executor and the lowering both depend on; a single edge out of it puts one
+     consumer on the other's dependency graph and it stops being a pivot. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Profile.JavaScript.Format</AssemblyName>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" />
+  </ItemGroup>
+</Project>

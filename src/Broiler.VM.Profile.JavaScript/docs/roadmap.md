@@ -1,16 +1,29 @@
 # Broiler.VM.Profile.JavaScript roadmap
 
-**Status:** Proposed component roadmap for the JavaScript language profile of the Broiler.VM
-execution core. [The evidence ledger](roadmap.status.md) is the authority for what has been
-accepted; at the time of writing it records **JS-0 through JS-10 as not started**, and it records
-that the component has no source tree, no snapshot, no descriptor, and no evidence bundle. No
-milestone is complete because its design appears here.
+**Status:** Proposed roadmap for the JavaScript language profile of the Broiler.VM execution
+core. [The evidence ledger](roadmap.status.md) is the authority for what has been accepted; as of
+2026-08-31 it records **JS-0 as in progress with two named open gate clauses, and JS-1 through
+JS-10 as not started**. What exists is three product project shells, seven decision records, four
+registered rules and one evidence bundle; there is still **no descriptor, no format, no verifier,
+no executor, no manifest, no snapshot and no product code**, and nothing here is accepted. No
+milestone is complete because its design appears in this document.
 
 `Broiler.VM.Profile.JavaScript` is a **language profile**: one bytecode format, one verifier, one
 value and frame model, one executor, one set of host imports, and one conformance suite, compiled
 into a product by a composition root that names its descriptor directly. It is not an execution
-core and owns none of the mechanism the core owns. It references exactly two core assemblies and
-nothing else Broiler-owned, and no core milestone waits for it.
+core and owns none of the mechanism the core owns. It references exactly two core assemblies plus
+its own siblings, and nothing else Broiler-owned, and no core milestone waits for it.
+
+**Where it lives, decided at JS-0 and stated here because the rest of this document was written
+before the decision.** This profile is a family of product projects **inside the `Broiler.VM`
+component**, not a component with its own repository. Four things this document assumes it will
+own are therefore the host component's — the assurance system, the architecture rule register, the
+public API baseline, and the licence and notice files — and each is recorded as a dated deviation
+in [JSD-0006](decisions/0006-assurance-evidence-and-rules-adoption.md). **What is not shared is
+evidence**: every gate in this document is closed by this profile's own bundles, no result from
+another component is cited here, and the two ledgers stay apart. Where the text below says "this
+component", read "this profile" — the argument is unaffected, and the places where the placement
+genuinely changes an answer say so.
 
 The component does not start empty and this roadmap does not pretend otherwise. It starts as a
 **snapshot copy** of a large existing JavaScript engine whose execution arm emits IL at run time,
@@ -40,6 +53,8 @@ rather than start to finish.
 | [`roadmap.delivery.md`](roadmap.delivery.md) | 19–20 | The milestones and the order they are delivered in. |
 | [`roadmap.gates.md`](roadmap.gates.md) | 17, 21–24 | The measurement rules, the test and evidence matrix, the release gates, the stop conditions, and the references. |
 | [`roadmap.status.md`](roadmap.status.md) | — | The evidence ledger. It, and not any file above, is the authority for what has been accepted. |
+| [`decisions/`](decisions/README.md) | — | The dated decision records, `JSD-nnnn`. A plan says what is intended; a decision record says what was chosen, what it rejected, and who signed it. |
+| `evidence/js-<n>/` | — | One retained bundle per milestone, produced by `eng/collect-js-evidence.py`. Cited by the ledger and by nothing in the core's. |
 
 Two rules keep the split cheap and are not negotiable. **Section numbers are global and do
 not change when a section moves**, so every reference written before the split still resolves
@@ -577,13 +592,19 @@ The rules the verified graph must retain, whatever the names become:
 
 - the profile's Broiler.VM reference set is **exactly** the two core assemblies — no reference
   to the core runtime, no package reference to a third core package, no `InternalsVisibleTo` in
-  either direction. **One question inside this rule is the core's to answer and is open today**:
-  the frozen profile-facing contract states the reference set as exactly those two assemblies, and
-  the graph above adds a third Broiler.VM-named assembly that is this component's own format. Either
-  a profile's own sibling assemblies sit outside that set or the graph above is illegal under a rule
-  that is already active, and JS-0's placement decision cannot be taken correctly until the core has
-  ruled. The risk table already names the shape of this hazard; this is where it has actually
-  arrived;
+  either direction. ~~**One question inside this rule is the core's to answer and is open
+  today**~~ — **answered 2026-08-31, and the answer is that a profile's own siblings sit outside
+  the set.** ADR 0011's obligation P1 carries an editorial revision stating that the set is of
+  *Broiler.VM-owned* assemblies and that a profile component's own siblings — its format assembly,
+  its lowering, its composition roots — are not members of it, and ADR 0001 carries the same
+  qualifier with the same reason: the format pivot below is incoherent unless a profile may
+  reference its own format assembly. So the graph above is legal. One thing did have to change on
+  the core's side and it is recorded in ADR 0001 revision 5: rule A11 forbade any reference to a
+  `Broiler.VM.Profile.*` assembly from outside a composition root, which made the pivot
+  unreachable, and it now exempts a sibling **in the same profile family**, keyed on the language
+  segment so a JavaScript project referencing a WebAssembly one is still a violation. Decision
+  [JSD-0001](decisions/0001-placement-identity-and-assembly-topology.md) records the profile's
+  half;
 - the profile never references the lowering, which is what makes an execution-only image contain
   a format, a verifier, and an interpreter and no compiler at all;
 - no product project references a test project, a fixture, or a conformance host;

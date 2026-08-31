@@ -1,0 +1,14 @@
+<!-- Violates N2, outbound half: a JavaScript-family project referencing a WebAssembly-family one.
+     Two profiles in one image are composed by a composition root and are never linked to each
+     other. A11's sibling exemption is keyed on the language segment precisely so that this edge
+     stays a violation while the format sibling is admitted. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Profile.JavaScript.Compiler</AssemblyName>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Profile.JavaScript.Format\Broiler.VM.Profile.JavaScript.Format.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Profile.WebAssembly.Format\Broiler.VM.Profile.WebAssembly.Format.csproj" />
+  </ItemGroup>
+</Project>

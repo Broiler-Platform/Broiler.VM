@@ -1,0 +1,9 @@
+<!-- Violates N4: a JavaScript-family project omitting the literal IsPackable false. The vendored
+     packaging props default IsPackable to true for any project whose name matches none of their
+     test-and-tooling suffixes, which none of these does, so an omission packs rather than
+     defaulting to safe. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Profile.JavaScript.Format</AssemblyName>
+  </PropertyGroup>
+</Project>

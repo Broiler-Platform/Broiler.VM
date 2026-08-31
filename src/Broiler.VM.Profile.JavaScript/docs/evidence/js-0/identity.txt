@@ -1,0 +1,47 @@
+bundle:                JS-0-001
+milestone:             JS-0
+collected (UTC):       2026-08-31T16:12:30+00:00
+component commit:      e79c0070ad5c2fbc30249698906704ef6124c8c6
+branch:                claude/js-0-boundary-identity-assurance
+working tree:          DIRTY
+dirty entries:         33
+owner:                 profile architecture owner (unassigned identity)
+reviewer:              NONE - nothing here has been reviewed
+
+Every path below is relative to the component root. A figure in this bundle is this
+component's own; no result from any other component is evidence here.
+
+Dirty entries at collection time, listed rather than summarised:
+   M Broiler.VM.slnx
+   M CODE-ASSURANCE.md
+   M HUMAN_REVIEW.md
+   M THIRD_PARTY_NOTICES.md
+   M assurance.manifest.json
+   M docs/adr/0001-component-topology-and-dependency-graph.md
+   M docs/evidence/vm-6/d1-outcome.txt
+   M src/Broiler.VM.Profile.JavaScript/docs/roadmap.md
+   M src/Broiler.VM.Profile.JavaScript/docs/roadmap.status.md
+   M src/tests/Broiler.VM.Architecture.Tests/ArchitectureRules.cs
+   M src/tests/Broiler.VM.Architecture.Tests/AssuranceScannerTests.cs
+   M src/tests/Broiler.VM.Architecture.Tests/AssuranceSources.cs
+   M src/tests/Broiler.VM.Architecture.Tests/ProjectFileRuleTests.cs
+   M src/tests/Broiler.VM.Architecture.Tests/ReviewRecordRuleTests.cs
+   M src/tests/Broiler.VM.Architecture.Tests/RuleRegisterTests.cs
+   M src/tests/Broiler.VM.Architecture.Tests/graph.manifest.json
+   M src/tests/Broiler.VM.Architecture.Tests/rules.register.json
+  ?? eng/collect-js-evidence.py
+  ?? src/Broiler.VM.Profile.JavaScript.Compiler/
+  ?? src/Broiler.VM.Profile.JavaScript.Format/
+  ?? src/Broiler.VM.Profile.JavaScript/AssemblyMarker.cs
+  ?? src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj
+  ?? src/Broiler.VM.Profile.JavaScript/docs/decisions/
+  ?? src/Broiler.VM.Profile.JavaScript/docs/evidence/
+  ?? src/tests/Broiler.VM.Architecture.Tests/witnesses/N1-profile-internals-visible-to.csproj.witness
+  ?? src/tests/Broiler.VM.Architecture.Tests/witnesses/N1-profile-package-reference.csproj.witness
+  ?? src/tests/Broiler.VM.Architecture.Tests/witnesses/N1-profile-references-runtime.csproj.witness
+  ?? src/tests/Broiler.VM.Architecture.Tests/witnesses/N1-profile-references-the-lowering.csproj.witness
+  ?? src/tests/Broiler.VM.Architecture.Tests/witnesses/N2-family-references-another-profile.csproj.witness
+  ?? src/tests/Broiler.VM.Architecture.Tests/witnesses/N2-non-family-project-references-the-profile.csproj.witness
+  ?? src/tests/Broiler.VM.Architecture.Tests/witnesses/N3-format-references-the-profile.csproj.witness
+  ?? src/tests/Broiler.VM.Architecture.Tests/witnesses/N4-family-project-declares-a-package-id.csproj.witness
+  ?? src/tests/Broiler.VM.Architecture.Tests/witnesses/N4-family-project-omits-ispackable.csproj.witness

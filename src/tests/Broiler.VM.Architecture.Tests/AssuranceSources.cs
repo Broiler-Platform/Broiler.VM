@@ -33,9 +33,34 @@ namespace Broiler.VM.Architecture.Tests;
 /// </remarks>
 internal static class AssuranceSources
 {
-    /// <summary>The three assemblies the component publishes, and therefore covers.</summary>
+    /// <summary>The product assemblies of this component, and therefore the ones it covers.</summary>
+    /// <remarks>
+    /// <para>
+    /// Three of them pack and three do not. JS-0 adds the JavaScript profile's three project
+    /// shells, which are product projects under ADR 0001's path partition and are therefore
+    /// covered, even though the profile's own packaging decision is JS-10's and rule N4 keeps
+    /// every one of them unpackable until it is taken. Coverage follows the product/test
+    /// partition and not packability: what is covered is what ships as an assembly, and a
+    /// component that reviewed only what it packs would leave a composition root's dependencies
+    /// unreviewed for as long as they were unpackable.
+    /// </para>
+    /// <para>
+    /// The JavaScript profile's own roadmap asks JS-0 to stand up an assurance system of its own.
+    /// Decision JSD-0006 records why it adopts this one instead: the profile is a set of projects
+    /// inside this component rather than a separate component, so a second scanner over the same
+    /// tree would be two implementations of one repository policy - which is the drift the
+    /// platform's own CODE-ASSURANCE.md names as the reason to avoid a third implementation.
+    /// </para>
+    /// </remarks>
     internal static readonly string[] CoveredAssemblies =
-        ["Broiler.VM.Abstractions", "Broiler.VM.Binary", "Broiler.VM.Runtime"];
+    [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Profile.JavaScript",
+        "Broiler.VM.Profile.JavaScript.Compiler",
+        "Broiler.VM.Profile.JavaScript.Format",
+        "Broiler.VM.Runtime",
+    ];
 
     /// <summary>
     /// The conditional symbols the parse defines: a superset of what the SDK defines for
