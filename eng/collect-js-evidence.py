@@ -676,6 +676,46 @@ CORPUS_CONTROLS = [
             "            if (false && isEntry[next] == 1 && after != 0)"),
     ),
     (
+        "the-constant-pool-is-sized-before-its-count-is-checked",
+        "The pool array is allocated from the declared count BEFORE the count is compared against "
+        "the limits section's maximum. This is the injection roadmap section 7's third discipline "
+        "exists for, and it is the one that shows why the discipline is separate from the corpus: "
+        "the outcome, the reason and the diagnostic code are all unchanged, so every replay row "
+        "still agrees and only the ORDERING checks notice - a hostile entry declaring sixty "
+        "thousand constants charges most of a megabyte from a fifty-seven-byte artifact before "
+        "refusing it.",
+        PROFILE_VERIFIER,
+        lambda text: text.replace(
+            "        if (count > sections.MaxConstants)\n"
+            "        {\n"
+            "            return Invalid(\n"
+            "                VmReason.InconsistentStructure,\n"
+            "                JavaScriptDiagnosticCode.ConstantCountExceedsDeclaredMaximum,\n"
+            "                reader.Position);\n"
+            "        }\n"
+            "\n"
+            "        if (!VmBoundedAllocator.TryAllocate<JavaScriptValue>("
+            "in bounds, adapter, count, out var constants))",
+
+            "        if (!VmBoundedAllocator.TryAllocate<JavaScriptValue>("
+            "in bounds, adapter, count, out var constants))\n"
+            "        {\n"
+            "            return VmVerifierOutcome.ResourceExhaustion(\n"
+            "                VmBudgetDimension.AllocatedBytes, VmBudgetScope.Artifact);\n"
+            "        }\n"
+            "\n"
+            "        if (count > sections.MaxConstants)\n"
+            "        {\n"
+            "            return Invalid(\n"
+            "                VmReason.InconsistentStructure,\n"
+            "                JavaScriptDiagnosticCode.ConstantCountExceedsDeclaredMaximum,\n"
+            "                reader.Position);\n"
+            "        }\n"
+            "\n"
+            "        if (!VmBoundedAllocator.TryAllocate<JavaScriptValue>("
+            "in bounds, adapter, count, out constants))"),
+    ),
+    (
         "the-verifier-stops-refusing-unreachable-code",
         "The unreachable-code check is removed, so an artifact carrying bytes no entry point "
         "reaches would verify. The entry recording that rejection must stop agreeing.",

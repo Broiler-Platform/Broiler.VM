@@ -136,6 +136,11 @@ internal static class CorpusBuilder
             MoreConstantsThanDeclared(),
             "InconsistentStructure",
             JavaScriptDiagnosticCodes.ConstantCountExceedsDeclaredMaximum),
+        Invalid(
+            "a-constant-count-far-beyond-what-the-artifact-carries",
+            AHostileConstantCount(),
+            "InconsistentStructure",
+            JavaScriptDiagnosticCodes.ConstantCountExceedsDeclaredMaximum),
 
         // ---- the reserved sections ---------------------------------------------------------------
         Invalid(
@@ -357,6 +362,35 @@ internal static class CorpusBuilder
                     JavaScriptFormat.SectionKind.Limits,
                     JavaScriptArtifactWriter.Limits(JavaScriptFormat.CeilingOperandStack + 1, 1, 1, 1)),
                 standard[1], standard[2], standard[3],
+            ]);
+    }
+
+    /// <summary>
+    /// A pool declaring sixty thousand entries and carrying none, in an artifact of a few dozen
+    /// bytes.
+    /// </summary>
+    /// <remarks>
+    /// <b>The answer is the same as its smaller neighbour's and the point is not the answer.</b>
+    /// <c>more-constants-than-the-limits-section-admits</c> declares two where one is admitted,
+    /// which a verifier that sized the array before comparing would survive - it would have
+    /// allocated thirty-two bytes and then refused. This one would have allocated close to a
+    /// megabyte from an artifact that carries nothing to fill it, which is what makes the ordering
+    /// check sharp rather than arithmetic. The count is below the format's own ceiling on purpose,
+    /// so what refuses it is the limits section's declaration and not a structural bound.
+    /// </remarks>
+    private static byte[] AHostileConstantCount()
+    {
+        var standard = StandardSections();
+
+        return JavaScriptArtifactWriter.Write(
+            Manifest,
+            [
+                new JavaScriptArtifactWriter.Section(
+                    JavaScriptFormat.SectionKind.Limits, JavaScriptArtifactWriter.Limits(16, 1, 1, 1)),
+                new JavaScriptArtifactWriter.Section(
+                    JavaScriptFormat.SectionKind.Constants,
+                    JavaScriptArtifactWriter.Constants([], declaredCount: 60_000)),
+                standard[2], standard[3],
             ]);
     }
 

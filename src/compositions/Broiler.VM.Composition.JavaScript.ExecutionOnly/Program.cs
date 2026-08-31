@@ -62,6 +62,8 @@ internal static class Program
             };
 
             checks.AddRange(ReplayChecks(corpus, verbose));
+            checks.AddRange(OrderingChecks.Run(
+                corpus, CorpusReplay.ReadManifest(Path.Combine(corpus, "corpus.manifest"))));
 
             var failed = 0;
 

@@ -35,6 +35,7 @@ an-interned-name-the-manifest-excludes|871f2fbbb2bdc97f178f90e9a5dacb1b0faf78661
 an-unknown-constant-tag|4d33590a0ccf2af8362352da5c55e656c7cfa134aa2d8ca373d9784310b5be34|default|InvalidArtifact|UnknownFeature|1301|-|-
 a-boolean-constant-that-is-neither|8468f6c01599c044d70d45d04f5feba1e633e1e0cdf0045d3ac0f9c27683173b|default|InvalidArtifact|MalformedEncoding|1302|-|-
 more-constants-than-the-limits-section-admits|1b7dc99e2f313e82cde8618e7bda5403ad390d235b1f4d822713dd446bce51f4|default|InvalidArtifact|InconsistentStructure|1303|-|-
+a-constant-count-far-beyond-what-the-artifact-carries|8dfcacc54448dbdbb84cd8d8197b6a180272ea0b5fccab6f92ca658084bcd005|default|InvalidArtifact|InconsistentStructure|1303|-|-
 an-exception-region-the-manifest-excludes|ddaad4017aec7fad7624b7bf95b4a9070eca5df1c3c32954be22f2760ad4b44f|default|InvalidArtifact|UnknownFeature|1507|-|-
 a-suspension-target-the-manifest-excludes|2b92f9a22115e5e797473989a69238ac8d84de66e8da7f5a4087fa5f726b2e83|default|InvalidArtifact|UnknownFeature|1508|-|-
 an-unknown-opcode|a1144eecb5e9cf34abcf359cf39637831c22396b264c62c95ff0bcb08f14da53|default|InvalidArtifact|UnknownFeature|1401|-|2:0:0:0
