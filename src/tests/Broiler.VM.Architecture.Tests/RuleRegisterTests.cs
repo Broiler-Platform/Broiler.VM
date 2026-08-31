@@ -287,12 +287,14 @@ public sealed class RuleRegisterTests
             .ToDictionary(static group => group.Key, static group => group.Count(), StringComparer.Ordinal);
 
         // JS-0 mints group N - four rules over the JavaScript profile family's project graph -
-        // and changes neither of the other two counts: the one Vacuous row is B3, which nothing
-        // in the graph can violate, and the one Deferred row still awaits its own milestone.
-        Assert.Equal(67, byStatus["Active"]);
+        // and JS-3a adds five more over the published diagnostic registry and the position
+        // encoding. Neither milestone changes the other two counts: the one Vacuous row is B3,
+        // which nothing in the graph can violate, and the one Deferred row still awaits its own
+        // milestone.
+        Assert.Equal(72, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(69, Loaded.Rules.Count);
+        Assert.Equal(74, Loaded.Rules.Count);
     }
 
     private static Register Load()

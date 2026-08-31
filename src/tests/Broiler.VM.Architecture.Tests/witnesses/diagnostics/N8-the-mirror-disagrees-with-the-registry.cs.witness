@@ -1,0 +1,15 @@
+// A corpus producer whose restated codes have drifted from the published registry.
+//
+// The duplication in the real producer is deliberate: it writes its expected codes out rather than
+// reading them from the profile it is testing, so a renumbering moves one side and not both. That
+// only buys anything while something holds both sides to the registry, and this input is what
+// rule N8 is shown rejecting - one constant renumbered, one named nothing publishes.
+
+namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
+
+internal static class JavaScriptDiagnosticCodes
+{
+    internal const int WrongMagic = 1001;
+    internal const int UnknownOpcode = 1499;
+    internal const int SomethingNobodyPublished = 1601;
+}

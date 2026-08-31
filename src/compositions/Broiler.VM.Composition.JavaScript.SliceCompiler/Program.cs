@@ -69,8 +69,19 @@ internal static class Program
         var entries = CorpusBuilder.Build();
         var manifest = new System.Text.StringBuilder();
 
-        manifest.AppendLine("# broiler.javascript.slice retained corpus, format version 1");
-        manifest.AppendLine("# name|sha256|mode|outcome|reason|diagnostic|completion");
+        // LF, explicitly, on every platform. The manifest is a retained artefact whose bytes are
+        // hashed into an evidence bundle and whose repository form .gitattributes pins to LF, so a
+        // producer that emitted the platform's newline would write a file that differs from the one
+        // a fresh checkout holds - and the bundle's hash would then record the machine rather than
+        // the corpus.
+        const string Eol = "\n";
+
+        manifest.Append("# broiler.javascript.slice retained corpus, format version 1").Append(Eol);
+        manifest.Append("# name|sha256|mode|outcome|reason|diagnostic|completion|position").Append(Eol);
+        manifest
+            .Append("# position is sectionIndex:byteOffset:coordinate0:coordinate1, or - where the row ")
+            .Append("pins no position")
+            .Append(Eol);
 
         foreach (var entry in entries)
         {
@@ -84,8 +95,9 @@ internal static class Program
                 .Append(entry.Reason).Append('|')
                 .Append(entry.DiagnosticCode.ToString(System.Globalization.CultureInfo.InvariantCulture))
                 .Append('|')
-                .Append(entry.Completion)
-                .AppendLine();
+                .Append(entry.Completion).Append('|')
+                .Append(entry.Position)
+                .Append(Eol);
         }
 
         File.WriteAllText(Path.Combine(directory, "corpus.manifest"), manifest.ToString());

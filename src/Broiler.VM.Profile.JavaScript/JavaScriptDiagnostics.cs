@@ -24,13 +24,14 @@ namespace Broiler.VM.Profile.JavaScript;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>This is not yet the published registry.</b> Milestone JS-3a publishes and versions the
-/// diagnostic-code registry, binds it in both directions - every emittable code appears in it and
-/// every code in it is reachable from a named case - and records which half of the registry each
-/// code belongs to, because a code carried by a rejection of ARTIFACT BYTES travels in a core
-/// result and a code carried by a rejection of SOURCE never does. What is here is the set JS-1
-/// emits, laid out so that the split JS-3a has to record is already visible: every code below is
-/// carried in a core result, because at JS-1 there is no source rejection at all.
+/// <b>The published registry is <c>docs/diagnostics/registry.txt</c></b> and decision JSD-0009
+/// owns it. Every member below has a row there; every row there names a member here; each row
+/// names the one core reason its emissions carry and the half of the registry it belongs to,
+/// because a code carried by a rejection of ARTIFACT BYTES travels in a core result and a code
+/// carried by a rejection of SOURCE never does. Every member below is in the core-result half,
+/// because at this manifest there is no source rejection at all - the lowering is hand-written
+/// and JS-3b is the milestone that mints the first embedder-seam code. Rules N5 through N8 hold
+/// the two halves to the registry; nothing in this file is the authority on its own.
 /// </para>
 /// <para>
 /// The numbers are grouped by the stage that emits them so that a reader can tell from the code

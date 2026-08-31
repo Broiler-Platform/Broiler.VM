@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   31
-// Annotated:        31/31
-// Exempt:           26
-// Human-reviewed:   0/31
+// Relevant units:   32
+// Annotated:        32/32
+// Exempt:           27
+// Human-reviewed:   0/32
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         10/10
+// Criteria:         11/11
 // Resource impact:  7/10 max
-// Unverified:       31
+// Unverified:       32
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -251,7 +251,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
         return VerifyCore(in descriptor, ref reader, in bounds, adapter, cancellationToken);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E82206
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A48C81
     // Broiler-Human:        PENDING
     private VmVerifierOutcome VerifyCore(
         in VmArtifactDescriptor descriptor,
@@ -315,7 +315,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
             }
 
             var sectionOutcome = ReadSection(
-                ref reader, in bounds, adapter, ref previousKind, ref sections, cancellationToken);
+                ref reader, in bounds, adapter, ref previousKind, ref sections, index, cancellationToken);
 
             if (sectionOutcome.Category != VmOutcome.Normal)
             {
@@ -402,7 +402,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
     /// refused before its body is read. An unknown kind is refused outright: skipping it would let
     /// one artifact carry content this verifier never looked at.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=54705F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=2FA2BD
     // Broiler-Falsified-If: a section body is read before its kind's order and uniqueness are checked, or an unknown kind is skipped rather than refused
     // Broiler-Human:        PENDING
     private VmVerifierOutcome ReadSection(
@@ -411,6 +411,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
         JavaScriptReadAdapter adapter,
         ref uint previousKind,
         ref SectionSet sections,
+        uint sectionIndex,
         System.Threading.CancellationToken cancellationToken)
     {
         var at = reader.Position;
@@ -446,7 +447,8 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
         {
             JavaScriptFormat.SectionKind.Limits => ReadLimits(ref reader, ref sections),
             JavaScriptFormat.SectionKind.Constants => ReadConstants(ref reader, in bounds, adapter, ref sections, cancellationToken),
-            JavaScriptFormat.SectionKind.Code => ReadCode(ref reader, in bounds, adapter, length, ref sections),
+            JavaScriptFormat.SectionKind.Code => ReadCode(
+                ref reader, in bounds, adapter, length, ref sections, sectionIndex),
             JavaScriptFormat.SectionKind.Entries => ReadEntries(ref reader, ref sections),
             JavaScriptFormat.SectionKind.ExceptionRegions => ReadReserved(
                 ref reader, JavaScriptDiagnosticCode.ExceptionRegionOutsideManifest),
@@ -637,14 +639,15 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
         return Ok;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=32117D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4B9AB8
     // Broiler-Human:        PENDING
     private VmVerifierOutcome ReadCode(
         ref VmBoundedReader reader,
         in VmReadBounds bounds,
         JavaScriptReadAdapter adapter,
         ulong declaredLength,
-        ref SectionSet sections)
+        ref SectionSet sections,
+        uint sectionIndex)
     {
         if (declaredLength == 0)
         {
@@ -671,6 +674,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
         body.CopyTo(code);
         sections.HasCode = true;
         sections.Code = code;
+        sections.CodeSectionIndex = (int)sectionIndex;
         return Ok;
     }
 
@@ -768,7 +772,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
             : Invalid(VmReason.UnknownFeature, diagnosticCode, at);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=19E703
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=EDFC3A
     // Broiler-Human:        PENDING
     private VmVerifierOutcome ReadPositions(ref VmBoundedReader reader, ref SectionSet sections)
     {
@@ -792,8 +796,8 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
             var at = reader.Position;
 
             if (!reader.TryReadVarUInt32(out var offset) ||
-                !reader.TryReadVarUInt32(out _) ||
-                !reader.TryReadVarUInt32(out _))
+                !reader.TryReadVarUInt32(out var line) ||
+                !reader.TryReadVarUInt32(out var column))
             {
                 return FromReader(ref reader, at);
             }
@@ -807,8 +811,20 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
                     VmReason.InconsistentStructure, JavaScriptDiagnosticCode.MalformedPositionRow, at);
             }
 
+            // Zero is the published encoding's "not known" and one artifact may not mint it. A
+            // table that could declare an unknown-looking position would be a table a consumer
+            // trusts for the rows it wrote and cannot distinguish from the rows it did not. The
+            // upper bound is the same clause from the other side: the coordinate is an int in the
+            // core's record, so a value that does not survive the narrowing is refused rather
+            // than wrapped into a negative line nobody wrote.
+            if (line is 0 or > int.MaxValue || column is 0 or > int.MaxValue)
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure, JavaScriptDiagnosticCode.MalformedPositionRow, at);
+            }
+
             previousOffset = offset;
-            sections.PositionOffsets.Add(offset);
+            sections.PositionRows.Add(new JavaScriptPositionRow(offset, (int)line, (int)column));
         }
 
         sections.HasPositions = true;
@@ -835,7 +851,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
     /// traversal rather than about the program.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=4741BA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=6740E8
     // Broiler-Falsified-If: an artifact admitted here contains a jump to a non-boundary, a join whose two heights differ, an unreachable instruction, or a path that reaches the end of the code without returning
     // Broiler-Human:        PENDING
     private VmVerifierOutcome Link(ref SectionSet sections, in VmReadBounds bounds, JavaScriptReadAdapter adapter)
@@ -868,15 +884,19 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
         {
             if (!JavaScriptOpcodes.IsDefined(code[offset]))
             {
-                return Invalid(VmReason.UnknownFeature, JavaScriptDiagnosticCode.UnknownOpcode, (ulong)offset);
+                return InvalidInCode(
+                    VmReason.UnknownFeature, JavaScriptDiagnosticCode.UnknownOpcode, (ulong)offset, in sections);
             }
 
             var width = JavaScriptOpcodes.InstructionWidth((JavaScriptOpcode)code[offset]);
 
             if (offset + width > code.Length)
             {
-                return Invalid(
-                    VmReason.Truncated, JavaScriptDiagnosticCode.TruncatedInstruction, (ulong)offset);
+                return InvalidInCode(
+                    VmReason.Truncated,
+                    JavaScriptDiagnosticCode.TruncatedInstruction,
+                    (ulong)offset,
+                    in sections);
             }
 
             boundary[offset] = 1;
@@ -888,25 +908,27 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
         {
             if (entry.CodeOffset >= code.Length || boundary[entry.CodeOffset] == 0)
             {
-                return Invalid(
+                return InvalidInCode(
                     VmReason.InconsistentStructure,
                     JavaScriptDiagnosticCode.EntryOffsetNotAnInstructionBoundary,
-                    (ulong)entry.CodeOffset);
+                    (ulong)entry.CodeOffset,
+                    in sections);
             }
         }
 
-        foreach (var offset in sections.PositionOffsets)
+        foreach (var row in sections.PositionRows)
         {
-            if (offset >= (uint)code.Length || boundary[offset] == 0)
+            if (row.Offset >= (uint)code.Length || boundary[row.Offset] == 0)
             {
-                return Invalid(
+                return InvalidInCode(
                     VmReason.InconsistentStructure,
                     JavaScriptDiagnosticCode.MalformedPositionRow,
-                    offset);
+                    row.Offset,
+                    in sections);
             }
         }
 
-        var walk = Walk(sections, code, boundary, height, constants.Length);
+        var walk = Walk(in sections, code, boundary, height, constants.Length);
 
         if (walk.Outcome.Category != VmOutcome.Normal)
         {
@@ -917,8 +939,11 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
         {
             if (boundary[offset] == 1 && height[offset] < 0)
             {
-                return Invalid(
-                    VmReason.InconsistentStructure, JavaScriptDiagnosticCode.UnreachableCode, (ulong)offset);
+                return InvalidInCode(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.UnreachableCode,
+                    (ulong)offset,
+                    in sections);
             }
         }
 
@@ -929,14 +954,14 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
                 sections.Entries,
                 walk.MaximumOperandStack,
                 sections.LocalCount,
-                sections.PositionOffsets.Count),
+                sections.PositionRows.Count),
             VmArtifactSharing.Shareable);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=11EF8A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=187EF7
     // Broiler-Human:        PENDING
     private (VmVerifierOutcome Outcome, int MaximumOperandStack) Walk(
-        SectionSet sections,
+        in SectionSet sections,
         byte[] code,
         byte[] boundary,
         int[] height,
@@ -944,9 +969,18 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
     {
         var pending = new System.Collections.Generic.Stack<(int Offset, int Height)>();
 
+        // An entry point is entered with an empty operand stack, so any EDGE that reaches one
+        // carrying operands is refused - and refused at the edge rather than at the join it would
+        // otherwise cause. The distinction is not cosmetic: a join mismatch is reported by
+        // whichever of the two arrivals the worklist happens to pop second, so a program's
+        // diagnostic would depend on a traversal order no artifact can see. Checking the edge
+        // makes the answer a property of the program.
+        var isEntry = new bool[code.Length];
+
         foreach (var entry in sections.Entries)
         {
             pending.Push((entry.CodeOffset, 0));
+            isEntry[entry.CodeOffset] = true;
         }
 
         var observed = 0;
@@ -959,10 +993,11 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
             {
                 if (height[offset] != incoming)
                 {
-                    return (Invalid(
+                    return (InvalidInCode(
                         VmReason.InconsistentStructure,
                         JavaScriptDiagnosticCode.InconsistentStackHeightAtJoin,
-                        (ulong)offset), 0);
+                        (ulong)offset,
+                        in sections), 0);
                 }
 
                 continue;
@@ -976,25 +1011,27 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
 
             if (incoming < pop)
             {
-                return (Invalid(
+                return (InvalidInCode(
                     VmReason.SemanticValidationFailed,
                     JavaScriptDiagnosticCode.OperandStackUnderflow,
-                    (ulong)offset), 0);
+                    (ulong)offset,
+                    in sections), 0);
             }
 
             var after = incoming - pop + JavaScriptOpcodes.PushCount(opcode);
 
             if (after > sections.MaxOperandStack)
             {
-                return (Invalid(
+                return (InvalidInCode(
                     VmReason.SemanticValidationFailed,
                     JavaScriptDiagnosticCode.OperandStackOverflow,
-                    (ulong)offset), 0);
+                    (ulong)offset,
+                    in sections), 0);
             }
 
             observed = after > observed ? after : observed;
 
-            var operand = OperandCheck(opcode, code, offset, constantCount, sections.LocalCount);
+            var operand = OperandCheck(opcode, code, offset, constantCount, in sections);
 
             if (operand.Category != VmOutcome.Normal)
             {
@@ -1009,10 +1046,11 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
                     // height after popping it is zero. Anything else is a lowering that lost track
                     // of its own stack, and admitting it would mean the executor could finish with
                     // values it never accounted for.
-                    return (Invalid(
+                    return (InvalidInCode(
                         VmReason.SemanticValidationFailed,
                         JavaScriptDiagnosticCode.ReturnStackNotExactlyOne,
-                        (ulong)offset), 0);
+                        (ulong)offset,
+                        in sections), 0);
                 }
 
                 continue;
@@ -1027,10 +1065,20 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
 
                 if (target < 0 || target >= code.Length || boundary[target] == 0)
                 {
-                    return (Invalid(
+                    return (InvalidInCode(
                         VmReason.InconsistentStructure,
                         JavaScriptDiagnosticCode.JumpTargetNotAnInstructionBoundary,
-                        (ulong)offset), 0);
+                        (ulong)offset,
+                        in sections), 0);
+                }
+
+                if (isEntry[target] && after != 0)
+                {
+                    return (InvalidInCode(
+                        VmReason.SemanticValidationFailed,
+                        JavaScriptDiagnosticCode.EntryStackNotEmpty,
+                        (ulong)target,
+                        in sections), 0);
                 }
 
                 pending.Push(((int)target, after));
@@ -1045,10 +1093,20 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
 
             if (next >= code.Length)
             {
-                return (Invalid(
+                return (InvalidInCode(
                     VmReason.SemanticValidationFailed,
                     JavaScriptDiagnosticCode.FallsOffTheEnd,
-                    (ulong)offset), 0);
+                    (ulong)offset,
+                    in sections), 0);
+            }
+
+            if (isEntry[next] && after != 0)
+            {
+                return (InvalidInCode(
+                    VmReason.SemanticValidationFailed,
+                    JavaScriptDiagnosticCode.EntryStackNotEmpty,
+                    (ulong)next,
+                    in sections), 0);
             }
 
             pending.Push((next, after));
@@ -1057,14 +1115,14 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
         return (Ok, observed);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E6BEA3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D39432
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome OperandCheck(
         JavaScriptOpcode opcode,
         byte[] code,
         int offset,
         int constantCount,
-        int localCount)
+        in SectionSet sections)
     {
         if (opcode == JavaScriptOpcode.LoadConstant)
         {
@@ -1073,10 +1131,11 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
 
             return index < constantCount
                 ? Ok
-                : Invalid(
+                : InvalidInCode(
                     VmReason.SemanticValidationFailed,
                     JavaScriptDiagnosticCode.ConstantIndexOutOfRange,
-                    (ulong)offset);
+                    (ulong)offset,
+                    in sections);
         }
 
         if (opcode is JavaScriptOpcode.LoadLocal or JavaScriptOpcode.StoreLocal)
@@ -1084,12 +1143,13 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
             var index = System.Buffers.Binary.BinaryPrimitives.ReadUInt16LittleEndian(
                 System.MemoryExtensions.AsSpan(code, offset + 1, 2));
 
-            return index < localCount
+            return index < sections.LocalCount
                 ? Ok
-                : Invalid(
+                : InvalidInCode(
                     VmReason.SemanticValidationFailed,
                     JavaScriptDiagnosticCode.LocalIndexOutOfRange,
-                    (ulong)offset);
+                    (ulong)offset,
+                    in sections);
         }
 
         return Ok;
@@ -1117,6 +1177,27 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome Invalid(VmReason reason, JavaScriptDiagnosticCode code, ulong offset) =>
         VmVerifierOutcome.InvalidArtifact(reason, (int)code, At(offset));
+
+    /// <summary>
+    /// An invalid answer whose offset is an offset into the CODE SECTION rather than into the
+    /// artifact, carrying the section it is in and the source position that covers it.
+    /// </summary>
+    /// <remarks>
+    /// The two factories are separate rather than one with a flag because the difference is not a
+    /// formatting choice: an offset resolved against the wrong frame names an unrelated byte, and
+    /// the compiler is the party that should be refusing to mix them up. Every diagnostic the link
+    /// and walk stages produce is of this kind, and every diagnostic the read stage produces is of
+    /// the other.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=B800EB
+    // Broiler-Falsified-If: a code-section offset is reported with the artifact-relative section index, or a read-stage offset with a section index
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome InvalidInCode(
+        VmReason reason, JavaScriptDiagnosticCode code, ulong offset, in SectionSet sections) =>
+        VmVerifierOutcome.InvalidArtifact(
+            reason,
+            (int)code,
+            JavaScriptPosition.InCode(sections.CodeSectionIndex, offset, sections.PositionRows));
 
     /// <summary>
     /// What a refused poll means, which is not one thing.
@@ -1187,20 +1268,15 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
             _ => Invalid(VmReason.InconsistentStructure, JavaScriptDiagnosticCode.ReaderStopped, position),
         };
 
-    /// <summary>
-    /// This profile's use of the core's position record, fixed here and published at JS-3a.
-    /// </summary>
+    /// <summary>An artifact-relative position, which is what every read-stage refusal carries.</summary>
     /// <remarks>
-    /// The record carries four fields and this profile populates two of them: the byte offset, and
-    /// a section index of <c>-1</c> meaning "an offset into the artifact rather than into a framed
-    /// section". The two profile-owned coordinates are left at zero at JS-1 and JS-3a decides what
-    /// they carry - the intended answer being a line and a column from the position table, which
-    /// exists in the format from version 1 but which no source-bearing artifact has yet been
-    /// lowered from.
+    /// The encoding itself lives in <see cref="JavaScriptPosition"/> and is published in the
+    /// diagnostic registry. This is the read stage's half of it: the reader is part-way through
+    /// the framing when it stops, so there is no frame to name and the section index is <c>-1</c>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=834CF8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=300F5E
     // Broiler-Human:        PENDING
-    private static VmSourcePosition At(ulong offset) => new(-1, offset, 0, 0);
+    private static VmSourcePosition At(ulong offset) => JavaScriptPosition.InArtifact(offset);
 
     /// <summary>What the section pass accumulates for the whole-artifact pass to link.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=BB5E79
@@ -1240,11 +1316,23 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=63AFA5
         // Broiler-Human:        PENDING
         public JavaScriptEntryPoint[] Entries;
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CA47BD
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=512D1C
         // Broiler-Human:        PENDING
-        public System.Collections.Generic.List<uint> PositionOffsets;
+        public System.Collections.Generic.List<JavaScriptPositionRow> PositionRows;
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4B265F
+        /// <summary>
+        /// The ordinal index of the code section's frame, or <c>-1</c> until it is framed.
+        /// </summary>
+        /// <remarks>
+        /// The ordinal, not the section KIND. An artifact may omit a section this format defines,
+        /// so the two are different numbers, and the core's position record wants the one that
+        /// identifies a frame in THIS artifact.
+        /// </remarks>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D6697B
+        // Broiler-Human:        PENDING
+        public int CodeSectionIndex;
+
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C1D971
         // Broiler-Human:        PENDING
         public SectionSet()
         {
@@ -1259,7 +1347,8 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
             Constants = [];
             Code = [];
             Entries = [];
-            PositionOffsets = [];
+            PositionRows = [];
+            CodeSectionIndex = JavaScriptPosition.OutsideAnySection;
         }
     }
 }

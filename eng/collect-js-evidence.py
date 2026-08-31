@@ -41,6 +41,10 @@ PROFILE_MARKER = os.path.join(PROFILE_ROOT, "AssemblyMarker.cs")
 PROFILE_VALUE = os.path.join(PROFILE_ROOT, "JavaScriptValue.cs")
 PROFILE_EXECUTOR = os.path.join(PROFILE_ROOT, "JavaScriptExecutor.cs")
 PROFILE_VERIFIER = os.path.join(PROFILE_ROOT, "JavaScriptVerifier.cs")
+PROFILE_POSITION = os.path.join(PROFILE_ROOT, "JavaScriptPosition.cs")
+REGISTRY = os.path.join(PROFILE_ROOT, "docs", "diagnostics", "registry.txt")
+MIRROR = os.path.join(
+    "src", "compositions", "Broiler.VM.Composition.JavaScript.SliceCompiler", "CorpusBuilder.cs")
 FIXTURES_PROJECT = os.path.join(
     "src", "tests", "Broiler.VM.Fixtures", "Broiler.VM.Fixtures.csproj")
 
@@ -263,6 +267,57 @@ CONTROLS = [
             "    <ProjectReference Include=\"..\\..\\Broiler.VM.Profile.JavaScript"
             "\\Broiler.VM.Profile.JavaScript.csproj\" />\n"
             "  </ItemGroup>\n\n</Project>"),
+    ),
+    (
+        "N5-the-registry-omits-a-declared-code",
+        "One published row is deleted while the code stays declared and emittable. This is the "
+        "forward half of the registry binding, and the shape a real edit takes: a code retired "
+        "from the registry and left in the vocabulary.",
+        REGISTRY,
+        lambda text: text.replace(
+            "1411|UnreachableCode|core-result|InconsistentStructure|code|corpus|"
+            "an-instruction-no-entry-point-reaches|1\n",
+            ""),
+    ),
+    (
+        "N6-the-registry-names-a-reason-the-sites-do-not-carry",
+        "One row's core reason is changed to another real core reason. Nothing about the file "
+        "looks wrong afterwards, which is why the rule reads the emission sites rather than the "
+        "row's plausibility.",
+        REGISTRY,
+        lambda text: text.replace(
+            "1401|UnknownOpcode|core-result|UnknownFeature|",
+            "1401|UnknownOpcode|core-result|SemanticValidationFailed|"),
+    ),
+    (
+        "N7-the-registry-names-a-case-the-corpus-does-not-have",
+        "One row's case is renamed to an entry nobody wrote. The backward binding is the half a "
+        "registry cannot satisfy by being internally consistent, so it is the half worth a "
+        "control of its own.",
+        REGISTRY,
+        lambda text: text.replace(
+            "|corpus|an-unknown-opcode|1", "|corpus|an-opcode-nobody-wrote-a-case-for|1"),
+    ),
+    (
+        "N8-a-restated-code-drifts-from-the-registry",
+        "The corpus producer's restated constant is renumbered. The duplication is deliberate - "
+        "the producer must not read its codes from the profile it tests - and it only buys "
+        "anything while the registry holds both halves.",
+        MIRROR,
+        lambda text: text.replace(
+            "    internal const int UnknownOpcode = 1401;",
+            "    internal const int UnknownOpcode = 1499;"),
+    ),
+    (
+        "N9-a-position-is-built-outside-the-factory",
+        "The verifier builds a position itself instead of going through the published encoding. "
+        "This is the exact shape of the conflation JS-3a corrected, reintroduced: one call site "
+        "answering with its own convention.",
+        PROFILE_VERIFIER,
+        lambda text: text.replace(
+            "    private static VmSourcePosition At(ulong offset) => "
+            "JavaScriptPosition.InArtifact(offset);",
+            "    private static VmSourcePosition At(ulong offset) => new(-1, offset, 0, 0);"),
     ),
     (
         "J3-a-profile-fingerprint-is-stale",
@@ -540,6 +595,36 @@ CORPUS_CONTROLS = [
             "        var truncated = (double)(uint)System.Math.Min(System.Math.Max(value, 0), 4294967295.0);"),
     ),
     (
+        "the-position-encoding-loses-the-section-index",
+        "A code-section position is reported with the artifact-relative marker again, which is "
+        "the defect JS-3a corrected. The number stays right and the frame it names goes wrong, so "
+        "no outcome, reason or diagnostic code moves - only the four rows that pin a position.",
+        PROFILE_POSITION,
+        lambda text: text.replace(
+            "        return new(codeSectionIndex, codeOffset, line, column);",
+            "        return new(OutsideAnySection, codeOffset, line, column);"),
+    ),
+    (
+        "the-position-lookup-takes-the-first-row",
+        "The covering-row scan stops at the first row rather than the last one at or before the "
+        "offset. Three of the four pinned rows are unaffected; the entry whose refusal sits under "
+        "the SECOND row of a two-row table is the one that must notice.",
+        PROFILE_POSITION,
+        lambda text: text.replace(
+            "            line = row.Line;\n            column = row.Column;\n        }",
+            "            line = row.Line;\n            column = row.Column;\n            break;\n        }"),
+    ),
+    (
+        "an-entry-point-may-be-reached-with-operands",
+        "The fall-through edge into an entry point stops being refused. A program is entered with "
+        "an empty operand stack; without this check the artifact is answered by whichever fault "
+        "the traversal reaches first, which is the order-dependence JS-3a removed.",
+        PROFILE_VERIFIER,
+        lambda text: text.replace(
+            "            if (isEntry[next] && after != 0)",
+            "            if (false && isEntry[next] && after != 0)"),
+    ),
+    (
         "the-verifier-stops-refusing-unreachable-code",
         "The unreachable-code check is removed, so an artifact carrying bytes no entry point "
         "reaches would verify. The entry recording that rejection must stop agreeing.",
@@ -707,6 +792,11 @@ def main():
         os.path.join(PROFILE_ROOT, "docs", "decisions", "0005-the-seed-waited-on-set-and-snapshot-stop-condition.md"),
         os.path.join(PROFILE_ROOT, "docs", "decisions", "0006-assurance-evidence-and-rules-adoption.md"),
         os.path.join(PROFILE_ROOT, "docs", "decisions", "0007-cross-profile-position-and-amendment-grading.md"),
+        os.path.join(PROFILE_ROOT, "docs", "decisions", "0008-format-version-1-the-entry-point-and-what-js-1-corrected.md"),
+        os.path.join(PROFILE_ROOT, "docs", "decisions", "0009-the-diagnostic-registry-and-the-position-encoding.md"),
+        REGISTRY,
+        PROFILE_POSITION,
+        os.path.join(arguments.corpus, "corpus.manifest"),
     ])
 
     print(f"collected {arguments.bundle} into {arguments.out}")

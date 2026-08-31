@@ -11,7 +11,8 @@ internal sealed record ReplayEntry(
     string Outcome,
     string Reason,
     int DiagnosticCode,
-    string Completion);
+    string Completion,
+    string Position);
 
 /// <summary>What one replayed entry actually did.</summary>
 internal sealed record ReplayObservation(
@@ -20,6 +21,7 @@ internal sealed record ReplayObservation(
     string Reason,
     int DiagnosticCode,
     string Completion,
+    string Position,
     string HashStatus);
 
 /// <summary>
@@ -61,7 +63,7 @@ internal static class CorpusReplay
 
             var parts = line.Split('|');
 
-            if (parts.Length != 7)
+            if (parts.Length != 8)
             {
                 throw new InvalidOperationException($"corpus manifest row has {parts.Length} columns: {line}");
             }
@@ -73,7 +75,8 @@ internal static class CorpusReplay
                 parts[3],
                 parts[4],
                 int.Parse(parts[5], System.Globalization.CultureInfo.InvariantCulture),
-                parts[6]));
+                parts[6],
+                parts[7]));
         }
 
         return entries.ToArray();
@@ -102,7 +105,7 @@ internal static class CorpusReplay
 
         if (runtime is null)
         {
-            return new ReplayObservation(entry.Name, "HostFailure", failure, 0, "-", hashStatus);
+            return new ReplayObservation(entry.Name, "HostFailure", failure, 0, "-", "-", hashStatus);
         }
 
         var descriptor = Hosts.Descriptor(entry.Mode);
@@ -123,6 +126,7 @@ internal static class CorpusReplay
                 verified.Reason.ToString(),
                 verified.Diagnostics.ProfileDiagnosticCode,
                 "-",
+                Position(entry, in verified),
                 hashStatus);
         }
 
@@ -135,6 +139,7 @@ internal static class CorpusReplay
                 instantiated.Outcome.ToString(),
                 instantiated.Reason.ToString(),
                 instantiated.Diagnostics.ProfileDiagnosticCode,
+                "-",
                 "-",
                 hashStatus);
         }
@@ -154,7 +159,34 @@ internal static class CorpusReplay
             verified.Reason.ToString(),
             verified.Diagnostics.ProfileDiagnosticCode,
             completion,
+            Position(entry, in verified),
             hashStatus);
+    }
+
+    /// <summary>
+    /// The four fields of the position a verification answered with, as the manifest writes them.
+    /// </summary>
+    /// <remarks>
+    /// A row that pins no position observes none: the alternative - formatting every row's four
+    /// fields and comparing them - would turn every entry into a claim about byte offsets this
+    /// corpus does not make, and the first change to the artifact writer would fail sixty rows for
+    /// a reason none of them is about.
+    /// </remarks>
+    private static string Position(ReplayEntry entry, in VmVerificationResult verified)
+    {
+        if (string.Equals(entry.Position, "-", StringComparison.Ordinal))
+        {
+            return "-";
+        }
+
+        var position = verified.Diagnostics.SourcePosition;
+
+        return string.Join(
+            ':',
+            position.SectionIndex,
+            position.ByteOffset,
+            position.ProfileCoordinate0,
+            position.ProfileCoordinate1);
     }
 
     /// <summary>Whether an observation is what its manifest row recorded.</summary>
@@ -163,5 +195,6 @@ internal static class CorpusReplay
         string.Equals(expected.Outcome, observed.Outcome, StringComparison.Ordinal) &&
         string.Equals(expected.Reason, observed.Reason, StringComparison.Ordinal) &&
         expected.DiagnosticCode == observed.DiagnosticCode &&
-        string.Equals(expected.Completion, observed.Completion, StringComparison.Ordinal);
+        string.Equals(expected.Completion, observed.Completion, StringComparison.Ordinal) &&
+        string.Equals(expected.Position, observed.Position, StringComparison.Ordinal);
 }

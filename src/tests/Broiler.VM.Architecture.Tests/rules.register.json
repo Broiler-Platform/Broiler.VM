@@ -761,6 +761,56 @@
       "activationMilestone": null,
       "nonVacuousWhen": "Three family projects exist at JS-0, none matching a name-suffix rule in the vendored packaging props, so each would default to packable without the element.",
       "witness": "witnesses/N4-family-project-declares-a-package-id.csproj.witness, witnesses/N4-family-project-omits-ispackable.csproj.witness"
+    },
+    {
+      "id": "N5",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "The published diagnostic-code registry at src/Broiler.VM.Profile.JavaScript/docs/diagnostics/registry.txt and the JavaScriptDiagnosticCode vocabulary are the same set: every declared member has exactly one row carrying its name and its number, every row names a member of that number, no number appears twice, the registry states its own revision, and every row dates from a revision the registry has. Decision JSD-0009 owns the registry; this is the forward half of JS-3a's both-directions binding.",
+      "evidence": "The published registry file, and the enum declaration parsed with Roslyn",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Forty codes are declared and forty rows are published at JS-3a, so a clean result is a comparison over a real set. The vocabulary is read from source rather than from metadata because rule A11 keeps the profile assembly out of this project's reference set.",
+      "witness": "witnesses/diagnostics/N5-registry-omits-a-declared-code.txt.witness"
+    },
+    {
+      "id": "N6",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "Every diagnostic code maps onto exactly one core VmReason, that reason is a member of the core's own vocabulary rather than an invented or aliased one, it is the reason every emission site in the profile assembly actually carries, and no declared code is emitted by nothing. A code emitted with two reasons is two rejections sharing a number, and every corpus entry that recorded it recorded a triple that does not identify what happened.",
+      "evidence": "The published registry, and every emission site in the profile assembly parsed with Roslyn",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The profile assembly has more emission sites than it has codes at JS-3a, including two shapes - a direct call naming reason and code together, and a forwarding helper that supplies the reason from its own body - so the one-reason clause decides real pairs. Reason names are held to VmReason itself, which this project does reference.",
+      "witness": "witnesses/diagnostics/N6-registry-names-the-wrong-reason.txt.witness"
+    },
+    {
+      "id": "N7",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "Every registry row is reachable from a named case: a corpus row names an entry of the retained corpus manifest that records that exact code, and a defensive row is one of the three the rule itself lists and states why no artifact reaches it. The backward half of JS-3a's both-directions binding, and the half a registry cannot satisfy by being edited.",
+      "evidence": "The published registry, and the retained corpus manifest read off disk",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Thirty-seven of the forty rows are reached by a named corpus entry at JS-3a and three are not. The three are listed in the RULE rather than in the registry, so a fourth row excusing itself from the binding is an edit to a test rather than an edit to the file the test reads.",
+      "witness": "witnesses/diagnostics/N7-registry-names-a-case-the-corpus-does-not-have.txt.witness"
+    },
+    {
+      "id": "N8",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "The diagnostic codes the corpus-producing composition restates agree with the published registry, name for name and number for number. The producer deliberately writes its expected codes out rather than reading them from the profile it is testing; that duplication is only worth its cost while a third artefact holds both halves, and the registry is that artefact.",
+      "evidence": "The published registry, and the composition's restated constants parsed with Roslyn",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The producer restates thirty-seven codes at JS-3a - one per corpus-reachable row - so the comparison has a real subject on both sides.",
+      "witness": "witnesses/diagnostics/N8-the-mirror-disagrees-with-the-registry.cs.witness"
+    },
+    {
+      "id": "N9",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "A VmSourcePosition is constructed in JavaScriptPosition.cs and nowhere else in the profile assembly, in either the named or the target-typed form. The core's position record carries two fields whose meaning it does not interpret; JSD-0009 writes this profile's convention down, and this keeps every position in the assembly going through the two factories that implement it.",
+      "evidence": "Every member of the profile assembly whose return type is the position record, parsed with Roslyn",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The profile answers with positions from more than one member at JS-3a and exactly one file builds them, so the rule decides a real partition. It reports its own vacuity: a run in which nothing builds a position at all is a violation rather than a clean result.",
+      "witness": "witnesses/diagnostics/N9-a-position-built-outside-the-factory.cs.witness"
     }
   ]
 }

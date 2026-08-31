@@ -631,6 +631,322 @@ internal static class ArchitectureRules
         }
     }
 
+    // ---- Group N, second half: the published diagnostic registry ------------------------------
+    //
+    // JS-3a publishes the diagnostic-code registry and the position encoding, and the four rules
+    // below are what "published and bound in both directions" means mechanically. Each binds the
+    // registry to a DIFFERENT independently written artefact - the enum, the emission sites, the
+    // retained corpus, the composition's restated constants - so that the registry cannot be made
+    // to agree with everything by being edited to match one thing.
+    //
+    // Every one of them is over TEXT parsed with Roslyn or over a manifest read off disk, for the
+    // same reason the first half of group N is over project files: rule A11 keeps the profile
+    // assembly out of this project's reference set, so there is no metadata to read and none of
+    // these rules pretends there is.
+
+    /// <summary>
+    /// N5: the registry and the code vocabulary are the same set. Every member of
+    /// <c>JavaScriptDiagnosticCode</c> has exactly one registry row carrying its name and its
+    /// number; every registry row names a member; the registry states its own revision; and every
+    /// row's <c>since</c> is a revision that exists.
+    /// </summary>
+    /// <remarks>
+    /// The revision half is not bookkeeping. A retained corpus entry records a diagnostic code and
+    /// nothing else about it, so a code that changed meaning between two releases would silently
+    /// invalidate every entry that recorded it - and the only thing that lets a reader date an
+    /// entry is the registry stating which revision it is and each row stating the revision its
+    /// meaning dates from.
+    /// </remarks>
+    internal static IEnumerable<string> N5(
+        IReadOnlyList<DiagnosticRegistryRow> registry,
+        IReadOnlyList<(string Name, int Value)> vocabulary,
+        int revision)
+    {
+        if (revision < 1)
+        {
+            yield return "the registry states no revision of its own";
+        }
+
+        foreach (var duplicate in registry
+            .GroupBy(static row => row.Code)
+            .Where(static group => group.Count() > 1))
+        {
+            yield return $"the registry has {duplicate.Count()} rows for code {duplicate.Key}";
+        }
+
+        foreach (var row in registry)
+        {
+            if (!vocabulary.Any(member => member.Name == row.Name && member.Value == row.Code))
+            {
+                yield return
+                    $"registry row {row.Code} names {row.Name}, which is not a member of that " +
+                    "number in the code vocabulary";
+            }
+
+            if (row.Since < 1 || row.Since > revision)
+            {
+                yield return
+                    $"registry row {row.Code} dates from revision {row.Since}, and the registry " +
+                    $"is at revision {revision}";
+            }
+
+            if (!DiagnosticRegistry.Halves.Contains(row.Half, StringComparer.Ordinal))
+            {
+                yield return $"registry row {row.Code} claims the half {row.Half}, which is not one";
+            }
+
+            if (!DiagnosticRegistry.Stages.Contains(row.Stage, StringComparer.Ordinal))
+            {
+                yield return $"registry row {row.Code} names the stage {row.Stage}, which is not one";
+            }
+        }
+
+        foreach (var member in vocabulary)
+        {
+            if (!registry.Any(row => row.Code == member.Value && row.Name == member.Name))
+            {
+                yield return
+                    $"the code vocabulary declares {member.Name} = {member.Value} and the " +
+                    "registry has no row for it";
+            }
+        }
+    }
+
+    /// <summary>
+    /// N6: every code maps onto exactly one core reason, and it is the reason its emission sites
+    /// actually carry. No code is emitted with two reasons, no registry row names a reason that is
+    /// not a member of the core's own vocabulary, and no declared code is emitted by nothing.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// "Exactly one reason" is the clause that makes a code mean something. A code emitted as
+    /// <c>InconsistentStructure</c> in one place and <c>SemanticValidationFailed</c> in another is
+    /// two rejections sharing a number, and every corpus entry that recorded it recorded a triple
+    /// that does not identify what happened.
+    /// </para>
+    /// <para>
+    /// The reason names are held to <see cref="VmReason"/> itself rather than to a list here,
+    /// which is what "with no invented or aliased reason" requires: a registry naming a reason the
+    /// core does not have would otherwise pass every other check in this file.
+    /// </para>
+    /// </remarks>
+    internal static IEnumerable<string> N6(
+        IReadOnlyList<DiagnosticRegistryRow> registry,
+        IReadOnlyList<DiagnosticRegistry.EmissionSite> sites,
+        IReadOnlyList<(string Name, int Value)> vocabulary)
+    {
+        var reasons = Enum.GetNames<VmReason>();
+
+        foreach (var row in registry)
+        {
+            if (!reasons.Contains(row.Reason, StringComparer.Ordinal))
+            {
+                yield return
+                    $"registry row {row.Code} names the reason {row.Reason}, which the core does " +
+                    "not have";
+            }
+        }
+
+        foreach (var group in sites.GroupBy(static site => site.Code, StringComparer.Ordinal))
+        {
+            var carried = group
+                .Select(static site => site.Reason)
+                .Distinct(StringComparer.Ordinal)
+                .OrderBy(static reason => reason, StringComparer.Ordinal)
+                .ToArray();
+
+            if (carried.Length > 1)
+            {
+                yield return
+                    $"{group.Key} is emitted with {carried.Length} reasons " +
+                    $"[{string.Join(", ", carried)}], and a code carries one";
+            }
+
+            var row = registry.FirstOrDefault(candidate => candidate.Name == group.Key);
+
+            if (row is null)
+            {
+                yield return $"{group.Key} is emitted and the registry has no row for it";
+                continue;
+            }
+
+            foreach (var site in group.Where(site =>
+                !string.Equals(site.Reason, row.Reason, StringComparison.Ordinal)))
+            {
+                yield return
+                    $"{site.File}({site.Line}) emits {site.Code} with {site.Reason}, and the " +
+                    $"registry says {row.Reason}";
+            }
+        }
+
+        foreach (var member in vocabulary)
+        {
+            if (!sites.Any(site => string.Equals(site.Code, member.Name, StringComparison.Ordinal)))
+            {
+                yield return
+                    $"{member.Name} is declared and no site emits it, so nothing can reach it";
+            }
+        }
+    }
+
+    /// <summary>
+    /// The registry rows no artifact reaches, and the only ones permitted to claim it.
+    /// </summary>
+    /// <remarks>
+    /// <b>The list is here rather than in the registry, and that is the whole point of it.</b> A
+    /// row claiming to be unreachable is a row excused from the backward binding, so if the
+    /// registry alone decided which rows may claim it, the excuse would be available by editing
+    /// the file the rule reads. Adding a fourth is an edit to this test, which is a review.
+    /// </remarks>
+    internal static readonly int[] DefensiveCodes = [1003, 1006, 1903];
+
+    /// <summary>
+    /// N7: every registry row is reachable from a named case. A <c>corpus</c> row names an entry
+    /// of the retained corpus manifest that records that exact code; a <c>defensive</c> row is one
+    /// of <see cref="DefensiveCodes"/> and states why no artifact reaches it.
+    /// </summary>
+    /// <remarks>
+    /// This is the backward half of the binding and the expensive one to satisfy honestly: a
+    /// registry can always be made to agree with the enum, and it takes a corpus to show that the
+    /// codes are reachable at all. Three rows are not, each for a reason that is a fact about the
+    /// build rather than a gap - two because the core screens the descriptor before this profile
+    /// is called, one because the reader's status set is exhausted by the arms above it - and each
+    /// states its reason where a reader meets the row.
+    /// </remarks>
+    internal static IEnumerable<string> N7(
+        IReadOnlyList<DiagnosticRegistryRow> registry,
+        ILookup<int, string> corpus)
+    {
+        foreach (var row in registry)
+        {
+            if (!DiagnosticRegistry.Reachabilities.Contains(row.Reachability, StringComparer.Ordinal))
+            {
+                yield return
+                    $"registry row {row.Code} claims the reachability {row.Reachability}, which " +
+                    "is not one";
+
+                continue;
+            }
+
+            if (string.Equals(row.Reachability, "defensive", StringComparison.Ordinal))
+            {
+                if (!DefensiveCodes.Contains(row.Code))
+                {
+                    yield return
+                        $"registry row {row.Code} claims to be unreachable and is not one of the " +
+                        "rows this rule admits as unreachable";
+                }
+
+                if (row.Case.Trim().Length < 20)
+                {
+                    yield return
+                        $"registry row {row.Code} claims to be unreachable and states no reason";
+                }
+
+                continue;
+            }
+
+            if (!corpus[row.Code].Contains(row.Case, StringComparer.Ordinal))
+            {
+                yield return
+                    $"registry row {row.Code} names the case {row.Case}, and no corpus entry of " +
+                    $"that name records code {row.Code}";
+            }
+        }
+
+        foreach (var code in DefensiveCodes)
+        {
+            var row = registry.FirstOrDefault(candidate => candidate.Code == code);
+
+            if (row is not null &&
+                !string.Equals(row.Reachability, "defensive", StringComparison.Ordinal))
+            {
+                yield return
+                    $"registry row {code} is admitted as unreachable and claims to be reachable " +
+                    "by a case, which is a stronger claim than this rule was told to expect";
+            }
+        }
+    }
+
+    /// <summary>
+    /// N8: the codes a composition restates agree with the registry, name for name and number for
+    /// number.
+    /// </summary>
+    /// <remarks>
+    /// The corpus producer writes its expected codes out rather than reading them from the profile
+    /// it is testing, so that a renumbering moves one side and not both. That duplication is only
+    /// worth its cost while something holds the two halves to a third thing, and this is it: the
+    /// registry is the third thing, and neither half is the other's authority.
+    /// </remarks>
+    internal static IEnumerable<string> N8(
+        IReadOnlyList<DiagnosticRegistryRow> registry,
+        IReadOnlyList<(string Name, int Value)> mirror)
+    {
+        foreach (var restated in mirror)
+        {
+            var row = registry.FirstOrDefault(candidate => candidate.Name == restated.Name);
+
+            if (row is null)
+            {
+                yield return
+                    $"the composition restates {restated.Name} = {restated.Value}, and the " +
+                    "registry has no row of that name";
+
+                continue;
+            }
+
+            if (row.Code != restated.Value)
+            {
+                yield return
+                    $"the composition restates {restated.Name} = {restated.Value}, and the " +
+                    $"registry publishes it as {row.Code}";
+            }
+        }
+    }
+
+    /// <summary>
+    /// N9: a core position is constructed in the file that decides the encoding and nowhere else.
+    /// </summary>
+    /// <remarks>
+    /// The core's position record carries two fields whose meaning it does not interpret, which is
+    /// exactly the shape in which one component builds two conventions against one struct without
+    /// noticing. JSD-0009 writes the convention down; this keeps every position in the assembly
+    /// going through the two factories that implement it, so a call site cannot quietly answer
+    /// with a third shape.
+    /// </remarks>
+    internal static IEnumerable<string> N9(
+        IReadOnlyList<DiagnosticRegistry.PositionProducer> producers,
+        IReadOnlyList<string> namedConstructions)
+    {
+        foreach (var producer in producers.Where(static producer => producer.Constructs))
+        {
+            if (!string.Equals(producer.File, DiagnosticRegistry.PositionPath, StringComparison.Ordinal))
+            {
+                yield return
+                    $"{producer.File} builds a {DiagnosticRegistry.PositionType} in " +
+                    $"{producer.Member}, and the encoding is decided in " +
+                    $"{DiagnosticRegistry.PositionPath}";
+            }
+        }
+
+        foreach (var construction in namedConstructions.Where(construction =>
+            !construction.StartsWith(DiagnosticRegistry.PositionPath, StringComparison.Ordinal)))
+        {
+            yield return
+                $"{construction} names {DiagnosticRegistry.PositionType} in a construction outside " +
+                $"{DiagnosticRegistry.PositionPath}";
+        }
+
+        if (!producers.Any(static producer =>
+            producer.Constructs &&
+            string.Equals(producer.File, DiagnosticRegistry.PositionPath, StringComparison.Ordinal)))
+        {
+            yield return
+                $"{DiagnosticRegistry.PositionPath} builds no position at all, so this rule is " +
+                "quantifying over nothing";
+        }
+    }
+
     // ---- Group B: compiled metadata ---------------------------------------------------------
 
     /// <summary>B1: an assembly references nothing outside the framework.</summary>
