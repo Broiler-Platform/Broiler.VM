@@ -11,7 +11,7 @@ remaining rows are `Not started`.** What exists is one feature manifest, one for
 executor, a descriptor admitted by a catalog, a hand-written lowering, two composition roots that
 publish and run on one RID under JIT, trimming and Native AOT, a 60-entry retained corpus, a
 published diagnostic-code registry, a frozen public-API baseline, twelve decision records, ten
-registered architecture rules, seven evidence bundles, a fuzz target over two surfaces and
+registered architecture rules, eight evidence bundles, a fuzz target over two surfaces and
 twenty-six negative controls. There is
 **no tokenizer, no static-semantic stage, no object model, no standard library, no suspension, no
 guest-initiated load, no snapshot and no conformance harness**. No milestone is complete because
