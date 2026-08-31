@@ -302,6 +302,12 @@ public sealed class CalculatorVerifier : IVmProfileVerifier
             VmBoundedReadStatus.DeclaredCountExceeded =>
                 VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.DeclaredCount, VmBudgetScope.Artifact),
 
+            VmBoundedReadStatus.SectionCountExceeded =>
+                VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.SectionCount, VmBudgetScope.Artifact),
+
+            VmBoundedReadStatus.StructuralDepthExceeded =>
+                VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.StructuralDepth, VmBudgetScope.Artifact),
+
             VmBoundedReadStatus.ArtifactBytesExceeded =>
                 VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.ArtifactBytes, VmBudgetScope.Artifact),
 

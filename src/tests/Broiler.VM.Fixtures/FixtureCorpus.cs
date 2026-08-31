@@ -297,11 +297,15 @@ public static class FixtureCorpus
             VmBudgetDimension.DeclaredCount, VmBudgetScope.Artifact,
             "A section count above the declared-count ceiling is refused before it can drive a loop."));
 
-        entries.Add(Invalid(
+        entries.Add(Exhausted(
             "sections-beyond-section-ceiling", "framing",
             ManySections(65),
-            VmReason.InconsistentStructure, 2003,
-            "Sixty-five sections against a sixty-four section ceiling: entering the sixty-fifth is refused."));
+            VmBudgetDimension.SectionCount, VmBudgetScope.Artifact,
+            "Sixty-five sections against a sixty-four section ceiling: entering the sixty-fifth is refused. "
+            + "A ceiling breach and not a malformed artifact - the sixty-five frames are all well formed, "
+            + "and the same bytes verify against a host that permits sixty-five. This entry was pinned as "
+            + "invalid-artifact until 2026-08-31 and is the reason that misreading was worth finding: a "
+            + "corpus entry recording the wrong category does not fail, it passes."));
 
         foreach (var kind in new byte[] { 0, 3, 9, 255 })
         {

@@ -741,10 +741,19 @@ intended profiles had roadmaps of their own and after their claims were checked
 against the shipped assemblies rather than against prose. Seven items, each
 named in the roadmap's own VM-0 next action:
 
-1. the bounded-read status mapping, ruled once for the whole set. The mapping is
-   asserted today in `VmBoundedReadStatus`'s own remarks, which attribute it to
-   ADR 0006 and ADR 0007; **neither record carries it**, and the three verifiers
-   in this graph do not agree on it;
+1. ~~the bounded-read status mapping, ruled once for the whole set~~ **- resolved
+   2026-08-31, and it did not need an amendment.** The premise was wrong in the
+   profile's favour: the remarks attributed the mapping to ADR 0006 and ADR 0007,
+   neither of which mentions either status, but **ADR 0005 rules it already** -
+   "a value that contradicts the format is `InvalidArtifact`; a value that is well
+   formed but exceeds a configured bound is `ResourceExhaustion`; where both apply
+   at one point, `InvalidArtifact` wins." Nothing was unspecified, so section 7's
+   bar on specifying-previously-unspecified never applied and no version is minted.
+   What existed was a false citation and four implementations that disagreed with
+   the record and with each other. The remarks now cite ADR 0005, and the
+   verifiers were corrected to match it. This item is closed; it is left in the
+   list, struck through, because the reason it was mis-filed is the same reason it
+   was worth finding - a wrong citation reads exactly like a missing ruling;
 2. both catalog-wide ceiling terms - the tightest hard maximum and the tightest
    adopted default - in the ordered precedence algorithm, together with the rule
    that a dimension declared inapplicable still publishes an unconstrained
@@ -764,15 +773,23 @@ named in the roadmap's own VM-0 next action:
    asked for; and
 7. that a retained-state dimension cannot carry a guest-observable refusal.
 
-None is applied. **Every one of them is a clarification of behaviour the
-implementation already has**, not a change to it, so none is an amendment under
-section 7's test - but section 7 also rules that "specifying a previously
+Item 1 is applied and closed; the remaining six are not. **Every one of them is a
+clarification of behaviour the implementation already has**, not a change to it,
+so none is an amendment under section 7's test - but section 7 also rules that "specifying a previously
 unspecified behaviour is not an available move", and section 13's own EX-15
 records the amendment procedure as currently unexecutable because the minting
 role and both co-signing roles are held by one person. Recording the gap is
 therefore the only move available, and it is recorded rather than left tacit for
 the same reason section 11 exists. Closed by: a second named maintainer, then a
-VM-0 pass that lands items 1 to 7 in the records that own them.
+VM-0 pass that lands items 2 to 7 in the records that own them.
+
+**One lesson from item 1 is worth carrying to the other six.** It was recorded
+here as a missing ruling and turned out to be a false citation, which is a much
+cheaper defect and a much more dangerous one: a missing ruling stops an
+implementer, and a wrong citation sends four of them confidently in three
+different directions. Before treating any remaining item as needing an amendment,
+check whether some record already rules it and is simply not the record the code
+cites.
 
 ## Consequences
 
