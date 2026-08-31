@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   19
-// Annotated:        19/19
+// Relevant units:   20
+// Annotated:        20/20
 // Exempt:           18
-// Human-reviewed:   0/19
+// Human-reviewed:   0/20
 // IP risk:          Low
 // Security risk:    Medium
-// Criteria:         9/0
+// Criteria:         10/0
 // Resource impact:  1/10 max
-// Unverified:       19
+// Unverified:       20
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -100,6 +100,24 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
 
     /// <summary>The scope that refused.</summary>
     internal VmBudgetScope FailedScope { get; private set; }
+
+    /// <summary>
+    /// Whether <paramref name="exception"/> is this operation's own cancellation rather than some
+    /// other token's, which is what ADR 0011's X1 asks and what separates a host propagating our
+    /// cancellation from a host throwing a cancellation that has nothing to do with us.
+    /// </summary>
+    /// <remarks>
+    /// Both halves are load-bearing. A foreign token is a fault, because nothing about this
+    /// operation was cancelled. And an exception carrying our token while the token is not actually
+    /// cancellation-requested is also a fault, because reporting it as cancellation would name an
+    /// event that did not happen - and would be dropped anyway, since the stage's own cancellation
+    /// test reads the token rather than this flag.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=0; Fingerprint=77EE01
+    // Broiler-Falsified-If: a cancellation carrying a foreign token is reported as this operation's cancellation
+    // Broiler-Human:        PENDING
+    internal bool IsOperationCancellation(System.OperationCanceledException exception) =>
+        cancellation.IsCancellationRequested && exception.CancellationToken == cancellation;
 
     /// <summary>Whether the last refusal was a cancellation rather than an exhaustion.</summary>
     internal bool CancellationObserved { get; private set; }
@@ -324,7 +342,7 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     /// it has already seen the growth succeed.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0003 s12 row 9, ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=411C57
+    // Broiler-AI:           Origin=AI; Spec=ADR-0003 s12 row 9, ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=68B388
     // Broiler-Falsified-If: a level commits a retention on a path where the parent refused that same retention
     // Broiler-Human:        PENDING
     public void ReportRetained(VmBudgetDimension dimension, ulong amount)
@@ -334,11 +352,51 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
             return;
         }
 
-        if (parent is not null &&
-            VmBudgetDimensions.CarriesAggregateScope(dimension) &&
-            !parent.TryCharge(dimension, amount))
+        // Admission is tested at every level before anything is committed at any of them. The test
+        // is separate from the commit because this member cannot refuse its caller - it returns
+        // nothing - so the answer is latched and observed at the next charge or poll. Committing a
+        // breach anyway is what made a runtime, instance or invocation ceiling report nothing at
+        // all: only the parent was ever asked, Poll looks at wall clock alone, and a profile that
+        // retained past its ceiling and then completed was never told.
+        VmBudgetScope? refusedLocally = null;
+
+        lock (gate)
         {
-            Refuse(dimension, VmBudgetScope.Aggregate);
+            if (!runtime.Admits(dimension, amount))
+            {
+                refusedLocally = VmBudgetScope.Runtime;
+            }
+            else if (instance is not null && !instance.Admits(dimension, amount))
+            {
+                refusedLocally = VmBudgetScope.Instance;
+            }
+            else if (!invocation.Admits(dimension, amount))
+            {
+                refusedLocally = VmBudgetScope.Invocation;
+            }
+        }
+
+        // Outermost scope first, as everywhere else, so the parent is asked even when a local level
+        // has already refused - and what it accepts is handed straight back when one has, because a
+        // parent debited for a retention no level committed could never be released: the release
+        // path credits the parent only what the invocation level actually holds.
+        if (parent is not null && VmBudgetDimensions.CarriesAggregateScope(dimension))
+        {
+            if (!parent.TryCharge(dimension, amount))
+            {
+                Refuse(dimension, VmBudgetScope.Aggregate);
+                return;
+            }
+
+            if (refusedLocally is not null)
+            {
+                parent.Release(dimension, amount);
+            }
+        }
+
+        if (refusedLocally is not null)
+        {
+            Refuse(dimension, refusedLocally.Value);
             return;
         }
 
