@@ -207,8 +207,8 @@ machine has **recorded** a RID, and a support table that has not been issued has
 
 ### JS-3a — The diagnostic registry and the oracle, standing before the copy arrives
 
-**This milestone stands behind neither of this component's external blockers, and that is why it
-is a milestone of its own.** Nothing in the oracle method of
+**This milestone stands behind neither of the two things that hold JS-2, and that is why it is a
+milestone of its own.** Nothing in the oracle method of
 [section 14](roadmap.md#14-the-conformance-oracle) needs a copied line: it needs a scoring target,
 and JS-1 produces one — every verifier outcome reached by a named retained corpus case, over a
 corpus that replays with no residue and contains passing controls. Fusing the harness to the

@@ -111,7 +111,7 @@ A `Broiler.VM.Profile.JavaScript` preview or stable release must satisfy all app
 2. **Graph and registration:** the graph is acyclic and matches its manifest; the profile
    reference set is exactly the two core assemblies plus whatever the core's placement ruling
    admits for this component's own siblings; **no edge reaches a legacy component and no edge
-   reaches another Broiler.VM profile component, in either direction, each with both halves
+   reaches another Broiler.VM profile family, in either direction, each with both halves
    witnessed**; registration is static and typed, with no reflection, dynamic loading, IL emit, or
    module initializer anywhere in a product closure.
 3. **Correctness and safety:** the malformed corpus replays with zero unexplained differences on

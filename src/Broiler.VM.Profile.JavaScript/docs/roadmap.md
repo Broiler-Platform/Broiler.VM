@@ -650,7 +650,7 @@ The rules the verified graph retains, whatever the names become:
 - no product project references a test project, a fixture, or a conformance host;
 - **no edge in either direction reaches any legacy Broiler component**, asserted by an
   architecture rule with a passing witness and a negative control, including the inbound half;
-- **no edge in either direction reaches any other Broiler.VM profile component**, asserted the
+- **no edge in either direction reaches any other Broiler.VM profile family**, asserted the
   same way and with the same negative control. This is a separate rule from the one above and it
   is not implied by the reference-set clause, because that clause already tolerates one further
   Broiler.VM-named assembly — this component's own format. Two profiles in one browser image are
@@ -1400,7 +1400,7 @@ browser image implies a working `WebAssembly` namespace. It commits to **not for
 a design choice here would make the seam harder — a host-object model with no stable identity, a
 realm model that cannot hold a foreign exotic object, a transfer surface that cannot carry an opaque
 reference — the choice is recorded with that consequence noted at the milestone that takes it. And
-it commits to **naming the owner**: a browser integration is a consumer of two profile components
+it commits to **naming the owner**: a browser integration is a consumer of two profile families
 and belongs to whichever component composes them. That component owns the two-profile composition's
 closure report, its Native AOT evidence, its shared aggregate budget, and the reconciliation of two
 profiles' **declared defaults** — the maxima need no reconciling, because each binds only the
@@ -1429,9 +1429,9 @@ What this roadmap does instead is fix the design so it stays reachable, at no co
   profile may compile a different path depending on them, so a key that omits them collides two
   variants onto one entry, which is a correctness defect in the cache and not a tuning one. The
   tuple covers imports the artifact **binds**; registered-but-unimported capabilities are excluded,
-  so an unrelated composition change does not invalidate every entry. **The set is cited, never
-  restated from memory** — a key enumerated by hand is a key with a field missing
-  *(corrected: JSC-13)*.
+  so an unrelated composition change does not invalidate every entry. **The core's record is the
+  authority for that set and this enumeration is checked against it rather than remembered**: three
+  earlier hand-written versions of it were each wrong in a different way *(corrected: JSC-13)*.
 
   Three terms are deliberately **not** in it, each for a stated reason:
 
