@@ -32,8 +32,8 @@ that record before designing the mediator adapter.**
 
 **These rules bind the first bundle that publishes a figure**; they do not describe a discipline a
 milestone has already exercised, and the ledger is where a reader learns whether any bundle yet
-carries one. The repetition count is fixed by the milestone that stands up the measurement lane,
-which is JS-10 — and by JS-5 for the frame-cost and charging numbers its own gate demands earlier
+carries one. The repetition count is fixed by **JS-5, the first milestone whose gate demands a
+figure**, and JS-10's measurement lane inherits it rather than fixing a second one
 *(corrected: JSC-18)*.
 
 1. **A control that is the same workload minus the thing being measured.** A difference between
@@ -153,9 +153,9 @@ A `Broiler.VM.Profile.JavaScript` preview or stable release must satisfy all app
 11. **Human review:** no package is published, no RID is claimed, no support table is issued, and
     no milestone moves to accepted until a named human has recorded a decision on every relevant
     code unit, bound to that declaration's fingerprint.
-12. **Licence and attribution:** this component's licence and notices carry the upstream
-    derivation and the ingested conformance suite's own attribution, modified files are marked as
-    changed, the aggregate-repository notice names this component in the same change that
+12. **Licence and attribution:** the host component's licence and notices carry this profile's
+    upstream derivation and the ingested conformance suite's own attribution, modified files are
+    marked as changed, the aggregate-repository notice names this component in the same change that
     introduces its copied tree, and no standing third-party claim elsewhere is falsified by what
     this component ships **or by what its tree contains**.
 13. **Operations:** diagnostics, cancellation, rollback, format-version rejection, corpus and
@@ -215,8 +215,8 @@ links below are discovery entry points, **not substitutes for the pinned manifes
   hashed, and archived. Retrieving, hashing, and archiving a third-party document is a **human
   action**: until someone performs it the pin is provisional and carries a named exclusion in the
   ledger, and **it is open today**. Recording an intended edition nobody has retrieved would be a
-  pin in name only, so the pin is taken and recorded by the milestone that performs the retrieval,
-  and no manifest is accepted against an unpinned edition.
+  pin in name only, so **JS-3a records the pin it actually takes** rather than an earlier milestone
+  recording one it intends, and no manifest is accepted against an unpinned edition.
 - **The conformance suite revision**, the immutable commit resolved once before any shard starts,
   never a branch name, together with the scope manifests mapping this component's assemblies to
   suite path prefixes.

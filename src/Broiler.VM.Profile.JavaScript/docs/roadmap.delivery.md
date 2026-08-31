@@ -132,32 +132,33 @@ machine has **recorded** a RID, and a support table that has not been issued has
 - **Dependencies:** JS-0. Deliberately **not** the copy, not a parser, and not core acceptance:
   the point of this milestone is to find contract defects against about two thousand readable
   lines rather than against a copied engine.
-- **Objective exit gate:** The execution-only composition **publishes and runs** on every RID of
+- **Objective exit gate:** **Each of the two composition roots publishes and runs** on every RID of
   this milestone's claimed set, which its bundle names and which is not empty — under JIT, trimmed
-  self-contained, and
-  Native AOT with trim and AOT warnings treated as errors, executing a verified artifact to its
-  expected answer in every mode, each closure report containing exactly the declared assemblies
-  and no test, reflection, dynamic-code, or IL-emission assembly. **Each of the five verifier
-  outcomes** is produced by a named retained corpus case, the invalid-artifact case carrying a
-  diagnostic code and a source position and the exhaustion case naming one dimension and one
-  scope. **Each of the five execution-step kinds** is produced by a named test, including a
-  contract violation from a deliberately non-conforming variant; if `Suspended` is unreachable
-  from this surface the milestone declares it produced at JS-7 rather than minting an
-  out-of-manifest opcode. The descriptor is admitted by a catalog build, and named negative cases
-  produce each catalog refusal this descriptor can provoke. An artifact naming an absent profile
-  answers `UnsupportedProfile` / `ProfileNotInCatalog` **with no payload byte examined**; one
-  naming an unaccepted manifest answers `UnsupportedFeatureManifest`; one naming an out-of-range
-  format version answers `UnsupportedProfileFormatVersion`. A second profile composed in the same
-  catalog proves a foreign payload is dropped rather than projected, and every payload kind this
-  profile can mint lies inside its declared range. A case proves the executor sizes its operand
-  stack from a bound **computed at verification and stored on the verified state**, never from a
-  number the payload chose. The descriptor is reachable through exactly one static accessor, and
-  no aggregate profile-listing type exists in the graph. A permutation of registration orders
-  over the same descriptor set produces a byte-identical catalog identity encoding. A case
-  mutates, disposes, and concurrently overwrites the caller's payload buffer after verification
-  returns, and neither the verified state nor the execution result changes. The slice corpus
-  replays identically twice with no residue, contains at least one successful control entry, and
-  the verifier throws on none of it.
+  self-contained, and Native AOT with trim and AOT warnings treated as errors, executing a verified
+  artifact to its expected answer in every mode, each closure report containing exactly the
+  declared assemblies and no test, reflection, dynamic-code, or IL-emission assembly, **and the two
+  reports differing by exactly the lowering** — which is the whole of the `execution-only`
+  property, and the reason it is two projects rather than one binary with a flag a closure report
+  cannot see. **Each of the five verifier outcomes** is produced by a named retained corpus case,
+  the invalid-artifact case carrying a diagnostic code and a source position and the exhaustion
+  case naming one dimension and one scope. **Each of the five execution-step kinds** is produced by
+  a named test, including a contract violation from a deliberately non-conforming variant; if
+  `Suspended` is unreachable from this surface the milestone declares it produced at JS-7 rather
+  than minting an out-of-manifest opcode. The descriptor is admitted by a catalog build, and named
+  negative cases produce each catalog refusal this descriptor can provoke. An artifact naming an
+  absent profile answers `UnsupportedProfile` / `ProfileNotInCatalog` **with no payload byte
+  examined**; one naming an unaccepted manifest answers `UnsupportedFeatureManifest`; one naming an
+  out-of-range format version answers `UnsupportedProfileFormatVersion`. A second profile composed
+  in the same catalog proves a foreign payload is dropped rather than projected, and every payload
+  kind this profile can mint lies inside its declared range. A case proves the executor sizes its
+  operand stack from a bound **computed at verification and stored on the verified state**, never
+  from a number the payload chose. The descriptor is reachable through exactly one static accessor,
+  and no aggregate profile-listing type exists in the graph. A permutation of registration orders
+  over the same descriptor set produces a byte-identical catalog identity encoding. A case mutates,
+  disposes, and concurrently overwrites the caller's payload buffer after verification returns, and
+  neither the verified state nor the execution result changes. The slice corpus replays identically
+  twice with no residue, contains at least one successful control entry, and the verifier throws on
+  none of it.
 - **Seed:** Nothing. This milestone's hand-written encoder and lowering are **scheduled for
   deletion at JS-4** with a named owner and a gate clause, because a second handle-producing path
   and a second lowering are non-goals.
@@ -178,11 +179,16 @@ machine has **recorded** a RID, and a support table that has not been issued has
   every copied unit as ported.
 - **Dependencies:** JS-1, plus **one external gate: the core contract accepted**, which this
   component does not hold and which the ledger records as a named blocker with its holder and its
-  unblock condition. Three things this milestone once waited on are settled and no longer gate it:
-  the per-item ruling of
-  [section 4.2](roadmap.md#42-what-after-the-fix-work-lands-can-and-cannot-mean) and its stop
-  condition, and the nullable and unsafe positions the seed forces, all taken at JS-0.
-- **Objective exit gate:** The snapshot identity is recorded recursively and re-derivable; the
+  unblock condition. Three things this milestone once waited on were taken at JS-0 and no longer
+  gate it: the per-item ruling of
+  [section 4.2](roadmap.md#42-what-after-the-fix-work-lands-can-and-cannot-mean), its stop
+  condition, and the nullable and unsafe positions the seed forces. **Taken is not applied**:
+  enabling nullable on the copied files, confining `AllowUnsafeBlocks` to the lowering project, and
+  adding the rule that asserts that distribution are all this milestone's work.
+- **Objective exit gate:** The snapshot identity is recorded recursively and re-derivable; **the
+  seed's own gates are re-run from this component at the snapshot commit, and the defect
+  [section 4.1](roadmap.md#41-the-snapshot-identity) inherits is either fixed before the snapshot or
+  recorded as a named exception** — an inherited reading is not a verified one; the
   two-way boundary rule passes with its witnesses; the copied front end builds with the trim and
   AOT analyzers **force-enabled**, producing zero trim and AOT warnings **anywhere in its
   reference closure** rather than merely none attributed to the project, and a metadata scan finds
@@ -722,11 +728,11 @@ What this ordering does and does not imply:
 
 ## 25. The chapter, milestone, and gate map
 
-Four documents describe one programme, and each is organised for its own kind of reading: the
-argument by subject, the milestones by sequence, the gates by evidence class, the risks by failure
-mode. **Nothing in that arrangement guarantees they cover the same ground**, and the two ways they
-can fail are opposite and equally quiet — a chapter that argues for something no milestone
-delivers, and a gate that demands something no chapter designed.
+Three files describe one programme, each organised for its own kind of reading — the argument by
+subject, the milestones by sequence, the gate material by evidence class and again by failure mode.
+**Nothing in that arrangement guarantees they cover the same ground**, and the two ways they can
+fail are opposite and equally quiet: a chapter that argues for something no milestone delivers, and
+a gate that demands something no chapter designed.
 
 This map is the join. It is read in both directions, and **a blank cell is a finding**: a chapter
 with no delivering milestone is a plan for work nobody scheduled, and an evidence area or a release
@@ -757,8 +763,8 @@ gate with no owning milestone is a gate nobody can close.
 | — packaging and consumers | JS-10 | Packaging and consumers | 8 | a package resolving a dependency from the internet |
 | — operational ownership: diagnostics, cancellation, rollback, version rejection, corpus and suite drift, **vulnerability response**, recertification | JS-10 names every owner | Assurance and review | 13 | a role held by nobody |
 
-**What the map shows that no single file does**, and each of the four is deliberate rather than a
-gap to be closed:
+**What the map shows that no single file does.** The first four are deliberate; the last two are
+the gaps it was built to find:
 
 - **[Section 16](roadmap.md#16-persistence-and-the-code-cache) is delivered by no milestone.** The
   core admits a persisted envelope by contract and implements none, so a profile-owned cache format

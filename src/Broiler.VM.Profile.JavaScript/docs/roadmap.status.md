@@ -163,8 +163,8 @@ Stated positively, because a table of empty rows invites a reader to fill them i
   record has a shape; JS-2 records what was actually taken, and may differ. Bundle JS-0-001
   re-derives that candidate from the checkout and matches on all four revisions, which says the
   record is reproducible and says nothing about a snapshot having happened.
-- **A taken decision is not implemented code.** The decision series is dated history, not a count
-  this bullet transcribes, and two of its records decide things no line in this checkout does yet: [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md)
+- **A taken decision is not implemented code.** Two records decide things no line in this checkout
+  does yet: [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md)
   fixes an eight-row ABI whose object model, frame object and string are all unwritten, and
   [JSD-0005](decisions/0005-the-seed-waited-on-set-and-snapshot-stop-condition.md) rules on a
   snapshot nobody has taken. Each says so in its own text; this bullet is here because a reader

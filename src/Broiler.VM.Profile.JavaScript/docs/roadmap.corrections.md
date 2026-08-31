@@ -90,24 +90,24 @@ existed and met its first implementation all at once.
 | [JSC-09](#jsc-09) | roadmap §7 | The third of section 7's three disciplines was never implemented, and no bundle had said so | Bundle JS-1-002 |
 | [JSC-10](#jsc-10) | roadmap §8 | The value, frame and call ABI is taken, and the answer is **replace** | [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md) |
 | [JSC-11](#jsc-11) | roadmap §10 | The entry-point answer is taken: an artifact declares named program entries | [JSD-0008](decisions/0008-format-version-1-the-entry-point-and-what-js-1-corrected.md) |
-| [JSC-12](#jsc-12) | roadmap §15 | Two composition roots, neither claiming a composition label yet | [JSD-0008](decisions/0008-format-version-1-the-entry-point-and-what-js-1-corrected.md), [JSD-0003](decisions/0003-deployment-composition-labels.md) |
-| [JSC-13](#jsc-13) | roadmap §16 | The persisted cache key is the core's closed set, cited rather than re-enumerated — three hand-written enumerations were each wrong differently | core ADR 0006 |
+| [JSC-12](#jsc-12) | roadmap §15 | Two composition roots differing by one reference; the difference is the `execution-only` label, and the second root claims none | [JSD-0008](decisions/0008-format-version-1-the-entry-point-and-what-js-1-corrected.md), [JSD-0003](decisions/0003-deployment-composition-labels.md) |
+| [JSC-13](#jsc-13) | roadmap §16 | The persisted cache key is the core's closed set, cited rather than re-enumerated — three hand-written enumerations were each wrong differently | core ADR 0006; ADR 0010 for source identity |
 | [JSC-14](#jsc-14) | roadmap §18 | The argument-channel row is re-graded **strong**, and the result channel is split out of it | [JSD-0007](decisions/0007-cross-profile-position-and-amendment-grading.md) |
 | [JSC-15](#jsc-15) | delivery §19, §20 | `JS-3` became `JS-3a` and `JS-3b`, split by dependency rather than by size | the roadmap itself; ledger section 2 |
 | [JSC-16](#jsc-16) | delivery §19 | The public-API baseline clause moved from JS-0 to JS-3b to JS-3a, and closed there | [JSD-0012](decisions/0012-the-profile-api-baseline-and-where-its-clause-lives.md) |
 | [JSC-17](#jsc-17) | delivery §19 | JS-6 is re-scoped from a copy to a rewrite, before it starts | [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md) |
 | [JSC-18](#jsc-18) | gates §17 | No declared repetition count was fixed at JS-1; the obligation moves to the milestone that first measures | ledger section 2; bundle JS-1-001 |
-| [JSC-19](#jsc-19) | gates §23 | Two stop conditions have discharged and one risk has been narrowed | [JSD-0005](decisions/0005-the-seed-waited-on-set-and-snapshot-stop-condition.md), [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md), ADR 0007 |
+| [JSC-19](#jsc-19) | gates §23 | One risk narrowed, one stop condition fired and honoured, one discharged in part — three different states | [JSD-0005](decisions/0005-the-seed-waited-on-set-and-snapshot-stop-condition.md), [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md), ADR 0007 |
 | [JSC-20](#jsc-20) | roadmap header; delivery §19 | The plan stopped transcribing counts and inventories that the ledger already holds | ledger update rule 10 |
 | [JSC-21](#jsc-21) | placement, throughout | This profile is product projects inside `Broiler.VM`, and mechanisms the plan assumed it would own are adopted from the host component | [JSD-0001](decisions/0001-placement-identity-and-assembly-topology.md), [JSD-0006](decisions/0006-assurance-evidence-and-rules-adoption.md) |
-| [JSC-22](#jsc-22) | roadmap §6 | The list of deliberately underspecified surfaces is per manifest, and the first manifest's entry is empty | [JSD-0002](decisions/0002-feature-manifest-allocation.md); the shipped slice surface |
+| [JSC-22](#jsc-22) | roadmap §6 | The list of deliberately underspecified surfaces is per manifest; the slice answered two of the five in code and published no list | the shipped slice surface, against [JSD-0002](decisions/0002-feature-manifest-allocation.md) |
 | [JSC-23](#jsc-23) | delivery §19, §20 | JS-9 opens against JS-1 and closes after JS-8; the delivery order drew only its closing edge | ledger section 2, row JS-9 |
 | [JSC-24](#jsc-24) | roadmap §4.3 | The copy table's standard-library row is a rewrite, and two neighbouring rows follow it | [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md) |
 | [JSC-25](#jsc-25) | roadmap header; ledger preamble | The public API baseline was adopted from the host component and became this family's own | [JSD-0012](decisions/0012-the-profile-api-baseline-and-where-its-clause-lives.md) |
 | [JSC-26](#jsc-26) | roadmap §7 | Format version 1 carries a section the plan never listed, and reserves an interning the plan described as performed | [JSD-0008](decisions/0008-format-version-1-the-entry-point-and-what-js-1-corrected.md); the shipped format |
 | [JSC-27](#jsc-27) | roadmap §8 | The value representation is neither candidate the plan offered, and an interpreter frame is a heap object | [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md) |
 | [JSC-28](#jsc-28) | roadmap §9 | Every diagnostic code is `core-result` today; "half the registry" was a projection stated as a fact | [JSD-0009](decisions/0009-the-diagnostic-registry-and-the-position-encoding.md) |
-| [JSC-29](#jsc-29) | roadmap §18 | Four amendment rows the plan graded on generality: three the counterweight declines, one it wants and needs from nobody | the other profile's own roadmap |
+| [JSC-29](#jsc-29) | roadmap §18 | Seven of ten amendment rows named no counterweight position; four of those seven had a recorded and contrary one | the other profile's own roadmap |
 
 ### JSC-01
 
@@ -296,10 +296,12 @@ the effective ceilings materialized before the first byte is read, a refusal bef
 it would have authorised, and a declared count compared against its bound before it sizes
 anything.
 
-**What was actually true.** JS-1 observed **one** ordering, and it was a different one. The gate
-clause was reported as met by a bundle that did not demonstrate it, and no bundle had said so.
-Bundle JS-1-002 lands the three assertions and the ledger records the discrepancy rather than
-letting the original bundle stand as if it had covered them.
+**What was actually true.** JS-1 observed **one** ordering, and it was a different one. No bundle
+claimed the discipline and no bundle named its absence, so it was **silently missing rather than
+wrongly claimed** — which is the harder failure to notice, because an exclusion list is where a
+reader looks for what a bundle did not show. Bundle JS-1-002 lands the three assertions and the
+ledger records the discrepancy rather than letting the original bundle stand as if it had covered
+them.
 
 **Why this is a correction and not a defect report.** The plan did not change. What changed is the
 record of what the plan had been shown to hold, which is exactly the distinction the ledger's
@@ -370,11 +372,11 @@ string, in the one place the contract deliberately carries bytes it does not int
 **What the plan said.** Three composition labels, and JS-1 stands up "the named execution-only
 composition root".
 
-**What replaced it.** Two composition roots, and **neither claims a composition label**. They
-differ by exactly one reference — the lowering — and that difference is the whole of the
-`execution-only` label: the execution-only root names the profile and not the compiler, so it
-cannot turn source into an artifact however it is invoked, and every artifact it runs is
-precompiled and read as bytes from the retained corpus. A flag on one binary would have made the
+**What replaced it.** Two composition roots. They differ by exactly one reference — the lowering —
+and **that difference is the whole of the `execution-only` label**: the execution-only root names
+the profile and not the compiler, so it cannot turn source into an artifact however it is invoked,
+and every artifact it runs is precompiled and read as bytes from the retained corpus. The
+slice-compiler root beside it **claims no label at all**. A flag on one binary would have made the
 difference a run-time choice inside one closure, and **a closure report cannot see a flag**.
 
 **Why the second root claims nothing.** `narrow-runtime-compiler` belongs to a composition carrying
@@ -406,9 +408,12 @@ precisely the term that is in the persisted key while being *out* of in-process 
 where the effective ceilings subsume it. Source identity is **echoed, not compared**: it is the
 host's own lookup key, which the core records and never compares.
 
-**Authority and date.** The core's own record of the persisted-envelope key set, read against the
-plan's enumeration, 2026-08-31. **This entry is here rather than in a decision record because no
-decision was needed** — the core had already fixed the answer, and the plan had restated it wrongly,
+**Authority and date.** The core's own persisted-envelope key set, read against the plan's
+enumeration, 2026-08-31; the source-identity row is the core's embedding-decisions record rather
+than the ownership one, which is itself worth knowing — the key set and the thing that is echoed
+rather than compared are written down in two different places. **This entry is here rather than in
+a decision record because no decision was needed** — the core had already fixed the answer, and the
+plan had restated it wrongly,
 three times.
 
 ### JSC-14
@@ -416,8 +421,8 @@ three times.
 **Where:** roadmap [section 18](roadmap.md#18-amendments-this-profile-expects-to-ask-of-the-core).
 
 **What the plan said.** The argument-channel candidate was graded **weak**, on the ground that a
-profile with no parser, no text format and no dynamic loads would not need it — and argument and
-result were filed as one row.
+fixed-entry-point profile whose lowering encodes arguments into the program it compiles would not
+need it — and argument and result were filed as one row.
 
 **What replaced it.** Two corrections, and the second is the sharper one.
 
@@ -583,7 +588,8 @@ ledger into prose.
 predicts: **no count, total, graph, commit or score is copied into prose, because a number
 transcribed into a sentence goes stale silently.** By the time JS-3a and JS-9 landed, the header
 under-counted the decision records, omitted a milestone that had moved to `In progress`, and named
-none of the artefacts the later milestones produced.
+neither the frozen public-API baseline nor a single artefact JS-9 produced — while still naming the
+diagnostic registry, which is what a partly-updated inventory looks like.
 
 **What replaced it.** The header states the durable things — what this component is, that it starts
 from a snapshot copy, that nothing in it is accepted, and what it does **not** contain — and points
@@ -636,20 +642,28 @@ fix is the core's decision, not this profile's.
 the specification leaves implementation-defined, implementation-approximated or host-defined, each
 marked fixed or varying, so that no corpus entry is ever written over a legitimately varying answer.
 
-**What was actually true.** **No such list was published at JS-1, and none should have been.** Every
-surface the list names — property enumeration order, the contents of stack traces and error
-messages, number-to-string precision at the edges, locale-sensitive behaviour, host-supplied values
-— is unreachable from `broiler.javascript.slice`, which has no strings, no objects, no property
-access and no host capability at all. A reader checking whether the obligation was met would find
-nothing and could not tell an empty answer from a skipped one.
+**What was actually true.** **No list was published, and yet two of the five surfaces were
+answered.** The slice reaches two of them and settles both in its own product code: the contents and
+format of an error message are **declared varying and excluded from the retained corpus by name**,
+so a corpus entry pins the error kind and never the string; and number-to-string at the edges is
+**fixed**, by a rendering the profile owns for its own evidence and which no caller may present as
+what a JavaScript program would print. The other three — property enumeration order,
+locale-sensitive behaviour, and anything the host supplies — the slice cannot reach at all.
 
-**What replaced it.** The list is **per manifest**, and an empty entry is an entry. The slice's
-entry is empty and says so; the list becomes load-bearing at `broiler.javascript.core`, which is
-the first manifest to reach any of the five surfaces. Nothing about the obligation is weakened —
-what changed is which milestone owes which part of it.
+So the obligation was met in code and not as a document, which is the worst of both: a reader
+looking for the list finds nothing, and a reader who finds the two answers cannot tell whether they
+are the whole of the list or the part somebody happened to write down.
 
-**Authority and date.** [JSD-0002](decisions/0002-feature-manifest-allocation.md), read against the
-shipped slice surface, 2026-08-31.
+**What replaced it.** The list is **per manifest**, and a manifest's entry is published with it. The
+slice's entry has two rows, one varying and one fixed, and is silent on the three it cannot reach;
+`broiler.javascript.core` is where the other three arrive. Nothing about the obligation is weakened
+— what changed is that it is discharged per manifest, in the document rather than only in a remark.
+
+**Authority and date.** The shipped slice surface — the fault's message text and the value's
+diagnostic rendering, each of which names the section-6 obligation in its own remark — read against
+[JSD-0002](decisions/0002-feature-manifest-allocation.md)'s obligation, 2026-08-31. **JSD-0002 puts
+the list at JS-1 and no record re-homes it**, so the milestone that mints the next manifest owns
+confirming this reading with a dated record of its own.
 
 ### JSC-23
 
@@ -672,8 +686,8 @@ whose gate closes late is not a milestone that starts late**, and drawing only t
 how a schedulable milestone gets read as blocked — which is the same defect the JS-3 split
 corrected ([JSC-15](#jsc-15)), in a milestone nobody had looked at twice.
 
-**Authority and date.** The ledger's JS-9 row, which records the milestone in progress with
-retained bundles while JS-2 through JS-8 have none, 2026-08-31.
+**Authority and date.** The ledger's JS-9 row, which records the milestone in progress with three
+retained bundles while JS-2 and JS-3b through JS-8 have none, 2026-08-31.
 
 ### JSC-24
 
@@ -681,15 +695,25 @@ retained bundles while JS-2 through JS-8 have none, 2026-08-31.
 [section 4.4](roadmap.md#44-what-the-copy-actually-costs).
 
 **What the plan said.** The copy table's standard-library row read "**Copy, or port** — whether it
-is a copy or a port is decided by the value-representation decision", with two neighbouring rows
-carrying the same conditional: the re-homed prototype patching was to be "copied or ported with the
-library", and the test corpus was to be copied "as a port wherever the value model changed".
+is a copy or a port is decided by the value-representation decision", with three neighbouring rows
+resting on the same unresolved condition: the optional surfaces were "**Copy** behind separate
+manifests", the re-homed prototype patching was to be "copied or ported with the library", and the
+test corpus was to be copied "as a port wherever the value model changed".
 
-**What replaced it.** The condition is discharged and the rows say so. The library's core surface is
-**rewritten**; the prototype patching is **re-implemented with it**; and the test corpus splits —
-the storage half is copied, the library half is ported. The conditional was correct while the
-decision was open, and a conditional left standing after its condition resolves is how a reader ends
-up planning for the branch that did not happen.
+**What replaced it.** The condition is discharged and all four rows say so. The library's core
+surface is **rewritten**; the optional surfaces are **rewritten too**, because they are the same
+assembly typed against the same value base type and nothing about being behind a later manifest
+makes them copyable; the prototype patching is **re-implemented with the library**; and the test
+corpus splits — the storage half is copied, the library half is ported. The conditional was correct
+while the decision was open, and a conditional left standing after its condition resolves is how a
+reader ends up planning for the branch that did not happen.
+
+**One thing this entry decides that no record before it did.** [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md)
+scopes itself to JS-6 and says it "touches nothing else in the copy table". The optional surfaces
+are not JS-6's, so the record left them alone — but the reason it gives applies to them word for
+word, and a table whose verdict column reads *copy* for half the library it cannot copy is worse
+than a table that draws the obvious conclusion. **The milestone that mints each of those manifests
+owns confirming it**, and may record a different answer with a dated record of its own.
 
 **Authority and date.** [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md), 2026-08-31. The
 milestone-level consequence is [JSC-17](#jsc-17).
@@ -806,13 +830,13 @@ and the published registry, 2026-08-31.
 **Where:** roadmap [section 18](roadmap.md#18-amendments-this-profile-expects-to-ask-of-the-core),
 the counterweight column.
 
-**What the plan said.** After [JSC-14](#jsc-14) the section promised that "every row below names the
-other profile's position where it is known". Six of the ten rows did not name it, and on four of
-those six the other profile's position was recorded, dated, and **contrary**.
+**What the plan said.** The section promised that "the rest name the other profile's position where
+it is known". Three of the ten rows named it; **seven did not**, and on four of those seven the
+other profile's position was recorded, dated, and contrary.
 
-**What replaced it.** Every row names it. Four rows change character, and three of them are the
-counterweight test **failing** rather than passing — a need that looks general and is one language's
-shape. The fourth is weaker than that and is corrected for a different reason:
+**What replaced it.** Every row names it. Four rows change character. Two are the counterweight test
+**failing outright** — a need that looks general and is one language's shape — and two are weaker
+than that and corrected for their own reasons:
 
 - **An in-process producer input form.** The other profile records *not needed, and would not
   co-sign it*: every byte it runs arrives from outside the trust boundary, so serialization is its
@@ -820,16 +844,19 @@ shape. The fourth is weaker than that and is corrected for a different reason:
 - **Lazy per-section verification.** *Not needed, and actively declined* — its own specification
   offers the permission and its validation chapter refuses it, because a deferred check is a check
   reported as a trap.
-- **Nested instantiation through the mediator.** *Not needed*: its language has no instruction that
-  asks for code while running.
+- **Nested instantiation through the mediator.** *Not needed* — a plain absence of need rather than
+  a refusal: its language has no instruction that asks for code while running.
 - **Streaming or incremental verification.** *Wanted eventually, needed by nobody yet* — not a
   decline, but enough to make a grade of "strong: general" an overstatement. Both profiles want it
   and neither has the measurement that would open it.
 
-**Why this is a correction and not a re-grading.** No grade this profile owns changed. What changed
-is that a column promising the other profile's position now carries it, including where it is a
-refusal — and a counterweight column that silently omits four refusals is the failure mode the
-counterweight exists to prevent.
+**Why this is mostly a correction and not a re-grading.** Nine of the ten grades are unchanged;
+what changed is that a column promising the other profile's position now carries it, and a
+counterweight column that silently omits a decline is the failure mode the counterweight exists to
+prevent. **One grade did move and is recorded rather than slipped in**: streaming keeps its
+*strong: general* standing from [JSD-0007](decisions/0007-cross-profile-position-and-amendment-grading.md),
+and what the row gains is the other profile's urgency — wanted, and needed by nobody yet — which
+bears on when it is filed and not on how general it is.
 
 **Authority and date.** The other intended profile's own roadmap, read against this table,
 2026-08-31.
@@ -890,12 +917,14 @@ plans, schedules or gates anything here, and no item identifier from it appears 
 profile's documents — in either direction, deliberately, because a roadmap that cited its origin's
 plans would re-create the dependency the fork exists to avoid.
 
-**Two mark legends exist in one repository, and they say different things.** The component's own
-review legend has nine marks and describes review states; this profile's ledger publishes a
-three-mark legend describing what a milestone's retained evidence shows. A mark from one
-vocabulary used in the other's documents is a rule violation, and the rule decides which legend
-governs a document **by path and not by content** — deciding from what a document contains would
-let a document choose its own vocabulary by using it.
+**Two mark legends exist in one repository, and the difference between them is granularity rather
+than subject.** The component's own legend has nine marks in two vocabularies — four evidence
+verdicts about a piece of evidence, and five review verdicts about a gate clause. This profile's
+ledger publishes three, and they are one evidence verdict about a whole milestone row. Both legends
+therefore contain evidence verdicts, which is exactly why a mark from one used in the other's
+documents is a rule violation rather than a harmless synonym — and why the rule decides which
+legend governs a document **by path and not by content**: deciding from what a document contains
+would let a document choose its own vocabulary by using it.
 
 **A suite total collected before JS-3a is a total over a different corpus.** The architecture suite
 now reads more documents than it did. The two bundles collected before that change are unaffected
@@ -960,5 +989,7 @@ an open question is not mistaken for a correction nobody wrote down.
 6. **This file records no status.** It never marks a milestone, never uses the ledger's mark
    vocabulary, and never says anything is accepted, validated or supported.
 7. **A pointer in the roadmap is a bare identifier.** Where a section must warn a reader that an
-   earlier reading existed, it carries *(corrected: JSC-nn)* and no summary. A summary in the plan
-   is the inline correction coming back.
+   earlier reading existed, it carries *(corrected: JSC-nn)* and **no account of what the earlier
+   reading was** — that account is this file's, and repeating it in the plan is the inline
+   correction coming back. Stating the *current* reading as forcefully as the section needs is not
+   a summary; it is the plan doing its job.

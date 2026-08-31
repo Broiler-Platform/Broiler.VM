@@ -70,8 +70,10 @@ Four rules keep the split cheap and are not negotiable.
 before the split still resolves, the gates file holding 17 before 21 is intentional rather than an
 error, and a new chapter takes the next unused number rather than a gap. **Milestone identifiers
 are never written as links**: `JS-0` through `JS-10` are the join key between this plan and the
-ledger, and they stay bare. **No count, total, or status is transcribed into any of the three plan
-files** — the same rule the ledger imposes on itself, applied to the document a reader opens first.
+ledger, and they stay bare. **No count, inventory, or status the ledger already holds is
+transcribed into any of the three plan files** — the ledger's own update rule 10, applied to the
+document a reader opens first. A structural fact the plan itself fixes, such as how many budget
+dimensions the contract has, is the plan's to state.
 And **a correction is never written inline**: where implementation or a dated decision replaced
 something this plan used to say, the plan states the new reading in its own voice and
 [`roadmap.corrections.md`](roadmap.corrections.md) holds what it replaced. A section carries a bare
@@ -362,8 +364,9 @@ high-water-mark bound today — charge on entry, release on exit — and this pr
 amendment to express one. The single caution the core's own surface carries is that the retention
 report returns nothing: a refusal on a ceiling-class dimension is latched and surfaces at the
 operation's next charge or poll, so **a ceiling-class dimension cannot carry a guest-observable
-refusal**. **Gating on a charge instead does not recover one:** a refused `TryCharge` at any scope
-latches exhaustion on the meter, and the core rewrites the completed step as `ResourceExhaustion`
+refusal**. **Gating on a charge instead does not recover one, and this is read off the shipped core
+rather than inferred from the contract:** a refused `TryCharge` at any scope latches exhaustion on
+the meter, and the core rewrites the completed step as `ResourceExhaustion`
 whatever the profile does with the `false` it was handed. **There is no guest-observable budget
 refusal on the current contract, in any spelling.** This profile has no construct that needs one
 today — a JavaScript allocation failure is a host-level condition, not a value the language reads
@@ -454,13 +457,14 @@ That row set is the **candidate** identity, not the taken one. It is written her
 has a shape and a starting value; JS-2 takes the snapshot and replaces these values with the ones
 it actually took, or records why it took different ones.
 
-**One reported defect in the candidate, and the report is itself unverified.** A repository gate in
-the seed is understood to be red at that commit — a configuration test asserting a smaller ownership
-set than the tree contains — so a snapshot precondition asking for every gate green would not be
-satisfied by this candidate. **Nobody has re-run the seed's gates from this component**, so that is
-a reading carried forward rather than a fact established here, and JS-2 verifies it against the
-seed's own suite before it takes the snapshot. Naming it is the point either way: "take it when it
-is green" is not a precondition if nobody has checked whether it is green.
+**One honest defect in the candidate, recorded rather than discovered later.** A repository gate in
+the seed is red at that commit: a configuration test asserts a smaller ownership set than the tree
+contains. A snapshot precondition asking for every gate green at the snapshot commit is not
+satisfied by this candidate today. That is a small, cheap, nameable thing to fix before the
+snapshot — and naming it is the point, because "take it when it is green" is not a precondition if
+nobody has checked whether it is green. **Nobody has re-run the seed's gates from this component**,
+so the defect is inherited from this document's own reading rather than confirmed here, and **JS-2
+owns verifying it against the seed's own suite and either fixing it or recording the exception**.
 
 ### 4.2 What "after the fix work lands" can and cannot mean
 
@@ -513,7 +517,7 @@ column.
 | Property storage: hidden-class shapes with a transition table, shape-only slot storage with its one-way materialization boundary, packed/holey/dictionary element arrays, the named-property trie | Part of ~2,700 lines | **Copy, with its tests and its recorded defect history.** This is the strongest single asset in the seed and the least likely to be improved by rewriting. |
 | The interned property-key table | Small | **Rewrite.** Its static constructor initialises its own fields by reflection, which is trim- and AOT-hostile in the lowest layer of the graph, and its identities are process-wide where this profile needs them realm-scoped. |
 | Standard library, core surface | ~30,000 lines | **Rewrite.** The gate on entry to JS-4 exists precisely so this answer is known before a file is taken, and [section 8](#8-the-value-frame-and-call-model)'s answer is *replace* — so a library typed against the seed's boxed value base type cannot be copied and re-typed. Its semantics are taken as specification, it is re-implemented against this profile's value struct, and its tests are ported and labelled as ported *(corrected: JSC-24)*. |
-| Standard library, optional surfaces: temporal, internationalization, regular expressions | ~29,000 lines | **Behind separate manifests, each with its own verdict taken when its manifest is minted.** Together they are about half the library. None belongs in the first feature manifest, and each gets its own identity so a composition can decline it truthfully. **The core-surface row's answer does not automatically carry here**: whether a surface typed against the seed's value base type is rewritten, ported, or excluded is a per-manifest question with a per-manifest cost, and the milestone that mints the manifest owns it. |
+| Standard library, optional surfaces: temporal, internationalization, regular expressions | ~29,000 lines | **Rewrite, behind separate manifests**, for the row above's reason: they are the same assembly typed against the same value base type, so none of them is a copy either. Together they are about half the library. None belongs in the first feature manifest, and each gets its own identity so a composition can decline it truthfully — which also means each carries its own cost, at the milestone that mints its manifest, rather than all three landing with the core surface *(corrected: JSC-24)*. |
 | The built-in registration source generator and its attribute vocabulary | ~1,600 lines | **Copy, and change one thing.** It is a Roslyn incremental generator emitting static creation and registration methods with no runtime reflection — which already satisfies the core's static-and-typed rule. Its generated prototype lookup reads ambient context and must take a realm parameter instead. |
 | The value base type's dynamic-metaobject interface and its binder | Small, pervasive | **Amputate at ingest.** It is a runtime-code-generation path sitting on the base class of every JavaScript value, so the decision cannot be deferred past the first copied file. |
 | A dead registration attribute family | ~120 lines, zero usages | **Delete at ingest.** A copy that begins by deleting provably dead inherited code is cheaper to review than one that carries it. |
@@ -727,14 +731,16 @@ entry pins it by accident. The internationalization and temporal surfaces are al
 their own manifests for a related reason; what this rule adds is that the approximated surfaces
 *inside* `broiler.javascript.core` get the same treatment.
 
-**Every manifest publishes its own entry in that list, and an empty entry is an entry.**
-`broiler.javascript.slice` reaches none of the named surfaces — it has no strings, no objects, no
-property access, and no host-supplied value — so its entry is empty and the list becomes
-load-bearing at the first manifest that reaches one of them, which is `broiler.javascript.core`.
-Each manifest thereafter extends it and the support table publishes the whole
-*(corrected: JSC-22)*. **A determinism claim broader than the list is an untruthful support
-claim**, and a corpus entry over an unlisted varying surface is a test that will eventually fail
-for a reason that is not a defect.
+**Every manifest publishes its own entry in that list, and a manifest that reaches only two of the
+surfaces publishes two rows.** `broiler.javascript.slice` reaches exactly two: error-message text,
+**declared varying** so that a corpus entry pins the error kind and never the string, and
+number-to-string at the edges, **fixed** by a rendering this profile owns for its own evidence and
+which no caller may present as what a JavaScript program would print. Property enumeration order,
+locale-sensitive behaviour, and anything the host supplies are unreachable from a surface with no
+objects, no locales and no capabilities, and the manifest that first reaches each publishes its row
+*(corrected: JSC-22)*. **A determinism claim broader than the list is an untruthful support claim**,
+and a corpus entry over an unlisted varying surface is a test that will eventually fail for a
+reason that is not a defect.
 
 ---
 
@@ -861,8 +867,9 @@ of the four it names.
 
 **This decision is taken before the standard library is copied, and it is a gate on entry to
 JS-4 rather than that milestone's first task.** The seed's library is typed against the seed's
-value base type; where a profile replaces that representation, its library milestone is a rewrite
-and must be re-scoped **before it starts, not during it**.
+value base type. This profile replaces that representation, so JS-6 is a rewrite — and it was
+re-scoped **before it started, not during it**, which is the whole reason the decision sits on the
+entry to JS-4 instead of inside it.
 
 **The gate is taken and [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md) is the
 authority for every row of it.** The rows below are the questions this section asks; the record
@@ -1231,8 +1238,8 @@ diagnostics carry identity and position without carrying host secrets.
 An engine that grades itself is not evidence. This profile builds the harness **against the
 smallest scoring target that exists rather than after the language it will eventually score** —
 JS-1's verifier, executor and retained corpus are that target, which is why JS-3a hangs off JS-1
-and behind neither of this component's external gates. The harness's first job is not to score
-anything: it is to prove that a failing test comes back as a failure.
+and sits behind neither the core acceptance gate nor the snapshot. The harness's first job is not
+to score anything: it is to prove that a failing test comes back as a failure.
 
 **The method, stated so it can be built from this document.**
 
@@ -1510,7 +1517,7 @@ this profile is asking alone.
 | A charging hook for work done inside a host capability | Wall clock covers a slow capability; it does not cover a capability that allocates on this profile's behalf. | **Strong: general**, and the other intended profile grades it the same, reaching it by the same route. |
 | An in-process producer input form — compiling straight to a verified handle | Version 1 admits no other input form, so every caller-driven compile and every mediated dynamic compile serializes and re-decodes on the critical path. | **Moderate, and the counterweight declines it.** The other intended profile records **not needed, and would not co-sign it**: every byte it runs arrives from outside the trust boundary, so serialization is its input rather than a critical-path cost, and it names in-process compilation as a property of the asking profile rather than of the contract. That is the counterweight test **failing**, recorded rather than argued around. Opened only against JS-10's verification-throughput-per-byte and cold-start figures, never against an intuition. |
 | Lazy per-section verification | A browser compiles function bodies on first call and will not verify a whole bundle to run one entry point; version 1 fixes whole-artifact eager verification. | **Moderate, and actively declined by the counterweight**, which is offered the same permission by its own specification and refuses it because a deferred check is a check reported as a trap. This profile's invariant 3 fixes the shape of any proposal it would sign, and the two profiles agree on that shape: each section verified **completely** before that section's first execution, with no structural, index, stack-consistency, or handler-nesting check migrating into execution. Funded by a measurement, not by argument. |
-| Streaming or incremental verification | A browser wants to verify as bytes arrive. | **General, and wanted by both profiles — needed by neither yet.** The core already carries a registered amendment shape, and the other intended profile grades it *wanted eventually, needed by nobody yet*: it streams bytes and is not indifferent, but it has no measurement either. Reopened against a measurement, not against the observation that browsers stream. |
+| Streaming or incremental verification | A browser wants to verify as bytes arrive. | **Strong: general**, and the core already carries a registered amendment shape for it. **Both profiles want it and neither needs it yet**: the other intended profile grades it *wanted eventually, needed by nobody yet* — it streams bytes and is not indifferent, but it has no measurement either. That bears on when the row is filed, not on how general it is. Reopened against a measurement, not against the observation that browsers stream. |
 | A persisted envelope | [Section 16](#16-persistence-and-the-code-cache). | **Strong: general**, graded the same by the other intended profile, and already admitted by contract. It needs a gate rather than an amendment. |
 
 The rule that governs all of them: **a design that can only be hosted by a second core state
@@ -1531,8 +1538,6 @@ merged or approved capability.
 in both directions and a table that only ever asks is not a position. A **refusable retention member
 on the metering surface** would give a ceiling-class dimension a guest-observable refusal, which
 [section 3](#3-what-the-core-already-gives-this-profile-and-what-it-refuses) records as absent from
-the current contract in any spelling. **The other intended profile grades that row strong and
-blocking; this one does not need it**, because a JavaScript allocation failure is a host-level
-condition rather than a value the language reads back. This profile therefore neither files it nor
-obstructs it, and records here that it designs no construct on the assumption that a charge can be
-refused politely.
+the current contract in any spelling, and which that section also explains this profile does not
+need. **The other intended profile grades that row strong and blocking.** This profile therefore
+neither files it nor obstructs it.
