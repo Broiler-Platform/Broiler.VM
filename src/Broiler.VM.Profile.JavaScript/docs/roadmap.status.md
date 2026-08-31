@@ -6,15 +6,16 @@
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
 gates; this ledger records whether those gates have accepted evidence.
 
-**At this snapshot, JS-0 and JS-1 are `In progress` and JS-2 through JS-10 are `Not started`.**
-What exists is one feature manifest, one format version, a verifier, an executor, a descriptor
-admitted by a catalog, a hand-written lowering, two composition roots that publish and run on one
-RID under JIT, trimming and Native AOT, a 51-entry retained corpus, eight decision records, four
-registered architecture rules, two evidence bundles and twelve negative controls. There is **no
-tokenizer, no static-semantic stage, no object model, no standard library, no suspension, no
-guest-initiated load, no snapshot and no conformance harness**. No milestone is complete because
-its design appears in the roadmap, **nothing here has been reviewed by a human**, and nothing in
-this component may be described as validated, accepted or supported.
+**At this snapshot, JS-0, JS-1 and JS-3a are `In progress`, JS-2 is blocked, and the remaining
+rows are `Not started`.** What exists is one feature manifest, one format version, a verifier, an
+executor, a descriptor admitted by a catalog, a hand-written lowering, two composition roots that
+publish and run on one RID under JIT, trimming and Native AOT, a 59-entry retained corpus, a
+published diagnostic-code registry, nine decision records, nine registered architecture rules,
+three evidence bundles and twenty negative controls. There is **no tokenizer, no static-semantic
+stage, no object model, no standard library, no suspension, no guest-initiated load, no snapshot
+and no conformance harness**. No milestone is complete because its design appears in the roadmap,
+**nothing here has been reviewed by a human**, and nothing in this component may be described as
+validated, accepted or supported.
 
 **The placement decision is taken.** This component is not a repository of its own and is not a
 component of its own: it is a family of product projects inside `Broiler.VM`, at
@@ -79,7 +80,7 @@ closed and has three members:
 - `[FULL]` — the row's bundle demonstrates every exit-gate clause. It is still not `Accepted`:
   acceptance additionally needs an owner and a reviewer decision, which nothing here has.
 
-Two rows are `[PARTIAL]` and the remaining ten are `[NONE]`.
+Three rows are `[PARTIAL]` and the remaining nine are `[NONE]`.
 
 **The milestone set changed on 2026-08-31 and this table now carries the new shape.** What was one
 `JS-3` is now `JS-3a` and `JS-3b`, split by dependency rather than by size: the conformance harness
@@ -93,7 +94,7 @@ evidence claim — it changes what a reader is told is schedulable today.
 | [PARTIAL] | **JS-0 — boundary, placement, identity, assurance floor** | **In progress** | [Bundle JS-0-001](evidence/js-0/README.md): Release build of the whole solution with 0 warnings; the whole suite green; the assurance gate green and the assurance **release** mode refusing while naming each blocking declaration individually; **8 negative controls, each failing the suite when injected and passing after revert**; the candidate seed identity re-derived and matching on all four revisions. Seven decision records, [JSD-0001](decisions/0001-placement-identity-and-assembly-topology.md) through [JSD-0007](decisions/0007-cross-profile-position-and-amendment-grading.md). Rules N1–N4 registered Active with nine witness inputs. | **Two exit-gate clauses are open and neither may be read as passed.** (1) The two-profile catalog test needs this profile's descriptor and there is none until JS-1; its `eval`-refusal half needs guest loads and is carried to JS-8. (2) The public API baseline's subject is the packable set, so it does not cover the profile's assemblies; they export nothing public today, and **JS-1 lands a public surface and owns extending it**. Both are named in the bundle's exclusions. |
 | [PARTIAL] | **JS-1 — the whole contract loop on a narrow slice** | **In progress** | [Bundle JS-1-001](evidence/js-1/README.md). `broiler.javascript.slice` is minted and format version 1 defined, carrying framed sections, a tagged constant pool, fixed instruction boundaries, **exception regions and suspension targets reserved and refused**, a canonical position table and declared maxima checked before use. All seven core-facing types are implemented. The descriptor is filled in one full-arity construction, admitted by a catalog, and **four named negative cases each provoke a refusal**. **All five verifier outcomes** are produced by named entries of a 51-entry retained corpus which replays twice with no residue, contains 16 passing controls, and on which the verifier throws nothing. **Four of the five execution-step kinds** are produced by named checks. **Two composition roots publish AND run on `win-x64` under JIT, trimmed self-contained and Native AOT**, warnings as errors, closures read off the published output: six managed assemblies for the execution-only image and seven for the compiler-bearing one, **differing by exactly the lowering**. JS-0's carried two-profile catalog clause is discharged in both directions. **Twelve negative controls**, four of them judged by the corpus rather than by the suite. Decision [JSD-0008](decisions/0008-format-version-1-the-entry-point-and-what-js-1-corrected.md) records the entry-point answer and four corrections to earlier records. | **One exit-gate clause is open.** The public API baseline does not cover the profile's assemblies, and the reason is now known rather than pending: `ApiSurface` describes a surface by loading an assembly, which needs a project reference, which **rule A11 forbids a test project to have on a profile**. Two routes are named in the bundle — describe from metadata, or have a composition root print its own surface — and the clause is carried to JS-3b. `Suspended` is declared unreachable and produced at JS-7; five descriptor rows are provisional pending JS-5's measurements; one RID, one machine. |
 | [NONE] | **JS-2 — seeding snapshot and front-end ingest** | **Blocked** (recorded as `Not started` above the blocker, because no work has begun either) | None. No snapshot has been taken. The candidate identity in roadmap [section 4.1](roadmap.md#41-the-snapshot-identity) is a recorded candidate, not a taken snapshot. | **Blocked on two named external dependencies.** See section 3. |
-| [NONE] | **JS-3a — diagnostic registry, position encoding, pinned suite, the oracle** | **Not started** | None. No published registry, no harness, no pinned suite revision, no self-check fixture. The codes JS-1 emits exist and are grouped by emitting stage, and the position encoding JS-1 uses populates two of the record's four fields; neither is published or versioned. | **Openable now, and JS-1 has produced the scoring target the split was designed around**: five verifier outcomes each by a named corpus entry, and a corpus that replays twice with no residue. Publish the registry bound in both directions — including which half each code belongs to — then stand the harness up and prove the self-check before scoring anything. |
+| [PARTIAL] | **JS-3a — diagnostic registry, position encoding, pinned suite, the oracle** | **In progress** | [Bundle JS-3A-001](evidence/js-3a/README.md), which is **the registry half of this milestone and not the oracle half**. [`docs/diagnostics/registry.txt`](diagnostics/registry.txt) is published at revision 1, one row per code, each naming the member that declares it, **the one core reason every emission carries**, the stage that refuses, **which half of the registry it belongs to**, the case that reaches it, and the revision its meaning dates from. **Five rules, N5 through N9, bind it to four independently written artefacts** — the code vocabulary, every emission site in the profile assembly, the retained corpus, and the composition's deliberately restated constants — plus the position factories, so no one edit can make it agree with everything. The corpus grew from 51 to **59 entries** to close the backward binding, and **37 of the 40 rows are reached by a named entry**. Decision [JSD-0009](decisions/0009-the-diagnostic-registry-and-the-position-encoding.md) records the registry, its two halves and the position encoding; the encoding is pinned by four corpus rows through a new manifest column, and landing it **corrected a conflation in which every link- and walk-stage diagnostic reported a code-section offset under the artifact-relative marker**. `EntryStackNotEmpty` was declared at JS-1 and emitted by nothing; it is refused on the edge now, which also removes an order-dependence in which code an artifact provoked. **Twenty negative controls**, seven of them judged by the corpus rather than by the suite. | **The oracle half of the exit gate is untouched, and it is the larger half.** No suite revision is pinned, no harness, self-check, sharding, merge, audit or scope tooling exists, no per-host-mode totals are published and no ratchet is set; the suite-revision dependency in section 3 is still open and a human has to retrieve, hash and archive the suite before it can close. Within the registry half: **three rows are reachable from no artifact**, named and reasoned about in JSD-0009 with the admitting list held in rule N7 rather than in the registry; **no `embedder-seam` code exists**, because the front end that would mint one is JS-3b's, so that half of the split is declared and not exercised; four corpus rows pin a position and fifty-five pin none; one RID, one machine. |
 | [NONE] | **JS-3b — static semantics as one verification stage, and the lowering** | **Not started** | None. No consolidated early-error stage, no strict-mode ruling, no lowering, no recorded answer for where the verification boundary falls. | After JS-2, and after JS-3a supplies the registry its diagnostics land in. Record the boundary decision of roadmap [section 9](roadmap.md#9-the-semantic-front-end-and-lowering) before writing the stage that depends on it. |
 | [NONE] | **JS-4 — value representation and object model** | **Not started** | None. The value-representation decision is **open**, and roadmap [section 23](roadmap.gates.md#23-risks-and-stop-conditions) makes copying standard-library source while it is open a stop condition. | Open the decision now — it needs no copied code and can be prepared against JS-1 rather than waiting on the acceptance gate. |
 | [NONE] | **JS-5 — executor, abrupt completion, budgets** | **Not started** | None. No interpreter, no charging model, no measured `CallDepth`. | After JS-4. |
@@ -116,7 +117,9 @@ Stated positively, because a table of empty rows invites a reader to fill them i
   registered as demonstrations. **One runtime identifier is recorded as published and run** -
   `win-x64` - which is a record of what happened on one machine and not a supported-RID claim;
   claiming a RID is a release act and JS-10 owns it.
-- **No conformance result exists.** The suite is not pinned and the harness is not built.
+- **No conformance result exists.** The suite is not pinned and the harness is not built. A
+  published diagnostic registry is not a conformance claim and neither is a retained corpus:
+  both are this component's own record of what its verifier does.
 - **No measurement exists**, and no figure from any other component stands in for one.
 - **Nothing is reviewed.** No human has read anything here, and nothing that will be copied
   arrives reviewed.
@@ -131,8 +134,8 @@ Stated positively, because a table of empty rows invites a reader to fill them i
 - **JS-1's hand-written encoder and lowering are scheduled for deletion at JS-4**, with a named
   owner and a gate clause, because a second handle-producing path and a second lowering are
   non-goals.
-- **Neither JS-0 nor JS-1 is accepted.** Each has an open exit-gate clause, and acceptance would
-  in any case need a reviewer decision that nobody has made.
+- **No milestone is accepted.** JS-0, JS-1 and JS-3a each have an open exit-gate clause, and
+  acceptance would in any case need a reviewer decision that nobody has made.
 
 ---
 
@@ -156,7 +159,7 @@ one. **JS-0 opened two of them and left two unopened**, and the table says which
 |---|---|---|
 | **OPENED 2026-08-31.** Acquisition of the regular-expression matcher and the Unicode and locale data as this checkout's own dependencies. **Owner: the profile built-ins owner**, named in [JSD-0005](decisions/0005-the-seed-waited-on-set-and-snapshot-stop-condition.md). Nothing is acquired yet; what changed is that the dependency now has a holder. | Opened at JS-0, consumed at JS-6 | JS-6 excludes every surface needing it and publishes the exclusions, rather than waiting. `broiler.javascript.regexp` is already a separate manifest identity, so the exclusion is a manifest not yet minted rather than a hole in one that is. |
 | **The language-specification edition is not pinned, and JS-0 did not pin it.** Retrieving, hashing and archiving a third-party document is a human action; until someone performs it the pin is provisional, and roadmap [section 24](roadmap.gates.md#24-specification-and-platform-references) requires a provisional pin to carry a named exclusion here. This row is that exclusion, and it is **still open**: JS-0 was asked to record the intended edition and no decision record does, because recording an edition nobody has retrieved would be a pin in name only. | JS-3a records the pin actually taken | No manifest may be accepted against an unpinned edition, because a conformance total against a moving document is not a total. |
-| **The conformance-suite revision is not pinned**, and its licence and attribution obligations are unexamined. The suite is third-party material this component ingests; roadmap [section 22](roadmap.gates.md#22-release-gates) gate 12 makes an attribution obligation discovered during a publish a stop. | JS-3a | The harness cannot start: a branch name is not a pin, and the method requires the revision resolved once before any shard. |
+| **The conformance-suite revision is not pinned**, and its licence and attribution obligations are unexamined. The suite is third-party material this component ingests; roadmap [section 22](roadmap.gates.md#22-release-gates) gate 12 makes an attribution obligation discovered during a publish a stop. **Still open after JS-3a's registry half**, which was deliberately built to need nothing from it: retrieving, hashing and archiving third-party material is a human action and nobody has performed it. | JS-3a | The harness cannot start: a branch name is not a pin, and the method requires the revision resolved once before any shard. **This is what keeps JS-3a `In progress` rather than the registry work.** |
 | **This profile's declared defaults are catalog-wide and unreconciled.** Roadmap section 3 records that a host adopting profile defaults gets the tightest in the catalog, so a neighbour's stingy default reaches this profile wherever ceilings are adopted rather than stated, and that reconciling two profiles' declarations belongs to whichever component composes them. That component does not exist and has no owner. **Narrowed 2026-08-31**: the maxima half of this row was retired when the core removed a catalog-wide maximum clamp its own record never authorised. A maximum now binds only the artifacts of the profile that declared it. **PARTLY OPENED 2026-08-31**: [JSD-0004](decisions/0004-limit-defaults-hard-maxima-and-the-budget-matrix.md) records the fifteen defaults and fifteen maxima with the split stated inside the decision, and chooses `NestedLoadDepth`'s default at 4 rather than the 1 this profile would need, precisely so a neighbour adopting defaults is not strangled. **The reconciliation itself is still unowned.** | JS-0 recorded the vectors; the composing component owns the reconciliation | A browser composition that adopts defaults discovers it as a resource exhaustion naming a dimension this profile did not breach, in a verifier that did nothing wrong. |
 
 ---
@@ -226,7 +229,15 @@ fields below. **A command written in a plan is not evidence that the command ran
 
 ---
 
-Until such updates are recorded, section 2 remains the complete status of this component: **JS-0
-through JS-10 are not started, no source exists, no snapshot has been taken, no language surface
-is supported, no composition is advertised, no runtime identifier is claimed, no measurement or
-conformance result exists, and nothing has been reviewed.**
+Until such updates are recorded, section 2 remains the complete status of this component: **no
+milestone is accepted, no snapshot has been taken, no language surface is supported, no
+composition is advertised, no runtime identifier is claimed, no measurement or conformance result
+exists, and nothing has been reviewed.**
+
+**This paragraph was wrong for two milestones before JS-3a corrected it**, and how it went wrong
+is worth keeping. It was written when the component was empty and it said so — "JS-0 through JS-10
+are not started, no source exists" — and it stayed word for word while JS-0 and JS-1 landed a
+verifier, an executor, a lowering and two composition roots above it. Section 2 was right the
+whole time. A closing summary that restates a table rather than pointing at it is a second copy of
+the status, and the second copy is the one that goes stale; this one now restates only what no
+milestone can change without changing the table.
