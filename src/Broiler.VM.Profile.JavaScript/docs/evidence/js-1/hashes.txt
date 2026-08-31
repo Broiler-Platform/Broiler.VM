@@ -14,7 +14,7 @@ ea0c5da8e3d23abf20212f3c941ef449c38409dd8fffa808e4924299ce9feeb8  src\Broiler.VM
 ea7f81bdb1627f8b649d5eb33155d14bc6587ae8ecbc6c65991f3287a7b67a83  src\Broiler.VM.Profile.JavaScript\docs\decisions\0007-cross-profile-position-and-amendment-grading.md
 e8e33cb8c026e8ff5e38402c81f2d579eadcb32584f9bac9189b074d30eb7d74  src\Broiler.VM.Profile.JavaScript\docs\roadmap.delivery.md
 d4febe9a1b4eb5c4e101203222be2a8ab531213ccaa6e2239faf12e53cfd4cad  src\Broiler.VM.Profile.JavaScript\docs\roadmap.gates.md
-371ae2c5e1043703b2cc298cbbd03000e07291a30c9c90b2c8b9f8362f10cbbc  src\Broiler.VM.Profile.JavaScript\docs\roadmap.md
-abde6c6b4455740ec44069c4fabb46006cf6909740286669686e68c6a8558c2c  src\Broiler.VM.Profile.JavaScript\docs\roadmap.status.md
+1878f671b611ee40f3e2fc143d49e721953c70415ed010a91f8b920c955dd390  src\Broiler.VM.Profile.JavaScript\docs\roadmap.md
+5767fe6790469d7c9f3efea686c16aed61e8b8407e749320da25e7fd9066dfcc  src\Broiler.VM.Profile.JavaScript\docs\roadmap.status.md
 a21a02ea093d4cf9ce28783cc32f559e6f9a37b71c685b250e3c1f0acec1670e  src\tests\Broiler.VM.Architecture.Tests\graph.manifest.json
 4b3e5b515ac71798c676b41e0ec520c190730a25ed68511fb616cc66c097be3c  src\tests\Broiler.VM.Architecture.Tests\rules.register.json

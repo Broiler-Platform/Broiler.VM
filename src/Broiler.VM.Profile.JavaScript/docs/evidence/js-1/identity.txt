@@ -1,42 +1,12 @@
 bundle:                JS-1-001
 milestone:             JS-1
-collected (UTC):       2026-08-31T18:08:51+00:00
-component commit:      340f0915cf7e3faa2fc819c9b7af087d1e6417c1
+collected (UTC):       2026-08-31T18:16:15+00:00
+component commit:      1fb217f2beec7bc09e73526839102942202ecfba
 branch:                claude/js-0-boundary-identity-assurance
-working tree:          DIRTY
-dirty entries:         28
+working tree:          clean
+dirty entries:         0
 owner:                 profile architecture owner (unassigned identity)
 reviewer:              NONE - nothing here has been reviewed
 
 Every path below is relative to the component root. A figure in this bundle is this
 component's own; no result from any other component is evidence here.
-
-Dirty entries at collection time, listed rather than summarised:
-   M Broiler.VM.slnx
-   M CODE-ASSURANCE.md
-   M HUMAN_REVIEW.md
-   M assurance.manifest.json
-   M docs/compositions.md
-   M eng/collect-js-evidence.py
-   M src/tests/Broiler.VM.Architecture.Tests/CompositionRegisterTests.cs
-   M src/tests/Broiler.VM.Architecture.Tests/CompositionRules.cs
-   M src/tests/Broiler.VM.Architecture.Tests/ProjectFileRuleTests.cs
-   M src/tests/Broiler.VM.Architecture.Tests/ReviewRecordRuleTests.cs
-   M src/tests/Broiler.VM.Architecture.Tests/graph.manifest.json
-  ?? src/Broiler.VM.Profile.JavaScript.Compiler/SliceLowering.cs
-  ?? src/Broiler.VM.Profile.JavaScript.Compiler/SliceProgramBuilder.cs
-  ?? src/Broiler.VM.Profile.JavaScript.Format/JavaScriptArtifactWriter.cs
-  ?? src/Broiler.VM.Profile.JavaScript.Format/JavaScriptFormat.cs
-  ?? src/Broiler.VM.Profile.JavaScript.Format/JavaScriptOpcode.cs
-  ?? src/Broiler.VM.Profile.JavaScript/JavaScriptDiagnostics.cs
-  ?? src/Broiler.VM.Profile.JavaScript/JavaScriptExecutor.cs
-  ?? src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs
-  ?? src/Broiler.VM.Profile.JavaScript/JavaScriptValue.cs
-  ?? src/Broiler.VM.Profile.JavaScript/JavaScriptVerifier.cs
-  ?? src/Broiler.VM.Profile.JavaScript/docs/evidence/js-1/
-  ?? src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/
-  ?? src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/
-  ?? src/tests/Broiler.VM.Architecture.Tests/TestResults/
-  ?? src/tests/Broiler.VM.Architecture.Tests/catalogs/executiononly.catalog.txt
-  ?? src/tests/Broiler.VM.Architecture.Tests/catalogs/slicecompiler.catalog.txt
-  ?? src/tests/corpus/js-1/
