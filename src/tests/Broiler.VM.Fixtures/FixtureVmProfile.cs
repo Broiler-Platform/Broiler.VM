@@ -171,7 +171,8 @@ public static class FixtureDescriptorFactory
         int ordinal,
         FixtureReadOrderRecorder? orderRecorder = null,
         FixtureExecutionGate? gate = null,
-        VmThreadAffinity affinity = VmThreadAffinity.Agile)
+        VmThreadAffinity affinity = VmThreadAffinity.Agile,
+        VmLimitVector? profileHardMaxima = null)
     {
         VmDiagnosticsIdentity.TryCreate(profileId, profileId + ".diagnostics", out var diagnostics);
 
@@ -224,7 +225,7 @@ public static class FixtureDescriptorFactory
             cancellationPollBound: variant is FixtureVmProfileVariant.PollBoundBreaker ? 32UL : 1024UL,
             abandonBudget: 1000,
             limitDefaults: Defaults(),
-            profileHardMaxima: Maxima(),
+            profileHardMaxima: profileHardMaxima ?? Maxima(),
             budgetDeclarationMatrix: Matrix(declaresGuestLoads),
             hostCapabilityDescriptors: FixtureHostCapabilities.ImportsFor(variant),
             guestInitiatedLoads: guestLoads,
@@ -267,6 +268,25 @@ public static class FixtureDescriptorFactory
     }
 
     /// <summary>The profile's hard maxima, which a host may tighten and never loosen.</summary>
+    /// <summary>The hard maxima with one dimension deliberately tightened.</summary>
+    /// <remarks>
+    /// For pinning what a catalog does with unlike profiles. A maximum is a statement about a
+    /// profile's neighbours as much as about itself, and a fixture that cannot vary one cannot
+    /// demonstrate that.
+    /// </remarks>
+    public static VmLimitVector MaximaWith(VmBudgetDimension dimension, ulong value)
+    {
+        var values = new ulong[VmBudgetDimensions.Count];
+
+        foreach (var current in VmBudgetDimensions.All)
+        {
+            values[(int)current] = current == dimension ? value : Maxima()[current];
+        }
+
+        VmLimitVector.TryCreate(values, out var vector);
+        return vector;
+    }
+
     public static VmLimitVector Maxima()
     {
         var values = new ulong[VmBudgetDimensions.Count];

@@ -22,6 +22,47 @@ namespace Broiler.VM.Contract.Tests;
 public sealed class LimitPrecedenceTests
 {
     [Fact]
+    public void A_Ceiling_Is_Clamped_By_Every_Profile_In_The_Catalog_Not_Only_The_Selected_One()
+    {
+        // PINS A DIVERGENCE RATHER THAN RATIFYING IT. ADR 0007's ordered algorithm gives P1 a
+        // closed "Inputs it may read" column - the host's explicit value and the two markers - and
+        // places the ProfileMax intersection at P2, against the artifact's OWN profile. The
+        // implementation clamps at P1 to the tightest maximum across EVERY descriptor in the
+        // catalog. On a catalog of unlike profiles the two produce different numbers, and this test
+        // records which number is produced today.
+        //
+        // Under the record as written the answer below would be 256, the host's own ceiling, because
+        // Alpha's maximum of 1024 does not bind. Under the implementation it is 64, because Beta - a profile
+        // this artifact has nothing to do with - declared a tighter one. That is not a hypothetical:
+        // the VM-3 bundle records a ledger artifact refused with ResourceExhaustion naming
+        // SectionCount "in a verifier that had done nothing wrong", for exactly this reason.
+        //
+        // Exclusion EX-104 item 2 carries the open question of which of the two is wrong. Until it
+        // is ruled, this test is the only executable statement of the disagreement: whoever rules
+        // changes it deliberately rather than rediscovering the divergence a third time.
+        var catalog = FixtureComposition.Catalog(
+            FixtureVmProfile.Descriptor,
+            FixtureDescriptorFactory.Create(
+                SecondFixtureVmProfile.Id,
+                SecondFixtureVmProfile.Manifest,
+                "Fixture Beta",
+                "Broiler.VM.Fixtures",
+                FixtureVmProfileVariant.Conforming,
+                2,
+                profileHardMaxima: FixtureDescriptorFactory.MaximaWith(VmBudgetDimension.SectionCount, 64)));
+
+        using var runtime = FixtureComposition.Runtime(
+            catalog,
+            FixtureComposition.Options(FixtureComposition.CeilingsWith(VmBudgetDimension.SectionCount, 256)));
+
+        var artifact = FixtureComposition.Verify(runtime, FixtureArtifactWriter.Constant(1));
+        var effective = artifact.Identity.EffectiveCeilings.VerificationCeilings[VmBudgetDimension.SectionCount];
+
+        Assert.Equal(64ul, effective);
+        Assert.NotEqual(256ul, effective);
+    }
+
+    [Fact]
     public void An_Omitted_Artifact_Request_Removes_Nothing_And_Adds_Nothing()
     {
         // The first half of P2: a descriptor that requests no limits inherits the intersection of

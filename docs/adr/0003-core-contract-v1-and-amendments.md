@@ -321,7 +321,7 @@ The new record carries these rows, and a row may not be omitted:
 |---|---|---|
 | 1 | The driving capability, the profile that needs it, and the profile-owned design that was tried and rejected | section 2 step 1; asserting that no profile-owned design exists is not sufficient |
 | 2 | The diff, per artefact class, each item marked added / changed / removed | section 2 step 2 |
-| 3 | The counterweight check: whether the other intended profile could use the capability or is unaffected | section 9 designates WebAssembly the counterweight for judging whether a proposed core feature is general or one language's need in disguise |
+| 3 | The counterweight check: whether the other intended profile could use the capability, is unaffected, **or records a refusal - a refusal being recorded and not blocking** | section 9 designates WebAssembly the counterweight for judging whether a proposed core feature is general or one language's need in disguise. Widened 2026-08-31: the first live counterweight answer was neither of the two the row admitted. A profile holding a veto over a core amendment would be a profile-to-profile dependency established by governance rather than by reference, which is what the extraction gate's fourth condition exists to prevent, so a refusal is an answer and not a bar. Editorial: section 2's closed list of seven artefact classes does not contain this procedure |
 | 4 | The classification, additive or breaking, by the test in section 7 below | section 2 |
 | 5 | The new `MinimumSupportedVersion`: unchanged for additive, raised to n+1 for breaking | section 7 below |
 | 6 | The public API impact, which may be "none" | section 3 above |
@@ -648,12 +648,20 @@ is what the paragraph above says and what makes the register safe to extend
 under Exclusion EX-15. Two of the five are worth reading together rather than in
 order. **Row 5 is the only candidate both intended profiles independently rate
 general**, which is the strongest evidence this register carries about any of
-them, so it is listed first among the additions. And **row 6 is the only one the
-two profiles graded in opposite directions** - the profile with no parser, no
-text format and no dynamic loads calls it the strongest ask in its document,
-while the profile with all three calls it weak - which is precisely the
-disagreement section 6's counterweight step exists to surface, and it is
-unresolvable until both roadmaps state one scope for it.
+them, so it is listed first among the additions. And **row 6 was the one the two
+profiles graded in opposite directions** - the profile with no parser, no text
+format and no dynamic loads called it the strongest ask in its document while the
+profile with all three called it weak, which is precisely the disagreement section
+6's counterweight step exists to surface.
+
+*Corrected 2026-08-31: that disagreement is resolved and this paragraph described
+it as live for longer than it was.* Both roadmaps now grade the argument channel
+the same way and both fix its scope at **arguments only**, the result channel
+being adequate as it stands; the profile that had graded it weak did so reasoning
+from a host that compiles a program rather than a call, which stops holding the
+moment it hosts another profile. Row 6 is recorded at that scope. The lesson the
+paragraph is kept for is that a register entry describing a disagreement outlives
+the disagreement unless someone re-reads it.
 
 | # | Candidate | What would drive it | Classes touched | Clause it must clear | Owning ADR |
 |---|---|---|---|---|---|
@@ -665,12 +673,22 @@ unresolvable until both roadmaps state one scope for it.
 | 6 | A typed argument channel on the invocation request | a module that is nothing but exported functions with typed signatures, whose conformance suite invokes them with arguments end to end; and a profile hosting another one, where an export call is a typed call whose arguments originate on the other side | 2 | AD2: the entry-point name is a request field, so widening it must not re-scope any existing category | 0005 |
 | 7 | Multiple results on a host capability | a calling convention admitting more than one result, whose second result has nowhere to go and is refused rather than truncated | 7 | AD3: a capability signature is a declared shape and widening it must not weaken the declaration rules | 0011 |
 | 8 | A wider value slot on the capability channel | one value type in one instruction family that does not fit the current slot; splitting works and needs a published encoding | 7 | AD5: a profile compiled against the narrow slot must still compile | 0011 |
+| 10 | Nested instantiation of a guest-loaded handle | a module system whose dependency must become its own instance rather than run in the requesting frame; the JavaScript roadmap names it and grades it moderate, and the WebAssembly roadmap declines it outright, having no instruction that asks for code while running | 5, 1 | AD4 - it must be opt-in through a descriptor declaration - and AD1, because it makes a nesting-depth bound live that is presently unreachable | 0008 |
 | 9 | A refusable retention member on the metering surface | a language whose guest must observe a refused growth and continue, where the retention report returns nothing and the refusal is latched for the next charge or poll | 3 | AD3: it must not let a profile learn a remaining value, which is the asymmetry the four-member surface exists to hold | 0007 |
 
 Candidates 1 and 2 are funded by VM-5 measurements, per section 16's
 critical-path risk row: a latency regression discovered after the contract is
 frozen costs an amendment, so the choice rests on numbers rather than on
 anticipation.
+
+Candidate 10 is registered because ADR 0008 struck a clause that had described it
+as already permitted - "plus a child instantiation where the profile's declaration
+permits one", against a declaration with no such part and a path Exclusion EX-78
+records as unreachable since VM-2. Striking the clause was editorial; restoring
+the capability is not, and the shape is fixed here so that the difference is
+visible. EX-78's own closing line names the same amendment: *"closed by an
+amendment that lets a profile instantiate what it loaded, or a provider that may
+re-enter."*
 
 Candidates 3 and 4 acquired a counterweight answer on 2026-08-31 that this
 register should carry, because it is the answer the procedure asks for and it
@@ -740,9 +758,9 @@ claimed a ruling was missing when it existed.** The audit and its corrections ar
 below, because an exclusion that overstates a gap is worse than no exclusion - it
 sends the next reader to mint an amendment nothing needed.
 
-**Items 1, 3, 4b and 7 are closed. Items 4a, 5 and 6 are open and need no
-amendment. Item 2 is open, is the only genuinely blocked one, and is worse than
-originally described.**
+**Items 1, 3, 4a, 4b, 5, 6 and 7 are closed. Item 2 alone remains open: it is the
+only genuinely blocked one, it is worse than originally described, and its
+divergence is now pinned by a test even though its ruling is not available.**
 
 1. ~~the bounded-read status mapping~~ **- closed 2026-08-31.** The remarks
    attributed the mapping to ADR 0006 and ADR 0007, neither of which mentions
@@ -771,6 +789,15 @@ originally described.**
    no code. Closed by: a second named maintainer, and then a decision about which
    of the record and the code is wrong - not by an editorial pass.
 
+   **What was done instead, because the decision is not available and the silence
+   was.** The catalog-wide clamp was enforced by code and asserted by no test: it
+   appeared in two profiles' XML comments and a VM-3 evidence finding, while the
+   precedence tests cover the single-profile intersection ADR 0007 actually
+   describes. A test now pins the behaviour and names the record it contradicts.
+   That ratifies nothing - it makes the divergence executable, so whichever way it
+   is ruled, someone changes a test deliberately rather than rediscovering the
+   disagreement a third time.
+
 3. ~~the host-exception translation precedence, "which both profile roadmaps
    restated from the implementation because no record states it"~~ **- closed
    2026-08-31, and the quoted premise was false.** ADR 0011 states it, in the
@@ -780,22 +807,30 @@ originally described.**
    because nobody looked, not because nothing existed.
 
 4. Split in two, and the halves ended differently.
-   - **4a, OPEN and recordable without an amendment.** Whether a profile's own
-     sibling assembly counts inside ADR 0011 P1's reference set is genuinely
-     unruled - the phrase appears in two ADRs and neither addresses siblings. But
-     P1's subject is package graph and assembly layout, which section 2 lists as
-     *explicitly outside version 1*, so the qualifier lands as a dated editorial
-     revision rather than an amendment. Note also that rule A13 cannot reach a
-     product profile - its subject test requires a test-only project - so it is a
-     repo-local tightening over the in-checkout consumer profiles, and the question
-     is not answered by enforcement either.
+   - **4a, ~~sibling assemblies inside ADR 0011 P1's reference set~~ - closed
+     2026-08-31.** P1 and ADR 0001's quoted sentence both now carry the qualifier:
+     the set is of Broiler.VM-owned assemblies and a profile component's own
+     siblings are not members of it. Filed as a dated editorial revision on both,
+     which section 2 permits because the subject is package graph and assembly
+     layout - explicitly outside version 1 - and because nothing changed: no
+     product profile exists, and rule A13's subject test requires a test-only
+     project, so no enforcement could have reached a sibling either way.
    - **4b, ~~the reconciliation of roadmap section 5 with section 10 on where a
      format lives~~ - closed, and it was already closed when this exclusion was
      written.** Commit `4cb815e` reconciled both sections twenty-four minutes
      before commit `462c746` recorded them here as unreconciled. A stale to-do,
      filed by the same author in the same session.
 
-5. **OPEN, far narrower than described, and both named halves were false.** The
+5. ~~who invokes the extraction gate and where the record is filed~~ **- closed
+   2026-08-31.** Both named halves were false: ADR 0011 names who and names where.
+   The two genuine residues are now recorded in ADR 0011 itself - the unsatisfied-G1
+   filing, which the gate's own failure branch cannot cover because invocation is
+   barred until G1 holds, and the reconciliation of the "first real invocation"
+   clause, which was a statement about *when* and had been read as one about *who*.
+   Neither was an amendment: the extraction gate is not among the seven artefact
+   classes. The original text read:
+
+   *OPEN, far narrower than described, and both named halves were false.* The
    original text said ADR 0011 *"delegates the first invocation to a profile
    roadmap without naming one"*. ADR 0011 names who - *"any profile owner or the
    core architecture owner may invoke"* - names where the record is filed - *"in
@@ -809,7 +844,13 @@ originally described.**
    Neither is an amendment - the extraction gate is not among the seven artefact
    classes.
 
-6. **OPEN and mostly discharged.** Section 12 gained five rows on 2026-08-31 and
+6. ~~this register's own section 12, brought level with what the profiles have
+   asked for~~ **- closed 2026-08-31.** Section 12 gained a tenth row for nested
+   instantiation, the stale paragraph about the two profiles grading the argument
+   channel oppositely is corrected, and section 6 row 3 is widened to admit a
+   recorded refusal. The original text read:
+
+   *OPEN and mostly discharged.* Section 12 gained five rows on 2026-08-31 and
    is level with the profiles on all but one candidate: nested instantiation of a
    guest-loaded handle, which the JavaScript roadmap names and which the evidence
    side has carried open since VM-2 as EX-78. Two residues remain. This record's
