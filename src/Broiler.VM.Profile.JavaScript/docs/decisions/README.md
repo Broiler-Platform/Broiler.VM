@@ -22,6 +22,7 @@ does not contain says so in its own text.
 | [JSD-0008](0008-format-version-1-the-entry-point-and-what-js-1-corrected.md) | What format version 1 carries, the entry-point answer, and four things JS-1 corrected in earlier records | JS-1 |
 | [JSD-0009](0009-the-diagnostic-registry-and-the-position-encoding.md) | The published diagnostic-code registry, its two halves, the three codes no artifact reaches, and this profile's use of the core's position record | JS-3a |
 | [JSD-0010](0010-which-review-rules-govern-this-profiles-documents.md) | That the component's review-document rules read this profile's ledger and bundles, that the mark vocabulary is per document family, and the two clauses that do not govern them | JS-3a |
+| [JSD-0011](0011-the-value-frame-and-call-abi.md) | The eight-row value, frame and call ABI, and the re-scoping of JS-6 from a copy to a rewrite that follows from it | JS-4, entry gate |
 
 ## What a record must carry
 

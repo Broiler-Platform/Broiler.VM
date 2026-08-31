@@ -800,6 +800,14 @@ JS-4 rather than that milestone's first task.** The seed's library is typed agai
 value base type; if this profile is going to replace that representation, JS-6 is a rewrite and
 must be re-scoped before it starts, not during it.
 
+**Taken on 2026-08-31, and stated here because the rest of this section was written before it.**
+[JSD-0011](decisions/0011-the-value-frame-and-call-abi.md) records all eight rows below. The
+answer to the row that gates the others is **replace**: this profile keeps its own tagged struct
+and does not adopt the seed's boxed hierarchy, so the stop condition's second half fires and
+**JS-6 is re-scoped from a copy to a rewrite**. The rows below are the questions; the record is
+the answers, and where the two differ the record is the authority. **Nothing in it is
+implemented** - it is the gate on entry, and JS-4 is not started.
+
 What the decision must state, in both directions — what it buys and what it costs:
 
 | Row | What must be decided and recorded |
