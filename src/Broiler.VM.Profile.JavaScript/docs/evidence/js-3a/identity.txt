@@ -1,0 +1,12 @@
+bundle:                JS-3A-001
+milestone:             JS-3a
+collected (UTC):       2026-08-31T19:52:37+00:00
+component commit:      c7ea270b2fd7517c396c41b2929398c9b266055c
+branch:                claude/js-3a-diagnostic-registry
+working tree:          clean
+dirty entries:         0
+owner:                 profile architecture owner (unassigned identity)
+reviewer:              NONE - nothing here has been reviewed
+
+Every path below is relative to the component root. A figure in this bundle is this
+component's own; no result from any other component is evidence here.

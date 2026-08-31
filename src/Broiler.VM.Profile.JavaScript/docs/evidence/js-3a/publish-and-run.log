@@ -1,0 +1,427 @@
+[executiononly/jit] publish exit 0
+dotnet publish src\compositions\Broiler.VM.Composition.JavaScript.ExecutionOnly\Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o D:\Broiler.Browser\Broiler.VM\artifacts\js-publish\executiononly\jit -r win-x64 --self-contained false -p:PublishTrimmed=false
+  Wiederherzustellende Projekte werden ermittelt...
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" wiederhergestellt (in 286 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Format\Broiler.VM.Profile.JavaScript.Format.csproj" wiederhergestellt (in 286 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" wiederhergestellt (in 286 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" wiederhergestellt (in 286 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Binary\Broiler.VM.Binary.csproj" wiederhergestellt (in 286 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.ExecutionOnly\Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj" wiederhergestellt (in 286 ms.).
+  Broiler.VM.Binary -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Profile.JavaScript.Format -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Format\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Runtime -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.ExecutionOnly -> D:\Broiler.Browser\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.ExecutionOnly\bin\Release\net10.0\win-x64\Broiler.VM.Composition.JavaScript.ExecutionOnly.dll
+  Broiler.VM.Composition.JavaScript.ExecutionOnly -> D:\Broiler.Browser\Broiler.VM\artifacts\js-publish\executiononly\jit\
+
+
+[executiononly/jit] --closure exit 0
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.JavaScript.ExecutionOnly
+label execution-only
+carries-lowering no
+profiles 1
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 0
+manifest broiler.javascript.slice
+format-versions 1 1
+
+
+[executiononly/jit] run exit 0
+     entry addition: Normal/NormalCompleted/0/42/-
+     entry division-by-zero: Normal/NormalCompleted/0/Infinity/-
+     entry zero-over-zero: Normal/NormalCompleted/0/NaN/-
+     entry negative-zero-division: Normal/NormalCompleted/0/-Infinity/-
+     entry remainder-takes-the-dividends-sign: Normal/NormalCompleted/0/-2/-
+     entry bitwise-or-goes-through-to-int32: Normal/NormalCompleted/0/-2147483648/-
+     entry unsigned-shift-goes-through-to-uint32: Normal/NormalCompleted/0/4294967295/-
+     entry comparison-produces-a-boolean: Normal/NormalCompleted/0/true/-
+     entry not-a-number-is-not-itself: Normal/NormalCompleted/0/false/-
+     entry a-boolean-adds-as-one: Normal/NormalCompleted/0/2/-
+     entry strict-equality-compares-kinds: Normal/NormalCompleted/0/false/-
+     entry an-unassigned-local-is-undefined: Normal/NormalCompleted/0/undefined/-
+     entry a-counting-loop: Normal/NormalCompleted/0/55/-
+     entry a-taken-conditional: Normal/NormalCompleted/0/1/-
+     entry an-untaken-conditional: Normal/NormalCompleted/0/2/-
+     entry two-entry-points: Normal/NormalCompleted/0/1/-
+     entry wrong-magic: InvalidArtifact/MalformedEncoding/1001/-/-1:0:0:0
+     entry unsupported-format-version: InvalidArtifact/UnsupportedProfileFormatVersion/1002/-/-
+     entry a-manifest-this-build-does-not-accept: InvalidArtifact/UnsupportedFeatureManifest/1004/-/-
+     entry a-manifest-identity-longer-than-the-format-admits: InvalidArtifact/InconsistentStructure/1005/-/-
+     entry an-overlong-variable-length-integer: InvalidArtifact/MalformedEncoding/1902/-/-
+     entry trailing-bytes: InvalidArtifact/InconsistentStructure/1104/-/-
+     entry an-unknown-section-kind: InvalidArtifact/UnknownFeature/1101/-/-
+     entry a-duplicated-section: InvalidArtifact/InconsistentStructure/1102/-/-
+     entry sections-out-of-order: InvalidArtifact/InconsistentStructure/1102/-/-
+     entry no-code-section: InvalidArtifact/InconsistentStructure/1103/-/-
+     entry a-section-shorter-than-it-declared: InvalidArtifact/InconsistentStructure/1105/-/-
+     entry a-truncated-payload: InvalidArtifact/Truncated/1901/-/-
+     entry more-frames-than-the-slice-has: InvalidArtifact/UnknownFeature/1202/-/-
+     entry a-declared-maximum-above-the-formats-own-ceiling: InvalidArtifact/InconsistentStructure/1201/-/-
+     entry an-interned-name-the-manifest-excludes: InvalidArtifact/UnknownFeature/1304/-/-
+     entry an-unknown-constant-tag: InvalidArtifact/UnknownFeature/1301/-/-
+     entry a-boolean-constant-that-is-neither: InvalidArtifact/MalformedEncoding/1302/-/-
+     entry more-constants-than-the-limits-section-admits: InvalidArtifact/InconsistentStructure/1303/-/-
+     entry an-exception-region-the-manifest-excludes: InvalidArtifact/UnknownFeature/1507/-/-
+     entry a-suspension-target-the-manifest-excludes: InvalidArtifact/UnknownFeature/1508/-/-
+     entry an-unknown-opcode: InvalidArtifact/UnknownFeature/1401/-/2:0:0:0
+     entry a-code-section-of-no-length: InvalidArtifact/InconsistentStructure/1410/-/-
+     entry an-instruction-whose-operand-runs-off-the-end: InvalidArtifact/Truncated/1402/-/-
+     entry a-jump-out-of-range: InvalidArtifact/InconsistentStructure/1403/-/-
+     entry a-jump-into-an-operand: InvalidArtifact/InconsistentStructure/1403/-/-
+     entry an-operand-stack-underflow: InvalidArtifact/SemanticValidationFailed/1405/-/-
+     entry an-operand-stack-deeper-than-declared: InvalidArtifact/SemanticValidationFailed/1406/-/-
+     entry two-paths-reaching-one-offset-at-different-heights: InvalidArtifact/InconsistentStructure/1404/-/-
+     entry an-instruction-no-entry-point-reaches: InvalidArtifact/InconsistentStructure/1411/-/-
+     entry code-that-falls-off-the-end: InvalidArtifact/SemanticValidationFailed/1409/-/-
+     entry a-constant-index-past-the-pool: InvalidArtifact/SemanticValidationFailed/1407/-/-
+     entry a-local-index-past-the-frame: InvalidArtifact/SemanticValidationFailed/1408/-/-
+     entry a-return-that-leaves-more-than-the-completion-value: InvalidArtifact/SemanticValidationFailed/1412/-/-
+     entry no-entry-point: InvalidArtifact/InconsistentStructure/1501/-/-
+     entry a-duplicated-entry-point: InvalidArtifact/InconsistentStructure/1502/-/-
+     entry an-entry-point-inside-an-operand: InvalidArtifact/InconsistentStructure/1503/-/-
+     entry a-position-row-inside-an-operand: InvalidArtifact/InconsistentStructure/1506/-/2:1:1:1
+     entry an-entry-point-name-of-no-length: InvalidArtifact/InconsistentStructure/1504/-/-
+     entry an-entry-point-reached-with-operands-on-the-stack: InvalidArtifact/SemanticValidationFailed/1505/-/-
+     entry a-refusal-covered-by-the-second-position-row: InvalidArtifact/UnknownFeature/1401/-/2:3:7:5
+     entry a-section-count-ceiling-this-host-declined: ResourceExhaustion/CeilingReached/0/-/-
+     entry a-token-that-was-already-cancelled: Cancellation/Cancelled/0/-/-
+     entry a-profile-the-catalog-does-not-hold: UnsupportedProfile/ProfileNotInCatalog/0/-/-
+ok   unsupported-profile-examines-no-payload-byte: UnsupportedProfile/ProfileNotInCatalog over an empty payload
+ok   execution-step-kinds: Instantiated, Completed, Faulted as a ReferenceError, and ContractViolation from a resume
+ok   suspended-is-declared-produced-at-js-7: neither external suspension nor asynchronous instantiation is declared; JS-7 produces the fifth kind
+ok   operand-stack-sized-from-verification: the artifact declared 16 and verification computed 2
+ok   the-caller-buffer-may-change-afterwards: the buffer was overwritten after verification and the answer did not move
+ok   corpus-replay: 59 entries replayed to their recorded answers
+ok   corpus-replays-twice-with-no-residue: both passes agreed row for row
+ok   the-corpus-contains-passing-controls: 16 entries verify successfully
+ok   five-verifier-outcomes: Cancellation, InvalidArtifact, Normal, ResourceExhaustion, UnsupportedProfile
+ok   every-invalid-artifact-carries-a-diagnostic-code: 40 entries, each with a code
+broiler-js-execution-only: 10 checks passed, core contract version 1
+
+
+[executiononly/trimmed] publish exit 0
+dotnet publish src\compositions\Broiler.VM.Composition.JavaScript.ExecutionOnly\Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o D:\Broiler.Browser\Broiler.VM\artifacts\js-publish\executiononly\trimmed -r win-x64 --self-contained true
+  Wiederherzustellende Projekte werden ermittelt...
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" wiederhergestellt (in 326 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" wiederhergestellt (in 326 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Format\Broiler.VM.Profile.JavaScript.Format.csproj" wiederhergestellt (in 326 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Binary\Broiler.VM.Binary.csproj" wiederhergestellt (in 326 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" wiederhergestellt (in 326 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.ExecutionOnly\Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj" wiederhergestellt (in 326 ms.).
+  Broiler.VM.Binary -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Profile.JavaScript.Format -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Format\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Runtime -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.ExecutionOnly -> D:\Broiler.Browser\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.ExecutionOnly\bin\Release\net10.0\win-x64\Broiler.VM.Composition.JavaScript.ExecutionOnly.dll
+  Assemblys werden für die Größe optimiert. Dieser Vorgang kann eine Weile dauern.
+  Broiler.VM.Composition.JavaScript.ExecutionOnly -> D:\Broiler.Browser\Broiler.VM\artifacts\js-publish\executiononly\trimmed\
+
+
+[executiononly/trimmed] --closure exit 0
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.JavaScript.ExecutionOnly
+label execution-only
+carries-lowering no
+profiles 1
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 0
+manifest broiler.javascript.slice
+format-versions 1 1
+
+
+[executiononly/trimmed] run exit 0
+     entry addition: Normal/NormalCompleted/0/42/-
+     entry division-by-zero: Normal/NormalCompleted/0/Infinity/-
+     entry zero-over-zero: Normal/NormalCompleted/0/NaN/-
+     entry negative-zero-division: Normal/NormalCompleted/0/-Infinity/-
+     entry remainder-takes-the-dividends-sign: Normal/NormalCompleted/0/-2/-
+     entry bitwise-or-goes-through-to-int32: Normal/NormalCompleted/0/-2147483648/-
+     entry unsigned-shift-goes-through-to-uint32: Normal/NormalCompleted/0/4294967295/-
+     entry comparison-produces-a-boolean: Normal/NormalCompleted/0/true/-
+     entry not-a-number-is-not-itself: Normal/NormalCompleted/0/false/-
+     entry a-boolean-adds-as-one: Normal/NormalCompleted/0/2/-
+     entry strict-equality-compares-kinds: Normal/NormalCompleted/0/false/-
+     entry an-unassigned-local-is-undefined: Normal/NormalCompleted/0/undefined/-
+     entry a-counting-loop: Normal/NormalCompleted/0/55/-
+     entry a-taken-conditional: Normal/NormalCompleted/0/1/-
+     entry an-untaken-conditional: Normal/NormalCompleted/0/2/-
+     entry two-entry-points: Normal/NormalCompleted/0/1/-
+     entry wrong-magic: InvalidArtifact/MalformedEncoding/1001/-/-1:0:0:0
+     entry unsupported-format-version: InvalidArtifact/UnsupportedProfileFormatVersion/1002/-/-
+     entry a-manifest-this-build-does-not-accept: InvalidArtifact/UnsupportedFeatureManifest/1004/-/-
+     entry a-manifest-identity-longer-than-the-format-admits: InvalidArtifact/InconsistentStructure/1005/-/-
+     entry an-overlong-variable-length-integer: InvalidArtifact/MalformedEncoding/1902/-/-
+     entry trailing-bytes: InvalidArtifact/InconsistentStructure/1104/-/-
+     entry an-unknown-section-kind: InvalidArtifact/UnknownFeature/1101/-/-
+     entry a-duplicated-section: InvalidArtifact/InconsistentStructure/1102/-/-
+     entry sections-out-of-order: InvalidArtifact/InconsistentStructure/1102/-/-
+     entry no-code-section: InvalidArtifact/InconsistentStructure/1103/-/-
+     entry a-section-shorter-than-it-declared: InvalidArtifact/InconsistentStructure/1105/-/-
+     entry a-truncated-payload: InvalidArtifact/Truncated/1901/-/-
+     entry more-frames-than-the-slice-has: InvalidArtifact/UnknownFeature/1202/-/-
+     entry a-declared-maximum-above-the-formats-own-ceiling: InvalidArtifact/InconsistentStructure/1201/-/-
+     entry an-interned-name-the-manifest-excludes: InvalidArtifact/UnknownFeature/1304/-/-
+     entry an-unknown-constant-tag: InvalidArtifact/UnknownFeature/1301/-/-
+     entry a-boolean-constant-that-is-neither: InvalidArtifact/MalformedEncoding/1302/-/-
+     entry more-constants-than-the-limits-section-admits: InvalidArtifact/InconsistentStructure/1303/-/-
+     entry an-exception-region-the-manifest-excludes: InvalidArtifact/UnknownFeature/1507/-/-
+     entry a-suspension-target-the-manifest-excludes: InvalidArtifact/UnknownFeature/1508/-/-
+     entry an-unknown-opcode: InvalidArtifact/UnknownFeature/1401/-/2:0:0:0
+     entry a-code-section-of-no-length: InvalidArtifact/InconsistentStructure/1410/-/-
+     entry an-instruction-whose-operand-runs-off-the-end: InvalidArtifact/Truncated/1402/-/-
+     entry a-jump-out-of-range: InvalidArtifact/InconsistentStructure/1403/-/-
+     entry a-jump-into-an-operand: InvalidArtifact/InconsistentStructure/1403/-/-
+     entry an-operand-stack-underflow: InvalidArtifact/SemanticValidationFailed/1405/-/-
+     entry an-operand-stack-deeper-than-declared: InvalidArtifact/SemanticValidationFailed/1406/-/-
+     entry two-paths-reaching-one-offset-at-different-heights: InvalidArtifact/InconsistentStructure/1404/-/-
+     entry an-instruction-no-entry-point-reaches: InvalidArtifact/InconsistentStructure/1411/-/-
+     entry code-that-falls-off-the-end: InvalidArtifact/SemanticValidationFailed/1409/-/-
+     entry a-constant-index-past-the-pool: InvalidArtifact/SemanticValidationFailed/1407/-/-
+     entry a-local-index-past-the-frame: InvalidArtifact/SemanticValidationFailed/1408/-/-
+     entry a-return-that-leaves-more-than-the-completion-value: InvalidArtifact/SemanticValidationFailed/1412/-/-
+     entry no-entry-point: InvalidArtifact/InconsistentStructure/1501/-/-
+     entry a-duplicated-entry-point: InvalidArtifact/InconsistentStructure/1502/-/-
+     entry an-entry-point-inside-an-operand: InvalidArtifact/InconsistentStructure/1503/-/-
+     entry a-position-row-inside-an-operand: InvalidArtifact/InconsistentStructure/1506/-/2:1:1:1
+     entry an-entry-point-name-of-no-length: InvalidArtifact/InconsistentStructure/1504/-/-
+     entry an-entry-point-reached-with-operands-on-the-stack: InvalidArtifact/SemanticValidationFailed/1505/-/-
+     entry a-refusal-covered-by-the-second-position-row: InvalidArtifact/UnknownFeature/1401/-/2:3:7:5
+     entry a-section-count-ceiling-this-host-declined: ResourceExhaustion/CeilingReached/0/-/-
+     entry a-token-that-was-already-cancelled: Cancellation/Cancelled/0/-/-
+     entry a-profile-the-catalog-does-not-hold: UnsupportedProfile/ProfileNotInCatalog/0/-/-
+ok   unsupported-profile-examines-no-payload-byte: UnsupportedProfile/ProfileNotInCatalog over an empty payload
+ok   execution-step-kinds: Instantiated, Completed, Faulted as a ReferenceError, and ContractViolation from a resume
+ok   suspended-is-declared-produced-at-js-7: neither external suspension nor asynchronous instantiation is declared; JS-7 produces the fifth kind
+ok   operand-stack-sized-from-verification: the artifact declared 16 and verification computed 2
+ok   the-caller-buffer-may-change-afterwards: the buffer was overwritten after verification and the answer did not move
+ok   corpus-replay: 59 entries replayed to their recorded answers
+ok   corpus-replays-twice-with-no-residue: both passes agreed row for row
+ok   the-corpus-contains-passing-controls: 16 entries verify successfully
+ok   five-verifier-outcomes: Cancellation, InvalidArtifact, Normal, ResourceExhaustion, UnsupportedProfile
+ok   every-invalid-artifact-carries-a-diagnostic-code: 40 entries, each with a code
+broiler-js-execution-only: 10 checks passed, core contract version 1
+
+
+[executiononly/aot] publish exit 0
+dotnet publish src\compositions\Broiler.VM.Composition.JavaScript.ExecutionOnly\Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o D:\Broiler.Browser\Broiler.VM\artifacts\js-publish\executiononly\aot -r win-x64 -p:PublishAot=true
+  Wiederherzustellende Projekte werden ermittelt...
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" wiederhergestellt (in 326 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" wiederhergestellt (in 326 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" wiederhergestellt (in 326 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Binary\Broiler.VM.Binary.csproj" wiederhergestellt (in 326 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Format\Broiler.VM.Profile.JavaScript.Format.csproj" wiederhergestellt (in 326 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.ExecutionOnly\Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj" wiederhergestellt (in 326 ms.).
+  Broiler.VM.Binary -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Profile.JavaScript.Format -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Format\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Abstractions -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Runtime -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.ExecutionOnly -> D:\Broiler.Browser\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.ExecutionOnly\bin\Release\net10.0\win-x64\Broiler.VM.Composition.JavaScript.ExecutionOnly.dll
+  Generating native code
+  Broiler.VM.Composition.JavaScript.ExecutionOnly -> D:\Broiler.Browser\Broiler.VM\artifacts\js-publish\executiononly\aot\
+
+
+[executiononly/aot] --closure exit 0
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.JavaScript.ExecutionOnly
+label execution-only
+carries-lowering no
+profiles 1
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 0
+manifest broiler.javascript.slice
+format-versions 1 1
+
+
+[executiononly/aot] run exit 0
+     entry addition: Normal/NormalCompleted/0/42/-
+     entry division-by-zero: Normal/NormalCompleted/0/Infinity/-
+     entry zero-over-zero: Normal/NormalCompleted/0/NaN/-
+     entry negative-zero-division: Normal/NormalCompleted/0/-Infinity/-
+     entry remainder-takes-the-dividends-sign: Normal/NormalCompleted/0/-2/-
+     entry bitwise-or-goes-through-to-int32: Normal/NormalCompleted/0/-2147483648/-
+     entry unsigned-shift-goes-through-to-uint32: Normal/NormalCompleted/0/4294967295/-
+     entry comparison-produces-a-boolean: Normal/NormalCompleted/0/true/-
+     entry not-a-number-is-not-itself: Normal/NormalCompleted/0/false/-
+     entry a-boolean-adds-as-one: Normal/NormalCompleted/0/2/-
+     entry strict-equality-compares-kinds: Normal/NormalCompleted/0/false/-
+     entry an-unassigned-local-is-undefined: Normal/NormalCompleted/0/undefined/-
+     entry a-counting-loop: Normal/NormalCompleted/0/55/-
+     entry a-taken-conditional: Normal/NormalCompleted/0/1/-
+     entry an-untaken-conditional: Normal/NormalCompleted/0/2/-
+     entry two-entry-points: Normal/NormalCompleted/0/1/-
+     entry wrong-magic: InvalidArtifact/MalformedEncoding/1001/-/-1:0:0:0
+     entry unsupported-format-version: InvalidArtifact/UnsupportedProfileFormatVersion/1002/-/-
+     entry a-manifest-this-build-does-not-accept: InvalidArtifact/UnsupportedFeatureManifest/1004/-/-
+     entry a-manifest-identity-longer-than-the-format-admits: InvalidArtifact/InconsistentStructure/1005/-/-
+     entry an-overlong-variable-length-integer: InvalidArtifact/MalformedEncoding/1902/-/-
+     entry trailing-bytes: InvalidArtifact/InconsistentStructure/1104/-/-
+     entry an-unknown-section-kind: InvalidArtifact/UnknownFeature/1101/-/-
+     entry a-duplicated-section: InvalidArtifact/InconsistentStructure/1102/-/-
+     entry sections-out-of-order: InvalidArtifact/InconsistentStructure/1102/-/-
+     entry no-code-section: InvalidArtifact/InconsistentStructure/1103/-/-
+     entry a-section-shorter-than-it-declared: InvalidArtifact/InconsistentStructure/1105/-/-
+     entry a-truncated-payload: InvalidArtifact/Truncated/1901/-/-
+     entry more-frames-than-the-slice-has: InvalidArtifact/UnknownFeature/1202/-/-
+     entry a-declared-maximum-above-the-formats-own-ceiling: InvalidArtifact/InconsistentStructure/1201/-/-
+     entry an-interned-name-the-manifest-excludes: InvalidArtifact/UnknownFeature/1304/-/-
+     entry an-unknown-constant-tag: InvalidArtifact/UnknownFeature/1301/-/-
+     entry a-boolean-constant-that-is-neither: InvalidArtifact/MalformedEncoding/1302/-/-
+     entry more-constants-than-the-limits-section-admits: InvalidArtifact/InconsistentStructure/1303/-/-
+     entry an-exception-region-the-manifest-excludes: InvalidArtifact/UnknownFeature/1507/-/-
+     entry a-suspension-target-the-manifest-excludes: InvalidArtifact/UnknownFeature/1508/-/-
+     entry an-unknown-opcode: InvalidArtifact/UnknownFeature/1401/-/2:0:0:0
+     entry a-code-section-of-no-length: InvalidArtifact/InconsistentStructure/1410/-/-
+     entry an-instruction-whose-operand-runs-off-the-end: InvalidArtifact/Truncated/1402/-/-
+     entry a-jump-out-of-range: InvalidArtifact/InconsistentStructure/1403/-/-
+     entry a-jump-into-an-operand: InvalidArtifact/InconsistentStructure/1403/-/-
+     entry an-operand-stack-underflow: InvalidArtifact/SemanticValidationFailed/1405/-/-
+     entry an-operand-stack-deeper-than-declared: InvalidArtifact/SemanticValidationFailed/1406/-/-
+     entry two-paths-reaching-one-offset-at-different-heights: InvalidArtifact/InconsistentStructure/1404/-/-
+     entry an-instruction-no-entry-point-reaches: InvalidArtifact/InconsistentStructure/1411/-/-
+     entry code-that-falls-off-the-end: InvalidArtifact/SemanticValidationFailed/1409/-/-
+     entry a-constant-index-past-the-pool: InvalidArtifact/SemanticValidationFailed/1407/-/-
+     entry a-local-index-past-the-frame: InvalidArtifact/SemanticValidationFailed/1408/-/-
+     entry a-return-that-leaves-more-than-the-completion-value: InvalidArtifact/SemanticValidationFailed/1412/-/-
+     entry no-entry-point: InvalidArtifact/InconsistentStructure/1501/-/-
+     entry a-duplicated-entry-point: InvalidArtifact/InconsistentStructure/1502/-/-
+     entry an-entry-point-inside-an-operand: InvalidArtifact/InconsistentStructure/1503/-/-
+     entry a-position-row-inside-an-operand: InvalidArtifact/InconsistentStructure/1506/-/2:1:1:1
+     entry an-entry-point-name-of-no-length: InvalidArtifact/InconsistentStructure/1504/-/-
+     entry an-entry-point-reached-with-operands-on-the-stack: InvalidArtifact/SemanticValidationFailed/1505/-/-
+     entry a-refusal-covered-by-the-second-position-row: InvalidArtifact/UnknownFeature/1401/-/2:3:7:5
+     entry a-section-count-ceiling-this-host-declined: ResourceExhaustion/CeilingReached/0/-/-
+     entry a-token-that-was-already-cancelled: Cancellation/Cancelled/0/-/-
+     entry a-profile-the-catalog-does-not-hold: UnsupportedProfile/ProfileNotInCatalog/0/-/-
+ok   unsupported-profile-examines-no-payload-byte: UnsupportedProfile/ProfileNotInCatalog over an empty payload
+ok   execution-step-kinds: Instantiated, Completed, Faulted as a ReferenceError, and ContractViolation from a resume
+ok   suspended-is-declared-produced-at-js-7: neither external suspension nor asynchronous instantiation is declared; JS-7 produces the fifth kind
+ok   operand-stack-sized-from-verification: the artifact declared 16 and verification computed 2
+ok   the-caller-buffer-may-change-afterwards: the buffer was overwritten after verification and the answer did not move
+ok   corpus-replay: 59 entries replayed to their recorded answers
+ok   corpus-replays-twice-with-no-residue: both passes agreed row for row
+ok   the-corpus-contains-passing-controls: 16 entries verify successfully
+ok   five-verifier-outcomes: Cancellation, InvalidArtifact, Normal, ResourceExhaustion, UnsupportedProfile
+ok   every-invalid-artifact-carries-a-diagnostic-code: 40 entries, each with a code
+broiler-js-execution-only: 10 checks passed, core contract version 1
+
+
+[executiononly] catalog tables identical across modes: True
+
+[slicecompiler/jit] publish exit 0
+dotnet publish src\compositions\Broiler.VM.Composition.JavaScript.SliceCompiler\Broiler.VM.Composition.JavaScript.SliceCompiler.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o D:\Broiler.Browser\Broiler.VM\artifacts\js-publish\slicecompiler\jit -r win-x64 --self-contained false -p:PublishTrimmed=false
+  Wiederherzustellende Projekte werden ermittelt...
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Compiler\Broiler.VM.Profile.JavaScript.Compiler.csproj" wiederhergestellt (in 293 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Format\Broiler.VM.Profile.JavaScript.Format.csproj" wiederhergestellt (in 293 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" wiederhergestellt (in 293 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Binary\Broiler.VM.Binary.csproj" wiederhergestellt (in 293 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" wiederhergestellt (in 293 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" wiederhergestellt (in 293 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.SliceCompiler\Broiler.VM.Composition.JavaScript.SliceCompiler.csproj" wiederhergestellt (in 293 ms.).
+  Broiler.VM.Binary -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Profile.JavaScript.Format -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Format\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Profile.JavaScript -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Runtime -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Compiler\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Composition.JavaScript.SliceCompiler -> D:\Broiler.Browser\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.SliceCompiler\bin\Release\net10.0\win-x64\Broiler.VM.Composition.JavaScript.SliceCompiler.dll
+  Broiler.VM.Composition.JavaScript.SliceCompiler -> D:\Broiler.Browser\Broiler.VM\artifacts\js-publish\slicecompiler\jit\
+
+
+[slicecompiler/jit] --closure exit 0
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.JavaScript.SliceCompiler
+label narrow-runtime-compiler-shaped
+carries-lowering yes
+profiles 1
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 0
+
+
+[slicecompiler/jit] run exit 0
+ok   a-neighbours-maximum-does-not-reach-this-profile: the neighbour caps section count at 1 and this profile's artifact still verified
+ok   a-neighbours-adopted-default-does-reach-this-profile: adopting defaults beside a neighbour declaring 1 refused this artifact, naming SectionCount
+ok   a-foreign-payload-is-not-projected: the neighbour's payload completed and projected as neither of this profile's
+ok   registration-order-does-not-change-the-catalog-identity: both encodings are 462 bytes and equal
+ok   descriptor-admitted-and-its-refusals-named: admitted, and four named negative cases were each refused
+broiler-js-slice-compiler: 5 cross-profile checks passed
+
+
+[slicecompiler/trimmed] publish exit 0
+dotnet publish src\compositions\Broiler.VM.Composition.JavaScript.SliceCompiler\Broiler.VM.Composition.JavaScript.SliceCompiler.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o D:\Broiler.Browser\Broiler.VM\artifacts\js-publish\slicecompiler\trimmed -r win-x64 --self-contained true
+  Wiederherzustellende Projekte werden ermittelt...
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" wiederhergestellt (in 316 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Compiler\Broiler.VM.Profile.JavaScript.Compiler.csproj" wiederhergestellt (in 316 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Binary\Broiler.VM.Binary.csproj" wiederhergestellt (in 316 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" wiederhergestellt (in 316 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Format\Broiler.VM.Profile.JavaScript.Format.csproj" wiederhergestellt (in 316 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" wiederhergestellt (in 316 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.SliceCompiler\Broiler.VM.Composition.JavaScript.SliceCompiler.csproj" wiederhergestellt (in 316 ms.).
+  Broiler.VM.Abstractions -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Profile.JavaScript.Format -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Format\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Binary -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Profile.JavaScript -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Runtime -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Compiler\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Composition.JavaScript.SliceCompiler -> D:\Broiler.Browser\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.SliceCompiler\bin\Release\net10.0\win-x64\Broiler.VM.Composition.JavaScript.SliceCompiler.dll
+  Assemblys werden für die Größe optimiert. Dieser Vorgang kann eine Weile dauern.
+  Broiler.VM.Composition.JavaScript.SliceCompiler -> D:\Broiler.Browser\Broiler.VM\artifacts\js-publish\slicecompiler\trimmed\
+
+
+[slicecompiler/trimmed] --closure exit 0
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.JavaScript.SliceCompiler
+label narrow-runtime-compiler-shaped
+carries-lowering yes
+profiles 1
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 0
+
+
+[slicecompiler/trimmed] run exit 0
+ok   a-neighbours-maximum-does-not-reach-this-profile: the neighbour caps section count at 1 and this profile's artifact still verified
+ok   a-neighbours-adopted-default-does-reach-this-profile: adopting defaults beside a neighbour declaring 1 refused this artifact, naming SectionCount
+ok   a-foreign-payload-is-not-projected: the neighbour's payload completed and projected as neither of this profile's
+ok   registration-order-does-not-change-the-catalog-identity: both encodings are 462 bytes and equal
+ok   descriptor-admitted-and-its-refusals-named: admitted, and four named negative cases were each refused
+broiler-js-slice-compiler: 5 cross-profile checks passed
+
+
+[slicecompiler/aot] publish exit 0
+dotnet publish src\compositions\Broiler.VM.Composition.JavaScript.SliceCompiler\Broiler.VM.Composition.JavaScript.SliceCompiler.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o D:\Broiler.Browser\Broiler.VM\artifacts\js-publish\slicecompiler\aot -r win-x64 -p:PublishAot=true
+  Wiederherzustellende Projekte werden ermittelt...
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Binary\Broiler.VM.Binary.csproj" wiederhergestellt (in 302 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.SliceCompiler\Broiler.VM.Composition.JavaScript.SliceCompiler.csproj" wiederhergestellt (in 302 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" wiederhergestellt (in 302 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" wiederhergestellt (in 302 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Format\Broiler.VM.Profile.JavaScript.Format.csproj" wiederhergestellt (in 302 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" wiederhergestellt (in 302 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Compiler\Broiler.VM.Profile.JavaScript.Compiler.csproj" wiederhergestellt (in 302 ms.).
+  Broiler.VM.Profile.JavaScript.Format -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Format\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Binary -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Runtime -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Compiler\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Composition.JavaScript.SliceCompiler -> D:\Broiler.Browser\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.SliceCompiler\bin\Release\net10.0\win-x64\Broiler.VM.Composition.JavaScript.SliceCompiler.dll
+  Generating native code
+  Broiler.VM.Composition.JavaScript.SliceCompiler -> D:\Broiler.Browser\Broiler.VM\artifacts\js-publish\slicecompiler\aot\
+
+
+[slicecompiler/aot] --closure exit 0
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.JavaScript.SliceCompiler
+label narrow-runtime-compiler-shaped
+carries-lowering yes
+profiles 1
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 0
+
+
+[slicecompiler/aot] run exit 0
+ok   a-neighbours-maximum-does-not-reach-this-profile: the neighbour caps section count at 1 and this profile's artifact still verified
+ok   a-neighbours-adopted-default-does-reach-this-profile: adopting defaults beside a neighbour declaring 1 refused this artifact, naming SectionCount
+ok   a-foreign-payload-is-not-projected: the neighbour's payload completed and projected as neither of this profile's
+ok   registration-order-does-not-change-the-catalog-identity: both encodings are 462 bytes and equal
+ok   descriptor-admitted-and-its-refusals-named: admitted, and four named negative cases were each refused
+broiler-js-slice-compiler: 5 cross-profile checks passed
+
+
+[slicecompiler] catalog tables identical across modes: True
