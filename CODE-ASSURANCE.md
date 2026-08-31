@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 47 |
 | Files carrying an annotation | 47 |
-| Code units | 1646 |
-| Relevant | 721 |
-| Exempt by predicate | 925 |
-| Annotated | 721 of 721 (100%) |
-| Human reviewed | 0 of 721 (0%) |
-| Unverified | 721 |
+| Code units | 1649 |
+| Relevant | 722 |
+| Exempt by predicate | 927 |
+| Annotated | 722 of 722 (100%) |
+| Human reviewed | 0 of 722 (0%) |
+| Unverified | 722 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 721 |
+| HUMAN_PENDING | 722 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 925 |
+| EXEMPT | 927 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
 | None | 21 |
-| Low | 700 |
+| Low | 701 |
 | Medium | 0 |
 | High | 0 |
 | Unknown | 0 |
@@ -52,7 +52,7 @@ figures below are the measurement of how far from that claim the component is.
 | None | 2 |
 | Low | 399 |
 | Medium | 273 |
-| High | 47 |
+| High | 48 |
 | Critical | 0 |
 | *not annotated* | 0 |
 
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 0.7 / 10 |
-| Units scored | 721 |
+| Units scored | 722 |
 
 ## High-security review areas
 
@@ -89,6 +89,7 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.VmBoundedAllocator.TryAllocateExact<T>(in VmReadBounds, IVmBoundedAllocationMeter, ulong, out T[])` in `src/Broiler.VM.Binary/VmBoundedAllocator.cs` - Security=High, human line PENDING
 - `Broiler.VM.VmBoundedReader` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, human line PENDING
 - `Broiler.VM.VmBoundedReader.VmBoundedReader(System.ReadOnlySpan<byte>, in VmReadBounds, IVmBoundedAllocationMeter)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, human line PENDING
+- `Broiler.VM.VmBoundedReader.VmBoundedReader(System.ReadOnlySpan<byte>, in VmReadBounds, IVmBoundedAllocationMeter, ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, human line PENDING
 - `Broiler.VM.VmBoundedReader.Remaining` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, human line PENDING
 - `Broiler.VM.VmBoundedReader.TryReadByte(out byte)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, human line PENDING
 - `Broiler.VM.VmBoundedReader.TryReadUInt32LittleEndian(out uint)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, human line PENDING
@@ -118,8 +119,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 81 |
-| Units required to carry one | 47 |
+| Units carrying a criterion | 82 |
+| Units required to carry one | 48 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -152,7 +153,7 @@ that the rule is reviewable in one place rather than in several hundred.
 | CompilerSuppliedRecordOrEnumMember | 0 |
 | DelegatingOverrideOrOperator | 94 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 139 |
+| FieldDeclaringStorage | 141 |
 | EnumMemberOfADeclaredVocabulary | 278 |
 | DeclaredInSource | 0 |
 
@@ -173,7 +174,7 @@ No unit in this component states a per-unit exemption.
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-1646 of them, exempt and relevant alike - with the fingerprint of its declaration.
+1649 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in

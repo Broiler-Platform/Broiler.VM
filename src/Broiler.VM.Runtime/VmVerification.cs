@@ -164,8 +164,8 @@ public sealed partial class VmRuntime
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=8; Fingerprint=40CE34
-    // Broiler-Falsified-If: an escaping verifier exception is answered as a category, or both effective ceilings are one vector
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=8; Fingerprint=D433B9
+    // Broiler-Falsified-If: an escaping verifier exception is answered as a category, or both effective ceilings are one vector, or a cancelled or poll-bound-violating verification is answered as resource exhaustion
     // Broiler-Human:        PENDING
     private VmVerificationResult RunVerifier(
         VmProfileDescriptor profile,
@@ -239,11 +239,41 @@ public sealed partial class VmRuntime
                         .WithPosition(outcome.Position, outcome.ProfileDiagnosticCode));
 
             case VmOutcome.ResourceExhaustion:
+            {
+                // A verifier built on the bounded reader cannot tell these three apart on its own:
+                // TryChargeWork and Poll are both folded into WorkBudgetExhausted, so a cancelled
+                // verification, a poll-bound violation and a genuinely exhausted budget all reach
+                // the profile as one status and come back here as ResourceExhaustion. Reporting
+                // the verifier's own attribution would tell a caller its artifact was too
+                // expensive when the host had in fact cancelled, and a corpus labelled by category
+                // and reason could not tell the two apart. VmInstantiation already consults the
+                // meter's latches for exactly this reason; verification did not, and the meter is
+                // the only party that knows which of the three actually happened.
+                if (meter.CancellationObserved)
+                {
+                    return VmVerificationResult.Cancellation(
+                        VmReason.Cancelled,
+                        identified.WithOutcome(VmStage.Verification, VmOutcome.Cancellation, VmReason.Cancelled, VmInitiator.Host));
+                }
+
+                // A poll-bound violation is deliberately NOT translated here. It is a profile
+                // contract breach, and the verification taxonomy has no ProfileFault category to
+                // put one in; reporting it as InvalidArtifact would blame the artifact for the
+                // verifier's defect, which is the same error the escaping-exception rule above
+                // exists to prevent. Choosing a category for it is a contract question, and it is
+                // recorded as one rather than answered here.
+
+                // Where the meter latched, its dimension and scope name the level that actually
+                // refused; the verifier can only report the level it can attribute unaided.
+                var exhaustedDimension = meter.ExhaustionObserved ? meter.FailedDimension : outcome.ExhaustedDimension;
+                var exhaustedScope = meter.ExhaustionObserved ? meter.FailedScope : outcome.ExhaustedScope;
+
                 return VmVerificationResult.ResourceExhaustion(
                     outcome.Reason,
                     identified
                         .WithOutcome(VmStage.Verification, VmOutcome.ResourceExhaustion, outcome.Reason, VmInitiator.Guest)
-                        .WithExhaustion(outcome.ExhaustedDimension, outcome.ExhaustedScope));
+                        .WithExhaustion(exhaustedDimension, exhaustedScope));
+            }
 
             case VmOutcome.Cancellation:
                 return VmVerificationResult.Cancellation(

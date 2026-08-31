@@ -93,6 +93,19 @@ corroborates it independently - 321 ns per constant marginal, against a 4,000-co
 verification whose whole difference from a raw pass is 1,459,519.0 ns, which is 365 ns each - and
 the agreement between a total and a marginal measured different ways is the reason both are here.
 
+**Two of the costs behind that figure were removed on 2026-08-31, and the figure has not been
+re-measured.** The description above undercounts what a byte cost: each of the two interface calls
+took the meter's gate *twice*, because `TryCharge` and `Poll` each accrued wall clock under the
+lock before taking it again themselves - four monitor acquisitions and two clock reads per byte.
+`TryCharge` no longer accrues, since `Poll` does and the contract already bounds how long a profile
+may go between polls; and `VmBoundedReader` now takes an optional poll granularity, so a profile
+that declares an uncharged-work bound can poll once per bound rather than once per byte instead of
+paying a latency it never promised. **Until the lane is re-run, the 157.6276 and 129.0454 figures
+in the table above describe code that no longer exists, and no claim may be made about the
+improvement** - the number is the evidence, and there is not one yet. Re-running
+`verify-throughput` and `verify-per-declared-count` on the same machine, with the fixture verifier
+passing its own bound, is the measurement that closes this.
+
 **The core's per-verification framing is below the noise.** It follows from the two above: the
 total for 4,000 constants and 4,000 times the marginal cost agree to within the A/A floor, so the
 fixed cost of a verification - descriptor validation, handle creation, the lease - is too small for

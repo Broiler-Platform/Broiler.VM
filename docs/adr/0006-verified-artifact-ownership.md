@@ -538,6 +538,7 @@ here. Each is recorded once, not re-argued.
 | Any foreign-runtime identity mismatch is `unsupported profile` | Narrowed to clause 2 of the sharing predicate; every other refusal is `invalid state` with a reason. |
 | Handle record fields include `EffectiveSectionVerificationMode` and `ProducedBy` | Both struck; the non-compared field list is exactly five members. |
 | A `RemainderDerivedCeilings` flag on nested handles | Struck; `VmArtifactOrigin == GuestInitiated` is that set. |
+| ADR 0005's profile-boundary paragraph, which extended `ProfileFault` translation to an escaping *verifier* exception | Corrected there, not here. This record's section 5 clause 2 is the ruling, and the shipped `VmVerification` implements it: a verifier exception propagates untranslated. The disagreement was live until 2026-08-31 and is recorded so it is not rediscovered as a code defect. |
 | Deferred-body memoisation approved in version 1 | Struck with lazy per-section verification (ADR 0010); no memoisation use is approved. |
 | Eight ad-hoc `resource exhaustion` reason identifiers | Replaced by the exhausted dimension name plus `VmBudgetScope` (ADR 0007). |
 | Four-field host-signature assumption tuple | Widened to seven fields, adding Reentrancy, ExceptionTranslation, and optional-import boundness. |

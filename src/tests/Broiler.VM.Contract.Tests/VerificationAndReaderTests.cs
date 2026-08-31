@@ -52,6 +52,36 @@ public sealed class VerificationAndReaderTests
     }
 
     [Fact]
+    public void A_Cancelled_Verification_Is_Cancellation_Not_Resource_Exhaustion()
+    {
+        // The bounded reader folds three causes into one status: a refused work charge, a
+        // cancellation observed at a poll, and a poll-bound violation all surface to the profile
+        // as WorkBudgetExhausted, so a verifier answers ResourceExhaustion for all three. Only the
+        // meter knows which happened. If the core reports the verifier's attribution unchanged, a
+        // host that cancelled is told its artifact was too expensive - and a malformed corpus
+        // labelled by category and reason cannot tell a cancellation from a real exhaustion.
+        // The cancellation must arrive *during* the verifier's read. A token already cancelled on
+        // entry is answered before the profile is called at all, so it cannot witness this.
+        using var cancellation = new CancellationTokenSource();
+
+        using var runtime = FixtureComposition.Runtime(
+            FixtureComposition.Catalog(FixtureVmProfile.DescriptorForVerifierHook(
+                FixtureVmProfileVariant.Conforming,
+                cancellation.Cancel)));
+
+        var descriptor = FixtureComposition.Descriptor();
+
+        var payload = FixtureArtifactWriter.Write(
+            [1], [FixtureFormat.OpPushConst, 0, FixtureFormat.OpReturn]);
+
+        var result = runtime.Verify(in descriptor, payload, cancellation.Token);
+
+        Assert.Equal(VmOutcome.Cancellation, result.Outcome);
+        Assert.Equal(VmReason.Cancelled, result.Reason);
+        Assert.False(result.TryGetArtifact(out _));
+    }
+
+    [Fact]
     public void An_Unknown_Profile_Is_Not_An_Invalid_Artifact()
     {
         // Conflating the two misreports a composition mistake as a corrupt file, which is the most
@@ -245,9 +275,79 @@ public sealed class VerificationAndReaderTests
         Assert.False(reader.TryReadByte(out _));
     }
 
+    [Fact]
+    public void A_Reader_Polls_Once_Per_Byte_By_Default()
+    {
+        // The behaviour every existing caller has. It is recorded so the granularity overload
+        // cannot change it by accident.
+        var meter = new CountingMeter();
+        var bounds = new VmReadBounds(1024, 8, 1024, 4);
+
+        var reader = new VmBoundedReader(new byte[16], in bounds, meter);
+
+        for (var i = 0; i < 16; i++)
+        {
+            Assert.True(reader.TryReadByte(out _));
+        }
+
+        Assert.Equal(16, meter.Charges);
+        Assert.Equal(16, meter.Polls);
+    }
+
+    [Fact]
+    public void A_Granularity_Batches_The_Poll_And_Never_The_Charge()
+    {
+        // A poll takes the meter's lock and reads a clock, and the contract bounds cancellation
+        // latency by the profile's declared uncharged-work bound rather than by one byte - so
+        // polling per byte is a cost with no promise behind it. The charge is a different thing:
+        // work is charged before it is done, and batching that would let a refused budget be
+        // stepped past. This asserts both halves at once.
+        var meter = new CountingMeter();
+        var bounds = new VmReadBounds(1024, 8, 1024, 4);
+
+        var reader = new VmBoundedReader(new byte[16], in bounds, meter, pollGranularity: 4);
+
+        for (var i = 0; i < 16; i++)
+        {
+            Assert.True(reader.TryReadByte(out _));
+        }
+
+        Assert.Equal(16, meter.Charges);
+        Assert.Equal(4, meter.Polls);
+    }
+
+    [Fact]
+    public void A_Refused_Poll_Stops_The_Reader_Even_When_Batched()
+    {
+        // Batching may delay a cancellation by up to the granularity. It may not lose one.
+        var meter = new CountingMeter { RefusePollAfter = 1 };
+        var bounds = new VmReadBounds(1024, 8, 1024, 4);
+
+        var reader = new VmBoundedReader(new byte[16], in bounds, meter, pollGranularity: 4);
+
+        var consumed = 0;
+        while (reader.TryReadByte(out _))
+        {
+            consumed++;
+        }
+
+        // Seven, not eight: the poll that refuses belongs to the eighth byte, and a byte whose
+        // charge-and-poll did not both succeed is not consumed. So the refusal is observed at the
+        // boundary it was batched to, and the byte it stopped on stays unread.
+        Assert.Equal(VmBoundedReadStatus.WorkBudgetExhausted, reader.Status);
+        Assert.Equal(7, consumed);
+        Assert.Equal(2, meter.Polls);
+    }
+
     private sealed class CountingMeter : IVmBoundedAllocationMeter
     {
         internal ulong Reserved { get; private set; }
+
+        internal int Charges { get; private set; }
+
+        internal int Polls { get; private set; }
+
+        internal int RefusePollAfter { get; init; } = int.MaxValue;
 
         public bool TryReserve(ulong byteCount)
         {
@@ -257,8 +357,16 @@ public sealed class VerificationAndReaderTests
 
         public void Release(ulong byteCount) => Reserved -= byteCount;
 
-        public bool TryChargeWork(ulong workUnits) => true;
+        public bool TryChargeWork(ulong workUnits)
+        {
+            Charges++;
+            return true;
+        }
 
-        public bool Poll() => true;
+        public bool Poll()
+        {
+            Polls++;
+            return Polls <= RefusePollAfter;
+        }
     }
 }

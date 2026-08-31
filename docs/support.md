@@ -25,7 +25,7 @@ says so where nothing has been.
 | Package | Version | What it is | Depends on |
 |---|---|---|---|
 | `Broiler.VM.Abstractions` | 0.1.0-preview.1 | The profile-neutral contracts: descriptors, results, diagnostics, budgets, the source-level profile contract | Nothing |
-| `Broiler.VM.Binary` | 0.1.0-preview.1 | Bounded binary reading: checked readers, canonical LEB128, framing, allocation guards. No format, no schema, no semantics | Nothing |
+| `Broiler.VM.Binary` | 0.1.0-preview.1 | Bounded binary reading: checked readers, canonical-only LEB128, framing, allocation guards. No format, no schema, no semantics. **A format whose specification requires padded variable-length encodings to be accepted cannot use the variable-length readers or `TryReadDeclaredCount`**, and decodes its own integers over the byte-level members instead | Nothing |
 | `Broiler.VM.Runtime` | 0.1.0-preview.1 | The catalog, the runtime and its lifecycle, resource authority, guest-load mediation, external suspension | `Broiler.VM.Abstractions`, `Broiler.VM.Binary` (assembly references; see below) |
 
 **The three packages depend on nothing outside themselves.** `Broiler.VM.Runtime` declares the

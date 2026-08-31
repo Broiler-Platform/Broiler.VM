@@ -145,17 +145,33 @@ host registered the capability and one whose host did not - and both are correct
 answers. Write the unbound branch first: it is the one a host's policy can force
 on you at any time, and `IsBound` is the whole of what you may ask.
 
-**Defaults clamp catalog-wide too, and the dimension you never use is the one to
-watch.** The clamp above is the half a reader remembers; adopting a profile
-default resolves to the tightest default in the catalog, which is the half that
-gets missed. And the clamp reads every dimension of every descriptor with no
-exemption for the ones a profile declares inapplicable. So a profile writing `0`
-into a guest-load maximum because it has no guest loads clamps a profile that
-does have them to zero, and a declaring profile cannot defend itself: ADR 0008
-forbids it from declaring those four unconstrained. **Declare `Unconstrained` on
-a dimension you do not use, and say why in the record**, because the failure
-surfaces in somebody else's verifier as a refusal naming a dimension they never
-touched.
+**Defaults clamp catalog-wide, and the dimension you never use is the one to
+watch.** Since the maxima clamp was removed this is the whole of the catalog-wide
+reach, and it is the half that gets missed: adopting a profile default resolves
+to the tightest default in the catalog. The fold reads every dimension of every
+descriptor with no exemption for the ones a profile declares inapplicable. So a
+profile writing `0` into a guest-load **default** because it has no guest loads
+hands a host that adopts defaults a ceiling of zero, and the failure surfaces in
+somebody else's verifier as a refusal naming a dimension they never touched.
+
+**And there is no costless spelling of "I do not constrain this".**
+`VmDescriptorValidation` refuses any descriptor whose `LimitDefaults` carries an
+unconstrained slot, with reason `LimitDefaultsInvalid`, because a default meaning
+unbounded would make adopting it identical to declaring no ceiling at all -
+invariant 9's rule that omission never means unbounded. Hard maxima may use
+`Unconstrained`; defaults may not. **So declare a large finite default on a
+dimension you do not use, say why in the record, and state plainly that it still
+participates in the fold** - the exposure is bounded, not removed. An earlier
+version of this paragraph advised declaring `Unconstrained` and was wrong: that
+descriptor does not build.
+
+**Prove it rather than asserting it.** The way to show you have not mis-declared
+a catalog-wide default is a two-profile catalog test with a deliberately adverse
+neighbour - a descriptor that tightens the dimensions you do not declare and
+writes a stingy default into one you do not use - asserting that the neighbour's
+maxima do not reach your artifacts at all, and that its adopted defaults do. Both
+intended first profiles build exactly this at their first milestone. It is a test
+shape, not a shared asset: nothing is extracted to run it.
 
 ---
 
@@ -175,9 +191,12 @@ profile:
   calls a browser its *largest* closure because it links a lowering; the other
   calls a browser its *smallest* because it compiles nothing. Both are true of
   themselves and neither describes the image, which is the union plus the core.
-- **The two profiles clamp each other**, per the paragraph above, on all fifteen
-  dimensions in both directions. Reconciling two independently owned descriptors
-  is the composing component's job and nothing in either profile can do it.
+- **The two profiles reach each other through their declared *defaults***, per
+  the paragraph above, on all fifteen dimensions - and through their maxima not
+  at all, since that clamp was removed on 2026-08-31. Reconciling two
+  independently owned sets of defaults is the composing component's job and
+  nothing in either profile can do it. A host that states explicit ceilings never
+  meets the fold; a host that adopts defaults always does.
 - **A call chain that crosses runtimes is bounded only under one shared parent.**
   Cross-runtime reentry is legal and depth-bounded, and it is the route a
   browser's cross-profile seam takes - but the bound is an aggregate one, so a
