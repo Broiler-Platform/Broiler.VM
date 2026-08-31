@@ -1022,6 +1022,7 @@ type Broiler.VM.Binary Broiler.VM.VmBoundedReadStatus : enum
   Broiler.VM.Binary Broiler.VM.VmBoundedReadStatus.value__ : System.Int32
 type Broiler.VM.Binary Broiler.VM.VmBoundedReader : ref struct
   Broiler.VM.Binary Broiler.VM.VmBoundedReader..ctor(System.ReadOnlySpan<System.Byte> source, in Broiler.VM.VmReadBounds readBounds, Broiler.VM.IVmBoundedAllocationMeter allocationMeter) : void
+  Broiler.VM.Binary Broiler.VM.VmBoundedReader..ctor(System.ReadOnlySpan<System.Byte> source, in Broiler.VM.VmReadBounds readBounds, Broiler.VM.IVmBoundedAllocationMeter allocationMeter, System.UInt64 pollGranularity) : void
   Broiler.VM.Binary Broiler.VM.VmBoundedReader.Bounds : Broiler.VM.VmReadBounds { get; }
   Broiler.VM.Binary Broiler.VM.VmBoundedReader.IsOk : System.Boolean { get; }
   Broiler.VM.Binary Broiler.VM.VmBoundedReader.Position : System.UInt64 { get; }

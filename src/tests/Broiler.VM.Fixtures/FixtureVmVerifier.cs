@@ -23,6 +23,7 @@ public sealed class FixtureVmVerifier : IVmProfileVerifier
     private readonly bool chargesWork;
     private readonly FixtureVmProfileVariant variant;
     private readonly FixtureReadOrderRecorder? recorder;
+    private readonly System.Action? onFirstPayloadRead;
 
     /// <summary>Creates a verifier for <paramref name="profileId"/>.</summary>
     public FixtureVmVerifier(
@@ -30,13 +31,15 @@ public sealed class FixtureVmVerifier : IVmProfileVerifier
         int semanticVersion,
         bool chargesWork = true,
         FixtureVmProfileVariant variant = FixtureVmProfileVariant.Conforming,
-        FixtureReadOrderRecorder? orderRecorder = null)
+        FixtureReadOrderRecorder? orderRecorder = null,
+        System.Action? onFirstPayloadRead = null)
     {
         ProfileId = profileId;
         VerifierSemanticVersion = semanticVersion;
         this.chargesWork = chargesWork;
         this.variant = variant;
         recorder = orderRecorder;
+        this.onFirstPayloadRead = onFirstPayloadRead;
     }
 
     /// <inheritdoc/>
@@ -87,6 +90,10 @@ public sealed class FixtureVmVerifier : IVmProfileVerifier
         {
             return Fail(ref reader, position: 0);
         }
+
+        // The one moment a test can stand inside a verification: after real payload bytes have
+        // been read and while the rest of the artifact is still to come.
+        onFirstPayloadRead?.Invoke();
 
         if (!System.MemoryExtensions.SequenceEqual(magic, FixtureFormat.Magic))
         {

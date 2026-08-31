@@ -401,11 +401,19 @@ handed to an observer the host registers at runtime creation and is never placed
 in a result.
 
 **Profile boundary.** A language fault is a returned typed payload, never a CLR
-exception. The core wraps every call into a profile verifier or executor; an
-escaping exception is a profile contract violation reported as `ProfileFault`
-with reason `ProfileContractViolation`, an empty payload slot, a terminal
-non-resumable instance, and - for a verifier - no handle and no partial state
-escaping. A profile whose internals use exceptions, such as an engine adapted
+exception. The core wraps every call into a profile **executor**; an escaping
+exception there is a profile contract violation reported as `ProfileFault`
+with reason `ProfileContractViolation`, an empty payload slot, and a terminal
+non-resumable instance.
+
+**A profile verifier is the exception, and this record previously said the
+opposite.** An escaping exception from a verifier is **not** translated into any
+category: the core releases its own buffers, leaves the budget already charged,
+leaves the runtime usable, and lets the exception propagate unchanged - so a
+verifier bug can never masquerade as a malicious artifact or hide from the
+malformed corpus. No handle and no partial state escape either way. ADR 0006
+section 5 clause 2 owns that ruling, `VmVerification` implements it, and this
+paragraph is corrected to match both rather than to compete with them. A profile whose internals use exceptions, such as an engine adapted
 under roadmap section 9's seeding conditions, catches at its own adapter. That
 is the concrete discharge of section 9's requirement that the contract be
 reachable by code that was not written for it.

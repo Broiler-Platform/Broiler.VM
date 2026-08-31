@@ -244,6 +244,136 @@ public sealed class AggregateBudgetConcurrencyTests
     }
 
     /// <summary>
+    /// A call chain that crosses two runtimes is metered against their shared parent, and the
+    /// parent is what stops it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This is the cross-profile seam a browser actually builds: a host object bridges two
+    /// independent runtimes, one profile calls out through a capability, the embedder invokes the
+    /// other profile's runtime, and results come back. The core admits it deliberately and states
+    /// that the chain is bounded - but only where both runtimes were created under one shared
+    /// aggregate budget. A composition that creates two unparented runtimes has no bound on the
+    /// chain at all, and nothing in this suite said so out loud before.
+    /// </para>
+    /// <para>
+    /// <b>What this test does not witness.</b> The core's own statement of the bound names
+    /// aggregate <c>CallDepth</c>, and no code in this repository charges that dimension: no
+    /// fixture or consumer profile here has a call construct, so the dimension is declared in six
+    /// descriptors and charged by nothing. The chain below is therefore bounded by the allowances
+    /// it does spend, not by the depth ceiling the prose relies on. Closing that needs a profile
+    /// with calls, and it is recorded as an open item rather than implied by this test.
+    /// </para>
+    /// </remarks>
+    [Theory]
+    [InlineData(60_000UL, VmOutcome.Normal)]
+    [InlineData(4_500UL, VmOutcome.ResourceExhaustion)]
+    public void A_Call_Chain_Across_Two_Runtimes_Is_Bounded_By_Their_Shared_Parent(
+        ulong parentFuel, VmOutcome expectedInner)
+    {
+        // Both runtimes state the SAME ceiling in both rows, and the second runtime's inner work
+        // fits inside it in both rows. Only the shared parent differs. So a difference in the inner
+        // outcome can come from nothing but the parent, which is what makes this a witness rather
+        // than an observation - the generous row proves the chain runs, the tight row proves the
+        // parent is what stops it, and neither runtime's own allowance moved between them.
+        const ulong PerRuntimeCeiling = 4_000;
+        // Each spin stays under the fixture profile's declared 1024-unit poll bound: a bigger one
+        // is a poll-bound violation rather than a budget answer, which would test the wrong rule.
+        const long DrainPerCycle = 900;
+        const long InnerWork = 900;
+
+        var parent = Parent(fuel: parentFuel);
+        var catalog = FixtureComposition.AlphaCatalog();
+        var ceilings = FixtureComposition.CeilingsWith(VmBudgetDimension.Fuel, PerRuntimeCeiling);
+
+        VmRuntime? second = null;
+        var crossed = 0;
+        var innerOutcome = VmOutcome.None;
+        var innerReason = VmReason.None;
+
+        VmHostCallOutcome CrossToSecondRuntime(ReadOnlySpan<long> arguments, out long result)
+        {
+            result = 0;
+            crossed++;
+
+            if (second is null)
+            {
+                return VmHostCallOutcome.Completed;
+            }
+
+            // Exactly what an embedder does at the seam: convert, invoke the other runtime, convert
+            // back. Two host-boundary transits, and the core never learns either language.
+            var descriptor = FixtureComposition.Descriptor();
+            var verified = second.Verify(in descriptor, FixtureArtifactWriter.Spin(InnerWork), CancellationToken.None);
+
+            if (!verified.TryGetArtifact(out var artifact))
+            {
+                innerOutcome = verified.Outcome;
+                return VmHostCallOutcome.Completed;
+            }
+
+            using (artifact)
+            {
+                var instantiated = second.Instantiate(artifact, CancellationToken.None);
+
+                if (!instantiated.TryGetInstance(out var instance))
+                {
+                    innerOutcome = instantiated.Outcome;
+                    return VmHostCallOutcome.Completed;
+                }
+
+                var inner = FixtureComposition.Invoke(instance);
+                innerOutcome = inner.Outcome;
+                innerReason = inner.Reason;
+                instance.Dispose();
+            }
+
+            return VmHostCallOutcome.Completed;
+        }
+
+        var capabilities = ImmutableArray.Create(
+            VmCapabilityRegistration.Value(FixtureHostCapabilities.Double, CrossToSecondRuntime),
+            VmCapabilityRegistration.Value(FixtureHostCapabilities.Throwing, FixtureHostCapabilities.ThrowingHandler),
+            VmCapabilityRegistration.Value(FixtureHostCapabilities.Refusing, FixtureHostCapabilities.RefusingHandler));
+
+        using var first = FixtureComposition.Runtime(
+            catalog, FixtureComposition.Options(ceilings: ceilings, parent: parent, capabilities: capabilities));
+
+        using var other = FixtureComposition.Runtime(
+            catalog, FixtureComposition.Options(ceilings: ceilings, parent: parent));
+
+        second = other;
+
+        // Spend most of the shared allowance from the FIRST runtime, inside its own ceiling. This
+        // is the browser case in miniature: one profile has been running for a while before it
+        // reaches across, and what is left for the other side is whatever the parent still has.
+        var drain = FixtureComposition.Verify(first, FixtureArtifactWriter.Spin(DrainPerCycle));
+
+        for (var cycle = 0; cycle < 4; cycle++)
+        {
+            var spinner = FixtureComposition.Instantiate(first, drain);
+            FixtureComposition.Invoke(spinner);
+            spinner.Dispose();
+        }
+
+        drain.Dispose();
+
+        var bridge = FixtureComposition.Verify(
+            first, FixtureArtifactWriter.HostCall(21, FixtureHostCapabilities.DoubleBinding));
+
+        var caller = FixtureComposition.Instantiate(first, bridge);
+        FixtureComposition.Invoke(caller);
+
+        // The crossing happened, so the chain is real rather than short-circuited.
+        Assert.Equal(1, crossed);
+        Assert.True(expectedInner == innerOutcome, $"inner was {innerOutcome}/{innerReason}");
+
+        caller.Dispose();
+        bridge.Dispose();
+        parent.Dispose();
+    }
+
+    /// <summary>
     /// A parent with a stated fuel allowance and room for every runtime these tests create.
     /// </summary>
     /// <remarks>

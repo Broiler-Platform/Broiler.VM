@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 721 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 722 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 47 |
-| Code units | 1646 |
-| Relevant | 721 |
-| Exempt | 925 |
-| Assessed | 721 of 721 (100%) |
-| Human reviewed | 0 of 721 (0%) |
-| Unverified | 721 |
+| Code units | 1649 |
+| Relevant | 722 |
+| Exempt | 927 |
+| Assessed | 722 of 722 (100%) |
+| Human reviewed | 0 of 722 (0%) |
+| Unverified | 722 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 721 |
+| HUMAN_PENDING | 722 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 925 |
+| EXEMPT | 927 |
 
 ## 5. Aliases In The Tree
 
@@ -138,7 +138,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Binary/IVmBoundedAllocationMeter.cs` | 5 | 5 | 0 | 5 | Low | High | 3/3 |
 | `src/Broiler.VM.Binary/VmBoundedAllocator.cs` | 3 | 3 | 0 | 3 | Low | High | 3/3 |
 | `src/Broiler.VM.Binary/VmBoundedReadStatus.cs` | 10 | 1 | 9 | 1 | Low | Low | 0/0 |
-| `src/Broiler.VM.Binary/VmBoundedReader.cs` | 33 | 21 | 12 | 21 | Low | High | 19/18 |
+| `src/Broiler.VM.Binary/VmBoundedReader.cs` | 36 | 22 | 14 | 22 | Low | High | 20/19 |
 | `src/Broiler.VM.Binary/VmReadBounds.cs` | 11 | 3 | 8 | 3 | Low | Low | 0/0 |
 | `src/Broiler.VM.Binary/VmSectionFrame.cs` | 10 | 3 | 7 | 3 | Low | Low | 0/0 |
 | `src/Broiler.VM.Runtime/VmAggregateBudget.cs` | 42 | 23 | 19 | 23 | Low | Medium | 0/0 |
@@ -221,8 +221,10 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: new T[] is reached before TryReserve returns true, or a failed allocation keeps its reservation
 - `Broiler.VM.VmBoundedReader` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `CCF177`, PENDING
   - Falsified if: a public member examines bytes or advances position while Status is not Ok
-- `Broiler.VM.VmBoundedReader.VmBoundedReader(System.ReadOnlySpan<byte>, in VmReadBounds, IVmBoundedAllocationMeter)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `97DF17`, PENDING
-  - Falsified if: a source longer than MaxArtifactBytes leaves Status Ok, so the excess truncates silently
+- `Broiler.VM.VmBoundedReader.VmBoundedReader(System.ReadOnlySpan<byte>, in VmReadBounds, IVmBoundedAllocationMeter)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `CB0FB0`, PENDING
+  - Falsified if: it forwards a granularity other than 1, so an existing caller's poll cadence changes
+- `Broiler.VM.VmBoundedReader.VmBoundedReader(System.ReadOnlySpan<byte>, in VmReadBounds, IVmBoundedAllocationMeter, ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=ADR-0007, `83214B`, PENDING
+  - Falsified if: a source longer than MaxArtifactBytes leaves Status Ok, or a granularity below 1 stops the reader polling at all
 - `Broiler.VM.VmBoundedReader.Remaining` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `D3559E`, PENDING
   - Falsified if: position can exceed bytes.Length, so the subtraction wraps to a remainder larger than the span
 - `Broiler.VM.VmBoundedReader.TryReadByte(out byte)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `EADE4A`, PENDING
@@ -253,8 +255,8 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: position advances past a failed bound test or a refused ChargeWork, or the addition is unchecked
 - `Broiler.VM.VmBoundedReader.TryReadVarUInt64Core(int, out ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `DE9CB5`, PENDING
   - Falsified if: an over-long encoding is accepted: a group past maxBits, an overflowing tail, a zero continuation
-- `Broiler.VM.VmBoundedReader.ChargeWork(ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `183D6C`, PENDING
-  - Falsified if: WorkBudgetExhausted is latched for a Poll that returned false under cancellation, not exhaustion
+- `Broiler.VM.VmBoundedReader.ChargeWork(ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `04F760`, PENDING
+  - Falsified if: WorkBudgetExhausted is latched for a Poll that returned false under cancellation, not exhaustion, or a charge is batched, or work accumulates past the granularity without a poll
 - `Broiler.VM.VmInstanceImplementation.Dispose(System.TimeSpan)` in `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` - Security=High, Spec=ADR-0004, `3B4D81`, PENDING
   - Falsified if: disposal returns while stepsInFlight is above zero and still releases the lease
 - `Broiler.VM.VmInstanceImplementation.LeaveStep()` in `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` - Security=High, Spec=ADR-0004, `E8A45C`, PENDING
@@ -269,8 +271,8 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a guest-initiated load is admitted while a profile verifier frame is on the stack
 - `Broiler.VM.VmRuntime.VerifyCore(in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken, VmDiagnostics, VmArtifactOrigin, VmMeter?)` in `src/Broiler.VM.Runtime/VmVerification.cs` - Security=High, Spec=none cited, `4166AF`, PENDING
   - Falsified if: cancellation is decided after an input is examined, or an unknown profile answers InvalidArtifact
-- `Broiler.VM.VmRuntime.RunVerifier(VmProfileDescriptor, in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken, VmDiagnostics, VmArtifactOrigin, VmMeter?)` in `src/Broiler.VM.Runtime/VmVerification.cs` - Security=High, Spec=none cited, `40CE34`, PENDING
-  - Falsified if: an escaping verifier exception is answered as a category, or both effective ceilings are one vector
+- `Broiler.VM.VmRuntime.RunVerifier(VmProfileDescriptor, in VmArtifactDescriptor, System.ReadOnlySpan<byte>, System.Threading.CancellationToken, VmDiagnostics, VmArtifactOrigin, VmMeter?)` in `src/Broiler.VM.Runtime/VmVerification.cs` - Security=High, Spec=none cited, `D433B9`, PENDING
+  - Falsified if: an escaping verifier exception is answered as a category, or both effective ceilings are one vector, or a cancelled or poll-bound-violating verification is answered as resource exhaustion
 
 ## 10. What This Record Does Not Say
 
@@ -293,7 +295,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 721 of the 721 assessed units declare
+That is not a figure of speech. 722 of the 722 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

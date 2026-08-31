@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   21
-// Annotated:        21/21
-// Exempt:           12
-// Human-reviewed:   0/21
+// Relevant units:   22
+// Annotated:        22/22
+// Exempt:           14
+// Human-reviewed:   0/22
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         19/18
+// Criteria:         20/19
 // Resource impact:  2/10 max
-// Unverified:       21
+// Unverified:       22
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -51,9 +51,11 @@ public ref struct VmBoundedReader
     private readonly System.ReadOnlySpan<byte> bytes;
     private readonly VmReadBounds bounds;
     private readonly IVmBoundedAllocationMeter meter;
+    private readonly ulong granularity;
     private ulong position;
     private ulong sectionsEntered;
     private uint structuralDepth;
+    private ulong unpolledWork;
     private VmBoundedReadStatus status;
 
     /// <summary>
@@ -66,13 +68,51 @@ public ref struct VmBoundedReader
     /// <see cref="VmBoundedReadStatus.ArtifactBytesExceeded"/>, so the caller learns it on the
     /// first read exactly as it learns every other bound.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=97DF17
-    // Broiler-Falsified-If: a source longer than MaxArtifactBytes leaves Status Ok, so the excess truncates silently
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=CB0FB0
+    // Broiler-Falsified-If: it forwards a granularity other than 1, so an existing caller's poll cadence changes
     // Broiler-Human:        PENDING
     public VmBoundedReader(
         System.ReadOnlySpan<byte> source,
         in VmReadBounds readBounds,
         IVmBoundedAllocationMeter allocationMeter)
+        : this(source, in readBounds, allocationMeter, pollGranularity: 1)
+    {
+    }
+
+    /// <summary>
+    /// Creates a reader that polls its meter once per <paramref name="pollGranularity"/> work
+    /// units rather than once per unit.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The charge is never batched - ADR 0007 requires work to be charged before it is done, and
+    /// one refused charge must stop the read. Only the <em>poll</em> is batched, and a poll is the
+    /// cancellation and wall-clock check, whose latency the contract already bounds by the
+    /// profile's declared uncharged-work bound rather than by one byte.
+    /// </para>
+    /// <para>
+    /// Polling once per byte is therefore far tighter than the contract asks for, and it is not
+    /// free: a poll takes the meter's lock and reads a clock, so a verifier that reads a
+    /// variable-length integer one byte at a time pays that on every byte of every integer. A
+    /// profile passes its own declared bound here and gets the latency it promised rather than a
+    /// stricter one it never claimed.
+    /// </para>
+    /// <para>
+    /// Pass the value the profile declares as its uncharged-work bound. A granularity larger than
+    /// that bound is a profile defect the meter detects on its own: accumulated work strictly
+    /// greater than the bound is reported as a poll-bound violation, so a granularity equal to the
+    /// bound is the largest safe value. A granularity of zero or one polls on every charge, which
+    /// is the behaviour of the constructor above.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=High; Resources=1; Fingerprint=83214B
+    // Broiler-Falsified-If: a source longer than MaxArtifactBytes leaves Status Ok, or a granularity below 1 stops the reader polling at all
+    // Broiler-Human:        PENDING
+    public VmBoundedReader(
+        System.ReadOnlySpan<byte> source,
+        in VmReadBounds readBounds,
+        IVmBoundedAllocationMeter allocationMeter,
+        ulong pollGranularity)
     {
         bytes = source;
         bounds = readBounds;
@@ -80,6 +120,8 @@ public ref struct VmBoundedReader
         position = 0;
         sectionsEntered = 0;
         structuralDepth = 0;
+        granularity = pollGranularity < 1 ? 1 : pollGranularity;
+        unpolledWork = 0;
         status = (ulong)source.Length > readBounds.MaxArtifactBytes
             ? VmBoundedReadStatus.ArtifactBytesExceeded
             : VmBoundedReadStatus.Ok;
@@ -466,12 +508,32 @@ public ref struct VmBoundedReader
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=183D6C
-    // Broiler-Falsified-If: WorkBudgetExhausted is latched for a Poll that returned false under cancellation, not exhaustion
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=04F760
+    // Broiler-Falsified-If: WorkBudgetExhausted is latched for a Poll that returned false under cancellation, not exhaustion, or a charge is batched, or work accumulates past the granularity without a poll
     // Broiler-Human:        PENDING
     private bool ChargeWork(ulong workUnits)
     {
-        if (!meter.TryChargeWork(workUnits) || !meter.Poll())
+        // The charge is always immediate: work is charged before it is done, and a refused charge
+        // stops the read here rather than one unit later.
+        if (!meter.TryChargeWork(workUnits))
+        {
+            return Fail(VmBoundedReadStatus.WorkBudgetExhausted);
+        }
+
+        // The poll is not. It is the cancellation and wall-clock check, and the contract bounds its
+        // latency by the profile's declared uncharged-work bound, not by one work unit. Polling
+        // more often than that is a cost with no promise behind it: every poll takes the meter's
+        // lock and reads a clock.
+        unpolledWork += workUnits;
+
+        if (unpolledWork < granularity)
+        {
+            return true;
+        }
+
+        unpolledWork = 0;
+
+        if (!meter.Poll())
         {
             return Fail(VmBoundedReadStatus.WorkBudgetExhausted);
         }

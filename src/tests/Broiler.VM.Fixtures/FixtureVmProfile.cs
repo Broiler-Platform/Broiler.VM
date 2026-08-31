@@ -120,6 +120,25 @@ public static class FixtureVmProfile
         VmThreadAffinity affinity) =>
         FixtureDescriptorFactory.Create(
             Id, Manifest, "Fixture Alpha", "Broiler.VM.Fixtures", variant, 1, null, null, affinity);
+
+    /// <summary>
+    /// The descriptor for one variant whose verifier runs <paramref name="onFirstPayloadRead"/>
+    /// once, after its first payload byte and before the rest of the artifact.
+    /// </summary>
+    /// <remarks>
+    /// The only way to stand inside a verification. Every other cancellation a test can arrange is
+    /// already requested when <c>Verify</c> is entered, and the core answers those before the
+    /// profile is called at all - so a test that wants the case where a token is cancelled *while*
+    /// a verifier is reading has to be handed the moment, exactly as a concurrency test is handed
+    /// one by an execution gate. It belongs to a descriptor rather than to the profile type so two
+    /// tests in parallel cannot see each other's hook.
+    /// </remarks>
+    public static VmProfileDescriptor DescriptorForVerifierHook(
+        FixtureVmProfileVariant variant,
+        System.Action onFirstPayloadRead) =>
+        FixtureDescriptorFactory.Create(
+            Id, Manifest, "Fixture Alpha", "Broiler.VM.Fixtures", variant, 1,
+            onFirstPayloadRead: onFirstPayloadRead);
 }
 
 /// <summary>
@@ -172,7 +191,8 @@ public static class FixtureDescriptorFactory
         FixtureReadOrderRecorder? orderRecorder = null,
         FixtureExecutionGate? gate = null,
         VmThreadAffinity affinity = VmThreadAffinity.Agile,
-        VmLimitVector? profileHardMaxima = null)
+        VmLimitVector? profileHardMaxima = null,
+        System.Action? onFirstPayloadRead = null)
     {
         VmDiagnosticsIdentity.TryCreate(profileId, profileId + ".diagnostics", out var diagnostics);
 
@@ -215,7 +235,8 @@ public static class FixtureDescriptorFactory
             supportedFormatVersions: new VmFormatVersionRange(1, 1),
             acceptedFeatureManifests: manifests,
             verifier: new FixtureVmVerifier(
-                profileId, semanticVersion: 1, variant: variant, orderRecorder: orderRecorder),
+                profileId, semanticVersion: 1, variant: variant, orderRecorder: orderRecorder,
+                onFirstPayloadRead: onFirstPayloadRead),
             executorFactory: environment => new FixtureVmExecutor(
                 executorIdentity, environment, variant, chargingGranularity: 1, gate),
             artifactRepresentationKind: VmArtifactRepresentationKind.Decoded,

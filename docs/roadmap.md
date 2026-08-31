@@ -29,7 +29,7 @@ test names, and release manifests must qualify the term when ambiguity is possib
 |---|---|
 | **VM profile** | A bytecode language plus its format, feature/version manifest, verifier, value/frame model, and executor. It is a separate component that references the core; the core never references it. |
 | **Core contract version** | The numbered revision of the profile-neutral lifecycle, operation-result, resource-authority, guest-initiated-load, external-control, and host-capability contract frozen by VM-0 and implemented by VM-1. Profiles and artifacts version independently of it. |
-| **Feature manifest** | The exact language surface accepted by one version of a profile. The core fixes the manifest's shape and identity rules; a profile fixes its content. A profile name alone is never a conformance claim. |
+| **Feature manifest** | The exact language surface accepted by one version of a profile. The core fixes the manifest's shape and identity rules; a profile fixes its content. A profile name alone is never a conformance claim, and neither is a manifest name: a manifest claims only what its own retained oracle run shows. |
 | **Built-in profile** | A profile whose factory and dependencies are directly referenced at build time and rooted in a static catalog. A built-in may be Broiler-provided or application-local; it is never discovered at run time. |
 | **Fixture profile** | A deliberately trivial profile owned by the core's own tests. It proves contracts, closures, and failure paths without waiting for a product profile, and it never ships in a product package. |
 | **Verified artifact** | The opaque, immutable, profile-bound output of successful verification. Execution and instantiation consume this handle, never caller-owned raw bytes. |
@@ -475,8 +475,14 @@ nobody has to reconcile with the contract.
   request. An omitted invocation override inherits the handle/runtime budget; an explicit override
   may only tighten it. Raising a verification/instantiation ceiling requires re-verification.
   Variable-work operations charge proportional work rather than one nominal instruction.
-- Where a host creates several runtimes under one shared aggregate budget, fuel, wall-clock,
-  allocation, and live-runtime counts are metered against the parent as well as each runtime.
+- Where a host creates several runtimes under one shared aggregate budget, **eleven of the fifteen
+  dimensions** are metered against the parent as well as each runtime: the seven allowances plus
+  `LiveBytes`, `CallDepth`, `NestedLoadDepth` and `LiveRuntimes`, per
+  `VmBudgetDimensions.CarriesAggregateScope`. The four artifact-shaped ceilings — `ArtifactBytes`,
+  `SectionCount`, `DeclaredCount`, `StructuralDepth` — do not, because summing a per-artifact
+  ceiling across concurrent runtimes measures nothing. **`CallDepth` is in the first group, and
+  that is the fact a cross-profile call chain depends on**: it is what bounds a chain that
+  re-enters a second runtime through a host object.
   Exhausting the parent is reported as `resource exhaustion` to whichever operation observes it,
   and no runtime may be created or resumed once the parent has no remaining allowance.
 - Host exceptions cannot tear down or corrupt another runtime; the core translates them according
@@ -530,14 +536,18 @@ Applied to the concrete candidates:
 
 | Candidate | Verdict |
 |---|---|
-| Bounded binary reading: checked arithmetic, variable-length integers, framing, allocation guards | **Core-owned from day one** (`Broiler.VM.Binary`). The core's own envelope needs it and every profile verifier needs it, so it has two consumers before any profile exists. |
+| Bounded binary reading: checked arithmetic, variable-length integers, framing, allocation guards | **Core-owned from day one** (`Broiler.VM.Binary`), and pre-approved without the gate by ADR 0011. The core's own envelope needs it, so it has a consumer before any profile exists. **The original justification also said "every profile verifier needs it", and that half is now known to be false**: the intended WebAssembly profile declines `TryReadVarUInt32`, `TryReadVarUInt64` and `TryReadDeclaredCount`, because this package's integers are canonical-only and that format requires padded encodings to be accepted. The obligation to route a dimension through this package is therefore conditional on the members a profile actually calls, not absolute. |
 | Descriptor matching, verified handles, limit intersection, envelope, lifecycle, budgets, diagnostics identity, host registry | **Already core-owned.** No new component; the rule is simply that a profile never re-implements them. |
 | A verification framework: worklist and fixpoint over a control-flow graph, parameterized by the profile's abstract domain | **Extract later, do not predict.** Two verifiers will share the shape and share no domain. Open it when the second verifier exists and the duplication is measured. |
 | Lexing and diagnostic *formatting* | **Only when a second text front end exists.** Until then it is one profile's private code wearing a shared name. |
 | Positioned diagnostics and a stable code registry: a versioned registry bound in both directions, each code mapping to exactly one core reason, each emission carrying the core's position record | **Named mechanism, extract later, trigger re-cut.** The original trigger — a second text front end — can never fire: a binary-format profile emits positioned refusals and will never have a front end. The trigger is instead **the second profile that emits positioned refusals**, front end or not. Until then both profiles use the core's position record, state which of its fields they populate, and neither invents a parallel one. |
-| The conformance-harness method: a pinned corpus revision, content-independent sharding, a recorded selection pipeline, a self-check with a passing control before every shard, a closed set of configuration failures, a failure manifest that is a queue, the harness's own regression suite, and a ratchet | **Named mechanism, extract later, and test-only either way.** Two profiles have specified it in near-identical words against two unrelated corpora, which is design-level evidence and not merged code. The trigger is the second profile's harness merging. Note that a shared harness is never referenced by a product package, so its extraction can never enter a product closure — which removes the usual objection but not the gate. |
+| The conformance-harness method: a pinned corpus revision, content-independent sharding, a recorded selection pipeline, a self-check with a passing control before every shard, a closed set of configuration failures, a failure manifest that is a queue, the harness's own regression suite, totals partitioned along a profile-named axis with each partition reporting the same six counters, and a ratchet bound to the pinned suite revision | **Named mechanism, extract later, and test-only either way.** Two profiles have specified it in near-identical words against two unrelated corpora, which is design-level evidence and not merged code. The trigger is the second profile's harness merging. Note that a shared harness is never referenced by a product package, so its extraction can never enter a product closure — which removes the usual objection but not the gate. |
 | Assurance annotation, fingerprinting, review-state generation, and the evidence-bundle contract and collection script | **Repository policy, not a core component.** The core has one implementation and both profile roadmaps specify a byte-identical floor. The correct first move is a repository-level policy document that the components cite, not a shared assembly; the trigger for a shared tool is a second component's implementation existing to compare against. |
 | The projection between the contract meter and the bounded-reading meter, and between a limit vector and the four artifact-shaped read bounds | **Documented duplication, kept.** It is four method bodies and one projection, it names no language concept, and it is already written once per profile in this repository — but the canonical copy lives in a test-only assembly no product profile may reference, so every profile writes it again. The core's obligation is to publish the canonical form in the profile-facing contract so the copies agree, not to add a package for it. |
+| The retained malformed-corpus method: self-authored bytes with a hash and a pinned observed answer per entry, replay across three publish modes with byte-identical failure-class tables, mutated-entry detection, and control entries that verify successfully | **Named mechanism, extract later, and test-only either way.** Distinct from the conformance-harness row: that one ratchets a third-party suite, this one pins the core's own answers to bytes nobody else authored. The core already implements it — `CorpusRunner`, `MalformedCorpusTests`, and eighty-seven artifacts under `src/tests/corpus/vm-2` — and both intended profiles re-specify it in near-verbatim words. The trigger is the second profile's corpus merging. **The corpus-entry schema is published in ADR 0011 now**, so the copies agree on the record even while each writes its own runner. |
+| The read-order recorder: a monotonic three-stamp sequence — policy handed over, first payload byte consumed, first allocation reserved — and the two ordering predicates over it | **Documented duplication, kept, with a published canonical form.** It is what makes the ordering clause both profiles write into their gates provable rather than asserted, it names no language concept, and it exists once already as `FixtureReadOrderRecorder`. But it lives in a test-only assembly no product profile may reference, so every profile writes it again. The core's obligation is to keep the canonical form discoverable, not to add a package. |
+| The mapping from a bounded-read status onto an outcome category, a reason, and where applicable a budget dimension and scope | **Documented duplication, kept — and structurally unhomeable, which is worth stating rather than discovering.** `VmBoundedReadStatus` lives in `Broiler.VM.Binary` and the outcome vocabulary lives in `Broiler.VM.Abstractions`; both are dependency sinks with no reference between them, deliberately, so no core product assembly can host the mapping. It is already hand-written three times in this tree and has diverged once. **The canonical table is published in ADR 0011 now**; every profile still writes the method body, but they write the same one. |
+| The two-profile hostile-neighbour catalog test: composing a profile beside a deliberately adverse neighbour and proving the neighbour's maxima do not reach it while its adopted defaults do | **A test shape, not a component.** Both intended profiles build it at their first milestone. It is recorded in the composition register as the way to prove a catalog-wide default has not been mis-declared, and no assembly is shared to do it. |
 | A shared syntax tree or parser (`Broiler.VM.Parser.AST` and similar) | **No.** A syntax tree is the most language-specific artifact in a pipeline, and a binary-format profile has no parser and no tree at all. Such a component would have one consumer and would encode one language's grammar into the core's namespace. |
 | Shared value representation, frame layout, or opcode set | **No.** These are the semantics the core exists not to own. |
 | A cross-profile value channel, so one profile can call another in the same process | **No, and this is the row a browser will push hardest on.** See the cross-profile boundary below: the price is paid at the embedder's seam, where it is visible, rather than inside a core that would have to learn two languages to charge it. |
@@ -774,24 +784,30 @@ version, and format version, store the envelope, and skip compilation next time.
 handles are immutable and shareable across runtimes with matching identity, two realms running the
 same script can share one compiled artifact instead of compiling it twice.
 
-### Three decisions this forces on VM-0
+### Three decisions this forced on VM-0, and how ADR 0010 settled them
 
-Each is cheap to settle now and expensive to retrofit, and each is invisible until a host with a
-latency budget arrives.
+Each was cheap to settle then and expensive to retrofit, and each is invisible until a host with a
+latency budget arrives. **All three are closed. They are kept here with their answers** because both
+intended profiles reason from the closed answers, and a reader who met them as open questions would
+mis-plan against them.
 
 1. **Whether locally produced bytecode must round-trip through bytes.** Invariant 3 is written for
    bytes that came from outside. When the compiler that produced them is in the same process and
    inside the same trust boundary, serializing and re-decoding on every load is pure critical-path
-   cost. VM-0 decides whether the format may expose a compile-directly-to-verified-handle path
-   that skips serialization while still running every type and control-flow check, or whether the
-   round trip is mandatory. VM-5 measures verification throughput so the choice rests on numbers.
+   cost. **Settled: the round trip is mandatory** — bytes are the only input from which a verified
+   artifact may be produced (ADR 0010, decision 1), with the alternative registered as candidate
+   amendment 3, the in-process producer input form. VM-5 measures verification throughput so a
+   later reopening rests on numbers.
 2. **Whether verification may be lazy per section.** Hosts that compile function bodies on first
-   call do not want to verify an entire bundle to run one entry point. Either the profile verifies
-   eagerly, or the format supports independently verified sections, each verified before its own
-   first execution so that nothing unverified ever runs.
-3. **Whether an artifact may be verified incrementally as it arrives.** The contract today is
-   whole-bytes to handle. Streaming would be a core contract amendment; deciding it deliberately
-   beats discovering it during a latency regression.
+   call do not want to verify an entire bundle to run one entry point. **Settled: verification is
+   whole-artifact and eager** — a handle means the whole artifact was verified (ADR 0010, decision
+   2), with the alternative registered as candidate amendment 4.
+3. **Whether an artifact may be verified incrementally as it arrives.** The contract is whole-bytes
+   to handle. **Settled: excluded from version 1** — the input is whole and complete when
+   verification is called (ADR 0010, decision 3), with the alternative registered as candidate
+   amendment 2, streaming verification. ADR 0010 declined to foreclose it permanently, on the
+   ground that section 9's WebAssembly profile lives in an ecosystem where streaming compilation is
+   standard practice.
 
 ### Verification stays separable from execution
 
@@ -1106,7 +1122,8 @@ representative workload changes.
 |---|---|
 | The core becomes a lowest-common-denominator language runtime | Keep opcodes, values, frames, verifier rules, and semantics profile-owned. Apply section 8's extraction gate before sharing anything, and reject a shared primitive that introduces a profile-to-profile dependency or a semantic conversion tax. |
 | One profile's declared maxima or defaults silently cap another profile composed beside it, and the victim's verifier is refused for something it did not cause | Both catalog-wide terms are stated in the record that owns effective-ceiling materialization; a dimension declared inapplicable still publishes an unconstrained maximum; and a two-profile catalog test catches it rather than a reader. **Stop: a maximum or default set to a profile's own usage is a composition defect, and a composition that hosts two profiles does not close a gate until that test exists.** |
-| The extraction gate is never invoked, so duplicated mechanism accumulates with no record of why | A refused extraction produces a dated record naming the failed condition and the condition that reopens it, and each duplicated implementation points at it. Invocation belongs to the core architecture owner; a profile supplies its half and records no verdict. **Stop: the verdict may be either, and an unsatisfied first condition is not a failure — but an unrecorded state is.** |
+| The extraction gate is never invoked, so duplicated mechanism accumulates with no record of why | A refused extraction produces a dated record naming the failed condition and the condition that reopens it, and each duplicated implementation points at it. Any profile owner or the core architecture owner may invoke, per ADR 0011; a profile supplies its half and records no verdict, and the verdict is filed in the core ADR set whoever invoked. **Stop: the verdict may be either, and an unsatisfied first condition is not a failure — but an unrecorded state is.** |
+| **`CallDepth` is declared by every profile and charged by no code in this repository**, so the cross-profile seam's stated bound has never executed | Found 2026-08-31 and recorded rather than asserted away. Six descriptors declare a `CallDepth` ceiling; a search of the tree finds no charge site, because no fixture or consumer profile here has a call construct. What *is* now witnessed is the half that can be: a call chain crossing two runtimes under one shared parent is bounded by that parent, proved by a two-row case in which only the parent differs. The depth half stays unproven. **Closed by a profile with calls that charges the dimension, and a case in which an aggregate `CallDepth` ceiling refuses a cross-runtime chain.** Until then no document may describe the depth bound as demonstrated. |
 | Guest-controlled cost that grows with its input is charged flatly, so a bounded budget bounds nothing | Per-family declared monotone charging functions with a declared granularity and a ceiling floor, each with a retained fixture and an unsimplified control. The core cannot check this and says so; the compensating control is the evidence bundle. **Stop: an operation family without a proportionality fixture does not ship.** |
 | Declared scalars — depth ceilings, uncharged-work bounds, charging granularity, poll bounds — are round figures rather than measurements | Each is derived from a retained, reproducible measurement on each claimed RID and recorded with it. **Stop: a stack overflow is not translatable into a result, so claiming to handle deep recursion without a measured bound is an untruthful capability claim.** |
 | Owner and reviewer are the same person, so no gate here is independently confirmed | Roles are named per milestone and per record; where one person holds several, the non-independence is recorded as a residual limit on what these gates prove rather than resolved by assertion. **Stop: a vacant role stops the point that requires it; a role held by nobody does not pass to whoever is available.** |

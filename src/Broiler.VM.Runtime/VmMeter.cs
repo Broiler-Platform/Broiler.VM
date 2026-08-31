@@ -198,8 +198,8 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=7A8087
-    // Broiler-Falsified-If: one level commits while another refuses, or a refusal names Invocation where an outer level would
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=A1D8C1
+    // Broiler-Falsified-If: one level commits while another refuses, or a refusal names Invocation where an outer level would, or a wall-clock ceiling reached during a run of charges is never reported at the next poll
     // Broiler-Human:        PENDING
     public bool TryCharge(VmBudgetDimension dimension, ulong amount)
     {
@@ -213,8 +213,12 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
             return true;
         }
 
-        AccrueWallClock();
-
+        // Wall clock is deliberately NOT accrued here. It accrues in Poll, and the contract already
+        // bounds how long a profile may go between polls, so a wall-clock ceiling reached in the
+        // middle of a run of charges is still reported - at the next poll, within the latency the
+        // profile declared. Accruing on every charge bought nothing that guarantee did not already
+        // give, and cost a second lock acquisition and a clock read on the hottest path in the
+        // component: a verifier reading one byte at a time charges once per byte.
         lock (gate)
         {
             // Outermost first, and deliberately without committing: a level that would refuse must

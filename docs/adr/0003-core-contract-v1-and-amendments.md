@@ -635,7 +635,7 @@ section cites those identifiers and does not restate their text.
 
 ### 12. The candidate-amendment register
 
-Section 2 states that at least one amendment should be planned for. Nine
+Section 2 states that at least one amendment should be planned for. Eleven
 candidates are recorded so that the sentence has named content and so that the
 shape of each is fixed while it is cheap. **The register records shape, not
 intent: no candidate is proposed, approved or scheduled, and none is admissible
@@ -675,6 +675,7 @@ the disagreement unless someone re-reads it.
 | 8 | A wider value slot on the capability channel | one value type in one instruction family that does not fit the current slot; splitting works and needs a published encoding | 7 | AD5: a profile compiled against the narrow slot must still compile | 0011 |
 | 10 | Nested instantiation of a guest-loaded handle | a module system whose dependency must become its own instance rather than run in the requesting frame; the JavaScript roadmap names it and grades it moderate, and the WebAssembly roadmap declines it outright, having no instruction that asks for code while running | 5, 1 | AD4 - it must be opt-in through a descriptor declaration - and AD1, because it makes a nesting-depth bound live that is presently unreachable | 0008 |
 | 9 | A refusable retention member on the metering surface | a language whose guest must observe a refused growth and continue, where the retention report returns nothing and the refusal is latched for the next charge or poll | 3 | AD3: it must not let a profile learn a remaining value, which is the asymmetry the four-member surface exists to hold | 0007 |
+| 11 | A refusal cause on the bounded allocator, and a refusing scope on the bounded-reading meter | a verifier that must tell a caller which bound refused it. `VmBoundedAllocator` collapses five distinct causes into a bare `false`, `VmBoundedReadStatus.AllocationRefused` is produced by no core member as a result, and `IVmBoundedAllocationMeter.TryReserve` returns `bool`, so the scope that actually refused is discarded and every merged verifier in this tree hardcodes `Artifact`. Registered rather than taken: both members are on the frozen surface, so widening them is an amendment and not an edit, and the shape is fixed here while it is cheap. Found 2026-08-31 while reading the three merged verifiers against each other. |
 
 Candidates 1 and 2 are funded by VM-5 measurements, per section 16's
 critical-path risk row: a latency regression discovered after the contract is

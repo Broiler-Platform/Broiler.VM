@@ -521,6 +521,74 @@ Standing refusals, restated so they are not re-litigated:
 | A verification framework parameterized by a profile's abstract domain | Not predicted. Opened only when a second PRODUCT verifier exists and the duplication is measured. |
 | Lexing, source positions, diagnostic formatting | Waits for a second text front end. |
 | A command-line compiler, build integration, or packaged SDK | Not opened until a composition must ship precompiled artifacts with no compiler in its image. VM-0 chooses no name for one. |
+| Assurance annotation, fingerprinting, review-state generation, and the evidence-bundle contract and collection script | Refused as a core component. **G1 unsatisfied on 2026-08-31**: one product implementation exists and it is this component's own. The first move is a repository-level policy document the components cite, not a shared assembly. Reopened when a second component's assurance implementation exists to compare against. |
+| The conformance-harness method | Refused for now. **G1 unsatisfied on 2026-08-31**: two profile roadmaps specify it in near-identical words, which is design-level evidence and not merged code. Reopened when the second profile's harness merges. Test-only either way, so it can never enter a product closure. |
+| The projection between the contract meter and the bounded-reading meter, and between a limit vector and the four artifact-shaped read bounds | Refused permanently as a component, and discharged as prose instead. It is four method bodies and one projection; the canonical form is published below so the copies agree. |
+| The retained malformed-corpus method and its entry schema | Refused for now. **G1 unsatisfied on 2026-08-31.** The core implements it; the entry schema is published below so two profiles' corpora agree on the record without sharing an assembly. |
+| The read-order recorder | Refused for now. **G1 unsatisfied on 2026-08-31.** Duplication documented and kept; the canonical form is `FixtureReadOrderRecorder` and it is test-only. |
+
+### Canonical forms this record publishes, so the copies agree
+
+Three mechanisms are refused as components above and duplicated by every profile instead. Roadmap
+section 8 puts the matching obligation on the core: **publish the canonical form in the
+profile-facing contract so the copies agree.** These three tables discharge it. They are normative
+prose, not API: a profile still writes its own method bodies, and no package is added. A profile
+that departs from any of them records the departure and its reason.
+
+**C1 - the meter projection.** `Broiler.VM.Binary` is a dependency sink and deliberately does not
+reference `Broiler.VM.Abstractions`, so the core can supply no concrete adapter a profile may use.
+Every profile writes this class; every profile writes it the same way.
+
+| Bounded-reading member | Contract-meter call |
+|---|---|
+| `IVmBoundedAllocationMeter.TryReserve(byteCount)` | `IVmMeter.TryCharge(VmBudgetDimension.AllocatedBytes, byteCount)` |
+| `IVmBoundedAllocationMeter.Release(byteCount)` | `IVmMeter.ReportReleased(VmBudgetDimension.AllocatedBytes, byteCount)` |
+| `IVmBoundedAllocationMeter.TryChargeWork(workUnits)` | `IVmMeter.TryCharge(VmBudgetDimension.VerifierWork, workUnits)` |
+| `IVmBoundedAllocationMeter.Poll()` | `IVmMeter.Poll()` |
+
+And the limit vector projects onto the four artifact-shaped read bounds in this order:
+`VmReadBounds(limits[ArtifactBytes], limits[SectionCount], limits[DeclaredCount],
+limits[StructuralDepth])`. The reference implementation is
+`FixtureBoundedReadAdapter` in the test tree, which no product profile may reference.
+
+**C2 - the bounded-read status mapping.** `VmBoundedReadStatus` lives in `Broiler.VM.Binary` and the
+outcome vocabulary lives in `Broiler.VM.Abstractions`; both are sinks with no reference between
+them, so this mapping can live in no core product assembly at all. It is already written three
+times in this tree and has diverged once, which is why it is fixed here.
+
+| Status | Category | Reason / dimension and scope |
+|---|---|---|
+| `Ok` | not a failure | - |
+| `Truncated` | `InvalidArtifact` | `VmReason.Truncated`, with a position |
+| `MalformedEncoding` | `InvalidArtifact` | `VmReason.MalformedEncoding`, with a position |
+| `DeclaredCountExceeded` | `ResourceExhaustion` | `DeclaredCount` at `Artifact` |
+| `SectionCountExceeded` | `ResourceExhaustion` | `SectionCount` at `Artifact` |
+| `StructuralDepthExceeded` | `ResourceExhaustion` | `StructuralDepth` at `Artifact` |
+| `ArtifactBytesExceeded` | `ResourceExhaustion` | `ArtifactBytes` at `Artifact` |
+| `AllocationRefused` | `ResourceExhaustion` | `AllocatedBytes` at `Artifact` |
+| `WorkBudgetExhausted` | `ResourceExhaustion` | `VerifierWork` at `Artifact` |
+| any other value | `InvalidArtifact` | `VmReason.InconsistentStructure`, with a position |
+
+A profile whose verifier holds the meter's own latched dimension and scope reports those instead,
+because the latch names the level that actually refused and this table names only the level a
+reader can attribute unaided.
+
+**C3 - the retained malformed-corpus entry schema.** Both intended profiles specify this method in
+near-verbatim words. The record they pin an answer in is fixed here so two corpora are comparable
+even though neither shares a line of code with the other.
+
+| Field | Meaning |
+|---|---|
+| `id`, `family` | Stable identity, and the failure family the entry belongs to |
+| `provenance` | `Seeded` or `Minimized` - authored deliberately, or reduced from a fuzz finding |
+| `pinning` | `Exact` or `Recorded` - whether the answer is asserted or merely observed |
+| `file`, `bytes`, `sha256` | The bytes, their length, and their hash, so a mutated entry is detected |
+| `descriptorFormatVersion`, `artifactBytesRequest` | The configuration the answer was pinned under |
+| `expected` | `outcome`, `reason`, `profileDiagnosticCode`, `dimension`, `scope`, and `namesDimension` - the last saying whether the dimension is part of the claim |
+| `recorded` | The same tuple as last observed, so a moved answer is a diff rather than a surprise |
+| `note` | Why the entry exists. Control entries that verify **successfully** are required: a corpus in which everything fails cannot detect a verifier that rejects everything |
+
+The reference implementation is `src/tests/corpus/vm-2/manifest.json` with `CorpusRunner`.
 
 Rule A11: No project outside the composition-root allow-list references an
 assembly matching Broiler.VM.Profile.*. The allow-list is empty at VM-0.
