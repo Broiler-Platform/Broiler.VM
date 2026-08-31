@@ -372,7 +372,7 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
     /// own bound checks fire before any meter charge and so leave no trace for the caller's result
     /// to pick up. Latching makes the conversion obligation enforced rather than trusted.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=0; Fingerprint=8961AA
+    // Broiler-AI:           Origin=AI; Spec=ADR-0008; IP=Low; Security=Medium; Resources=0; Fingerprint=64C2D0
     // Broiler-Human:        PENDING
     private static VmGuestLoadResult Exhausted(
         VmMeter meter,
@@ -383,7 +383,7 @@ internal sealed class VmArtifactLoadMediator : IVmArtifactLoadMediator
         meter.LatchNestedRefusal(dimension, scope);
 
         return VmGuestLoadResult.ResourceExhaustion(
-            VmReason.CeilingReached,
+            VmMeter.ReasonFor(dimension),
             identified
                 .WithOutcome(VmStage.GuestInitiatedLoad, VmOutcome.ResourceExhaustion, VmReason.CeilingReached, VmInitiator.Core)
                 .WithExhaustion(dimension, scope));

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   18
-// Annotated:        18/18
+// Relevant units:   19
+// Annotated:        19/19
 // Exempt:           18
-// Human-reviewed:   0/18
+// Human-reviewed:   0/19
 // IP risk:          Low
 // Security risk:    Medium
-// Criteria:         8/0
+// Criteria:         9/0
 // Resource impact:  1/10 max
-// Unverified:       18
+// Unverified:       19
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -40,6 +40,27 @@ namespace Broiler.VM;
 // Broiler-Human:        PENDING
 internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
 {
+    /// <summary>
+    /// Which reason names a breach of <paramref name="dimension"/>: an allowance is spent, a
+    /// ceiling is reached, and which of the two a dimension is, is fixed by its class rather than
+    /// chosen at the call site.
+    /// </summary>
+    /// <remarks>
+    /// Every site that reports exhaustion naming a dimension goes through here, because the
+    /// alternative was tried and failed in both directions at once: the verification path
+    /// hardcoded a ceiling reason and was right only for the one dimension it named, the
+    /// invocation, resume and instantiation paths hardcoded an allowance reason and were wrong
+    /// whenever the meter failed on a ceiling, and the guest-load mediator hardcoded a ceiling
+    /// reason while two of its three dimensions are allowances.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0005; IP=Low; Security=Low; Resources=0; Fingerprint=43869B
+    // Broiler-Falsified-If: a dimension's class and its reported reason disagree at any exhaustion site
+    // Broiler-Human:        PENDING
+    internal static VmReason ReasonFor(VmBudgetDimension dimension) =>
+        VmBudgetDimensions.ClassOf(dimension) is VmBudgetClass.Ceiling
+            ? VmReason.CeilingReached
+            : VmReason.AllowanceExhausted;
+
     private readonly object gate;
     private readonly VmBudgetLevel invocation;
     private readonly VmBudgetLevel? instance;

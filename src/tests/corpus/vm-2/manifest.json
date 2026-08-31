@@ -674,7 +674,7 @@
       },
       "recorded": {
         "outcome": "ResourceExhaustion",
-        "reason": "AllowanceExhausted",
+        "reason": "CeilingReached",
         "profileDiagnosticCode": 0,
         "dimension": "DeclaredCount",
         "scope": "Artifact"
@@ -701,7 +701,7 @@
       },
       "recorded": {
         "outcome": "ResourceExhaustion",
-        "reason": "AllowanceExhausted",
+        "reason": "CeilingReached",
         "profileDiagnosticCode": 0,
         "dimension": "SectionCount",
         "scope": "Artifact"
@@ -944,7 +944,7 @@
       },
       "recorded": {
         "outcome": "ResourceExhaustion",
-        "reason": "AllowanceExhausted",
+        "reason": "CeilingReached",
         "profileDiagnosticCode": 0,
         "dimension": "DeclaredCount",
         "scope": "Artifact"
@@ -971,7 +971,7 @@
       },
       "recorded": {
         "outcome": "ResourceExhaustion",
-        "reason": "AllowanceExhausted",
+        "reason": "CeilingReached",
         "profileDiagnosticCode": 0,
         "dimension": "DeclaredCount",
         "scope": "Artifact"
@@ -1106,7 +1106,7 @@
       },
       "recorded": {
         "outcome": "ResourceExhaustion",
-        "reason": "AllowanceExhausted",
+        "reason": "CeilingReached",
         "profileDiagnosticCode": 0,
         "dimension": "DeclaredCount",
         "scope": "Artifact"

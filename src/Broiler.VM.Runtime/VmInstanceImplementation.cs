@@ -534,7 +534,7 @@ internal sealed class VmInstanceImplementation : VmInstance
         return Finish(operation, MapInvocation(operation, step));
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0005; IP=Low; Security=Medium; Resources=1; Fingerprint=BA495C
+    // Broiler-AI:           Origin=AI; Spec=ADR-0005; IP=Low; Security=Medium; Resources=1; Fingerprint=832E40
     // Broiler-Human:        PENDING
     private VmInvocationResult MapInvocation(VmOperation operation, VmExecutionStep step)
     {
@@ -557,10 +557,12 @@ internal sealed class VmInstanceImplementation : VmInstance
 
         if (operation.Meter.ExhaustionObserved && step.Kind is not VmExecutionStepKind.Suspended)
         {
+            var exhausted = VmMeter.ReasonFor(operation.Meter.FailedDimension);
+
             return VmInvocationResult.ResourceExhaustion(
-                VmReason.AllowanceExhausted,
+                exhausted,
                 operation.Baseline
-                    .WithOutcome(VmStage.Invocation, VmOutcome.ResourceExhaustion, VmReason.AllowanceExhausted, VmInitiator.Core)
+                    .WithOutcome(VmStage.Invocation, VmOutcome.ResourceExhaustion, exhausted, VmInitiator.Core)
                     .WithExhaustion(operation.Meter.FailedDimension, operation.Meter.FailedScope));
         }
 
@@ -638,7 +640,7 @@ internal sealed class VmInstanceImplementation : VmInstance
         }
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0005; IP=Low; Security=Medium; Resources=1; Fingerprint=E51974
+    // Broiler-AI:           Origin=AI; Spec=ADR-0005; IP=Low; Security=Medium; Resources=1; Fingerprint=5DE8C1
     // Broiler-Human:        PENDING
     private VmResumeResult MapResume(VmOperation operation, VmExecutionStep step)
     {
@@ -653,9 +655,9 @@ internal sealed class VmInstanceImplementation : VmInstance
         if (operation.Meter.ExhaustionObserved && step.Kind is not VmExecutionStepKind.Suspended)
         {
             return VmResumeResult.ResourceExhaustion(
-                operation.Stage, VmReason.AllowanceExhausted,
+                operation.Stage, VmMeter.ReasonFor(operation.Meter.FailedDimension),
                 operation.Baseline
-                    .WithOutcome(VmStage.Resume, VmOutcome.ResourceExhaustion, VmReason.AllowanceExhausted, VmInitiator.Core)
+                    .WithOutcome(VmStage.Resume, VmOutcome.ResourceExhaustion, VmMeter.ReasonFor(operation.Meter.FailedDimension), VmInitiator.Core)
                     .WithExhaustion(operation.Meter.FailedDimension, operation.Meter.FailedScope));
         }
 
