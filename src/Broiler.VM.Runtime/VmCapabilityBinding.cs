@@ -110,7 +110,7 @@ internal sealed class VmCapabilityInvoker : IVmHostCapabilityInvoker
         bindingIndex >= 0 && bindingIndex < bindings.Length && bindings[bindingIndex].IsBound;
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=2; Fingerprint=ECEF69
+    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=2; Fingerprint=7C7101
     // Broiler-Human:        PENDING
     public VmHostCallOutcome Invoke(int bindingIndex, System.ReadOnlySpan<long> arguments, out long result)
     {
@@ -135,10 +135,15 @@ internal sealed class VmCapabilityInvoker : IVmHostCapabilityInvoker
         {
             return handler(arguments, out result);
         }
-        catch (System.OperationCanceledException)
+        catch (System.OperationCanceledException exception) when (meter.IsOperationCancellation(exception))
         {
             // Recognised before the generic catch so that a host propagating the operation's own
-            // cancellation is not reported as having faulted.
+            // cancellation is not reported as having faulted. The filter is what makes that the
+            // whole of the exemption: a cancellation carrying any other token, or carrying ours
+            // while ours was never cancelled, falls to the generic catch and is translated as the
+            // fault it is. Without it such an exception reached neither the stage's cancellation
+            // test - which reads the operation's token, not this flag - nor the host-failure path,
+            // because nothing here sets TerminatesOperation. It was dropped.
             LastFailure = VmReason.Cancelled;
             LastFailureCapability = binding.Import.Descriptor.CapabilityId;
             return VmHostCallOutcome.Unavailable;
@@ -154,7 +159,7 @@ internal sealed class VmCapabilityInvoker : IVmHostCapabilityInvoker
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=2; Fingerprint=048344
+    // Broiler-AI:           Origin=AI; Spec=ADR-0011; IP=Low; Security=Medium; Resources=2; Fingerprint=F685D1
     // Broiler-Human:        PENDING
     public VmHostCallOutcome InvokeBytes(int bindingIndex, VmBytes argument, out VmOpaqueRef result)
     {
@@ -179,7 +184,7 @@ internal sealed class VmCapabilityInvoker : IVmHostCapabilityInvoker
         {
             return handler(argument, out result);
         }
-        catch (System.OperationCanceledException)
+        catch (System.OperationCanceledException exception) when (meter.IsOperationCancellation(exception))
         {
             LastFailure = VmReason.Cancelled;
             LastFailureCapability = binding.Import.Descriptor.CapabilityId;

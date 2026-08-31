@@ -635,6 +635,75 @@ public sealed class ReviewRegressionTests
         return (GC.GetAllocatedBytesForCurrentThread() - before) / Writes;
     }
 
+    // ---- exception translation and retention admission -------------------------------------
+
+    [Fact]
+    public void A_Foreign_Cancellation_From_A_Capability_Is_A_Host_Failure()
+    {
+        // The catch was unfiltered, so ANY OperationCanceledException a capability threw was
+        // recorded as this operation's cancellation - and then dropped. It set no
+        // TerminatesOperation, so the latch returned early and nothing reached the operation; and
+        // the stage's own cancellation test reads the operation's token, which was never cancelled.
+        // The exception reached neither the cancellation path nor the host-failure path. The
+        // operation completed Normal having swallowed a host defect.
+        using var foreign = new System.Threading.CancellationTokenSource();
+
+        VmHostCallOutcome Cancelling(ReadOnlySpan<long> arguments, out long result)
+        {
+            result = 0;
+            throw new System.OperationCanceledException(foreign.Token);
+        }
+
+        var capabilities = ImmutableArray.Create(
+            VmCapabilityRegistration.Value(FixtureHostCapabilities.Double, Cancelling),
+            VmCapabilityRegistration.Value(FixtureHostCapabilities.Throwing, FixtureHostCapabilities.ThrowingHandler),
+            VmCapabilityRegistration.Value(FixtureHostCapabilities.Refusing, FixtureHostCapabilities.RefusingHandler));
+
+        using var runtime = FixtureComposition.Runtime(
+            FixtureComposition.AlphaCatalog(), FixtureComposition.Options(capabilities: capabilities));
+
+        var artifact = FixtureComposition.Verify(
+            runtime, FixtureArtifactWriter.HostCall(1, FixtureHostCapabilities.DoubleBinding));
+
+        using var instance = FixtureComposition.Instantiate(runtime, artifact);
+        var result = FixtureComposition.Invoke(instance);
+
+        // A cancellation that is not this operation's is a fault like any other, which is what
+        // ADR 0011's X1 says by naming the operation's own token rather than the exception type.
+        Assert.Equal(VmOutcome.HostFailure, result.Outcome);
+        Assert.Equal(VmReason.HostCapabilityFaulted, result.Reason);
+        Assert.Equal(FixtureHostCapabilities.DoubleId, result.Diagnostics.CapabilityId);
+        Assert.NotEqual(VmOutcome.Normal, result.Outcome);
+    }
+
+    [Fact]
+    public void A_Retention_Beyond_A_Runtime_Ceiling_Is_Refused_Rather_Than_Committed_Over_It()
+    {
+        // Only the aggregate parent was ever asked. A retention breaching the runtime, instance or
+        // invocation ceiling was committed over it with nothing latched, and Poll looks at wall
+        // clock alone - so a profile that retained past its ceiling and then completed was never
+        // told, and neither was the caller. The ceiling bounded nothing unless some later charge on
+        // that same dimension happened to fail.
+        var ceilings = FixtureComposition.CeilingsWith(VmBudgetDimension.LiveBytes, 1000);
+
+        using var runtime = FixtureComposition.Runtime(
+            FixtureComposition.AlphaCatalog(), FixtureComposition.Options(ceilings));
+
+        var retain = FixtureArtifactWriter.Write(
+            [1500], [FixtureFormat.OpRetain, 0, FixtureFormat.OpPushConst, 0, FixtureFormat.OpReturn]);
+
+        using var instance = FixtureComposition.Instantiate(runtime, FixtureComposition.Verify(runtime, retain));
+        var result = FixtureComposition.Invoke(instance);
+
+        Assert.Equal(VmOutcome.ResourceExhaustion, result.Outcome);
+        Assert.Equal(VmBudgetDimension.LiveBytes, result.Diagnostics.ExhaustedDimension);
+
+        // And nothing was committed: a refused retention that had been committed anyway would leave
+        // the runtime holding more than its own ceiling permits.
+        var held = runtime.GetBudgetSnapshot().Consumed(VmBudgetDimension.LiveBytes);
+        Assert.True(held <= 1000, $"the runtime committed {held} against a ceiling of 1000");
+    }
+
     private static VmAggregateBudget Parent(
         ulong fuel = 10_000_000,
         ulong liveBytes = 1_000_000_000,
