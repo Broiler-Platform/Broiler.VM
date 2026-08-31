@@ -1,0 +1,259 @@
+// SPDX-FileCopyrightText: 2026 Broiler Platform contributors
+// SPDX-License-Identifier: Apache-2.0
+//
+// Broiler Code Assurance
+// ----------------------
+// Relevant units:   8
+// Annotated:        8/8
+// Exempt:           41
+// Human-reviewed:   0/8
+// IP risk:          Low
+// Security risk:    High
+// Criteria:         1/1
+// Resource impact:  1/10 max
+// Unverified:       8
+//
+// GENERATED - DO NOT EDIT MANUALLY
+
+using Broiler.VM;
+
+namespace Broiler.VM.Profile.JavaScript;
+
+/// <summary>
+/// This profile's own stable diagnostic codes. The core attaches no meaning to any of them.
+/// </summary>
+/// <remarks>
+/// <para>
+/// <b>This is not yet the published registry.</b> Milestone JS-3a publishes and versions the
+/// diagnostic-code registry, binds it in both directions - every emittable code appears in it and
+/// every code in it is reachable from a named case - and records which half of the registry each
+/// code belongs to, because a code carried by a rejection of ARTIFACT BYTES travels in a core
+/// result and a code carried by a rejection of SOURCE never does. What is here is the set JS-1
+/// emits, laid out so that the split JS-3a has to record is already visible: every code below is
+/// carried in a core result, because at JS-1 there is no source rejection at all.
+/// </para>
+/// <para>
+/// The numbers are grouped by the stage that emits them so that a reader can tell from the code
+/// alone which pass refused an artifact. A code is never reused for a different meaning; a
+/// rejection that changes meaning takes a new number and the old one is retired, because a corpus
+/// entry that recorded a code has dated it.
+/// </para>
+/// <para>
+/// <b>It is an enum rather than a class of constants, and that is a review decision.</b> A
+/// registry is a closed vocabulary, and the assurance system's exemption predicate treats a
+/// vocabulary as one reviewable thing: the declaration carries the assessment and every member is
+/// covered by its fingerprint. A class of forty-five <c>const int</c> fields would instead be
+/// forty-five separately assessed fixed values, each demanding its own two-line block, which the
+/// predicate's own record calls a worse record than one block on the vocabulary.
+/// </para>
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=623679
+// Broiler-Human:        PENDING
+public enum JavaScriptDiagnosticCode
+{
+    // ---- 1000: the header, before any section is framed ----------------------------------
+
+    /// <summary>The first four bytes are not this format's magic.</summary>
+    WrongMagic = 1001,
+
+    /// <summary>The format version is outside the range this build defines.</summary>
+    UnsupportedFormatVersion = 1002,
+
+    /// <summary>The artifact descriptor's format version disagrees with the payload's.</summary>
+    DescriptorFormatVersionMismatch = 1003,
+
+    /// <summary>The feature-manifest identity in the payload is not one this descriptor accepts.</summary>
+    UnsupportedFeatureManifest = 1004,
+
+    /// <summary>The feature-manifest identity is longer than this format admits.</summary>
+    ManifestIdTooLong = 1005,
+
+    /// <summary>The artifact descriptor's manifest disagrees with the payload's.</summary>
+    DescriptorManifestMismatch = 1006,
+
+    // ---- 1100: section framing ------------------------------------------------------------
+
+    /// <summary>A section kind this format version does not define.</summary>
+    UnknownSectionKind = 1101,
+
+    /// <summary>Sections are out of order, or one kind appears twice.</summary>
+    SectionOrder = 1102,
+
+    /// <summary>A required section is absent.</summary>
+    MissingSection = 1103,
+
+    /// <summary>Bytes remain after the last declared section.</summary>
+    TrailingBytes = 1104,
+
+    /// <summary>A section body did not consume exactly its declared length.</summary>
+    SectionLengthMismatch = 1105,
+
+    // ---- 1200: the limits section ---------------------------------------------------------
+
+    /// <summary>A declared maximum is above this format's own structural ceiling for it.</summary>
+    DeclaredMaximumTooLarge = 1201,
+
+    /// <summary>The artifact declares a frame count the slice surface does not have.</summary>
+    DeclaredFrameCount = 1202,
+
+    // ---- 1300: the constant pool ----------------------------------------------------------
+
+    /// <summary>A constant-pool tag this format version does not define.</summary>
+    UnknownConstantTag = 1301,
+
+    /// <summary>A Boolean constant's payload byte is neither 0 nor 1.</summary>
+    MalformedBooleanConstant = 1302,
+
+    /// <summary>The pool declares more constants than the limits section admits.</summary>
+    ConstantCountExceedsDeclaredMaximum = 1303,
+
+    /// <summary>
+    /// The pool carries an interned name, which this format reserves and no manifest admits.
+    /// </summary>
+    InternedNameOutsideManifest = 1304,
+
+    // ---- 1400: the code section -----------------------------------------------------------
+
+    /// <summary>A byte in the code section is not an opcode this format version defines.</summary>
+    UnknownOpcode = 1401,
+
+    /// <summary>An instruction's operand runs past the end of the code section.</summary>
+    TruncatedInstruction = 1402,
+
+    /// <summary>A jump displacement lands outside the code, or not on an instruction boundary.</summary>
+    JumpTargetNotAnInstructionBoundary = 1403,
+
+    /// <summary>Two paths reach one offset with different operand-stack heights.</summary>
+    InconsistentStackHeightAtJoin = 1404,
+
+    /// <summary>An instruction would pop from an empty operand stack.</summary>
+    OperandStackUnderflow = 1405,
+
+    /// <summary>The operand stack would grow past the declared maximum.</summary>
+    OperandStackOverflow = 1406,
+
+    /// <summary>A constant index addresses no pool entry.</summary>
+    ConstantIndexOutOfRange = 1407,
+
+    /// <summary>A local slot index is above the declared local count.</summary>
+    LocalIndexOutOfRange = 1408,
+
+    /// <summary>Control reaches the end of the code without a return.</summary>
+    FallsOffTheEnd = 1409,
+
+    /// <summary>The code section is empty.</summary>
+    EmptyCode = 1410,
+
+    /// <summary>
+    /// An instruction is reachable from no entry point.
+    /// </summary>
+    /// <remarks>
+    /// Unreachable code is refused rather than left unchecked. Tolerating it would leave bytes in
+    /// a verified artifact that no check ever looked at, and "unreachable" would then be a claim
+    /// about the verifier's own traversal rather than about the program.
+    /// </remarks>
+    UnreachableCode = 1411,
+
+    /// <summary>A return would leave values on the operand stack besides the completion value.</summary>
+    ReturnStackNotExactlyOne = 1412,
+
+    // ---- 1500: entries, positions, and the reserved sections -------------------------------
+
+    /// <summary>The artifact declares no entry point.</summary>
+    NoEntryPoint = 1501,
+
+    /// <summary>Two entry points carry the same name.</summary>
+    DuplicateEntryPoint = 1502,
+
+    /// <summary>An entry point's code offset is not an instruction boundary.</summary>
+    EntryOffsetNotAnInstructionBoundary = 1503,
+
+    /// <summary>An entry point's name is longer than this format admits, or is not valid UTF-8.</summary>
+    MalformedEntryName = 1504,
+
+    /// <summary>An entry point is reached with a non-empty operand stack.</summary>
+    EntryStackNotEmpty = 1505,
+
+    /// <summary>A position row's offset is not an instruction boundary, or rows are not ascending.</summary>
+    MalformedPositionRow = 1506,
+
+    /// <summary>
+    /// The artifact declares an exception region, which this format reserves and no manifest
+    /// admits.
+    /// </summary>
+    ExceptionRegionOutsideManifest = 1507,
+
+    /// <summary>
+    /// The artifact declares a suspension target, which this format reserves and no manifest
+    /// admits.
+    /// </summary>
+    SuspensionTargetOutsideManifest = 1508,
+
+    // ---- 1900: the bounded reader's own statuses, mapped -----------------------------------
+
+    /// <summary>The payload ended inside a value the reader was part-way through.</summary>
+    Truncated = 1901,
+
+    /// <summary>A variable-length integer is malformed or overlong.</summary>
+    MalformedEncoding = 1902,
+
+    /// <summary>The reader stopped for a status this profile has no more specific answer for.</summary>
+    ReaderStopped = 1903,
+}
+
+/// <summary>
+/// The projection between the contract's metering surface and the bounded reader's, and the one
+/// between an effective limit vector and the four artifact-shaped ceilings.
+/// </summary>
+/// <remarks>
+/// <c>Broiler.VM.Binary</c> names no contract vocabulary, so the party holding both performs the
+/// projection. Writing it is this profile's work and not the core's, which is the whole of what
+/// the seventh core-facing type amounts to.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=1DD7A4
+// Broiler-Falsified-If: a charge made through this adapter reaches a dimension other than the one named, or a released byte count is charged rather than released
+// Broiler-Human:        PENDING
+public sealed class JavaScriptReadAdapter : IVmBoundedAllocationMeter
+{
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D9AC66
+    // Broiler-Human:        PENDING
+    private readonly IVmMeter meter;
+
+    /// <summary>Wraps the contract meter the core supplied.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9141C7
+    // Broiler-Human:        PENDING
+    public JavaScriptReadAdapter(IVmMeter contractMeter) => meter = contractMeter;
+
+    /// <summary>Projects the four artifact-shaped ceilings out of an effective limit vector.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=8F35EC
+    // Broiler-Human:        PENDING
+    public static VmReadBounds ToReadBounds(VmLimitVector limits) =>
+        new(
+            limits[VmBudgetDimension.ArtifactBytes],
+            limits[VmBudgetDimension.SectionCount],
+            limits[VmBudgetDimension.DeclaredCount],
+            limits[VmBudgetDimension.StructuralDepth]);
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=FFFA26
+    // Broiler-Human:        PENDING
+    public bool TryReserve(ulong byteCount) =>
+        meter.TryCharge(VmBudgetDimension.AllocatedBytes, byteCount);
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E74062
+    // Broiler-Human:        PENDING
+    public void Release(ulong byteCount) =>
+        meter.ReportReleased(VmBudgetDimension.AllocatedBytes, byteCount);
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4E1E45
+    // Broiler-Human:        PENDING
+    public bool TryChargeWork(ulong workUnits) =>
+        meter.TryCharge(VmBudgetDimension.VerifierWork, workUnits);
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=06A1AC
+    // Broiler-Human:        PENDING
+    public bool Poll() => meter.Poll();
+}

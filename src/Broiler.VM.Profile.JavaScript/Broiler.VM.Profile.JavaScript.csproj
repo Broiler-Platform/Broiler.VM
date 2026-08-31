@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Profile.JavaScript</RootNamespace>
+    <AssemblyName>Broiler.VM.Profile.JavaScript</AssemblyName>
+    <Description>The Broiler.VM JavaScript language profile: descriptor, verifier, executor, value and object model, standard library, host imports and payload projections. JS-0 project shell: no profile behaviour is implemented yet.</Description>
+
+    <!-- JS-0 declares no package; see the Format project for why. -->
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <!--
+    ADR 0011 obligation P1: a profile's Broiler.VM-owned reference set is exactly Abstractions
+    and Binary, and P1's 2026-08-31 revision states that a profile component's own siblings are
+    not members of that set. The format assembly is such a sibling.
+
+    This project never references the lowering. That absence is what makes an execution-only
+    composition contain a format, a verifier and an interpreter and no compiler at all, and
+    rule N2 asserts it rather than leaving it to review.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Profile.JavaScript.Format\Broiler.VM.Profile.JavaScript.Format.csproj" />
+  </ItemGroup>
+
+</Project>

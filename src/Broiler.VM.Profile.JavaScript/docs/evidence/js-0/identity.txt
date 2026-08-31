@@ -1,0 +1,12 @@
+bundle:                JS-0-001
+milestone:             JS-0
+collected (UTC):       2026-08-31T16:14:59+00:00
+component commit:      71d1b92001057c4f1e86b441618a7e1f1d1fd1af
+branch:                claude/js-0-boundary-identity-assurance
+working tree:          clean
+dirty entries:         0
+owner:                 profile architecture owner (unassigned identity)
+reviewer:              NONE - nothing here has been reviewed
+
+Every path below is relative to the component root. A figure in this bundle is this
+component's own; no result from any other component is evidence here.

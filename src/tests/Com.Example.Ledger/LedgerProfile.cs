@@ -131,12 +131,25 @@ public static class LedgerProfile
     /// The hard maxima a host may tighten and may never loosen.
     /// </summary>
     /// <remarks>
-    /// Generous on the three nested-load dimensions for the same reason the calculator is generous
-    /// on the ones it does not use: a runtime ceiling is clamped to the tightest hard maximum in the
-    /// catalog, so declaring zero for a dimension this profile merely does not reach would forbid it
-    /// to every profile composed alongside it. This profile declares no guest loads and charges none
-    /// - its matrix says so, and that is what makes them unreachable here - so what it declares as a
-    /// maximum is about its neighbours rather than about itself.
+    /// <para>
+    /// Generous on the three nested-load dimensions, which this profile does not reach at all: it
+    /// declares no guest loads and charges none, its matrix says so, and that is what makes them
+    /// unreachable here. A maximum on a dimension a profile never touches is a statement about
+    /// what it would tolerate being granted, and zero would be a stronger claim than a profile
+    /// with no opinion is entitled to make.
+    /// </para>
+    /// <para>
+    /// <b>Corrected 2026-08-31.</b> This remark used to give a different reason - that a runtime
+    /// ceiling is clamped to the tightest hard maximum in the catalog, so a zero here would forbid
+    /// the dimension to every profile composed alongside - and it ended by saying that what this
+    /// profile declares as a maximum is about its neighbours rather than about itself. Both halves
+    /// were wrong. That clamp was an implementation defect rather than a property of the contract,
+    /// ADR 0007 puts <c>ProfileMax</c> at P2 against the profile an artifact names, and it has been
+    /// removed: <b>a maximum binds this profile's own artifacts and nobody else's.</b> The
+    /// neighbour-facing declaration is the <c>Defaults</c> vector above, because a host that adopts
+    /// profile defaults gets the tightest in the catalog per dimension. <c>docs/compositions.md</c>
+    /// section 5 is the authority. The numbers are left unchanged; only the reason for them moved.
+    /// </para>
     /// </remarks>
     private static VmLimitVector Maxima()
     {

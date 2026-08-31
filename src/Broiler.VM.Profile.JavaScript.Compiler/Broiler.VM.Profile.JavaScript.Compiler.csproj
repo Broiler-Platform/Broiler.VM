@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Profile.JavaScript.Compiler</RootNamespace>
+    <AssemblyName>Broiler.VM.Profile.JavaScript.Compiler</AssemblyName>
+    <Description>The JavaScript profile's lowering: tokenizer, syntax tree, static semantics and source-to-bytecode translation. A sibling of the profile, not a part of it. JS-0 project shell: no lowering is implemented yet.</Description>
+
+    <!-- JS-0 declares no package; see the Format project for why. -->
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <!--
+    The lowering references the format because it writes it, and Abstractions because a lowering
+    stamps a feature-manifest identity into what it emits. It never references the profile: the
+    dependency runs profile -> format <- lowering, which is what lets a composition carry the
+    profile without carrying a compiler.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Profile.JavaScript.Format\Broiler.VM.Profile.JavaScript.Format.csproj" />
+  </ItemGroup>
+
+</Project>

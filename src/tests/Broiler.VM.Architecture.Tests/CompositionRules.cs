@@ -53,11 +53,41 @@ internal static class CompositionRules
     ];
 
     /// <summary>One row of the register's composition table.</summary>
+    /// <summary>
+    /// One row of the composition register.
+    /// </summary>
+    /// <param name="Composition">The composition root's assembly name.</param>
+    /// <param name="Kind">`advertised` or `demonstration`.</param>
+    /// <param name="ProfileIds">The profile IDs the root registers, in catalog order.</param>
+    /// <param name="ProfileAssemblies">The assemblies those profiles come from.</param>
+    /// <param name="SiblingAssemblies">
+    /// Assemblies the root links that are neither core, nor the root, nor a profile: a profile's
+    /// own siblings, of which a lowering is the first.
+    /// </param>
+    /// <param name="Evidence">
+    /// The repository-relative bundle directory holding this composition's retained catalog table
+    /// and closure report.
+    /// </param>
+    /// <remarks>
+    /// <b>The evidence column exists because this repository now has two milestone series.</b>
+    /// Rules K3 and K4 used to read one bundle - the core's current one - which was correct while
+    /// every composition belonged to the core. The JavaScript profile's roots belong to the JS
+    /// series and their evidence lives in the profile's own bundle tree, and a rule that read the
+    /// core's bundle for them would either fail or, worse, quietly compare a JavaScript closure
+    /// against a file that was never written for it. Naming the bundle per row is what keeps the
+    /// two ledgers apart while one rule still holds every composition to its own evidence.
+    /// </remarks>
     internal sealed record Row(
         string Composition,
         string Kind,
         IReadOnlyList<string> ProfileIds,
-        IReadOnlyList<string> ProfileAssemblies);
+        IReadOnlyList<string> ProfileAssemblies,
+        IReadOnlyList<string>? SiblingAssemblies = null,
+        string Evidence = "")
+    {
+        /// <summary>The sibling assemblies, never null.</summary>
+        internal IReadOnlyList<string> Siblings => SiblingAssemblies ?? [];
+    }
 
     /// <summary>
     /// K1: the register and the checkout name the same compositions, and every row declares a
@@ -126,15 +156,36 @@ internal static class CompositionRules
             .OrderBy(static name => name, StringComparer.Ordinal)
             .ToArray();
 
+        // Two directions, and they are deliberately not the same direction.
+        //
+        // Every non-core assembly a root REFERENCES must be declared, as a profile or as a
+        // sibling: a reference the register does not know about is how a closure grows silently.
+        //
+        // Every declared PROFILE must be referenced directly, because a composition names its
+        // profiles - that is what composing is. A declared SIBLING need not be: a profile's format
+        // assembly arrives transitively through the profile and appears in no composition's
+        // project file, while being unmistakably in the image. Requiring it here would force a
+        // root to name an assembly it does not compose, which is the opposite of what the
+        // reference set is for.
         var declaredAssemblies = row.ProfileAssemblies
+            .Concat(row.Siblings)
             .OrderBy(static name => name, StringComparer.Ordinal)
             .ToArray();
 
-        if (!referencedProfiles.SequenceEqual(declaredAssemblies, StringComparer.Ordinal))
+        foreach (var undeclared in referencedProfiles.Where(name =>
+                     !declaredAssemblies.Contains(name, StringComparer.Ordinal)))
         {
             yield return
-                $"{row.Composition} references [{string.Join(", ", referencedProfiles)}] " +
-                $"and the register declares [{string.Join(", ", declaredAssemblies)}]";
+                $"{row.Composition} references {undeclared}, which the register declares as " +
+                "neither a profile assembly nor a sibling";
+        }
+
+        foreach (var unreferenced in row.ProfileAssemblies.Where(name =>
+                     !referencedProfiles.Contains(name, StringComparer.Ordinal)))
+        {
+            yield return
+                $"{row.Composition} declares profile assembly {unreferenced} and does not " +
+                "reference it";
         }
 
         if (!string.Equals(catalog.Composition, row.Composition, StringComparison.Ordinal))
@@ -149,6 +200,8 @@ internal static class CompositionRules
                 $"and the register declares [{string.Join(", ", row.ProfileIds)}]";
         }
 
+        // Package identities come from the composed profiles alone: a sibling is in the closure and
+        // is not something a profile is FROM, so it never appears in a catalog table.
         if (!catalog.ProfileAssemblies.SequenceEqual(row.ProfileAssemblies, StringComparer.Ordinal))
         {
             yield return
@@ -167,9 +220,30 @@ internal static class CompositionRules
             yield return $"{row.Composition} composes {duplicate.Key} {duplicate.Count()} times";
         }
 
-        foreach (var reserved in catalog.ProfileIds.Where(IsReservedNamespace))
+        // The reserved first label is reserved FOR Broiler, not forbidden. What the core refuses at
+        // catalog construction is the PAIRING: a profile ID whose first label is `broiler` must
+        // carry a `Broiler.*` package identity. Until 2026-08-31 this check forbade the namespace
+        // outright, which was indistinguishable from the pairing rule while every composed profile
+        // was a consumer one under a documentation domain - and became wrong the moment a genuine
+        // Broiler-owned profile was composed. The catalog table prints both halves side by side,
+        // so the pairing is what is checked here.
+        for (var index = 0; index < catalog.ProfileIds.Count; index++)
         {
-            yield return $"{row.Composition} composes {reserved}, which claims the reserved first label";
+            if (!IsReservedNamespace(catalog.ProfileIds[index]))
+            {
+                continue;
+            }
+
+            var package = index < catalog.ProfileAssemblies.Count
+                ? catalog.ProfileAssemblies[index]
+                : string.Empty;
+
+            if (!package.StartsWith("Broiler.", StringComparison.Ordinal))
+            {
+                yield return
+                    $"{row.Composition} composes {catalog.ProfileIds[index]}, which claims the " +
+                    $"reserved first label, under package identity '{package}'";
+            }
         }
     }
 
@@ -224,6 +298,7 @@ internal static class CompositionRules
         var allowed = CoreAssemblies
             .Concat([row.Composition])
             .Concat(row.ProfileAssemblies)
+            .Concat(row.Siblings)
             .OrderBy(static name => name, StringComparer.Ordinal)
             .ToArray();
 

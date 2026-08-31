@@ -142,14 +142,33 @@ public static class CalculatorProfile
     /// same number.
     /// </para>
     /// <para>
-    /// The distinction is load-bearing in a composition, not merely tidy. A runtime ceiling is
-    /// clamped to the <em>tightest</em> hard maximum in the catalog, across every profile in it, so
-    /// a profile that declared its own usage as its maximum caps every profile composed beside it.
-    /// This profile never enters a section, never nests and never calls a host, so on those
-    /// dimensions it has no opinion and says so with a generous number rather than with zero. A zero
-    /// here would mean "no profile sharing a runtime with me may frame an artifact", which is not a
-    /// claim a calculator is entitled to make. The dimensions it does use - fuel, bytes, work,
-    /// depth, artifact size - are capped at what it will actually tolerate.
+    /// <b>A maximum binds this profile's own artifacts and nobody else's.</b> It is applied at
+    /// verification, against the profile the artifact names, so a tight one constrains only what
+    /// this profile accepts. This profile never enters a section, never nests and never calls a
+    /// host, so on those dimensions it has no opinion and says so with a generous number rather
+    /// than with zero - which is now a matter of not making a claim it cannot support rather than
+    /// a matter of protecting a neighbour. The dimensions it does use - fuel, bytes, work, depth,
+    /// artifact size - are capped at what it will actually tolerate.
+    /// </para>
+    /// <para>
+    /// <b>The catalog-wide half is the DEFAULT vector above, and this profile is the reason that
+    /// matters.</b> A host that adopts profile defaults rather than stating numbers gets the
+    /// tightest default in the catalog, per dimension, because at runtime creation no profile has
+    /// been selected. The defaults above write <c>0</c> for host calls and all three nested-load
+    /// dimensions and <c>1</c> for section count and structural depth - honest about what a
+    /// calculator needs, and exactly what reaches a profile composed beside it. It is why
+    /// <c>Broiler.VM.Composition.Workbench</c> states <c>HostCalls</c>, <c>SectionCount</c> and
+    /// <c>StructuralDepth</c> explicitly instead of adopting: the ledger frames two sections, and
+    /// a runtime adopting throughout would refuse its artifact for want of a second one.
+    /// </para>
+    /// <para>
+    /// <b>Corrected 2026-08-31.</b> This remark used to say that a runtime ceiling is clamped to
+    /// the tightest hard maximum in the catalog, across every profile in it. That clamp was an
+    /// implementation defect rather than a property of the contract - ADR 0007 puts
+    /// <c>ProfileMax</c> at P2, against the profile an artifact names - and it has been removed.
+    /// The generous numbers below were chosen under the old reading and are left unchanged,
+    /// because nothing about them is wrong; what changed is which vector a profile author has to
+    /// think about their neighbours in. <c>docs/compositions.md</c> section 5 is the authority.
     /// </para>
     /// </remarks>
     private static VmLimitVector Maxima()

@@ -1,0 +1,716 @@
+"""Collect the retained evidence for a Broiler.VM.Profile.JavaScript milestone bundle.
+
+    python eng/collect-js-evidence.py --bundle JS-0-001 \
+        --out src/Broiler.VM.Profile.JavaScript/docs/evidence/js-0
+
+The JavaScript profile is a family of product projects inside this component (decision JSD-0001),
+but its EVIDENCE is its own: a JS bundle is cited only by the profile's status ledger and a core
+bundle only by the core's, because a result that can be read from either ledger is a result that
+proves whichever claim a reader wanted. Decision JSD-0006 records why this is a script of its own
+rather than a flag on eng/collect-evidence.py - that script publishes composition roots, replays
+a corpus and runs three hosts, none of which this profile has at JS-0, and adding a mode would
+have made a collection script's behaviour conditional on who was collecting.
+
+Nothing here decides whether the result is good. It runs the procedure and retains what happened,
+including failures. Reading the result is the bundle's job.
+
+Every negative control is an injection into the real checkout, followed by a revert. A control
+that fails to revert stops the run loudly rather than leaving the tree modified.
+"""
+
+import argparse
+import datetime
+import hashlib
+import io
+import os
+import platform
+import shutil
+import subprocess
+import sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SOLUTION = "Broiler.VM.slnx"
+
+PROFILE_ROOT = os.path.join("src", "Broiler.VM.Profile.JavaScript")
+PROFILE_PROJECT = os.path.join(PROFILE_ROOT, "Broiler.VM.Profile.JavaScript.csproj")
+FORMAT_PROJECT = os.path.join(
+    "src", "Broiler.VM.Profile.JavaScript.Format", "Broiler.VM.Profile.JavaScript.Format.csproj")
+COMPILER_PROJECT = os.path.join(
+    "src", "Broiler.VM.Profile.JavaScript.Compiler", "Broiler.VM.Profile.JavaScript.Compiler.csproj")
+PROFILE_MARKER = os.path.join(PROFILE_ROOT, "AssemblyMarker.cs")
+PROFILE_VALUE = os.path.join(PROFILE_ROOT, "JavaScriptValue.cs")
+PROFILE_EXECUTOR = os.path.join(PROFILE_ROOT, "JavaScriptExecutor.cs")
+PROFILE_VERIFIER = os.path.join(PROFILE_ROOT, "JavaScriptVerifier.cs")
+FIXTURES_PROJECT = os.path.join(
+    "src", "tests", "Broiler.VM.Fixtures", "Broiler.VM.Fixtures.csproj")
+
+# The two composition roots the register lists for this profile, with the slug rules K3 and K4 use
+# to find their retained artefacts: the last dot-separated segment, lowercased.
+EXECUTION_ONLY = os.path.join(
+    "src", "compositions", "Broiler.VM.Composition.JavaScript.ExecutionOnly",
+    "Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj")
+SLICE_COMPILER = os.path.join(
+    "src", "compositions", "Broiler.VM.Composition.JavaScript.SliceCompiler",
+    "Broiler.VM.Composition.JavaScript.SliceCompiler.csproj")
+COMPOSITIONS = (
+    ("executiononly", "Broiler.VM.Composition.JavaScript.ExecutionOnly", EXECUTION_ONLY),
+    ("slicecompiler", "Broiler.VM.Composition.JavaScript.SliceCompiler", SLICE_COMPILER),
+)
+
+# Native AOT on Windows needs vswhere.exe on PATH. The ILCompiler package's own findvcvarsall.bat
+# calls it unqualified, and when it is missing the batch file ERROR TEXT is substituted into the
+# property that becomes the linker path - so the publish fails with MSB3073 naming a command that
+# looks like a sentence. The core exclusion EX-42 records this as needing a vcvars64 shell; it does
+# not. It needs this directory on PATH, which is a narrower and more useful statement.
+VS_INSTALLER = "C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer"
+
+# The candidate snapshot identity JSD-0005 records. The script re-derives the four revisions from
+# an aggregate checkout and compares; it does not take a snapshot and does not judge the result.
+SEED_CANDIDATE = {
+    "Broiler.JS": "0341e5c98553b43569217aa7a30c8a01a1eada0c",
+    "Broiler.JS/Broiler.DateTime": "d0c036783bdeeedaeb657a69bea6e2d5f5d438e9",
+    "Broiler.JS/Broiler.Regex": "4df3fb8e005d9688921c235ccc44e2e89746180e",
+    "Broiler.JS/Broiler.Unicode": "151799bb010bd8c882e07bace636ed12197c3410",
+}
+
+
+def run(command, cwd=None):
+    """Run a command and return (exit code, combined output). Never raises on a non-zero exit."""
+    completed = subprocess.run(
+        command,
+        cwd=cwd or ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        shell=False)
+
+    return completed.returncode, (completed.stdout or "") + (completed.stderr or "")
+
+
+def write(path, text):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with io.open(path, "w", encoding="utf-8", newline="\n") as handle:
+        handle.write(text)
+
+
+def read(path):
+    with io.open(os.path.join(ROOT, path), encoding="utf-8", newline="") as handle:
+        return handle.read()
+
+
+def overwrite(path, text):
+    with io.open(os.path.join(ROOT, path), "w", encoding="utf-8", newline="") as handle:
+        handle.write(text)
+
+
+def suite():
+    """Build and run the whole solution. The gate is the suite, so a control is judged by it."""
+    return run([
+        "dotnet", "test", SOLUTION, "-c", "Release", "--nologo",
+        "-p:TreatWarningsAsErrors=true"])
+
+
+def identity(arguments, out):
+    now = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
+
+    _, commit = run(["git", "rev-parse", "HEAD"])
+    _, branch = run(["git", "rev-parse", "--abbrev-ref", "HEAD"])
+    _, status = run(["git", "status", "--porcelain"])
+
+    dirty = [line for line in status.splitlines() if line.strip()]
+
+    lines = [
+        f"bundle:                {arguments.bundle}",
+        f"milestone:             {arguments.milestone}",
+        f"collected (UTC):       {now}",
+        f"component commit:      {commit.strip()}",
+        f"branch:                {branch.strip()}",
+        f"working tree:          {'DIRTY' if dirty else 'clean'}",
+        f"dirty entries:         {len(dirty)}",
+        f"owner:                 {arguments.owner}",
+        f"reviewer:              {arguments.reviewer}",
+        "",
+        "Every path below is relative to the component root. A figure in this bundle is this",
+        "component's own; no result from any other component is evidence here.",
+        "",
+    ]
+
+    if dirty:
+        lines.append("Dirty entries at collection time, listed rather than summarised:")
+        lines.extend(f"  {entry}" for entry in dirty)
+        lines.append("")
+
+    write(os.path.join(out, "identity.txt"), "\n".join(lines))
+    return dirty
+
+
+def environment(out):
+    code, info = run(["dotnet", "--info"])
+
+    text = "\n".join([
+        f"os:                    {platform.platform()}",
+        f"machine:               {platform.machine()}",
+        f"python:                {platform.python_version()}",
+        f"dotnet --info exit:    {code}",
+        "",
+        info,
+    ])
+
+    write(os.path.join(out, "environment.txt"), text)
+
+
+def snapshot_identity(out):
+    """Re-derive JSD-0005's candidate seed identity from an aggregate checkout, if there is one."""
+    aggregate = os.path.dirname(ROOT)
+    lines = [
+        "JSD-0005 records a CANDIDATE snapshot identity. This step re-derives it and compares.",
+        "A match is not a taken snapshot: JS-2 takes one and records what it actually took.",
+        "",
+        f"aggregate checkout:    {aggregate}",
+        "",
+    ]
+
+    if not os.path.exists(os.path.join(aggregate, ".gitmodules")):
+        lines.append(
+            "INCONCLUSIVE - no aggregate checkout above the component root, so the seed's "
+            "revisions could not be read. This is not a match and not a mismatch.")
+        write(os.path.join(out, "snapshot-identity.txt"), "\n".join(lines) + "\n")
+        return
+
+    mismatches = 0
+
+    for path, expected in sorted(SEED_CANDIDATE.items()):
+        parent = aggregate if "/" not in path else os.path.join(aggregate, os.path.dirname(path))
+        name = os.path.basename(path)
+
+        code, output = run(["git", "ls-files", "-s", name], cwd=parent)
+        actual = output.split()[1] if code == 0 and len(output.split()) > 1 else "<unreadable>"
+
+        verdict = "match" if actual == expected else "MISMATCH"
+        mismatches += 0 if verdict == "match" else 1
+
+        lines.append(f"{path}")
+        lines.append(f"  recorded: {expected}")
+        lines.append(f"  checkout: {actual}   [{verdict}]")
+
+    lines.append("")
+    lines.append(f"mismatches: {mismatches}")
+
+    write(os.path.join(out, "snapshot-identity.txt"), "\n".join(lines) + "\n")
+
+
+CONTROLS = [
+    (
+        "N1-profile-references-the-runtime",
+        "The profile assembly is given an edge to Broiler.VM.Runtime. ADR 0011 P1 forbids it and "
+        "rule N1 must report it; rule A7 must also report the edge the graph manifest does not have.",
+        PROFILE_PROJECT,
+        lambda text: text.replace(
+            '    <ProjectReference Include="..\\Broiler.VM.Binary\\Broiler.VM.Binary.csproj" />',
+            '    <ProjectReference Include="..\\Broiler.VM.Binary\\Broiler.VM.Binary.csproj" />\n'
+            '    <ProjectReference Include="..\\Broiler.VM.Runtime\\Broiler.VM.Runtime.csproj" />'),
+    ),
+    (
+        "N1-profile-references-the-lowering",
+        "The profile assembly is given an edge to its own lowering. This is the violation the "
+        "execution-only composition label exists to exclude, and N1 names it in its own words.",
+        PROFILE_PROJECT,
+        lambda text: text.replace(
+            '    <ProjectReference Include="..\\Broiler.VM.Binary\\Broiler.VM.Binary.csproj" />',
+            '    <ProjectReference Include="..\\Broiler.VM.Binary\\Broiler.VM.Binary.csproj" />\n'
+            '    <ProjectReference Include="..\\Broiler.VM.Profile.JavaScript.Compiler'
+            '\\Broiler.VM.Profile.JavaScript.Compiler.csproj" />'),
+    ),
+    (
+        "N3-format-is-not-a-sink",
+        "The format assembly is given one edge. It is the pivot two consumers depend on, so a "
+        "single edge out of it puts one consumer on the other's graph.",
+        FORMAT_PROJECT,
+        lambda text: text.replace(
+            "</Project>",
+            '  <ItemGroup>\n'
+            '    <ProjectReference Include="..\\Broiler.VM.Abstractions'
+            '\\Broiler.VM.Abstractions.csproj" />\n'
+            '  </ItemGroup>\n\n</Project>'),
+    ),
+    (
+        "N4-family-project-declares-a-package-id",
+        "The lowering declares a PackageId. Packaging is JS-10's decision and the ledger's "
+        "standing claim is that nothing here is packable.",
+        COMPILER_PROJECT,
+        lambda text: text.replace(
+            "    <IsPackable>false</IsPackable>",
+            "    <PackageId>Broiler.VM.Profile.JavaScript.Compiler</PackageId>\n"
+            "    <IsPackable>false</IsPackable>"),
+    ),
+    (
+        "N4-family-project-omits-ispackable",
+        "The lowering loses its literal IsPackable false. The vendored packaging props would "
+        "then default it to packable, so an omission ships rather than defaulting to safe.",
+        COMPILER_PROJECT,
+        lambda text: text.replace("    <IsPackable>false</IsPackable>\n", ""),
+    ),
+    (
+        "N2-a-non-family-project-references-the-profile",
+        "The fixture profile, which is in no profile family, is given an edge into the JavaScript "
+        "profile. This is the INBOUND half of the no-edge-to-another-profile rule, and it is the "
+        "half that would otherwise be satisfied from the side that never changes.",
+        FIXTURES_PROJECT,
+        lambda text: text.replace(
+            "</Project>",
+            "  <ItemGroup>\n"
+            "    <ProjectReference Include=\"..\\..\\Broiler.VM.Profile.JavaScript"
+            "\\Broiler.VM.Profile.JavaScript.csproj\" />\n"
+            "  </ItemGroup>\n\n</Project>"),
+    ),
+    (
+        "J3-a-profile-fingerprint-is-stale",
+        "The profile's assembly marker keeps its recorded fingerprint while its declaration "
+        "changes. This is the control that proves the assurance system REACHES the three new "
+        "assemblies rather than merely listing them.",
+        PROFILE_MARKER,
+        lambda text: text.replace(
+            "internal sealed class AssemblyMarker\n{\n}",
+            "internal sealed class AssemblyMarker\n{\n    internal const int Injected = 1;\n}"),
+    ),
+    (
+        "J4-a-profile-unit-claims-a-reviewer",
+        "The profile's assembly marker claims a human review nobody performed. The value of this "
+        "system is that it records the ABSENCE of review, so a mechanism that could turn PENDING "
+        "into a name would convert an honest record into a false one.",
+        PROFILE_MARKER,
+        lambda text: text.replace(
+            "// Broiler-Human:        PENDING",
+            "// Broiler-Human:        APPROVED; Reviewer=NOBODY; Date=2026-08-31"),
+    ),
+]
+
+
+def controls(out):
+    """Each control is injected into the real checkout, judged by the suite, and reverted."""
+    log = [
+        "Every control below is an injection into the real checkout followed by a revert. A",
+        "control PASSES when the suite fails while it is injected and passes after the revert.",
+        "A control that does not restore its file byte for byte stops the run.",
+        "",
+    ]
+
+    passed = 0
+
+    for name, why, path, mutate in CONTROLS:
+        original = read(path)
+        mutated = mutate(original)
+
+        if mutated == original:
+            log.append(f"[{name}] SKIPPED - the injection changed nothing; the anchor has moved.")
+            log.append(f"    file: {path}")
+            log.append("")
+            continue
+
+        overwrite(path, mutated)
+        injected_code, injected_output = suite()
+        overwrite(path, original)
+
+        if read(path) != original:
+            raise SystemExit(f"control {name} did not restore {path}; stopping with the tree modified")
+
+        reverted_code, _ = suite()
+
+        verdict = "PASS" if injected_code != 0 and reverted_code == 0 else "FAIL"
+        passed += 1 if verdict == "PASS" else 0
+
+        log.append(f"[{name}] {verdict}")
+        log.append(f"    why:       {why}")
+        log.append(f"    file:      {path}")
+        log.append(f"    injected:  exit {injected_code}")
+        log.append(f"    reverted:  exit {reverted_code}")
+        log.append("    failing tests while injected:")
+        log.extend(
+            f"      {line.strip()}"
+            for line in injected_output.splitlines()
+            if "[FAIL]" in line)
+        log.append("")
+
+    log.append(f"controls run: {len(CONTROLS)}; controls passed: {passed}")
+    log.append("")
+    log.append(
+        "STATED LIMIT. Rule N2 has a control for its INBOUND half and none for its cross-family "
+        "half, because a second profile family does not exist in this graph: an injected edge "
+        "would name a project that is not there and the build would fail before any rule ran, so "
+        "the suite would go red for the wrong reason. That half has a witness input instead. The "
+        "control becomes constructible when the WebAssembly profile's own JS-0 equivalent lands, "
+        "and it is named in this bundle's exclusions rather than left as a silent gap.")
+
+    write(os.path.join(out, "negative-controls.log"), "\n".join(log) + "\n")
+    return passed
+
+
+def publish(project, out_directory, extra, environment=None):
+    """Publish one project into a directory, returning the exit code and the log."""
+    command = [
+        "dotnet", "publish", project, "-c", "Release", "--nologo",
+        "-p:TreatWarningsAsErrors=true", "-o", out_directory] + extra
+
+    completed = subprocess.run(
+        command, cwd=ROOT, capture_output=True, text=True,
+        encoding="utf-8", errors="replace", env=environment)
+
+    return completed.returncode, " ".join(command) + "\n" + (completed.stdout or "") + (completed.stderr or "")
+
+
+def is_managed(path):
+    """
+    Whether a PE file carries a CLI header, which is what makes it a managed assembly.
+
+    The core's collection script filters a closure by NAME - anything System.* or Microsoft.* -
+    and that is enough on Linux, where the runtime's own native components are .so files a .dll
+    glob never sees. On Windows they are .dll files called coreclr, clrjit, hostfxr and so on, and
+    a name filter lets every one of them into the report. A closure report is a statement about
+    what the composition contributes, so the question it has to ask is whether a file is a managed
+    assembly at all - which the PE header answers exactly.
+    """
+    try:
+        with io.open(path, "rb") as handle:
+            data = handle.read(1024)
+    except OSError:
+        return False
+
+    if len(data) < 0x40 or data[:2] != b"MZ":
+        return False
+
+    header = int.from_bytes(data[0x3C:0x40], "little")
+
+    if len(data) < header + 24 or data[header:header + 4] != b"PE\0\0":
+        return False
+
+    magic = int.from_bytes(data[header + 24:header + 26], "little")
+    directories = header + 24 + (96 if magic == 0x10B else 112)
+    cli = directories + (14 * 8)
+
+    if len(data) < cli + 8:
+        return False
+
+    return int.from_bytes(data[cli + 4:cli + 8], "little") != 0
+
+
+def closure_of(directory):
+    """
+    The non-framework managed assemblies a published directory contains.
+
+    Read off the published output rather than derived from the project file, because a reference
+    set that looks right can still pull something in through a transitive package, and the linker
+    is the only party that knows what actually shipped.
+    """
+    if not os.path.isdir(directory):
+        return []
+
+    return sorted(
+        name[:-4] for name in os.listdir(directory)
+        if name.endswith(".dll")
+        and is_managed(os.path.join(directory, name))
+        and not name.startswith("System.")
+        and not name.startswith("Microsoft.")
+        and name not in ("netstandard.dll", "mscorlib.dll", "WindowsBase.dll"))
+
+
+def compositions(arguments, out, corpus):
+    """
+    Publish and run both roots in three modes, and retain what each composed and shipped.
+
+    Three artefacts per composition. The transcript says whether the checks passed in every mode;
+    the catalog table says which profiles were composed, compared across modes byte for byte so a
+    difference between JIT and Native AOT is a failure rather than a footnote; and the closure
+    report lists what the published image actually contains, which is the only form of Native AOT
+    evidence the roadmap admits - a linker annotation without execution is insufficient.
+    """
+    rid = arguments.rid
+    binary = ".exe" if platform.system() == "Windows" else ""
+    environment = dict(os.environ)
+
+    if platform.system() == "Windows" and os.path.isdir(VS_INSTALLER):
+        environment["PATH"] = VS_INSTALLER + os.pathsep + environment["PATH"]
+
+    log = []
+    ok = True
+
+    for slug, assembly, project in COMPOSITIONS:
+        catalogs = {}
+        closures = ["# closure " + assembly + " rid=" + rid, ""]
+
+        for mode, extra in (
+                ("jit", ["-r", rid, "--self-contained", "false", "-p:PublishTrimmed=false"]),
+                ("trimmed", ["-r", rid, "--self-contained", "true"]),
+                ("aot", ["-r", rid, "-p:PublishAot=true"])):
+
+            directory = os.path.join(ROOT, "artifacts", "js-publish", slug, mode)
+            shutil.rmtree(directory, ignore_errors=True)
+            code, text = publish(project, directory, extra, environment)
+            log.append("[" + slug + "/" + mode + "] publish exit " + str(code) + "\n" + text)
+
+            if code != 0:
+                ok = False
+                closures.append("[" + mode + "] publish failed")
+                closures.append("")
+                continue
+
+            executable = os.path.join(directory, assembly + binary)
+
+            catalog = subprocess.run(
+                [executable, "--closure"], capture_output=True, text=True,
+                encoding="utf-8", errors="replace")
+
+            catalogs[mode] = catalog.stdout or ""
+            log.append("[" + slug + "/" + mode + "] --closure exit " + str(catalog.returncode)
+                       + "\n" + catalogs[mode])
+
+            run_arguments = (
+                [executable, "--corpus", corpus, "--verbose"] if slug == "executiononly"
+                else [executable, "--checks", "--verbose"])
+
+            result = subprocess.run(
+                run_arguments, capture_output=True, text=True,
+                encoding="utf-8", errors="replace")
+
+            log.append("[" + slug + "/" + mode + "] run exit " + str(result.returncode) + "\n"
+                       + (result.stdout or "") + (result.stderr or ""))
+
+            if result.returncode != 0:
+                ok = False
+
+            names = closure_of(directory)
+            closures.append("[" + mode + "] " + str(len(names)) + " non-framework assemblies")
+            closures.extend(names)
+            closures.append("")
+
+        distinct = {text for text in catalogs.values()}
+        log.append("[" + slug + "] catalog tables identical across modes: " + str(len(distinct) <= 1))
+
+        if len(distinct) > 1:
+            ok = False
+
+        write(os.path.join(out, "catalog-" + slug + ".txt"), next(iter(catalogs.values()), ""))
+        write(os.path.join(out, "closure-" + slug + ".txt"), "\n".join(closures))
+
+    write(os.path.join(out, "publish-and-run.log"), "\n\n".join(log))
+    return ok
+
+
+# The corpus controls: injections the SUITE cannot see.
+#
+# Every control in CONTROLS above is judged by the test suite, which is right for a rule about the
+# graph or about an annotation. A language semantic is not in the suite at all - rule A11 forbids a
+# test project to reference a profile assembly, so the behavioural evidence is the composition
+# root's own run - and a corpus that could not detect a semantic regression would be a directory of
+# bytes rather than a gate. These four are judged by running the execution-only root against the
+# retained corpus, which is the thing that would have to notice.
+CORPUS_CONTROLS = [
+    (
+        "the-language-guards-division-by-zero",
+        "Division by zero is made a fault, which is what a calculator does and not what the "
+        "language does. The corpus entry recording Infinity must stop agreeing.",
+        PROFILE_EXECUTOR,
+        lambda text: text.replace(
+            "                    stack[top - 2] = JavaScriptValue.Number(\n"
+            "                        stack[top - 2].ToNumber() / stack[top - 1].ToNumber());",
+            "                    if (stack[top - 1].ToNumber() == 0)\n"
+            "                    {\n"
+            "                        return VmExecutionStep.Faulted(new JavaScriptFault(\n"
+            "                            ProfileId, JavaScriptErrorKind.RangeError, \"division by zero\"));\n"
+            "                    }\n\n"
+            "                    stack[top - 2] = JavaScriptValue.Number(\n"
+            "                        stack[top - 2].ToNumber() / stack[top - 1].ToNumber());"),
+    ),
+    (
+        "strict-equality-stops-comparing-kinds",
+        "Strict equality is made to compare numbers whatever the kinds are, so `1 === true` "
+        "becomes true. The entry recording false must stop agreeing.",
+        PROFILE_VALUE,
+        lambda text: text.replace(
+            "        if (Kind != other.Kind)\n        {\n            return false;\n        }",
+            "        if (Kind != other.Kind)\n        {\n            return ToNumber() == other.ToNumber();\n        }"),
+    ),
+    (
+        "to-uint32-becomes-a-cast",
+        "The ToUint32 conversion is replaced by a C# cast, which saturates instead of reducing "
+        "modulo 2^32. The bitwise-or entry recording -2147483648 must stop agreeing.",
+        PROFILE_VALUE,
+        lambda text: text.replace(
+            "        var truncated = System.Math.Truncate(value) % 4294967296.0;",
+            "        var truncated = (double)(uint)System.Math.Min(System.Math.Max(value, 0), 4294967295.0);"),
+    ),
+    (
+        "the-verifier-stops-refusing-unreachable-code",
+        "The unreachable-code check is removed, so an artifact carrying bytes no entry point "
+        "reaches would verify. The entry recording that rejection must stop agreeing.",
+        PROFILE_VERIFIER,
+        lambda text: text.replace(
+            "            if (boundary[offset] == 1 && height[offset] < 0)",
+            "            if (false && boundary[offset] == 1 && height[offset] < 0)"),
+    ),
+]
+
+
+def corpus_controls(out, corpus, arguments):
+    """Each control is injected, judged by the corpus replay, and reverted."""
+    log = [
+        "These controls are judged by running the execution-only composition against the retained",
+        "corpus, NOT by the test suite. A language semantic is in no test project - rule A11",
+        "forbids one to reference a profile assembly - so a corpus that could not detect a",
+        "semantic regression would be a directory of bytes rather than a gate.",
+        "",
+    ]
+
+    passed = 0
+
+    for name, why, path, mutate in CORPUS_CONTROLS:
+        original = read(path)
+        mutated = mutate(original)
+
+        if mutated == original:
+            log.append("[" + name + "] SKIPPED - the injection changed nothing; the anchor moved.")
+            log.append("    file: " + path)
+            log.append("")
+            continue
+
+        overwrite(path, mutated)
+        injected_code, injected_output = replay(corpus)
+        overwrite(path, original)
+
+        if read(path) != original:
+            raise SystemExit("control " + name + " did not restore " + path)
+
+        reverted_code, _ = replay(corpus)
+
+        verdict = "PASS" if injected_code != 0 and reverted_code == 0 else "FAIL"
+        passed += 1 if verdict == "PASS" else 0
+
+        log.append("[" + name + "] " + verdict)
+        log.append("    why:       " + why)
+        log.append("    file:      " + path)
+        log.append("    injected:  exit " + str(injected_code))
+        log.append("    reverted:  exit " + str(reverted_code))
+        log.extend(
+            "      " + line.strip()
+            for line in injected_output.splitlines()
+            if line.strip().startswith("FAIL"))
+        log.append("")
+
+    log.append("corpus controls run: " + str(len(CORPUS_CONTROLS)) + "; passed: " + str(passed))
+    write(os.path.join(out, "corpus-controls.log"), "\n".join(log) + "\n")
+    return passed
+
+
+def replay(corpus):
+    """Rebuild and run the execution-only root against the retained corpus."""
+    code, text = run(["dotnet", "build", SOLUTION, "-c", "Release", "--nologo"])
+
+    if code != 0:
+        return code, text
+
+    return run([
+        "dotnet", "run", "--project", EXECUTION_ONLY, "-c", "Release", "--no-build",
+        "--", "--corpus", corpus])
+
+
+def hashes(out, paths):
+    lines = []
+
+    for path in sorted(paths):
+        full = os.path.join(ROOT, path)
+
+        if not os.path.exists(full):
+            lines.append(f"{'<missing>':<64}  {path}")
+            continue
+
+        with io.open(full, "rb") as handle:
+            digest = hashlib.sha256(handle.read()).hexdigest()
+
+        lines.append(f"{digest}  {path}")
+
+    write(os.path.join(out, "hashes.txt"), "\n".join(lines) + "\n")
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--bundle", required=True)
+    parser.add_argument("--out", required=True)
+    parser.add_argument("--milestone", default="JS-0")
+    parser.add_argument("--owner", default="profile architecture owner (unassigned identity)")
+    parser.add_argument("--reviewer", default="NONE - nothing here has been reviewed")
+    parser.add_argument("--skip-controls", action="store_true")
+    parser.add_argument("--skip-publish", action="store_true")
+    parser.add_argument("--rid", default="win-x64" if platform.system() == "Windows" else "linux-x64")
+    parser.add_argument("--corpus", default=os.path.join("src", "tests", "corpus", "js-1"))
+    arguments = parser.parse_args()
+
+    out = os.path.join(ROOT, arguments.out)
+    os.makedirs(out, exist_ok=True)
+
+    identity(arguments, out)
+    environment(out)
+    snapshot_identity(out)
+
+    code, output = run(["dotnet", "build", SOLUTION, "-c", "Release", "--nologo"])
+    write(os.path.join(out, "build.log"), f"exit {code}\n\n{output}")
+
+    code, output = suite()
+    write(os.path.join(out, "suite.log"), f"exit {code}\n\n{output}")
+
+    gate_code, gate_output = run([
+        "dotnet", "test", os.path.join("src", "tests", "Broiler.VM.Architecture.Tests"),
+        "-c", "Release", "--nologo"])
+    write(os.path.join(out, "assurance-gate.log"), f"exit {gate_code}\n\n{gate_output}")
+
+    release_environment = dict(os.environ, BROILER_ASSURANCE_RELEASE="1")
+    completed = subprocess.run(
+        ["dotnet", "test", os.path.join("src", "tests", "Broiler.VM.Architecture.Tests"),
+         "-c", "Release", "--nologo"],
+        cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace",
+        env=release_environment)
+
+    write(
+        os.path.join(out, "assurance-release.log"),
+        "The release mode is EXPECTED to refuse. Every relevant unit in this component is\n"
+        "HUMAN_PENDING, the profile's three among them, so a release gate that passed here would\n"
+        "be the defect. What this log is read for is that each blocking declaration is named\n"
+        "individually rather than counted.\n\n"
+        f"exit {completed.returncode}\n\n{(completed.stdout or '') + (completed.stderr or '')}")
+
+    corpus = os.path.join(ROOT, arguments.corpus)
+
+    if not arguments.skip_publish:
+        compositions(arguments, out, corpus)
+
+    if not arguments.skip_controls:
+        controls(out)
+        corpus_controls(out, corpus, arguments)
+
+    hashes(out, [
+        SOLUTION,
+        PROFILE_PROJECT,
+        FORMAT_PROJECT,
+        COMPILER_PROJECT,
+        PROFILE_MARKER,
+        os.path.join("src", "Broiler.VM.Profile.JavaScript.Format", "AssemblyMarker.cs"),
+        os.path.join("src", "Broiler.VM.Profile.JavaScript.Compiler", "AssemblyMarker.cs"),
+        os.path.join("src", "tests", "Broiler.VM.Architecture.Tests", "rules.register.json"),
+        os.path.join("src", "tests", "Broiler.VM.Architecture.Tests", "graph.manifest.json"),
+        os.path.join(PROFILE_ROOT, "docs", "roadmap.md"),
+        os.path.join(PROFILE_ROOT, "docs", "roadmap.delivery.md"),
+        os.path.join(PROFILE_ROOT, "docs", "roadmap.gates.md"),
+        os.path.join(PROFILE_ROOT, "docs", "roadmap.status.md"),
+        os.path.join(PROFILE_ROOT, "docs", "decisions", "0001-placement-identity-and-assembly-topology.md"),
+        os.path.join(PROFILE_ROOT, "docs", "decisions", "0002-feature-manifest-allocation.md"),
+        os.path.join(PROFILE_ROOT, "docs", "decisions", "0003-deployment-composition-labels.md"),
+        os.path.join(PROFILE_ROOT, "docs", "decisions", "0004-limit-defaults-hard-maxima-and-the-budget-matrix.md"),
+        os.path.join(PROFILE_ROOT, "docs", "decisions", "0005-the-seed-waited-on-set-and-snapshot-stop-condition.md"),
+        os.path.join(PROFILE_ROOT, "docs", "decisions", "0006-assurance-evidence-and-rules-adoption.md"),
+        os.path.join(PROFILE_ROOT, "docs", "decisions", "0007-cross-profile-position-and-amendment-grading.md"),
+    ])
+
+    print(f"collected {arguments.bundle} into {arguments.out}")
+
+
+if __name__ == "__main__":
+    sys.exit(main())

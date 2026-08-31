@@ -504,7 +504,11 @@ public sealed class AssuranceScannerTests
             .OrderBy(static name => name, StringComparer.Ordinal)
             .ToArray();
 
-        Assert.Equal(3, onDisk.Length);
+        // Six product projects at JS-0: the three the core packs, and the three project shells
+        // the JavaScript profile family adds. The literal is the point of this assertion - a
+        // seventh product project appearing in the tree fails here until someone decides whether
+        // it is covered, and that decision is what the number records having been made.
+        Assert.Equal(6, onDisk.Length);
 
         // The covered list is exactly those projects...
         Assert.Equal(

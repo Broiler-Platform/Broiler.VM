@@ -257,7 +257,58 @@ internal static class ArchitectureRules
 
         return project.ReferencedAssemblyNames
             .Where(IsComposableProfile)
+            .Where(name => !IsSameProfileFamily(project.AssemblyName, name))
             .Select(name => $"{project.RelativePath} -> {name}");
+    }
+
+    /// <summary>
+    /// Whether two assembly names belong to the same profile family: the same language under
+    /// <c>Broiler.VM.Profile.</c>, so that <c>Broiler.VM.Profile.JavaScript.Compiler</c> and
+    /// <c>Broiler.VM.Profile.JavaScript.Format</c> are family and
+    /// <c>Broiler.VM.Profile.WebAssembly</c> is not.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This is A11's one exemption and it is narrow on purpose. ADR 0011 P1's 2026-08-31 revision
+    /// states that a profile component's own siblings - its format assembly, its lowering - are
+    /// not members of the Broiler.VM-owned reference set P1 bounds, and the JavaScript profile's
+    /// roadmap section 5 makes the format assembly the PIVOT the executor and the lowering both
+    /// depend on. Without the exemption that graph is illegal under a rule written before any
+    /// product profile existed, and the profile could not reference its own bytecode format.
+    /// </para>
+    /// <para>
+    /// The exemption is keyed on the LANGUAGE segment rather than on the
+    /// <c>Broiler.VM.Profile.</c> prefix, which is the whole point: two profiles in one image are
+    /// composed by a composition root and are never linked to each other, so a JavaScript project
+    /// referencing a WebAssembly one is still a violation and rule N2 asserts that half by its
+    /// own witness. A prefix-wide exemption would have dissolved exactly the boundary the
+    /// extraction gate's fourth condition exists to keep.
+    /// </para>
+    /// </remarks>
+    internal static bool IsSameProfileFamily(string left, string right)
+    {
+        var leftFamily = ProfileFamily(left);
+
+        return leftFamily is not null &&
+            string.Equals(leftFamily, ProfileFamily(right), StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// The <c>Broiler.VM.Profile.&lt;Language&gt;</c> prefix of an assembly name, or null when the
+    /// name is not a Broiler-owned profile assembly at all.
+    /// </summary>
+    internal static string? ProfileFamily(string assemblyName)
+    {
+        const string Prefix = "Broiler.VM.Profile.";
+
+        if (!assemblyName.StartsWith(Prefix, StringComparison.Ordinal))
+        {
+            return null;
+        }
+
+        var language = assemblyName[Prefix.Length..].Split('.')[0];
+
+        return language.Length == 0 ? null : Prefix + language;
     }
 
     /// <summary>
@@ -369,6 +420,216 @@ internal static class ArchitectureRules
     private static bool IsComposableProfile(string assemblyName) =>
         assemblyName.StartsWith("Broiler.VM.Profile.", StringComparison.Ordinal) ||
         assemblyName.StartsWith("Com.Example.", StringComparison.Ordinal);
+
+    // ---- Group N: the JavaScript profile family -----------------------------------------------
+    //
+    // Group N holds the shape of the Broiler.VM.Profile.JavaScript family's project graph. The
+    // letter is chosen because A-E, V, F, M, G, P, S and T are recorded as in use, H replaces the
+    // reverted group R, J is the assurance group, K the composition register, L the baselines and
+    // M the API baseline; R1..R6 stays the reserved namespace ADR 0003 records for ADR 0012's six
+    // ownership roles.
+    //
+    // The rules live in this register rather than in one of the profile's own because the profile
+    // is a set of product projects INSIDE this component - decision JSD-0001 - so there is one
+    // graph, one manifest and one register to hold it. The JavaScript roadmap's JS-0 exit gate
+    // asks for the profile's own rule register; decision JSD-0006 records the adoption of this one
+    // as a deviation with its reason, rather than standing up a second register over one graph.
+    //
+    // Every N rule is over PROJECT FILES. The profile assemblies are deliberately absent from the
+    // architecture test project's reference set - A11 forbids it - so no N rule can read compiled
+    // metadata, and none pretends to. The metadata half arrives with the composition roots at
+    // JS-1, which is where a published closure exists to read.
+
+    /// <summary>The exact Broiler.VM-owned reference set the JavaScript profile assembly may have.</summary>
+    /// <remarks>
+    /// ADR 0011 P1, whose 2026-08-31 revision states that the set is of Broiler.VM-OWNED
+    /// assemblies and that a profile's own siblings are not members of it. The format assembly is
+    /// therefore admitted by <see cref="N1"/> explicitly rather than by adding it to this list,
+    /// because the two admissions have different authorities and folding them together would make
+    /// one unreadable from the other.
+    /// </remarks>
+    internal static readonly string[] JavaScriptProfileCoreReferences =
+        ["Broiler.VM.Abstractions", "Broiler.VM.Binary"];
+
+    /// <summary>The format sibling both the profile and the lowering are permitted to reference.</summary>
+    internal const string JavaScriptFormatAssembly = "Broiler.VM.Profile.JavaScript.Format";
+
+    /// <summary>The lowering, which the profile assembly may never reference.</summary>
+    internal const string JavaScriptCompilerAssembly = "Broiler.VM.Profile.JavaScript.Compiler";
+
+    /// <summary>The profile assembly itself.</summary>
+    internal const string JavaScriptProfileAssembly = "Broiler.VM.Profile.JavaScript";
+
+    /// <summary>
+    /// N1: the JavaScript profile assembly references exactly Abstractions, Binary and its own
+    /// format sibling; it never references the runtime and never references the lowering; it
+    /// declares no PackageReference and opens its internals to nobody.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Four independent claims, and the roadmap makes each of them load-bearing for a different
+    /// reason. The runtime exclusion is ADR 0011 P1. The lowering exclusion is what makes an
+    /// execution-only composition contain a format, a verifier and an interpreter and no compiler
+    /// at all - a deployment property, not a build switch. The package exclusion keeps the
+    /// published closure readable off the project file. The internals exclusion is P2: a profile
+    /// is written against the public source contract or the contract is not what it claims.
+    /// </para>
+    /// <para>
+    /// Rule A13 does not reach this project, and widening it would have been the wrong repair.
+    /// A13's subject is a test-only profile, which is what the two consumer profiles are, and it
+    /// states a reference set of exactly two assemblies; a product profile with a format sibling
+    /// has three, so widening A13 would have weakened the rule that holds the consumer profiles.
+    /// N1 states the stronger claim over its own subject instead.
+    /// </para>
+    /// </remarks>
+    internal static IEnumerable<string> N1(ComponentGraph.ProjectFile project)
+    {
+        if (!string.Equals(project.AssemblyName, JavaScriptProfileAssembly, StringComparison.Ordinal))
+        {
+            yield break;
+        }
+
+        var expected = JavaScriptProfileCoreReferences
+            .Append(JavaScriptFormatAssembly)
+            .OrderBy(static name => name, StringComparer.Ordinal)
+            .ToArray();
+
+        var referenced = project.ReferencedAssemblyNames
+            .OrderBy(static name => name, StringComparer.Ordinal)
+            .ToArray();
+
+        if (!referenced.SequenceEqual(expected, StringComparer.Ordinal))
+        {
+            yield return
+                $"{project.RelativePath} references [{string.Join(", ", referenced)}] rather than " +
+                $"[{string.Join(", ", expected)}]";
+        }
+
+        // Named separately from the set comparison above even though the set implies it. A message
+        // naming the lowering is what a reader needs to see when the execution-only property is
+        // the thing that broke, and a single "the set differs" line would report the most
+        // consequential violation in this component in the same words as a typo.
+        if (referenced.Contains(JavaScriptCompilerAssembly, StringComparer.Ordinal))
+        {
+            yield return
+                $"{project.RelativePath} references {JavaScriptCompilerAssembly}, so an " +
+                "execution-only composition would carry a lowering";
+        }
+
+        foreach (var package in project.PackageReferences)
+        {
+            yield return $"{project.RelativePath} declares PackageReference {package}";
+        }
+
+        foreach (var target in project.InternalsVisibleTo)
+        {
+            yield return $"{project.RelativePath} opens internals to {target}";
+        }
+    }
+
+    /// <summary>
+    /// N2: no project in one profile family references a project in another, in either direction.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The JavaScript roadmap states this as a rule separate from the reference-set clause, and
+    /// says why: the reference-set clause already tolerates one further Broiler.VM-named assembly,
+    /// this profile's own format, so it cannot also carry the cross-profile prohibition. Two
+    /// profiles in one browser image are composed by a composition root; they are not linked to
+    /// each other, and the extraction gate's fourth condition IS this property.
+    /// </para>
+    /// <para>
+    /// Both halves are swept in one rule because both are the same edge seen from its two ends,
+    /// and a rule that checked only the outbound half would be satisfied from the side that never
+    /// changes. A composition root is exempt on both halves - composing two profiles is what a
+    /// composition root is for - and A12 is what bounds a root's reference set instead.
+    /// </para>
+    /// </remarks>
+    internal static IEnumerable<string> N2(ComponentGraph.ProjectFile project)
+    {
+        if (project.IsComposition)
+        {
+            yield break;
+        }
+
+        var family = ProfileFamily(project.AssemblyName);
+
+        foreach (var name in project.ReferencedAssemblyNames)
+        {
+            var target = ProfileFamily(name);
+
+            if (target is null)
+            {
+                continue;
+            }
+
+            if (family is null)
+            {
+                yield return
+                    $"{project.RelativePath} is outside every profile family and references {name}";
+                continue;
+            }
+
+            if (!string.Equals(family, target, StringComparison.Ordinal))
+            {
+                yield return $"{project.RelativePath} ({family}) -> {name} ({target})";
+            }
+        }
+    }
+
+    /// <summary>
+    /// N3: the JavaScript format assembly references nothing at all - not the core, not the
+    /// profile, not the lowering.
+    /// </summary>
+    /// <remarks>
+    /// The format is the pivot. The executor and the lowering must agree on the bytecode and
+    /// neither may depend on the other, so both reference the format and the format references
+    /// neither; a single edge out of it would put one of its two consumers on the other's
+    /// dependency graph and the pivot would stop being one. It is a sink, so this half of the
+    /// profile's subgraph is acyclic by construction rather than by inspection - the same argument
+    /// ADR 0001 makes for Abstractions and Binary.
+    /// </remarks>
+    internal static IEnumerable<string> N3(ComponentGraph.ProjectFile project) =>
+        string.Equals(project.AssemblyName, JavaScriptFormatAssembly, StringComparison.Ordinal)
+            ? project.ReferencedAssemblyNames.Select(name => $"{project.RelativePath} -> {name}")
+            : [];
+
+    /// <summary>
+    /// N4: no project in the JavaScript profile family declares a PackageId, and every one carries
+    /// the literal element <c>IsPackable false</c>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The status ledger's standing claim is that no composition is advertised, none is packable
+    /// and no runtime identifier is claimed. Packaging is JS-10's decision, and until it is taken
+    /// the honest state is that these assemblies ship nowhere. Without this rule the claim decays
+    /// silently: the vendored packaging props default <c>IsPackable</c> to true for any project
+    /// whose name matches none of their test-and-tooling suffixes, which none of these does, so a
+    /// family project that merely forgot the element would pack under its assembly name.
+    /// </para>
+    /// <para>
+    /// The literal element is asserted rather than the evaluated property, which is rule A5's
+    /// discipline applied to a second partition and for the same reason: an evaluated property can
+    /// be true because of an import a reader of the project file cannot see.
+    /// </para>
+    /// </remarks>
+    internal static IEnumerable<string> N4(ComponentGraph.ProjectFile project)
+    {
+        if (ProfileFamily(project.AssemblyName) is null)
+        {
+            yield break;
+        }
+
+        if (project.PackageId is not null)
+        {
+            yield return $"{project.RelativePath} declares PackageId {project.PackageId}";
+        }
+
+        if (!project.RawText.Contains("<IsPackable>false</IsPackable>", StringComparison.Ordinal))
+        {
+            yield return $"{project.RelativePath} does not carry the literal <IsPackable>false</IsPackable>";
+        }
+    }
 
     // ---- Group B: compiled metadata ---------------------------------------------------------
 

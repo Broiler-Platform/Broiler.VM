@@ -1,0 +1,12 @@
+<!-- Violates N2, inbound half: a project in no profile family referencing into one. The rule is
+     the same edge seen from its other end, and a rule that checked only the outbound half would
+     be satisfied from the side that never changes. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Fixtures</AssemblyName>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" />
+  </ItemGroup>
+</Project>

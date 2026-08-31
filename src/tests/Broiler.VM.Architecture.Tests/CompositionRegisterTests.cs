@@ -120,7 +120,7 @@ public sealed class CompositionRegisterTests
             var slug = Slug(row.Composition);
 
             Assert.Empty(CompositionRules.K3(
-                row.Composition, BaselineText(slug), Retained($"catalog-{slug}.txt")));
+                row.Composition, BaselineText(slug), RetainedFor(row, $"catalog-{slug}.txt")));
         }
 
         var first = Rows[0];
@@ -143,7 +143,7 @@ public sealed class CompositionRegisterTests
     {
         foreach (var row in Rows)
         {
-            Assert.Empty(CompositionRules.K4(row, ClosureModes(Slug(row.Composition))));
+            Assert.Empty(CompositionRules.K4(row, ClosureModesFor(row)));
         }
 
         var calculator = Rows.Single(row =>
@@ -234,6 +234,27 @@ public sealed class CompositionRegisterTests
     private static CompositionRules.CatalogTable Baseline(string composition) =>
         ParseCatalog(BaselineText(Slug(composition)));
 
+    /// <summary>Reads a retained artefact out of the bundle the row itself names.</summary>
+    /// <remarks>
+    /// Per row rather than per repository, because two milestone series now keep two evidence
+    /// trees. A row with no bundle named falls back to the core's current one, which is what every
+    /// row said implicitly before the column existed.
+    /// </remarks>
+    private static string RetainedFor(CompositionRules.Row row, string fileName)
+    {
+        var bundle = row.Evidence.Length == 0
+            ? Path.Combine("docs", "evidence", ComponentGraph.CurrentEvidenceDirectory)
+            : row.Evidence.Replace('/', Path.DirectorySeparatorChar);
+
+        var path = Path.Combine(ComponentGraph.Root, bundle, fileName);
+
+        return File.Exists(path) ? File.ReadAllText(path) : string.Empty;
+    }
+
+    /// <summary>Reads a retained closure report out of the bundle the row itself names.</summary>
+    private static IReadOnlyList<CompositionRules.ClosureMode> ClosureModesFor(CompositionRules.Row row) =>
+        ParseClosure(RetainedFor(row, $"closure-{Slug(row.Composition)}.txt"));
+
     private static string BaselineText(string slug) =>
         File.ReadAllText(Path.Combine(
             ComponentGraph.Root, "src", "tests", "Broiler.VM.Architecture.Tests", "catalogs",
@@ -250,10 +271,11 @@ public sealed class CompositionRegisterTests
     /// <summary>
     /// Reads a retained closure report: a header line per mode, then one assembly name per line.
     /// </summary>
-    private static IReadOnlyList<CompositionRules.ClosureMode> ClosureModes(string slug)
-    {
-        var text = Retained($"closure-{slug}.txt");
+    private static IReadOnlyList<CompositionRules.ClosureMode> ClosureModes(string slug) =>
+        ParseClosure(Retained($"closure-{slug}.txt"));
 
+    private static IReadOnlyList<CompositionRules.ClosureMode> ParseClosure(string text)
+    {
         if (text.Length == 0)
         {
             return [];
@@ -369,7 +391,11 @@ public sealed class CompositionRegisterTests
                 Unquote(cells[0]),
                 cells[1],
                 Names(cells[2]),
-                Names(cells[3])));
+                Names(cells[3]),
+                cells.Length > 4 && !string.Equals(cells[4], "none", StringComparison.Ordinal)
+                    ? Names(cells[4])
+                    : [],
+                cells.Length > 7 ? Unquote(cells[7]) : string.Empty));
         }
 
         return rows;

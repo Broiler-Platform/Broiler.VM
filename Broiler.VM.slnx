@@ -3,10 +3,15 @@
     <Project Path="src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj" />
     <Project Path="src/Broiler.VM.Binary/Broiler.VM.Binary.csproj" />
     <Project Path="src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj" />
+    <Project Path="src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj" />
+    <Project Path="src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj" />
+    <Project Path="src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj" />
   </Folder>
   <Folder Name="/compositions/">
     <Project Path="src/compositions/Broiler.VM.Composition.Calculator/Broiler.VM.Composition.Calculator.csproj" />
     <Project Path="src/compositions/Broiler.VM.Composition.Workbench/Broiler.VM.Composition.Workbench.csproj" />
+    <Project Path="src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj" />
+    <Project Path="src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="src/tests/Broiler.VM.Architecture.Tests/Broiler.VM.Architecture.Tests.csproj" />

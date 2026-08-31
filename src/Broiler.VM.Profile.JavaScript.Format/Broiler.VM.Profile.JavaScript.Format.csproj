@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Profile.JavaScript.Format</RootNamespace>
+    <AssemblyName>Broiler.VM.Profile.JavaScript.Format</AssemblyName>
+    <Description>The JavaScript profile's bytecode format: opcodes, schema, encoder, decoder and the format-version range. JS-0 project shell: no format is defined yet.</Description>
+
+    <!-- JS-0 declares no package. The JavaScript profile's packaging decision is JS-10's and
+         the status ledger records that nothing here is packable, so ADR 0001's packable set
+         stays at exactly the three core packages and rule A6 keeps counting three. -->
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <!-- The pivot. The executor and the lowering must agree on the bytecode and neither may
+       depend on the other, so both reference this and it references nothing at all - not the
+       core, not the profile, not the lowering. That is what makes it a sink of this profile's
+       subgraph and what keeps an execution-only composition free of a compiler. -->
+
+</Project>

@@ -1,0 +1,16 @@
+<!-- Violates N1: the JavaScript profile assembly referencing Broiler.VM.Runtime. ADR 0011's
+     obligation P1 fixes the Broiler.VM-owned reference set at exactly Abstractions and Binary,
+     and a profile that could name a runtime type would be relying on something no consumer
+     outside this repository has. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Profile.JavaScript</AssemblyName>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Profile.JavaScript.Format\Broiler.VM.Profile.JavaScript.Format.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+  </ItemGroup>
+</Project>

@@ -136,11 +136,29 @@ internal static class CounterProfile
     /// The most this profile will ever accept, whatever a host asks for.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// A host may tighten these and may not loosen them. Setting them close to the defaults is the
-    /// conservative choice for a profile this small, and it is worth knowing that the maxima are
-    /// CATALOG-WIDE in effect: composed beside another profile, the tightest maximum for a
-    /// dimension caps every profile in the catalog, so a profile that declares a small maximum is
-    /// making a decision on its neighbours' behalf as well as its own.
+    /// conservative choice for a profile this small, and it costs nothing: <b>a maximum binds this
+    /// profile's own artifacts and nobody else's</b>, because it is applied at verification against
+    /// the profile the artifact names.
+    /// </para>
+    /// <para>
+    /// The declaration that reaches a neighbour is the <c>Defaults</c> vector above. A host that
+    /// adopts profile defaults rather than stating numbers gets the tightest default in the
+    /// catalog, per dimension, because at runtime creation no profile has been selected and there
+    /// is no other safe answer. This profile is composed alone, so nothing here is felt by anyone
+    /// else - but a profile written for a mixed catalog should declare a maximum for what it would
+    /// tolerate being granted and a default for what it actually needs, and should know that a
+    /// stingy default on a dimension it never uses is the one that strangles a neighbour.
+    /// </para>
+    /// <para>
+    /// <b>Corrected 2026-08-31.</b> This remark used to say the maxima were CATALOG-WIDE in
+    /// effect - that the tightest maximum for a dimension capped every profile in the catalog, so
+    /// a small maximum decided on a neighbour's behalf. That clamp was an implementation defect
+    /// rather than a property of the contract; ADR 0007 puts <c>ProfileMax</c> at P2, against the
+    /// profile an artifact names, and it has been removed. <c>docs/compositions.md</c> section 5
+    /// is the authority.
+    /// </para>
     /// </remarks>
     private static VmLimitVector Maxima()
     {

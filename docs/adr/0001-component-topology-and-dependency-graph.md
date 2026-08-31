@@ -1035,3 +1035,169 @@ of which depends on the other two, and no evidence in five milestones has argued
 for a fourth or for a merge. "Finalize only the boundaries justified by VM-0
 evidence" is satisfied by leaving them alone, and saying so is more useful than
 a revision that moves something to look decisive.
+
+---
+
+### 2026-08-31 - the JavaScript profile's project shells, and where a profile component lives
+
+Milestone JS-0 of the `Broiler.VM.Profile.JavaScript` roadmap owns a placement
+decision, and this record is the half of it that belongs to the core's topology
+owner. The profile's own half - its identity, its manifests, its budget
+declarations, its waited-on set - is recorded in
+`src/Broiler.VM.Profile.JavaScript/docs/decisions/`, which is that component's
+own series and not this one.
+
+**Where the profile lives.** The two profile roadmaps were staged in the
+aggregate repository beside the components they would sit next to, and the
+JavaScript profile's status ledger recorded that the component had no repository
+of its own and that JS-0 owned moving them. They now sit in THIS repository, at
+`src/Broiler.VM.Profile.JavaScript/` and
+`src/Broiler.VM.Profile.WebAssembly/`, which is the product-project path shape
+this record already fixes. So a language profile is a set of product projects in
+the Broiler.VM component rather than a component of its own, and its roadmap
+documents live inside the project directory whose assembly they describe.
+
+**This revises a rejection, and the rejection is worth reading before the
+revision.** The "Decision: five projects" section rejects "a product-located
+profile shell, which would make the fixture-containment rule vacuous". That
+rejection was right and is unchanged for the subject it had: the FIXTURE profile
+is test-only, and what keeps it out of a shipped image is its path under
+`src/tests/`, which rules A4 and A5 hold. A product-located fixture would have
+dissolved that. A product-located PRODUCT profile is a different subject - it is
+meant to ship, it is what `src/compositions/` exists to link, and the
+containment rule it would have to violate is one nobody wrote because no product
+profile existed. Rules A4, A5 and A11 keep the fixture exactly where it was.
+
+**The budget.** JS-0 adds three projects and no packable assembly:
+
+| Project | Path | Kind | Why |
+|---|---|---|---|
+| `Broiler.VM.Profile.JavaScript.Format` | `src/Broiler.VM.Profile.JavaScript.Format/` | product | The bytecode format. The PIVOT: the executor and the lowering must agree on the bytecode and neither may depend on the other, so both reference this and it references nothing. Rule N3 keeps it a sink |
+| `Broiler.VM.Profile.JavaScript` | `src/Broiler.VM.Profile.JavaScript/` | product | The profile: descriptor, verifier, executor, value and object model, standard library, host imports. Rule N1 fixes its reference set |
+| `Broiler.VM.Profile.JavaScript.Compiler` | `src/Broiler.VM.Profile.JavaScript.Compiler/` | product | The lowering. A sibling of the profile, never a part of it, so that an execution-only composition contains no compiler |
+
+The graph goes from 14 projects and 41 edges to 17 and 46, and product projects
+from 3 to 6. **The packable set is unchanged at exactly three.** All three new
+projects declare no `PackageId` and carry the literal
+`<IsPackable>false</IsPackable>`; rule N4 asserts both halves, and the clause
+above requiring a dated revision for a fourth packable assembly is therefore not
+exercised by this one either. Packaging the profile is milestone JS-10's
+decision and it will need its own revision here.
+
+**Why three assemblies rather than one.** Each enforces a boundary that cannot
+be enforced inside another, which is the test this record applies to every
+assembly it authorises. The format is a DEPENDENCY boundary: two consumers must
+agree on it and neither may see the other, and one assembly holding format and
+profile together would put the format's second consumer - the lowering - on the
+profile's graph. The lowering is a DEPLOYMENT boundary: the difference between
+an execution-only composition and a runtime-compiler one is whether this
+assembly is in the closure, and a build switch inside one assembly is not a
+closure report. The profile itself is the OWNERSHIP boundary a composition root
+names. Whether the profile later splits further - a value and object model apart
+from the standard library - is left open and needs its own revision.
+
+**What the profile's reference set is, and which record admits each part.** The
+profile references `Broiler.VM.Abstractions`, `Broiler.VM.Binary` and its own
+format sibling. The first two are ADR 0011's obligation P1. The third is P1's
+2026-08-31 revision, which states that the set P1 bounds is of
+**Broiler.VM-owned** assemblies and that a profile component's own siblings are
+not members of it. Rule N1 asserts the whole set in one place, and refuses the
+runtime and the lowering by their own witnesses.
+
+**One core rule changed.** A11 forbade every reference to a
+`Broiler.VM.Profile.*` assembly from outside a composition root. It was written
+when no product profile existed, and it makes the format pivot illegal. A11 now
+exempts a sibling **in the same profile family**, keyed on the language segment -
+so `Broiler.VM.Profile.JavaScript.Compiler` may reference
+`Broiler.VM.Profile.JavaScript.Format`, and a JavaScript project referencing a
+WebAssembly one is still a violation. Rule N2 asserts that second half in both
+directions with its own witnesses, because an exemption keyed on the
+`Broiler.VM.Profile.` prefix would have dissolved the cross-profile boundary
+that the extraction gate's fourth condition exists to keep.
+
+**A13 was not widened, and that is a decision rather than an oversight.** Its
+subject is a test-only consumer profile and it states a reference set of exactly
+two assemblies. A product profile with a format sibling has three, so widening
+A13 to cover it would have loosened the rule that holds
+`Com.Example.Calculator` and `Com.Example.Ledger`. N1 states the stronger claim
+over its own subject instead, and the two rules now cover the two kinds of
+profile this component contains without either weakening the other.
+
+**What JS-0 does not do.** It lands no product code: the three assemblies
+contain one `AssemblyMarker` each and nothing else, for the same reason VM-0's
+did. There is no descriptor, no format, no verifier, no executor, no feature
+manifest and no composition root, and the profile's status ledger says so. The
+assurance system's covered set grows to six product assemblies, which is the
+product/test partition applied unchanged rather than a new policy - decision
+JSD-0006 records why the profile adopts this component's assurance system rather
+than standing up a second one over the same tree.
+
+---
+
+### 2026-08-31 - the JavaScript profile's two composition roots
+
+Milestone JS-1 of the `Broiler.VM.Profile.JavaScript` roadmap closes the whole
+contract loop on one feature manifest, and it needs somewhere to run. This
+record authorises the projects; the profile's own JSD-0008 records what they are
+and why there are two.
+
+**The budget.** JS-1 adds two projects and no packable assembly:
+
+| Project | Path | Kind | Why |
+|---|---|---|---|
+| `Broiler.VM.Composition.JavaScript.ExecutionOnly` | `src/compositions/` | composition root | The execution-only image: format, verifier, executor and **no compiler**. It runs precompiled artifacts read as bytes |
+| `Broiler.VM.Composition.JavaScript.SliceCompiler` | `src/compositions/` | composition root | The producer: it carries the lowering, writes the retained corpus, and holds the checks that need a second profile in the catalog |
+
+The graph goes from 17 projects and 46 edges to 19 and 55. **The packable set is
+unchanged at exactly three**, and both roots carry the literal
+`<IsPackable>false</IsPackable>`.
+
+**Why two projects and not two modes of one binary.** They differ by exactly one
+reference - the lowering - and that difference *is* the `execution-only`
+composition label. A flag on one binary would have made the difference a run-time
+choice inside one closure, and a closure report cannot see a flag. The published
+closures are what settles it: six managed assemblies for the execution-only image
+and seven for the compiler-bearing one, differing by
+`Broiler.VM.Profile.JavaScript.Compiler` and nothing else.
+
+**A naming collision, recorded because it is a property of the rules rather than
+a preference.** The JavaScript roadmap proposes the name
+`Broiler.VM.Profile.JavaScript.Composition.*` for these roots. It cannot be used:
+every rule that identifies a profile assembly does so by the
+`Broiler.VM.Profile.` prefix, so a composition root under that prefix *is* a
+profile assembly to rules A8, A11 and A13 - and A8 fired on the first build,
+correctly, because a composition root must reference the runtime. The roots take
+this record's own `Broiler.VM.Composition.*` shape instead, which puts them where
+A12 and the composition register can hold them.
+
+**Three rules in group K changed, and each change is a widening the register
+needed rather than a relaxation.**
+
+- **K2 no longer forbids the reserved first label; it checks the pairing.** The
+  reserved `broiler` label is reserved FOR Broiler, and what the core refuses at
+  catalog construction is a profile claiming it without a `Broiler.*` package
+  identity. Forbidding the namespace outright was indistinguishable from the
+  pairing rule while every composed profile was a consumer one under a
+  documentation domain, and became wrong the moment a genuine Broiler-owned
+  profile was composed.
+- **K2's reference-set comparison is now two directions rather than one
+  equality.** Every non-core assembly a root references must be declared; every
+  declared PROFILE must be referenced. A declared SIBLING need not be, because a
+  profile's format assembly arrives transitively and appears in no composition's
+  project file while being unmistakably in every published closure.
+- **The register gains a sibling column and an evidence column.** The first
+  because the schema had no place for a lowering - an assembly in the closure
+  that no profile comes from - and the second because this repository now has two
+  milestone series, so rules K3 and K4 read the bundle each row names instead of
+  the core's current one. Without the second, a JavaScript closure would have
+  been compared against a file nobody wrote for it.
+
+**One measurement correction that is not this record's but is recorded where a
+reader will look.** Exclusion EX-42 says the Native AOT publish step needs a
+`vcvars64` shell on Windows. It does not. It needs `vswhere.exe` on `PATH`: the
+ILCompiler package's own `findvcvarsall.bat` calls it unqualified, and when it is
+missing the batch file's error text is substituted into the property that becomes
+the linker path, so the publish fails with MSB3073 naming a command that reads as
+a sentence. Adding the Visual Studio Installer directory to `PATH` publishes and
+runs; a `vcvars64` shell without it still fails. The JavaScript collection script
+does that and says so at the constant.

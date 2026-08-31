@@ -286,10 +286,13 @@ public sealed class RuleRegisterTests
             .GroupBy(static rule => rule.Status, StringComparer.Ordinal)
             .ToDictionary(static group => group.Key, static group => group.Count(), StringComparer.Ordinal);
 
-        Assert.Equal(63, byStatus["Active"]);
+        // JS-0 mints group N - four rules over the JavaScript profile family's project graph -
+        // and changes neither of the other two counts: the one Vacuous row is B3, which nothing
+        // in the graph can violate, and the one Deferred row still awaits its own milestone.
+        Assert.Equal(67, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(65, Loaded.Rules.Count);
+        Assert.Equal(69, Loaded.Rules.Count);
     }
 
     private static Register Load()

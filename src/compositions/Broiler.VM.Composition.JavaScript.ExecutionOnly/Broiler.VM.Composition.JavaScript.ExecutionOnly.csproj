@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Composition.JavaScript.ExecutionOnly</RootNamespace>
+    <AssemblyName>Broiler.VM.Composition.JavaScript.ExecutionOnly</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Not advertised. The composition register lists no JavaScript composition, packaging is
+         JS-10's decision, and rule N4 holds both halves of that claim. -->
+    <IsPackable>false</IsPackable>
+
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <!--
+    THE EXECUTION-ONLY CLOSURE, STATED AS A REFERENCE SET.
+
+    It names the profile and NOT the lowering. That absence is the whole of the composition
+    label: an execution-only image contains a format, a verifier, an interpreter and no
+    compiler, and it therefore cannot turn source into an artifact however it is invoked. The
+    artifacts it runs are precompiled, produced by the slice-compiler root and read as bytes.
+
+    Rule N1 asserts the same absence one level down, over the profile assembly's own reference
+    set, so the property holds whether a reader checks the root or the profile.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" />
+  </ItemGroup>
+
+</Project>

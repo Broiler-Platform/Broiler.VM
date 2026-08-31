@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Composition.JavaScript.SliceCompiler</RootNamespace>
+    <AssemblyName>Broiler.VM.Composition.JavaScript.SliceCompiler</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Not advertised, for the same reason as its execution-only sibling. -->
+    <IsPackable>false</IsPackable>
+
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <!--
+    THE PRODUCER, AND IT IS A DIFFERENT COMPOSITION FROM ITS SIBLING.
+
+    This root names the lowering as well as the profile, so its closure carries a compiler. That
+    is the shape a narrow-runtime-compiler composition has, and JS-3b is the milestone that
+    claims the label with a publish-and-run gate of its own over a real source surface. At JS-1
+    it exists to lower the slice programs and write the retained corpus, and NO publish of this
+    root is evidence for the execution-only one - the roadmap's rule that no publish is evidence
+    for another kind is why the two are separate projects rather than two modes of one.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Profile.JavaScript.Compiler\Broiler.VM.Profile.JavaScript.Compiler.csproj" />
+  </ItemGroup>
+
+</Project>

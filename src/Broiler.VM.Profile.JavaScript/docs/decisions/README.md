@@ -1,0 +1,33 @@
+# Broiler.VM.Profile.JavaScript decision records
+
+The JavaScript profile's own dated decisions, numbered `JSD-nnnn`. They are a **separate series
+from the core's ADRs** and neither series numbers into the other: a `JSD` record decides
+something about this profile, an `ADR` decides something about the Broiler.VM core, and where a
+decision needs both halves each record carries its own and names the other.
+
+The [roadmap](../roadmap.md) states planned work and objective exit gates. The
+[status ledger](../roadmap.status.md) is the authority for what has been accepted. **A decision
+recorded here is not evidence that it was implemented**, and a record whose subject the checkout
+does not contain says so in its own text.
+
+| Record | Decides | Milestone |
+|---|---|---|
+| [JSD-0001](0001-placement-identity-and-assembly-topology.md) | Where this component lives, its profile ID and package identity, and the three assemblies it is built from | JS-0 |
+| [JSD-0002](0002-feature-manifest-allocation.md) | The feature-manifest identities, what each admits, and the admission criterion for the next increment | JS-0 |
+| [JSD-0003](0003-deployment-composition-labels.md) | The three composition labels, what each contains, and which are advertised | JS-0 |
+| [JSD-0004](0004-limit-defaults-hard-maxima-and-the-budget-matrix.md) | The fifteen limit defaults, the fifteen hard maxima, the budget declaration matrix, and which numbers are measured rather than chosen | JS-0 |
+| [JSD-0005](0005-the-seed-waited-on-set-and-snapshot-stop-condition.md) | Per-item dispositions on the seed's open work, the snapshot stop condition, the satellite dependency, and the nullable and unsafe positions | JS-0 |
+| [JSD-0006](0006-assurance-evidence-and-rules-adoption.md) | That this profile adopts the component's assurance system, rule register, API baseline and evidence contract rather than standing up its own, and what that costs | JS-0 |
+| [JSD-0007](0007-cross-profile-position-and-amendment-grading.md) | The `WebAssembly` host-object surface as a named exclusion, the refusal of a cross-profile value channel, and the re-grading of the amendment candidates | JS-0 |
+| [JSD-0008](0008-format-version-1-the-entry-point-and-what-js-1-corrected.md) | What format version 1 carries, the entry-point answer, and four things JS-1 corrected in earlier records | JS-1 |
+
+## What a record must carry
+
+Each record states its **status**, its **date**, its **owner** and any **co-signer**, the
+**decision**, what it **rejects and why**, and — where the decision is provisional — the named
+condition that would settle it and the milestone that owns settling it. A decision with no
+recorded rejection is a decision nobody chose between.
+
+**Where owner and co-signer are the same person, the record says so in those words.** The
+roadmap requires the non-independence to be recorded as a limit on what the decision proves,
+not resolved by assertion, and every record in this series is currently in that position.

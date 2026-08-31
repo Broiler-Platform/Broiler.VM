@@ -78,12 +78,34 @@ plan trees that will contain third-party-derived material: one starts from a sna
 Apache-2.0 engine that is itself derived from an upstream project, and the other ingests a
 third-party conformance suite as test-only material.
 
-**Neither falsifies the sentence above, and neither may be allowed to falsify it silently.** A
-profile is a separate component with its own packages, its own licence file, and its own notices;
-nothing it vendors ships in `Broiler.VM.Abstractions`, `Broiler.VM.Binary`, or
-`Broiler.VM.Runtime`, and no gitlink or project reference runs from any of the three to any
-profile. The claim stays true because it is a claim about *these three packages*, not about the
-repository they sit in or the components that reference them.
+**Neither falsifies the sentence above, and neither may be allowed to falsify it silently.**
+
+**Restated 2026-08-31, because the reason changed even though the claim did not.** This paragraph
+used to give its reason as "a profile is a separate component with its own packages, its own
+licence file, and its own notices". That is no longer true of the JavaScript profile: milestone
+JS-0's placement decision - ADR 0001 revision 5, and the profile's own JSD-0001 - puts it in
+**this repository**, as three product projects at `src/Broiler.VM.Profile.JavaScript*`, sharing
+this licence file and this notice. A reason that has stopped being true is worse than no reason,
+so here is the one that holds.
+
+The claim is about **these three packages**, and it stays true for three reasons a reader can
+check rather than take:
+
+1. **The profile packs nothing.** None of its three projects declares a `PackageId` and every one
+   carries the literal `<IsPackable>false</IsPackable>`; **rule N4** asserts both halves, and
+   **rule A6** independently asserts that exactly three projects in the whole repository declare a
+   `PackageId`. Packaging the profile is milestone JS-10's decision and needs its own revision of
+   ADR 0001.
+2. **The dependency runs one way.** A profile references the core; no core package references a
+   profile assembly. **Rule A11** permits a reference to a profile assembly only from a
+   composition root or a sibling in the same profile family, and the three packable projects are
+   neither.
+3. **The closure reports are the check.** Rule K4 asserts that a published composition's closure
+   contains exactly the composition, the three core assemblies and the profile assemblies its
+   register row declares.
+
+So the sentence's scope is now *narrower than the repository* rather than *the same as the
+component*, and it says which mechanism holds each half.
 
 What follows is an obligation on the other side rather than on this one. **A component that
 ingests or copies third-party source confirms this scoping, or amends this file, in the change
@@ -94,3 +116,16 @@ against, rather than a reader inferring the scope from a sentence that does not 
 
 **Ingesting components, as of 2026-08-31: none.** This list is empty and is expected to gain
 entries; an entry names the component, what it ingests, and the date the scoping was confirmed.
+
+**One obligation moved inside this repository on 2026-08-31 and is recorded here rather than
+left to be discovered.** The JavaScript profile's snapshot copy of an Apache-2.0 engine now lands
+in **this tree**, at milestone JS-2, not in a repository of its own. When it does, three things
+happen in the same change or the change is not complete: this file gains an entry naming what was
+ingested and its upstream derivation; the copied files are marked as changed as Apache-2.0
+section 4(b) requires; and the release owner co-signs the confirmation that the opening sentence
+is still true. **JS-0 copies nothing** - the profile's three assemblies hold one assembly marker
+each - so the list is empty today and the sentence is unamended.
+
+**The co-signature is not independent.** Every owner and co-signer role this repository names is
+currently held by one person, and this notice records that rather than resolving it by
+assertion.

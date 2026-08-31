@@ -239,6 +239,114 @@ public sealed class ProjectFileRuleTests
     }
 
     [Fact]
+    public void A11_Admits_A_Profile_Family_Sibling_And_Refuses_Another_Family()
+    {
+        // The exemption is one line in A11 and it is the line that decides whether this component
+        // can hold a profile at all, so it is asserted in both directions rather than left to be
+        // read out of the clean sweep above. The real profile assembly references its own format
+        // sibling and must be clean; the same shape pointed at another language must not be.
+        Assert.Empty(ArchitectureRules.A11(
+            ComponentGraph.Projects.Single(project => string.Equals(
+                project.AssemblyName, "Broiler.VM.Profile.JavaScript", StringComparison.Ordinal))));
+
+        Assert.NotEmpty(ArchitectureRules.A11(
+            ComponentGraph.Witness("N2-family-references-another-profile.csproj.witness")));
+
+        // And the exemption is not a prefix exemption. Naming the predicate directly is what
+        // stops a later widening from passing both assertions above by accident.
+        Assert.True(ArchitectureRules.IsSameProfileFamily(
+            "Broiler.VM.Profile.JavaScript", "Broiler.VM.Profile.JavaScript.Format"));
+
+        Assert.False(ArchitectureRules.IsSameProfileFamily(
+            "Broiler.VM.Profile.JavaScript", "Broiler.VM.Profile.WebAssembly"));
+
+        Assert.False(ArchitectureRules.IsSameProfileFamily(
+            "Broiler.VM.Runtime", "Broiler.VM.Profile.JavaScript"));
+    }
+
+    [Fact]
+    public void N1_The_JavaScript_Profile_References_Abstractions_Binary_And_Its_Own_Format()
+    {
+        Assert.Empty(Sweep(ArchitectureRules.N1));
+
+        // Four independent claims, four violating inputs, each asserted on the CONTENT of the
+        // message it should produce. A bare non-empty check would pin only whichever clause fires
+        // first and would let the other three be deleted in one patch with nothing red.
+        Assert.Contains(
+            ArchitectureRules.N1(ComponentGraph.Witness("N1-profile-references-runtime.csproj.witness")),
+            message => message.Contains("Broiler.VM.Runtime", StringComparison.Ordinal));
+
+        Assert.Contains(
+            ArchitectureRules.N1(ComponentGraph.Witness("N1-profile-references-the-lowering.csproj.witness")),
+            message => message.Contains("would carry a lowering", StringComparison.Ordinal));
+
+        Assert.Contains(
+            ArchitectureRules.N1(ComponentGraph.Witness("N1-profile-package-reference.csproj.witness")),
+            message => message.Contains("PackageReference", StringComparison.Ordinal));
+
+        Assert.Contains(
+            ArchitectureRules.N1(ComponentGraph.Witness("N1-profile-internals-visible-to.csproj.witness")),
+            message => message.Contains("opens internals", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void N2_No_Profile_Family_Reaches_Another_In_Either_Direction()
+    {
+        Assert.Empty(Sweep(ArchitectureRules.N2));
+
+        Assert.Contains(
+            ArchitectureRules.N2(ComponentGraph.Witness("N2-family-references-another-profile.csproj.witness")),
+            message => message.Contains("Broiler.VM.Profile.WebAssembly", StringComparison.Ordinal));
+
+        Assert.Contains(
+            ArchitectureRules.N2(ComponentGraph.Witness("N2-non-family-project-references-the-profile.csproj.witness")),
+            message => message.Contains("outside every profile family", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void N3_The_JavaScript_Format_Assembly_Is_A_Sink()
+    {
+        Assert.Empty(Sweep(ArchitectureRules.N3));
+
+        // Non-vacuous in both directions: the real format project exists and has no edge, and the
+        // rule rejects one that does. Without the first half this would pass over a checkout that
+        // contained no format assembly at all.
+        Assert.Contains(
+            ComponentGraph.Projects,
+            project => string.Equals(
+                project.AssemblyName, "Broiler.VM.Profile.JavaScript.Format", StringComparison.Ordinal));
+
+        Assert.NotEmpty(ArchitectureRules.N3(
+            ComponentGraph.Witness("N3-format-references-the-profile.csproj.witness")));
+    }
+
+    [Fact]
+    public void N4_No_JavaScript_Profile_Project_Is_Packable()
+    {
+        Assert.Empty(Sweep(ArchitectureRules.N4));
+
+        // The rule has real subjects: three family projects in the graph - the format, the profile
+        // and the lowering - none of them packable. The two JavaScript composition roots are NOT
+        // family projects and that is deliberate: they are named Broiler.VM.Composition.JavaScript.*
+        // rather than Broiler.VM.Profile.JavaScript.Composition.*, because the second shape makes
+        // a composition root indistinguishable from a profile assembly to every rule that
+        // identifies one by prefix - A8 fired on it, correctly, when it was tried. A12 and the
+        // composition register hold the roots instead.
+        Assert.Equal(
+            3,
+            ComponentGraph.Projects.Count(project =>
+                ArchitectureRules.ProfileFamily(project.AssemblyName) is not null));
+
+        Assert.Contains(
+            ArchitectureRules.N4(ComponentGraph.Witness("N4-family-project-declares-a-package-id.csproj.witness")),
+            message => message.Contains("declares PackageId", StringComparison.Ordinal));
+
+        Assert.Contains(
+            ArchitectureRules.N4(ComponentGraph.Witness("N4-family-project-omits-ispackable.csproj.witness")),
+            message => message.Contains("IsPackable", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void The_Graph_Manifest_Describes_The_Checkout()
     {
         // A7 compares only the edge multiset, so the manifest's other columns were description
