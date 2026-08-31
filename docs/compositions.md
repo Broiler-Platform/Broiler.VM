@@ -114,8 +114,9 @@ one machine, one lane: exclusion EX-45 of the VM-2 bundle applies unchanged.
 
 ## 5. What a profile author should take from this
 
-Two things surfaced while composing two unlike profiles that are properties of
-the contract rather than of these two profiles, and both are cheap to get wrong.
+Three things surfaced while composing two unlike profiles that are properties of
+the contract rather than of these two profiles, and all three are cheap to get
+wrong.
 
 **A hard maximum is a statement about your neighbours, not only about you.** A
 runtime ceiling is clamped to the tightest hard maximum in the catalog, across
@@ -132,6 +133,53 @@ The same profile, over the same artifact, answers differently in a runtime whose
 host registered the capability and one whose host did not - and both are correct
 answers. Write the unbound branch first: it is the one a host's policy can force
 on you at any time, and `IsBound` is the whole of what you may ask.
+
+**Defaults clamp catalog-wide too, and the dimension you never use is the one to
+watch.** The clamp above is the half a reader remembers; adopting a profile
+default resolves to the tightest default in the catalog, which is the half that
+gets missed. And the clamp reads every dimension of every descriptor with no
+exemption for the ones a profile declares inapplicable. So a profile writing `0`
+into a guest-load maximum because it has no guest loads clamps a profile that
+does have them to zero, and a declaring profile cannot defend itself: ADR 0008
+forbids it from declaring those four unconstrained. **Declare `Unconstrained` on
+a dimension you do not use, and say why in the record**, because the failure
+surfaces in somebody else's verifier as a refusal naming a dimension they never
+touched.
+
+---
+
+## 5a. A composition this register does not yet have
+
+Both intended first profiles are written against this core, and the product that
+consumes them first is a browser, which needs **both at once**. No such
+composition exists, and this register deliberately has no row for it: rule K1
+fails on a row naming a root that does not exist, so an anticipated composition
+is recorded here in prose or not at all.
+
+What is worth fixing now is who owes what, because none of it belongs to either
+profile:
+
+- **The closure, the RID matrix and the Native AOT evidence are the composing
+  component's**, not the union of two profiles' evidence. One profile's roadmap
+  calls a browser its *largest* closure because it links a lowering; the other
+  calls a browser its *smallest* because it compiles nothing. Both are true of
+  themselves and neither describes the image, which is the union plus the core.
+- **The two profiles clamp each other**, per the paragraph above, on all fifteen
+  dimensions in both directions. Reconciling two independently owned descriptors
+  is the composing component's job and nothing in either profile can do it.
+- **A call chain that crosses runtimes is bounded only under one shared parent.**
+  Cross-runtime reentry is legal and depth-bounded, and it is the route a
+  browser's cross-profile seam takes - but the bound is an aggregate one, so a
+  composition root that creates two runtimes without a shared aggregate budget
+  has no bound on the chain at all. Create one.
+- **No cross-profile value channel exists or is coming.** A guest-initiated load
+  may not name another profile; the provider must answer with an artifact of the
+  profile that asked. The seam is the embedder's, every call across it is two
+  host-boundary transits, and a shared mutable region has no core representation.
+
+Until that component exists, the honest position is the one section 1 already
+takes: nothing here is advertised, and a browser is not a composition this
+register describes.
 
 ---
 

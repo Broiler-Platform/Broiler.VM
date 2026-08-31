@@ -256,7 +256,7 @@ project shells and an explicit assembly/package budget.
 | Bounded input primitives | `Broiler.VM.Binary` | Checked readers, variable-length integer decoding, bounded framing, and allocation guards used by the core envelope and by every profile verifier. Contains no format, no schema, and no semantics. |
 | Core runtime | `Broiler.VM.Runtime` | Builder, immutable catalog, bounded load/execute lifecycle, resource authority, guest-initiated-load mediation, cancellation, diagnostics, and ownership. References abstractions and binary primitives only. |
 | Fixture profile | `Broiler.VM.Fixtures` *(test-only)* | The trivial profile and application-local consumer profile used to prove contracts and closures. Never referenced by a product package. |
-| Profile (future) | `Broiler.VM.Profile.<Language>` | One language: format, verifier, value/frame model, executor, imports, conformance. References the core; never references another profile. |
+| Profile (future) | `Broiler.VM.Profile.<Language>` | One language: format, verifier, value/frame model, executor, imports, conformance. References the core; never references another profile. **One product assembly is the default**; section 10 splits the format out only where Broiler compiles the language itself, and a profile that consumes a format an external toolchain produces has nothing for a format assembly to hold apart. VM-0 rules whether a profile's own sibling assembly counts inside the frozen "exactly two core assemblies" reference set, because a profile cannot decide its topology until it knows. |
 
 Single-profile and multi-profile composition roots are explicit packages or samples, never a
 runtime option that removes an already rooted profile. No new assembly is accepted merely to
@@ -417,11 +417,43 @@ rejected, whether external suspension may be requested and by whom, and how susp
 retains and releases resources. The reentrancy rules must state explicitly whether a
 guest-initiated load may re-enter the runtime that requested it.
 
+### Ceilings are catalog-wide, and both halves of that are load-bearing
+
+Effective ceilings are not resolved against the profile the caller selected. They are resolved
+against **every profile in the catalog**, in two separate ways, and a profile author who knows only
+the first will still write a defect:
+
+1. **A runtime ceiling is clamped to the tightest profile hard maximum in the catalog**, per
+   dimension, with no exemption for a profile that declares the dimension inapplicable; and
+2. **adopting a profile default resolves to the tightest default in the catalog**, per dimension.
+
+The consequence is the one VM-3 discovered by building a second profile rather than by reasoning:
+a profile that declares its own usage as its maximum caps every profile composed beside it, and the
+victim's verifier is refused for something it did nothing to cause. **A hard maximum is a statement
+about your neighbours as much as about you.** What keeps a dimension unreachable is a profile's
+import list and its budget declaration matrix, never a zero ceiling — and a dimension a profile
+declares `NotApplicable` must still publish an unconstrained hard maximum, or it silently disables
+that dimension for every profile beside it.
+
+VM-0 records both terms in the resource-authority ADR that owns effective-ceiling materialization,
+rather than leaving them in a topology finding, a composition register and an evidence bundle where
+the algorithm that implements them does not cite any of the three. A profile roadmap states the
+rule by citation and does not paraphrase it.
+
 ### Load-time requirements
 
 - Checked arithmetic for every length, count, offset, index, and allocation calculation.
 - Effective limits computed from profile hard maxima, host ceilings, and artifact requests before
   reading or allocating from an untrusted declared count; artifact metadata cannot raise a limit.
+- **A bounded-read stop maps onto one outcome category, and which one is core-owned, not a matter
+  of profile taste.** Each bounded-read status has exactly one correct answer: a framing or
+  encoding failure is `invalid artifact`, and a breach of a configured ceiling that names a budget
+  dimension is `resource exhaustion` naming that dimension and its scope. VM-0 rules the whole set
+  in one place and VM-2 proves it, because the answer is what a retained corpus entry records: a
+  miscategorised entry does not fail later, it passes and encodes the wrong answer, and every
+  profile that copies the mapping copies the error. Conflating the two also misreports a host's
+  declined ceiling as a malformed artifact, which is the diagnostic error most likely to be acted
+  on wrongly.
 - Bounds on artifact bytes, sections, constants, metadata, nesting, and aggregate verifier work.
 - Deterministic rejection for unknown identifiers, sections, features, and versions.
 - No allocation based on an untrusted declared count before the count passes its configured bound.
@@ -463,6 +495,13 @@ answers a guest-initiated load with a descriptor and bytes instead of a value. I
 allowlisted, versioned, and audited separately; registering value capabilities never implies one;
 and a composition that omits it makes every guest-initiated load fail deterministically.
 
+**Host-exception translation has a precedence and the order is the core's.** An exception crossing
+back from a capability is classified in exactly this order: a cancellation exception carrying the
+operation's own token is `cancellation`; an exhausted meter at the moment of the catch is `resource
+exhaustion`; anything else is `host failure` naming the capability. The order is stated here so a
+profile cites it rather than re-deriving it from the implementation, which is what two independently
+written profile roadmaps did.
+
 ---
 
 ## 8. Sharing between profiles without a lowest-common-denominator core
@@ -486,16 +525,63 @@ Applied to the concrete candidates:
 | Bounded binary reading: checked arithmetic, variable-length integers, framing, allocation guards | **Core-owned from day one** (`Broiler.VM.Binary`). The core's own envelope needs it and every profile verifier needs it, so it has two consumers before any profile exists. |
 | Descriptor matching, verified handles, limit intersection, envelope, lifecycle, budgets, diagnostics identity, host registry | **Already core-owned.** No new component; the rule is simply that a profile never re-implements them. |
 | A verification framework: worklist and fixpoint over a control-flow graph, parameterized by the profile's abstract domain | **Extract later, do not predict.** Two verifiers will share the shape and share no domain. Open it when the second verifier exists and the duplication is measured. |
-| Lexing, source positions, diagnostic formatting | **Only when a second text front end exists.** Until then it is one profile's private code wearing a shared name. |
+| Lexing and diagnostic *formatting* | **Only when a second text front end exists.** Until then it is one profile's private code wearing a shared name. |
+| Positioned diagnostics and a stable code registry: a versioned registry bound in both directions, each code mapping to exactly one core reason, each emission carrying the core's position record | **Named mechanism, extract later, trigger re-cut.** The original trigger — a second text front end — can never fire: a binary-format profile emits positioned refusals and will never have a front end. The trigger is instead **the second profile that emits positioned refusals**, front end or not. Until then both profiles use the core's position record, state which of its fields they populate, and neither invents a parallel one. |
+| The conformance-harness method: a pinned corpus revision, content-independent sharding, a recorded selection pipeline, a self-check with a passing control before every shard, a closed set of configuration failures, a failure manifest that is a queue, the harness's own regression suite, and a ratchet | **Named mechanism, extract later, and test-only either way.** Two profiles have specified it in near-identical words against two unrelated corpora, which is design-level evidence and not merged code. The trigger is the second profile's harness merging. Note that a shared harness is never referenced by a product package, so its extraction can never enter a product closure — which removes the usual objection but not the gate. |
+| Assurance annotation, fingerprinting, review-state generation, and the evidence-bundle contract and collection script | **Repository policy, not a core component.** The core has one implementation and both profile roadmaps specify a byte-identical floor. The correct first move is a repository-level policy document that the components cite, not a shared assembly; the trigger for a shared tool is a second component's implementation existing to compare against. |
+| The projection between the contract meter and the bounded-reading meter, and between a limit vector and the four artifact-shaped read bounds | **Documented duplication, kept.** It is four method bodies and one projection, it names no language concept, and it is already written once per profile in this repository — but the canonical copy lives in a test-only assembly no product profile may reference, so every profile writes it again. The core's obligation is to publish the canonical form in the profile-facing contract so the copies agree, not to add a package for it. |
 | A shared syntax tree or parser (`Broiler.VM.Parser.AST` and similar) | **No.** A syntax tree is the most language-specific artifact in a pipeline, and a binary-format profile has no parser and no tree at all. Such a component would have one consumer and would encode one language's grammar into the core's namespace. |
 | Shared value representation, frame layout, or opcode set | **No.** These are the semantics the core exists not to own. |
+| A cross-profile value channel, so one profile can call another in the same process | **No, and this is the row a browser will push hardest on.** See the cross-profile boundary below: the price is paid at the embedder's seam, where it is visible, rather than inside a core that would have to learn two languages to charge it. |
 
 **The extraction gate.** A new shared component is opened only when all four hold: two or more
-profiles already implement the behavior; the implementations are compared and the shared part is
-identified from real code rather than anticipated; the shared part is expressible without naming
-any language concept; and extracting it does not create a profile-to-profile dependency. Failing
-any one, the duplication is documented and kept. Duplicated mechanism is cheap; a wrong shared
-abstraction is not.
+**product** profiles already implement the behavior; the implementations are compared and the
+shared part is identified from real merged code rather than anticipated; the shared part is
+expressible without naming any language concept; and extracting it does not create a
+profile-to-profile dependency. The fixture profile and the application-local consumer profiles do
+not count toward the two: they are core-owned and deliberately shaped to fit the contract, so
+agreement between them is evidence about the core's own tests. Failing any one condition, the
+duplication is documented and kept. Duplicated mechanism is cheap; a wrong shared abstraction is
+not.
+
+**Failing the gate is a filing obligation, not a silence.** The first condition is unsatisfiable
+until two product profiles exist, so for the whole of VM-0 through VM-6 every candidate above fails
+it. That does not make the candidates unrecorded work: a refused extraction produces a dated record
+in the ADR set naming the condition that failed and the condition that would reopen it, and each
+duplicated implementation carries a source-level pointer to that record. A duplication with no
+record is the failure mode this rule exists to prevent, because it is indistinguishable from
+nobody having noticed.
+
+**The gate's first invocation belongs to the core architecture owner, not to a profile.** A profile
+milestone *supplies* its half — file paths, source revision, and a correspondence table against the
+other implementation — and records that it supplied it. It records no verdict, because a verdict is
+a change to the core graph and because neither profile may cite an identifier belonging to the
+other. A profile that finds the second implementation has not merged records that the first
+condition is unsatisfied and names what would satisfy it. **An unrecorded state is a stop
+condition; an unsatisfied first condition is not.**
+
+### The cross-profile boundary, and why it is not an extraction question
+
+A browser hosts two profiles at once and reaches one of them through the other. That is a real
+product requirement and the core answers it with two facts, both frozen and both easy to discover
+too late:
+
+- **A guest-initiated load may not name another profile.** The provider must answer with an
+  artifact of the profile that asked; a different profile is a provider contract breach reported as
+  a host failure. One profile can therefore never reach another through the mediator, and no
+  amendment to the mediator is the right way to ask for it.
+- **Cross-runtime reentry is legal and depth-bounded.** A host object bridging two independent
+  runtimes is admitted deliberately, which is the route a browser's `WebAssembly` surface actually
+  takes: the embedder receives a call from one profile, converts arguments into the core's transfer
+  types, invokes the other profile's runtime, and converts results back.
+
+So the seam is the embedder's, every call across it is two host-boundary transits, and a shared
+mutable region — the case that matters most in practice — has no core representation and is not
+getting one. **The core's obligation is to make that price visible before the component that pays
+it exists.** Two further obligations follow and belong to whichever component composes both
+profiles: a two-profile composition is a named composition with its own closure report, RID matrix
+and evidence, and a call chain that crosses runtimes is bounded only where those runtimes were
+created under one shared aggregate budget — so a two-profile composition root creates one.
 
 ---
 
@@ -519,6 +605,19 @@ Expected to require, beyond the baseline in section 4:
 
 Each of those is why the corresponding core contract exists. Together they are the reason section
 2's amendment procedure is written before the first profile rather than after it.
+
+It will also need a **test-only conformance-suite ingestion path**, for the same reason the other
+profile does: its oracle is an external corpus distributed as source files, and the harness that
+reads them is the largest piece of code that must never appear in a product. The core's obligation
+is the general rule in section 14 — test tooling and corpus readers stay out of every product
+package and Native AOT closure — and the rule is stated for both profiles rather than for one,
+because an asymmetric note is how one roadmap ends up with a discipline the other lacks.
+
+**It is also the profile a browser reaches WebAssembly through**, which is a requirement that
+belongs to neither profile alone. Section 8's cross-profile boundary records what the core does and
+does not provide for it; the reciprocal obligation on this profile is to declare the `WebAssembly`
+host-object surface as a named exclusion rather than let a reader infer it from the presence of a
+second profile in the same image.
 
 **Seeding.** The JavaScript profile will be started from a **copy** of the legacy `Broiler.JS`
 component taken after its in-flight fix programme completes, used as a base and template rather
@@ -572,13 +671,19 @@ Two concerns hide behind the word *compiler*, and they do not share a home:
 
 | Concern | Language-specific | Home |
 |---|---|---|
-| **Format** — opcodes, schema, encoder and decoder | yes | `Broiler.VM.Profile.<Language>.Format` |
+| **Format** — opcodes, schema, encoder and decoder | yes | `Broiler.VM.Profile.<Language>.Format`, **only where a Broiler compiler exists for the language**; otherwise inside the profile |
 | **Lowering** — source to bytecode | yes, and only where Broiler compiles the language itself | `Broiler.VM.Profile.<Language>.Compiler` |
 
-**The format package is the pivot.** A compiler and an executor must agree on the bytecode, and
-neither may depend on the other, so the format is one authority that both reference. The compiler
-is a **sibling** of the profile rather than a part of it, which is what makes an execution-only
-image contain a format, a verifier, and an interpreter and no compiler at all.
+**The format package is the pivot, and it is a pivot only where there are two parties to pivot
+between.** A compiler and an executor must agree on the bytecode, and neither may depend on the
+other, so the format is one authority that both reference. The compiler is a **sibling** of the
+profile rather than a part of it, which is what makes an execution-only image contain a format, a
+verifier, and an interpreter and no compiler at all. Where Broiler writes no compiler for the
+language — because an external toolchain already produces the artifacts — there is no second party,
+the format stays inside the profile per section 5, and creating a format assembly would be creating
+an assembly to shorten a file. **The split is a consequence of compiling the language, not a naming
+convention for profiles**, and a profile roadmap that copies the three-package shape without a
+compiler has copied a rationale it does not have.
 
 There is no generic compiler host with pluggable language profiles, and section 8's extraction
 gate is why. A generic compiler core would own no compilation: parsing, analysis, lowering, and
@@ -736,6 +841,36 @@ never complete because its design appears here.
   execution and must stay so, and settle section 11's three embedding decisions: whether locally
   produced bytecode must round-trip through bytes, whether verification may be lazy per section,
   and whether an artifact may be verified incrementally as it arrives.
+
+  Then settle seven further questions that are a sentence now and a defect in a shipped profile
+  later. Each is here because it is reachable from the implementation and absent from the record
+  that owns it, or because two independently written profile roadmaps answered it differently:
+
+  1. **The bounded-read status mapping**, ruled once for the whole set, in the resource-authority
+     and artifact-ownership records rather than in a source comment that attributes itself to
+     records not carrying it. Every ceiling breach that names a budget dimension is `resource
+     exhaustion` naming that dimension and scope, or it is not, but the four artifact-shaped
+     ceilings are ruled together and not split arbitrarily.
+  2. **Both catalog-wide ceiling terms** — the tightest hard maximum and the tightest adopted
+     default — written into the ordered precedence algorithm that owns effective-ceiling
+     materialization, with the "publish an unconstrained maximum on a dimension you declare
+     inapplicable" rule stated as a profile obligation.
+  3. **Host-exception translation precedence**, written down rather than left to be re-derived
+     from the implementation.
+  4. **Whether a profile's own sibling assembly counts inside the frozen two-core-assembly
+     reference set**, and the reconciliation of section 5 with section 10 on where a format lives.
+     No profile can take its placement decision until this is answered.
+  5. **Who invokes the extraction gate, and where the record is filed** — including the case where
+     the first condition is unsatisfied, and the fact that neither profile may cite the other, so
+     the record can only live here.
+  6. **The candidate-amendment register brought level with what the profiles have asked for**,
+     including the charging hook for work done inside a host capability, which is the one candidate
+     both intended profiles independently rate general, and the argument channel, whose scope and
+     strength the two profiles currently record differently.
+  7. **Whether a retained-state dimension can carry a guest-observable refusal.** It cannot today —
+     the retention report returns nothing and the refusal is latched for the next charge or poll —
+     and a profile whose language requires an observable refusal must gate on a charge instead.
+     Recording it costs a sentence; discovering it costs a memory representation.
 - **Dependencies:** Named ownership for the core contract and its amendments. No dependency on any
   profile, on the legacy component, or on the legacy component's in-flight work.
 - **Objective exit gate:** An acyclic shell graph builds; architecture tests express every
@@ -747,7 +882,11 @@ never complete because its design appears here.
   aggregate-budget questions each carry a recorded decision rather than silence; verification is
   separable from execution and recorded as required to stay so; and section 11's round-trip,
   lazy-section, and incremental-verification decisions are recorded with the reasoning that
-  settled them.
+  settled them. The seven questions above each carry a dated decision in the record that owns the
+  subject, not in a source comment and not in an evidence bundle; the sharing table's triggers each
+  name a condition that can actually fire; and the cross-profile boundary is recorded with its
+  two frozen facts, its named unowned costs, and the statement that a two-profile composition is a
+  composition with its own evidence rather than an emergent property of composing two roots.
 
 ### VM-1 — Build the semantics-neutral runtime, catalog, and fixture profile
 
@@ -886,9 +1025,9 @@ a core gate.
 
 | Area | Required tests/evidence | Failure that blocks release |
 |---|---|---|
-| Core/catalog | duplicate, alias, unknown and reserved IDs; version and core-contract-version mismatch; explicit selection; order independence; factory identity; application-local fixture; profile-neutral outcomes and typed payload preservation | reflection or name discovery, silent replacement, core reference to a concrete profile, an undeclared or forked core contract version, or catalog drift |
+| Core/catalog | duplicate, alias, unknown and reserved IDs; version and core-contract-version mismatch; explicit selection; order independence; factory identity; application-local fixture; profile-neutral outcomes and typed payload preservation; **a two-profile catalog test proving that neither profile's declared maxima or adopted defaults refuse the other's ordinary artifact** | reflection or name discovery, silent replacement, core reference to a concrete profile, an undeclared or forked core contract version, catalog drift, or **one profile's declaration capping a dimension it declares inapplicable** |
 | Dependency architecture | acyclic graph; core references no profile; no profile references another; no product package references a fixture or test project; no edge to a legacy Broiler component in either direction | any forbidden project or assembly edge, or undeclared dynamic loading |
-| Artifact safety and policy | truncation, invalid sizes, indexes and framing, corrupt envelope, post-verification caller-buffer mutation, disposal and concurrent overwrite, verified-handle identity and lease lifetime, explicit default adoption, omitted-limit inheritance, host/profile/artifact intersection, invocation-only tightening, guest-initiated-load depth, fan-out and cumulative bounds, nested budget charging, missing-provider refusal, minimized fuzz corpus | invalid input executes, caller mutation changes execution, one runtime invalidates another's handle, omission becomes unbounded, policy raises a verified ceiling, a nested load enlarges or escapes its requesting operation's budget, a provider-less composition executes acquired bytes, unbounded allocation, crash, hang, or nondeterministic failure class |
+| Artifact safety and policy | truncation, invalid sizes, indexes and framing, corrupt envelope, post-verification caller-buffer mutation, disposal and concurrent overwrite, verified-handle identity and lease lifetime, explicit default adoption, omitted-limit inheritance, host/profile/artifact intersection, invocation-only tightening, guest-initiated-load depth, fan-out and cumulative bounds, nested budget charging, missing-provider refusal, minimized fuzz corpus; **every bounded-read status produced by a named case and mapped onto its one ruled outcome category, asserted identically across every verifier in the graph** | invalid input executes, caller mutation changes execution, one runtime invalidates another's handle, omission becomes unbounded, policy raises a verified ceiling, a nested load enlarges or escapes its requesting operation's budget, a provider-less composition executes acquired bytes, **a ceiling breach reported as a malformed artifact or a framing failure reported as exhaustion**, **two verifiers in one graph answering one status differently**, unbounded allocation, crash, hang, or nondeterministic failure class |
 | Persistence ownership | core outer-schema compatibility, rejection and migration; header and profile dispatch; atomic corruption handling; profile payload and cache-key boundaries; content authorization separate from checksum | ambiguous migration owner, outer compatibility mistaken for payload compatibility, torn update treated as valid, or checksum treated as authenticity |
 | Lifecycle/concurrency | frozen state transitions; repeated verify, instantiate, run, suspend, resume, cancel and dispose; external suspension, resume and abandonment; guest-initiated load under cancellation and disposal; independent runtimes; multiple fixture profiles; thread affinity; reentrancy; shared aggregate budget exhaustion; memory plateau | profile-specific state leaks into the core result enum, shared mutable leakage, race, unbounded retention, use-after-dispose, an externally suspended operation that cannot be resumed, cancelled or disposed, concurrent runtimes multiplying a host ceiling, or unbounded cancellation latency |
 | Host security | typed allowlist, signature mismatch, permission denial, thread affinity, host exception translation, artifact-provider allowlist and its absence, secret-safe diagnostics | arbitrary CLR discovery or access, a provider reachable without declaration, a tool reached outside the declared closure, or cross-runtime capability leak |
@@ -931,6 +1070,15 @@ A Broiler.VM core preview or stable release must satisfy all applicable gates:
    envelope recovery, vulnerability response, and recertification owners are named.
 8. **Measurement honesty:** core overhead is published with its method, and no language
    performance is claimed or implied.
+9. **Human review:** no package is published, no RID is claimed, no support table is issued, and
+   no milestone moves to accepted until a named human has recorded a decision on every relevant
+   code unit, bound to that declaration's fingerprint. This gate is stated here rather than only in
+   the ledger's update rules, because a release gate that lives only in an update rule has to be
+   discovered from a milestone row instead of read off the list a release is checked against.
+10. **Licence and attribution:** notices are current and correctly scoped, and no standing
+   third-party claim this component publishes is falsified by what any component that ingests or
+   copies from it ships **or by what its tree contains**. A component that vendors or copies
+   third-party source is named in the notice in the same change that introduces it.
 
 Recertification is required when the SDK or runtime, core contract version, package graph, host
 capability surface, Native AOT settings, RID matrix, cache identity, resource defaults, or
@@ -943,6 +1091,12 @@ representative workload changes.
 | Risk | Mitigation / stop condition |
 |---|---|
 | The core becomes a lowest-common-denominator language runtime | Keep opcodes, values, frames, verifier rules, and semantics profile-owned. Apply section 8's extraction gate before sharing anything, and reject a shared primitive that introduces a profile-to-profile dependency or a semantic conversion tax. |
+| One profile's declared maxima or defaults silently cap another profile composed beside it, and the victim's verifier is refused for something it did not cause | Both catalog-wide terms are stated in the record that owns effective-ceiling materialization; a dimension declared inapplicable still publishes an unconstrained maximum; and a two-profile catalog test catches it rather than a reader. **Stop: a maximum or default set to a profile's own usage is a composition defect, and a composition that hosts two profiles does not close a gate until that test exists.** |
+| The extraction gate is never invoked, so duplicated mechanism accumulates with no record of why | A refused extraction produces a dated record naming the failed condition and the condition that reopens it, and each duplicated implementation points at it. Invocation belongs to the core architecture owner; a profile supplies its half and records no verdict. **Stop: the verdict may be either, and an unsatisfied first condition is not a failure — but an unrecorded state is.** |
+| Guest-controlled cost that grows with its input is charged flatly, so a bounded budget bounds nothing | Per-family declared monotone charging functions with a declared granularity and a ceiling floor, each with a retained fixture and an unsimplified control. The core cannot check this and says so; the compensating control is the evidence bundle. **Stop: an operation family without a proportionality fixture does not ship.** |
+| Declared scalars — depth ceilings, uncharged-work bounds, charging granularity, poll bounds — are round figures rather than measurements | Each is derived from a retained, reproducible measurement on each claimed RID and recorded with it. **Stop: a stack overflow is not translatable into a result, so claiming to handle deep recursion without a measured bound is an untruthful capability claim.** |
+| Owner and reviewer are the same person, so no gate here is independently confirmed | Roles are named per milestone and per record; where one person holds several, the non-independence is recorded as a residual limit on what these gates prove rather than resolved by assertion. **Stop: a vacant role stops the point that requires it; a role held by nobody does not pass to whoever is available.** |
+| A profile's programme stalls on a precondition this component holds, and the blocker is described as scheduling | The core is the named holder of the contract-acceptance blocker for every profile. Each blocked milestone is recorded blocked with its holder and its unblock condition. **Stop: lack of scheduling is not a blocker; an unaccepted contract is.** |
 | A core designed with no real profile fits no real profile | Prove every gate against a fixture profile shaped after a non-trivial existing runtime, keep section 9's requirement lists current, and treat a profile that cannot be expressed through section 4 as a contract defect rather than a profile problem. |
 | An approved profile capability does not fit the frozen core contract | Amend it: mint the next core contract version, state what changed, and recertify affected evidence. Do not add a language-specific path to the core state machine, and do not maintain a second core contract per profile. |
 | The core result enum grows one case per language | Keep only profile-neutral outcome categories in the core and carry language outcomes as typed profile payloads. Reject a profile that requires the core execution loop to learn its semantics. |

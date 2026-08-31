@@ -69,3 +69,28 @@ into a shipped closure would fail that rule rather than survive as a missing row
 If a runtime dependency is ever added to any of the three packages, this file must gain a row for
 it **in the same change**. ADR 0001 records that requirement as the reason this file was deferred
 rather than created empty: an empty notices file asserts a license pass that has not happened.
+
+## The scope of the claim, and who may falsify it
+
+The opening sentence is scoped to **the three Broiler.VM packages**, and that scoping is
+load-bearing now that other components are being written against this one. Two profile roadmaps
+plan trees that will contain third-party-derived material: one starts from a snapshot copy of an
+Apache-2.0 engine that is itself derived from an upstream project, and the other ingests a
+third-party conformance suite as test-only material.
+
+**Neither falsifies the sentence above, and neither may be allowed to falsify it silently.** A
+profile is a separate component with its own packages, its own licence file, and its own notices;
+nothing it vendors ships in `Broiler.VM.Abstractions`, `Broiler.VM.Binary`, or
+`Broiler.VM.Runtime`, and no gitlink or project reference runs from any of the three to any
+profile. The claim stays true because it is a claim about *these three packages*, not about the
+repository they sit in or the components that reference them.
+
+What follows is an obligation on the other side rather than on this one. **A component that
+ingests or copies third-party source confirms this scoping, or amends this file, in the change
+that introduces the material** - with the release owner co-signing, because the confirmation is a
+release-facing statement and not a housekeeping edit. Both profile roadmaps carry that as a
+milestone item. This section exists so that the confirmation has something specific to confirm
+against, rather than a reader inferring the scope from a sentence that does not state it.
+
+**Ingesting components, as of 2026-08-31: none.** This list is empty and is expected to gain
+entries; an entry names the component, what it ingests, and the date the scoping was confirmed.
