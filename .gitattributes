@@ -1,0 +1,46 @@
+# Line endings in this component are not a matter of taste, and this file exists
+# because two of its disciplines break without them.
+#
+# Three artefacts here are generated and then compared byte for byte against what
+# the generator would write again - CODE-ASSURANCE.md, HUMAN_REVIEW.md and
+# assurance.manifest.json - and rule J5 fails when they differ. The generators
+# emit LF. On a checkout that converts to CRLF the comparison fails on every line
+# while the content is identical, and the failure reports "differs in length
+# only", which is a true sentence nobody can act on. Five tests fail this way on a
+# stock Windows clone, before anyone has edited anything.
+#
+# And the malformed-input corpus is eighty-seven artifacts pinned by SHA-256. A
+# single byte of end-of-line conversion invalidates a hash and takes VM-2's whole
+# boundary evidence with it. Those files must never be converted by anything, and
+# leaving that to a heuristic is not a bound.
+#
+# Everything tracked here is already LF in the index, so this file pins what is
+# true today rather than changing it. Adding it renormalises nothing.
+
+# Text is stored and checked out LF, on every platform, whatever a contributor's
+# core.autocrlf says. eol=lf is the half that matters: text=auto alone would still
+# hand a Windows checkout CRLF.
+*                         text=auto eol=lf
+
+# C# is text even where git's heuristic says otherwise. samples/.../Program.cs
+# embeds a "NOPE\x01\x00\x00"u8 payload literal, so it carries real NUL bytes and
+# is detected as binary - which means it neither diffs as source nor gets the
+# guarantee above. Declaring the type removes the guess.
+*.cs                      text eol=lf
+*.csproj                  text eol=lf
+*.slnx                    text eol=lf
+*.props                   text eol=lf
+*.targets                 text eol=lf
+*.json                    text eol=lf
+*.md                      text eol=lf
+*.yml                     text eol=lf
+*.txt                     text eol=lf
+*.log                     text eol=lf
+*.witness                 text eol=lf
+*.py                      text eol=lf
+*.config                  text eol=lf
+
+# Byte-pinned evidence. Declared binary so no future heuristic, filter or
+# contributor setting can rewrite a corpus artifact and break its recorded hash.
+src/tests/corpus/**/*.bin binary
+*.png                     binary
