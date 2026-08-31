@@ -82,17 +82,27 @@ that had to curate its registrations per composed profile would be doing the
 core's containment work by hand, and getting it wrong would be silent.
 
 **Why the two-profile root states three ceilings explicitly.** Adopting the
-profile default resolves to the *tightest* default in the catalog, and a runtime
-ceiling is additionally clamped to the tightest profile hard maximum in the
-catalog. In a mixed catalog both are catalog-wide facts rather than per-profile
-ones, so the calculator's numbers would otherwise decide what the ledger may do:
-the ledger frames two sections and imports a stamping capability, and a runtime
-adopting throughout would refuse its artifact for want of a second section. The
-root therefore states `HostCalls`, `SectionCount` and `StructuralDepth` itself.
-This is not a way around the calculator's limits - the effective ceiling for an
-operation is the intersection of the host's with that profile's own hard maxima,
-so the calculator is still held to one section and no host call - and the
-profile-authoring consequence is recorded in section 5.
+profile default resolves to the *tightest* default in the catalog. That is a
+catalog-wide fact rather than a per-profile one, so the calculator's numbers
+would otherwise decide what the ledger may do: the calculator's defaults write
+`1` for section count and `0` for host calls, the ledger frames two sections and
+imports a stamping capability, and a runtime adopting throughout would refuse its
+artifact for want of a second section. The root therefore states `HostCalls`,
+`SectionCount` and `StructuralDepth` itself. This is not a way around the
+calculator's limits - the effective ceiling for an operation is the intersection
+of the host's with **that profile's own** hard maxima, so the calculator is still
+held to one section and no host call - and the profile-authoring consequence is
+recorded in section 5.
+
+*Corrected 2026-08-31, and this paragraph contradicted section 5 until it was.*
+It also said a runtime ceiling was "additionally clamped to the tightest profile
+hard maximum in the catalog", and called both terms catalog-wide. Only the
+default is. The maximum clamp was an implementation defect rather than a property
+of the contract - ADR 0007 puts `ProfileMax` at P2, against the profile an
+artifact names - and it has been removed. **The reason this root states three
+ceilings is unchanged**, because it was always the default fold that produced the
+refusal; what changed is that a reader of this section is no longer told the
+maxima do it too.
 
 ---
 
