@@ -1,0 +1,17 @@
+These controls are judged by a FUZZ SESSION. A session that reports no counterexample is
+worth what the demonstration that it would have reported one is worth, and nothing more.
+
+A control PASSES when the session exits 1 - a finding - while injected, and 0 after the
+revert. Any other exit code is a session that failed for a reason unrelated to the
+injection, and is not a pass.
+
+[the-constant-index-is-admitted-unchecked] PASS
+    why:       The verifier stops checking a LoadConstant operand against the pool size. The artifact then verifies and the executor indexes past the pool - the core catches the exception and reports a fault the profile did not author, which is the executor-surface invariant. TWENTY-FIVE THOUSAND UNDIRECTED ITERATIONS DID NOT FIND THIS, and the operand-targeting mutation was written because of it; the session finds it in under two hundred now.
+    file:      src\Broiler.VM.Profile.JavaScript\JavaScriptVerifier.cs
+    injected:  exit 1
+    reverted:  exit 0
+      broiler-js-fuzz: FINDING at iteration 116 of seed 1
+      a verified artifact faulted with no typed payload, so something threw out of the executor and the core reported it
+      minimized from 64 bytes (57 non-zero) to 64 bytes (53 non-zero)
+
+fuzz controls run: 1; passed: 1; SKIPPED: 0

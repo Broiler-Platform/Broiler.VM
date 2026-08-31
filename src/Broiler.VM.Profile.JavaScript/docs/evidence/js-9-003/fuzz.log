@@ -1,0 +1,48 @@
+Coverage-guided fuzzing over the two of roadmap section 7's four surfaces that exist:
+the verifier, and the executor over verified-but-adversarial artifacts. The source
+tokenizer and parser and the regular-expression matcher are surfaces this profile has
+not written, and a session may not be read as covering them.
+
+Each session is a total function of its seed and the seed corpus. A session that answers
+the same way every time, or that never reaches the executor, exits NON-ZERO rather than
+reporting clean iterations it did not earn.
+
+[seed 1, 25000 iterations] exit 0
+    broiler-js-fuzz: seed 1, 25000 iterations, 60 seed artifacts, surfaces: verifier and executor
+    broiler-js-fuzz: no counterexample in 25000 iterations.
+      InvalidArtifact: 22311
+      Normal/fault:ReferenceError: 120
+      Normal/invoke:Normal: 839
+      ResourceExhaustion: 1730
+    broiler-js-fuzz: 959 mutants verified and were instantiated and invoked, so both surfaces were reached.
+
+[seed 2, 25000 iterations] exit 0
+    broiler-js-fuzz: seed 2, 25000 iterations, 60 seed artifacts, surfaces: verifier and executor
+    broiler-js-fuzz: no counterexample in 25000 iterations.
+      InvalidArtifact: 22336
+      Normal/fault:ReferenceError: 105
+      Normal/invoke:Normal: 888
+      Normal/invoke:ResourceExhaustion: 1
+      ResourceExhaustion: 1670
+    broiler-js-fuzz: 994 mutants verified and were instantiated and invoked, so both surfaces were reached.
+
+[seed 3, 25000 iterations] exit 0
+    broiler-js-fuzz: seed 3, 25000 iterations, 60 seed artifacts, surfaces: verifier and executor
+    broiler-js-fuzz: no counterexample in 25000 iterations.
+      InvalidArtifact: 22231
+      Normal/fault:ReferenceError: 117
+      Normal/invoke:Normal: 963
+      ResourceExhaustion: 1689
+    broiler-js-fuzz: 1080 mutants verified and were instantiated and invoked, so both surfaces were reached.
+
+[seed 4, 25000 iterations] exit 0
+    broiler-js-fuzz: seed 4, 25000 iterations, 60 seed artifacts, surfaces: verifier and executor
+    broiler-js-fuzz: no counterexample in 25000 iterations.
+      InvalidArtifact: 22323
+      Normal/fault:ReferenceError: 105
+      Normal/invoke:Normal: 883
+      Normal/invoke:ResourceExhaustion: 2
+      ResourceExhaustion: 1687
+    broiler-js-fuzz: 990 mutants verified and were instantiated and invoked, so both surfaces were reached.
+
+sessions: 4; sessions reporting a finding: 0

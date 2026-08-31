@@ -1,0 +1,12 @@
+bundle:                JS-9-003
+milestone:             JS-9
+collected (UTC):       2026-08-31T20:59:16+00:00
+component commit:      7c91ab11a2287e054c6e13a9be9aa76f4d4b8fce
+branch:                claude/js-3a-diagnostic-registry
+working tree:          clean
+dirty entries:         0
+owner:                 profile architecture owner (unassigned identity)
+reviewer:              NONE - nothing here has been reviewed
+
+Every path below is relative to the component root. A figure in this bundle is this
+component's own; no result from any other component is evidence here.
