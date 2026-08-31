@@ -417,28 +417,33 @@ rejected, whether external suspension may be requested and by whom, and how susp
 retains and releases resources. The reentrancy rules must state explicitly whether a
 guest-initiated load may re-enter the runtime that requested it.
 
-### Ceilings are catalog-wide, and both halves of that are load-bearing
+### Which ceiling terms are catalog-wide, and which are not
 
-Effective ceilings are not resolved against the profile the caller selected. They are resolved
-against **every profile in the catalog**, in two separate ways, and a profile author who knows only
-the first will still write a defect:
+Effective ceilings are resolved partly against the profile an artifact selects and partly against
+the whole catalog, and the split is not arbitrary — it was ruled on 2026-08-31 after the record and
+the implementation were found to disagree:
 
-1. **A runtime ceiling is clamped to the tightest profile hard maximum in the catalog**, per
-   dimension, with no exemption for a profile that declares the dimension inapplicable; and
-2. **adopting a profile default resolves to the tightest default in the catalog**, per dimension.
+1. **A profile hard maximum constrains that profile's own artifacts and nobody else's.** It is
+   applied at verification, against the profile the artifact names. The implementation used to
+   clamp every runtime ceiling to the tightest maximum in the catalog, one step earlier; that was a
+   defect and is corrected. A profile declaring a tight maximum no longer caps its neighbours, and
+   the obligation to publish an unconstrained maximum on a dimension it declares inapplicable falls
+   away with it.
+2. **Adopting a profile default does resolve to the tightest default in the catalog**, per
+   dimension, and that one is deliberate. At runtime creation no profile has been selected, so an
+   adopted default has no owner to take a number from and the conservative answer is the only safe
+   one. It costs nothing, because verification re-intersects with the selected profile's own maxima
+   afterwards; a host that wants more states an explicit ceiling.
 
-The consequence is the one VM-3 discovered by building a second profile rather than by reasoning:
-a profile that declares its own usage as its maximum caps every profile composed beside it, and the
-victim's verifier is refused for something it did nothing to cause. **A hard maximum is a statement
-about your neighbours as much as about you.** What keeps a dimension unreachable is a profile's
-import list and its budget declaration matrix, never a zero ceiling — and a dimension a profile
-declares `NotApplicable` must still publish an unconstrained hard maximum, or it silently disables
-that dimension for every profile beside it.
+**The asymmetry is the rule**: a maximum has a correct owner one step later, so runtime creation
+must not guess at one; a default has no owner at all, so it must. What keeps a dimension unreachable
+is a profile's import list and its budget declaration matrix, never a zero ceiling.
 
-VM-0 records both terms in the resource-authority ADR that owns effective-ceiling materialization,
-rather than leaving them in a topology finding, a composition register and an evidence bundle where
-the algorithm that implements them does not cite any of the three. A profile roadmap states the
-rule by citation and does not paraphrase it.
+The ruling cost more to reach than it should have, and the reason is worth keeping. The clamp was
+enforced by code, described in two profiles' comments, a composition register and an evidence bundle
+— and asserted by no test, while the record that owns effective-ceiling materialization said
+something different. A behaviour with four prose witnesses and no executable one is a behaviour
+nobody has to reconcile with the contract.
 
 ### Load-time requirements
 

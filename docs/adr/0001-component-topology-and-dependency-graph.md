@@ -865,12 +865,17 @@ consumer profiles as well as `Broiler.VM.Profile.*`, and its allow-list has real
 members rather than being empty.
 
 **One finding, recorded because it is a property of the contract rather than of
-these two profiles.** A runtime ceiling is clamped to the tightest profile hard
-maximum in the CATALOG, across every profile in it, and adopting a profile
-default resolves to the tightest default in the catalog. Both are catalog-wide
-facts. A profile that declares its own usage as its hard maximum therefore caps
-every profile composed beside it, and the failure surfaces as a resource refusal
-inside somebody else's verifier. The two consumer profiles were written that way
+these two profiles.** ~~A runtime ceiling is clamped to the tightest profile hard
+maximum in the CATALOG, across every profile in it, and adopting a profile default
+resolves to the tightest default in the catalog. Both are catalog-wide facts.~~
+
+**Corrected 2026-08-31: only one of the two was a property of the contract, and
+the other was a defect.** Adopting a profile default does resolve to the tightest
+default in the catalog, and ADR 0007 now records that as the marker's referent.
+The hard-maximum clamp was not in the contract at all - ADR 0007 puts `ProfileMax`
+at P2 against the profile an artifact names - and the implementation has been
+corrected to match. A profile's declared maximum no longer caps profiles composed
+beside it. The two consumer profiles were written that way
 first and the two-profile composition could not verify a ledger artifact until
 they were corrected. Nothing in the core changed; what changed is what a profile
 author should declare, and `docs/compositions.md` section 5 records it where a
