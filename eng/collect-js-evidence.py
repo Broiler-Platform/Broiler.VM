@@ -716,6 +716,24 @@ CORPUS_CONTROLS = [
             "in bounds, adapter, count, out constants))"),
     ),
     (
+        "the-executor-stops-charging-fuel-per-step",
+        "The interpreter loop stops charging Fuel for the step it is about to take. Nothing about "
+        "one program's ANSWER changes - a counting loop still returns 55 - so the corpus replay is "
+        "unmoved. What breaks is every claim that rests on a budget being spent: two siblings under "
+        "one parent stop exhausting it, and a host that declined stops declining. This is the "
+        "control for the aggregate-budget exercise, and it is judged by the same run.",
+        PROFILE_EXECUTOR,
+        lambda text: text.replace(
+            "            if (!environment.Meter.TryCharge(VmBudgetDimension.Fuel, 1))\n"
+            "            {\n"
+            "                return VmExecutionStep.ContractViolation(VmReason.AllowanceExhausted);\n"
+            "            }",
+            "            if (false && !environment.Meter.TryCharge(VmBudgetDimension.Fuel, 1))\n"
+            "            {\n"
+            "                return VmExecutionStep.ContractViolation(VmReason.AllowanceExhausted);\n"
+            "            }"),
+    ),
+    (
         "the-verifier-stops-refusing-unreachable-code",
         "The unreachable-code check is removed, so an artifact carrying bytes no entry point "
         "reaches would verify. The entry recording that rejection must stop agreeing.",
