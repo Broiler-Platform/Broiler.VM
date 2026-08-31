@@ -1,0 +1,14 @@
+# A profile ledger whose legend is not the vocabulary it uses
+
+## 2. Current milestone status
+
+The legend below publishes a mark the rule does not expect and omits one it requires, which is the
+same pair of failures the component's own legend is held to - a legend that may publish a fourth
+mark is not a closed vocabulary, and one that may drop a member leaves a mark in the table above
+it that nothing defines.
+
+| Mark | Meaning |
+|---|---|
+| `[NONE]` | The row has retained evidence of no kind. |
+| `[SOME]` | A fourth mark, published by a legend that says it has three. |
+| `[FULL]` | The row's bundle demonstrates every exit-gate clause. |

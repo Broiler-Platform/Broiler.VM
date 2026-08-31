@@ -358,6 +358,17 @@ omission corrected.
   ingest — the dead attribute family, the dead date-time reference, the module-initializer
   wiring itself, the assembly probing. Re-homed rather than deleted — the prototype patching
   that wiring registers. Excluded by name — the interop assembly and the module hosts.
+- **RE-SCOPED 2026-08-31, before this milestone starts, which is where the stop condition requires
+  it to happen.** [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md) answers the value
+  representation with **replace**, so "a port wherever the value model changed" is the whole
+  library rather than a qualifier on part of it: the seed's library is typed against a boxed value
+  base type this profile does not adopt, and it is re-implemented against the value struct rather
+  than copied and re-typed. **The storage half of the copy table is untouched** — shapes, the
+  transition table, element arrays and the named-property store are about storage keyed by a
+  value, not about the value's representation. What this milestone must now carry that a copy
+  would not: its own scope estimate, its own review budget, and an exclusion list published on the
+  day it lands, because a rewritten library is smaller than a copied one and the difference is a
+  support claim.
 
 ### JS-7 — Suspension: generators, async functions, top-level await, terminal unwind
 

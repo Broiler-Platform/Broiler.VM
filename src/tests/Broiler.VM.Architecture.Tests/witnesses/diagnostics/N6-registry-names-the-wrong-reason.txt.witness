@@ -1,0 +1,11 @@
+# A registry whose reasons are not the reasons the code is emitted with.
+#
+# The first row names a reason the core does not have at all, which is the "no invented or aliased
+# reason" half. The second names a real core reason that this code's emission sites do not carry,
+# which is the half a plausible-looking edit would introduce.
+#
+# registry-revision: 1
+#
+# code|name|half|reason|stage|reachability|case|since
+1001|WrongMagic|core-result|MalformedBytes|header|corpus|wrong-magic|1
+1401|UnknownOpcode|core-result|SemanticValidationFailed|code|corpus|an-unknown-opcode|1

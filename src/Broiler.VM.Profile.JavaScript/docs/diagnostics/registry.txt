@@ -1,0 +1,68 @@
+# broiler.javascript.slice diagnostic-code registry
+#
+# registry-revision: 1
+# published-at-milestone: JS-3a
+# owning-decision: JSD-0009
+# format-version: 1
+# feature-manifest: broiler.javascript.slice
+#
+# code|name|half|reason|stage|reachability|case|since
+#
+# half           core-result  the code travels in a core verification result, in the profile
+#                             diagnostic-code field, beside a core reason and a position.
+#                embedder-seam  the code is carried by a rejection of SOURCE, which never becomes
+#                             an artifact and never crosses a core result envelope. There are none
+#                             at this revision: the front end that would mint them is JS-3b's.
+# reason         the ONE core VmReason every emission of this code carries. A code emitted with
+#                two reasons is a registry violation, not a code with two meanings.
+# stage          the pass that refuses. header, manifest, framing, limits, constants, code,
+#                entries, positions, reserved, reader.
+# reachability   corpus     a named entry of the retained corpus produces this code.
+#                defensive  no artifact reaches it at this build. The case column says why, and
+#                           the count of these rows is fixed by rule N7 rather than by this file.
+# case           the retained corpus entry that produces the code, or, for a defensive row, the
+#                reason no artifact reaches it.
+# since          the registry revision in which this code acquired the meaning it has now. A code
+#                is never reused for a different meaning: a rejection whose meaning changes takes a
+#                new number and the old one is retired, which is what lets a corpus entry recording
+#                a code be dated by the revision it was recorded under.
+1001|WrongMagic|core-result|MalformedEncoding|header|corpus|wrong-magic|1
+1002|UnsupportedFormatVersion|core-result|UnsupportedProfileFormatVersion|header|corpus|unsupported-format-version|1
+1003|DescriptorFormatVersionMismatch|core-result|DescriptorMismatch|header|defensive|the core screens the descriptor's format version against the registered range before the profile is called, and this build registers exactly one version|1
+1004|UnsupportedFeatureManifest|core-result|UnsupportedFeatureManifest|manifest|corpus|a-manifest-this-build-does-not-accept|1
+1005|ManifestIdTooLong|core-result|InconsistentStructure|manifest|corpus|a-manifest-identity-longer-than-the-format-admits|1
+1006|DescriptorManifestMismatch|core-result|DescriptorMismatch|manifest|defensive|the core screens the descriptor's manifest against the accepted set before the profile is called, and this build accepts exactly one manifest|1
+1101|UnknownSectionKind|core-result|UnknownFeature|framing|corpus|an-unknown-section-kind|1
+1102|SectionOrder|core-result|InconsistentStructure|framing|corpus|a-duplicated-section|1
+1103|MissingSection|core-result|InconsistentStructure|framing|corpus|no-code-section|1
+1104|TrailingBytes|core-result|InconsistentStructure|framing|corpus|trailing-bytes|1
+1105|SectionLengthMismatch|core-result|InconsistentStructure|framing|corpus|a-section-shorter-than-it-declared|1
+1201|DeclaredMaximumTooLarge|core-result|InconsistentStructure|limits|corpus|a-declared-maximum-above-the-formats-own-ceiling|1
+1202|DeclaredFrameCount|core-result|UnknownFeature|limits|corpus|more-frames-than-the-slice-has|1
+1301|UnknownConstantTag|core-result|UnknownFeature|constants|corpus|an-unknown-constant-tag|1
+1302|MalformedBooleanConstant|core-result|MalformedEncoding|constants|corpus|a-boolean-constant-that-is-neither|1
+1303|ConstantCountExceedsDeclaredMaximum|core-result|InconsistentStructure|constants|corpus|more-constants-than-the-limits-section-admits|1
+1304|InternedNameOutsideManifest|core-result|UnknownFeature|constants|corpus|an-interned-name-the-manifest-excludes|1
+1401|UnknownOpcode|core-result|UnknownFeature|code|corpus|an-unknown-opcode|1
+1402|TruncatedInstruction|core-result|Truncated|code|corpus|an-instruction-whose-operand-runs-off-the-end|1
+1403|JumpTargetNotAnInstructionBoundary|core-result|InconsistentStructure|code|corpus|a-jump-out-of-range|1
+1404|InconsistentStackHeightAtJoin|core-result|InconsistentStructure|code|corpus|two-paths-reaching-one-offset-at-different-heights|1
+1405|OperandStackUnderflow|core-result|SemanticValidationFailed|code|corpus|an-operand-stack-underflow|1
+1406|OperandStackOverflow|core-result|SemanticValidationFailed|code|corpus|an-operand-stack-deeper-than-declared|1
+1407|ConstantIndexOutOfRange|core-result|SemanticValidationFailed|code|corpus|a-constant-index-past-the-pool|1
+1408|LocalIndexOutOfRange|core-result|SemanticValidationFailed|code|corpus|a-local-index-past-the-frame|1
+1409|FallsOffTheEnd|core-result|SemanticValidationFailed|code|corpus|code-that-falls-off-the-end|1
+1410|EmptyCode|core-result|InconsistentStructure|code|corpus|a-code-section-of-no-length|1
+1411|UnreachableCode|core-result|InconsistentStructure|code|corpus|an-instruction-no-entry-point-reaches|1
+1412|ReturnStackNotExactlyOne|core-result|SemanticValidationFailed|code|corpus|a-return-that-leaves-more-than-the-completion-value|1
+1501|NoEntryPoint|core-result|InconsistentStructure|entries|corpus|no-entry-point|1
+1502|DuplicateEntryPoint|core-result|InconsistentStructure|entries|corpus|a-duplicated-entry-point|1
+1503|EntryOffsetNotAnInstructionBoundary|core-result|InconsistentStructure|entries|corpus|an-entry-point-inside-an-operand|1
+1504|MalformedEntryName|core-result|InconsistentStructure|entries|corpus|an-entry-point-name-of-no-length|1
+1505|EntryStackNotEmpty|core-result|SemanticValidationFailed|entries|corpus|an-entry-point-reached-with-operands-on-the-stack|1
+1506|MalformedPositionRow|core-result|InconsistentStructure|positions|corpus|a-position-row-inside-an-operand|1
+1507|ExceptionRegionOutsideManifest|core-result|UnknownFeature|reserved|corpus|an-exception-region-the-manifest-excludes|1
+1508|SuspensionTargetOutsideManifest|core-result|UnknownFeature|reserved|corpus|a-suspension-target-the-manifest-excludes|1
+1901|Truncated|core-result|Truncated|reader|corpus|a-truncated-payload|1
+1902|MalformedEncoding|core-result|MalformedEncoding|reader|corpus|an-overlong-variable-length-integer|1
+1903|ReaderStopped|core-result|InconsistentStructure|reader|defensive|every bounded-read status this build was compiled against has its own arm, so this one answers a status the reader does not currently have|1

@@ -1,0 +1,12 @@
+# A registry whose backward binding does not hold.
+#
+# The first row names a corpus entry that does not exist. The second names one that does and
+# records a different code. The third excuses itself as unreachable without being one of the rows
+# the rule admits as unreachable, which is the escape hatch this rule exists to keep shut.
+#
+# registry-revision: 1
+#
+# code|name|half|reason|stage|reachability|case|since
+1001|WrongMagic|core-result|MalformedEncoding|header|corpus|a-corpus-entry-nobody-wrote|1
+1401|UnknownOpcode|core-result|UnknownFeature|code|corpus|wrong-magic|1
+1405|OperandStackUnderflow|core-result|SemanticValidationFailed|code|defensive|nobody has got round to writing one|1

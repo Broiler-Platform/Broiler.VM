@@ -1,0 +1,12 @@
+# A profile review document borrowing the component's vocabulary
+
+The two legends say different things about different subjects. The component's `[MET]` is a claim
+about a piece of evidence; a profile ledger's `[FULL]` is a claim about a milestone row's whole
+exit gate. A reader who met `[MET]` in a profile ledger would have to guess which of the two
+vocabularies it came from, and the guess would change what the row means.
+
+| Verdict | Milestone | State |
+|---|---|---|
+| [MET] | **JS-4 — value representation and object model** | **Not started** |
+
+- [UNMET] the row above, restated as a list item so the scan is shown reaching both forms.

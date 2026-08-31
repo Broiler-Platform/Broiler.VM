@@ -16,6 +16,7 @@ internal sealed record CorpusEntry(
     string Reason,
     int DiagnosticCode,
     string Completion,
+    string Position,
     byte[] Bytes);
 
 /// <summary>
@@ -67,7 +68,14 @@ internal static class CorpusBuilder
         Ok("two-entry-points", SliceLowering.TwoEntryPoints(), "1"),
 
         // ---- the header ----------------------------------------------------------------------
-        Invalid("wrong-magic", WrongMagic(), "MalformedEncoding", JavaScriptDiagnosticCodes.WrongMagic),
+        Invalid(
+            "wrong-magic",
+            WrongMagic(),
+            "MalformedEncoding",
+            JavaScriptDiagnosticCodes.WrongMagic,
+            // The read stage: no frame has been entered, so the section index is -1 and the offset
+            // is an offset into the artifact.
+            "-1:0:0:0"),
         Invalid(
             "unsupported-format-version",
             FormatVersion(2),
@@ -78,6 +86,17 @@ internal static class CorpusBuilder
             OtherManifest(),
             "UnsupportedFeatureManifest",
             JavaScriptDiagnosticCodes.UnsupportedFeatureManifest),
+
+        Invalid(
+            "a-manifest-identity-longer-than-the-format-admits",
+            LongManifestId(),
+            "InconsistentStructure",
+            JavaScriptDiagnosticCodes.ManifestIdTooLong),
+        Invalid(
+            "an-overlong-variable-length-integer",
+            OverlongFormatVersion(),
+            "MalformedEncoding",
+            JavaScriptDiagnosticCodes.MalformedEncoding),
 
         // ---- section framing ------------------------------------------------------------------
         Invalid("trailing-bytes", TrailingBytes(), "InconsistentStructure", JavaScriptDiagnosticCodes.TrailingBytes),
@@ -94,6 +113,11 @@ internal static class CorpusBuilder
 
         // ---- the limits section ----------------------------------------------------------------
         Invalid("more-frames-than-the-slice-has", TwoFrames(), "UnknownFeature", JavaScriptDiagnosticCodes.DeclaredFrameCount),
+        Invalid(
+            "a-declared-maximum-above-the-formats-own-ceiling",
+            OperandStackAboveTheCeiling(),
+            "InconsistentStructure",
+            JavaScriptDiagnosticCodes.DeclaredMaximumTooLarge),
 
         // ---- the constant pool ------------------------------------------------------------------
         Invalid(
@@ -107,6 +131,16 @@ internal static class CorpusBuilder
             BadBoolean(),
             "MalformedEncoding",
             JavaScriptDiagnosticCodes.MalformedBooleanConstant),
+        Invalid(
+            "more-constants-than-the-limits-section-admits",
+            MoreConstantsThanDeclared(),
+            "InconsistentStructure",
+            JavaScriptDiagnosticCodes.ConstantCountExceedsDeclaredMaximum),
+        Invalid(
+            "a-constant-count-far-beyond-what-the-artifact-carries",
+            AHostileConstantCount(),
+            "InconsistentStructure",
+            JavaScriptDiagnosticCodes.ConstantCountExceedsDeclaredMaximum),
 
         // ---- the reserved sections ---------------------------------------------------------------
         Invalid(
@@ -121,7 +155,15 @@ internal static class CorpusBuilder
             JavaScriptDiagnosticCodes.SuspensionTargetOutsideManifest),
 
         // ---- the code section ---------------------------------------------------------------------
-        Invalid("an-unknown-opcode", Code([0xFF]), "UnknownFeature", JavaScriptDiagnosticCodes.UnknownOpcode),
+        Invalid(
+            "an-unknown-opcode",
+            Code([0xFF]),
+            "UnknownFeature",
+            JavaScriptDiagnosticCodes.UnknownOpcode,
+            // The link stage: the code section is the third frame, the offset is into IT, and the
+            // artifact carries no position table - so both coordinates are the reserved zero.
+            "2:0:0:0"),
+        Invalid("a-code-section-of-no-length", EmptyCode(), "InconsistentStructure", JavaScriptDiagnosticCodes.EmptyCode),
         Invalid(
             "an-instruction-whose-operand-runs-off-the-end",
             Code([(byte)JavaScriptOpcode.LoadConstant, 0x00]),
@@ -195,7 +237,33 @@ internal static class CorpusBuilder
             "a-position-row-inside-an-operand",
             PositionIntoOperand(),
             "InconsistentStructure",
-            JavaScriptDiagnosticCodes.MalformedPositionRow),
+            JavaScriptDiagnosticCodes.MalformedPositionRow,
+            // The row that is refused is the row that covers the offset, so this one reports its
+            // own line and column.
+            "2:1:1:1"),
+        Invalid(
+            "an-entry-point-name-of-no-length",
+            NamelessEntry(),
+            "InconsistentStructure",
+            JavaScriptDiagnosticCodes.MalformedEntryName),
+        Invalid(
+            "an-entry-point-reached-with-operands-on-the-stack",
+            EntryReachedWithOperands(),
+            "SemanticValidationFailed",
+            JavaScriptDiagnosticCodes.EntryStackNotEmpty),
+
+        // ---- the position encoding ------------------------------------------------------------------
+        //
+        // The one entry whose point is the POSITION rather than the code. Its refusal is at a code
+        // offset the second of two table rows covers, so an encoding that reported the first row,
+        // reported no row, or reported the offset against the artifact rather than against the code
+        // section would each produce a different manifest row.
+        Invalid(
+            "a-refusal-covered-by-the-second-position-row",
+            RefusalUnderASecondPositionRow(),
+            "UnknownFeature",
+            JavaScriptDiagnosticCodes.UnknownOpcode,
+            "2:3:7:5"),
 
         // ---- the three that need a host rather than bytes ----------------------------------------------
         new CorpusEntry(
@@ -205,6 +273,7 @@ internal static class CorpusBuilder
             "CeilingReached",
             0,
             "-",
+            Unpinned,
             SliceLowering.Addition()),
         new CorpusEntry(
             "a-token-that-was-already-cancelled",
@@ -213,6 +282,7 @@ internal static class CorpusBuilder
             "Cancelled",
             0,
             "-",
+            Unpinned,
             SliceLowering.Addition()),
         new CorpusEntry(
             "a-profile-the-catalog-does-not-hold",
@@ -221,14 +291,31 @@ internal static class CorpusBuilder
             "ProfileNotInCatalog",
             0,
             "-",
+            Unpinned,
             SliceLowering.Addition()),
     ];
 
     private static CorpusEntry Ok(string name, byte[] bytes, string completion) =>
-        new(name, "default", "Normal", "NormalCompleted", 0, completion, bytes);
+        new(name, "default", "Normal", "NormalCompleted", 0, completion, Unpinned, bytes);
 
-    private static CorpusEntry Invalid(string name, byte[] bytes, string reason, int code) =>
-        new(name, "default", "InvalidArtifact", reason, code, "-", bytes);
+    private static CorpusEntry Invalid(
+        string name, byte[] bytes, string reason, int code, string position = Unpinned) =>
+        new(name, "default", "InvalidArtifact", reason, code, "-", position, bytes);
+
+    /// <summary>
+    /// The position column of a row that does not pin one.
+    /// </summary>
+    /// <remarks>
+    /// <b>Deliberately not "every row states its position".</b> A position is an offset into bytes
+    /// this file assembles, so writing one on every row would mean hand-computing sixty offsets
+    /// that no reader could check and that any change to the writer would silently invalidate - and
+    /// a producer that asked the verifier for them would be recording the answer it is meant to be
+    /// testing. What the rows below pin instead is the ENCODING: one artifact-relative position,
+    /// two code-relative ones, and one whose line and column come from the second row of a
+    /// two-row table. Each of the four fails differently if the encoding moves, and a row that
+    /// pins nothing says so.
+    /// </remarks>
+    private const string Unpinned = "-";
 
     // ---- the byte-level variants -------------------------------------------------------------------
 
@@ -238,6 +325,168 @@ internal static class CorpusBuilder
         bytes[0] = (byte)'X';
         return bytes;
     }
+
+    private static byte[] LongManifestId() =>
+        JavaScriptArtifactWriter.Write(
+            new string('m', (int)JavaScriptFormat.MaximumManifestIdBytes + 1), StandardSections());
+
+    /// <summary>The format version re-encoded overlong, which is a value that already had a form.</summary>
+    /// <remarks>
+    /// The four magic bytes are followed by the format version as a variable-length integer, and
+    /// version 1 is one byte. <c>0x81 0x00</c> is the same value in two bytes with a redundant zero
+    /// continuation, which the bounded reader refuses rather than accepting and truncating - so
+    /// this is the entry that pins the reader's malformed-encoding status onto this profile's own
+    /// code, as opposed to the header check that refuses a version this build does not define.
+    /// </remarks>
+    private static byte[] OverlongFormatVersion()
+    {
+        var bytes = SliceLowering.Addition();
+        var spliced = new byte[bytes.Length + 1];
+
+        bytes[..4].CopyTo(spliced, 0);
+        spliced[4] = 0x81;
+        spliced[5] = 0x00;
+        bytes[5..].CopyTo(spliced, 6);
+
+        return spliced;
+    }
+
+    private static byte[] OperandStackAboveTheCeiling()
+    {
+        var standard = StandardSections();
+
+        return JavaScriptArtifactWriter.Write(
+            Manifest,
+            [
+                new JavaScriptArtifactWriter.Section(
+                    JavaScriptFormat.SectionKind.Limits,
+                    JavaScriptArtifactWriter.Limits(JavaScriptFormat.CeilingOperandStack + 1, 1, 1, 1)),
+                standard[1], standard[2], standard[3],
+            ]);
+    }
+
+    /// <summary>
+    /// A pool declaring sixty thousand entries and carrying none, in an artifact of a few dozen
+    /// bytes.
+    /// </summary>
+    /// <remarks>
+    /// <b>The answer is the same as its smaller neighbour's and the point is not the answer.</b>
+    /// <c>more-constants-than-the-limits-section-admits</c> declares two where one is admitted,
+    /// which a verifier that sized the array before comparing would survive - it would have
+    /// allocated thirty-two bytes and then refused. This one would have allocated close to a
+    /// megabyte from an artifact that carries nothing to fill it, which is what makes the ordering
+    /// check sharp rather than arithmetic. The count is below the format's own ceiling on purpose,
+    /// so what refuses it is the limits section's declaration and not a structural bound.
+    /// </remarks>
+    private static byte[] AHostileConstantCount()
+    {
+        var standard = StandardSections();
+
+        return JavaScriptArtifactWriter.Write(
+            Manifest,
+            [
+                new JavaScriptArtifactWriter.Section(
+                    JavaScriptFormat.SectionKind.Limits, JavaScriptArtifactWriter.Limits(16, 1, 1, 1)),
+                new JavaScriptArtifactWriter.Section(
+                    JavaScriptFormat.SectionKind.Constants,
+                    JavaScriptArtifactWriter.Constants([], declaredCount: 60_000)),
+                standard[2], standard[3],
+            ]);
+    }
+
+    /// <summary>Two pool entries under a limits section that admits one.</summary>
+    private static byte[] MoreConstantsThanDeclared()
+    {
+        var standard = StandardSections();
+
+        return JavaScriptArtifactWriter.Write(
+            Manifest,
+            [
+                new JavaScriptArtifactWriter.Section(
+                    JavaScriptFormat.SectionKind.Limits, JavaScriptArtifactWriter.Limits(16, 1, 1, 1)),
+                new JavaScriptArtifactWriter.Section(
+                    JavaScriptFormat.SectionKind.Constants,
+                    JavaScriptArtifactWriter.Constants(
+                    [
+                        JavaScriptArtifactWriter.NumberConstant(1),
+                        JavaScriptArtifactWriter.NumberConstant(2),
+                    ])),
+                standard[2], standard[3],
+            ]);
+    }
+
+    private static byte[] EmptyCode()
+    {
+        var standard = StandardSections();
+
+        return JavaScriptArtifactWriter.Write(
+            Manifest,
+            [
+                standard[0], standard[1],
+                new JavaScriptArtifactWriter.Section(JavaScriptFormat.SectionKind.Code, []),
+                standard[3],
+            ]);
+    }
+
+    private static byte[] NamelessEntry() => JavaScriptArtifactWriter.Write(
+        Manifest,
+        [
+            Limits(),
+            StandardSections()[1],
+            StandardSections()[2],
+            Entries([(string.Empty, 0u)]),
+        ]);
+
+    /// <summary>
+    /// Two entry points, the second of which the first falls into with a value on the stack.
+    /// </summary>
+    /// <remarks>
+    /// A program is entered with an empty operand stack, so the edge from the first entry's
+    /// <c>LoadConstant</c> into the second entry is the violation - and it is the EDGE that is
+    /// refused, not the join it would otherwise cause, so the answer does not depend on which of
+    /// the two arrivals the verifier's worklist happens to pop second.
+    /// </remarks>
+    private static byte[] EntryReachedWithOperands() => JavaScriptArtifactWriter.Write(
+        Manifest,
+        [
+            Limits(),
+            new JavaScriptArtifactWriter.Section(
+                JavaScriptFormat.SectionKind.Constants,
+                JavaScriptArtifactWriter.Constants([JavaScriptArtifactWriter.NumberConstant(1)])),
+            new JavaScriptArtifactWriter.Section(
+                JavaScriptFormat.SectionKind.Code,
+                [
+                    (byte)JavaScriptOpcode.LoadConstant, 0x00, 0x00,
+                    (byte)JavaScriptOpcode.LoadConstant, 0x00, 0x00,
+                    (byte)JavaScriptOpcode.Return,
+                ]),
+            Entries([(SliceLowering.MainEntry, 0u), ("second", 3u)]),
+        ]);
+
+    /// <summary>
+    /// An unknown opcode at an offset the SECOND of two position-table rows covers.
+    /// </summary>
+    /// <remarks>
+    /// The refusal is ordinary; the row it produces is the point. The code section is the third
+    /// frame, the bad byte is at code offset 3, and the row covering offset 3 says line 7 column 5
+    /// - so the manifest records <c>2:3:7:5</c> and an encoding that reported the artifact-relative
+    /// offset, the first row, or no row at all would each write a different one.
+    /// </remarks>
+    private static byte[] RefusalUnderASecondPositionRow() => JavaScriptArtifactWriter.Write(
+        Manifest,
+        [
+            Limits(),
+            new JavaScriptArtifactWriter.Section(
+                JavaScriptFormat.SectionKind.Constants,
+                JavaScriptArtifactWriter.Constants([JavaScriptArtifactWriter.NumberConstant(1)])),
+            new JavaScriptArtifactWriter.Section(
+                JavaScriptFormat.SectionKind.Code,
+                [(byte)JavaScriptOpcode.LoadConstant, 0x00, 0x00, 0xFF]),
+            Entries([(SliceLowering.MainEntry, 0u)]),
+            new JavaScriptArtifactWriter.Section(
+                JavaScriptFormat.SectionKind.Positions,
+                JavaScriptArtifactWriter.Positions([(0u, 1u, 1u), (3u, 7u, 5u)])),
+        ]);
 
     private static byte[] FormatVersion(uint version) =>
         JavaScriptArtifactWriter.Write(Manifest, StandardSections(), formatVersion: version);
@@ -498,15 +747,18 @@ internal static class JavaScriptDiagnosticCodes
 {
     internal const int WrongMagic = 1001;
     internal const int UnsupportedFormatVersion = 1002;
+    internal const int ManifestIdTooLong = 1005;
     internal const int UnsupportedFeatureManifest = 1004;
     internal const int UnknownSectionKind = 1101;
     internal const int SectionOrder = 1102;
     internal const int MissingSection = 1103;
     internal const int TrailingBytes = 1104;
     internal const int SectionLengthMismatch = 1105;
+    internal const int DeclaredMaximumTooLarge = 1201;
     internal const int DeclaredFrameCount = 1202;
     internal const int UnknownConstantTag = 1301;
     internal const int MalformedBooleanConstant = 1302;
+    internal const int ConstantCountExceedsDeclaredMaximum = 1303;
     internal const int InternedNameOutsideManifest = 1304;
     internal const int UnknownOpcode = 1401;
     internal const int TruncatedInstruction = 1402;
@@ -517,13 +769,17 @@ internal static class JavaScriptDiagnosticCodes
     internal const int ConstantIndexOutOfRange = 1407;
     internal const int LocalIndexOutOfRange = 1408;
     internal const int FallsOffTheEnd = 1409;
+    internal const int EmptyCode = 1410;
     internal const int UnreachableCode = 1411;
     internal const int ReturnStackNotExactlyOne = 1412;
     internal const int NoEntryPoint = 1501;
     internal const int DuplicateEntryPoint = 1502;
     internal const int EntryOffsetNotAnInstructionBoundary = 1503;
+    internal const int MalformedEntryName = 1504;
+    internal const int EntryStackNotEmpty = 1505;
     internal const int MalformedPositionRow = 1506;
     internal const int ExceptionRegionOutsideManifest = 1507;
     internal const int SuspensionTargetOutsideManifest = 1508;
     internal const int Truncated = 1901;
+    internal const int MalformedEncoding = 1902;
 }

@@ -42,12 +42,28 @@ internal static class Program
                 return ReportClosure();
             }
 
+            var replay = Argument(args, "--replay");
+
+            if (replay is not null)
+            {
+                return Fuzzing.Replay(replay);
+            }
+
             var corpus = Argument(args, "--corpus");
 
             if (corpus is null)
             {
                 Console.WriteLine("broiler-js-execution-only: no --corpus <directory> was given");
                 return 2;
+            }
+
+            if (args.Contains("--fuzz", StringComparer.Ordinal))
+            {
+                return Fuzzing.Run(
+                    corpus,
+                    ulong.Parse(Argument(args, "--seed") ?? "1", System.Globalization.CultureInfo.InvariantCulture),
+                    int.Parse(Argument(args, "--iterations") ?? "20000", System.Globalization.CultureInfo.InvariantCulture),
+                    verbose);
             }
 
             var addition = File.ReadAllBytes(Path.Combine(corpus, "addition.bjsb"));
@@ -62,6 +78,9 @@ internal static class Program
             };
 
             checks.AddRange(ReplayChecks(corpus, verbose));
+            checks.AddRange(HostLifetimeChecks.Run(corpus));
+            checks.AddRange(OrderingChecks.Run(
+                corpus, CorpusReplay.ReadManifest(Path.Combine(corpus, "corpus.manifest"))));
 
             var failed = 0;
 
@@ -137,18 +156,22 @@ internal static class Program
         {
             if (!CorpusReplay.Agrees(entries[index], first[index]))
             {
+                // Every compared field is printed, the position among them. An earlier revision
+                // printed four of the five, so a position regression reported an expected and an
+                // observed answer that read identically - a true sentence nobody can act on, which
+                // is the one thing a control log may not produce.
                 disagreements.Add(
                     $"{entries[index].Name}: expected " +
                     $"{entries[index].Outcome}/{entries[index].Reason}/{entries[index].DiagnosticCode}/" +
-                    $"{entries[index].Completion}, observed " +
+                    $"{entries[index].Completion}/{entries[index].Position}, observed " +
                     $"{first[index].Outcome}/{first[index].Reason}/{first[index].DiagnosticCode}/" +
-                    $"{first[index].Completion} (hash {first[index].HashStatus})");
+                    $"{first[index].Completion}/{first[index].Position} (hash {first[index].HashStatus})");
             }
             else if (verbose)
             {
                 Console.WriteLine(
                     $"     entry {entries[index].Name}: {first[index].Outcome}/{first[index].Reason}/" +
-                    $"{first[index].DiagnosticCode}/{first[index].Completion}");
+                    $"{first[index].DiagnosticCode}/{first[index].Completion}/{first[index].Position}");
             }
         }
 

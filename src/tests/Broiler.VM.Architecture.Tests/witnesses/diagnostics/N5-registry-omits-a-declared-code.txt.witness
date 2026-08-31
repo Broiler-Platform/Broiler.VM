@@ -1,0 +1,12 @@
+# A registry that is not the vocabulary it publishes.
+#
+# Three defects, and each is one a real edit could introduce: a declared code with no row at all,
+# a row whose name does not belong to its number, and a row dated from a revision the registry
+# does not have.
+#
+# registry-revision: 2
+#
+# code|name|half|reason|stage|reachability|case|since
+1001|WrongMagic|core-result|MalformedEncoding|header|corpus|wrong-magic|1
+1002|UnsupportedFormatVersionExtended|core-result|UnsupportedProfileFormatVersion|header|corpus|unsupported-format-version|1
+1004|UnsupportedFeatureManifest|core-result|UnsupportedFeatureManifest|manifest|corpus|a-manifest-this-build-does-not-accept|3

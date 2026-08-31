@@ -1,0 +1,12 @@
+bundle:                JS-1-002
+milestone:             JS-1
+collected (UTC):       2026-08-31T20:22:26+00:00
+component commit:      02a5b45d3018b6f5017466de9ee4447bd0073675
+branch:                claude/js-3a-diagnostic-registry
+working tree:          clean
+dirty entries:         0
+owner:                 profile architecture owner (unassigned identity)
+reviewer:              NONE - nothing here has been reviewed
+
+Every path below is relative to the component root. A figure in this bundle is this
+component's own; no result from any other component is evidence here.

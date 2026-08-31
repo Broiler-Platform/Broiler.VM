@@ -1,0 +1,16 @@
+// A profile file that answers with a core position it builds itself.
+//
+// Both shapes are here because a rule that caught only the named one would be satisfied by exactly
+// the form the real factories are written in: At uses the target-typed new, Elsewhere names the
+// type. Either is a second convention against a record whose two profile-owned coordinates mean
+// whatever the party that filled them in decided they meant.
+
+namespace Broiler.VM.Profile.JavaScript;
+
+internal static class SomeOtherFile
+{
+    private static VmSourcePosition At(ulong offset) => new(-1, offset, 0, 0);
+
+    private static VmSourcePosition Elsewhere(ulong offset) =>
+        new VmSourcePosition(0, offset, 1, 1);
+}

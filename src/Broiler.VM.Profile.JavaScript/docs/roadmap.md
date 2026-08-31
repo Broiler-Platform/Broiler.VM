@@ -2,12 +2,13 @@
 
 **Status:** Proposed roadmap for the JavaScript language profile of the Broiler.VM execution
 core. [The evidence ledger](roadmap.status.md) is the authority for what has been accepted; as of
-2026-08-31 it records **JS-0 and JS-1 as in progress, each with one named open gate clause, and
-JS-2 through JS-10 as not started**. What exists is one feature manifest, one format version, a
-verifier, an executor, a hand-written lowering, two composition roots that publish and run on one
-RID, a retained corpus and eight decision records; there is still **no tokenizer, no static
-semantics, no object model, no standard library, no suspension, no guest-initiated load, no
-snapshot and no conformance harness**, and nothing here is accepted. No milestone is complete
+2026-08-31 it records **JS-0, JS-1 and JS-3a as in progress, each with named open gate clauses,
+JS-2 as blocked, and the remaining rows as not started**. What exists is one feature manifest,
+one format version, a verifier, an executor, a hand-written lowering, two composition roots that
+publish and run on one RID, a retained corpus, a published diagnostic-code registry and nine
+decision records; there is still **no tokenizer, no static semantics, no object model, no
+standard library, no suspension, no guest-initiated load, no snapshot and no conformance
+harness**, and nothing here is accepted. No milestone is complete
 because its design appears in this document.
 
 `Broiler.VM.Profile.JavaScript` is a **language profile**: one bytecode format, one verifier, one
@@ -798,6 +799,14 @@ Three disciplines make that list provable rather than aspirational:
 JS-4 rather than that milestone's first task.** The seed's library is typed against the seed's
 value base type; if this profile is going to replace that representation, JS-6 is a rewrite and
 must be re-scoped before it starts, not during it.
+
+**Taken on 2026-08-31, and stated here because the rest of this section was written before it.**
+[JSD-0011](decisions/0011-the-value-frame-and-call-abi.md) records all eight rows below. The
+answer to the row that gates the others is **replace**: this profile keeps its own tagged struct
+and does not adopt the seed's boxed hierarchy, so the stop condition's second half fires and
+**JS-6 is re-scoped from a copy to a rewrite**. The rows below are the questions; the record is
+the answers, and where the two differ the record is the authority. **Nothing in it is
+implemented** - it is the gate on entry, and JS-4 is not started.
 
 What the decision must state, in both directions — what it buys and what it costs:
 

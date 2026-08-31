@@ -26,6 +26,24 @@
          source and lists nuget.org, where this package resolves. No product project may acquire
          it - a parser in a shipping assembly would be a dependency the component does not have. -->
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.3.0" />
+
+    <!-- Reflection over an assembly this project may not reference and must not run.
+
+         The public-API baseline describes a surface by reflecting over it. For the three packable
+         assemblies that is ordinary Assembly.Load, because a ProjectReference puts them in this
+         project's output. For the JavaScript profile's three it cannot be: rule A11 forbids a test
+         project to reference a profile assembly, and that prohibition is one of the things this
+         component exists to demonstrate rather than an inconvenience to work around.
+
+         Assembly.LoadFrom over the built file is not the way out either. Loading RUNS module
+         initializers - which invariant 2 forbids and rule B5b exists to detect - so a describer
+         built on it would execute the code it is describing. MetadataLoadContext reflects without
+         running anything, which is the same reason AssemblyFacts reads metadata tables directly
+         for the group B rules.
+
+         THIS PROJECT ONLY, like the Roslyn reference above, and for the same reason: a reflection
+         host in a shipping assembly would be a dependency this component does not have. -->
+    <PackageReference Include="System.Reflection.MetadataLoadContext" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>

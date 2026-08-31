@@ -43,4 +43,11 @@
 # Byte-pinned evidence. Declared binary so no future heuristic, filter or
 # contributor setting can rewrite a corpus artifact and break its recorded hash.
 src/tests/corpus/**/*.bin binary
+
+# The JavaScript profile's corpus is pinned the same way and was covered by nothing: the
+# rule above names .bin, which is the core's extension, and the profile's artifacts are
+# .bjsb. Every one of them happens to carry a NUL today, so git's heuristic calls them
+# binary and no hash has moved - which is the same accident this file's own comment says is
+# not a bound. Declared at JS-3a, which added nine more of them.
+src/tests/corpus/**/*.bjsb binary
 *.png                     binary

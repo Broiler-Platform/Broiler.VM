@@ -44,13 +44,27 @@ public sealed class ReviewRecordRuleTests
 
     /// <summary>
     /// The documents a reviewer reads: the generated review record, the evidence bundles, and the
-    /// status ledger. Every group H rule reads this one set.
+    /// status ledgers - the component's own, and every profile family's. Every group H rule reads
+    /// this one set.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// <c>docs/review/</c> is still enumerated although nothing is in it any more. The per-item
     /// worksheet that lived there is deleted - it cited source files by line number, and a
     /// reviewer now writes on the declaration instead - and leaving the directory in the corpus
     /// costs nothing and means a document dropped there later is read rather than unread.
+    /// </para>
+    /// <para>
+    /// <b>A profile family's documents are in this set, and were not until JS-3a.</b> A profile
+    /// lives inside this component (decision JSD-0001) and adopts its assurance and review system
+    /// rather than standing up one of its own (JSD-0006) - but its ledger and its evidence bundles
+    /// live under <c>src/Broiler.VM.Profile.*/docs/</c>, which this loader did not look at. So the
+    /// clauses that exist because a reviewer reads these documents - no citation of a source line
+    /// number, a closed mark vocabulary, every cited exclusion defined - reached the component's
+    /// own ledger and not the ledger a profile reviewer actually opens. The families are
+    /// discovered rather than listed, so a second profile is covered on the day its docs directory
+    /// exists.
+    /// </para>
     /// </remarks>
     private static IReadOnlyList<ReviewDocument> Corpus { get; } = LoadCorpus();
 
@@ -102,6 +116,7 @@ public sealed class ReviewRecordRuleTests
         }
 
         paths.Add(Path.Combine(ComponentGraph.Root, "docs", "roadmap.status.md"));
+        paths.AddRange(ProfileReviewDocuments());
 
         return paths
             .Where(File.Exists)
@@ -110,6 +125,52 @@ public sealed class ReviewRecordRuleTests
                 File.ReadAllText(path)))
             .OrderBy(static document => document.Name, StringComparer.Ordinal)
             .ToArray();
+    }
+
+    /// <summary>The docs directory of every profile family in this component, if it has one.</summary>
+    internal static IEnumerable<string> ProfileDocDirectories()
+    {
+        var source = Path.Combine(ComponentGraph.Root, "src");
+
+        if (!Directory.Exists(source))
+        {
+            yield break;
+        }
+
+        foreach (var project in Directory
+            .EnumerateDirectories(source, "Broiler.VM.Profile.*", SearchOption.TopDirectoryOnly)
+            .OrderBy(static path => path, StringComparer.Ordinal))
+        {
+            var docs = Path.Combine(project, "docs");
+
+            if (Directory.Exists(docs))
+            {
+                yield return docs;
+            }
+        }
+    }
+
+    /// <summary>A profile family's own review documents: its status ledger and its bundles.</summary>
+    private static IEnumerable<string> ProfileReviewDocuments()
+    {
+        foreach (var docs in ProfileDocDirectories())
+        {
+            yield return Path.Combine(docs, "roadmap.status.md");
+
+            var evidence = Path.Combine(docs, "evidence");
+
+            if (!Directory.Exists(evidence))
+            {
+                continue;
+            }
+
+            foreach (var bundle in Directory
+                .EnumerateDirectories(evidence)
+                .OrderBy(static path => path, StringComparer.Ordinal))
+            {
+                yield return Path.Combine(bundle, "README.md");
+            }
+        }
     }
 
     /// <summary>
@@ -172,41 +233,90 @@ public sealed class ReviewRecordRuleTests
         AssertTheRegisterRowStatesItsLimits(
             "H1",
             "with or without the optional leading pipe",
-            "GFM task-list checkbox");
+            "GFM task-list checkbox",
+            "each family is held to its own legend",
+            "only a table under a Mark/Meaning header publishes");
 
         Assert.Empty(UnpublishedMarkViolations(Corpus));
-        Assert.Empty(LegendViolations(HumanReview));
+        Assert.Empty(LegendViolations(HumanReview, CoreLegend));
+
+        // Every profile family publishes its own legend and is held to it. Non-vacuous: there is
+        // at least one such ledger in this checkout, and it publishes a different vocabulary from
+        // the component's - so the resolution below decides something.
+        Assert.NotEmpty(ProfileLedgers);
+        Assert.All(ProfileLedgers, static ledger => Assert.Empty(LegendViolations(ledger, ProfileLegend)));
+
+        // Clause: the split is not a no-op. The SAME document is clean under the legend that
+        // governs it and a wall of violations under the other one, in both directions, and the
+        // two vocabularies share no member.
+        var profileLedger = ProfileLedgers.First();
+
+        Assert.Empty(UnpublishedMarkViolations([profileLedger], ProfileLegend));
+        Assert.NotEmpty(UnpublishedMarkViolations([profileLedger], CoreLegend));
+        Assert.NotEmpty(UnpublishedMarkViolations([HumanReview], ProfileLegend));
+        Assert.Empty(CoreLegend.Marks.Intersect(ProfileLegend.Marks, StringComparer.Ordinal));
+
+        // Clause: the resolution is by path, and it answers for both families.
+        Assert.Equal(ProfileLegend, LegendFor(profileLedger.Name));
+        Assert.Equal(CoreLegend, LegendFor(HumanReviewName));
+        Assert.Equal(CoreLegend, LegendFor("docs/evidence/vm-6/README.md"));
+
+        // Clause: a profile document using a mark from the OTHER family's legend is a violation,
+        // which is what stops the two vocabularies leaking into each other.
+        var borrowed = UnpublishedMarkViolations(
+            [Witness("H1-profile-document-uses-a-core-mark.md.witness")], ProfileLegend);
+
+        Assert.Equal(2, borrowed.Count);
+        Assert.Single(borrowed.Where(static violation =>
+            violation.Contains("table cell mark token [MET]", StringComparison.Ordinal)));
+        Assert.Single(borrowed.Where(static violation =>
+            violation.Contains("list item mark token [UNMET]", StringComparison.Ordinal)));
+        Assert.All(borrowed, static violation => Assert.Contains(
+            "which the section 2 legend does not publish", violation, StringComparison.Ordinal));
+
+        // Clause: a profile legend is held to its three the same way the component's is held to
+        // its nine, in both directions.
+        var profileLegend = LegendViolations(
+            Witness("H1-profile-legend-does-not-publish-the-three.md.witness"), ProfileLegend);
+
+        Assert.Equal(2, profileLegend.Count);
+        Assert.Single(profileLegend.Where(static violation =>
+            violation.Contains("publishes [SOME]", StringComparison.Ordinal)));
+        Assert.Single(profileLegend.Where(static violation =>
+            violation.Contains("does not publish [PARTIAL]", StringComparison.Ordinal)));
 
         // Clause: a table cell whose whole trimmed text is a mark token. The token is eight
         // characters inside the brackets, so it also carries the no-length-cap requirement.
-        var cell = Assert.Single(UnpublishedMarkViolations([Witness("H1-table-cell-unknown-mark.md.witness")]));
+        var cell = Assert.Single(
+            UnpublishedMarkViolations([Witness("H1-table-cell-unknown-mark.md.witness")], CoreLegend));
         Assert.Contains("H1-table-cell-unknown-mark.md.witness", cell, StringComparison.Ordinal);
         Assert.Contains("table cell mark token [APPROVED]", cell, StringComparison.Ordinal);
 
         // Clause: the trailing pipe is optional in GFM, so a row that omits it is still a row.
-        var loose = Assert.Single(UnpublishedMarkViolations([Witness("H1-table-row-without-trailing-pipe.md.witness")]));
+        var loose = Assert.Single(UnpublishedMarkViolations([Witness("H1-table-row-without-trailing-pipe.md.witness")], CoreLegend));
         Assert.Contains("table cell mark token [REJECTED]", loose, StringComparison.Ordinal);
 
         // Clause: the LEADING pipe is optional too. A row that omits it is a real row of the table
         // it sits in, and gating the scan on the leading pipe skipped it whole.
-        var headless = Assert.Single(UnpublishedMarkViolations([Witness("H1-table-row-without-a-leading-pipe.md.witness")]));
+        var headless = Assert.Single(UnpublishedMarkViolations([Witness("H1-table-row-without-a-leading-pipe.md.witness")], CoreLegend));
         Assert.Contains("table cell mark token [APPROVED]", headless, StringComparison.Ordinal);
 
         // Clause: a bracketed token leading a list item, which is the form section 5 uses.
-        var item = Assert.Single(UnpublishedMarkViolations([Witness("H1-list-item-unknown-mark.md.witness")]));
+        var item = Assert.Single(UnpublishedMarkViolations([Witness("H1-list-item-unknown-mark.md.witness")], CoreLegend));
         Assert.Contains("list item mark token [NOT MET]", item, StringComparison.Ordinal);
 
         // Clause: the final token of an ATX heading.
-        var heading = Assert.Single(UnpublishedMarkViolations([Witness("H1-heading-unknown-mark.md.witness")]));
+        var heading = Assert.Single(UnpublishedMarkViolations([Witness("H1-heading-unknown-mark.md.witness")], CoreLegend));
         Assert.Contains("heading mark token [PENDING]", heading, StringComparison.Ordinal);
 
         // Clause: a heading mark written in backticks, which the heading branch has to unquote.
-        var quoted = Assert.Single(UnpublishedMarkViolations([Witness("H1-heading-mark-in-backticks.md.witness")]));
+        var quoted = Assert.Single(UnpublishedMarkViolations([Witness("H1-heading-mark-in-backticks.md.witness")], CoreLegend));
         Assert.Contains("heading mark token [APPROVED]", quoted, StringComparison.Ordinal);
 
         // Clause: block-quote markers are stripped before a line is classified, so a quoted list
         // item, table row and heading are each still what they are.
-        var quotedBlock = UnpublishedMarkViolations([Witness("H1-marks-inside-a-block-quote.md.witness")]);
+        var quotedBlock = UnpublishedMarkViolations(
+            [Witness("H1-marks-inside-a-block-quote.md.witness")], CoreLegend);
         Assert.Equal(3, quotedBlock.Count);
         Assert.Single(quotedBlock.Where(static violation =>
             violation.Contains("list item mark token [APPROVED]", StringComparison.Ordinal)));
@@ -216,7 +326,7 @@ public sealed class ReviewRecordRuleTests
             violation.Contains("table cell mark token [REJECTED]", StringComparison.Ordinal)));
 
         // Clause: the legend itself, parsed independently of the body scan, in both directions.
-        var legend = LegendViolations(Witness("H1-legend-does-not-publish-the-nine.md.witness"));
+        var legend = LegendViolations(Witness("H1-legend-does-not-publish-the-nine.md.witness"), CoreLegend);
         Assert.Equal(2, legend.Count);
         Assert.Single(legend.Where(static violation =>
             violation.Contains("publishes [WAIVED]", StringComparison.Ordinal)));
@@ -225,22 +335,76 @@ public sealed class ReviewRecordRuleTests
 
         // Clause: the legend scan reads a row that omits the leading pipe, so a tenth mark cannot
         // be published past the equality check by dropping one character.
-        var legendRow = Assert.Single(LegendViolations(Witness("H1-legend-row-without-a-leading-pipe.md.witness")));
+        var legendRow = Assert.Single(
+            LegendViolations(Witness("H1-legend-row-without-a-leading-pipe.md.witness"), CoreLegend));
         Assert.Contains("publishes [WAIVED]", legendRow, StringComparison.Ordinal);
 
         // Clause: the legend publishes each of the nine once.
-        var twice = Assert.Single(LegendViolations(Witness("H1-legend-publishes-a-mark-twice.md.witness")));
+        var twice = Assert.Single(
+            LegendViolations(Witness("H1-legend-publishes-a-mark-twice.md.witness"), CoreLegend));
         Assert.Contains("publishes [MET] more than once", twice, StringComparison.Ordinal);
 
         // Clause: exactly one legend section. Section() returning its first match with no
         // uniqueness check let a decoy heading above the real one become the section under test.
-        var twoLegends = Assert.Single(LegendViolations(Witness("H1-legend-section-appears-twice.md.witness")));
+        var twoLegends = Assert.Single(
+            LegendViolations(Witness("H1-legend-section-appears-twice.md.witness"), CoreLegend));
         Assert.Contains("carries 2 'section 1 legend' headings", twoLegends, StringComparison.Ordinal);
     }
 
-    /// <summary>The nine marks the legend publishes, as a fixed set.</summary>
-    private static readonly string[] PublishedMarks =
-        ["[MET]", "[PART]", "[UNMET]", "[N/A]", "[ ]", "[A]", "[C]", "[R]", "[?]"];
+    /// <summary>
+    /// One mark legend: the document that publishes it, the section it lives in, and the marks it
+    /// must publish.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>There is more than one, and that is the point.</b> A mark is only readable against the
+    /// legend a reader of THAT document would look up, and this component holds two document
+    /// families with two vocabularies. The component's own review record publishes nine marks over
+    /// evidence verdicts and review verdicts. A profile's status ledger publishes three - its
+    /// evidence verdict over a milestone row - and says in its own words that the vocabulary is
+    /// closed and has three members.
+    /// </para>
+    /// <para>
+    /// Folding them into one set of twelve would be the obvious repair and it is the wrong one: it
+    /// would admit <c>[FULL]</c> into the component's review record, where nothing defines it, and
+    /// <c>[MET]</c> into a profile ledger whose own section says it has three marks. Each family
+    /// is held to the legend that governs it, and a mark that is legal in one is a violation in
+    /// the other.
+    /// </para>
+    /// </remarks>
+    private sealed record MarkLegend(string Publisher, Regex Section, string Label, string[] Marks);
+
+    /// <summary>The component's own legend: HUMAN_REVIEW.md section 1, nine marks.</summary>
+    private static readonly MarkLegend CoreLegend = new(
+        HumanReviewName,
+        new Regex(@"^##\s+1\.\s", RegexOptions.Compiled),
+        "section 1 legend",
+        ["[MET]", "[PART]", "[UNMET]", "[N/A]", "[ ]", "[A]", "[C]", "[R]", "[?]"]);
+
+    /// <summary>A profile family's legend: its status ledger's section 2, three marks.</summary>
+    private static readonly MarkLegend ProfileLegend = new(
+        "roadmap.status.md",
+        new Regex(@"^##\s+2\.\s", RegexOptions.Compiled),
+        "section 2 legend",
+        ["[NONE]", "[PARTIAL]", "[FULL]"]);
+
+    /// <summary>
+    /// The legend that governs a document, decided by where the document lives.
+    /// </summary>
+    /// <remarks>
+    /// By path and not by content, deliberately. Deciding from what a document contains would let
+    /// a document choose its own vocabulary by using it, which is the check inverted.
+    /// </remarks>
+    private static MarkLegend LegendFor(string documentName) =>
+        documentName.StartsWith("src/Broiler.VM.Profile.", StringComparison.Ordinal)
+            ? ProfileLegend
+            : CoreLegend;
+
+    /// <summary>Every profile status ledger in the checkout, each of which publishes a legend.</summary>
+    private static IEnumerable<ReviewDocument> ProfileLedgers => Corpus
+        .Where(static document =>
+            document.Name.StartsWith("src/Broiler.VM.Profile.", StringComparison.Ordinal) &&
+            document.Name.EndsWith("/roadmap.status.md", StringComparison.Ordinal));
 
     /// <summary>
     /// A mark token is a bracketed run with no closing bracket and no line break inside it. No
@@ -257,17 +421,32 @@ public sealed class ReviewRecordRuleTests
         @"^(?:[-*+]|\d+[.)])\s+(?<tick>`?)(?<token>\[[^\]\r\n]*\])\k<tick>(?=$|\s|[,.;:!?)])",
         RegexOptions.Compiled);
 
-    private static List<string> UnpublishedMarkViolations(IEnumerable<ReviewDocument> corpus)
+    /// <summary>Every mark in the corpus, each judged against the legend that governs its file.</summary>
+    private static List<string> UnpublishedMarkViolations(IEnumerable<ReviewDocument> corpus) =>
+        corpus.SelectMany(document => UnpublishedMarkViolations([document], LegendFor(document.Name)))
+            .ToList();
+
+    /// <summary>
+    /// The same scan against one named legend, which is how a witness input is judged.
+    /// </summary>
+    /// <remarks>
+    /// A witness sits under <c>witnesses/review/</c> and would resolve to the component's own
+    /// legend by path whatever it is witnessing, so the legend is a parameter here. It is also
+    /// what lets one witness be shown legal under one legend and a violation under the other,
+    /// which is the clause that keeps the split from being a no-op.
+    /// </remarks>
+    private static List<string> UnpublishedMarkViolations(
+        IEnumerable<ReviewDocument> corpus, MarkLegend legend)
     {
-        var published = PublishedMarks.ToHashSet(StringComparer.Ordinal);
+        var published = legend.Marks.ToHashSet(StringComparer.Ordinal);
 
         return corpus
             .SelectMany(static document => MarkTokens(document.Lines)
                 .Select(mark => (document.Name, Mark: mark)))
             .Where(found => !published.Contains(found.Mark.Token))
-            .Select(static found =>
+            .Select(found =>
                 $"{found.Name}:{found.Mark.Line} uses {found.Mark.Kind} mark token {found.Mark.Token}, " +
-                "which the legend does not publish")
+                $"which the {legend.Label} does not publish")
             .ToList();
     }
 
@@ -333,19 +512,55 @@ public sealed class ReviewRecordRuleTests
     /// that a mark added to the legend is visible to the equality check. Sharing the body scanner
     /// is what made an earlier attempt's legend check unable to see a tenth mark.
     /// </summary>
-    private static List<string> LegendMarks(ReviewDocument document, List<string> violations)
+    /// <summary>The header a legend table opens with. Only a table under it publishes marks.</summary>
+    /// <remarks>
+    /// <b>Only the legend TABLE publishes, and the section is not enough on its own.</b> An
+    /// earlier revision took any table row in the legend section whose first cell was mark-shaped,
+    /// which was true of the component's section 1 by accident - it contains nothing but legend
+    /// tables - and false the moment a profile ledger arrived, whose section 2 carries the legend
+    /// and the milestone table together. Under the old reading every <c>[NONE]</c> in the status
+    /// table counted as a legend row, so a ledger with nine of them published <c>[NONE]</c> nine
+    /// times. The header is what distinguishes a legend from a table that happens to be beside
+    /// one, and rule H2 already draws exactly this distinction for the exclusion table.
+    /// </remarks>
+    private static readonly string[] LegendHeader = ["Mark", "Meaning"];
+
+    private static List<string> LegendMarks(
+        ReviewDocument document, MarkLegend legend, List<string> violations)
     {
-        var section = Section(document, LegendSection, "section 1 legend", violations);
+        var section = Section(document, legend.Section, legend.Label, violations);
         var marks = new List<string>();
+        var inLegendTable = false;
 
         foreach (var line in section)
         {
             if (!line.IsTableRow)
             {
+                inLegendTable = false;
                 continue;
             }
 
-            var first = Unquote(TableCells(line.Text).FirstOrDefault() ?? string.Empty);
+            var cells = TableCells(line.Text).Select(Unquote).ToArray();
+
+            if (cells.Length == LegendHeader.Length &&
+                cells.SequenceEqual(LegendHeader, StringComparer.OrdinalIgnoreCase))
+            {
+                inLegendTable = true;
+                continue;
+            }
+
+            if (!inLegendTable)
+            {
+                continue;
+            }
+
+            var first = cells.FirstOrDefault() ?? string.Empty;
+
+            // The delimiter row under the header is part of the table and publishes nothing.
+            if (first.Length > 0 && first.Trim('-', ':', ' ').Length == 0)
+            {
+                continue;
+            }
 
             if (MarkToken.IsMatch(first))
             {
@@ -356,23 +571,27 @@ public sealed class ReviewRecordRuleTests
         return marks;
     }
 
-    private static readonly Regex LegendSection = new(@"^##\s+1\.\s", RegexOptions.Compiled);
-
-    private static List<string> LegendViolations(ReviewDocument document)
+    /// <summary>
+    /// A published legend held to the marks it must carry, in both directions and without
+    /// repetition.
+    /// </summary>
+    private static List<string> LegendViolations(ReviewDocument document, MarkLegend legend)
     {
         var violations = new List<string>();
-        var legend = LegendMarks(document, violations);
+        var published = LegendMarks(document, legend, violations);
 
-        violations.AddRange(legend
+        violations.AddRange(published
             .Distinct(StringComparer.Ordinal)
-            .Where(token => !PublishedMarks.Contains(token, StringComparer.Ordinal))
-            .Select(token => $"{document.Name} legend publishes {token}, which is not one of the nine"));
+            .Where(token => !legend.Marks.Contains(token, StringComparer.Ordinal))
+            .Select(token =>
+                $"{document.Name} legend publishes {token}, which is not one of the " +
+                $"{legend.Marks.Length}"));
 
-        violations.AddRange(PublishedMarks
-            .Where(token => !legend.Contains(token, StringComparer.Ordinal))
+        violations.AddRange(legend.Marks
+            .Where(token => !published.Contains(token, StringComparer.Ordinal))
             .Select(token => $"{document.Name} legend does not publish {token}"));
 
-        violations.AddRange(legend
+        violations.AddRange(published
             .GroupBy(static token => token, StringComparer.Ordinal)
             .Where(static group => group.Count() > 1)
             .Select(group => $"{document.Name} legend publishes {group.Key} more than once"));
@@ -415,7 +634,8 @@ public sealed class ReviewRecordRuleTests
             "H2",
             "exclusion table",
             "fenced code block",
-            "subsection");
+            "subsection",
+            "a profile bundle is a different document shape");
 
         var defined = ExclusionDefinitions(EvidenceBundles);
 
@@ -670,12 +890,12 @@ public sealed class ReviewRecordRuleTests
         Assert.Empty(CoverageViolations(HumanReview, AssuranceSources.Files, AssuranceScanner.Units));
         Assert.Empty(FileCountViolations(HumanReview, AssuranceSources.Files));
 
-        // Non-vacuous: the table is 60 rows over a tree of 60 files, so a clean result is a
-        // comparison and not a quantifier over nothing. JS-0 added three assembly markers and JS-1
-        // adds seven more files - the format, the profile and the lowering - each covered for the
-        // same reason every other product file is, which is that it compiles into an assembly this
-        // component builds.
-        Assert.Equal(60, AssuranceSources.Files.Count);
+        // Non-vacuous: the table is 61 rows over a tree of 61 files, so a clean result is a
+        // comparison and not a quantifier over nothing. JS-0 added three assembly markers, JS-1
+        // added seven more files - the format, the profile and the lowering - and JS-3a adds the
+        // position encoding, each covered for the same reason every other product file is, which
+        // is that it compiles into an assembly this component builds.
+        Assert.Equal(61, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(
@@ -1242,7 +1462,8 @@ public sealed class ReviewRecordRuleTests
             "in a recognised phrasing",
             "EX-54",
             "EX-56",
-            "EX-81");
+            "EX-81",
+            "cannot source the retained figures");
 
         var current = Figures(CurrentBundle);
 
@@ -1252,8 +1473,20 @@ public sealed class ReviewRecordRuleTests
         Assert.NotNull(current.NativeImageSize);
         Assert.NotNull(current.TrimmedImageSize);
 
-        Assert.Empty(Corpus.SelectMany(static document => FigureViolations(document, AcceptableFigures(document))));
-        Assert.Empty(RetainedFigureGuard(Corpus, current));
+        // H5 reads documents it can source figures FOR, and a profile family's are not among
+        // them. The exclusion is asserted rather than assumed: the excluded set is non-empty, and
+        // every member of it is a profile document, so it cannot quietly grow to cover a document
+        // whose figures this rule could have checked.
+        var sourced = Corpus.Where(HasARetainedFigureSource).ToArray();
+        var unsourced = Corpus.Where(static document => !HasARetainedFigureSource(document)).ToArray();
+
+        Assert.NotEmpty(sourced);
+        Assert.NotEmpty(unsourced);
+        Assert.All(unsourced, static document => Assert.StartsWith(
+            ProfileDocumentPrefix, document.Name, StringComparison.Ordinal));
+
+        Assert.Empty(sourced.SelectMany(static document => FigureViolations(document, AcceptableFigures(document))));
+        Assert.Empty(RetainedFigureGuard(sourced, current));
 
         // Clause: a quoted suite total is compared against the per-assembly totals and their sum.
         var total = Assert.Single(FigureViolations(
@@ -1426,6 +1659,42 @@ public sealed class ReviewRecordRuleTests
     /// quotes them.
     /// </para>
     /// </remarks>
+    /// <summary>Where a profile family's review documents live, as a path prefix.</summary>
+    internal const string ProfileDocumentPrefix = "src/Broiler.VM.Profile.";
+
+    /// <summary>
+    /// Whether this rule can source the retained figures a document would be compared against.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A profile family's documents cannot be, and saying so is better than comparing them
+    /// against the wrong logs.</b> The figure loader reads a bundle's <c>test.log</c>,
+    /// <c>publish-aot.log</c> and <c>publish-jit-and-trimmed.log</c> and parses a suite total out
+    /// of an English "Passed:" line. A profile bundle is collected by a different script: its logs
+    /// are <c>suite.log</c> and <c>publish-and-run.log</c>, and the totals in them are whatever
+    /// the collecting machine's SDK printed, which on the machine that has collected every profile
+    /// bundle so far is German. Nothing in the loader would match, so every profile bundle would
+    /// resolve to an empty figure set.
+    /// </para>
+    /// <para>
+    /// What made this worth an exclusion rather than a shrug is that the fallback is not
+    /// harmless. A document the loader has no bundle for falls back to the CURRENT bundle's
+    /// figures, so a profile bundle README would have been compared against the component's own
+    /// logs - a comparison that passes today only because there is one suite and its totals are
+    /// the same number in both, and that is a coincidence of the moment rather than a property.
+    /// A rule that passes for a reason unrelated to what it checks is worse than one that says it
+    /// does not reach a document.
+    /// </para>
+    /// <para>
+    /// Decision JSD-0010 records the condition that closes it: a profile bundle is sourced when
+    /// the loader reads that family's log names and parses a suite total without depending on the
+    /// collecting machine's locale. Until then this is a stated limit and the assertion above
+    /// keeps it from covering anything else.
+    /// </para>
+    /// </remarks>
+    private static bool HasARetainedFigureSource(ReviewDocument document) =>
+        !document.Name.StartsWith(ProfileDocumentPrefix, StringComparison.Ordinal);
+
     private static IReadOnlyList<LogFigures> AcceptableFigures(ReviewDocument document)
     {
         var primary = FiguresFor(document);

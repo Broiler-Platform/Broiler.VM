@@ -1,0 +1,47 @@
+exit 0
+
+  Wiederherzustellende Projekte werden ermittelt...
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" wiederhergestellt (in 302 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Format\Broiler.VM.Profile.JavaScript.Format.csproj" wiederhergestellt (in 302 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Contract.Tests\Broiler.VM.Contract.Tests.csproj" wiederhergestellt (in 302 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.ExecutionOnly\Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj" wiederhergestellt (in 302 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\tests\Com.Example.Ledger\Com.Example.Ledger.csproj" wiederhergestellt (in 302 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Fixtures\Broiler.VM.Fixtures.csproj" wiederhergestellt (in 302 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Binary\Broiler.VM.Binary.csproj" wiederhergestellt (in 302 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\compositions\Broiler.VM.Composition.Workbench\Broiler.VM.Composition.Workbench.csproj" wiederhergestellt (in 302 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.SliceCompiler\Broiler.VM.Composition.JavaScript.SliceCompiler.csproj" wiederhergestellt (in 302 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Fixtures.Host\Broiler.VM.Fixtures.Host.csproj" wiederhergestellt (in 302 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Soak.Host\Broiler.VM.Soak.Host.csproj" wiederhergestellt (in 302 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Fuzz.Host\Broiler.VM.Fuzz.Host.csproj" wiederhergestellt (in 302 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Compiler\Broiler.VM.Profile.JavaScript.Compiler.csproj" wiederhergestellt (in 302 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\compositions\Broiler.VM.Composition.Calculator\Broiler.VM.Composition.Calculator.csproj" wiederhergestellt (in 302 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Bench.Host\Broiler.VM.Bench.Host.csproj" wiederhergestellt (in 302 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\Broiler.VM.Architecture.Tests.csproj" wiederhergestellt (in 302 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" wiederhergestellt (in 3 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\tests\Com.Example.Calculator\Com.Example.Calculator.csproj" wiederhergestellt (in 3 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" wiederhergestellt (in 3 ms.).
+  Broiler.VM.Binary -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Profile.JavaScript.Format -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Format\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Abstractions -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Fixtures -> D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Fixtures\bin\Release\net10.0\Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Com.Example.Ledger -> D:\Broiler.Browser\Broiler.VM\src\tests\Com.Example.Ledger\bin\Release\net10.0\Com.Example.Ledger.dll
+  Broiler.VM.Profile.JavaScript -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Profile.JavaScript.Compiler\bin\Release\net10.0\Broiler.VM.Profile.JavaScript.Compiler.dll
+  Com.Example.Calculator -> D:\Broiler.Browser\Broiler.VM\src\tests\Com.Example.Calculator\bin\Release\net10.0\Com.Example.Calculator.dll
+  Broiler.VM.Composition.JavaScript.SliceCompiler -> D:\Broiler.Browser\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.SliceCompiler\bin\Release\net10.0\Broiler.VM.Composition.JavaScript.SliceCompiler.dll
+  Broiler.VM.Composition.JavaScript.ExecutionOnly -> D:\Broiler.Browser\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.ExecutionOnly\bin\Release\net10.0\Broiler.VM.Composition.JavaScript.ExecutionOnly.dll
+  Broiler.VM.Soak.Host -> D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Soak.Host\bin\Release\net10.0\Broiler.VM.Soak.Host.dll
+  Broiler.VM.Fuzz.Host -> D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Fuzz.Host\bin\Release\net10.0\Broiler.VM.Fuzz.Host.dll
+  Broiler.VM.Bench.Host -> D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Bench.Host\bin\Release\net10.0\Broiler.VM.Bench.Host.dll
+  Broiler.VM.Fixtures.Host -> D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Fixtures.Host\bin\Release\net10.0\Broiler.VM.Fixtures.Host.dll
+  Broiler.VM.Contract.Tests -> D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Contract.Tests\bin\Release\net10.0\Broiler.VM.Contract.Tests.dll
+  Broiler.VM.Composition.Calculator -> D:\Broiler.Browser\Broiler.VM\src\compositions\Broiler.VM.Composition.Calculator\bin\Release\net10.0\Broiler.VM.Composition.Calculator.dll
+  Broiler.VM.Architecture.Tests -> D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\bin\Release\net10.0\Broiler.VM.Architecture.Tests.dll
+  Broiler.VM.Composition.Workbench -> D:\Broiler.Browser\Broiler.VM\src\compositions\Broiler.VM.Composition.Workbench\bin\Release\net10.0\Broiler.VM.Composition.Workbench.dll
+
+Der Buildvorgang wurde erfolgreich ausgeführt.
+    0 Warnung(en)
+    0 Fehler
+
+Verstrichene Zeit 00:00:03.67
