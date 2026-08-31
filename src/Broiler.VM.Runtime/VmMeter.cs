@@ -307,13 +307,24 @@ internal sealed class VmMeter : IVmMeter, IVmBoundedAllocationMeter
     /// zero, at which point it would admit a retention it should refuse.
     /// </para>
     /// <para>
-    /// The member returns <c>void</c> because the frozen metering surface has exactly four members
-    /// and none of them reports a remaining value, so a refusal cannot be handed back here. It is
-    /// latched instead, and the operation's next charge or poll reports the exhaustion at aggregate
-    /// scope.
+    /// The member returns <c>void</c>, and the reason is the frozen shape of the surface rather than
+    /// anything about remaining values - <c>TryCharge</c> hands a refusal back and reads no
+    /// remaining value either, so that cannot be what distinguishes them. ADR 0003's
+    /// candidate-amendment register states the fact directly, in the row that would change it: the
+    /// retention report returns nothing and the refusal is latched for the next charge or poll. ADR
+    /// 0007 supplies the observation point - live operations fail at their next charge or poll - and
+    /// freezes the surface at four members with <c>TryCharge</c> the only one given a return.
+    /// </para>
+    /// <para>
+    /// The consequence a profile needs, and the reason this is worth stating where it is enforced:
+    /// <strong>a ceiling-class dimension cannot carry a guest-observable refusal.</strong> A language
+    /// construct that must observe a refusal and continue - a guest asking to grow a region and
+    /// deciding what to do when told no - gates on <c>TryCharge</c>. Reporting the retention and
+    /// hoping to hear about it is a refusal the guest observes one operation too late, by which time
+    /// it has already seen the growth succeed.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=411C57
+    // Broiler-AI:           Origin=AI; Spec=ADR-0003 s12 row 9, ADR-0007; IP=Low; Security=Medium; Resources=1; Fingerprint=411C57
     // Broiler-Falsified-If: a level commits a retention on a path where the parent refused that same retention
     // Broiler-Human:        PENDING
     public void ReportRetained(VmBudgetDimension dimension, ulong amount)
