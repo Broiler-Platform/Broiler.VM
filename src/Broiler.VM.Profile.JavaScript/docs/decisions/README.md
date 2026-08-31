@@ -21,6 +21,7 @@ does not contain says so in its own text.
 | [JSD-0007](0007-cross-profile-position-and-amendment-grading.md) | The `WebAssembly` host-object surface as a named exclusion, the refusal of a cross-profile value channel, and the re-grading of the amendment candidates | JS-0 |
 | [JSD-0008](0008-format-version-1-the-entry-point-and-what-js-1-corrected.md) | What format version 1 carries, the entry-point answer, and four things JS-1 corrected in earlier records | JS-1 |
 | [JSD-0009](0009-the-diagnostic-registry-and-the-position-encoding.md) | The published diagnostic-code registry, its two halves, the three codes no artifact reaches, and this profile's use of the core's position record | JS-3a |
+| [JSD-0010](0010-which-review-rules-govern-this-profiles-documents.md) | That the component's review-document rules read this profile's ledger and bundles, that the mark vocabulary is per document family, and the two clauses that do not govern them | JS-3a |
 
 ## What a record must carry
 

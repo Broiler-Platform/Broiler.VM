@@ -43,6 +43,7 @@ PROFILE_EXECUTOR = os.path.join(PROFILE_ROOT, "JavaScriptExecutor.cs")
 PROFILE_VERIFIER = os.path.join(PROFILE_ROOT, "JavaScriptVerifier.cs")
 PROFILE_POSITION = os.path.join(PROFILE_ROOT, "JavaScriptPosition.cs")
 REGISTRY = os.path.join(PROFILE_ROOT, "docs", "diagnostics", "registry.txt")
+LEDGER = os.path.join(PROFILE_ROOT, "docs", "roadmap.status.md")
 MIRROR = os.path.join(
     "src", "compositions", "Broiler.VM.Composition.JavaScript.SliceCompiler", "CorpusBuilder.cs")
 FIXTURES_PROJECT = os.path.join(
@@ -318,6 +319,27 @@ CONTROLS = [
             "    private static VmSourcePosition At(ulong offset) => "
             "JavaScriptPosition.InArtifact(offset);",
             "    private static VmSourcePosition At(ulong offset) => new(-1, offset, 0, 0);"),
+    ),
+    (
+        "H1-a-profile-ledger-uses-the-components-own-mark",
+        "One milestone row's verdict is replaced by a mark from the component's nine-member "
+        "legend. The two vocabularies are different claims about different subjects, and a reader "
+        "meeting [MET] in a profile ledger would have to guess which one it came from.",
+        LEDGER,
+        lambda text: text.replace("| [PARTIAL] | **JS-0", "| [MET] | **JS-0"),
+    ),
+    (
+        "H1-a-profile-legend-drops-a-mark",
+        "The legend stops publishing [FULL] while the vocabulary still has three members. A legend "
+        "that may drop a member leaves a mark in the table above it that nothing defines - and "
+        "this control is also what proves the rule reads THIS ledger, which until JS-3a it did "
+        "not.",
+        LEDGER,
+        lambda text: text.replace(
+            "| `[FULL]` | The row's bundle demonstrates every exit-gate clause. It is still not "
+            "`Accepted`: acceptance additionally needs an owner and a reviewer decision, which "
+            "nothing here has. |\n",
+            ""),
     ),
     (
         "J3-a-profile-fingerprint-is-stale",
@@ -819,6 +841,7 @@ def main():
         os.path.join(PROFILE_ROOT, "docs", "decisions", "0007-cross-profile-position-and-amendment-grading.md"),
         os.path.join(PROFILE_ROOT, "docs", "decisions", "0008-format-version-1-the-entry-point-and-what-js-1-corrected.md"),
         os.path.join(PROFILE_ROOT, "docs", "decisions", "0009-the-diagnostic-registry-and-the-position-encoding.md"),
+        os.path.join(PROFILE_ROOT, "docs", "decisions", "0010-which-review-rules-govern-this-profiles-documents.md"),
         REGISTRY,
         PROFILE_POSITION,
         os.path.join(arguments.corpus, "corpus.manifest"),

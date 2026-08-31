@@ -66,6 +66,19 @@ The leading column is an **evidence verdict** — the author's mark about what a
 evidence shows. It is not a reviewer's finding and not a change of state. Every row below is
 `[NONE]`, because no row has retained evidence of any kind.
 
+**This table is this document family's mark legend, and rule H1 reads it.** The vocabulary is
+closed and has three members, and it is the same vocabulary every profile ledger in this component
+uses; the component's own nine-member legend in `HUMAN_REVIEW.md` is a different vocabulary about
+different subjects, and a mark from it appearing here is a rule violation. Only one of the three
+is in use today, which is what a ledger with no retained evidence looks like — publishing all
+three is what lets the other two be read when a row first earns one.
+
+| Mark | Meaning |
+|---|---|
+| `[NONE]` | The row has retained evidence of no kind. |
+| `[PARTIAL]` | The row has a retained bundle that demonstrates some of its exit gate, with every unmet clause named in the bundle's own exclusions. A `[PARTIAL]` row is not a qualified pass. |
+| `[FULL]` | The row's bundle demonstrates every exit-gate clause. It is still not `Accepted`: acceptance additionally needs an owner and a reviewer decision. |
+
 | Verdict | Milestone | State | Current evidence | Immediate evidence-producing action |
 |---|---|---|---|---|
 | [NONE] | **WA-0 — boundary, placement, identity, assurance floor** | **Not started** | None. No project, no rule register, no assurance manifest, no licence or notice file, no evidence-collection script, and no declared limit vectors. | Take the placement decision with the core's topology owner co-signing, then stand up the shell graph and the architecture rule register with both halves of the no-edge-to-another-profile rule, the no-product-reference-to-the-harness rule, and a negative control for each. **Publish the fifteen hard maxima and fifteen defaults, with the three guest-load *defaults* explicitly `Unconstrained`** — a dimension declared inapplicable in the budget matrix is a statement about what this profile charges, not a licence to write a zero into the vector a neighbour adopts — and add the two-profile catalog test that catches the mistake. The maxima need no such care: since 2026-08-31 they bind this profile's own modules alone. Nothing else in this component may land first. |

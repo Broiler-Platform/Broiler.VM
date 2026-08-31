@@ -55,6 +55,22 @@ JavaScript engine component or by the Broiler.VM core establishes anything here,
 this ledger may cite one. That rule is not a courtesy to the fork; it is what makes a number in
 this file mean something.
 
+**This document is under the host component's review-document rules, and was not until JS-3a.**
+Those rules built their corpus from the host's own `docs/` and this ledger lives elsewhere, so the
+clauses that exist because a reviewer reads these documents — no citation of a source line number,
+a closed mark vocabulary, every cited exclusion defined — governed a ledger a profile reviewer
+never opens and not this one.
+[JSD-0010](decisions/0010-which-review-rules-govern-this-profiles-documents.md) closes that, and
+records the two clauses that still do not reach this profile's bundles and what would close each.
+**Section 2's mark table is this document family's legend**, read by the rule rather than restated
+by it.
+
+**One consequence for earlier evidence, stated rather than left to be inferred.** The architecture
+suite now reads more documents than it did, so a suite total collected before JS-3a is a total over
+a different test corpus. Bundles [JS-0-001](evidence/js-0/README.md) and
+[JS-1-001](evidence/js-1/README.md) are unaffected in what they demonstrate — no rule either of
+them cites changed — but each `suite.log` is a run of a suite that did not read this ledger.
+
 ### Status vocabulary
 
 | State | Meaning |
@@ -70,15 +86,20 @@ this file mean something.
 ## 2. Current milestone status
 
 The leading column is an **evidence verdict** — the author's mark about what a row's retained
-evidence shows. It is not a reviewer's finding and not a change of state. The vocabulary is
-closed and has three members:
+evidence shows. It is not a reviewer's finding and not a change of state.
 
-- `[NONE]` — the row has retained evidence of no kind.
-- `[PARTIAL]` — the row has a retained bundle that demonstrates some of its exit gate, with
-  every unmet clause named in the bundle's own exclusions. **A `[PARTIAL]` row is not a
-  qualified pass.** It is a row whose gate is open, and the named clauses are what is open.
-- `[FULL]` — the row's bundle demonstrates every exit-gate clause. It is still not `Accepted`:
-  acceptance additionally needs an owner and a reviewer decision, which nothing here has.
+**This table is this document family's mark legend, and rule H1 reads it.** The vocabulary is
+closed and has three members; a mark used anywhere in this profile's review documents that this
+table does not publish is a rule violation, and so is a mark from the component's own nine-member
+legend — the two vocabularies say different things and a reader must not have to guess which one
+a mark came from. [JSD-0010](decisions/0010-which-review-rules-govern-this-profiles-documents.md)
+records the split.
+
+| Mark | Meaning |
+|---|---|
+| `[NONE]` | The row has retained evidence of no kind. |
+| `[PARTIAL]` | The row has a retained bundle that demonstrates some of its exit gate, with every unmet clause named in the bundle's own exclusions. **A `[PARTIAL]` row is not a qualified pass.** It is a row whose gate is open, and the named clauses are what is open. |
+| `[FULL]` | The row's bundle demonstrates every exit-gate clause. It is still not `Accepted`: acceptance additionally needs an owner and a reviewer decision, which nothing here has. |
 
 Three rows are `[PARTIAL]` and the remaining nine are `[NONE]`.
 
