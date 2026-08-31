@@ -223,11 +223,44 @@ values are non-negative finite integers.
 | Step | Layer | Produces | Inputs it may read | Meaning of omission | Failure |
 |---|---|---|---|---|---|
 | P0 | Catalog | `ProfileMax(d)`, `ProfileDefault(d)` | the immutable profile descriptor | `ProfileMax` may be TOP; a profile need not constrain a dimension | a descriptor with `ProfileDefault(d) > ProfileMax(d)` is rejected at catalog construction (ADR 0002, `0002-profile-identity-and-static-catalog.md`) |
-| P1 | Runtime creation | `RuntimeCeiling(d)` | the host's explicit value, or the `AdoptProfileDefault(d)` marker, or the `AdoptParentRemaining(d)` marker | illegal; there is no core default | `HostFailure`, reason `BudgetDimensionUnresolved`, naming d |
+| P1 | Runtime creation | `RuntimeCeiling(d)` | the host's explicit value, or the `AdoptProfileDefault(d)` marker resolved against **the tightest `ProfileDefault(d)` in the catalog**, or the `AdoptParentRemaining(d)` marker. **No `ProfileMax` is applied here**; it enters at P2 alone | illegal; there is no core default | `HostFailure`, reason `BudgetDimensionUnresolved`, naming d |
 | P2 | Verification | `HandleCeiling(d) = min(RuntimeCeiling(d), ProfileMax(d), ArtifactRequest(d))` | the immutable artifact descriptor only | an omitted artifact request is TOP: it adds no restriction and removes none | a request above the intersection is clamped, with diagnostic `LimitRequestClamped(d, requested, effective)` |
 | P3 | Instantiation | `InstanceCeiling(d)`, `InstanceAllowance(d)` | the instance override | an omitted override is TOP: inherit | a raising override is refused, `HostFailure`, reason `BudgetRaiseRefused` |
 | P4 | Invocation and resume | the operation's values | the invocation override | an omitted override is TOP: inherit | as P3; a resume under an exhausted parent is `ResourceExhaustion`, reason `ParentExhausted` |
 | P5 | Charging | decremented meters | `TryCharge(d, n)` | not applicable | `ResourceExhaustion` naming d, the innermost failing link and that scope's identity |
+
+**Erratum, 2026-08-31: the marker's referent, and the maximum's absence.** Two
+things about P1 were settled by a ruling after the implementation and this row
+were found to disagree.
+
+*Whose default the marker adopts had never been stated.* `AdoptProfileDefault`
+appeared in this record exactly once - in the row above - and never said which
+profile's default a multi-profile catalog should use. That is a genuinely
+unspecified cell, against section 7's claim in ADR 0003 that version 1 has none,
+and the implementation had to answer it unaided. The answer is recorded rather
+than changed: **the tightest default in the catalog.** The reasoning is that a
+default has no owner at P1 - the host declined to state a number and no profile is
+selected until an artifact names one - so something must be chosen before there is
+anything to choose it from, and the conservative choice is the only safe one. It
+costs nothing, because P2 re-intersects with the selected profile's own maxima; a
+host wanting more states a number.
+
+*A profile maximum is not applied at P1, and the implementation used to apply
+one.* It clamped the host's value to the tightest `ProfileMax(d)` across every
+descriptor in the catalog, which this row's input list does not admit and which
+put `ProfileMax` a step earlier than P2. The effect was that one profile's
+declaration silently constrained another's: the VM-3 bundle records a ledger
+artifact refused with `ResourceExhaustion` naming `SectionCount` because a
+calculator in the same catalog framed one section, "in a verifier that had done
+nothing wrong". **The record was ruled correct and the implementation corrected**,
+which mints no version because this row is unchanged. Nothing is loosened that a
+profile could exploit: P2's `min(RuntimeCeiling, ProfileMax, ArtifactRequest)`
+still holds the selected profile to its own maximum, and the clamp only ever added
+cross-profile coupling on top of that.
+
+The asymmetry between the two halves is deliberate and is the whole of the ruling:
+**a maximum has a correct owner one step later, so P1 must not guess at one; a
+default has no owner at all, so P1 must.**
 
 At P1, if the host supplied neither a value nor a marker, or named a profile
 default the descriptor does not carry, runtime creation fails and no runtime

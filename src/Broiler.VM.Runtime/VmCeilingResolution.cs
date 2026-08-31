@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   5
-// Annotated:        5/5
+// Relevant units:   4
+// Annotated:        4/4
 // Exempt:           0
-// Human-reviewed:   0/5
+// Human-reviewed:   0/4
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       5
+// Unverified:       4
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -91,7 +91,7 @@ internal static class VmCeilingResolution
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=3; Fingerprint=2C6D3D
+    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=3; Fingerprint=6BDCA3
     // Broiler-Human:        PENDING
     private static bool TryResolveOne(
         VmCatalog catalog,
@@ -109,6 +109,13 @@ internal static class VmCeilingResolution
                 break;
 
             case VmCeilingSource.AdoptProfileDefault:
+                // The tightest default in the catalog, and unlike the maximum above this one is
+                // catalog-wide on purpose. A maximum has a correct owner at P2 - the profile the
+                // artifact names - so P1 need not guess at one. A default has no owner at all here:
+                // the host declined to state a number and no profile is selected yet, so something
+                // must be chosen before there is anything to choose it from. The most conservative
+                // answer is the only safe one, and it costs nothing, because verification
+                // re-intersects with the selected profile's own maxima afterwards.
                 value = TightestProfileDefault(catalog, spec.Dimension);
                 break;
 
@@ -143,14 +150,19 @@ internal static class VmCeilingResolution
                 break;
         }
 
-        // A profile hard maximum tightens whatever the host asked for. The profile may impose a
-        // stricter maximum than the host; it may never relax one.
-        var profileMaximum = TightestProfileMaximum(catalog, spec.Dimension);
-
-        if (value > profileMaximum)
-        {
-            value = profileMaximum;
-        }
+        // No profile hard maximum is applied here, and that is the whole of the correction ruled on
+        // 2026-08-31. ADR 0007 puts ProfileMax in P2, against the profile the ARTIFACT names, and
+        // gives P1 a closed input list that does not include a descriptor. This step used to clamp
+        // to the tightest maximum across every descriptor in the catalog, which meant one profile's
+        // declaration silently constrained another's: a ledger artifact was refused naming
+        // SectionCount because a calculator in the same catalog framed one section, in a verifier
+        // that had done nothing wrong.
+        //
+        // Dropping it removes no bound. Verification computes
+        // Intersect(hostCeilings, profile.ProfileHardMaxima) with the SELECTED profile, so a profile
+        // still cannot be granted more than its own maximum; the P1 clamp only ever added
+        // cross-profile coupling on top of that, in a graph whose rules are otherwise at pains to
+        // keep profiles from touching each other.
 
         if (options.AggregateBudget is not null &&
             VmBudgetDimensions.CarriesAggregateScope(spec.Dimension) &&
@@ -190,22 +202,4 @@ internal static class VmCeilingResolution
         return catalog.Count == 0 ? 0 : tightest;
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0007; IP=Low; Security=Medium; Resources=3; Fingerprint=B31B66
-    // Broiler-Human:        PENDING
-    private static ulong TightestProfileMaximum(VmCatalog catalog, VmBudgetDimension dimension)
-    {
-        var tightest = ulong.MaxValue;
-
-        foreach (var descriptor in catalog.Descriptors)
-        {
-            var declared = descriptor.ProfileHardMaxima[dimension];
-
-            if (declared < tightest)
-            {
-                tightest = declared;
-            }
-        }
-
-        return tightest;
-    }
 }

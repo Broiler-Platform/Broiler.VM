@@ -22,24 +22,24 @@ namespace Broiler.VM.Contract.Tests;
 public sealed class LimitPrecedenceTests
 {
     [Fact]
-    public void A_Ceiling_Is_Clamped_By_Every_Profile_In_The_Catalog_Not_Only_The_Selected_One()
+    public void A_Neighbours_Hard_Maximum_Does_Not_Constrain_This_Artifacts_Ceiling()
     {
-        // PINS A DIVERGENCE RATHER THAN RATIFYING IT. ADR 0007's ordered algorithm gives P1 a
-        // closed "Inputs it may read" column - the host's explicit value and the two markers - and
-        // places the ProfileMax intersection at P2, against the artifact's OWN profile. The
-        // implementation clamps at P1 to the tightest maximum across EVERY descriptor in the
-        // catalog. On a catalog of unlike profiles the two produce different numbers, and this test
-        // records which number is produced today.
+        // Ruled 2026-08-31, and this test was the pin that made the ruling checkable. It formerly
+        // asserted the opposite - that a catalog of unlike profiles clamps every runtime ceiling to
+        // the tightest maximum in it - because that is what the implementation did and no test said
+        // so. ADR 0007 says otherwise: P1's inputs are the host's value and the two markers, and
+        // ProfileMax enters at P2 against the profile the ARTIFACT names. The record won.
         //
-        // Under the record as written the answer below would be 256, the host's own ceiling, because
-        // Alpha's maximum of 1024 does not bind. Under the implementation it is 64, because Beta - a profile
-        // this artifact has nothing to do with - declared a tighter one. That is not a hypothetical:
-        // the VM-3 bundle records a ledger artifact refused with ResourceExhaustion naming
-        // SectionCount "in a verifier that had done nothing wrong", for exactly this reason.
+        // Beta declares a section-count maximum of 64 and has nothing to do with this artifact.
+        // Alpha, which the artifact names, permits 1024, and the host asked for 256. The answer is
+        // the host's 256: Beta does not get a vote, and Alpha's own maximum does not bind because
+        // it is looser than what the host asked for.
         //
-        // Exclusion EX-104 item 2 carries the open question of which of the two is wrong. Until it
-        // is ruled, this test is the only executable statement of the disagreement: whoever rules
-        // changes it deliberately rather than rediscovering the divergence a third time.
+        // Nothing is loosened that a profile could exploit. Verification still computes
+        // Intersect(hostCeilings, profile.ProfileHardMaxima) with the selected profile, so Alpha is
+        // held to 1024 whatever the host says. What is gone is a profile being punished for a
+        // neighbour's declaration - the failure the VM-3 bundle recorded as a refusal "in a
+        // verifier that had done nothing wrong".
         var catalog = FixtureComposition.Catalog(
             FixtureVmProfile.Descriptor,
             FixtureDescriptorFactory.Create(
@@ -58,8 +58,49 @@ public sealed class LimitPrecedenceTests
         var artifact = FixtureComposition.Verify(runtime, FixtureArtifactWriter.Constant(1));
         var effective = artifact.Identity.EffectiveCeilings.VerificationCeilings[VmBudgetDimension.SectionCount];
 
-        Assert.Equal(64ul, effective);
-        Assert.NotEqual(256ul, effective);
+        Assert.Equal(256ul, effective);
+        Assert.NotEqual(64ul, effective);
+    }
+
+    [Fact]
+    public void An_Adopted_Default_Is_The_Tightest_In_The_Catalog_Which_Is_Deliberate()
+    {
+        // The other half of the same ruling, and it goes the other way on purpose. A maximum has a
+        // correct owner at P2, so P1 need not guess at one. An adopted DEFAULT has no owner at all
+        // at P1: the host declined to state a number and no profile is selected yet, so something
+        // must be chosen before there is anything to choose it from. ADR 0007 named the marker and
+        // never said whose default it adopts - the one genuinely unspecified cell this audit found,
+        // against a record that claims it has none.
+        //
+        // The tightest in the catalog is the answer, because it is the conservative one and because
+        // it costs nothing: verification re-intersects with the selected profile's maxima anyway.
+        // A host that wants more states a number, which is what the two-profile composition in this
+        // repository does for the three dimensions where it matters.
+        var tight = FixtureDescriptorFactory.Create(
+            SecondFixtureVmProfile.Id,
+            SecondFixtureVmProfile.Manifest,
+            "Fixture Beta",
+            "Broiler.VM.Fixtures",
+            FixtureVmProfileVariant.Conforming,
+            2);
+
+        using var alone = FixtureComposition.Runtime(
+            FixtureComposition.AlphaCatalog(),
+            FixtureComposition.Options(FixtureComposition.AdoptedCeilings()));
+
+        using var beside = FixtureComposition.Runtime(
+            FixtureComposition.Catalog(FixtureVmProfile.Descriptor, tight),
+            FixtureComposition.Options(FixtureComposition.AdoptedCeilings()));
+
+        // Both fixture profiles declare the same defaults, so adopting resolves identically whether
+        // Alpha is alone or beside Beta. The assertion that matters is that adopting resolves at
+        // all over a multi-profile catalog rather than failing for want of an owner.
+        var one = FixtureComposition.Verify(alone, FixtureArtifactWriter.Constant(1));
+        var two = FixtureComposition.Verify(beside, FixtureArtifactWriter.Constant(1));
+
+        Assert.Equal(
+            one.Identity.EffectiveCeilings.VerificationCeilings[VmBudgetDimension.SectionCount],
+            two.Identity.EffectiveCeilings.VerificationCeilings[VmBudgetDimension.SectionCount]);
     }
 
     [Fact]

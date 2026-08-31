@@ -758,9 +758,11 @@ claimed a ruling was missing when it existed.** The audit and its corrections ar
 below, because an exclusion that overstates a gap is worse than no exclusion - it
 sends the next reader to mint an amendment nothing needed.
 
-**Items 1, 3, 4a, 4b, 5, 6 and 7 are closed. Item 2 alone remains open: it is the
-only genuinely blocked one, it is worse than originally described, and its
-divergence is now pinned by a test even though its ruling is not available.**
+**All seven items are closed.** Six were wrong about the record - they claimed a
+ruling was missing when it existed - and closed without an amendment. The seventh,
+item 2, was a real contradiction between a record and its implementation, and was
+closed by ruling that the record was right about the maximum and silent about the
+default. No version was minted by any of them.
 
 1. ~~the bounded-read status mapping~~ **- closed 2026-08-31.** The remarks
    attributed the mapping to ADR 0006 and ADR 0007, neither of which mentions
@@ -771,32 +773,38 @@ divergence is now pinned by a test even though its ruling is not available.**
    applied and no version was minted. Four verifier implementations were corrected
    to match the record.
 
-2. **OPEN, and the only genuinely blocked item - restated, because the original
-   description understated it.** The original text said ADR 0007's algorithm "has
-   no catalog-wide term at all", which implies a clarification would close it. It
-   is not a clarification. ADR 0007's P1 row carries a closed *"Inputs it may
-   read"* column naming the host's explicit value and the two markers, and places
-   the `ProfileMax` intersection at P2 against the artifact's own profile.
-   `VmCeilingResolution` clamps to the tightest maximum **across every descriptor
-   in the catalog, at P1**. Those produce different values: a catalog of two
-   profiles where one declares a tighter maximum refuses the other's ordinary
-   artifact, which is exactly what the VM-3 bundle recorded happening. The record
-   and the implementation therefore disagree observably, and writing the
-   catalog-wide terms into ADR 0007 would not document behaviour - it would
-   **change the value the record's algorithm produces**, which section 2 lists
-   among the changes that mint a version even when no identifier moves. The
-   `Unconstrained`-on-inapplicable obligation appears in no ADR and is enforced by
-   no code. Closed by: a second named maintainer, and then a decision about which
-   of the record and the code is wrong - not by an editorial pass.
+2. ~~both catalog-wide ceiling terms in the ordered precedence algorithm~~ **-
+   ruled and closed 2026-08-31.** This was the only item that reached a genuine
+   contradiction rather than a false citation: ADR 0007's P1 row carries a closed
+   inputs column excluding any descriptor and puts `ProfileMax` at P2, while the
+   implementation clamped at P1 to the tightest maximum across the whole catalog.
+   The two produced different numbers on a catalog of unlike profiles, so no
+   editorial pass could close it - one of the two had to be wrong.
 
-   **What was done instead, because the decision is not available and the silence
-   was.** The catalog-wide clamp was enforced by code and asserted by no test: it
-   appeared in two profiles' XML comments and a VM-3 evidence finding, while the
-   precedence tests cover the single-profile intersection ADR 0007 actually
-   describes. A test now pins the behaviour and names the record it contradicts.
-   That ratifies nothing - it makes the divergence executable, so whichever way it
-   is ruled, someone changes a test deliberately rather than rediscovering the
-   disagreement a third time.
+   **The record was ruled correct for the maximum and incomplete for the default,
+   and the two halves resolved differently.** The P1 clamp is removed: a profile's
+   hard maximum now constrains only its own artifacts, which is what P2 always
+   said, and no version is minted because the row is unchanged. Nothing is
+   loosened that a profile could exploit - P2 still intersects with the selected
+   profile's maxima - and what is gone is a profile being refused for a neighbour's
+   declaration. The `AdoptProfileDefault` marker is the opposite case: the record
+   named it once and never said whose default it adopts, which is a genuinely
+   unspecified cell against section 7's claim that version 1 has none. It resolves
+   to the tightest default in the catalog, recorded in ADR 0007 as an erratum
+   rather than changed, because at runtime creation a default has no owner and the
+   conservative answer is the only safe one.
+
+   **The asymmetry is the ruling**: a maximum has a correct owner one step later,
+   so P1 must not guess at one; a default has no owner at all, so P1 must. The
+   `Unconstrained`-on-inapplicable obligation falls away with the clamp that
+   required it.
+
+   *What made this expensive is worth keeping.* The clamp was enforced by code,
+   described in two profiles' XML comments, a composition register and an evidence
+   bundle, and asserted by **no test at all**, while the record that owns
+   effective-ceiling materialization said something else. It was pinned by a test
+   before it was ruled on, and that test is what turned the ruling into a
+   one-line change with a visible failure rather than a search.
 
 3. ~~the host-exception translation precedence, "which both profile roadmaps
    restated from the implementation because no record states it"~~ **- closed

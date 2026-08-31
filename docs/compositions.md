@@ -118,15 +118,26 @@ Three things surfaced while composing two unlike profiles that are properties of
 the contract rather than of these two profiles, and all three are cheap to get
 wrong.
 
-**A hard maximum is a statement about your neighbours, not only about you.** A
-runtime ceiling is clamped to the tightest hard maximum in the catalog, across
-every profile in it. A profile that declares its own usage as its maximum - zero
-host calls because it makes none, one section because it frames one - caps every
-profile composed beside it, and the failure appears as a resource refusal in
-somebody else's verifier. Declare a hard maximum for what you would tolerate
-being granted, and leave the dimensions you never reach generous. What keeps
-them unreachable is your budget declaration matrix and your import list, not a
-zero ceiling.
+**A hard maximum is a statement about you, and an adopted default is a statement
+about your neighbours.** These were one paragraph until 2026-08-31, and they are
+two rules with opposite reach.
+
+Your hard maximum binds *your* artifacts and nobody else's. It is applied at
+verification, against the profile the artifact names, so declaring a tight one
+constrains only what you accept. It used to clamp every runtime ceiling in a
+shared catalog - one section because you frame one, zero host calls because you
+make none, and every profile beside you held to that - and that was a defect, now
+corrected. If you read this register before that correction and loosened your
+maxima on its advice, nothing you did is now wrong; it is simply no longer
+required.
+
+The *default* you declare is still catalog-wide. A host that adopts profile
+defaults rather than stating numbers gets the tightest in the catalog, because at
+runtime creation no profile has been selected and there is no other safe answer.
+So a stingy default is what now reaches your neighbours, and a host that wants
+more states an explicit ceiling - which is what the two-profile composition below
+does for the three dimensions where it mattered. Declare a maximum for what you
+would tolerate being granted, and a default for what you actually need.
 
 **An optional import is a per-runtime binding, not a property of the profile.**
 The same profile, over the same artifact, answers differently in a runtime whose
