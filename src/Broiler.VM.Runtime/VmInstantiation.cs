@@ -146,7 +146,7 @@ internal static class VmInstantiation
         }
     }
 
-    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=67B1EA
+    // Broiler-AI:           Origin=AI; Spec=ADR-0004; IP=Low; Security=Medium; Resources=5; Fingerprint=92E293
     // Broiler-Falsified-If: the scope is entered with no owning operation, or the switch tests no host failure or poll bound
     // Broiler-Human:        PENDING
     private static VmInstantiationResult Instantiate(
@@ -238,9 +238,9 @@ internal static class VmInstantiation
         if (meter.ExhaustionObserved && step.Kind is not VmExecutionStepKind.Suspended)
         {
             return VmInstantiationResult.ResourceExhaustion(
-                VmReason.AllowanceExhausted,
+                VmMeter.ReasonFor(meter.FailedDimension),
                 identified
-                    .WithOutcome(VmStage.Instantiation, VmOutcome.ResourceExhaustion, VmReason.AllowanceExhausted, VmInitiator.Core)
+                    .WithOutcome(VmStage.Instantiation, VmOutcome.ResourceExhaustion, VmMeter.ReasonFor(meter.FailedDimension), VmInitiator.Core)
                     .WithExhaustion(meter.FailedDimension, meter.FailedScope));
         }
 

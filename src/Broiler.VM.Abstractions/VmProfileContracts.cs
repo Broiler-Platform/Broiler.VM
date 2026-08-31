@@ -216,11 +216,24 @@ public readonly struct VmVerifierOutcome
         new(VmOutcome.InvalidArtifact, reason, null, VmArtifactSharing.RuntimeScoped,
             profileDiagnosticCode, position, VmBudgetDimension.Fuel, VmBudgetScope.Artifact);
 
-    /// <summary>Verification ran out of a named allowance in a named scope.</summary>
-    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s5; IP=Low; Security=Low; Resources=0; Fingerprint=161DFE
+    /// <summary>Verification ran out of a named budget in a named scope.</summary>
+    /// <remarks>
+    /// The reason is derived from the dimension's class and is not a parameter: an allowance is
+    /// spent and a ceiling is reached, the vocabulary distinguishes them, and which of the two a
+    /// dimension is, is a fixed property of that dimension rather than a judgement the caller
+    /// makes. Hardcoding either produced the defect this replaces - every profile verifier
+    /// answered <see cref="VmReason.AllowanceExhausted"/> for a section-count ceiling while the
+    /// core answered <see cref="VmReason.CeilingReached"/> for the identical breach of the
+    /// artifact-bytes ceiling one call earlier.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; Spec=ADR-0006 s5; IP=Low; Security=Low; Resources=0; Fingerprint=9374B8
     // Broiler-Human:        PENDING
     public static VmVerifierOutcome ResourceExhaustion(VmBudgetDimension dimension, VmBudgetScope scope) =>
-        new(VmOutcome.ResourceExhaustion, VmReason.AllowanceExhausted, null,
+        new(VmOutcome.ResourceExhaustion,
+            VmBudgetDimensions.ClassOf(dimension) is VmBudgetClass.Ceiling
+                ? VmReason.CeilingReached
+                : VmReason.AllowanceExhausted,
+            null,
             VmArtifactSharing.RuntimeScoped, 0, default, dimension, scope);
 
     /// <summary>A cancellation request was observed at a polling point.</summary>

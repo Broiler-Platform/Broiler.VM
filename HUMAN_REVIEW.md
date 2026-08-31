@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 720 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 721 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 47 |
-| Code units | 1645 |
-| Relevant | 720 |
+| Code units | 1646 |
+| Relevant | 721 |
 | Exempt | 925 |
-| Assessed | 720 of 720 (100%) |
-| Human reviewed | 0 of 720 (0%) |
-| Unverified | 720 |
+| Assessed | 721 of 721 (100%) |
+| Human reviewed | 0 of 721 (0%) |
+| Unverified | 721 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,7 +96,7 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 720 |
+| HUMAN_PENDING | 721 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -154,7 +154,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` | 40 | 24 | 16 | 24 | Low | High | 6/2 |
 | `src/Broiler.VM.Runtime/VmInstantiation.cs` | 15 | 9 | 6 | 9 | Low | Medium | 2/0 |
 | `src/Broiler.VM.Runtime/VmLimitPrecedence.cs` | 3 | 3 | 0 | 3 | Low | High | 1/1 |
-| `src/Broiler.VM.Runtime/VmMeter.cs` | 36 | 18 | 18 | 18 | Low | Medium | 8/0 |
+| `src/Broiler.VM.Runtime/VmMeter.cs` | 37 | 19 | 18 | 19 | Low | Medium | 9/0 |
 | `src/Broiler.VM.Runtime/VmOperation.cs` | 54 | 25 | 29 | 25 | Low | Medium | 1/0 |
 | `src/Broiler.VM.Runtime/VmProfileRuntimeState.cs` | 15 | 6 | 9 | 6 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Runtime/VmRuntime.cs` | 57 | 34 | 23 | 34 | Low | High | 10/2 |
@@ -293,7 +293,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 720 of the 720 assessed units declare
+That is not a figure of speech. 721 of the 721 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that
