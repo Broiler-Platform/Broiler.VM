@@ -35,7 +35,7 @@ promises, frozen at core contract version 1.
 
 | # | Promise |
 |---|---|
-| P1 | A profile is an ordinary `net10.0` project whose Broiler.VM reference set is exactly {Broiler.VM.Abstractions, Broiler.VM.Binary}, by project or package reference, compiled into the application. Its descriptor and factory are named directly by a composition root (deferred to VM-3 for the first advertised root). |
+| P1 | A profile is an ordinary `net10.0` project whose Broiler.VM reference set is exactly {Broiler.VM.Abstractions, Broiler.VM.Binary}, by project or package reference, compiled into the application. **The set is of Broiler.VM-owned assemblies; a profile component's own siblings - its format assembly, its lowering, its composition roots - are not members of it and P1 does not bound them.** Its descriptor and factory are named directly by a composition root (deferred to VM-3 for the first advertised root). |
 | P2 | The promised surface is exactly the public API of those two assemblies, as captured by the public API baseline (deferred to VM-6). There is no privileged surface: nothing profile-facing is reachable through `InternalsVisibleTo`, a friend assembly, an internal partial, or an unlisted type. If a profile needs it, it is public or it does not exist. |
 | P3 | Within one core contract version, a profile that compiles and passes its contract tests against a core package version compiles unchanged, with the same semantics, against any later core package version carrying that same contract version. |
 | P4 | Every unsupported case a profile can reach has a named deterministic failure, and the profile may rely on that name (invariant 8). Which of the two discharge forms applies to each artefact is ADR 0003's (`0003-core-contract-v1-and-amendments.md`) admitted-versus-implemented table. |
@@ -51,6 +51,18 @@ delegate - is declared in Broiler.VM.Abstractions; Broiler.VM.Runtime holds
 implementations and exposes no profile-facing type. The alternative drags the
 runtime into every profile package's dependency closure and makes "the
 runtime's contract surface" an unbounded phrase no test can hold.
+
+**Editorial revision, 2026-08-31: P1's set is Broiler.VM-owned assemblies.** The
+qualifier was implicit in the phrase "Broiler.VM reference set" and in this
+record's own rationale, which is entirely about excluding the runtime, but it was
+never stated - and a profile roadmap proposing a sibling format assembly could not
+tell whether its own graph was legal. It is stated now. Nothing changes: no
+product profile exists in any checkout, the rationale below is unaltered, and the
+rule that enforces P1 could not have reached a sibling in any case (see the note on
+rule A13's subject below). Section 10's format pivot in the roadmap is incoherent
+unless a profile may reference its own format assembly, which is the second reason
+the reading was never in doubt and the first reason it should have been written
+down.
 
 Two registered rules already hold the shape of P1 and P2 against the shells:
 
@@ -566,9 +578,26 @@ and, where a sibling already owns the matching identifier, cited.
 4. **The capability boundary is not a sandbox**, as stated above. No support
    claim may describe it as one.
 5. **The extraction gate cannot fire during VM-0 through VM-6**, because no
-   product profile exists. G1 is unsatisfiable until two of them do, so the
-   first real invocation belongs to a profile roadmap rather than to this
-   component's. Closed by: the second product profile.
+   product profile exists. G1 is unsatisfiable until two of them do, so the first
+   real invocation falls outside this component's own milestones. **Who may invoke
+   is unchanged and is stated above: any profile owner or the core architecture
+   owner.** An earlier reading of this clause took "belongs to a profile roadmap"
+   as an assignment of authority and narrowed the invocation right accordingly;
+   it is a statement about *when*, not about *who*, and the roadmap that narrowed
+   it has been corrected.
+
+   **The unsatisfied-G1 state, which the gate's own failure branch does not
+   cover.** "When the gate fails" describes a gate that fired and failed a
+   condition; invocation is barred until G1 holds, so a profile that finds the
+   second product implementation has not merged cannot invoke and has nothing to
+   file under that branch. It files this instead, in this ADR set, because neither
+   profile may cite an identifier belonging to the other: a dated note stating that
+   G1 is unsatisfied, naming what would satisfy it, and supplying that profile's
+   own half - file paths, source revision, and a correspondence table against the
+   other implementation. **The note carries no verdict**, because a verdict changes
+   the core graph. An unrecorded state is the failure this is written to prevent;
+   an unsatisfied G1 is not a failure at all. Closed by: the second product
+   profile.
 6. **The Vacuous and Deferred rule inventory** - including B4 above - is
    recorded once, with counts and identifiers, as ADR 0001's Exclusion EX-05
    and is repeated verbatim in the evidence bundle (exists at VM-0:

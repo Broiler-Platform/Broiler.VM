@@ -98,10 +98,29 @@ path in the core that may:
 - it re-enters the runtime that requested it and no other runtime;
 - on the requesting operation's own thread;
 - inside the parent's already-held execution slot, taking no second slot;
-- only through the mediator, and only as a child verification, plus a child
-  instantiation where the profile's declaration permits one;
+- only through the mediator, and only as a child verification;
 - charged to the parent operation's remaining allowances; and
 - bounded by the four bounds below.
+
+**Editorial revision, 2026-08-31: a clause with no referent is struck.** The
+fourth bullet previously ended "plus a child instantiation where the profile's
+declaration permits one". **No such declaration exists.** This record's own
+descriptor contribution is a two-case discriminator with exactly three mandatory
+parts - minimum provider capability version, guest-load hard maxima, and the
+verifier-work-to-fuel rate - and none of them is a child-instantiation permission.
+Nor is the path reachable: a nested load hands the requesting profile a verified
+handle, instantiation lives on the runtime, and nothing an executor is given
+reaches it, which the VM-2 evidence bundle records as Exclusion EX-78 and carries
+open through VM-6. The clause permitted something no profile could declare and no
+code could perform.
+
+Struck as editorial rather than amended, because the behaviour provably did not
+change: there is no declaration to withdraw, no code path to remove, and no
+profile that could have relied on it. What it did do was make the guest-load
+nesting-depth bound look reachable, and a bound that cannot be exercised is the
+kind of thing that reads as tested when it is not. Restoring the permission means
+adding the descriptor part, which is an amendment and is registered as
+candidate 10 in ADR 0003 section 12.
 
 Everything else that could re-enter is refused. In particular the artifact
 provider itself may not re-enter (see below), and no guest-initiated load may

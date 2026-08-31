@@ -130,6 +130,15 @@ reference set is exactly {`Broiler.VM.Abstractions`, `Broiler.VM.Binary`}, and
 that binds the fixture profile, every future `Broiler.VM.Profile.*`, and every
 application-local consumer profile.
 
+**Revised 2026-08-31 to state the subject the sentence always had.** The set is of
+**Broiler.VM-owned** assemblies. A profile component's own siblings - a format
+assembly, a lowering, its composition roots - are not members of it and this
+sentence does not bound them. The subject here is the `Broiler.VM.Runtime`
+exclusion, which is what the paragraph above argues and all that rule A13 tests.
+The qualifier is added because this is the sentence readers quote, and a profile
+roadmap proposing its own format assembly had no way to tell from it whether the
+graph it drew was legal. ADR 0011 P1 carries the same qualifier.
+
 The consequence is binding on VM-1 and on ADR 0011
 (`0011-source-level-profile-contract.md`): any contract a profile needs is
 declared in Abstractions or it does not exist. The loose reading was rejected
