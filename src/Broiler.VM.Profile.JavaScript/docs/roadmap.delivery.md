@@ -775,6 +775,10 @@ gap to be closed:
   deliberately everywhere.** An invariant is not a milestone's deliverable; it is a property every
   later milestone must not break, which is why each appears in the gate of the first milestone that
   could violate it rather than in a milestone of its own.
+- **Two things the map surfaced have been folded back into the gates it checks against**, which is
+  the map doing its job rather than a defect in it: the family's frozen public surface, which two
+  milestones own as an exit clause and which no evidence area tested and no release gate blocked
+  on; and the operations gate below.
 - **One release gate is owned by no chapter, and the map is how that was found.** Gate 13 asks that
   the holders of diagnostics, cancellation, rollback, format-version rejection, corpus and
   suite-revision drift, **vulnerability response**, and recertification each be named. No chapter
