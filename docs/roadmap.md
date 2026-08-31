@@ -498,9 +498,12 @@ and a composition that omits it makes every guest-initiated load fail determinis
 **Host-exception translation has a precedence and the order is the core's.** An exception crossing
 back from a capability is classified in exactly this order: a cancellation exception carrying the
 operation's own token is `cancellation`; an exhausted meter at the moment of the catch is `resource
-exhaustion`; anything else is `host failure` naming the capability. The order is stated here so a
-profile cites it rather than re-deriving it from the implementation, which is what two independently
-written profile roadmaps did.
+exhaustion`; anything else is `host failure` naming the capability. **This is not a new statement:
+ADR 0011 already rules it**, as X1/X2/X3, "ordered and exhaustive - evaluate in order; stop at the
+first match", in the record section 2 names as the owner of the host-capability class. It is repeated
+here because two independently written profile roadmaps restated it from the implementation instead
+of citing it, which is a discoverability defect rather than a missing ruling. A profile cites ADR
+0011.
 
 ---
 
@@ -552,12 +555,18 @@ duplicated implementation carries a source-level pointer to that record. A dupli
 record is the failure mode this rule exists to prevent, because it is indistinguishable from
 nobody having noticed.
 
-**The gate's first invocation belongs to the core architecture owner, not to a profile.** A profile
-milestone *supplies* its half — file paths, source revision, and a correspondence table against the
-other implementation — and records that it supplied it. It records no verdict, because a verdict is
-a change to the core graph and because neither profile may cite an identifier belonging to the
-other. A profile that finds the second implementation has not merged records that the first
-condition is unsatisfied and names what would satisfy it. **An unrecorded state is a stop
+**Invocation is ADR 0011's to assign and it assigns it broadly: any profile owner or the core
+architecture owner may invoke the gate**, once two product profiles implement the behaviour in
+merged code. An earlier draft of this paragraph narrowed that to the core architecture owner alone,
+which contradicted the record rather than refining it, and the record is the authority. What is
+genuinely this roadmap's to add is the division of labour underneath: a profile milestone *supplies*
+its half — file paths, source revision, and a correspondence table against the other implementation
+— and records that it supplied it. **The verdict is filed in the core ADR set** whoever invoked,
+because a verdict changes the core graph and because neither profile may cite an identifier
+belonging to the other. A profile that finds the second implementation has not merged records that
+the first condition is unsatisfied and names what would satisfy it - a state the gate's own
+"when the gate fails" clause does not cover, because invocation is barred until the first condition
+holds. **An unrecorded state is a stop
 condition; an unsatisfied first condition is not.**
 
 ### The cross-profile boundary, and why it is not an extraction question
