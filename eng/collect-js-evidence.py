@@ -892,6 +892,16 @@ def fuzz_controls(out, corpus):
 
         reverted_code, _ = fuzz_session(corpus)
 
+        # The injected session RETAINED its finding, and that finding is an artefact of a defect
+        # this control put there and took away again. Leaving it on disk would put an unresolved
+        # counterexample in the tree for a defect that does not exist, which reads as the one thing
+        # a fuzz finding must never read as. A control reverts everything it did, not only the
+        # source.
+        findings = os.path.join(os.path.dirname(corpus), "js-1-fuzz-findings")
+
+        if os.path.isdir(findings):
+            shutil.rmtree(findings)
+
         verdict = "PASS" if injected_code == 1 and reverted_code == 0 else "FAIL"
         passed += 1 if verdict == "PASS" else 0
 
