@@ -1,37 +1,53 @@
 # Broiler.VM.Profile.JavaScript roadmap — delivery
 
 **This file is part of the [Broiler.VM.Profile.JavaScript roadmap](roadmap.md)**, which
-[names every file](roadmap.md#how-this-roadmap-is-split). It carries sections 19–20:
-the milestones and the order they are delivered in. **Section numbers are global and do not
-change when a section moves**, so a reference written to any section below still resolves here.
+[names every file](roadmap.md#how-this-roadmap-is-split). It carries sections 19–20 and 25:
+the milestones, the order they are delivered in, and the map that ties every chapter of the plan
+to the milestone that delivers it and the gate that closes it. **Section numbers are global and do
+not change when a section moves**, so a reference written to any section below still resolves here.
 
-The [evidence ledger](roadmap.status.md) is the authority for what has been accepted.
+The [evidence ledger](roadmap.status.md) is the authority for what has been accepted, and
+[the corrections and rejections](roadmap.corrections.md) hold what an earlier reading of any
+milestone below said before implementation replaced it.
 
 ---
 
 ## 19. Milestones
 
-The [status ledger](roadmap.status.md) is the authority for what has been accepted. This section
-states planned work and objective exit gates only.
+**This section is the authority for what is *planned* and for nothing else.** What has moved, what
+each retained bundle demonstrates, and which exit-gate clauses are open are the
+[ledger](roadmap.status.md)'s, and no milestone below restates them: each names its ledger row and
+stops there.
 
-**One bookkeeping note, because the alternative is a reader trusting the wrong document.** The
-milestone set here is JS-0, JS-1, JS-2, **JS-3a and JS-3b**, then JS-4 through JS-10: what was one
-JS-3 is now two, split by dependency rather than by size, for the reason
-[section 20](#20-delivery-order) gives. The ledger still enumerates the older set, so **until it
-is updated the two documents disagree on the shape of slot 3 and on nothing else**. The ledger is
-the authority for what has been *accepted* — which is nothing, on either shape — and this section
-is the authority for what is *planned*.
+The milestone set is JS-0, JS-1, JS-2, **JS-3a and JS-3b**, then JS-4 through JS-10 — twelve rows,
+because what was one JS-3 is two, split by dependency rather than by size for the reason
+[section 20](#20-delivery-order) gives *(corrected: JSC-15)*.
 
-Two dependencies run through every milestone and are stated once. **The core is implemented, not
-accepted**, so JS-0 and JS-1 build against implemented contracts while JS-2 onward additionally
-depend on the core contract being accepted — a gate this component does not hold. And **owner
-and reviewer roles are named per milestone**; where one person holds several, the
+**Every milestone below has the same six parts, in the same order, and nothing else**: **Owner**,
+**Ledger**, **Next action**, **Dependencies**, **Objective exit gate**, **Seed**. Where a milestone
+must explain why it sits where it does, it does so in a paragraph before the six rather than in a
+seventh bullet — a bullet only one milestone carries is a bullet a reader learns to skip, and it is
+where a re-scope or a correction otherwise accumulates.
+
+Two dependencies run through every milestone and are stated once. **The core's contract being
+implemented and the core's contract being accepted are two different inputs**, so JS-0, JS-1 and
+JS-3a need only the first while JS-2 onward additionally need the second — a gate this component
+does not hold, recorded in the ledger with its holder rather than routed around. And
+**owner and reviewer roles are named per milestone**; where one person holds several, the
 non-independence is recorded as a limit on what these gates prove, not resolved by assertion.
+
+One term below means one thing throughout. **A milestone's *claimed RID set* is the set its own
+bundle published and ran on, named in that bundle and never empty.** Claiming a runtime identifier
+as *supported* is a release act and JS-10 owns it: a milestone that published and ran on one
+machine has **recorded** a RID, and a support table that has not been issued has claimed none.
 
 ### JS-0 — Boundary, placement, identity, and the assurance floor
 
 - **Owner:** profile architecture owner, with the core's topology owner co-signing placement and
   the release owner co-signing the licence position.
+- **Ledger:** JS-0's row in
+  [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
+  its retained evidence, and every open clause of the gate below.
 - **Next action:** Decide and record, each as a dated decision with a registered rule and a
   passing witness: where this component lives relative to the core and the aggregate repository;
   the profile ID `broiler.javascript` and the `Broiler.*` package identity it obliges; the
@@ -55,16 +71,15 @@ non-independence is recorded as a limit on what these gates prove, not resolved 
   here rather than left to the other profile to carry alone. Re-grade
   [section 18](roadmap.md#18-amendments-this-profile-expects-to-ask-of-the-core)'s
   argument-channel row and split its result half out, since both need no code and the first
-  amendment the programme files will be one of them. Stand up this component's own assurance
-  system — annotation grammar, exemption predicate, generated review report, fingerprint binding,
-  release-mode gate — and its own evidence-bundle contract and collection script. Publish the
-  licence and third-party notice. **The annotation grammar, the exemption predicate, the
-  review-state machine, the fingerprint definition and the release-gate semantics are repository
-  policy, not this component's inventions**: they are recorded in the platform's
-  `CODE-ASSURANCE.md` and the policy it names, and this milestone implements them rather than
-  redefining them. Record the deviation if any of the
-  five has to differ, because a second implementation that quietly diverges is what the core's
-  extraction gate exists to catch.
+  amendment the programme files will be one of them. **Adopt the host component's assurance system,
+  rule register and licence and notice files rather than standing up a second of each** — the
+  annotation grammar, the exemption predicate, the review-state machine, the fingerprint definition
+  and the release-gate semantics are repository policy, and a second implementation that quietly
+  diverges is what the core's extraction gate exists to catch — and record every place adoption
+  costs something as a dated deviation. What this milestone *does* stand up of its own is the part
+  adoption cannot supply: **this profile's own evidence-bundle contract and collection script**,
+  because a bundle collected by the host's script would merge two ledgers, and its own group in the
+  rule register.
 - **Dependencies:** Named ownership. No dependency on the seed, on the copy, or on any core
   milestone's acceptance.
 - **Objective exit gate:** An acyclic shell graph builds Release with zero warnings; architecture
@@ -74,12 +89,18 @@ non-independence is recorded as a limit on what these gates prove, not resolved 
   this profile's descriptor beside a second profile whose declarations are deliberately hostile and
   proves that the neighbour's maxima do not reach this profile's artifacts at all, and that its
   adopted defaults do**, with a negative control that sets a guest-load *default* to zero on the
-  neighbour, adopts defaults rather than stating ceilings, and observes `eval` refused - the
-  exposure that survives, in the one configuration that still has it;
+  neighbour, adopts defaults rather than stating ceilings, and observes `eval` refused — the
+  exposure that survives, in the one configuration that still has it. **Neither half of that clause
+  can close here**: this milestone lands no product code, so there is no descriptor to compose
+  until JS-1, and no `eval` to refuse until JS-8. It is carried to both rather than satisfied with
+  a fabricated descriptor;
   a scan asserts no source file, project file, or build item resolves outside the component root,
   and an unresolvable build item is **reported rather than skipped**; the public API baseline
   mechanism exists and compares in both directions, with an injected member failing it and a
-  deleted member failing it too; the assurance generator is a fixed point — a regeneration moves
+  deleted member failing it too — **a clause this milestone cannot close, because the family
+  exports nothing until JS-1 and the describer that would read it needs a reference the rules
+  forbid, so it is carried and closed at JS-3a** *(corrected: JSC-16)*; the assurance generator is
+  a fixed point — a regeneration moves
   no byte — and a negative control proves it refuses to write a reviewer identifier no source
   line carries; the release-mode gate names each blocking declaration individually rather than
   counting them; the evidence-collection script exists and this milestone's own bundle was
@@ -91,20 +112,29 @@ non-independence is recorded as a limit on what these gates prove, not resolved 
 ### JS-1 — Close the whole contract loop on the smallest JavaScript that is still JavaScript
 
 - **Owner:** profile contract owner, with release and AOT review of the composition root.
+- **Ledger:** JS-1's row in
+  [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
+  its retained evidence, and every open clause of the gate below.
 - **Next action:** Mint `broiler.javascript.slice` and define format version 1 for it. Write the
   verifier over the core's bounded reader and allocator, supplying the bounds projection and the
   allocation-meter adapter. Implement all seven core-facing types. Fill every descriptor row in
   one full-arity construction, with the language-shaped rows of
   [section 8](roadmap.md#8-the-value-frame-and-call-model) marked **provisional** and each naming
   the milestone that will settle it. Write the lowering for this slice by hand in the lowering
-  sibling. Stand up the execution-only composition root with a closure self-report mode. Decide
+  sibling. Stand up **two composition roots differing by exactly one reference, the lowering** —
+  one that names the profile and not the compiler and therefore cannot turn source into an artifact
+  however it is invoked, and one that names both and writes the retained corpus — each with a
+  closure self-report mode, and **neither claiming a composition label**, because
+  `narrow-runtime-compiler` belongs to a composition lowering a named restricted *source* surface
+  and there is none until JS-3b. Decide
   and record the entry-point answer from
   [section 10](roadmap.md#10-execution-mapping-javascript-onto-the-core-lifecycle).
 - **Dependencies:** JS-0. Deliberately **not** the copy, not a parser, and not core acceptance:
   the point of this milestone is to find contract defects against about two thousand readable
   lines rather than against a copied engine.
-- **Objective exit gate:** The named execution-only composition **publishes and runs** on every
-  claimed RID — the set named here, non-vacuously — under JIT, trimmed self-contained, and
+- **Objective exit gate:** The execution-only composition **publishes and runs** on every RID of
+  this milestone's claimed set, which its bundle names and which is not empty — under JIT, trimmed
+  self-contained, and
   Native AOT with trim and AOT warnings treated as errors, executing a verified artifact to its
   expected answer in every mode, each closure report containing exactly the declared assemblies
   and no test, reflection, dynamic-code, or IL-emission assembly. **Each of the five verifier
@@ -135,6 +165,9 @@ non-independence is recorded as a limit on what these gates prove, not resolved 
 ### JS-2 — Take the snapshot; make the copied front end this component's own code
 
 - **Owner:** profile front-end owner, with the release owner co-signing the attribution change.
+- **Ledger:** JS-2's row in
+  [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
+  its retained evidence, and every open clause of the gate below.
 - **Next action:** Record the snapshot recursively. Copy the tokenizer, the syntax tree and its
   visitors, the parse-time binding and scope analysis, the free-name analysis, and the allocation
   and string primitives. Decide and record whether the few neighbouring primitives the tree
@@ -143,11 +176,12 @@ non-independence is recorded as a limit on what these gates prove, not resolved 
   the ambient parse-goal and top-level-await reads with an explicit options value. Take the
   deep-nesting decision of [section 9](roadmap.md#9-the-semantic-front-end-and-lowering). Annotate
   every copied unit as ported.
-- **Dependencies:** JS-1, plus two external gates: **the core contract accepted**, which is open
-  today and is recorded in the ledger as a named blocker with its holder and unblock condition;
-  and the per-item ruling of
-  [section 4.2](roadmap.md#42-what-after-the-fix-work-lands-can-and-cannot-mean). Plus the
-  nullable and unsafe positions from JS-0, which must be settled before the first compile.
+- **Dependencies:** JS-1, plus **one external gate: the core contract accepted**, which this
+  component does not hold and which the ledger records as a named blocker with its holder and its
+  unblock condition. Three things this milestone once waited on are settled and no longer gate it:
+  the per-item ruling of
+  [section 4.2](roadmap.md#42-what-after-the-fix-work-lands-can-and-cannot-mean) and its stop
+  condition, and the nullable and unsafe positions the seed forces, all taken at JS-0.
 - **Objective exit gate:** The snapshot identity is recorded recursively and re-derivable; the
   two-way boundary rule passes with its witnesses; the copied front end builds with the trim and
   AOT analyzers **force-enabled**, producing zero trim and AOT warnings **anywhere in its
@@ -173,17 +207,23 @@ non-independence is recorded as a limit on what these gates prove, not resolved 
 
 ### JS-3a — The diagnostic registry and the oracle, standing before the copy arrives
 
-**This milestone was split out of JS-3, and the split is the point.** Nothing in the oracle method
-of [section 14](roadmap.md#14-the-conformance-oracle) needs a copied line: it needs a scoring
-target, and JS-1 already produces one — five verifier outcomes each by a named retained corpus
-case, a slice corpus replaying twice with no residue and containing a passing control. Leaving the
-harness fused to the static-semantics work put this component's only external correctness signal
-behind **both** of its external blockers: the core acceptance gate and the seed's waited-on set.
-It only ever needed to be behind neither. [Section 20](#20-delivery-order)'s list of decisions
-that need no copied code omitted the harness, which is the largest of them; this milestone is that
-omission corrected.
+**This milestone stands behind neither of this component's external blockers, and that is why it
+is a milestone of its own.** Nothing in the oracle method of
+[section 14](roadmap.md#14-the-conformance-oracle) needs a copied line: it needs a scoring target,
+and JS-1 produces one — every verifier outcome reached by a named retained corpus case, over a
+corpus that replays with no residue and contains passing controls. Fusing the harness to the
+static-semantics work would put this component's only external correctness signal behind the core
+acceptance gate and behind the seed's snapshot, and a team that serialised them would spend the
+whole acceptance wait with no oracle *(corrected: JSC-15)*.
+
+**It deliberately does no static semantics and no lowering**, which are JS-3b's. A milestone that
+stands up the oracle *and* consolidates the early errors would have its hardest scoping question
+answered by whichever of the two ran late.
 
 - **Owner:** conformance owner, with the verification-boundary owner for the registry half.
+- **Ledger:** JS-3a's row in
+  [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
+  its retained evidence, and every open clause of the gate below.
 - **Next action:** Publish and version the diagnostic-code registry and the position encoding,
   stating which of the core position record's four fields this profile populates, what it carries
   in the two profile-owned coordinates, and what a section index of `-1` means here. **Record
@@ -194,13 +234,19 @@ omission corrected.
   self-check, the sharding, the merge, the scope manifests, and the audit command, and score the
   slice manifest.
 - **Dependencies:** **JS-1 only.** Deliberately not JS-2, not the copy, and not core acceptance.
-- **Objective exit gate:** The diagnostic-code registry is published, versioned, and bound in
-  **both** directions — every emittable code appears in it, every code in it is reachable from a
-  named case; each code maps onto exactly one core reason with no invented or aliased reason, and
-  the registry states its own revision so that a retained corpus entry recording a code can be
-  dated, because a code that changes meaning between releases silently invalidates every corpus
-  entry that recorded it; **the self-check runs against the built profile before every shard** and
-  every deliberately broken fixture returns its declared verdict alongside at least one passing
+- **Objective exit gate:** The public API baseline clause carried from JS-0 closes here, over a
+  baseline of this family's own, described from the build output **without loading or running
+  anything** and compared in both directions so an addition, a removal and a signature change each
+  fail it. The diagnostic-code registry is published, versioned, and bound in
+  **both** directions — every emittable code appears in it, and every code in it is reachable from
+  a named case **or is one of a rule-held list of defensive rows that no artifact reaches, each
+  stating why**, because a defensive arm deleted for being unreachable answers with some other
+  code at the moment the answer matters; each code maps onto exactly one core reason with no
+  invented or aliased reason, and the registry states its own revision so that a retained corpus
+  entry recording a code can be dated, because a code that changes meaning between releases
+  silently invalidates every corpus entry that recorded it; **the self-check runs against the built
+  profile before every shard** and every deliberately broken fixture returns its declared verdict
+  alongside at least one passing
   control, with a negative control that injects a scoring regression, observes the mismatch, and
   reverts; the slice manifest runs to completion and publishes per-host-mode totals from an exact
   commit and an exact suite revision, and **that run sets the ratchet**; removing one shard's report
@@ -218,13 +264,13 @@ omission corrected.
   the ingestion path and observes the scan fail.
 - **Seed:** Nothing is copied. Every mechanism here is this component's own code, and **no total,
   manifest entry, known-gap entry, or triage finding crosses the fork.**
-- **Deliberately not done:** No static semantics and no lowering. A milestone that stands up the
-  oracle and also consolidates the early errors will have its hardest scoping question answered by
-  whichever of the two ran late.
 
 ### JS-3b — Static semantics as one verification stage, and the lowering
 
 - **Owner:** verification-boundary owner.
+- **Ledger:** JS-3b's row in
+  [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
+  its retained evidence, and every open clause of the gate below.
 - **Next action:** Consolidate every early error the first manifest requires into one validation
   stage; carry on the tree the facts the two source re-scans recover, and delete the re-scans;
   take and record the strict-mode ownership decision; write the lowering that feeds the one
@@ -250,16 +296,19 @@ omission corrected.
 ### JS-4 — The value representation and the object model
 
 - **Owner:** profile runtime owner.
-- **Next action:** Take the [section 8](roadmap.md#8-the-value-frame-and-call-model) decision as a
-  numbered decision stating its consequence in both directions, **before any standard-library
-  source file is copied**. Record the eight-row ABI with fixtures and Native AOT representation
-  probes retained beside it. Copy the property storage with its tests and its recorded defect
-  history. Replace the reflective key-table initialiser with a generated table under a named owner
-  and make key identity realm-scoped. Amputate the dynamic-metaobject interface from the value
-  base type. Route what the front end and the executor need through a realm object the composition
-  creates. **Delete JS-1's hand-written encoder and lowering**, and assert the deletion.
-- **Dependencies:** JS-1 and JS-2. The ABI decision is a **gate on entry**, not this milestone's
-  first task.
+- **Ledger:** JS-4's row in
+  [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
+  its retained evidence, and every open clause of the gate below.
+- **Next action:** Implement the eight-row ABI the entry gate already fixed, retaining the
+  correctness fixtures and Native AOT representation probes the gate deferred to this milestone.
+  Copy the property storage with its tests and its recorded defect history. Replace the reflective
+  key-table initialiser with a generated table under a named owner and make key identity
+  realm-scoped. Amputate the dynamic-metaobject interface from the value base type. Route what the
+  front end and the executor need through a realm object the composition creates. **Delete JS-1's
+  hand-written encoder and lowering**, and assert the deletion.
+- **Dependencies:** JS-1 and JS-2. The [section 8](roadmap.md#8-the-value-frame-and-call-model)
+  ABI decision is a **gate on entry** and is taken; a taken entry gate is not a started milestone,
+  and this one still waits on JS-2.
 - **Objective exit gate:** The numbered ABI decision exists with all eight rows, with fixtures and
   AOT representation probes retained; the object model builds with analyzers force-enabled and
   zero trim and AOT warnings in its closure, and a metadata test finds no dynamic-loading,
@@ -286,6 +335,9 @@ omission corrected.
 ### JS-5 — The executor: frames, calls, abrupt completion, and the budgets it charges
 
 - **Owner:** profile runtime owner.
+- **Ledger:** JS-5's row in
+  [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
+  its retained evidence, and every open clause of the gate below.
 - **Next action:** Implement the interpreter over the ABI. Implement abrupt completion so
   `finally` runs on every applicable exit including a host exception crossing profile frames.
   Place every poll and every charge. Measure native frame cost per interpreter frame on each
@@ -328,51 +380,59 @@ omission corrected.
 
 ### JS-6 — The standard library
 
+**This milestone is a rewrite, not a copy, and it was scoped that way before it started.** The
+seed's library is typed against a boxed value base type this profile does not adopt, so it is
+re-implemented against the value struct rather than copied and re-typed. **The storage half of
+[the copy table](roadmap.md#43-the-copy-table) is untouched** — shapes and the transition table,
+element arrays and the named-property store are about storage keyed by a value, not about the
+value's representation — and the milestone keeps its place in the order; what changed is its size
+*(corrected: JSC-17)*.
+
 - **Owner:** profile built-ins owner, with the satellite-acquisition owner outside this component.
+- **Ledger:** JS-6's row in
+  [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
+  its retained evidence, and every open clause of the gate below.
 - **Next action:** Copy the registration source generator and its attribute vocabulary, changing
-  its generated prototype lookup to take a realm parameter. Copy the core library and its tests.
-  Mint separate manifest identities for the temporal, internationalization, and regular-expression
-  surfaces and leave all three out of `broiler.javascript.core`. Acquire the regular-expression
-  matcher and the Unicode and locale data as this checkout's own dependencies and drop the dead
-  date-time reference. Route regular expressions through the from-scratch matcher. Delete the
-  module-initializer wiring — the initializer bodies and the satellite initializer files, and
-  only those — after re-homing into the library proper the prototype patching that the same file
-  happens to register. Delete the assembly probing.
-- **Dependencies:** JS-3b for the general lowering, JS-4 for the object model, JS-5 for calls. **Satellite acquisition is an
-  external dependency opened at JS-0**: if it has not landed, the first manifest excludes every
-  surface that needs it and publishes each exclusion with its deterministic failure, rather than
-  this milestone waiting.
+  its generated prototype lookup to take a realm parameter. **Re-implement the core library
+  against this profile's value struct**, taking the seed's semantics as specification and its
+  tests as a port, and publish a scope estimate, a review budget, and an exclusion list on the day
+  it lands — a rewritten library is smaller than a copied one and the difference is a support
+  claim. Mint separate manifest identities for the temporal, internationalization, and
+  regular-expression surfaces and leave all three out of `broiler.javascript.core`. Acquire the
+  regular-expression matcher and the Unicode and locale data as this checkout's own dependencies
+  and drop the dead date-time reference. Route regular expressions through the from-scratch
+  matcher. Delete the module-initializer wiring — the initializer bodies and the satellite
+  initializer files, and only those — after re-homing into the library proper the prototype
+  patching that the same file happens to register. Delete the assembly probing.
+- **Dependencies:** JS-3b for the general lowering, JS-4 for the object model, JS-5 for calls.
+  **Satellite acquisition is an external dependency opened at JS-0**: if it has not landed, the
+  first manifest excludes every surface that needs it and publishes each exclusion with its
+  deterministic failure, rather than this milestone waiting.
 - **Objective exit gate:** The library's closure contains no IL-emission assembly **and no call
   site constructing a compiled-mode regular expression**, each asserted by its own metadata test
   with its own witness; the generator's emitted output is compiled and walked and contains no
   run-time reflection and no ambient context read, failing when the realm parameter is replaced by
   an ambient; `broiler.javascript.core` is declared and an artifact naming an unaccepted manifest
-  is refused; the copied library tests run against this component's object model with the pass
+  is refused; the ported library tests run against this component's object model with the pass
   count, the covered list, the excluded list, and a justification per exclusion recorded — and
   the milestone does not close on a recorded number alone: zero unexplained failures, every
-  exclusion owned; the satellites resolve from this checkout with nothing resolving outside the
-  component root; and the compositions from JS-1 and JS-3b still publish and run with the library
-  linked, closure reports unchanged in shape.
-- **Seed:** Copied — the source generator and attribute vocabulary, the core library, and its
-  tests **as a port wherever the value model changed at JS-4, and labelled as such**. Deleted at
-  ingest — the dead attribute family, the dead date-time reference, the module-initializer
-  wiring itself, the assembly probing. Re-homed rather than deleted — the prototype patching
-  that wiring registers. Excluded by name — the interop assembly and the module hosts.
-- **RE-SCOPED 2026-08-31, before this milestone starts, which is where the stop condition requires
-  it to happen.** [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md) answers the value
-  representation with **replace**, so "a port wherever the value model changed" is the whole
-  library rather than a qualifier on part of it: the seed's library is typed against a boxed value
-  base type this profile does not adopt, and it is re-implemented against the value struct rather
-  than copied and re-typed. **The storage half of the copy table is untouched** — shapes, the
-  transition table, element arrays and the named-property store are about storage keyed by a
-  value, not about the value's representation. What this milestone must now carry that a copy
-  would not: its own scope estimate, its own review budget, and an exclusion list published on the
-  day it lands, because a rewritten library is smaller than a copied one and the difference is a
-  support claim.
+  exclusion owned; **the exclusion list a rewrite makes necessary is published rather than
+  discovered**, with the review budget the rewritten units carry; the satellites resolve from this
+  checkout with nothing resolving outside the component root; and the compositions from JS-1 and
+  JS-3b still publish and run with the library linked, closure reports unchanged in shape.
+- **Seed:** Copied — the source generator and its attribute vocabulary. Taken as specification and
+  re-implemented — the core library, against this profile's value struct. Ported and labelled as
+  ported — the library's tests. Deleted at ingest — the dead attribute family, the dead date-time
+  reference, the module-initializer wiring itself, the assembly probing. Re-homed rather than
+  deleted — the prototype patching that wiring registers. Excluded by name — the interop assembly
+  and the module hosts.
 
 ### JS-7 — Suspension: generators, async functions, top-level await, terminal unwind
 
 - **Owner:** profile runtime owner.
+- **Ledger:** JS-7's row in
+  [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
+  its retained evidence, and every open clause of the gate below.
 - **Next action:** Make the executor's continuation capturable and reconstitutable on the heap.
   Implement generators and async functions on it. Take and record the routing decision of section
   12 per pause kind, **with the live-suspension count a representative workload produces**.
@@ -413,6 +473,9 @@ omission corrected.
 ### JS-8 — Guest-initiated loads and the three compositions
 
 - **Owner:** profile security owner with the host-capability owner.
+- **Ledger:** JS-8's row in
+  [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
+  its retained evidence, and every open clause of the gate below.
 - **Next action:** Declare guest-initiated loads with finite maxima for all four bounds and a
   defended verifier-work-to-fuel rate. Route `eval`, the `Function` constructor, and dynamic
   `import()` through the mediator and remove every alternative byte source. Implement the
@@ -461,14 +524,26 @@ omission corrected.
 
 ### JS-9 — Adversarial input, agents, and soak
 
+**This milestone opens against JS-1 and closes after JS-8.** The retained corpus grows from the
+first product code onward, and the soak and the shared-aggregate-budget exercises need nothing a
+later milestone delivers, so the work is schedulable immediately. What holds the milestone open is
+the gate rather than the work: two of the four untrusted-input surfaces it must fuzz — the source
+parser and the regular-expression matcher — do not exist until JS-3b and JS-6, and a session over
+surfaces that do not exist may not be read as covering them *(corrected: JSC-23)*.
+
 - **Owner:** profile security owner with the fuzz-corpus owner.
+- **Ledger:** JS-9's row in
+  [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
+  its retained evidence, and every open clause of the gate below.
 - **Next action:** Grow the malformed corpus from slice scope to the full format. **Fuzz all four
   untrusted-input surfaces** — the verifier, the source parser, the regular-expression matcher
   over pattern and subject, and the executor over verified-but-adversarial artifacts — with
   recorded seeds, budgets, and runtime settings. Design and implement retained-bytes reporting
   over the object model and state the limits of what it measures. Run a soak over recycled
   runtimes. Exercise sibling runtimes under one aggregate budget.
-- **Dependencies:** JS-5 through JS-8.
+- **Dependencies:** **To open, JS-1 only.** To close, JS-5 through JS-8 — for the full format the
+  corpus must cover, the object model the retained-bytes report must measure, and two of the four
+  fuzz surfaces.
 - **Objective exit gate:** Every entry in the full corpus produces its recorded outcome, reason,
   and diagnostic code on JIT, trimmed, and Native AOT hosts, the verifier throws on none, control
   entries verify successfully, and a repeat leaves no residue; a **mutated corpus entry** proves
@@ -490,12 +565,20 @@ omission corrected.
 ### JS-10 — Baselines, packaging, the support table, and the release gate
 
 - **Owner:** release owner with the package, security, API, performance, and documentation owners.
+- **Ledger:** JS-10's row in
+  [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
+  its retained evidence, and every open clause of the gate below.
 - **Next action:** Stand up the controlled measurement lane and take this component's own
-  baselines under [section 17](roadmap.gates.md#17-measurement-discipline). Resolve JS-0's
-  packaging decision into a shipped identity or a stated refusal. Publish the support table and
-  the composition register. Claim a RID only where a retained bundle published and ran the named
-  composition on it. Run the release gate that refuses the tree while any relevant unit lacks a
-  human decision.
+  baselines under [section 17](roadmap.gates.md#17-measurement-discipline), **including the two
+  figures other chapters open an amendment against: verification throughput per byte, and
+  cold-start cost.** Neither is optional: [section 16](roadmap.md#16-persistence-and-the-code-cache)
+  makes the persistence question reopen against them and
+  [section 18](roadmap.md#18-amendments-this-profile-expects-to-ask-of-the-core) opens the
+  in-process-producer row against them, so a milestone that produces neither leaves two rows opened
+  by nothing. Resolve JS-0's packaging decision into a shipped identity or a stated refusal.
+  Publish the support table and the composition register. Claim a RID only where a retained bundle
+  published and ran the named composition on it. Run the release gate that refuses the tree while
+  any relevant unit lacks a human decision.
 - **Dependencies:** JS-3a and JS-9 for evidence, JS-8 for the composition set, JS-0 for the
   packaging ruling, and **a named human reading every relevant unit** — the largest
   single-owner task in the programme, decomposed and scheduled rather than assumed.
@@ -517,7 +600,9 @@ omission corrected.
   what the table does not say; **the accepted manifest set contains no manifest whose oracle
   totals show it failing**; the composition register and the checkout agree in both directions;
   every claimed RID has a retained publish-and-run bundle with its closure report, and every
-  unclaimed one is listed with its reason; a pristine consumer restores and runs from a source
+  unclaimed one is listed with its reason; **verification throughput per byte and cold-start cost
+  are each published under the measurement rules**, because two chapters name them as the trigger
+  that would reopen a settled question; a pristine consumer restores and runs from a source
   containing only this component's packages with upstream feeds unreachable, and a rollback to the
   previous package set runs unchanged; the release gate refuses on each of its conditions, naming
   each blocker by its declaration, with a negative control proving the generator cannot invent a
@@ -541,7 +626,15 @@ omission corrected.
              ├→ JS-3a registry, position encoding, pinned suite, the harness
              │        ←── the suite revision is pinned (a human action)
              │        ←── an external correctness signal from here on, and it
-             │            is behind NEITHER of this component's two blockers
+             │            is behind NEITHER the core acceptance gate nor the
+             │            snapshot
+             │
+             ┊··→ JS-9 OPENS here and closes far below. The retained corpus
+             ┊        grows from JS-1 onward, so the corpus, the soak and the
+             ┊        aggregate-budget half of its gate need nothing a later
+             ┊        milestone delivers — while two of its four fuzz surfaces
+             ┊        do not exist until JS-3b and JS-6, which is what holds
+             ┊        the milestone open rather than the work.
              │
              └→ JS-2  seeding snapshot; the front end becomes this component's code
                   │        ←── (core contract accepted): external gate, held by
@@ -566,6 +659,9 @@ omission corrected.
                                            └→ JS-8  guest loads; three compositions
                                                 │
                                                 └→ JS-9  corpus, fuzz, soak, agents
+                                                     │    (opened against JS-1; it closes here,
+                                                     │     because the parser and the matcher it
+                                                     │     must also fuzz arrive at JS-3b and JS-6)
                                                      │
                                                      └→ JS-10 baselines, packaging,
                                                           │    support table,
@@ -581,37 +677,107 @@ oracle against the ratchet, and closes no milestone.
 
 What this ordering does and does not imply:
 
-- **Read the two arrow kinds differently.** A `└→` edge is milestone precedence. A `←──`
+- **Read the three arrow kinds differently.** A `└→` edge is milestone precedence. A `←──`
   annotation marks an input or an external gate entering at that node and constrains nothing
-  above it.
+  above it. A `┊··→` edge marks a milestone that **opens** at that node and **closes** lower down:
+  work may start there, and only the clauses of its gate that need a later milestone wait.
 - **Nothing here waits on a core milestone's *evidence*, and no gate here closes a core gate.**
-  JS-0 and JS-1 depend on the core being *implemented*, which is why the acceptance gate hangs
-  off JS-2 in the diagram rather than off the root. JS-2 onward additionally depend on the core
-  contract being *accepted*, which this component does not hold and must record as a blocker
+  JS-0, JS-1 and JS-3a depend on the core being *implemented*, which is why the acceptance gate
+  hangs off JS-2 in the diagram rather than off the root. JS-2 onward additionally depend on the
+  core contract being *accepted*, which this component does not hold and must record as a blocker
   rather than route around.
-- **Two forks are drawn, and both are the point.** The first is **JS-3a**, which hangs off JS-1 and
-  off nothing else: the harness needs a scoring target, not a copied line, and JS-1 produces one.
-  Fusing it into the post-copy work — as an earlier version of this ordering did — put this
-  component's only external correctness signal behind *both* of its blockers when it needed to be
-  behind neither. A team that serialises them spends the whole acceptance wait with no oracle.
-  The second is **JS-3b beside JS-4**: both are gated on JS-2 and on nothing else, and they are
-  different skills with different owners — the verification-boundary owner holds JS-3b's semantics
-  and lowering, the profile runtime owner holds JS-4's ABI and object model. Once JS-2 closes, both
-  may open. Every other edge in the diagram is a real prerequisite, and one of them is argued rather
+- **Three forks are drawn, and each is the point.** The first is **JS-3a**, which hangs off JS-1
+  and off nothing else: the harness needs a scoring target, not a copied line, and JS-1 produces
+  one. Fusing it into the post-copy work would put this component's only external correctness
+  signal behind *both* of its blockers when it needs to be behind neither, and a team that
+  serialises them spends the whole acceptance wait with no oracle. The second is **JS-3b beside
+  JS-4**: both are gated on JS-2 and on nothing else, and they are different skills with different
+  owners — the verification-boundary owner holds JS-3b's semantics and lowering, the profile
+  runtime owner holds JS-4's ABI and object model. Once JS-2 closes, both may open. The third is
+  **JS-9, which opens against JS-1 and closes after JS-8**: the corpus it grows, the soak it runs,
+  and the aggregate-budget behaviour it exercises are all reachable from the first product code,
+  while the parser and the regular-expression matcher two of its four fuzz surfaces need do not
+  exist until JS-3b and JS-6. A milestone whose gate closes late is not a milestone that starts
+  late. Every other edge in the diagram is a real prerequisite, and one of them is argued rather
   than assumed: **JS-8 depends on JS-7's continuation capture and JS-7 depends on nothing JS-8
   delivers**, which is what keeps that edge acyclic rather than merely asserted, so JS-8 cannot be
   staffed beside JS-7.
-- **Several decisions need no copied code** and may be opened against JS-1 rather than waiting on
-  the acceptance gate: **the entire conformance harness of
+- **Several decisions and one whole milestone need no copied code** and are opened against JS-1
+  rather than waiting on the acceptance gate: **the entire conformance harness of
   [section 14](roadmap.md#14-the-conformance-oracle)**, which is by a wide margin the largest of
-  them and is now JS-3a; the diagnostic registry and position encoding; the value and frame ABI;
-  the continuation design; and the suspension-versus-job-queue routing. A team that reaches the
-  acceptance gate after JS-1 should have prepared work rather than a hard stop.
+  them and is JS-3a; the diagnostic registry and position encoding; the value and frame ABI; the
+  continuation design; the suspension-versus-job-queue routing; and JS-9's corpus, soak and
+  aggregate-budget work. **This is not a hypothetical**: the registry, the position encoding and
+  the eight-row ABI have all been taken this way, ahead of a gate none of them needed. A team that
+  reaches the acceptance gate after JS-1 should have prepared work rather than a hard stop.
 - **Two milestones carry the bulk of the cost**, and a twelve-milestone diagram should not be
-  read as twelve equal steps: JS-4, which is the ABI plus the object model, and JS-6, which is
-  the standard library. JS-3a and JS-3b are one slot split by dependency rather than two steps
-  added.
+  read as twelve equal steps: JS-4, which is the ABI plus the object model, and JS-6, which is the
+  standard library — larger now that it is a rewrite than it was as a copy.
 - **Manifest increments are not milestones.** Each mints one identity with a reviewed scope,
   extends the corpus, and re-runs the oracle. The admission criterion for the next increment is
   [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s allocation
   table, not a judgement made per commit.
+
+---
+
+## 25. The chapter, milestone, and gate map
+
+Four documents describe one programme, and each is organised for its own kind of reading: the
+argument by subject, the milestones by sequence, the gates by evidence class, the risks by failure
+mode. **Nothing in that arrangement guarantees they cover the same ground**, and the two ways they
+can fail are opposite and equally quiet — a chapter that argues for something no milestone
+delivers, and a gate that demands something no chapter designed.
+
+This map is the join. It is read in both directions, and **a blank cell is a finding**: a chapter
+with no delivering milestone is a plan for work nobody scheduled, and an evidence area or a release
+gate with no owning milestone is a gate nobody can close.
+
+| Chapter | Delivered by | Evidence area, [section 21](roadmap.gates.md#21-test-and-evidence-matrix) | Release gate, [section 22](roadmap.gates.md#22-release-gates) | Stop condition, [section 23](roadmap.gates.md#23-risks-and-stop-conditions) |
+|---|---|---|---|---|
+| 1 Terminology and support claims | JS-0 fixes the identity; JS-10 issues the table | Identity and registration | 1 | untruthful published claim |
+| 2 Engineering invariants | every milestone; each invariant is asserted by the milestone that could first violate it | all rows | 3, 4 | several |
+| 3 What the core gives and refuses | JS-0 (the two vectors and the matrix); JS-1 (the descriptor) | Identity and registration; Composed-profile safety | 2 | declared defaults reaching a neighbour |
+| 4 The seed | JS-2 | Front end; Licence and attribution | 12 | the seed becomes a dependency |
+| 5 Package boundaries and the graph | JS-0 | Dependency architecture | 2 | placement assumed rather than decided |
+| 6 Feature manifests | JS-0 allocates; JS-1 mints the first; each increment extends | Identity and registration; Conformance | 1, 9 | the manifest set drifts upward |
+| 7 The format and the verifier | JS-1 builds it; JS-9 attacks it | Format and verifier safety | 3 | a check migrates into first execution |
+| 8 The value, frame, and call model | JS-4 (the ABI); JS-5 (the measured numbers and the charging) | Value model and storage; Executor and lifecycle; Measurement | 4, 10 | a late value-representation decision; unproportional charging |
+| 9 The front end and the lowering | JS-2 (ingest); JS-3b (the stage, the boundary, the lowering) | Front end | 3 | a nesting case terminating the process |
+| 10 Execution on the core lifecycle | JS-1 (the loop end to end); JS-5 (the executor) | Executor and lifecycle | 4 | a language fault reported as a core category |
+| 11 Guest-initiated loads | JS-8 | Guest loads and policy | 5 | a byte source other than the mediator |
+| 12 Suspension | JS-7 | Suspension | 4 | a thread held across a pause |
+| 13 Realms, agents, and the host boundary | JS-5 (binding and translation); JS-9 (agents under one parent) | Host boundary | 6 | a shared parent read as isolation |
+| 14 The conformance oracle | JS-3a | Conformance | 9 | the oracle reports a failure as a pass; an aggregate percentage |
+| 15 Compositions, Native AOT, the browser | JS-1, JS-3b and JS-8 build them; JS-10 advertises one | Native AOT | 7 | a publish cited for another kind; an implied `WebAssembly` namespace |
+| 16 Persistence and the code cache | **no milestone delivers it**, by decision; JS-8 carries the exclusion clause and JS-10 measures the reopening trigger | Format and verifier safety | 3 | a second verifier, or a build-time shortcut past the one |
+| 17 Measurement discipline | JS-10 stands up the lane; JS-5 produces the first figures it governs | Measurement | 10 | a figure without a control |
+| 18 Amendments | JS-0 grades them; **none is filed**, and none is admissible until it names a merged capability | — | — | a requirement with no core row |
+| — the standard library, which chapter 6's allocation admits rather than a chapter of its own | JS-6 | Standard library | 1, 9 | dynamic code hiding in the library |
+| — the assurance floor and the review debt, which are repository policy rather than this plan's argument | JS-0 adopts the host component's mechanism and records what adoption costs; JS-10 gates the release on it | Assurance and review | 11 | unreviewed units accumulating |
+| — packaging and consumers | JS-10 | Packaging and consumers | 8 | a package resolving a dependency from the internet |
+| — operational ownership: diagnostics, cancellation, rollback, version rejection, corpus and suite drift, **vulnerability response**, recertification | JS-10 names every owner | Assurance and review | 13 | a role held by nobody |
+
+**What the map shows that no single file does**, and each of the four is deliberate rather than a
+gap to be closed:
+
+- **[Section 16](roadmap.md#16-persistence-and-the-code-cache) is delivered by no milestone.** The
+  core admits a persisted envelope by contract and implements none, so a profile-owned cache format
+  would be a second serialization path with nothing to hold it to the first. The chapter exists to
+  keep the design reachable at no cost, and its only obligations on this programme are one gate
+  clause at JS-8 and one measurement at JS-10.
+- **[Section 18](roadmap.md#18-amendments-this-profile-expects-to-ask-of-the-core) closes no gate
+  and appears in no evidence area.** Every row in it is filed and held; the amendment procedure is
+  unexecutable while one person holds the minting role and both co-signing roles.
+- **Three areas of the evidence matrix have no chapter of their own** — the standard library, the
+  assurance floor, and packaging — because each is admitted by a chapter rather than argued by one.
+  They are listed above so that no evidence area is left without a milestone.
+- **[Section 2](roadmap.md#2-engineering-invariants)'s invariants are the one thing that is
+  deliberately everywhere.** An invariant is not a milestone's deliverable; it is a property every
+  later milestone must not break, which is why each appears in the gate of the first milestone that
+  could violate it rather than in a milestone of its own.
+- **One release gate is owned by no chapter, and the map is how that was found.** Gate 13 asks that
+  the holders of diagnostics, cancellation, rollback, format-version rejection, corpus and
+  suite-revision drift, **vulnerability response**, and recertification each be named. No chapter
+  argues for it, because it is an operational obligation rather than a design one — and this
+  component ships a parser and an interpreter over untrusted input, so a release with no named
+  holder for a report about either is not a release. JS-10 names them or the gate refuses.

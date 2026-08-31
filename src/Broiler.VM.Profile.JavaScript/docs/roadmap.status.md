@@ -4,7 +4,10 @@
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
-gates; this ledger records whether those gates have accepted evidence.
+gates; this ledger records whether those gates have accepted evidence. Where implementation or a
+dated decision replaced something the roadmap used to say, the plan carries the new reading and
+[the corrections and rejections](roadmap.corrections.md) carry what it replaced — **that file
+records no status and advances nothing here**.
 
 **At this snapshot, JS-0, JS-1, JS-3a and JS-9 are `In progress`, JS-2 is blocked, and the
 remaining rows are `Not started`.** What exists is one feature manifest, one format version, a verifier, an
@@ -23,12 +26,15 @@ component of its own: it is a family of product projects inside `Broiler.VM`, at
 `src/Broiler.VM.Profile.JavaScript*`, with its roadmap and decisions in the profile assembly's own
 project directory. The profile's half is [JSD-0001](decisions/0001-placement-identity-and-assembly-topology.md);
 the core's half is ADR 0001 revision 5, which authorises the three projects and revises rule A11
-so that a profile may reference its own format sibling. **Four things the roadmap assumed would be
-this component's own are now the host component's** - the assurance system, the rule register, the
-API baseline and the licence and notice files - and each is recorded as a dated deviation in
-[JSD-0006](decisions/0006-assurance-evidence-and-rules-adoption.md) rather than dropped. **What is
-not shared is evidence:** a JS bundle is cited only by this ledger, a core bundle only by the
-core's, and update rule 6 below is unchanged.
+so that a profile may reference its own format sibling. **Three things the roadmap assumed would be
+this component's own are the host component's** - the assurance system, the rule register in which
+this profile holds group N, and the licence and notice files - each recorded as a dated deviation in
+[JSD-0006](decisions/0006-assurance-evidence-and-rules-adoption.md) rather than dropped. **A fourth,
+the API baseline, was adopted at JS-0 and became this family's own at JS-3a**, because the host's
+describer cannot reach a profile assembly without a project reference rule A11 forbids;
+[JSD-0012](decisions/0012-the-profile-api-baseline-and-where-its-clause-lives.md) records it and
+rule N10 holds it. **What is not shared is evidence:** a JS bundle is cited only by this ledger, a
+core bundle only by the core's, and update rule 6 below is unchanged.
 
 ---
 
@@ -49,6 +55,13 @@ gets recorded:
 - **Inherited material** is anything copied from the seed. It carries **no status of its own**.
   A copied file is unvalidated and unreviewed in this component on the day it lands, however long
   it has existed elsewhere.
+
+A fifth thing is deliberately **not** a category here. **A correction to the plan is not evidence
+and does not appear in this ledger's tables.** When implementation invalidates, rejects or
+re-scopes something the roadmap said, the roadmap is edited and
+[the corrections and rejections](roadmap.corrections.md) record what it said before — a change of
+*plan*, never a change of *state*. A milestone whose scope was corrected has moved no row here,
+and a row here moves only on evidence.
 
 **Work in other components is not this component's evidence.** In particular, no conformance
 result, benchmark, measurement, review decision, or Native AOT sample produced by the legacy
@@ -109,7 +122,8 @@ Four rows are `[PARTIAL]` and the remaining eight are `[NONE]`.
 needs a scoring target and not a copied front end, so leaving it fused put this component's only
 external correctness signal behind both of the blockers in section 3 when it needed to be behind
 neither. Twelve rows, not eleven. Nothing is accepted under either shape, so the split changes no
-evidence claim — it changes what a reader is told is schedulable today.
+evidence claim — it changes what a reader is told is schedulable today. The split is recorded as
+[JSC-15](roadmap.corrections.md#jsc-15) and the delivery file carries the same shape.
 
 | Verdict | Milestone | State | Current evidence | Immediate evidence-producing action |
 |---|---|---|---|---|
@@ -149,8 +163,8 @@ Stated positively, because a table of empty rows invites a reader to fill them i
   record has a shape; JS-2 records what was actually taken, and may differ. Bundle JS-0-001
   re-derives that candidate from the checkout and matches on all four revisions, which says the
   record is reproducible and says nothing about a snapshot having happened.
-- **A taken decision is not implemented code.** Eleven decision records exist and two of them
-  decide things no line in this checkout does yet: [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md)
+- **A taken decision is not implemented code.** The decision series is dated history, not a count
+  this bullet transcribes, and two of its records decide things no line in this checkout does yet: [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md)
   fixes an eight-row ABI whose object model, frame object and string are all unwritten, and
   [JSD-0005](decisions/0005-the-seed-waited-on-set-and-snapshot-stop-condition.md) rules on a
   snapshot nobody has taken. Each says so in its own text; this bullet is here because a reader
