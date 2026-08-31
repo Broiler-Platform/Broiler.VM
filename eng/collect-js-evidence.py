@@ -112,6 +112,16 @@ def overwrite(path, text):
         handle.write(text)
 
 
+def read_bytes(path):
+    with io.open(os.path.join(ROOT, path), "rb") as handle:
+        return handle.read()
+
+
+def overwrite_bytes(path, payload):
+    with io.open(os.path.join(ROOT, path), "wb") as handle:
+        handle.write(payload)
+
+
 def suite():
     """Build and run the whole solution. The gate is the suite, so a control is judged by it."""
     return run([
@@ -959,6 +969,75 @@ def fuzz_session(corpus, seed=1, iterations=25_000):
         "--", "--corpus", corpus, "--fuzz", "--seed", str(seed), "--iterations", str(iterations)])
 
 
+# The corpus entries this check mutates. One control entry and one malformed entry, because the
+# replay compares a different field for each: a control's completion VALUE and a malformed entry's
+# diagnostic code. A check that only ever mutated one of the two would leave the other half of the
+# comparison unexercised.
+MUTATED_ENTRIES = ("addition", "an-unknown-opcode")
+
+
+def corpus_integrity(out, corpus):
+    """Flip one byte of a retained entry and require the replay to notice."""
+    log = [
+        "JS-9's exit gate asks that a MUTATED CORPUS ENTRY prove the replay detects a changed",
+        "observed triple. Every other control in this bundle injects into SOURCE; this one injects",
+        "into the retained bytes, which is the other direction and the one that would otherwise be",
+        "taken on trust - a corpus is only evidence while the thing that reads it would notice if",
+        "the bytes moved.",
+        "",
+        "Each entry is mutated by one byte, replayed, restored byte for byte, and replayed again.",
+        "A restore that does not reproduce the original stops the run rather than leaving the",
+        "corpus modified.",
+        "",
+    ]
+
+    passed = 0
+
+    for name in MUTATED_ENTRIES:
+        path = os.path.join(corpus_relative(corpus), name + ".bjsb")
+        original = read_bytes(path)
+
+        # The last byte, which is inside the last section's body rather than in the header - so
+        # what moves is the artifact's content and not the magic, and the replay has to reach a
+        # real comparison rather than refusing at the first four bytes.
+        mutated = bytearray(original)
+        mutated[-1] ^= 0xFF
+
+        overwrite_bytes(path, bytes(mutated))
+        injected_code, injected_output = replay(corpus)
+        overwrite_bytes(path, original)
+
+        if read_bytes(path) != original:
+            raise SystemExit("corpus integrity check did not restore " + path)
+
+        reverted_code, _ = replay(corpus)
+
+        verdict = "PASS" if injected_code != 0 and reverted_code == 0 else "FAIL"
+        passed += 1 if verdict == "PASS" else 0
+
+        log.append("[" + name + "] " + verdict)
+        log.append("    file:      " + path)
+        log.append("    mutation:  the last byte, exclusive-or 0xFF")
+        log.append("    injected:  exit " + str(injected_code))
+        log.append("    reverted:  exit " + str(reverted_code))
+        log.extend(
+            "      " + line.strip()
+            for line in injected_output.splitlines()
+            if line.strip().startswith("FAIL"))
+        log.append("")
+
+    log.append(
+        "entries mutated: " + str(len(MUTATED_ENTRIES)) + "; detected: " + str(passed))
+
+    write(os.path.join(out, "corpus-integrity.log"), "\n".join(log) + "\n")
+    return passed
+
+
+def corpus_relative(corpus):
+    """The corpus path relative to the component root, which is what the byte helpers take."""
+    return os.path.relpath(corpus, ROOT)
+
+
 def replay(corpus):
     """Rebuild and run the execution-only root against the retained corpus."""
     code, text = run(["dotnet", "build", SOLUTION, "-c", "Release", "--nologo"])
@@ -1047,6 +1126,7 @@ def main():
         fuzz(out, corpus)
 
     if not arguments.skip_controls:
+        corpus_integrity(out, corpus)
         _, suite_skipped = controls(out)
         _, corpus_skipped = corpus_controls(out, corpus, arguments)
         _, fuzz_skipped = fuzz_controls(out, corpus)
