@@ -58,13 +58,34 @@ internal static class ApiSurface
 
         foreach (var name in PackableAssemblies)
         {
-            var assembly = Assembly.Load(name);
+            lines.AddRange(Describe(Assembly.Load(name)));
+        }
 
-            foreach (var type in assembly.GetExportedTypes().OrderBy(Name, StringComparer.Ordinal))
-            {
-                lines.Add(DescribeType(name, type));
-                lines.AddRange(DescribeMembers(name, type));
-            }
+        return lines;
+    }
+
+    /// <summary>
+    /// Describes one assembly's public surface, however that assembly was obtained.
+    /// </summary>
+    /// <remarks>
+    /// <b>Two baselines, one describer.</b> The packable three arrive through
+    /// <see cref="Assembly.Load(string)"/> because a ProjectReference puts them in the test
+    /// output; the JavaScript profile family's three arrive through a
+    /// <c>MetadataLoadContext</c> over their build output, because rule A11 forbids the reference
+    /// that would put them here and loading them would run their module initializers. Only the
+    /// loading differs, and every line of both baselines is written by the code below - so a
+    /// reader who can read one file can read the other, and a change to how a member is spelled
+    /// moves both.
+    /// </remarks>
+    internal static IEnumerable<string> Describe(Assembly assembly)
+    {
+        var name = assembly.GetName().Name!;
+        var lines = new List<string>();
+
+        foreach (var type in assembly.GetExportedTypes().OrderBy(Name, StringComparer.Ordinal))
+        {
+            lines.Add(DescribeType(name, type));
+            lines.AddRange(DescribeMembers(name, type));
         }
 
         return lines;
@@ -79,7 +100,12 @@ internal static class ApiSurface
 
         var bases = new List<string>();
 
-        if (type is { IsClass: true, BaseType: not null } && type.BaseType != typeof(object))
+        // Compared by NAME rather than against typeof(object). A type described through a
+        // MetadataLoadContext has its own System.Object, which is not this runtime's, so the
+        // identity comparison was false for every profile type and wrote "System.Object" into one
+        // baseline and not the other - two spellings of one describer, which is the thing having
+        // one describer was for.
+        if (type is { IsClass: true, BaseType: not null } && Name(type.BaseType) != "System.Object")
         {
             bases.Add(Name(type.BaseType));
         }

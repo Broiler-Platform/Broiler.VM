@@ -210,7 +210,14 @@ public sealed class ApiSurfaceTests
             string.Empty,
         };
 
-        File.WriteAllLines(path, header.Concat(surface));
+        // LF, explicitly. WriteAllLines uses Environment.NewLine, so every regeneration on Windows
+        // rewrote all twelve hundred lines with CRLF while .gitattributes stores the file as LF -
+        // a whole-file diff on a run that changed nothing, which is the diff a reviewer is
+        // supposed to be reading. Rule N10's writer does the same.
+        File.WriteAllText(
+            path,
+            string.Concat(header.Concat(surface).Select(static line => line + "\n")),
+            AssuranceSources.Utf8NoBom);
     }
 
     private static string Path() =>

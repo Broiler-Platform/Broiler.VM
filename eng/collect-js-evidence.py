@@ -42,6 +42,9 @@ PROFILE_VALUE = os.path.join(PROFILE_ROOT, "JavaScriptValue.cs")
 PROFILE_EXECUTOR = os.path.join(PROFILE_ROOT, "JavaScriptExecutor.cs")
 PROFILE_VERIFIER = os.path.join(PROFILE_ROOT, "JavaScriptVerifier.cs")
 PROFILE_POSITION = os.path.join(PROFILE_ROOT, "JavaScriptPosition.cs")
+FORMAT_SOURCE = os.path.join(
+    "src", "Broiler.VM.Profile.JavaScript.Format", "JavaScriptFormat.cs")
+PROFILE_API_BASELINE = os.path.join(PROFILE_ROOT, "docs", "api", "public-api.txt")
 REGISTRY = os.path.join(PROFILE_ROOT, "docs", "diagnostics", "registry.txt")
 LEDGER = os.path.join(PROFILE_ROOT, "docs", "roadmap.status.md")
 MIRROR = os.path.join(
@@ -340,6 +343,20 @@ CONTROLS = [
             "`Accepted`: acceptance additionally needs an owner and a reviewer decision, which "
             "nothing here has. |\n",
             ""),
+    ),
+    (
+        "N10-a-public-member-appears-without-a-baseline-entry",
+        "A public constant is added to the format assembly and the frozen baseline is left alone. "
+        "This is the direction that matters for a profile: these assemblies are referenced by "
+        "composition roots, so a member added here is a member a composition can bind to without "
+        "anyone deciding it should be bindable - and until JS-3a nothing in this component would "
+        "have noticed.",
+        FORMAT_SOURCE,
+        lambda text: text.replace(
+            "    public const uint MaximumEntryNameBytes = 256;",
+            "    public const uint MaximumEntryNameBytes = 256;\n\n"
+            "    /// <summary>An addition nobody recorded.</summary>\n"
+            "    public const uint UnrecordedCeiling = 7;"),
     ),
     (
         "J3-a-profile-fingerprint-is-stale",
@@ -842,6 +859,9 @@ def main():
         os.path.join(PROFILE_ROOT, "docs", "decisions", "0008-format-version-1-the-entry-point-and-what-js-1-corrected.md"),
         os.path.join(PROFILE_ROOT, "docs", "decisions", "0009-the-diagnostic-registry-and-the-position-encoding.md"),
         os.path.join(PROFILE_ROOT, "docs", "decisions", "0010-which-review-rules-govern-this-profiles-documents.md"),
+        os.path.join(PROFILE_ROOT, "docs", "decisions", "0011-the-value-frame-and-call-abi.md"),
+        os.path.join(PROFILE_ROOT, "docs", "decisions", "0012-the-profile-api-baseline-and-where-its-clause-lives.md"),
+        PROFILE_API_BASELINE,
         REGISTRY,
         PROFILE_POSITION,
         os.path.join(arguments.corpus, "corpus.manifest"),

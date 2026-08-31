@@ -23,6 +23,7 @@ does not contain says so in its own text.
 | [JSD-0009](0009-the-diagnostic-registry-and-the-position-encoding.md) | The published diagnostic-code registry, its two halves, the three codes no artifact reaches, and this profile's use of the core's position record | JS-3a |
 | [JSD-0010](0010-which-review-rules-govern-this-profiles-documents.md) | That the component's review-document rules read this profile's ledger and bundles, that the mark vocabulary is per document family, and the two clauses that do not govern them | JS-3a |
 | [JSD-0011](0011-the-value-frame-and-call-abi.md) | The eight-row value, frame and call ABI, and the re-scoping of JS-6 from a copy to a rewrite that follows from it | JS-4, entry gate |
+| [JSD-0012](0012-the-profile-api-baseline-and-where-its-clause-lives.md) | The family's own frozen public surface, described without loading anything, and the re-homing of the gate clause that asked for it | JS-3a |
 
 ## What a record must carry
 

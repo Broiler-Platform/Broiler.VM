@@ -811,6 +811,16 @@
       "activationMilestone": null,
       "nonVacuousWhen": "The profile answers with positions from more than one member at JS-3a and exactly one file builds them, so the rule decides a real partition. It reports its own vacuity: a run in which nothing builds a position at all is a violation rather than a clean result.",
       "witness": "witnesses/diagnostics/N9-a-position-built-outside-the-factory.cs.witness"
+    },
+    {
+      "id": "N10",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "The Broiler.VM.Profile.JavaScript family's three assemblies export exactly what src/Broiler.VM.Profile.JavaScript/docs/api/public-api.txt declares, compared in BOTH directions so an addition and a removal are each a failure and a signature change is both. The surface is described from the build output by MetadataLoadContext, which reflects without running anything: rule A11 forbids the project reference that would let this be Assembly.Load, and Assembly.LoadFrom would run the module initializers invariant 2 forbids and rule B5b exists to detect.",
+      "evidence": "src/Broiler.VM.Profile.JavaScript/docs/api/public-api.txt against the three family assemblies' build output",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The family exports twenty-four types at JS-3a, so the comparison has a real subject on both sides, and the rule fails rather than passes when the build output is absent: it asserts that every named assembly was found and that the described surface is non-empty, because an empty surface compared against an empty baseline would agree. TWO STATED LIMITS. This baseline is over a BUILD OUTPUT and not over a package - nothing in this family packs, rule N4 keeps it that way until JS-10 takes the packaging decision, so what is frozen is what a composition root in this repository can bind to rather than what a consumer outside it can. And the file it reads is the last build in the configuration this test run was built in, which the rule takes from its own output path rather than assuming Release. It is deliberately not a widening of M1: M1's own non-vacuity clause is that it covers the packable assemblies AND NOTHING ELSE, and a rule holding two disjoint subjects to one baseline would be freezing a surface twice. Decision JSD-0012 owns the rule and records why the clause it closes was re-homed here from JS-3b.",
+      "witness": "witnesses/api/N10-baseline-omits-an-exported-member.txt.witness, witnesses/api/N10-baseline-declares-a-member-that-is-gone.txt.witness"
     }
   ]
 }
