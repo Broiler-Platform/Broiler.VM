@@ -350,10 +350,10 @@ public sealed class FixtureVmVerifier : IVmProfileVerifier
                 VmVerifierOutcome.InvalidArtifact(VmReason.MalformedEncoding, 2002, new VmSourcePosition(-1, position, 0, 0)),
 
             VmBoundedReadStatus.SectionCountExceeded =>
-                VmVerifierOutcome.InvalidArtifact(VmReason.InconsistentStructure, 2003, new VmSourcePosition(-1, position, 0, 0)),
+                VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.SectionCount, VmBudgetScope.Artifact),
 
             VmBoundedReadStatus.StructuralDepthExceeded =>
-                VmVerifierOutcome.InvalidArtifact(VmReason.InconsistentStructure, 2004, new VmSourcePosition(-1, position, 0, 0)),
+                VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.StructuralDepth, VmBudgetScope.Artifact),
 
             VmBoundedReadStatus.DeclaredCountExceeded =>
                 VmVerifierOutcome.ResourceExhaustion(VmBudgetDimension.DeclaredCount, VmBudgetScope.Artifact),

@@ -692,21 +692,21 @@
       "descriptorFormatVersion": 1,
       "artifactBytesRequest": 0,
       "expected": {
-        "outcome": "InvalidArtifact",
-        "reason": "InconsistentStructure",
-        "profileDiagnosticCode": 2003,
-        "dimension": "Fuel",
+        "outcome": "ResourceExhaustion",
+        "reason": "None",
+        "profileDiagnosticCode": 0,
+        "dimension": "SectionCount",
         "scope": "Artifact",
-        "namesDimension": false
+        "namesDimension": true
       },
       "recorded": {
-        "outcome": "InvalidArtifact",
-        "reason": "InconsistentStructure",
-        "profileDiagnosticCode": 2003,
-        "dimension": "Fuel",
-        "scope": "Invocation"
+        "outcome": "ResourceExhaustion",
+        "reason": "AllowanceExhausted",
+        "profileDiagnosticCode": 0,
+        "dimension": "SectionCount",
+        "scope": "Artifact"
       },
-      "note": "Sixty-five sections against a sixty-four section ceiling: entering the sixty-fifth is refused."
+      "note": "Sixty-five sections against a sixty-four section ceiling: entering the sixty-fifth is refused. A ceiling breach and not a malformed artifact - the sixty-five frames are all well formed, and the same bytes verify against a host that permits sixty-five. This entry was pinned as invalid-artifact until 2026-08-31 and is the reason that misreading was worth finding: a corpus entry recording the wrong category does not fail, it passes."
     },
     {
       "id": "section-kind-0",

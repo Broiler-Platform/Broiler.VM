@@ -154,6 +154,14 @@ internal sealed class CounterVerifier : IVmProfileVerifier
                 VmVerifierOutcome.ResourceExhaustion(
                     VmBudgetDimension.DeclaredCount, VmBudgetScope.Artifact),
 
+            VmBoundedReadStatus.SectionCountExceeded =>
+                VmVerifierOutcome.ResourceExhaustion(
+                    VmBudgetDimension.SectionCount, VmBudgetScope.Artifact),
+
+            VmBoundedReadStatus.StructuralDepthExceeded =>
+                VmVerifierOutcome.ResourceExhaustion(
+                    VmBudgetDimension.StructuralDepth, VmBudgetScope.Artifact),
+
             _ => VmVerifierOutcome.InvalidArtifact(
                 VmReason.Truncated, CounterFormat.NotThisFormat,
                 new VmSourcePosition(-1, position, 0, 0)),
