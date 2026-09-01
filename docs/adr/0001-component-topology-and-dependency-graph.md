@@ -587,7 +587,7 @@ section 8's extraction gate forbids, so VM-0 does not.
 | `assurance.manifest.json` | exists since VM-1: `assurance.manifest.json` | **Generated.** One entry per code unit in the three product assemblies, exempt and relevant alike, and one per covered file, each with a fingerprint. A change-detection record and not a review: an entry says what a declaration hashed to, never that anyone read it. Rule J7 holds it to the tree. |
 | `.gitattributes` | not created (VM-0 decision on paper; no file at VM-0) | The component contains no shell script, so there is no line-ending rule to fix yet. |
 | `global.json` | not created (VM-0 decision on paper; no file at VM-0) | No SDK pin; see Exclusion EX-03. |
-| `.github/workflows/` | exists since VM-1: `.github/workflows/` | Three lanes, and none publishes. `review.yml` regenerates every assurance artefact on a pull request, commits what moved, and then asserts that what is on disk is what the generator would write. `release.yml` runs that same gate and then the release gate - Rule J11 - before it packs, and stops at `dotnet pack`: pushing to a feed needs a credential this repository does not hold. The component ran no CI of its own at VM-0, which Exclusion EX-06 records; these lanes discharge that early and only in part, because they fire on a pull request and on a tag and nothing else. `broiler-vm.yml` was added at VM-6 to run the graph, catalog, AOT and drift checks, and has never run on a hosted runner; revision 2026-08-30 records that a workflow which has not run is a plan. |
+| `.github/workflows/` | exists since VM-1: `.github/workflows/` | Three lanes, and none publishes. `review.yml` regenerates every assurance artefact on a pull request, commits what moved, and then asserts that what is on disk is what the generator would write. `release.yml` runs that same gate and then the release gate - Rule J11 - before it packs, and stops at `dotnet pack`: pushing to a feed needs a credential this repository does not hold. The component ran no CI of its own at VM-0, which Exclusion EX-06 records; these lanes discharge that early and only in part, because they fire on a pull request and on a tag and nothing else. `broiler-vm.yml` was added at VM-6 to run the graph, catalog, AOT and drift checks. **It has now run on hosted runners and passes**, on `ubuntu-latest`, `windows-latest` and `macos-latest`, publishing and running every composition root as Native AOT on `linux-x64`, `win-x64` and `osx-arm64`; revision 2026-09-01 records what that does and does not settle, and it settles **no RID claim**, because a lane is not an evidence bundle. |
 | `docs/compositions.md` | exists at VM-3: docs/compositions.md | The composition and RID register. It carries the schema, the advertised set - empty at core contract version 1 - the two demonstration compositions, and what each was published and run for. Rule A11's allow-list is a path rather than a constant now, and group K holds the register to the checkout. Exclusion EX-08 is closed; revision 1 records it. |
 | `docs/platform-references.md` | not created (VM-0 decision on paper; no file at VM-0) | The section 17 pinned-revision table. ADR 0012 records why it is absent and what closes it. |
 | `docs/support.md` | deferred to VM-6 | The public support table. ADR 0012 records that none is published at VM-0. |
@@ -1201,3 +1201,43 @@ the linker path, so the publish fails with MSB3073 naming a command that reads a
 a sentence. Adding the Visual Studio Installer directory to `PATH` publishes and
 runs; a `vcvars64` shell without it still fails. The JavaScript collection script
 does that and says so at the constant.
+
+---
+
+### 2026-09-01 - the CI lane has run, and what that does not settle
+
+**What the record said.** That `broiler-vm.yml` "has never run on a hosted
+runner", and the 2026-08-30 revision above that "a workflow that has not run is
+a plan" whose RID matrix "is aspirational for every entry except `linux-x64`".
+The workflow's own header carried the same note, and `docs/support.md` carried
+it a third time as part of exclusion EX-45.
+
+**What is now true.** The lane has run on hosted runners and passes. Across two
+pull requests it executed on `ubuntu-latest`, `windows-latest` and
+`macos-latest`, and each of the three `publish and run` jobs published every
+composition root as Native AOT with trim and AOT warnings as errors and ran it -
+`linux-x64`, `win-x64` and `osx-arm64`. The `win-x64` job publishes a Native AOT
+image on a stock runner with no `vcvars64` shell, which is the second
+independent confirmation of the EX-42 correction recorded above.
+
+**What it does not settle, and this is the load-bearing half.** **No RID claim
+moves**, and the three unclaimed rows in `docs/support.md` stay unclaimed. The
+workflow's own header states the reason and it has not changed: **this lane does
+not collect an evidence bundle.** A bundle is collected deliberately, by a
+person, into `docs/evidence/`, and it records the machine, the SDK, the
+effective configuration and the raw outputs that make a figure readable. A green
+job on an ephemeral runner nobody names records none of that. The distinction
+the 2026-08-30 revision drew - a workflow that has not run is a plan - was right,
+and its converse is not: **a workflow that has run is not a bundle.**
+
+So what changed is narrower than "CI works" and worth stating exactly. Before,
+a reader was told nothing had ever published on `win-x64` or `osx-arm64`. Now
+something has, repeatedly, and the reason those rows are unclaimed is no longer
+that the platform is unattempted - it is that no retained collection exists on
+them. That is a better reason and a smaller gap, and pretending it is no gap
+would be the untruthful claim roadmap section 16 stops a release for.
+
+**What is not edited.** The 2026-08-30 revision above stands unchanged. It
+described what was true when it was written, and the append-only rule at the top
+of this section is what makes it worth reading; this entry is where a reader
+learns the sentence has been overtaken.
