@@ -121,6 +121,9 @@ rather than a decision record.
 | [JSC-35](#jsc-35) | roadmap §7; gates §21 | Each of the four exhaustion dimensions gets a corpus entry, because an exhaustion answer carries no code and the registry's binding cannot reach it | the corpus manifest, against rule N7 |
 | [JSC-36](#jsc-36) | delivery §19, §25 | Four clauses the release gates require and the map assigns, written into no exit gate — one defect with four instances | gates §22 gates 1 and 13; gates §24 |
 | [JSC-37](#jsc-37) | delivery §19, §25 | A fifth instance, and the first one a correction itself created: JSC-35's exhaustion entries were written into the evidence matrix and the map, and into no exit gate | gates §21; [JSC-35](#jsc-35); the map's blank-cell rule |
+| [JSC-38](#jsc-38) | ledger §2; delivery §19, §25; bundle JS-9-001 | The fuzz target is seeded mutation and was called coverage-guided; the guidance section 7 asks for was in no exit gate | the fuzz target's own source; ledger update rules 2 and 4 |
+| [JSC-39](#jsc-39) | roadmap §7; gates §21; delivery §19; ledger §2 | The verifier names seven exhaustion dimensions, not four, and JSC-35's binding covered four of seven arms | the verifier's own source; the corpus manifest; rule N7 |
+| [JSC-40](#jsc-40) | roadmap §5, §14; gates §21; delivery §19, §25 | The conformance harness is a never-advertised composition root, not a test project, and the ingestion scan is over advertised closures rather than published ones | rule A11; the composition register's advertised set |
 
 ### JSC-01
 
@@ -1136,6 +1139,124 @@ and the scope — is a fact about the checkout and is recorded in the
 **Authority and date.** [JSC-35](#jsc-35) and gates
 [section 21](roadmap.gates.md#21-test-and-evidence-matrix), read against JS-9's exit gate and the
 map's blank-cell rule; 2026-09-01.
+
+### JSC-38
+
+**Where:** the [ledger](roadmap.status.md#2-current-milestone-status)'s JS-9 row; delivery
+[section 19](roadmap.delivery.md#19-milestones), JS-9's exit gate; delivery
+[section 25](roadmap.delivery.md#25-the-chapter-milestone-and-gate-map); the header of bundle
+[JS-9-001](evidence/js-9/README.md) and the fuzz-log header the collection script writes.
+
+**What the plan said.** Nothing wrong: [section 7](roadmap.md#7-the-bytecode-format-and-the-verifier)'s
+second discipline and [section 21](roadmap.gates.md#21-test-and-evidence-matrix) both ask for
+*coverage-guided* fuzzing. What was wrong is what the ledger and the bundle said the plan had been
+shown to hold. The JS-9 row called the retained target "a coverage-guided fuzz target", bundle
+JS-9-001's header said the same, and the collection script wrote it into the head of every fuzz
+log. And JS-9's exit gate asked a session to retain its seed, its iteration budget, its settings and
+its counterexamples — and to be guided by nothing in particular.
+
+**What was actually true.** The target is seeded mutation. It draws every mutant from the fixed
+retained corpus, perturbs it by one of ten operators, and takes no feedback from what the mutant
+reached: no instrumentation, no coverage signal, and no seed added for new behaviour. The only
+feedback anywhere in a session is the outcome histogram it prints at the end, which decides whether
+the session exercised more than one path and nothing else. That is a fuzzer worth having — the
+operand-targeting mutation finds a class of defect the corpus cannot — and it is not the one the
+section names.
+
+**What replaced it.** The ledger says seeded mutation and names the guidance as an open clause of
+JS-9; the bundle's header carries a dated correction and no retained log was edited; the script's
+header says what the sessions are. And JS-9's exit gate now carries the guidance — a session
+observes what a mutant reached and keeps the mutants that reached something new as further seeds —
+so that a session over a fixed seed set cannot close the milestone. That last part is
+[JSC-36](#jsc-36)'s shape from the other side: the adjective was in the argument and in the
+evidence matrix, agreed by the map, and never reached the gate's clause, so the gate was
+satisfiable by the thing the argument excludes.
+
+**What it does not change.** Nothing about the sessions moves: the seeds, the iteration counts, the
+histogram and the one fuzz control are what they were, and the corpus-integrity mutation and the
+soak are untouched. What moved is the name the ledger gave the sessions, which is update rule 2's
+subject — *state what it demonstrated* — and update rule 4's: a result promoted beyond what it
+proves.
+
+**Authority and date.** The fuzz target's own source, read against section 7's second discipline
+and JS-9's exit gate; ledger update rules 2 and 4; 2026-09-01.
+
+### JSC-39
+
+**Where:** roadmap [section 7](roadmap.md#7-the-bytecode-format-and-the-verifier), the
+resource-exhaustion bullet of the verifier's rejection list; gates
+[section 21](roadmap.gates.md#21-test-and-evidence-matrix), the format-and-verifier row; delivery
+[section 19](roadmap.delivery.md#19-milestones), JS-9's exit gate; the
+[ledger](roadmap.status.md#2-current-milestone-status)'s JS-9 row.
+
+**What the plan said.** That the verifier answers `ResourceExhaustion` on four dimensions —
+structural depth, section count, declared counts and artifact bytes — and, since
+[JSC-35](#jsc-35), that each of the four gets a corpus entry because the registry's binding cannot
+reach an exhaustion answer.
+
+**What was actually true.** The verifier as built names seven. The four are the bounded reader's
+ceilings, answered through its statuses. The bounded allocator refuses an allocation and the
+verifier answers `AllocatedBytes` — in the constant pool, in the code section, and in the three
+arrays the link stage allocates over the code; the work charge the link stage makes over the code
+is refused and the verifier answers `VerifierWork`; and a poll that stops for a budget rather than
+for a token is answered as `WallClock`. [Section 3](roadmap.md#3-what-the-core-already-gives-this-profile-and-what-it-refuses)'s
+matrix already declared all three charged at verification. JSC-35's argument — an exhaustion answer
+carries no diagnostic code, so nothing but a corpus entry binds its category — applies to the
+allocator's arm, the work charge's arm and the poll's arm exactly as it applies to the reader's,
+and the plan bound four arms of seven.
+
+**What the checkout reaches today**, stated once here because [JSC-35](#jsc-35) and
+[JSC-37](#jsc-37) counted the same four two different ways — *one inside a fuzz session and one by
+nothing* against *two by nothing* — and both were reading the fuzz session's tight vector, which
+provokes a dimension the session never records: section count by an entry; artifact bytes by an
+ordering assertion; declared counts and allocated bytes only inside a fuzz session, whose histogram
+records the category and never the dimension; and structural depth, verifier work and the wall
+clock by nothing. The ledger's JS-9 row carries that per dimension from now on.
+
+**What replaced it.** Section 7 names the seven and their three sources; section 21 and JS-9's exit
+gate hold every one of them to an entry; the ledger's JS-9 row states what reaches each.
+
+**What it does not change.** No arm is wrong: every one of the seven maps its status onto the
+exhaustion category and not the invalid-artifact one, and the reader's mapping is one switch. What
+was unbound is the category of three arms nothing in the retained evidence provokes, which is the
+same defect JSC-35 found, three arms wider.
+
+**Authority and date.** The verifier's own source, read against section 7's bullet and the corpus
+manifest; rule N7's binding, which by construction covers only coded rejections; 2026-09-01.
+
+### JSC-40
+
+**Where:** roadmap [section 5](roadmap.md#5-package-boundaries-and-the-dependency-graph) and
+[section 14](roadmap.md#14-the-conformance-oracle); delivery
+[section 19](roadmap.delivery.md#19-milestones), JS-3a's exit gate; delivery
+[section 25](roadmap.delivery.md#25-the-chapter-milestone-and-gate-map); gates
+[section 21](roadmap.gates.md#21-test-and-evidence-matrix), the conformance row.
+
+**What the plan said.** That the ingestion path "ships nowhere", asserted by a scan that the suite
+harness appears in no product package "and in no published closure"; and JS-3a's gate asked the
+same of the harness, its cache and every suite file — "no closure report" — with a negative
+control adding "a product reference" to the ingestion path. Nothing said where the harness lives.
+
+**What replaced it.** The harness is a composition root that is never advertised, and the scan is
+over every package and every *advertised* composition's closure, with the control injected from the
+execution-only root. The reason is the one section 5 already gives for the corpus writer, the fuzz
+mutator and the soak, and it is the rule rather than a preference: the harness lowers suite
+sources, verifies the artifacts and runs them, so it drives this profile's own lowering, verifier
+and executor, and rule A11 forbids a test project to reference any of the three. A root publishes a
+closure of its own, so a scan over "no published closure" would fail on the very root that has to
+contain the harness — and would then be relaxed into meaninglessness by whoever met it.
+[JSC-34](#jsc-34) drew this consequence for everything that produces evidence except the one thing
+that produces the most of it, and the other intended profile reached the same placement from the
+same rule.
+
+**What it does not change.** No shipped image contains a harness, a suite cache or a suite file,
+and no advertised composition ever may. What moved is the boundary that carries the property —
+from *project kind* to *advertised or not*, which the composition register already records — and
+the direction of the control, which now injects the reference that would actually ship.
+
+**Authority and date.** Rule A11's registered statement and its path-keyed allow-list, read against
+section 14's bullet and JS-3a's gate; the composition register's advertised set, which is empty;
+2026-09-01.
 
 ---
 

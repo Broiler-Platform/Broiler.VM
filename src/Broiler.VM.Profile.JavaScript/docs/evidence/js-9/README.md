@@ -1,8 +1,27 @@
 # Evidence bundle JS-9-001
 
+> ### Correction, 2026-09-01 — this bundle called its fuzzer coverage-guided, and it is not
+>
+> **What this file said.** That the bundle covers section 7's second discipline, *coverage-guided
+> fuzzing*, over two of its four surfaces, and the fuzz log's own header said the same.
+>
+> **What the sessions are.** Seeded mutation. The mutator draws every mutant from the fixed
+> sixty-entry corpus, perturbs it by one of ten operators, and takes no feedback from what the
+> mutant reached: no instrumentation, no coverage signal, and no seed added for new behaviour. The
+> outcome histogram a session prints decides only whether the session exercised more than one path.
+> That is a fuzzer worth having and it is not the one section 7 asks for, so the discipline this
+> bundle covers is **seeded mutation over two surfaces**, and coverage guidance is an open clause
+> of JS-9 that no session here closes.
+>
+> **No log byte was edited.** `fuzz.log` still carries the header the collection script wrote at
+> the time; the script's header is corrected for later collections, and the ledger's JS-9 row and
+> [JSC-38](../../roadmap.corrections.md#jsc-38) record the correction. The rows below are corrected
+> in place; what was retained is untouched.
+
 **Milestone:** JS-9 — adversarial input, agents, soak. **What this bundle covers:** roadmap
-[section 7](../../roadmap.md#7-the-bytecode-format-and-the-verifier)'s **second discipline**,
-coverage-guided fuzzing, over **two of its four surfaces**.
+[section 7](../../roadmap.md#7-the-bytecode-format-and-the-verifier)'s **second discipline** in
+part — seeded mutation fuzzing, **not the coverage-guided fuzzing the section names**, over **two of
+its four surfaces**.
 
 **Verdict this bundle supports:** JS-9 is **In progress**, not accepted. Two of the four surfaces
 are not fuzzed because they do not exist; there is no soak host, no aggregate-budget exercise and

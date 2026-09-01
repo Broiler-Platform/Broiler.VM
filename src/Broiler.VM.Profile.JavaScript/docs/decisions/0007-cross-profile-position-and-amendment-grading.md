@@ -107,3 +107,26 @@ exists to prevent.
 
 None of these rows is admissible until it names a merged or approved capability. **JS-0 files
 none.**
+
+## Addendum, 2026-09-01 - the refusable retention member, which is the other profile's ask
+
+Part 2 graded every candidate this profile might ask for and none it would not. One capability the
+other intended profile asks for - **a refusable retention member on the metering surface**, so
+that a ceiling-class dimension can carry a guest-observable refusal - had no row here, and the
+core's procedure asks each amendment record to carry the other profile's position: could use it,
+unaffected, or refuses it. The row is the one the other profile opens as blocking rather than
+holds, so it is the row most likely to be filed first, and it was the one row whose counterweight
+field this profile had left empty.
+
+**This profile's position is *unaffected*.** It has no construct that needs a guest-observable
+budget refusal - a JavaScript allocation failure is a host-level condition, not a value the
+language reads back - and [JSD-0004](0004-limit-defaults-hard-maxima-and-the-budget-matrix.md)
+records that as a property to preserve rather than a coincidence to rely on. So this profile
+neither files the row nor obstructs it, which is what roadmap
+[section 18](../roadmap.md#18-amendments-this-profile-expects-to-ask-of-the-core) has said in its
+own voice since the corrections were lifted out of it; what this addendum adds is the date and the
+record, so the position can be cited by the other profile's amendment record rather than read off
+a plan.
+
+**Nothing in Part 2 moves.** No grade changes, no row becomes admissible, and the procedure is
+exactly as unexecutable as the section above records.

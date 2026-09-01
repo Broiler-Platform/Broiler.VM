@@ -77,12 +77,16 @@ scope control a copied codebase gets for free from the shape of what it copied.
   retrieved *(corrected: WAC-15)*.
 - **Dependencies:** Named ownership. No dependency on any core milestone's acceptance.
 - **Objective exit gate:** An acyclic shell graph builds Release with zero warnings; **the harness
-  roots are composition roots under `src/compositions/` and not test projects, and the graph proves
-  it rather than the prose asserting it** — a test project referencing this profile is refused by
+  placement is settled and recorded — the harness roots are composition roots under
+  `src/compositions/` and not test projects — and the rule that would refuse a test project
+  referencing this profile is shown to bite by a negative control over a harness-shaped test
+  project** *(corrected: WAC-22, WAC-25)*: a test project referencing this profile is refused by
   the host component's own active rule, which is why
   [section 5](roadmap.md#5-package-boundaries-and-the-dependency-graph) settles the placement
-  before a shell exists, and the register records which roots are advertised and which never are
-  *(corrected: WAC-22)*; architecture
+  before a shell exists, and the register records which roots are advertised and which never are.
+  **The roots themselves are not on this list**: this milestone lands no project that references a
+  core package, and rule A12 admits no composition root that composes nothing, so the graph proves
+  the placement at WA-1, where the first harness root exists; architecture
   rules express every forbidden edge — including **both halves** of the no-edge-to-another-profile
   rule and the rule that no **advertised** root reaches the script reader, the corpus store or the
   encoder — each with a passing witness and a
@@ -93,9 +97,13 @@ scope control a copied codebase gets for free from the shape of what it copied.
   that profile's work not at all, while its adopted defaults do**, with a negative control that
   writes a zero into one guest-load *default*, adopts defaults rather than stating ceilings, and
   observes the neighbour's nested load refused with a resource exhaustion naming a dimension this
-  profile does not use; **a descriptor whose guest-load defaults are unconstrained is refused by
-  the catalog, by a named negative case**, so the finite value above is held to by a test rather
-  than by a sentence; the public API baseline for this family exists and compares in both
+  profile does not use; and **a descriptor whose guest-load defaults are unconstrained is refused
+  by the catalog, by a named negative case**, so the finite value above is held to by a test
+  rather than by a sentence. **Neither of those two clauses can close here** *(corrected: WAC-25)*:
+  this milestone lands no descriptor to compose and no composition root to host the case in — a
+  check that drives a descriptor through a catalog has nowhere but a root under rule A11 — so both
+  are carried to WA-1, which has the descriptor and the first roots, rather than satisfied with a
+  fabricated descriptor; the public API baseline for this family exists and compares in both
   directions, with an injected member failing it and a deleted member failing it too, **described
   from the build output without loading or executing the assemblies it describes** — a describer
   that loads one needs a project reference the architecture rules forbid a test project to hold on
@@ -146,7 +154,13 @@ scope control a copied codebase gets for free from the shape of what it copied.
   deliberately non-conforming variant; `Suspended` is declared unreachable from this profile with
   the refusal tested rather than an out-of-manifest instruction minted to reach it. The descriptor
   is admitted by a catalog build, and named negative cases produce each catalog refusal this
-  descriptor can provoke. A module whose descriptor names an absent profile answers
+  descriptor can provoke. **The three clauses WA-0 carried close here** *(corrected: WAC-25)*: the
+  harness roots stand under `src/compositions/` as composition roots and the graph rules hold them
+  there; the two-profile catalog test composes this descriptor beside a neighbour that declares
+  guest-initiated loads and proves that this profile's maxima reach the neighbour not at all while
+  its adopted defaults do, with the zero-default negative control; and a descriptor whose
+  guest-load defaults are unconstrained is refused by the catalog, by a named negative case. A
+  module whose descriptor names an absent profile answers
   `UnsupportedProfile` / `ProfileNotInCatalog` **with no payload byte examined**; one naming an
   unaccepted manifest answers `UnsupportedFeatureManifest`; one naming an out-of-range format
   version answers `UnsupportedProfileFormatVersion`. A second profile composed in the same catalog
@@ -745,6 +759,14 @@ it was built to find:
   *(corrected: WAC-19)*. The fifth was a decision with no home: **what a `LiveBytes` breach does to
   an operation**, which the ledger had opened beside the ABI and which section 9 now carries as a
   row of its own *(corrected: WAC-23)*.
+- **A sixth was found on the third reading, and it is WAC-21's shape at WA-0** *(corrected:
+  WAC-25)*: three clauses of WA-0's gate — the harness roots proven in the graph, the two-profile
+  catalog test, and the unconstrained-default refusal — each need a descriptor or a composition
+  root, and WA-0's own scope line lands neither. Each is carried to WA-1 and WA-1's gate closes
+  them, which is what the sibling profile's first milestone did with the same catalog test. Two of
+  the three arrived on the day WAC-10 and WAC-22 were written, into the gate of the milestone that
+  owns the decision rather than the one that can first run the test — which is the map's rule
+  failing from the other direction: a clause can be in an exit gate that cannot fail on it.
 - **One release gate is owned by no chapter, and the map is how that was found.** Gate 12 asks that
   the holders of diagnostics, cancellation, rollback, format-version rejection, specification- and
   suite-revision drift, **vulnerability response**, and recertification each be named. No chapter

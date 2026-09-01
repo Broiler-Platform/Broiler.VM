@@ -294,10 +294,14 @@ answered by whichever of the two ran late.
   a clause no earlier milestone could close, because
   [section 4.5](roadmap.md#45-licence-attribution-and-one-notice-that-must-change)'s notice change
   is the seed's and the suite's own notice content is not in this checkout until the revision is
-  retrieved *(corrected: JSC-30)*; and a scan asserts the suite ingestion path, its cache, and
-  every suite file appear in
-  no product package and no closure report, with a negative control that adds a product reference to
-  the ingestion path and observes the scan fail.
+  retrieved *(corrected: JSC-30)*; **the harness is a composition root that is never advertised,
+  and not a test project** — it drives this profile's own lowering, verifier and executor, which
+  rule A11 forbids a test project to reference, and the composition register records it as never
+  advertised *(corrected: JSC-40)*; and a scan asserts the suite ingestion path, its cache, and
+  every suite file appear in no product package and in **no advertised composition's** closure
+  report — not in *no closure report*, because the harness root publishes one of its own — with a
+  negative control that adds the reference to the ingestion path **from the execution-only root**
+  and observes the scan fail.
 - **Seed:** Nothing is copied. Every mechanism here is this component's own code, and **no total,
   manifest entry, known-gap entry, or triage finding crosses the fork.**
 
@@ -590,12 +594,14 @@ surfaces that do not exist may not be read as covering them *(corrected: JSC-23)
   fuzz surfaces.
 - **Objective exit gate:** Every entry in the full corpus produces its recorded outcome, reason,
   and diagnostic code on JIT, trimmed, and Native AOT hosts, the verifier throws on none, control
-  entries verify successfully, and a repeat leaves no residue; **each of the four budget dimensions
-  [section 7](roadmap.md#7-the-bytecode-format-and-the-verifier) names as an exhaustion answer —
-  structural depth, section count, declared counts and artifact bytes — is reached by a corpus entry
-  of its own that records the dimension and the scope it named**, which needs a manifest column for
-  the pair, because an exhaustion answer carries no diagnostic code and the registry's
-  both-directions binding therefore reaches none of the four; where a dimension is unreachable at
+  entries verify successfully, and a repeat leaves no residue; **each of the seven budget
+  dimensions [section 7](roadmap.md#7-the-bytecode-format-and-the-verifier) names as an exhaustion
+  answer — the reader's structural depth, section count, declared counts and artifact bytes; the
+  allocator's allocated bytes and the work charge's verifier work; and the poll's wall clock — is
+  reached by a corpus entry of its own that records the dimension and the scope it named**, which
+  needs a manifest column for the pair, because an exhaustion answer carries no diagnostic code and
+  the registry's both-directions binding therefore reaches none of the seven
+  *(corrected: JSC-39)*; where a dimension is unreachable at
   the manifest this milestone closes against, the bundle names it, names the milestone that makes it
   reachable, and carries the entry as owed rather than as absent — the clause
   [the map](#25-the-chapter-milestone-and-gate-map) and
@@ -604,7 +610,13 @@ surfaces that do not exist may not be read as covering them *(corrected: JSC-23)
   the replay detects a changed observed triple; each fuzz session retains its corpus identity,
   its iteration budget with a stated floor, its runtime settings, and **every minimized
   counterexample**, and any counterexample is closed by a **named regression, never an allow-list
-  entry**; the compile-time nesting bound holds under fuzz; a soak over a recorded number of
+  entry**; **each fuzz session is coverage-guided — it observes what a mutant reached and keeps
+  the mutants that reached something new as further seeds, so its seed set grows with the surface
+  it explores rather than staying the retained corpus** — and a session that mutates a fixed seed
+  set is seeded mutation, which its bundle says in those words and which closes nothing here,
+  because that is the discipline [section 7](roadmap.md#7-the-bytecode-format-and-the-verifier)
+  and [section 21](roadmap.gates.md#21-test-and-evidence-matrix) both ask for and this gate did
+  not carry *(corrected: JSC-38)*; the compile-time nesting bound holds under fuzz; a soak over a recorded number of
   lifecycle cycles across recycled runtimes reaches a stated heap plateau and a disposed runtime
   leaves no per-thread state, each with a named regression that fails when the fix is reverted;
   two runtimes under one aggregate budget together spend no more than the parent's allowance,
@@ -829,7 +841,7 @@ gate with no owning milestone is a gate nobody can close.
 | 2 Engineering invariants | every milestone; each invariant is asserted by the milestone that could first violate it | all rows | 3, 4 | several |
 | 3 What the core gives and refuses | JS-0 (the two vectors and the matrix); JS-1 (the descriptor half of the two-profile test); JS-8 (its `eval`-refusal half); JS-10 publishes the defaults as the neighbour-facing half and names the reconciliation unowned | Identity and registration; Composed-profile safety | 1, 2 | declared defaults reaching a neighbour |
 | 4 The seed | JS-2 | Front end; Licence and attribution | 12 | the seed becomes a dependency |
-| 5 Package boundaries and the graph | JS-0; **JS-1 and JS-9 fill the composition roots with the evidence-producing code a test project may not hold**; JS-10 records the extraction-gate state, which no earlier milestone can, and no verdict | Dependency architecture | 2 | placement assumed rather than decided; the extraction gate unanswered |
+| 5 Package boundaries and the graph | JS-0; **JS-1, JS-3a and JS-9 fill the composition roots with the evidence-producing code a test project may not hold** — the corpus writer, the harness, the mutator and the soak; JS-10 records the extraction-gate state, which no earlier milestone can, and no verdict | Dependency architecture | 2 | placement assumed rather than decided; the extraction gate unanswered; an advertised closure reaching the ingestion path |
 | 6 Feature manifests | JS-0 allocates; JS-1 mints the first; each increment extends | Identity and registration; Conformance | 1, 9 | the manifest set drifts upward |
 | 7 The format and the verifier | JS-1 builds it; JS-9 attacks it and **owes the exhaustion entries the registry's binding cannot reach** | Format and verifier safety | 3 | a check migrates into first execution; a ceiling breach recorded as an invalid artifact |
 | 8 The value, frame, and call model | JS-4 (the ABI); JS-5 (the measured numbers and the charging) | Value model and storage; Executor and lifecycle; Measurement | 4, 10 | a late value-representation decision; unproportional charging |
@@ -838,7 +850,7 @@ gate with no owning milestone is a gate nobody can close.
 | 11 Guest-initiated loads | JS-8 | Guest loads and policy | 5 | — |
 | 12 Suspension | JS-7 | Suspension | 4 | — |
 | 13 Realms, agents, and the host boundary | JS-5 (binding and translation); JS-9 (agents under one parent) | Host boundary | 6 | a shared parent read as isolation; mutable optimization state reachable from a shared handle |
-| 14 The conformance oracle | JS-3a, which also lands the ingested suite's attribution **and pins the language-specification edition** | Conformance; Licence and attribution | 9, 12 | the oracle reports a failure as a pass; an aggregate percentage; a manifest scored against an unpinned edition |
+| 14 The conformance oracle | JS-3a, which also lands the ingested suite's attribution, **pins the language-specification edition**, and **stands the harness up as a never-advertised composition root** | Conformance; Licence and attribution; Dependency architecture | 9, 12 | the oracle reports a failure as a pass; an aggregate percentage; a manifest scored against an unpinned edition; the ingestion path in an advertised closure |
 | 15 Compositions, Native AOT, the browser | JS-1, JS-3b and JS-8 build them; JS-10 advertises one | Native AOT | 7 | a publish cited for another kind; an implied `WebAssembly` namespace |
 | 16 Persistence and the code cache | **no milestone delivers it**, by decision; JS-8 carries the exclusion clause and JS-10 measures the reopening trigger | Format and verifier safety | 3 | a second verifier, or a build-time shortcut past the one |
 | 17 Measurement discipline | JS-10 stands up the lane; JS-4 produces the first figure it governs and fixes the repetition count | Measurement | 10 | — |
@@ -898,6 +910,21 @@ the gaps it was built to find:
   milestones cannot see a requirement that has just been added to neither. The rule this map now
   holds is the general one: **a requirement is not in the programme until an exit gate would fail
   without it**, whatever introduced it — a chapter, a release gate, or a correction.
+- **A third reading found three more, and two of them are the rule above found from the other
+  side** *(corrected: JSC-38, JSC-39, JSC-40)*. [Section 7](roadmap.md#7-the-bytecode-format-and-the-verifier)
+  and [section 21](roadmap.gates.md#21-test-and-evidence-matrix) ask for *coverage-guided* fuzzing
+  and JS-9's gate asked only that a session retain its seed, its budget and its counterexamples —
+  so a seeded mutator with no coverage feedback satisfied the gate while the ledger called it
+  coverage-guided, and the gate now carries the guidance. Section 7 named four exhaustion
+  dimensions where the verifier as built names seven — the allocator's, the work charge's and the
+  poll's answers carry no diagnostic code either — so a binding that covered four of seven arms
+  read as complete. And [section 14](roadmap.md#14-the-conformance-oracle)'s harness was held to a
+  scan over *no published closure* while [section 5](roadmap.md#5-package-boundaries-and-the-dependency-graph)
+  had already put everything that drives the profile in a composition root, which the harness must
+  be too; the scan is over advertised closures now, which is the reading the other intended
+  profile reached from the same rule. **The lesson the first two add**: a gate can be satisfied by
+  the thing the argument excludes when the argument's adjective — *coverage-guided*, *the four* —
+  never reached the gate's clause.
 - **One release gate is owned by no chapter, and the map is how that was found.** Gate 13 asks that
   the holders of diagnostics, cancellation, rollback, format-version rejection, corpus and
   suite-revision drift, **vulnerability response**, and recertification each be named. No chapter

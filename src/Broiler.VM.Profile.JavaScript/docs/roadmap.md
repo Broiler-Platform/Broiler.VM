@@ -645,6 +645,16 @@ this profile's own verifier and executor, and the core's rules forbid a test pro
 profile assembly and forbid a composition root to reference the core's fixture assembly. There is
 nowhere else for them to be.
 
+**The conformance harness is in the same position, and it is said here rather than left to be
+found at JS-3a** *(corrected: JSC-40)*. [Section 14](#14-the-conformance-oracle)'s harness lowers
+suite sources, verifies the artifacts and runs them, so it drives this profile's own lowering,
+verifier and executor, and the same two rules leave it nowhere but a composition root — one that is
+never advertised, publishes a closure of its own for its own evidence, and is cited as evidence for
+no other composition. That changes the scan the ingestion path is held to: not *no published
+closure*, which the harness root's own publish would falsify, but **no package and no advertised
+composition's closure**, with the negative control adding the reference from the execution-only
+root, which is the direction that would actually ship.
+
 Two consequences are stated here so a reader meets them before a closure report does
 *(corrected: JSC-34)*. **The `execution-only` label describes a reference set and not a file
 inventory** — [section 15](#15-deployment-compositions-native-aot-and-the-browser-embedding)'s
@@ -841,18 +851,22 @@ answer. Each bullet below states which category it produces.
 - **`InvalidArtifact`** — every static semantic the manifest requires, and any construct outside
   the declared manifest — see [section 9](#9-the-semantic-front-end-and-lowering), which makes
   early errors a verification stage rather than a parser side effect;
-- **`ResourceExhaustion`** — structural depth, section count, declared counts, and artifact bytes,
-  against the effective ceilings the core materialized before the first byte was read. Each names
-  one dimension and one scope, and none of them is an invalid-artifact answer: the artifact is
-  well formed and this image declined to admit it. **Each of the four gets a corpus entry of its
-  own, and the reason is that nothing else would bind them** *(corrected: JSC-35)*: an exhaustion
+- **`ResourceExhaustion`** — **seven dimensions from three sources, and the verifier names every
+  one of them** *(corrected: JSC-35, JSC-39)*: structural depth, section count, declared counts and
+  artifact bytes, against the effective ceilings the core materialized before the first byte was
+  read and answered through the bounded reader's own statuses; allocated bytes and verifier work,
+  refused by the bounded allocator and by the work charge the verifier makes over the code it
+  links; and the wall clock, which the verifier's poll names when it stops for a budget rather than
+  for a token. Each names one dimension and one scope, and none of them is an invalid-artifact
+  answer: the artifact is well formed and this image declined to admit it. **Each of the seven gets
+  a corpus entry of its own, and the reason is that nothing else would bind them**: an exhaustion
   answer carries no profile diagnostic code, so the registry's both-directions binding — which is
-  what holds every invalid-artifact arm to a named case — does not reach this bullet at all. A
-  dimension named here and reached by no entry is an arm whose category is asserted by prose, in
-  exactly the place [section 21](roadmap.gates.md#21-test-and-evidence-matrix) names *a ceiling
-  breach recorded as an invalid artifact* as a release blocker. Where a dimension is unreachable at
-  the current manifest, the entry is owed by the milestone that makes it reachable and the bundle
-  says which;
+  what holds every invalid-artifact arm to a named case — does not reach this bullet at all, and it
+  reaches the allocator's arm and the poll's arm no more than the reader's. A dimension named here
+  and reached by no entry is an arm whose category is asserted by prose, in exactly the place
+  [section 21](roadmap.gates.md#21-test-and-evidence-matrix) names *a ceiling breach recorded as
+  an invalid artifact* as a release blocker. Where a dimension is unreachable at the current
+  manifest, the entry is owed by the milestone that makes it reachable and the bundle says which;
 - **`InvalidArtifact`** — any host assumption the artifact declares, checked against the
   capabilities the verification context reports as registered. An artifact that names an import the
   composition does not carry is refused at verification rather than at first call, and a
@@ -1329,8 +1343,14 @@ to score anything: it is to prove that a failing test comes back as a failure.
   across revisions, because a suite that added tests would otherwise read as a regression and a
   suite that removed them would silently lower the bar. This is the same discipline both the
   diagnostic registry and the corpus already apply to their own pinned revisions.
-- **The ingestion path ships nowhere.** A scan asserts the suite harness appears in no product
-  package and in no published closure.
+- **The ingestion path is never advertised, and that is asserted rather than assumed.** The
+  harness drives this profile's own lowering, verifier and executor, so
+  [section 5](#5-package-boundaries-and-the-dependency-graph) puts it in a composition root that
+  is never advertised rather than in a test project — and a root publishes a closure of its own.
+  What the scan asserts is therefore that the harness, its suite cache and every suite file appear
+  in **no package and in no advertised composition's closure** — not in *no published closure*,
+  which the harness root's own publish would falsify — and the negative control adds the reference
+  **from the execution-only root** and observes the scan fail *(corrected: JSC-40)*.
 - **The ingested suite carries its own attribution obligation, and JS-3a lands it.** The suite is
   separately licensed third-party material, and
   [section 4.5](#45-licence-attribution-and-one-notice-that-must-change)'s notice change is the

@@ -279,6 +279,15 @@ internal sealed record FuzzObservation(
 /// here covers the two that exist and says so; JS-9 owns the rest and the session budgets.
 /// </para>
 /// <para>
+/// <b>It is seeded mutation, not coverage-guided fuzzing.</b> Every mutant is drawn from the fixed
+/// seed corpus and nothing a mutant reached feeds back into what the next one is drawn from:
+/// there is no instrumentation, no coverage signal and no seed added for new behaviour. The
+/// histogram at the end of a session decides only whether the session exercised more than one
+/// path. The guidance the section asks for is an open clause of JS-9's gate, and a bundle
+/// retaining these sessions says seeded mutation rather than the section's adjective - the
+/// ledger's JS-9 row and JSC-38 record that this file's sessions were once called coverage-guided.
+/// </para>
+/// <para>
 /// <b>It finds nothing by itself.</b> What it produces when it does find something is the valuable
 /// part: a minimized input, retained, which becomes a named corpus entry. A counterexample closed
 /// by an allow-list entry is not closed.

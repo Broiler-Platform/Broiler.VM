@@ -494,7 +494,7 @@ removed. Naming the residue is the point; a default that looked free would hide 
   profile is therefore the counterweight that would *decline* both amendments rather than fund
   them.
 - **Its variable-length integer readers accept canonical encodings only.** The core's own package
-  description says "canonical LEB128", and the reader's source says over-long encodings are
+  description says "canonical-only LEB128", and the reader's source says over-long encodings are
   rejected "rather than accepted and truncated". The specification says the opposite.
   [Section 7](#7-the-artifact-the-decoder-and-one-disagreement-with-the-core) is the whole
   treatment, and it is the first design decision this component has to take.
@@ -574,7 +574,7 @@ commit.
 
 | Material | Disposition |
 |---|---|
-| The core's three packable assemblies | **Referenced as packages**, exactly two of them by the profile: the abstractions and the binary primitives. Never vendored, never copied, never sourced from a project reference across component boundaries. |
+| The core's three packable assemblies | **Referenced**, exactly two of them by the profile — the abstractions and the binary primitives — and by project reference, because this profile is a set of product projects in the same repository as the core and a package boundary between the two would put a version in the way for no boundary in return. Never vendored and never copied. |
 | The specification document | **Pinned by dated revision, retrieved, hashed, and archived.** Retrieving and archiving a third-party document is a *human* action; until someone performs it, the pin is provisional and carries a named exclusion in the ledger. WA-0 records the intended revision; WA-2 records the one actually taken. |
 | The conformance test suite | **Pinned by immutable commit** and read at run time from a directory rather than compiled into anything. It is Apache-2.0 licensed material entering this repository, so [section 4.4](#44-licence-attribution-and-one-notice-that-must-change) applies to it. No file of it is an item of any project, and a scan asserts none appears in any published closure. |
 | A text-format reader for the suite's scripts | **Written here, and never in an advertised composition.** The suite is distributed as scripts in the specification's text format, so something must read them. It is this component's code, it is subject to the same absent-from-the-advertised-closure rule as the corpus it reads, and [section 5](#5-package-boundaries-and-the-dependency-graph) fixes which project it may live in — which is **not** a test project *(corrected: WAC-22)*. It is not a WebAssembly text-format implementation and does not claim to be one: it reads what the suite actually contains. |
@@ -819,7 +819,7 @@ axis.
 requires padded encodings to be accepted. These cannot both be satisfied by the same call.**
 
 The core's position is explicit in two places that ship. Its published support table describes the
-binary package as providing "canonical LEB128". Its reader's own source says that over-long
+binary package as providing "canonical-only LEB128". Its reader's own source says that over-long
 encodings "are rejected rather than accepted and truncated", and gives the reason: "Two encodings
 of one value would make a byte-identical artifact check meaningless and would let a payload carry
 a value past a length check that read it differently, so the canonical form is the only accepted
@@ -1882,7 +1882,7 @@ table below records what this profile **needs**, and the section after it record
 | **A wider value slot on the capability channel** | `v128` does not fit in a 64-bit slot. Splitting works and needs a published encoding; a wider slot would not. | **Weak.** This is one type in one instruction family. Recorded so it is not mistaken for the previous row. |
 | **A charging hook for work done inside a host capability** | Wall clock covers a slow capability; it does not cover one that allocates on this profile's behalf. | **Strong: general**, and this profile reaches it by the same route any other would. |
 | **A persisted envelope** | [Section 18](#18-persistence-and-the-code-cache). | **Strong: general**, and already admitted by contract. It needs a gate rather than an amendment. |
-| **A refusable retention member on the metering surface** | [Section 3](#3-what-the-core-already-gives-this-profile-and-what-it-refuses): the retention report returns nothing, so a ceiling-class dimension cannot carry a guest-observable refusal, while [section 12](#12-traps-exhaustion-and-why-neither-is-a-process-failure) requires a refused `memory.grow` to be exactly that. **No local resolution exists.** Admitting or refusing growth on a charge, with retention reported for accounting only, does not work against the shipped core: a refused `TryCharge` latches exhaustion and the core rewrites the completed step as `ResourceExhaustion`, so no spelling of a guest-observable refusal exists on the current contract *(corrected: WAC-03)*. | **Strong, and blocking.** Any profile with host-visible retained state that the language can ask to grow meets it, which is the counterweight test passing — and unlike every other row in this table there is no local workaround to fall back on. **WA-5 cannot choose a memory representation until this is filed and answered**, so this is the one row this profile opens rather than holds. |
+| **A refusable retention member on the metering surface** | [Section 3](#3-what-the-core-already-gives-this-profile-and-what-it-refuses): the retention report returns nothing, so a ceiling-class dimension cannot carry a guest-observable refusal, while [section 12](#12-traps-exhaustion-and-why-neither-is-a-process-failure) requires a refused `memory.grow` to be exactly that. **No local resolution exists.** Admitting or refusing growth on a charge, with retention reported for accounting only, does not work against the shipped core: a refused `TryCharge` latches exhaustion and the core rewrites the completed step as `ResourceExhaustion`, so no spelling of a guest-observable refusal exists on the current contract *(corrected: WAC-03)*. | **Strong, and blocking.** Any profile with host-visible retained state that the language can ask to grow meets it, which is the counterweight test passing — and unlike every other row in this table there is no local workaround to fall back on. **WA-5 cannot choose a memory representation until this is filed and answered**, so this is the one row this profile opens rather than holds. **The other intended profile's position is recorded, dated, and it is *unaffected*** *(corrected: WAC-26)*: it has no construct that needs a guest-observable budget refusal and treats that as a property to preserve, so it neither files this row nor obstructs it — the second of the three answers the core's procedure admits, and the one that lets this row be filed by this profile alone with its counterweight field complete. |
 
 ### What this profile does **not** need, and says so
 
