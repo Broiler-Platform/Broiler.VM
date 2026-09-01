@@ -125,6 +125,7 @@ rather than a decision record.
 | [JSC-39](#jsc-39) | roadmap §7; gates §21; delivery §19; ledger §2 | The verifier names seven exhaustion dimensions, not four, and JSC-35's binding covered four of seven arms | the verifier's own source; the corpus manifest; rule N7 |
 | [JSC-40](#jsc-40) | roadmap §5, §14; gates §21; delivery §19, §25 | The conformance harness is a never-advertised composition root, not a test project, and the ingestion scan is over advertised closures rather than published ones | rule A11; the composition register's advertised set |
 | [JSC-41](#jsc-41) | roadmap §7; ledger §2 | The artifact-bytes exhaustion is the core's answer and no host ceiling reaches the verifier's own arm for it; six of the seven dimensions are this profile's to answer | the core's verification path; the retained corpus manifest |
+| [JSC-42](#jsc-42) | roadmap §7; gates §21; delivery §19; ledger §2 | A session's guidance is keyed on the answer this profile publishes and not on an edge, and what a session judges about itself is its loop rather than its growth | [JSD-0013](decisions/0013-the-fuzz-sessions-coverage-signal.md) |
 
 ### JSC-01
 
@@ -1448,3 +1449,50 @@ the reader answered all four.
 **Authority and date.** The core's verification path, read against the reader's constructor and the
 code section's own bound; the retained corpus manifest, whose artifact-bytes entry is answered
 before the verifier is called; 2026-09-01.
+
+### JSC-42
+
+**Where:** roadmap [section 7](roadmap.md#7-the-bytecode-format-and-the-verifier), the second of
+the three disciplines; gates [section 21](roadmap.gates.md#21-test-and-evidence-matrix), the
+format-and-verifier row; delivery [section 19](roadmap.delivery.md#19-milestones), JS-9's exit
+gate; the [ledger](roadmap.status.md#2-current-milestone-status)'s JS-9 row.
+
+**What the plan said.** *Coverage-guided fuzzing*, in the sense the adjective carries in the tools
+it was borrowed from: a session observes which edges of the code a mutant reached and keeps the
+mutants that reached new ones. [JSC-38](#jsc-38) wrote that reading into JS-9's exit gate on
+2026-09-01, after finding that the retained sessions took no feedback at all and had been called
+coverage-guided anyway.
+
+**What was actually true.** The reading is not one this component can deliver, and the reason is a
+rule rather than an effort estimate. A mutant's edges can only be observed by instrumenting the
+code that runs it; rule A11 forbids a test project to reference a profile assembly, so the sessions
+live in a composition root ([JSC-34](#jsc-34)); and instrumenting from there means either a
+coverage host in a published closure — in the one image whose dependency list is evidence — or an
+instrumented build of the assembly under test, which makes a session evidence about instrumented
+code. Both are refused, and refused for reasons the plan states elsewhere in its own words.
+
+**What replaced it.** A session is **guided by the answer this profile publishes**: the diagnostic
+code of a refusal, which names the site that refused; the dimension of an exhaustion, which carries
+no code; the step or the fault kind of a mutant that ran; the type of an exception that escaped. A
+mutant whose answer no seed artifact produces is kept as a further seed, so the seed set grows with
+the surface — which is the property JSC-38's clause asks for — and **two paths to one answer are
+one signal**, which is the bound, stated in every session's own output and in the ledger.
+[JSD-0013](decisions/0013-the-fuzz-sessions-coverage-signal.md) records the decision, the rejected
+alternative and what would falsify the rejection.
+
+**And a second reading replaced with it, which the plan never had and the implementation needed.**
+A session judges its **loop** and not its **growth**. How much a seed set grows is a fact about the
+corpus as much as about the mutator — a corpus that already reaches every answer the mutator can
+reach makes an honest session keep nothing — so a gate clause keyed on growth would fail harder the
+better the corpus got, and this component's corpus grows at every format-growing milestone. What a
+session is held to instead holds whatever the corpus contains: every mutant it drew was offered to
+the seed pool, and the pool keeps a new answer while refusing a repeat.
+
+**What it does not change.** The two surfaces that do not exist are still not fuzzed and a session
+still may not be read as covering them; a counterexample is still closed by a named regression and
+never by an allow-list entry; and no session budget is justified by anything. **Nor does it close
+JS-9's guidance clause** — the ledger is the authority for that, and closing needs a retained
+bundle.
+
+**Authority and date.** [JSD-0013](decisions/0013-the-fuzz-sessions-coverage-signal.md); rule A11's
+registered statement, read against where the sessions live; 2026-09-01.

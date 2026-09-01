@@ -909,12 +909,21 @@ of the four it names.
    that grows the format, and it contains **control entries that verify successfully** — a
    corpus in which nothing passes is a corpus that would not notice a verifier that rejects
    everything.
-2. **Coverage-guided fuzzing over four surfaces**, not one: the verifier, the source tokenizer
+2. **Guided fuzzing over four surfaces**, not one: the verifier, the source tokenizer
    and parser, the regular-expression matcher over both pattern and subject, and the executor
    over verified-but-adversarial artifacts. **Two of the four arrive with the milestones that
    build them** — the tokenizer and parser at JS-3b, the matcher at JS-6 — and until they exist a
    session may not be read as covering them, which is a clause of JS-9's gate rather than a
-   caveat. Every session retains its seed, its iteration budget, and every minimized
+   caveat. **A session takes feedback from what a mutant reached**: a mutant whose published
+   answer no seed artifact produces is kept as a further seed, so the seed set grows with the
+   surface rather than staying the retained corpus, and a session that draws every mutant from a
+   fixed set is seeded mutation and says so in those words. **The signal is the answer this
+   profile publishes — the diagnostic code of a refusal, the dimension of an exhaustion, the step
+   or fault of a mutant that ran — and it is not edge coverage** *(corrected: JSC-42)*: two paths
+   to one answer are one signal, and instrumenting for anything finer would put a coverage host in
+   a published closure or change the assembly under test, which
+   [JSD-0013](decisions/0013-the-fuzz-sessions-coverage-signal.md) records and refuses. Every
+   session retains its seed, its iteration budget, and every minimized
    counterexample. **A counterexample is closed by a named regression, never by an allow-list
    entry.**
 3. **Ordering assertions.** The effective ceilings are materialized before the first byte is

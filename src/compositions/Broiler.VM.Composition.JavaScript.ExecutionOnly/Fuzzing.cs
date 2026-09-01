@@ -256,6 +256,78 @@ internal sealed class ArtifactMutator
     }
 }
 
+/// <summary>
+/// The seed set a session draws from, and the answers it has already seen.
+/// </summary>
+/// <remarks>
+/// <para>
+/// A type of its own rather than two locals in the session loop, and the reason is that the loop
+/// has to be able to prove it is wired. A session's growth figure is a fact about the corpus as
+/// much as about the mutator - a corpus that already reaches everything the mutator can reach
+/// makes an honest session keep nothing - so growth cannot be the thing that fails. What can be
+/// is this: every mutant was offered to the pool, and the pool keeps a new answer and refuses a
+/// repeat.
+/// </para>
+/// <para>
+/// The pool is bounded. An unbounded one would make a long session's draw distribution a function
+/// of how many answers it happened to discover, so two sessions of different lengths over one seed
+/// would explore differently for a reason neither could state.
+/// </para>
+/// </remarks>
+internal sealed class SeedPool
+{
+    private readonly List<byte[]> artifacts;
+    private readonly HashSet<string> answers = new(StringComparer.Ordinal);
+    private readonly int ceiling;
+
+    internal SeedPool(IEnumerable<byte[]> corpus, int poolCeiling)
+    {
+        artifacts = [.. corpus];
+        ceiling = poolCeiling;
+    }
+
+    /// <summary>The seeds, as the mutator draws from them.</summary>
+    internal IReadOnlyList<byte[]> Artifacts => artifacts;
+
+    /// <summary>How many distinct answers this pool has been told about.</summary>
+    internal int Answers => answers.Count;
+
+    /// <summary>How many the seed corpus alone reached, fixed when priming ended.</summary>
+    internal int Baseline { get; private set; }
+
+    /// <summary>How many mutants were offered. A session offers every one it draws.</summary>
+    internal int Considered { get; private set; }
+
+    /// <summary>How many were kept as further seeds.</summary>
+    internal int Kept { get; private set; }
+
+    /// <summary>Records an answer the seed corpus reaches, without keeping anything.</summary>
+    internal void Prime(string coverage)
+    {
+        answers.Add(coverage);
+        Baseline = answers.Count;
+    }
+
+    /// <summary>Offers one mutant and its answer. Keeps it if the answer is new.</summary>
+    internal bool Consider(byte[] input, string coverage)
+    {
+        Considered++;
+
+        if (!answers.Add(coverage))
+        {
+            return false;
+        }
+
+        if (artifacts.Count < ceiling)
+        {
+            artifacts.Add(input);
+            Kept++;
+        }
+
+        return true;
+    }
+}
+
 /// <summary>What one verification of one mutant did.</summary>
 internal sealed record FuzzObservation(
     VmOutcome Outcome,
@@ -265,7 +337,8 @@ internal sealed record FuzzObservation(
     bool Escaped,
     string EscapedTypeName,
     ulong AllocatedBytes,
-    string ExecutionStep);
+    string ExecutionStep,
+    string ExhaustedDimension);
 
 /// <summary>
 /// Roadmap section 7's second discipline, over the two of its four surfaces that exist.
@@ -279,13 +352,23 @@ internal sealed record FuzzObservation(
 /// here covers the two that exist and says so; JS-9 owns the rest and the session budgets.
 /// </para>
 /// <para>
-/// <b>It is seeded mutation, not coverage-guided fuzzing.</b> Every mutant is drawn from the fixed
-/// seed corpus and nothing a mutant reached feeds back into what the next one is drawn from:
-/// there is no instrumentation, no coverage signal and no seed added for new behaviour. The
-/// histogram at the end of a session decides only whether the session exercised more than one
-/// path. The guidance the section asks for is an open clause of JS-9's gate, and a bundle
-/// retaining these sessions says seeded mutation rather than the section's adjective - the
-/// ledger's JS-9 row and JSC-38 record that this file's sessions were once called coverage-guided.
+/// <b>It is answer-guided mutation, and the adjective is load-bearing.</b> A mutant's coverage
+/// signal is <em>the answer this profile publishes about it</em> - the diagnostic code of a
+/// refusal, which names the site that refused; the dimension of an exhaustion, which an exhaustion
+/// carries instead of a code; the execution step or the fault kind of a mutant that ran; or the
+/// type of an exception that escaped. A mutant whose signal no seed artifact produces is kept as a
+/// further seed, so the seed set grows with the surface the session explores rather than staying
+/// the retained corpus.
+/// </para>
+/// <para>
+/// <b>What that is not.</b> It is not edge coverage. Nothing here observes a branch, a basic block
+/// or a line: two mutants that take different paths to the same published answer are one signal to
+/// this session, and a defect on a path that answers like its neighbour is invisible to the
+/// guidance. The signal is as fine as the profile's own diagnostic vocabulary and no finer, which
+/// is a real bound and is stated wherever the sessions are cited. Decision JSD-0013 records why
+/// this granularity was chosen over instrumenting the profile, and the ledger's JS-9 row and
+/// JSC-38 record that this file's sessions were once called coverage-guided when they took no
+/// feedback at all.
 /// </para>
 /// <para>
 /// <b>It finds nothing by itself.</b> What it produces when it does find something is the valuable
@@ -302,6 +385,121 @@ internal static class Fuzzing
     /// shapes, and a session checks it on every shape the mutator reaches.
     /// </remarks>
     private const ulong AllocationBytesPerArtifactByte = 64;
+
+    /// <summary>How many artifacts the seed pool may hold before it stops growing.</summary>
+    /// <remarks>
+    /// Bounded rather than open, and the bound is about determinism as much as about memory: an
+    /// unbounded pool makes a long session's draw distribution a function of how many answers it
+    /// happened to discover, so two sessions of different lengths over the same seed would explore
+    /// differently for reasons neither could state. The figure is a stated ceiling and not a
+    /// measurement - the retained corpus is sixty-six entries and this profile publishes forty
+    /// diagnostic codes, so a pool that reaches it has kept more distinct answers than the
+    /// vocabulary has members and the mutator is drawing from findings rather than from seeds.
+    /// </remarks>
+    private const int PoolCeiling = 512;
+
+    /// <summary>
+    /// What a mutant reached, as this session can observe it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The published answer is the signal.</b> A diagnostic code names the site that refused, so
+    /// two mutants carrying different codes reached different arms of the verifier; an exhaustion
+    /// carries no code and names a dimension instead, which is the same claim about the budget
+    /// arms; a mutant that ran carries what the executor did with it, which is the only signal the
+    /// second surface produces at all; and an escaped exception carries its type, which is a
+    /// finding rather than a signal but must never be folded into its neighbours.
+    /// </para>
+    /// <para>
+    /// <b>The reason is in the key beside the code and is not redundant.</b> A code is this
+    /// profile's, a reason is the core's, and the pair is what a corpus entry records - so a
+    /// session whose guidance keyed on the code alone would treat a miscategorised refusal as
+    /// something it had already seen.
+    /// </para>
+    /// <para>
+    /// <b>What the key cannot see</b> is two paths to one answer. That is the bound on the whole
+    /// mechanism and it is stated here rather than left to a reader: this is guidance by published
+    /// answer, and it is not edge coverage.
+    /// </para>
+    /// </remarks>
+    internal static string Coverage(FuzzObservation observation) =>
+        observation.Escaped
+            ? "escaped:" + observation.EscapedTypeName
+            : observation.Outcome switch
+            {
+                VmOutcome.InvalidArtifact =>
+                    $"refused:{observation.Reason}:{observation.DiagnosticCode}",
+                VmOutcome.ResourceExhaustion => "exhausted:" + observation.ExhaustedDimension,
+                VmOutcome.Normal => "ran:" + observation.ExecutionStep,
+                _ => "answered:" + observation.Outcome,
+            };
+
+    /// <summary>
+    /// Whether the guidance loop keeps a new answer and refuses a repeat.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>This is the claim, and the growth figure is not.</b> Whether a session's seed set grows
+    /// depends on the corpus it starts from: one that already reaches every answer the mutator can
+    /// reach makes an honest session keep nothing, and a check that failed on that would fail
+    /// harder the better the corpus got. What a session can always be held to is the mechanism -
+    /// a new answer is kept, a repeat is not, and the count of offers is the count of mutants.
+    /// </para>
+    /// <para>
+    /// Run twice: once at the start of every session, before the session reports any guidance
+    /// figure, and once as a named check of this composition, so a publish that never fuzzes still
+    /// carries it.
+    /// </para>
+    /// </remarks>
+    internal static (bool Wired, string Detail) GuidanceLoopIsWired()
+    {
+        byte[] first = [1];
+        byte[] second = [2];
+        byte[] third = [3];
+
+        var pool = new SeedPool([first], PoolCeiling);
+        pool.Prime("probe:already-reached");
+
+        var kept = pool.Consider(second, "probe:new");
+        var repeated = pool.Consider(third, "probe:new");
+        var primed = pool.Consider(third, "probe:already-reached");
+
+        if (!kept)
+        {
+            return (false, "an answer nothing had reached was not kept");
+        }
+
+        if (repeated)
+        {
+            return (false, "an answer already reached was kept a second time");
+        }
+
+        if (primed)
+        {
+            return (false, "an answer the corpus already reaches was kept as new");
+        }
+
+        if (pool.Artifacts.Count != 2 || !ReferenceEquals(pool.Artifacts[1], second))
+        {
+            return (false, $"the pool holds {pool.Artifacts.Count} artifacts and the kept one is not among them");
+        }
+
+        return pool.Considered == 3 && pool.Kept == 1
+            ? (true, "a new answer is kept, a repeat is not, and every offer is counted")
+            : (false, $"{pool.Considered} offers and {pool.Kept} kept, expected 3 and 1");
+    }
+
+    /// <summary>The host an iteration runs under: the unconstrained one, or one that declines.</summary>
+    /// <remarks>
+    /// Three iterations in four are unconstrained and the fourth rotates through the seven tight
+    /// vectors, so every dimension is reached about once in twenty-eight iterations. The rotation
+    /// is by iteration index and draws nothing from the mutator's stream, which keeps a session a
+    /// total function of its seed and its seed corpus.
+    /// </remarks>
+    private static VmLimitVector Host(int iteration) =>
+        iteration % 4 == 3
+            ? TightVectors[iteration / 4 % TightVectors.Length].Ceilings
+            : VmLimitVector.Unconstrained;
 
     internal static int Run(string directory, ulong seed, int iterations, bool verbose)
     {
@@ -329,16 +527,48 @@ internal static class Fuzzing
         var histogram = new Dictionary<string, int>(StringComparer.Ordinal);
         var verified = 0;
 
+        // The loop proves itself BEFORE the session reports anything about it. A session's growth
+        // figure is a fact about the corpus as much as about the mutator, so it cannot be what
+        // fails; this can, and it is what a negative control breaks.
+        var (wired, detail) = GuidanceLoopIsWired();
+
+        if (!wired)
+        {
+            Console.WriteLine("broiler-js-fuzz: the guidance loop is not wired: " + detail);
+            return 5;
+        }
+
+        // The pool OPENS as the retained corpus and grows; it is primed with everything the
+        // retained corpus reaches under every host this session uses, so "new" means new against
+        // the corpus rather than new since the last iteration. Priming costs one observation per
+        // entry per host - about two per cent of a full session - and without it the first mutant
+        // of every session would be kept for reaching what the corpus reaches on its own.
+        var pool = new SeedPool(corpus, PoolCeiling);
+
+        foreach (var artifact in corpus)
+        {
+            pool.Prime(Coverage(Observe(artifact)));
+
+            foreach (var host in TightVectors)
+            {
+                pool.Prime(Coverage(Observe(artifact, host.Ceilings)));
+            }
+        }
+
         for (var iteration = 0; iteration < iterations; iteration++)
         {
-            var input = mutator.Next(corpus);
+            var input = mutator.Next(pool.Artifacts);
 
-            // Every fourth iteration runs under a HOST THAT DECLINES. With unconstrained ceilings
-            // a resource exhaustion is unreachable, so three of the five outcomes the invariants
-            // admit would never be produced and the clauses about them would be quantifiers over
-            // nothing. The tight vector is not a measurement and is not tuned: it is small enough
-            // that most artifacts breach something and large enough that some do not.
-            var observation = Observe(input, tight: iteration % 4 == 3);
+            // Every fourth iteration runs under a HOST THAT DECLINES, and which of the seven it is
+            // rotates. With unconstrained ceilings a resource exhaustion is unreachable, so three
+            // of the five outcomes the invariants admit would never be produced and the clauses
+            // about them would be quantifiers over nothing. One vector per dimension rather than
+            // one vector tightening four: a session whose hosts declined on four dimensions could
+            // never reach the arms of the other three, and the dimension a mutant provokes is only
+            // attributable when the host tightened one thing. No vector here is a measurement and
+            // none is tuned.
+            var observation = Observe(input, Host(iteration));
+
             // A verified mutant's key carries what the EXECUTOR did with it. The verifier's answer
             // for an admitted artifact is always Normal, so a histogram keyed on that alone would
             // report the whole executor surface as one bucket - and the executor is half of what
@@ -351,6 +581,10 @@ internal static class Fuzzing
 
             histogram[key] = histogram.GetValueOrDefault(key) + 1;
             verified += observation.Outcome == VmOutcome.Normal ? 1 : 0;
+
+            // THE FEEDBACK LOOP. Every mutant is offered; one whose published answer nothing has
+            // produced before is kept, so the next draw can reach past it.
+            pool.Consider(input, Coverage(observation));
 
             var violations = Violations(observation, input.Length);
 
@@ -397,6 +631,17 @@ internal static class Fuzzing
             Console.WriteLine($"  {pair.Key}: {pair.Value}");
         }
 
+        // The guidance figures, reported and NOT judged. How much a session grows its seed set is
+        // a fact about the corpus as much as about the mutator: a corpus that already reaches
+        // everything the mutator reaches makes an honest session keep nothing, and a rule that
+        // failed on that would punish the corpus for being good. What is judged is two lines
+        // below, and it is whether the loop ran at all.
+        Console.WriteLine(
+            $"broiler-js-fuzz: guidance - {pool.Baseline} answers reached by the {corpus.Length} " +
+            $"seed artifacts, {pool.Answers} by the end of the session, {pool.Kept} mutants kept " +
+            $"as further seeds, pool {corpus.Length} -> {pool.Artifacts.Count} " +
+            $"(ceiling {PoolCeiling}). Guidance is by PUBLISHED ANSWER and is not edge coverage.");
+
         // A session whose mutants all answered the same way exercised one path, and reporting it as
         // success would let a broken mutator read as twenty thousand clean iterations. The same
         // argument applies to the executor surface: if nothing verified, nothing was executed, and
@@ -417,6 +662,21 @@ internal static class Fuzzing
                 "The session covers the verifier alone and may not be read as covering both.");
 
             return 4;
+        }
+
+        // And the clause that makes the adjective earn itself. A session may not call itself
+        // guided unless every mutant it drew was offered to the pool: a loop with the offer
+        // deleted would keep drawing from the retained corpus, report the same histogram, and be
+        // seeded mutation under another name - which is the thing JSC-38 corrected this file for
+        // claiming not to be, and which nothing in a session's output would otherwise show.
+        if (pool.Considered != iterations)
+        {
+            Console.WriteLine(
+                $"broiler-js-fuzz: {pool.Considered} of {iterations} mutants were offered to the " +
+                "seed pool, so the session took feedback from some of what it drew and not all. " +
+                "It may not be read as guided.");
+
+            return 5;
         }
 
         Console.WriteLine(
@@ -515,10 +775,16 @@ internal static class Fuzzing
         return violations;
     }
 
-    /// <summary>Verifies one input, and executes it if it verified.</summary>
-    private static FuzzObservation Observe(byte[] input, bool tight = false)
+    /// <summary>Verifies one input under a stated host, and executes it if it verified.</summary>
+    /// <remarks>
+    /// The dimension is read only where the answer is an exhaustion. The field is present on every
+    /// outcome and carries the first member of the enumeration where nothing was exhausted, so
+    /// recording it unconditionally would put <c>Fuel</c> in the coverage signal of every refusal
+    /// this profile makes - a value that looks like an observation and is not one.
+    /// </remarks>
+    private static FuzzObservation Observe(byte[] input, VmLimitVector? host = null)
     {
-        var context = new RecordingContext(tight ? TightCeilings : VmLimitVector.Unconstrained);
+        var context = new RecordingContext(host ?? VmLimitVector.Unconstrained);
         var descriptor = Hosts.Descriptor("default");
 
         try
@@ -536,13 +802,16 @@ internal static class Fuzzing
                 Escaped: false,
                 EscapedTypeName: string.Empty,
                 context.Recorder.Total(VmBudgetDimension.AllocatedBytes),
-                step);
+                step,
+                outcome.Category == VmOutcome.ResourceExhaustion
+                    ? outcome.ExhaustedDimension.ToString()
+                    : "-");
         }
         catch (Exception failure)
         {
             return new FuzzObservation(
                 VmOutcome.Normal, VmReason.None, 0, false, true, failure.GetType().FullName!,
-                context.Recorder.Total(VmBudgetDimension.AllocatedBytes), "-");
+                context.Recorder.Total(VmBudgetDimension.AllocatedBytes), "-", "-");
         }
     }
 
@@ -662,27 +931,54 @@ internal static class Fuzzing
     }
 
     /// <summary>
-    /// A host that declines: small ceilings on the four dimensions a verification can breach.
+    /// The hosts that decline: one per dimension a verification of this profile can exhaust, each
+    /// tightening that dimension and nothing else.
     /// </summary>
     /// <remarks>
-    /// Stated rather than derived, and deliberately not the profile's declared defaults: what this
-    /// exists to reach is the resource path, and a vector copied from the defaults would only
-    /// reach it for artifacts the defaults already refuse.
+    /// <para>
+    /// Stated rather than derived, and deliberately not the profile's declared defaults: what
+    /// these exist to reach is the resource path, and a vector copied from the defaults would only
+    /// reach it for artifacts the defaults already refuse. None of the seven figures is a
+    /// measurement.
+    /// </para>
+    /// <para>
+    /// <b>One dimension per vector, and the earlier revision tightened four in one.</b> A session
+    /// whose only declining host tightened four dimensions could never reach the arms of the other
+    /// three - and, worse, could not attribute what it did reach: an artifact refused under a
+    /// vector that tightened four things says nothing about which of the four the verifier
+    /// answered on, which is exactly the confusion that let the retained sessions be read as
+    /// covering dimensions their histogram never recorded.
+    /// </para>
+    /// <para>
+    /// <b>These vectors go to the verifier directly and not through a runtime</b>, which is why
+    /// the artifact-bytes row can be here at all: through a runtime the core answers that
+    /// dimension one call before the verifier is entered, so the reader's own arm for it is
+    /// reachable only from here and from the ordering assertions.
+    /// </para>
     /// </remarks>
-    private static VmLimitVector TightCeilings { get; } = Tighten();
+    private static (VmBudgetDimension Dimension, VmLimitVector Ceilings)[] TightVectors { get; } =
+        BuildTightVectors();
 
-    private static VmLimitVector Tighten()
+    private static (VmBudgetDimension, VmLimitVector)[] BuildTightVectors() =>
+    [
+        Tighten(VmBudgetDimension.ArtifactBytes, 96),
+        Tighten(VmBudgetDimension.SectionCount, 4),
+        Tighten(VmBudgetDimension.DeclaredCount, 8),
+        Tighten(VmBudgetDimension.StructuralDepth, 0),
+        Tighten(VmBudgetDimension.AllocatedBytes, 512),
+        Tighten(VmBudgetDimension.VerifierWork, 16),
+        Tighten(VmBudgetDimension.WallClock, 0),
+    ];
+
+    private static (VmBudgetDimension, VmLimitVector) Tighten(
+        VmBudgetDimension dimension, ulong value)
     {
         var values = new ulong[VmBudgetDimensions.Count];
         Array.Fill(values, ulong.MaxValue);
-
-        values[(int)VmBudgetDimension.ArtifactBytes] = 96;
-        values[(int)VmBudgetDimension.AllocatedBytes] = 512;
-        values[(int)VmBudgetDimension.DeclaredCount] = 8;
-        values[(int)VmBudgetDimension.SectionCount] = 4;
+        values[(int)dimension] = value;
 
         return VmLimitVector.TryCreate(values, out var vector)
-            ? vector
+            ? (dimension, vector)
             : throw new InvalidOperationException("the frozen dimension count moved");
     }
 
