@@ -3,7 +3,7 @@
   <PropertyGroup>
     <RootNamespace>Broiler.VM.Profile.JavaScript.Compiler</RootNamespace>
     <AssemblyName>Broiler.VM.Profile.JavaScript.Compiler</AssemblyName>
-    <Description>The JavaScript profile's lowering: tokenizer, syntax tree, static semantics and source-to-bytecode translation. A sibling of the profile, not a part of it. JS-0 project shell: no lowering is implemented yet.</Description>
+    <Description>The JavaScript profile's lowering: tokenizer, syntax tree, static semantics and source-to-bytecode translation. A sibling of the profile, not a part of it. At this milestone it carries a hand-written slice lowering and no tokenizer or static semantics; the status ledger is the authority for what exists.</Description>
 
     <!-- JS-0 declares no package; see the Format project for why. -->
     <IsPackable>false</IsPackable>

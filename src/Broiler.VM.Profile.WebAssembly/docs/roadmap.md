@@ -127,7 +127,7 @@ terms this component adds or narrows; where a term is the core's, that is said.
 | **A trap** | The specification's term for a runtime abort. In this component a trap is a typed profile payload behind a profile fault. It is never a process failure, never a CLR exception crossing the core boundary, and never a core outcome category. |
 | **DET / FUL** | The specification's *own* profiles: `DET` is its deterministic profile, `FUL` its full one. **This is a word collision with the core's "profile" and it is not resolvable by renaming either.** Wherever this document says *profile* unqualified it means the core's sense; the specification's sense is always written `DET` or `FUL`, or spelled out as "the specification's deterministic profile". [Section 6](#6-feature-manifests-how-the-language-surface-is-admitted) records that this component implements `DET`, and why that is a refinement rather than a subset. |
 | **The oracle** | The specification's own conformance test suite, pinned at an immutable revision, run by this component's own harness, whose self-check proves that a failing test comes back as a failure before any shard is scored. |
-| **The ratchet** | The first accepted per-assertion-family totals for a manifest. No later run of that manifest may regress against them. |
+| **The ratchet** | The first per-assertion-family totals **admitted** for a manifest by the milestone that scores it. No later run of that manifest may regress against them. *Admitted* is deliberately not the ledger's `Accepted` *(corrected: WAC-19)*. |
 | **Deployment composition** | The core's term. [Section 16](#16-deployment-compositions-native-aot-and-the-browser-embedding) records that this profile mints exactly one label, and why another profile's three do not transfer to it. |
 
 A release of this profile claims this profile: its accepted feature-manifest set, its accepted
@@ -181,10 +181,13 @@ core's byte primitives instead of calling the core's `TryReadVarUInt32`.
   what follows for the assembly graph. The format package that exists to keep a compiler and an
   executor from depending on each other has nothing to separate here, and creating one anyway
   would be an assembly created to shorten a file.
-- **The text format, in any product.** The specification's text format exists in this component
-  only as a **test-only** ingestion path, because the conformance corpus is distributed as scripts
-  written in it. A scan asserts it appears in no product package and in no published closure. Its
-  absence from the product is the point; its presence in the harness is unavoidable.
+- **The text format, in any advertised composition.** The specification's text format exists in
+  this component only as an ingestion path for the conformance corpus, which is distributed as
+  scripts written in it. A scan asserts it appears in no package and in **no advertised
+  composition's** closure — not in "no published closure", because
+  [section 5](#5-package-boundaries-and-the-dependency-graph) puts the harness in a root that
+  publishes one of its own *(corrected: WAC-22)*. Its absence from the shipped image is the point;
+  its presence in the harness is unavoidable.
 - **A second execution arm.** This profile has one interpreter. It emits no IL, builds no
   expression tree, compiles no delegate, and contains no tiering path into dynamic code. There is
   no bytecode-to-IL promotion, no deoptimization, and no on-stack replacement, because there is no
@@ -573,9 +576,9 @@ commit.
 |---|---|
 | The core's three packable assemblies | **Referenced as packages**, exactly two of them by the profile: the abstractions and the binary primitives. Never vendored, never copied, never sourced from a project reference across component boundaries. |
 | The specification document | **Pinned by dated revision, retrieved, hashed, and archived.** Retrieving and archiving a third-party document is a *human* action; until someone performs it, the pin is provisional and carries a named exclusion in the ledger. WA-0 records the intended revision; WA-2 records the one actually taken. |
-| The conformance test suite | **Pinned by immutable commit** and ingested by a **test-only** path. It is Apache-2.0 licensed material entering this repository, so [section 4.4](#44-licence-attribution-and-one-notice-that-must-change) applies to it. No file of it is referenced by a product project, and a scan asserts it appears in no published closure. |
-| A text-format reader for the suite's scripts | **Written here, test-only.** The suite is distributed as scripts in the specification's text format, so something must read them. It is this component's code, it lives in the harness, and it is subject to the same no-product-reference rule as the corpus it reads. It is not a WebAssembly text-format implementation and does not claim to be one: it reads what the suite actually contains. |
-| A binary encoder | **Written here, test-only.** The malformed corpus is generated, and generating a malformed module means being able to emit a well-formed one first. It exists to produce corpus entries and nothing else, and a scan asserts it is in no product closure. Its absence from the product is what keeps "no compiler" true. |
+| The conformance test suite | **Pinned by immutable commit** and read at run time from a directory rather than compiled into anything. It is Apache-2.0 licensed material entering this repository, so [section 4.4](#44-licence-attribution-and-one-notice-that-must-change) applies to it. No file of it is an item of any project, and a scan asserts none appears in any published closure. |
+| A text-format reader for the suite's scripts | **Written here, and never in an advertised composition.** The suite is distributed as scripts in the specification's text format, so something must read them. It is this component's code, it is subject to the same absent-from-the-advertised-closure rule as the corpus it reads, and [section 5](#5-package-boundaries-and-the-dependency-graph) fixes which project it may live in — which is **not** a test project *(corrected: WAC-22)*. It is not a WebAssembly text-format implementation and does not claim to be one: it reads what the suite actually contains. |
+| A binary encoder | **Written here, and never in an advertised composition.** The malformed corpus is generated, and generating a malformed module means being able to emit a well-formed one first. It exists to produce corpus entries and nothing else, and a scan asserts it is in no advertised closure. Its absence from the product is what keeps "no compiler" true. |
 | Everything else | **Written here.** Decoder, validator, store, linker, interpreter, payloads, descriptor, host adapter, harness, corpus, fuzz targets, measurement lane. |
 
 ### 4.4 Licence, attribution, and one notice that must change
@@ -623,24 +626,59 @@ file; each must enforce a dependency, AOT, deployment, ownership, test, or packa
 **The pivot argument does not transfer, and this is the section where that shows.** The core's
 placement rule for a profile puts the format in its own assembly because a compiler and an
 executor must agree on the bytecode and neither may depend on the other. This profile has no
-compiler. Its format is the W3C binary format, its only encoder is test-only, and its only decoder
-is inside the verifier. There is therefore nothing for a format assembly to hold apart, and
-creating one would be creating an assembly to shorten a file. **The default here is one product
+compiler. Its format is the W3C binary format, its only encoder lives in a harness root, and its
+only decoder is inside the verifier. There is therefore nothing for a format assembly to hold
+apart, and creating one would be creating an assembly to shorten a file. **The default here is one product
 assembly**, and a split needs a justification that names the boundary it enforces.
 
 | Logical boundary | Candidate assembly | Responsibility and dependency rule |
 |---|---|---|
 | Profile | `Broiler.VM.Profile.WebAssembly` | Descriptor, decoder, validator, verified module, store and instance model, linker, interpreter, host imports, payload projections. References exactly the two core assemblies and nothing else Broiler-owned. |
 | Composition root | `Broiler.VM.Composition.WebAssembly.Execution` | The one named deployment composition, under `src/compositions/`. The only project that knows which profiles and capabilities an image contains. **Not under the `Broiler.VM.Profile.` prefix**: the rule forbidding a profile project from referencing the runtime identifies a profile assembly by that prefix, so a composition root named under it would be a profile assembly to that rule — and referencing the runtime is exactly what a composition root must do. The rule bounding where a profile assembly may be referenced *from* is keyed on the path `src/compositions/` rather than on the name, so it is satisfied by where this root sits whatever it is called, and it is the runtime rule and not that one that the name would break *(corrected: WAC-09)*. Non-packable unless the composition register advertises it. |
-| Test-only | conformance host, script reader, corpus store and encoder, fuzz host, soak host, bench host | Never referenced by a product project and never present in a published closure. |
+| Harness roots | `Broiler.VM.Composition.WebAssembly.Harness*` | The conformance host, the script reader, the corpus store and encoder, the fuzz host, the soak host and the bench host. **These are composition roots and not test projects, and that is forced rather than chosen** — see below. Never advertised, never packable, and never cited as evidence for the execution composition's closure. |
+| Test-only | whatever judges a harness root's output rather than producing it | Never referenced by a product project and never present in a published closure. The corpus manifest's reader, the merge, and the audit command are this row; the code that drives the profile is the row above. |
 
 ```text
 Broiler.VM.Abstractions               ──→ (nothing)
 Broiler.VM.Binary                     ──→ (nothing)
 …Profile.WebAssembly                  ──→ Abstractions + Binary
-…Composition.WebAssembly.Execution    ──→ Broiler.VM.Runtime + the profile
-conformance / corpus / fuzz hosts     ──→ the profile  (never referenced by any product project)
+…Composition.WebAssembly.Execution    ──→ Broiler.VM.Runtime + the profile  (advertised)
+…Composition.WebAssembly.Harness*     ──→ Broiler.VM.Runtime + the profile  (never advertised)
 ```
+
+### The harness cannot be a test project, and the rule that says so is active today
+
+**This is the section's one structural finding, and it is written here because a plan that placed
+the harness in `src/tests/` would be illegal on the first build rather than on review.** The core's
+rule A11 forbids any project outside `src/compositions/` from referencing a
+`Broiler.VM.Profile.*` assembly, and its allow-list is a path rather than a name. A conformance
+host, a fuzz host, a soak host and a corpus writer all have to drive **this profile's own**
+verifier and executor, so all four would violate it.
+
+The core's own fuzz and soak hosts sit under `src/tests/` only because they drive the *fixture*
+profile, which A11 exempts by name; nothing in that exemption reaches a product profile. And the
+sibling profile family met the same wall from a different direction and resolved it the same way,
+which is a fact about the rule rather than about that family: **a describer that loads a profile
+assembly needs the reference A11 forbids** *(corrected: WAC-13)*, and so does anything that runs
+one.
+
+Three consequences, and each is a WA-0 gate clause rather than a note:
+
+- **The harness roots are composition roots**, under `src/compositions/`, named so that the
+  runtime rule A8 does not fire on them *(corrected: WAC-09)*. WA-0 records how many there are and
+  what each contains.
+- **"Test-only" is replaced by "never advertised", and the scan changes with it.** A harness root
+  publishes a closure of its own, so a scan asserting the script reader "appears in no published
+  closure" would be asserting something false about the root that contains it. What the scan
+  asserts instead is that the script reader, the corpus store, the encoder and every suite file
+  appear in **no advertised composition's** closure and in **no package** — which is the property
+  that was ever worth having, and which the composition register holds by naming which roots are
+  advertised. The negative control adds a reference to the script reader **from the execution
+  root** and observes the scan fail.
+- **A corpus this profile retains is written by a root that publishes**, for the reason the sibling
+  family records against its own corpus: a corpus a test project produced would be a corpus the
+  product path never exercised. What stays test-only is the tooling that *judges* a run rather than
+  produces it.
 
 The rules the verified graph must retain, whatever the names become:
 
@@ -660,8 +698,10 @@ The rules the verified graph must retain, whatever the names become:
   browser image are composed by a composition root; they are not linked to each other, and
   [section 17](#17-the-cross-profile-boundary-the-javascript-api-for-webassembly) depends on that
   staying true;
-- no product project references a test project, a fixture, a corpus, or a conformance host, and no
-  product project references the text-format reader or the binary encoder;
+- no project references a test project, a fixture, or a conformance host, and **no advertised
+  composition root reaches the text-format reader, the corpus store, or the binary encoder** —
+  which is the clause the harness's placement above turns from a project-level rule into a
+  root-level one, and which the negative control injects against *(corrected: WAC-22)*;
 - every namespace matches its assembly;
 - there is no aggregate profile-listing type anywhere. One would reference every profile assembly
   and defeat the exact-closure reports the composition depends on; and
@@ -1052,6 +1092,7 @@ What the decision must state, in both directions — what it buys and what it co
 | Frames and labels | Frame ownership, label representation for structured control flow, the native cost of one interpreter frame, and how that cost fixes the `CallDepth` default. |
 | Trap propagation | How a trap leaves an instruction, unwinds frames, and becomes a payload, expressed explicitly rather than as an exception the dispatch loop happens to catch. [Section 12](#12-traps-exhaustion-and-why-neither-is-a-process-failure) is the whole treatment. |
 | Metering | Where every `Poll()` and every charge sits in the loop, and against which dimension. A representation that makes charging awkward is a representation with a hidden cost. |
+| **What a `LiveBytes` breach does to an operation** | The row this decision would otherwise leave homeless, and the one the amendment in [section 20](#20-amendments-and-this-profiles-duty-as-the-counterweight) decides the shape of. A linear memory is retained state, `LiveBytes` is ceiling-class, and [section 3](#3-what-the-core-already-gives-this-profile-and-what-it-refuses) records that a ceiling-class dimension cannot carry a guest-observable refusal — while [section 12](#12-traps-exhaustion-and-why-neither-is-a-process-failure) requires a refused `memory.grow` to be exactly that. So the decision states, in both directions, whether an aggregate `LiveBytes` breach may terminate an operation at all, and what a guest observes when it does. **It is not separable from the memory representation** — a representation that cannot answer it is a representation this row rejects — which is why it sits here rather than beside it *(corrected: WAC-23)*. |
 
 Each row carries correctness fixtures and Native AOT representation probes retained beside it. **A
 representation is not accepted because it looks compact**, and it is not accepted on a JIT
@@ -1101,6 +1142,14 @@ place for a flat charge to hide:
 **An operation family without a proportionality fixture does not ship in the increment**, and
 `memory.fill` over a large memory is the canonical negative control: a flat charge passes a
 functional test and fails this one.
+
+**A fixture arrives with its instructions and not before, and the gates say which milestone owns
+which.** The list above is the whole set this profile will ever charge proportionally, not a set
+any one milestone can retain fixtures for: `memory.grow` is reachable at WA-5, segment
+initialisation at WA-7, the bulk-memory and table families at WA-8, and `array.*` at the manifest
+that admits it. So `memory.fill` is the canonical control **of the milestone that ships it**, and a
+gate that demanded it earlier would be a gate demanding a fixture for an instruction the
+interpreter cannot execute *(corrected: WAC-21)*.
 
 ---
 
@@ -1516,11 +1565,15 @@ that matters most, at a point where there is nothing to run.
 - **A pinned suite revision, resolved once.** An immutable commit, resolved before any shard
   starts, cached under a key containing it, and verified by re-reading the checked-out revision. A
   branch name is not a pin.
-- **The ingestion path is test-only and is asserted to be.** The suite is distributed as scripts in
-  the specification's text format. Reading them means a text-format reader, and that reader is the
-  single largest piece of code in this component that must never appear in a product. A scan
-  asserts it is absent from every product package and every published closure, and a negative
-  control adds a reference to it and observes the scan fail.
+- **The ingestion path is never advertised, and that is asserted rather than assumed.** The suite
+  is distributed as scripts in the specification's text format. Reading them means a text-format
+  reader, and that reader is the single largest piece of code in this component that must never
+  appear in a shipped image. It lives in a harness root rather than a test project, because a test
+  project may not reference a profile assembly
+  ([section 5](#5-package-boundaries-and-the-dependency-graph)), so what a scan asserts is that it
+  is absent from every package and from **every advertised composition's** closure, and the
+  negative control adds a reference to it **from the execution root** and observes the scan fail
+  *(corrected: WAC-22)*.
 - **Script semantics are implemented, not approximated.** The script language has module
   definitions in text and in binary form, registration of an instance under a name, actions that
   invoke an export or read a global, and assertions over each failure family. **Registration and
@@ -1568,11 +1621,15 @@ that matters most, at a point where there is nothing to run.
 - **The harness has its own regression suite**, run before any shard starts, with the crash
   classifier tested against recorded output. A measurement tool nobody tests is a measurement
   nobody can read.
-- **The ratchet.** The first accepted per-family totals for a manifest are the floor. No later run
-  of that manifest regresses against them. **The floor records the pinned suite
-  revision it was set under.** A suite-revision change re-bases the floor from the first accepted
-  run on the new revision, with the old floor and the reason retained; a floor is never compared
-  across revisions, because a suite that added tests would otherwise read as a regression and a
+- **The ratchet.** The first per-family totals **admitted for a manifest by the milestone that
+  scores it** are the floor. No later run of that manifest regresses against them. *Admitted* is deliberately not the ledger's `Accepted`,
+  which additionally needs a reviewer decision nothing in this component has: WA-4's own exit gate
+  sets the ratchet for the two families it scores, so a ratchet that could only be set by an
+  accepted milestone would be a ratchet nothing could ever set, and a floor is a measurement
+  discipline rather than a status *(corrected: WAC-19)*. **The floor records the pinned suite
+  revision it was set under.** A suite-revision change re-bases the floor from the first run
+  admitted on the new revision, with the old floor and the reason retained; a floor is never
+  compared across revisions, because a suite that added tests would otherwise read as a regression and a
   suite that removed them would silently lower the bar. This is the same discipline both the
   diagnostic registry and the corpus already apply to their own pinned revisions.
 - **The effective limit vector is published with every run.** A conformance total obtained under
@@ -1596,6 +1653,13 @@ so there is only one answer:
 | Label | Contains at run time | What its Native AOT gate proves |
 |---|---|---|
 | `execution-only` | Decoder, validator, store, linker, interpreter, host adapter | That the accepted manifest set verifies and executes under Native AOT on every claimed RID |
+
+**One label is not one root.** [Section 5](#5-package-boundaries-and-the-dependency-graph) puts the
+harness in composition roots of its own, because the rules forbid a test project to reference a
+profile assembly — and a harness root **claims no label at all**. A label is a claim about when
+source is compiled, and it is made by the composition register naming a root as advertised; a root
+that is never advertised makes none, publishes for its own evidence, and is cited as evidence for
+nothing else *(corrected: WAC-22)*.
 
 The three-label pattern a language with a compiler needs does not transfer, and inventing a second
 label here would be inventing a distinction this component cannot demonstrate. If a future

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <RootNamespace>Broiler.VM.Profile.JavaScript.Format</RootNamespace>
     <AssemblyName>Broiler.VM.Profile.JavaScript.Format</AssemblyName>
-    <Description>The JavaScript profile's bytecode format: opcodes, schema, encoder, decoder and the format-version range. JS-0 project shell: no format is defined yet.</Description>
+    <Description>The JavaScript profile's bytecode format: opcodes, schema, encoder, decoder and the format-version range. Format version 1 is defined; the status ledger is the authority for what it admits.</Description>
 
     <!-- JS-0 declares no package. The JavaScript profile's packaging decision is JS-10's and
          the status ledger records that nothing here is packable, so ADR 0001's packable set

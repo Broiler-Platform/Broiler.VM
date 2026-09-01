@@ -91,6 +91,11 @@ Ordered by the roadmap section they land in, so this file can be read beside the
 | [WAC-16](#wac-16) | roadmap §20; delivery §21, §27; gates §24, §25 | The one opened amendment gets a holder, an unblock condition, and a fallback that is WA-10's release decision rather than WA-5's | [WAC-03](#wac-03); gates §25's own stop condition |
 | [WAC-17](#wac-17) | roadmap §20; delivery §21, §27; gates §24 | The amendment register answers nothing at release, but its **state** is published there rather than inferred | gate 1; roadmap §20's unexecutable procedure |
 | [WAC-18](#wac-18) | delivery §21, §27; gates §24 | The support table names the declared-default vector's reconciliation as unowned, rather than publishing the vector and stopping | ledger section 3; gate 1 |
+| [WAC-19](#wac-19) | roadmap §1, §15 | The ratchet is the first **admitted** totals, not the first *accepted* ones — which nothing could ever have set | WA-4's own exit gate; the ledger's status vocabulary |
+| [WAC-20](#wac-20) | delivery §27 | The budget declaration matrix is WA-1's, not WA-0's; the map named an owner two other places contradicted | roadmap §3; WA-0's action list |
+| [WAC-21](#wac-21) | roadmap §9; delivery §21 | WA-5's proportionality clause is scoped to the families it ships; its named control was an instruction WA-8 introduces | roadmap §6's manifest allocation |
+| [WAC-22](#wac-22) | roadmap §1, §4.3, §5, §15; delivery §21; gates §23, §24, §25 | The harness cannot be a test project: rule A11 forbids one to reference a profile, so it is a never-advertised composition root and the scan changes with it | rule A11; [WAC-13](#wac-13) |
+| [WAC-23](#wac-23) | roadmap §9; delivery §21; gates §23, §25 | The `LiveBytes`-breach question the ledger had open becomes a ninth row of the entry-gate decision | ledger's WA-5 row; the map's blank-cell rule |
 
 ### WAC-01
 
@@ -557,6 +562,150 @@ would own it does not exist and has no owner.
 whose cross-profile row records that no component composing two profiles exists or is planned, read
 against [gate 1](roadmap.gates.md#24-release-gates)'s rule that no row reads as a bare yes;
 2026-09-01.
+
+### WAC-19
+
+**Where:** roadmap [section 1](roadmap.md#1-terminology-and-support-claims), the ratchet row, and
+[section 15](roadmap.md#15-the-conformance-oracle).
+
+**What the plan said.** That the ratchet is "the first **accepted** per-assertion-family totals for
+a manifest", and that a suite-revision change re-bases the floor "from the first accepted run on
+the new revision".
+
+**What replaced it.** *Admitted by the milestone that scores it*, not *accepted*. The two words
+name different things in this programme and the ledger defines the second: `Accepted` additionally
+requires an owner and a reviewer decision, which nothing in this component has and which no
+milestone can grant itself. **The plan already required a ratchet before any of that could exist**
+— WA-4's own exit gate says its run "sets the ratchet for those two families and for no
+others" — so the earlier wording made the floor unsettable by the milestone the plan tells to set it, and
+every later "unregressed against its ratchet" clause would have been comparing against nothing. A
+floor is a measurement discipline, not a status.
+
+**What it does not change.** The floor still records the pinned suite revision it was set under, is
+never compared across revisions, and re-bases from the first run admitted on a new one. Only the
+word that gates it moved.
+
+**Authority and date.** WA-4's own exit gate read against
+[the ledger's status vocabulary](roadmap.status.md#status-vocabulary); 2026-09-01.
+
+### WAC-20
+
+**Where:** delivery [section 27](roadmap.delivery.md#27-the-chapter-milestone-and-gate-map), the
+chapter-3 row.
+
+**What the plan said.** That chapter 3 is delivered by "WA-0 (the two vectors **and the matrix**);
+WA-1 (the descriptor)".
+
+**What replaced it.** WA-0 delivers the two vectors; **WA-1 delivers the budget declaration
+matrix**, in the descriptor that carries it. Roadmap
+[section 3](roadmap.md#3-what-the-core-already-gives-this-profile-and-what-it-refuses) has always
+said "the intended matrix, which WA-1 fixes", and WA-0's next-action list never mentioned a matrix
+— so the map named an owner two other places contradicted, and a reader planning WA-0 from the map
+would have scoped a decision into it that its own gate could not close.
+
+**Why it read that way.** The row is the shape a sibling profile's map row has, where the matrix
+genuinely is the boundary milestone's because that profile fixes it in the same dated record as its
+two limit vectors. The shape transferred; the ownership did not.
+
+**Authority and date.** Roadmap section 3 and WA-0's own action list, read against the map's
+blank-cell rule; 2026-09-01.
+
+### WAC-21
+
+**Where:** roadmap [section 9](roadmap.md#9-the-value-store-and-frame-model), the proportional
+charging subsection; delivery [section 21](roadmap.delivery.md#21-milestones), WA-5's exit gate.
+
+**What the plan said.** That WA-5's gate is met when "a proportionality fixture exists for each
+named operation family of section 9", with "`memory.fill` over a large memory" as the named
+negative control that a flat charge fails.
+
+**What replaced it.** A fixture for each named family **that the milestone ships**, which at WA-5
+is `memory.grow` and nothing else — and `memory.grow` over a large delta as WA-5's negative
+control. Section 9's family list is the whole set this profile will ever charge proportionally, and
+most of it is unreachable at WA-5: the bulk-memory and table families arrive at WA-8, segment
+initialisation at WA-7, and `array.*` at the manifest that admits it. **As written the clause was
+unsatisfiable**, and its named control was an instruction the WA-5 interpreter cannot execute — so
+a milestone reading its own gate literally would have had to widen its manifest to close it, which
+is the move [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted) exists
+to forbid.
+
+**What it does not change.** The rule itself is untouched: an operation family without a
+proportionality fixture does not ship in the increment. What moved is which increment each family
+belongs to, which the plan now states rather than leaving to a reader to infer from the manifest
+table.
+
+**Authority and date.** WA-5's own scope statement read against
+[section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s manifest
+allocation, which puts bulk memory in `core2`; 2026-09-01.
+
+### WAC-22
+
+**Where:** roadmap [section 1](roadmap.md#1-terminology-and-support-claims) non-goals,
+[section 4.3](roadmap.md#43-what-is-acquired-rather-than-written),
+[section 5](roadmap.md#5-package-boundaries-and-the-dependency-graph) and
+[section 15](roadmap.md#15-the-conformance-oracle); delivery
+[section 21](roadmap.delivery.md#21-milestones), WA-0, WA-1 and WA-4; gates
+[section 23](roadmap.gates.md#23-test-and-evidence-matrix),
+[section 24](roadmap.gates.md#24-release-gates) and
+[section 25](roadmap.gates.md#25-risks-and-stop-conditions).
+
+**What the plan said.** That the conformance host, the script reader, the corpus store, the binary
+encoder, the fuzz host, the soak host and the bench host are **test-only projects**, "never
+referenced by a product project and never present in a published closure", with a scan asserting
+exactly that and a negative control adding "a product reference".
+
+**What replaced it.** They are **composition roots that are never advertised**, under
+`src/compositions/`, and the scan is over every package and every *advertised* composition's
+closure rather than over "every published closure".
+
+**Why the earlier reading could not have been built.** The host component's rule A11 is active
+today and forbids any project outside `src/compositions/` from referencing a
+`Broiler.VM.Profile.*` assembly. Every one of those hosts has to drive **this profile's own**
+verifier and executor. The core's fuzz and soak hosts sit under `src/tests/` only because they
+drive the *fixture* profile, which A11 exempts by name, and nothing in that exemption reaches a
+product profile. So the whole harness plan named a project shape the first build would refuse —
+and the correction is not cosmetic, because the scan clause changes with the placement: a harness
+root publishes a closure of its own, so an assertion that the script reader appears in "no
+published closure" would fail on the very root that must contain it, and would then be relaxed
+into meaninglessness by whoever met it.
+
+**What it does not change.** The property that was ever worth having: no shipped image contains a
+text-format reader, an encoder, or a suite file. What changed is the boundary that carries it —
+from *project kind* to *advertised or not*, which the composition register already records — and
+that the negative control now injects **from the execution root**, which is the direction that
+would actually ship.
+
+**One consequence worth stating rather than leaving to be discovered.** A corpus this profile
+retains is therefore written by a root that publishes, which is the shape a sibling profile records
+against its own corpus for an independent reason: a corpus a test project produced would be a
+corpus the product path never exercised. The two arguments arrive at the same place.
+
+**Authority and date.** Rule A11's registered statement and its path-keyed allow-list, read against
+[WAC-13](#wac-13), which had already recorded the same collision for the API baseline without
+generalising it; 2026-09-01.
+
+### WAC-23
+
+**Where:** roadmap [section 9](roadmap.md#9-the-value-store-and-frame-model), the decision table;
+delivery [section 21](roadmap.delivery.md#21-milestones), WA-5; gates
+[section 23](roadmap.gates.md#23-test-and-evidence-matrix) and
+[section 25](roadmap.gates.md#25-risks-and-stop-conditions).
+
+**What the plan said.** That the WA-5 entry-gate decision has eight rows, none of them about
+`LiveBytes`. [Section 3](roadmap.md#3-what-the-core-already-gives-this-profile-and-what-it-refuses)
+separately observed that the metering latch "makes the aggregate `LiveBytes` case worse rather than
+better", and the ledger's WA-5 row recorded a second decision as open beside the ABI — **whether
+an aggregate `LiveBytes` breach may terminate an operation** — with no row, no gate clause and no map
+cell anywhere in the plan.
+
+**What replaced it.** A ninth row of the entry-gate decision, and a WA-5 exit-gate clause that asks
+for its answer to be exercised by a named case per arm. A decision the ledger calls open and the
+plan gives no home to is a decision that gets taken by whoever writes the memory representation,
+which is the failure mode a gate on entry exists to prevent — and it is **not separable** from the
+representation, since a representation that cannot express the answer is one this row rejects.
+
+**Authority and date.** [The ledger's WA-5 row](roadmap.status.md#2-current-milestone-status), read
+against the map's blank-cell rule; 2026-09-01.
 
 ---
 

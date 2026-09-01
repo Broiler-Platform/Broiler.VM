@@ -3,7 +3,7 @@
   <PropertyGroup>
     <RootNamespace>Broiler.VM.Profile.JavaScript</RootNamespace>
     <AssemblyName>Broiler.VM.Profile.JavaScript</AssemblyName>
-    <Description>The Broiler.VM JavaScript language profile: descriptor, verifier, executor, value and object model, standard library, host imports and payload projections. JS-0 project shell: no profile behaviour is implemented yet.</Description>
+    <Description>The Broiler.VM JavaScript language profile: descriptor, verifier, executor, value and object model, standard library, host imports and payload projections. At this milestone it implements one feature manifest, broiler.javascript.slice, which is deliberately not JavaScript anyone would ship; the status ledger is the authority for what exists.</Description>
 
     <!-- JS-0 declares no package; see the Format project for why. -->
     <IsPackable>false</IsPackable>

@@ -279,7 +279,15 @@ answered by whichever of the two ran late.
   regression tests run before any shard starts; **no aggregate percentage is published, then or
   ever**; the effective limit vector each run was obtained under is published with its totals,
   because a total obtained under generous ceilings is not the total a product with tight ones would
-  get; **the ingested suite's attribution row is landed in the host component's notice in the same
+  get; **the language-specification edition is pinned by immutable revision identifier, retrieved,
+  hashed and archived, and the pin actually taken is recorded — or the exclusion naming it
+  provisional is carried in the ledger with its holder and its unblock condition**, which is the
+  clause [section 24](roadmap.gates.md#24-specification-and-platform-references) and
+  [section 3 of the ledger](roadmap.status.md#3-open-external-dependencies) both put on this
+  milestone and which this gate did not previously carry *(corrected: JSC-36)*: no manifest may be
+  accepted against an unpinned edition, this is the first milestone that scores one, and a pin
+  nobody can fail a gate over is a pin nobody takes;
+  **the ingested suite's attribution row is landed in the host component's notice in the same
   change that first ingests a suite file, modified files are marked as changed, and the core's
   standing third-party claim is re-confirmed against what the ingestion adds to the tree or amended,
   with the release owner co-signing** —
@@ -394,7 +402,10 @@ answered by whichever of the two ran late.
   than terminating the process**, on every claimed RID under Native AOT; a deliberately
   non-polling variant completes as a profile fault with the poll-bound reason and the runtime
   poisoned to accept only disposal; **a proportionality fixture exists for each named operation
-  family of [section 8](roadmap.md#8-the-value-frame-and-call-model)**, each with an unsimplified
+  family of [section 8](roadmap.md#8-the-value-frame-and-call-model) *that this increment ships***
+  — which is not all of them, because regular-expression matching arrives with the matcher at JS-6
+  and the string and array families arrive with the library, and each family's fixture arrives with
+  its operations *(corrected: JSC-36)* — each with an unsimplified
   control, each showing fuel charged as a monotone non-decreasing function of input magnitude and
   at least the declared ceiling, with the declared function and granularity recorded — and an
   operation family without a fixture does not ship in the increment; a deliberately non-charging
@@ -636,9 +647,16 @@ surfaces that do not exist may not be read as covering them *(corrected: JSC-23)
   A/A difference is reported **below resolution**, not as a result; the baseline register and the
   retained log agree in both directions on both lanes, asserted by a rule; the support table names
   the core contract version **implemented** and the minimum **accepted** as two separate integers,
-  plus the accepted format-version range, the accepted manifest set, and the conformance manifest
-  identity and version, uses a vocabulary that never reads as a bare yes, gives every row an
-  evidence cell naming a rule or a retained artifact, names a deterministic failure or an
+  plus the accepted format-version range, the accepted manifest set, **the pinned
+  language-specification edition and the pinned suite revision by immutable identifier**, and the
+  conformance manifest identity and version; **it publishes the list of surfaces this profile
+  declares varying rather than fixed**, per
+  [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted), because a
+  determinism claim broader than that list is an untruthful support claim and the list is what
+  bounds it — both of these being clauses
+  [release gate 1](roadmap.gates.md#22-release-gates) has always asked for and this gate did not
+  carry *(corrected: JSC-36)*; it uses a vocabulary that never reads as a bare yes, gives every
+  row an evidence cell naming a rule or a retained artifact, names a deterministic failure or an
   exclusion for every unimplemented capability — **the `WebAssembly` host-object surface among
   them**, named rather than left to be inferred, because a browser image containing this profile
   beside another one is exactly where a reader will assume the namespace works — distinguishes
@@ -654,7 +672,13 @@ surfaces that do not exist may not be read as covering them *(corrected: JSC-23)
   previous package set runs unchanged; the release gate refuses on each of its conditions, naming
   each blocker by its declaration, with a negative control proving the generator cannot invent a
   reviewer; a named human decision exists on **every** relevant unit before the first publish;
-  every suppression is inventoried with an owner and a reachability argument; **the amendment
+  every suppression is inventoried with an owner and a reachability argument; **the operational
+  holders [release gate 13](roadmap.gates.md#22-release-gates) asks for are each named —
+  diagnostics, cancellation, rollback, format-version rejection, corpus and suite-revision drift,
+  vulnerability response, and recertification** — with a vacant one recorded vacant rather than
+  passed to whoever is available, which is the clause
+  [the map](#25-the-chapter-milestone-and-gate-map) has always said this milestone closes and which
+  this gate did not carry *(corrected: JSC-36)*; **the amendment
   register's state is published, row by row, with the deterministic failure or named exclusion each
   held row leaves standing and with the procedure's unexecutability stated** — asserted by a rule
   that fails when a row of
@@ -795,16 +819,16 @@ gate with no owning milestone is a gate nobody can close.
 | 2 Engineering invariants | every milestone; each invariant is asserted by the milestone that could first violate it | all rows | 3, 4 | several |
 | 3 What the core gives and refuses | JS-0 (the two vectors and the matrix); JS-1 (the descriptor half of the two-profile test); JS-8 (its `eval`-refusal half); JS-10 publishes the defaults as the neighbour-facing half and names the reconciliation unowned | Identity and registration; Composed-profile safety | 1, 2 | declared defaults reaching a neighbour |
 | 4 The seed | JS-2 | Front end; Licence and attribution | 12 | the seed becomes a dependency |
-| 5 Package boundaries and the graph | JS-0; JS-10 records the extraction-gate state, which no earlier milestone can, and no verdict | Dependency architecture | 2 | placement assumed rather than decided; the extraction gate unanswered |
+| 5 Package boundaries and the graph | JS-0; **JS-1 and JS-9 fill the composition roots with the evidence-producing code a test project may not hold**; JS-10 records the extraction-gate state, which no earlier milestone can, and no verdict | Dependency architecture | 2 | placement assumed rather than decided; the extraction gate unanswered |
 | 6 Feature manifests | JS-0 allocates; JS-1 mints the first; each increment extends | Identity and registration; Conformance | 1, 9 | the manifest set drifts upward |
-| 7 The format and the verifier | JS-1 builds it; JS-9 attacks it | Format and verifier safety | 3 | a check migrates into first execution |
+| 7 The format and the verifier | JS-1 builds it; JS-9 attacks it and **owes the exhaustion entries the registry's binding cannot reach** | Format and verifier safety | 3 | a check migrates into first execution; a ceiling breach recorded as an invalid artifact |
 | 8 The value, frame, and call model | JS-4 (the ABI); JS-5 (the measured numbers and the charging) | Value model and storage; Executor and lifecycle; Measurement | 4, 10 | a late value-representation decision; unproportional charging |
 | 9 The front end and the lowering | JS-2 (ingest); JS-3b (the stage, the boundary, the lowering) | Front end | 3 | a nesting case terminating the process |
 | 10 Execution on the core lifecycle | JS-1 (the loop end to end); JS-5 (the executor) | Executor and lifecycle | 4 | — |
 | 11 Guest-initiated loads | JS-8 | Guest loads and policy | 5 | — |
 | 12 Suspension | JS-7 | Suspension | 4 | — |
 | 13 Realms, agents, and the host boundary | JS-5 (binding and translation); JS-9 (agents under one parent) | Host boundary | 6 | a shared parent read as isolation; mutable optimization state reachable from a shared handle |
-| 14 The conformance oracle | JS-3a, which also lands the ingested suite's attribution | Conformance; Licence and attribution | 9, 12 | the oracle reports a failure as a pass; an aggregate percentage |
+| 14 The conformance oracle | JS-3a, which also lands the ingested suite's attribution **and pins the language-specification edition** | Conformance; Licence and attribution | 9, 12 | the oracle reports a failure as a pass; an aggregate percentage; a manifest scored against an unpinned edition |
 | 15 Compositions, Native AOT, the browser | JS-1, JS-3b and JS-8 build them; JS-10 advertises one | Native AOT | 7 | a publish cited for another kind; an implied `WebAssembly` namespace |
 | 16 Persistence and the code cache | **no milestone delivers it**, by decision; JS-8 carries the exclusion clause and JS-10 measures the reopening trigger | Format and verifier safety | 3 | a second verifier, or a build-time shortcut past the one |
 | 17 Measurement discipline | JS-10 stands up the lane; JS-4 produces the first figure it governs and fixes the repetition count | Measurement | 10 | — |
@@ -841,6 +865,19 @@ the gaps it was built to find:
   the map doing its job rather than a defect in it: the family's frozen public surface, which two
   milestones own as an exit clause and which no evidence area tested and no release gate blocked
   on; and the operations gate below.
+- **A later reading found four more of the same shape, and they are folded back too**
+  *(corrected: JSC-36)*. Three were clauses a release gate asks for that no milestone's exit gate
+  closed: **the pinned specification edition**, which
+  [section 24](roadmap.gates.md#24-specification-and-platform-references) and the ledger both put
+  on JS-3a while JS-3a's gate named only the suite; and **the varying-surface list** and **the
+  operational holders**, both of which gate 1 and gate 13 require and which JS-10's gate did not
+  mention even while the bullet below said JS-10 names them. The fourth was a gate that could not
+  be met as written: **JS-5's proportionality clause**, which demanded a fixture for every family
+  [section 8](roadmap.md#8-the-value-frame-and-call-model) names, including ones whose operations
+  arrive at JS-6. **The pattern in all four is the same and worth naming**: a clause stated in the
+  argument or the release gates, agreed by the map, and never written into the exit gate that would
+  have to fail without it — which is the one failure mode a map read in only one direction cannot
+  catch.
 - **One release gate is owned by no chapter, and the map is how that was found.** Gate 13 asks that
   the holders of diagnostics, cancellation, rollback, format-version rejection, corpus and
   suite-revision drift, **vulnerability response**, and recertification each be named. No chapter
