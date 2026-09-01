@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap — corrections and rejections
 
-**Last updated:** 2026-08-31
+**Last updated:** 2026-09-01
 
 **This file is part of the [Broiler.VM.Profile.JavaScript roadmap](roadmap.md)**, which
 [names every file](roadmap.md#how-this-roadmap-is-split). It carries no numbered section of the
@@ -49,7 +49,7 @@ record rather than a short one:
 | **What replaced it** | The reading the roadmap now carries. |
 | **Authority and date** | The decision record, core ADR, evidence bundle, or ledger row that settles it, and the date it was settled. **An entry with no authority outside this file is not a correction; it is an opinion**, and does not belong here. |
 
-Three rules govern the set:
+Four rules govern the set:
 
 - **The roadmap never carries a correction inline.** Where the settled statement is enough, the
   roadmap states it and says nothing about what it replaced. Where a reader of that section would
@@ -71,7 +71,8 @@ Three rules govern the set:
 
 ## 2. Corrections
 
-Ordered by the roadmap section they land in, so this file can be read beside the plan. Every
+Minted in the order the readings were replaced, and indexed below by the roadmap section each
+lands in, so this file can be read beside the plan either way. Every
 entry below is dated **2026-08-31** — the day JS-0, JS-1, JS-3a and JS-9 landed together with the
 decision records that settle them — except where a row says otherwise. **A single date is a fact
 about this programme's history, not a filing convention**: the plan was written before any of it
@@ -98,7 +99,7 @@ existed and met its first implementation all at once.
 | [JSC-17](#jsc-17) | delivery §19 | JS-6 is re-scoped from a copy to a rewrite, before it starts | [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md) |
 | [JSC-18](#jsc-18) | gates §17 | No declared repetition count was fixed at JS-1; the obligation moves to the milestone that first measures | ledger section 2; bundle JS-1-001 |
 | [JSC-19](#jsc-19) | gates §23 | One risk narrowed, one stop condition fired and honoured, one discharged in part — three different states | [JSD-0005](decisions/0005-the-seed-waited-on-set-and-snapshot-stop-condition.md), [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md), ADR 0007 |
-| [JSC-20](#jsc-20) | roadmap header; delivery §19 | The plan stopped transcribing counts and inventories that the ledger already holds | ledger update rule 10 |
+| [JSC-20](#jsc-20) | roadmap header; delivery §19; ledger header and closing summary | The plan stopped transcribing counts and inventories that the ledger already holds | ledger update rule 10 |
 | [JSC-21](#jsc-21) | placement, throughout | This profile is product projects inside `Broiler.VM`, and mechanisms the plan assumed it would own are adopted from the host component | [JSD-0001](decisions/0001-placement-identity-and-assembly-topology.md), [JSD-0006](decisions/0006-assurance-evidence-and-rules-adoption.md) |
 | [JSC-22](#jsc-22) | roadmap §6 | The list of deliberately underspecified surfaces is per manifest; the slice answered two of the five in code and published no list | the shipped slice surface, against [JSD-0002](decisions/0002-feature-manifest-allocation.md) |
 | [JSC-23](#jsc-23) | delivery §19, §20 | JS-9 opens against JS-1 and closes after JS-8; the delivery order drew only its closing edge | ledger section 2, row JS-9 |
@@ -221,7 +222,7 @@ this profile's half is [JSD-0001](decisions/0001-placement-identity-and-assembly
 ### JSC-06
 
 **Where:** roadmap [section 5](roadmap.md#5-package-boundaries-and-the-dependency-graph),
-the candidate-assembly table.
+the assembly table.
 
 **What the plan said.** Composition roots are named `Broiler.VM.Profile.JavaScript.Composition.*`.
 
@@ -299,9 +300,13 @@ anything.
 **What was actually true.** JS-1 observed **one** ordering, and it was a different one. No bundle
 claimed the discipline and no bundle named its absence, so it was **silently missing rather than
 wrongly claimed** — which is the harder failure to notice, because an exclusion list is where a
-reader looks for what a bundle did not show. Bundle JS-1-002 lands the three assertions and the
-ledger records the discrepancy rather than letting the original bundle stand as if it had covered
-them.
+reader looks for what a bundle did not show.
+
+**What replaced it.** The section now says the quantifier out loud: **all three** orderings are
+asserted mechanically for **every** corpus entry including every failing one, and a bundle that
+observes one of the three has not demonstrated the discipline. Bundle JS-1-002 lands the three
+assertions, and the ledger records the discrepancy rather than letting the original bundle stand
+as if it had covered them.
 
 **Why this is a correction and not a defect report.** The plan did not change. What changed is the
 record of what the plan had been shown to hold, which is exactly the distinction the ledger's
@@ -332,7 +337,7 @@ falsify it.
 **What it did not settle.** No fixtures and no Native AOT representation probes are retained,
 because seven of the eight rows have nothing to exercise until JS-4 and JS-5 exist; the gate that
 requires them is JS-4's. **A taken entry gate is not a started milestone**, and JS-4 depends on
-JS-2, which is blocked.
+JS-2.
 
 **Authority and date.** [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md), 2026-08-31.
 The consequence for JS-6 is [JSC-17](#jsc-17); the consequence for the stop condition is
@@ -541,8 +546,10 @@ sentence read as a settled fact about a number that does not exist — the exact
 sentence itself names.
 
 **What replaced it.** The obligation stands and its owner moves to the milestone that first
-produces a figure. **No measurement lane exists**, no baseline is taken, and section 17's rules
-bind the first bundle that publishes a figure rather than describing a discipline already in force.
+produces a figure — JS-4, whose gate demands a retained figure per value kind under section 17's
+rules by name. Those rules bind the first bundle that publishes a figure rather than describing a
+discipline already in force, and the ledger is where a reader learns whether any bundle yet carries
+one.
 
 **Authority and date.** Bundle JS-1-001 and ledger section 2, read against the sentence,
 2026-08-31.
@@ -551,8 +558,12 @@ bind the first bundle that publishes a figure rather than describing a disciplin
 
 **Where:** gates [section 23](roadmap.gates.md#23-risks-and-stop-conditions).
 
-Three rows moved on the same day, and each moved differently. The distinction matters, because a
-risk that has been *narrowed* and one whose stop condition has *fired* are not the same state.
+**What the plan said.** Three risk rows stood in one undifferentiated state, each read as a risk
+still wholly ahead of the component.
+
+**What replaced it.** Each of the three now says which way it moved, because a risk that has been
+*narrowed* and one whose stop condition has *fired* are not the same state and a register that
+records them alike teaches nothing.
 
 **Narrowed — the two-profile declaration row.** The maxima half is retired with the core's clamp
 ([JSC-01](#jsc-01)). What remains is the defaults half, which is real: a neighbour's zero default
@@ -567,9 +578,9 @@ recorded, because a risk register that deletes the rows that fired teaches nothi
 
 **Discharged in part — the stall row.** The waited-on set is itemised per open item with a stated
 reason, and a snapshot-as-is date and commit-count budget are recorded with a named owner
-([JSC-03](#jsc-03), [JSC-04](#jsc-04)). What is **not** discharged is the row's other half: JS-2
-remains blocked on a core contract nobody has accepted, and lack of scheduling is still not a
-blocker while an unaccepted contract is.
+([JSC-03](#jsc-03), [JSC-04](#jsc-04)). What is **not** discharged is the row's other half, the
+core-acceptance blocker, which the ledger carries with its holder and its unblock condition — lack
+of scheduling is still not a blocker while an unaccepted contract is.
 
 **Authority and date.** ADR 0007 and the core's clamp removal;
 [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md);
@@ -577,8 +588,8 @@ blocker while an unaccepted contract is.
 
 ### JSC-20
 
-**Where:** the roadmap header, and delivery [section 19](roadmap.delivery.md#19-milestones)'s
-opening notes.
+**Where:** the roadmap header, delivery [section 19](roadmap.delivery.md#19-milestones)'s opening
+notes, and the [ledger](roadmap.status.md)'s own header and closing summary.
 
 **What the plan said.** The roadmap's opening paragraph carried its own inventory of what exists —
 a milestone-state sentence, a count of decision records, a list of artefacts — transcribed from the
@@ -686,8 +697,8 @@ whose gate closes late is not a milestone that starts late**, and drawing only t
 how a schedulable milestone gets read as blocked — which is the same defect the JS-3 split
 corrected ([JSC-15](#jsc-15)), in a milestone nobody had looked at twice.
 
-**Authority and date.** The ledger's JS-9 row, which records the milestone in progress with three
-retained bundles while JS-2 and JS-3b through JS-8 have none, 2026-08-31.
+**Authority and date.** The ledger's JS-9 row, read against the delivery order's single closing
+edge, 2026-08-31.
 
 ### JSC-24
 
@@ -749,7 +760,7 @@ format version 1 carries.
 interning, so a name is interned once per program rather than at each use", and exception regions
 carried while suspension targets were separately described as merely *reserved*.
 
-**What replaced it, in three parts.**
+**What replaced it.** In three parts.
 
 **A section was missing.** Version 1 frames a section of **named program entries and their code
 offsets**, which is the whole of the entry-point answer ([JSC-11](#jsc-11)) and the reason an
@@ -847,16 +858,16 @@ than that and corrected for their own reasons:
 - **Nested instantiation through the mediator.** *Not needed* — a plain absence of need rather than
   a refusal: its language has no instruction that asks for code while running.
 - **Streaming or incremental verification.** *Wanted eventually, needed by nobody yet* — not a
-  decline, but enough to make a grade of "strong: general" an overstatement. Both profiles want it
-  and neither has the measurement that would open it.
+  decline, and not a reason to move the grade: both profiles want it, which is the counterweight
+  test passing, and neither has the measurement that would open it.
 
-**Why this is mostly a correction and not a re-grading.** Nine of the ten grades are unchanged;
-what changed is that a column promising the other profile's position now carries it, and a
-counterweight column that silently omits a decline is the failure mode the counterweight exists to
-prevent. **One grade did move and is recorded rather than slipped in**: streaming keeps its
-*strong: general* standing from [JSD-0007](decisions/0007-cross-profile-position-and-amendment-grading.md),
-and what the row gains is the other profile's urgency — wanted, and needed by nobody yet — which
-bears on when it is filed and not on how general it is.
+**Why this is a correction and not a re-grading.** **All ten grades are unchanged**; what changed
+is that a column promising the other profile's position now carries it, and a counterweight column
+that silently omits a decline is the failure mode the counterweight exists to prevent. Streaming
+keeps its *strong: general* standing from
+[JSD-0007](decisions/0007-cross-profile-position-and-amendment-grading.md), and what the row gains
+is the other profile's urgency — wanted, and needed by nobody yet — which bears on when it is
+filed and not on how general it is.
 
 **Authority and date.** The other intended profile's own roadmap, read against this table,
 2026-08-31.

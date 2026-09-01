@@ -14,10 +14,12 @@ milestone below said before implementation replaced it.
 
 ## 19. Milestones
 
-**This section is the authority for what is *planned* and for nothing else.** What has moved, what
-each retained bundle demonstrates, and which exit-gate clauses are open are the
-[ledger](roadmap.status.md)'s, and no milestone below restates them: each names its ledger row and
-stops there.
+**This section is the authority for what is *planned* and for nothing else.** What has moved and
+what each retained bundle demonstrates are the [ledger](roadmap.status.md)'s, and no milestone
+below restates them: each names its ledger row and stops there. **Which milestone a clause belongs
+to is this section's**, so a gate saying a clause is carried to a later milestone is a plan
+statement and not a status one — what the ledger holds is whether that clause has since been
+closed by evidence.
 
 The milestone set is JS-0, JS-1, JS-2, **JS-3a and JS-3b**, then JS-4 through JS-10 — twelve rows,
 because what was one JS-3 is two, split by dependency rather than by size for the reason
@@ -104,9 +106,12 @@ machine has **recorded** a RID, and a support table that has not been issued has
   no byte — and a negative control proves it refuses to write a reviewer identifier no source
   line carries; the release-mode gate names each blocking declaration individually rather than
   counting them; the evidence-collection script exists and this milestone's own bundle was
-  produced by it; the snapshot identity schema is recorded and **a second checkout re-derives the
-  same identity from the record**; and the licence and notice carry the Apache-2.0 text, the
-  upstream derivation, and the marking of modified files.
+  produced by it; and the snapshot identity schema is recorded with **a second checkout re-deriving
+  the same identity from the record**. The licence and notice are not on this list: the files are
+  the host component's, and the row this profile lands in them carries an upstream derivation that
+  does not exist until a tree is copied, so
+  [section 4.5](roadmap.md#45-licence-attribution-and-one-notice-that-must-change) puts it at JS-2
+  and JS-2's gate closes it.
 - **Seed:** Nothing is copied. Every mechanism here is this component's own code.
 
 ### JS-1 — Close the whole contract loop on the smallest JavaScript that is still JavaScript
@@ -124,9 +129,10 @@ machine has **recorded** a RID, and a support table that has not been issued has
   sibling. Stand up **two composition roots differing by exactly one reference, the lowering** —
   one that names the profile and not the compiler and therefore cannot turn source into an artifact
   however it is invoked, and one that names both and writes the retained corpus — each with a
-  closure self-report mode, and **neither claiming a composition label**, because
-  `narrow-runtime-compiler` belongs to a composition lowering a named restricted *source* surface
-  and there is none until JS-3b. Decide
+  closure self-report mode. **The missing reference is the whole of the execution-only root's
+  label**; the compiler-bearing root beside it claims none, because `narrow-runtime-compiler`
+  belongs to a composition lowering a named restricted *source* surface and there is none until
+  JS-3b. Decide
   and record the entry-point answer from
   [section 10](roadmap.md#10-execution-mapping-javascript-onto-the-core-lifecycle).
 - **Dependencies:** JS-0. Deliberately **not** the copy, not a parser, and not core acceptance:
@@ -179,10 +185,11 @@ machine has **recorded** a RID, and a support table that has not been issued has
   every copied unit as ported.
 - **Dependencies:** JS-1, plus **one external gate: the core contract accepted**, which this
   component does not hold and which the ledger records as a named blocker with its holder and its
-  unblock condition. Three things this milestone once waited on were taken at JS-0 and no longer
-  gate it: the per-item ruling of
+  unblock condition. Three things this milestone does not wait on, because JS-0 took them: the
+  per-item ruling of
   [section 4.2](roadmap.md#42-what-after-the-fix-work-lands-can-and-cannot-mean), its stop
-  condition, and the nullable and unsafe positions the seed forces. **Taken is not applied**:
+  condition, and the nullable and unsafe positions the seed forces
+  *(corrected: JSC-03, JSC-04)*. **Taken is not applied**:
   enabling nullable on the copied files, confining `AllowUnsafeBlocks` to the lowering project, and
   adding the rule that asserts that distribution are all this milestone's work.
 - **Objective exit gate:** The snapshot identity is recorded recursively and re-derivable; **the
@@ -265,7 +272,7 @@ answered by whichever of the two ran late.
   regression tests run before any shard starts; **no aggregate percentage is published, then or
   ever**; the effective limit vector each run was obtained under is published with its totals,
   because a total obtained under generous ceilings is not the total a product with tight ones would
-  get; and a scan asserts the suite ingestion path, the corpus store, and every suite file appear in
+  get; and a scan asserts the suite ingestion path, its cache, and every suite file appear in
   no product package and no closure report, with a negative control that adds a product reference to
   the ingestion path and observes the scan fail.
 - **Seed:** Nothing is copied. Every mechanism here is this component's own code, and **no total,
@@ -346,8 +353,8 @@ answered by whichever of the two ran late.
   its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** Implement the interpreter over the ABI. Implement abrupt completion so
   `finally` runs on every applicable exit including a host exception crossing profile frames.
-  Place every poll and every charge. Measure native frame cost per interpreter frame on each
-  claimed RID and derive the `CallDepth` default from it. Choose the uncharged-work bound, the
+  Place every poll and every charge. Measure the per-frame cost on each claimed RID and derive the
+  `CallDepth` default from it *(corrected: JSC-27)*. Choose the uncharged-work bound, the
   charging granularity, and the cancellation poll bound from measurement. Catch every internal
   exception at this profile's own adapter. Run the vertical-slice loop until the first executable
   increment of `broiler.javascript.core` is complete.
@@ -518,7 +525,12 @@ value's representation — and the milestone keeps its place in the order; what 
   such, and nested exhaustion and cancellation each proved **uncatchable from guest code** with
   bounded unwinding; a mediator used past its invocation is refused; a nested handle presented to
   a second runtime is refused **before** identity comparison and no member hands one to the host;
-  the malformed corpus is **replayed through the nested path**; and each of the three compositions
+  the malformed corpus is **replayed through the nested path**; **the `eval`-refusal half of JS-0's
+  two-profile catalog test closes here**, by a case that composes this profile beside a neighbour
+  which writes a zero into a guest-load *default*, adopts defaults rather than stating ceilings,
+  and observes `eval` refused with a resource exhaustion naming the dimension — this is the first
+  milestone with an `eval` to refuse, which is why JS-0 carried the clause rather than fabricating
+  a descriptor for it; and each of the three compositions
   publishes and runs on every claimed RID with warnings as errors, the execution-only closure
   containing no lowering and each runtime-compiler closure containing one, with no publish cited
   as evidence for another kind.
@@ -742,25 +754,25 @@ gate with no owning milestone is a gate nobody can close.
 |---|---|---|---|---|
 | 1 Terminology and support claims | JS-0 fixes the identity; JS-10 issues the table | Identity and registration | 1 | untruthful published claim |
 | 2 Engineering invariants | every milestone; each invariant is asserted by the milestone that could first violate it | all rows | 3, 4 | several |
-| 3 What the core gives and refuses | JS-0 (the two vectors and the matrix); JS-1 (the descriptor) | Identity and registration; Composed-profile safety | 2 | declared defaults reaching a neighbour |
+| 3 What the core gives and refuses | JS-0 (the two vectors and the matrix); JS-1 (the descriptor half of the two-profile test); JS-8 (its `eval`-refusal half) | Identity and registration; Composed-profile safety | 2 | declared defaults reaching a neighbour |
 | 4 The seed | JS-2 | Front end; Licence and attribution | 12 | the seed becomes a dependency |
-| 5 Package boundaries and the graph | JS-0 | Dependency architecture | 2 | placement assumed rather than decided |
+| 5 Package boundaries and the graph | JS-0 | Dependency architecture | 2 | placement assumed rather than decided; the extraction gate unanswered |
 | 6 Feature manifests | JS-0 allocates; JS-1 mints the first; each increment extends | Identity and registration; Conformance | 1, 9 | the manifest set drifts upward |
 | 7 The format and the verifier | JS-1 builds it; JS-9 attacks it | Format and verifier safety | 3 | a check migrates into first execution |
 | 8 The value, frame, and call model | JS-4 (the ABI); JS-5 (the measured numbers and the charging) | Value model and storage; Executor and lifecycle; Measurement | 4, 10 | a late value-representation decision; unproportional charging |
 | 9 The front end and the lowering | JS-2 (ingest); JS-3b (the stage, the boundary, the lowering) | Front end | 3 | a nesting case terminating the process |
-| 10 Execution on the core lifecycle | JS-1 (the loop end to end); JS-5 (the executor) | Executor and lifecycle | 4 | a language fault reported as a core category |
-| 11 Guest-initiated loads | JS-8 | Guest loads and policy | 5 | a byte source other than the mediator |
-| 12 Suspension | JS-7 | Suspension | 4 | a thread held across a pause |
-| 13 Realms, agents, and the host boundary | JS-5 (binding and translation); JS-9 (agents under one parent) | Host boundary | 6 | a shared parent read as isolation |
+| 10 Execution on the core lifecycle | JS-1 (the loop end to end); JS-5 (the executor) | Executor and lifecycle | 4 | — |
+| 11 Guest-initiated loads | JS-8 | Guest loads and policy | 5 | — |
+| 12 Suspension | JS-7 | Suspension | 4 | — |
+| 13 Realms, agents, and the host boundary | JS-5 (binding and translation); JS-9 (agents under one parent) | Host boundary | 6 | a shared parent read as isolation; mutable optimization state reachable from a shared handle |
 | 14 The conformance oracle | JS-3a | Conformance | 9 | the oracle reports a failure as a pass; an aggregate percentage |
 | 15 Compositions, Native AOT, the browser | JS-1, JS-3b and JS-8 build them; JS-10 advertises one | Native AOT | 7 | a publish cited for another kind; an implied `WebAssembly` namespace |
 | 16 Persistence and the code cache | **no milestone delivers it**, by decision; JS-8 carries the exclusion clause and JS-10 measures the reopening trigger | Format and verifier safety | 3 | a second verifier, or a build-time shortcut past the one |
-| 17 Measurement discipline | JS-10 stands up the lane; JS-5 produces the first figures it governs | Measurement | 10 | a figure without a control |
-| 18 Amendments | JS-0 grades them; **none is filed**, and none is admissible until it names a merged capability | — | — | a requirement with no core row |
+| 17 Measurement discipline | JS-10 stands up the lane; JS-4 produces the first figure it governs and fixes the repetition count | Measurement | 10 | — |
+| 18 Amendments | JS-0 grades them; **every row is filed and held** rather than scheduled, and none is admissible until it names a merged or approved capability | — | — | a requirement with no core row; the programme stalling on a precondition this component does not control |
 | — the standard library, which chapter 6's allocation admits rather than a chapter of its own | JS-6 | Standard library | 1, 9 | dynamic code hiding in the library |
-| — the assurance floor and the review debt, which are repository policy rather than this plan's argument | JS-0 adopts the host component's mechanism and records what adoption costs; JS-10 gates the release on it | Assurance and review | 11 | unreviewed units accumulating |
-| — packaging and consumers | JS-10 | Packaging and consumers | 8 | a package resolving a dependency from the internet |
+| — the assurance floor and the review debt, which are repository policy rather than this plan's argument | JS-0 adopts the host component's mechanism and records what adoption costs; JS-10 gates the release on it | Assurance and review | 11 | unreviewed units accumulating; owner and reviewer the same person |
+| — packaging and consumers | JS-10 | Packaging and consumers | 8 | — |
 | — operational ownership: diagnostics, cancellation, rollback, version rejection, corpus and suite drift, **vulnerability response**, recertification | JS-10 names every owner | Assurance and review | 13 | a role held by nobody |
 
 **What the map shows that no single file does.** The first four are deliberate; the last two are

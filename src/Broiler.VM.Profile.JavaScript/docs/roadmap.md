@@ -21,9 +21,12 @@ its own siblings, and nothing else Broiler-owned, and no core milestone waits fo
 **Where it lives.** This profile is a family of product projects **inside the `Broiler.VM`
 component**, at `src/Broiler.VM.Profile.JavaScript*`, and not a component with its own repository.
 Three mechanisms are therefore the host component's, adopted rather than duplicated — the assurance
-system, the architecture rule register (in which this profile holds a group of its own), and the
-licence and notice files — each recorded as a dated deviation in
-[JSD-0006](decisions/0006-assurance-evidence-and-rules-adoption.md). A fourth, the **public API
+system and the architecture rule register, in which this profile holds a group of its own, each
+recorded as a dated deviation in
+[JSD-0006](decisions/0006-assurance-evidence-and-rules-adoption.md), and the licence and notice
+files, which [JSD-0001](decisions/0001-placement-identity-and-assembly-topology.md) records as the
+host's and which no deviation covers, because adopting them costs this profile nothing.
+A fourth, the **public API
 baseline**, began there and is now this family's own: the host's describer cannot reach a profile
 assembly without a reference the architecture rules forbid, so this family has a baseline file and
 a rule of its own *(corrected: JSC-25)*. **What is not shared is
@@ -126,7 +129,7 @@ terms this component adds or narrows; where a term is the core's, that is said.
 | **The lowering** | Source-to-bytecode translation. It is a **sibling** of the executor, not a part of it: a composition that executes precompiled artifacts contains a format, a verifier, and an interpreter and no lowering at all. |
 | **Deployment composition** | The core's term. This component uses exactly three labels and mints no fourth: `execution-only`, `narrow-runtime-compiler`, `general-runtime-compiler`. They describe **when source is compiled, not how much of the language is supported.** |
 | **The oracle** | An external conformance suite pinned at an immutable revision, run by this component's own harness, whose self-check proves that a failing test comes back as a failure before any shard is scored. |
-| **The ratchet** | The first accepted per-host-mode totals for a manifest. No later run of that manifest may regress against it. |
+| **The ratchet** | The first per-host-mode totals admitted for a manifest by the milestone that scores it. No later run of that manifest may regress against it. |
 
 A release of this profile claims this profile: its accepted feature-manifest set, its accepted
 format-version range, the core contract version it is built against, the compositions it
@@ -324,8 +327,9 @@ against the structural consequences of the rest of the descriptor.
 **The intended matrix describes the profile this component is growing into; a descriptor describes
 what it is at the milestone that built it, and the two are not the same table.** The intended one
 is stated here rather than deferred to the first descriptor, because a matrix nobody wrote down is
-a matrix assembled from whatever made the catalog stop refusing. A later milestone may correct a
-row with a dated record; none may drift into one.
+a matrix assembled from whatever made the catalog stop refusing. **JS-0 fixes it**, in the same
+dated record that fixes the two limit vectors; a later milestone may correct a row with a dated
+record of its own, and none may drift into one *(corrected: JSC-02)*.
 
 | Dimension | Intended | What charges it |
 |---|---|---|
@@ -619,11 +623,12 @@ reference each other, and the lowering must be absent from an execution-only clo
 | Profile | `Broiler.VM.Profile.JavaScript` | Descriptor, verifier, executor, value and frame model, object model, standard library, host imports, payload projections. References the two core assemblies and the format. |
 | Lowering | `Broiler.VM.Profile.JavaScript.Compiler` | Tokenizer, syntax tree, static semantics, and source-to-bytecode lowering. A **sibling** of the profile, not a part of it. References the format; never referenced by the profile. |
 | Composition roots | `Broiler.VM.Composition.JavaScript.*` | One per named deployment composition. The only projects that know which profiles and capabilities an image contains. **Not under the `Broiler.VM.Profile.` prefix**: every architecture rule that identifies a profile assembly keys on that prefix, so a composition root under it would be a profile assembly to the rule that forbids a profile from referencing the runtime — which a composition root must do *(corrected: JSC-06)*. Non-packable unless the composition register advertises them. |
-| Test-only | conformance host, fuzz host, soak host, bench host | Never referenced by a product project and never present in a published closure. **The retained corpus is not in this row**: it is written by a composition root, which is a product project, because a corpus a test project produced would be a corpus the product path never exercised. What is test-only is the tooling that *judges* it. |
+| Test-only | conformance host, fuzz host, soak host, bench host | Never referenced by a product project and never present in a published closure. **The retained corpus is not in this row**: it is written by a composition root, which is neither a test project nor a fixture and whose published closure is the product path itself, because a corpus a test project produced would be a corpus the product path never exercised. What is test-only is the tooling that *judges* it. |
 
-Whether the profile is one assembly or several — a value and object model separated from the
-standard library, for instance — is settled for the profile assembly itself and stays open for
-nothing else: it is one assembly, and a later split needs a dated record of its own
+Whether the profile assembly itself later splits further — a value and object model separated from
+the standard library, for instance — is **deferred and not decided**: the single-assembly default
+holds until evidence argues otherwise, and a split needs both a dated record of its own and a
+revision of the core's topology record, because the assembly budget is the core's
 *(corrected: JSC-07)*.
 
 ```text
@@ -962,10 +967,10 @@ written over until they are**:
   Source with an early error never becomes an artifact, so its diagnostic never occupies the core's
   profile diagnostic code, never carries a byte offset within an artifact, and never crosses a core
   result envelope at all. The published registry therefore carries a `half` column: `core-result`,
-  or the embedder's own seam. **Every row is `core-result` today** — no `embedder-seam` code exists,
-  because the front end that would mint one is JS-3b's — and that is a fact about this milestone
-  rather than a simplification, stated so a reader does not read the empty half as an oversight
-  *(corrected: JSC-28)*.
+  or the embedder's own seam. **JS-3a records which half each code belongs to.** Every row is
+  `core-result` today — no `embedder-seam` code exists, because the front end that would mint one
+  is JS-3b's — and that is a fact about this milestone rather than a simplification, stated so a
+  reader does not read the empty half as an oversight *(corrected: JSC-28)*.
 - **Open: either the verifier re-derives every early error from artifact bytes, or it does not** —
   and if it does, the front-end contract that returns "a validated tree the lowering consumes" is
   doing work the verifier then repeats, which is a design this component may choose but not by
@@ -977,8 +982,9 @@ written over until they are**:
 
 JS-3b records the boundary and the doubly-bad artifact's answer, with a named case that **fails
 when the phases are fused**. Until it does, no gate may require an early error to map onto a *core
-invalid-artifact reason*: the mapping a gate can require is onto **one core reason**, which is what
-the registry binds and what an embedder-seam code will never carry.
+invalid-artifact* reason — that qualifier is what an embedder-seam code will never carry. What a
+gate can require of every code is the mapping onto **one core reason**, which is what
+the registry binds and what every row carries, seam half included.
 
 The static-semantic vocabulary the copied analysis already speaks is kept verbatim, because
 renaming it would be renaming the specification: `VarDeclaredNames`, `LexicallyDeclaredNames`,
@@ -1437,8 +1443,8 @@ What this roadmap does instead is fix the design so it stays reachable, at no co
   variants onto one entry, which is a correctness defect in the cache and not a tuning one. The
   tuple covers imports the artifact **binds**; registered-but-unimported capabilities are excluded,
   so an unrelated composition change does not invalidate every entry. **The core's record is the
-  authority for that set and this enumeration is checked against it rather than remembered**: three
-  earlier hand-written versions of it were each wrong in a different way *(corrected: JSC-13)*.
+  authority for that set and this enumeration is checked against it rather than remembered**
+  *(corrected: JSC-13)*.
 
   Three terms are deliberately **not** in it, each for a stated reason:
 
@@ -1501,15 +1507,15 @@ The counterweight answer is **not this profile's to write alone**. The core's pr
 every amendment record to state whether the other intended profile could use the capability, is
 unaffected, or refuses it — so a row graded here without knowing the other profile's grade is a row
 whose answer changes depending on which component files first. **Every row below names the other
-profile's position** — including the three rows it declines outright and the one it wants
-eventually and needs from nobody yet, which are the rows where the counterweight test fails and
-this profile is asking alone.
+profile's position**, including the three it declines outright and the one it wants eventually and
+needs from nobody yet. Two of those four are the counterweight test failing and this profile
+asking alone; the other two are weaker than that and are corrected for their own reasons.
 [JSD-0007](decisions/0007-cross-profile-position-and-amendment-grading.md) is the dated grading
 *(corrected: JSC-14, JSC-29)*.
 
 | Candidate | Why it might be needed | Counterweight |
 |---|---|---|
-| An argument channel on invocation | An invocation request carries one entry-point name and there is no typed way to pass values. For a caller-driven browser compile this is mild, because the adapter compiles a *program* and the lowering encodes the arguments into it. **It stops being mild the moment this profile hosts another one**: `instance.exports.f(a, b)` is a typed call whose arguments originate here, so [section 15](#15-deployment-compositions-native-aot-and-the-browser-embedding)'s seam needs the channel in exactly the case a browser is built for. | **Strong.** The other intended profile rates this the strongest ask in its own document, on the ground that a language with no parser, no text format, no dynamic loads and no notion of a program still needs it — which is the counterweight test **passing**, not failing. [Section 10](#10-execution-mapping-javascript-onto-the-core-lifecycle)'s workarounds are tried first and their cost recorded, and the grade does not rest on the argument that a fixed-entry-point profile would not need the channel. |
+| An argument channel on invocation | An invocation request carries one entry-point name and there is no typed way to pass values. For a caller-driven browser compile this is mild, because the adapter compiles a *program* and the lowering encodes the arguments into it. **It stops being mild the moment this profile hosts another one**: `instance.exports.f(a, b)` is a typed call whose arguments originate here, so [section 15](#15-deployment-compositions-native-aot-and-the-browser-embedding)'s seam needs the channel in exactly the case a browser is built for. | **Strong.** The other intended profile rates this the strongest ask in its own document, on the ground that a language with no parser, no text format, no dynamic loads and no notion of a program still needs it — which is the counterweight test **passing**, not failing. [Section 10](#10-execution-mapping-javascript-onto-the-core-lifecycle) takes neither of the two workarounds it records — one is JS-8's and one is rejected — so the row waits on the amendment rather than on a workaround being tried, and the grade does not rest on the argument that a fixed-entry-point profile would not need the channel. |
 | A result channel on invocation | Kept out of the row above deliberately. The typed payload already carries results, and several of them, so multi-value returns are expressible today. | **None needed.** The other profile states plainly that the result channel is adequate. Filing argument and result as one amendment would put two differently-scoped versions of one capability into the register, which is how a capability gets approved at the wrong width. |
 | Multi-result host capabilities | A capability returns one value. A host import whose signature has two results has nowhere to put the second, so an import that needs one is refused rather than truncated. | Moderate: any profile whose calling convention admits multiple results meets it, and the other intended profile raises it independently. Until then the refusal is deterministic and published. |
 | A wider value slot on the capability channel | A value wider than the channel's slot must be split, which works and needs a published encoding. | **Weak**, and the other intended profile grades it weak too, for the same reason: it is one type in one instruction family there, and a published split encoding here. Recorded so it is not mistaken for the row above. |

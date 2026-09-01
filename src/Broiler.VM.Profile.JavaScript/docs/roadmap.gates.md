@@ -32,9 +32,9 @@ that record before designing the mediator adapter.**
 
 **These rules bind the first bundle that publishes a figure**; they do not describe a discipline a
 milestone has already exercised, and the ledger is where a reader learns whether any bundle yet
-carries one. The repetition count is fixed by **JS-5, the first milestone whose gate demands a
-figure**, and JS-10's measurement lane inherits it rather than fixing a second one
-*(corrected: JSC-18)*.
+carries one. The repetition count is fixed by **JS-4, the first milestone whose gate demands a
+figure** — a retained figure per value kind, under these rules by name — and JS-5 and JS-10's
+measurement lane inherit it rather than fixing a second one *(corrected: JSC-18)*.
 
 1. **A control that is the same workload minus the thing being measured.** A difference between
    two different programs is a comparison, not an attribution.
@@ -137,9 +137,11 @@ A `Broiler.VM.Profile.JavaScript` preview or stable release must satisfy all app
    scoped. *A linker annotation without execution is insufficient.*
 8. **Packages and consumers:** the packable set matches its dated budget; produced metadata
    declares no foreign dependency; a pristine consumer restores and runs; rollback is exercised;
-   **the surface a consumer sees is the frozen baseline**, compared in both directions so an
-   addition and a removal each fail, and described without loading or executing the assemblies
-   that carry it.
+   and **whatever this milestone makes packable is frozen in a baseline of its own**, compared in
+   both directions so an addition and a removal each fail. The family's build-output baseline is
+   not that baseline: it freezes what a composition root in this repository can bind to rather
+   than what a consumer outside it can, which is why it can be described without loading or
+   executing the assemblies it covers. The packaging decision is where the two are reconciled.
 9. **Conformance:** a release-candidate run of the pinned suite exists from an exact commit with
    retained artifacts; the ratchet is not regressed; every claimed manifest has its own totals;
    the failure manifest is generated from that run; the effective limit vector each run was
@@ -214,7 +216,8 @@ links below are discovery entry points, **not substitutes for the pinned manifes
 - **The language specification edition**, pinned by immutable revision identifier, retrieved,
   hashed, and archived. Retrieving, hashing, and archiving a third-party document is a **human
   action**: until someone performs it the pin is provisional and carries a named exclusion in the
-  ledger, and **it is open today**. Recording an intended edition nobody has retrieved would be a
+  ledger, which is where a reader learns whether it is still open. Recording an intended edition
+  nobody has retrieved would be a
   pin in name only, so **JS-3a records the pin it actually takes** rather than an earlier milestone
   recording one it intends, and no manifest is accepted against an unpinned edition.
 - **The conformance suite revision**, the immutable commit resolved once before any shard starts,
