@@ -47,7 +47,7 @@ machine has **recorded** a RID, and a support table that has not been issued has
   the release owner co-signing the licence position.
 - **Ledger:** JS-0's row in
   [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
-  its retained evidence, and every open clause of the gate below.
+  its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** Decide and record, each as a dated decision with a registered rule and a
   passing witness: where this component lives relative to the core and the aggregate repository;
   the profile ID `broiler.javascript` and the `Broiler.*` package identity it obliges; the
@@ -114,7 +114,7 @@ machine has **recorded** a RID, and a support table that has not been issued has
 - **Owner:** profile contract owner, with release and AOT review of the composition root.
 - **Ledger:** JS-1's row in
   [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
-  its retained evidence, and every open clause of the gate below.
+  its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** Mint `broiler.javascript.slice` and define format version 1 for it. Write the
   verifier over the core's bounded reader and allocator, supplying the bounds projection and the
   allocation-meter adapter. Implement all seven core-facing types. Fill every descriptor row in
@@ -168,7 +168,7 @@ machine has **recorded** a RID, and a support table that has not been issued has
 - **Owner:** profile front-end owner, with the release owner co-signing the attribution change.
 - **Ledger:** JS-2's row in
   [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
-  its retained evidence, and every open clause of the gate below.
+  its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** Record the snapshot recursively. Copy the tokenizer, the syntax tree and its
   visitors, the parse-time binding and scope analysis, the free-name analysis, and the allocation
   and string primitives. Decide and record whether the few neighbouring primitives the tree
@@ -229,7 +229,7 @@ answered by whichever of the two ran late.
 - **Owner:** conformance owner, with the verification-boundary owner for the registry half.
 - **Ledger:** JS-3a's row in
   [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
-  its retained evidence, and every open clause of the gate below.
+  its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** Publish and version the diagnostic-code registry and the position encoding,
   stating which of the core position record's four fields this profile populates, what it carries
   in the two profile-owned coordinates, and what a section index of `-1` means here. **Record
@@ -276,7 +276,7 @@ answered by whichever of the two ran late.
 - **Owner:** verification-boundary owner.
 - **Ledger:** JS-3b's row in
   [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
-  its retained evidence, and every open clause of the gate below.
+  its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** Consolidate every early error the first manifest requires into one validation
   stage; carry on the tree the facts the two source re-scans recover, and delete the re-scans;
   take and record the strict-mode ownership decision; write the lowering that feeds the one
@@ -304,7 +304,7 @@ answered by whichever of the two ran late.
 - **Owner:** profile runtime owner.
 - **Ledger:** JS-4's row in
   [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
-  its retained evidence, and every open clause of the gate below.
+  its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** Implement the eight-row ABI the entry gate already fixed, retaining the
   correctness fixtures and Native AOT representation probes the gate deferred to this milestone.
   Copy the property storage with its tests and its recorded defect history. Replace the reflective
@@ -343,7 +343,7 @@ answered by whichever of the two ran late.
 - **Owner:** profile runtime owner.
 - **Ledger:** JS-5's row in
   [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
-  its retained evidence, and every open clause of the gate below.
+  its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** Implement the interpreter over the ABI. Implement abrupt completion so
   `finally` runs on every applicable exit including a host exception crossing profile frames.
   Place every poll and every charge. Measure native frame cost per interpreter frame on each
@@ -397,7 +397,7 @@ value's representation — and the milestone keeps its place in the order; what 
 - **Owner:** profile built-ins owner, with the satellite-acquisition owner outside this component.
 - **Ledger:** JS-6's row in
   [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
-  its retained evidence, and every open clause of the gate below.
+  its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** Copy the registration source generator and its attribute vocabulary, changing
   its generated prototype lookup to take a realm parameter. **Re-implement the core library
   against this profile's value struct**, taking the seed's semantics as specification and its
@@ -438,7 +438,7 @@ value's representation — and the milestone keeps its place in the order; what 
 - **Owner:** profile runtime owner.
 - **Ledger:** JS-7's row in
   [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
-  its retained evidence, and every open clause of the gate below.
+  its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** Make the executor's continuation capturable and reconstitutable on the heap.
   Implement generators and async functions on it. Take and record the routing decision of section
   12 per pause kind, **with the live-suspension count a representative workload produces**.
@@ -481,7 +481,7 @@ value's representation — and the milestone keeps its place in the order; what 
 - **Owner:** profile security owner with the host-capability owner.
 - **Ledger:** JS-8's row in
   [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
-  its retained evidence, and every open clause of the gate below.
+  its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** Declare guest-initiated loads with finite maxima for all four bounds and a
   defended verifier-work-to-fuel rate. Route `eval`, the `Function` constructor, and dynamic
   `import()` through the mediator and remove every alternative byte source. Implement the
@@ -540,7 +540,7 @@ surfaces that do not exist may not be read as covering them *(corrected: JSC-23)
 - **Owner:** profile security owner with the fuzz-corpus owner.
 - **Ledger:** JS-9's row in
   [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
-  its retained evidence, and every open clause of the gate below.
+  its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** Grow the malformed corpus from slice scope to the full format. **Fuzz all four
   untrusted-input surfaces** — the verifier, the source parser, the regular-expression matcher
   over pattern and subject, and the executor over verified-but-adversarial artifacts — with
@@ -573,7 +573,7 @@ surfaces that do not exist may not be read as covering them *(corrected: JSC-23)
 - **Owner:** release owner with the package, security, API, performance, and documentation owners.
 - **Ledger:** JS-10's row in
   [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
-  its retained evidence, and every open clause of the gate below.
+  its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** Stand up the controlled measurement lane and take this component's own
   baselines under [section 17](roadmap.gates.md#17-measurement-discipline), **including the two
   figures other chapters open an amendment against: verification throughput per byte, and

@@ -25,11 +25,11 @@ restatement alone would lose: a **declared repetition count**, published with ev
 carries a figure, because "retained repetitions" is a release gate nobody can fail without a
 number.
 
-**These rules bind the first bundle that publishes a figure**, and that is **WA-5** — the first
+**These rules bind the first bundle that publishes a figure**, and that is **WA-5's** — the first
 milestone whose gate demands a retained measurement, in the frame cost it derives `CallDepth` from
-and the proportionality fixtures it retains per operation family. WA-10's measurement lane inherits
-the count rather than fixing a second one, and no earlier milestone produces a figure for these
-rules to govern *(corrected: WAC-14)*.
+and the proportionality fixtures it retains per operation family. So **WA-5's exit gate is where
+the count is declared**, and WA-10's measurement lane uses that one rather than fixing a second;
+no earlier milestone produces a figure for these rules to govern *(corrected: WAC-14)*.
 
 1. **A control that is the same workload minus the thing being measured.** A difference between two
    different programs is a comparison, not an attribution.
@@ -76,9 +76,9 @@ comparing two different products under one word.
 | Conformance | pinned suite revision; self-check with failing **and** passing fixtures before every shard, plus an injected-and-reverted scoring regression; the malformed-before-invalid self-check fixture; per-family totals with per-family ratchets; published effective limit vector per run; registration and both module forms exercised; merge configuration-failure kinds; failure manifest as a queue; the harness's own regression suite; ingestion-path absence scan with a negative control | a failing test reported as a pass, a family selecting files and executing none, a green run with zero executed tests, a regression against a family's ratchet, an aggregate percentage published, a claimed manifest whose totals show it failing |
 | Native AOT | publish-and-run per claimed RID, warnings as errors, closure report attached and read off the published output; suppressions inventoried with owner and reachability | an AOT claim derived from a property, an analyzer, or a non-AOT publish; a closure containing a test, ingestion, reflection, or dynamic-code assembly; one RID's publish cited for another |
 | Packaging and consumers | package count and identity; produced metadata declaring no foreign dependency; pristine-feed consumer restore-and-run through the embedding seam; exercised rollback | a package that resolves a dependency from the internet, a packable identity outside the dated budget, a rollback that does not run |
-| Composed-profile safety | a two-profile catalog test with a neighbour that declares guest-initiated loads, proving this profile's maxima reach it not at all and its adopted defaults do; the fifteen maxima and fifteen defaults published, the defaults recorded as the neighbour-facing half; the three guest-load defaults published `Unconstrained` with a negative control that zeroes one, adopts defaults, and observes the neighbour refused | a default set so tight that a neighbour adopting it is strangled, a maximum mistaken for a neighbour-facing declaration, or a composition hosting two profiles closing a gate with no such test |
+| Composed-profile safety | a two-profile catalog test with a neighbour that declares guest-initiated loads, proving this profile's maxima reach it not at all and its adopted defaults do; the fifteen maxima and fifteen defaults published, the defaults recorded as the neighbour-facing half; the three guest-load defaults published as a large finite value stated as a number, with a negative control that zeroes one, adopts defaults, and observes the neighbour refused, and a named negative case in which a descriptor whose guest-load defaults are unconstrained is refused by the catalog *(corrected: WAC-10)* | a default set so tight that a neighbour adopting it is strangled, a maximum mistaken for a neighbour-facing declaration, or a composition hosting two profiles closing a gate with no such test |
 | Assurance and review | generator fixed point; refusal-to-invent-a-reviewer negative control; per-declaration blocker naming; review-mark vocabulary; **origin distribution published, and expected to be uniform** — a unit in this component that is not written here is a finding, because there is no seed to explain it | a generated artifact differing from what the generator would write, a reviewer identifier no source line carries, a stale fingerprint at publish, an unreviewed relevant unit at release, an unexplained non-local origin |
-| Licence and attribution | licence and notices carrying the ingested suite's attribution; modified files marked; the core's standing third-party claim confirmed scoped or amended with the release owner's co-signature | an attribution obligation discovered during a publish, a standing claim elsewhere falsified by what this component's tree contains |
+| Licence and attribution | the host component's notice carrying a row for the ingested suite's attribution, landed by this profile rather than inherited from adoption; modified files marked; the core's standing third-party claim confirmed scoped or amended with the release owner's co-signature | an attribution obligation discovered during a publish, a standing claim elsewhere falsified by what this component's tree contains |
 | Measurement | evidence class declared; immutable pre-run manifest carrying the specification and suite pins and the effective limit vector; comparable control; A/A lane; every repetition; effective-configuration attestation; register bound to log in both directions | a figure without a control, an envelope widened after seeing a candidate, an effective-versus-requested mismatch, a cross-profile or cross-engine comparison |
 
 Generated results are evidence artifacts, not substitutes for pinned manifests and durable
@@ -102,10 +102,11 @@ A `Broiler.VM.Profile.WebAssembly` preview or stable release must satisfy all ap
    the JavaScript API among them; composition label, contract admission, and implemented feature are
    kept apart per row; no row reads as a bare yes; and no figure from any other component appears.
 2. **Graph and registration:** the graph is acyclic and matches its manifest; the profile reference
-   set is exactly the two core assemblies plus whatever the core's placement ruling admits for this
-   family's own siblings; no edge reaches another profile family in either
-   direction; no product project reaches the ingestion path; registration is static and typed, with
-   no reflection, dynamic loading, IL emit, or module initializer anywhere in a product closure.
+   set is exactly the two core assemblies — a set of Broiler.VM-owned assemblies, which this
+   family's own siblings are not members of and which therefore does not bound them; no edge
+   reaches another profile family in either direction; no product project reaches the ingestion
+   path; registration is static and typed, with no reflection, dynamic loading, IL emit, or module
+   initializer anywhere in a product closure.
 3. **Correctness and safety:** the malformed and invalid corpora replay with zero unexplained
    differences on all three publish modes; the verifier throws on nothing; every fuzz counterexample
    is closed by a named regression; verification is separable from execution and there is exactly
@@ -138,9 +139,10 @@ A `Broiler.VM.Profile.WebAssembly` preview or stable release must satisfy all ap
 10. **Human review:** no package is published, no RID is claimed, no support table is issued, and no
     milestone moves to accepted until a named human has recorded a decision on every relevant code
     unit, bound to that declaration's fingerprint.
-11. **Licence and attribution:** this component's licence and notices carry the ingested suite's
-    attribution, modified files are marked as changed, and no standing third-party claim elsewhere
-    is falsified by what this component ships or by what its tree contains.
+11. **Licence and attribution:** the host component's notice carries a row for the ingested suite's
+    attribution, landed by this profile rather than inherited from adopting the file, modified files
+    are marked as changed, and no standing third-party claim elsewhere is falsified by what this
+    profile ships or by what its tree contains.
 12. **Operations:** diagnostics, cancellation, rollback, format-version rejection, specification-
     and suite-revision drift, **vulnerability response**, and recertification owners are each named.
     This component ships a decoder, a validator, and an interpreter over bytes the world produces;
@@ -176,7 +178,7 @@ is superseded.
 | The oracle reports a failure as a pass, or a green run means nothing. | Failing **and** passing self-check fixtures run before every shard, with an injected-and-reverted scoring regression; the malformed-before-invalid ordering as its own self-check fixture; per-family totals; configuration failures rather than green results; a ratchet no later run may regress. **Stop: a self-check mismatch stops the run, a green run with zero executed tests is never a pass, and a regression against the ratchet fails the milestone.** |
 | A WebAssembly requirement maps onto no row of the core's profile checklist, and pressure builds to work around it inside the core. | [Section 20](roadmap.md#20-amendments-and-this-profiles-duty-as-the-counterweight)'s proposals, each naming the driving capability, the profile-owned design tried and rejected, and the counterweight answer — or a recorded refusal, which is recorded and not blocking. **Stop: a design that can only be hosted by a second core state machine is refused; exactly one core state machine and one core contract version exist in the product graph at any time, and no language-specific path is added to the core's execution loop.** |
 | Mutable state becomes reachable from a shared handle, so two runtimes sharing one module collide. | The verified module is immutable by construction and the specification agrees; the handle-immutability structural scan with its mechanism and residual stated; concurrent unsynchronised reads by two runtimes. **Stop: any such reachability is a defect, not a tuning option, and the milestone does not close over it.** |
-| A shared aggregate parent is treated as isolation for multi-tenant modules. | [Section 3](roadmap.md#3-what-the-core-already-gives-this-profile-and-what-it-refuses)'s clamping note and WA-9's aggregate exercise; a shared parent is a channel, not isolation. **Stop: an isolation claim over a shared parent is an untruthful support claim, and no test may assert which sibling observes a shared-parent exhaustion.** |
+| A shared aggregate parent is treated as isolation for multi-tenant modules. | [Section 3](roadmap.md#3-what-the-core-already-gives-this-profile-and-what-it-refuses)'s tightest-default fold and WA-9's aggregate exercise; a shared parent is a channel, not isolation. **Stop: an isolation claim over a shared parent is an untruthful support claim, and no test may assert which sibling observes a shared-parent exhaustion.** |
 | The manifest set drifts upward one increment at a time, because the specification ships features in bundles and a version number looks like a unit. | Each increment mints one identity with a reviewed scope, extends the corpus, and re-runs the oracle against its own ratchet; the accepted set is published in every support claim. **Stop: an increment published without its own retained oracle run and corpus extension is not accepted, and no increment may be justified by a specification version number.** |
 | Owner and reviewer are the same person, so no gate here is independently confirmed. | Roles are named per milestone; where one person holds several, the non-independence is recorded as a residual limit on what these gates prove rather than resolved by assertion. **Stop: a vacant role stops the point that requires it; a role held by nobody does not pass to whoever is available.** |
 | The programme stalls on a precondition this component does not control. | The core-acceptance blocker is recorded with its holder and its unblock condition; the decisions that need no code are opened against WA-1. **Stop: a milestone blocked by a named external dependency is recorded blocked with its holder and its unblock condition — lack of scheduling is not a blocker, and an unaccepted contract is.** |

@@ -28,8 +28,9 @@ are easy to miss:
    a dated decision series, and met build failures this plan would meet identically. Where its
    findings are the core's rules rather than its own language's, they are this profile's findings
    too, available for free and before the build that would otherwise teach them.
-3. **The document corrected itself.** Five readings were replaced in drafting, each with the
-   retraction written where the reading had been.
+3. **The document corrected itself.** Three of the readings below were caught by reading this plan
+   against itself rather than against anything outside it, and each retraction was written inline
+   where the reading had been — which is the practice this file exists to end.
 
 A plan with no implementation is not a plan with no history. **It is the one most likely to be
 read as though every sentence in it were still load-bearing.**
@@ -60,9 +61,9 @@ Four rules govern the set:
   fixes a tense or repairs a reference without changing what the plan means gets no entry.
 - **An entry is never edited away.** A correction a later change reverses gets its own new entry
   naming the one it reverses.
-- **Nothing here is a status claim.** Every entry describes a change to a *plan*. **Every
-  milestone of this profile is `Not started`**, and no entry below is evidence that any line of it
-  has been written.
+- **Nothing here is a status claim.** Every entry describes a change to a *plan*. **No milestone of
+  this profile has started**; the [ledger](roadmap.status.md) is the authority for every state, and
+  no entry below is evidence that any line of this profile has been written.
 
 ---
 
@@ -72,7 +73,7 @@ Ordered by the roadmap section they land in, so this file can be read beside the
 
 | ID | Where | In one line | Authority |
 |---|---|---|---|
-| [WAC-01](#wac-01) | roadmap §3, §17 | The core's catalog-wide clamp on profile **maxima** was retracted; only a neighbour's **default** still reaches this profile | core ADR 0001, ADR 0007 |
+| [WAC-01](#wac-01) | roadmap §3, §17; gates §25 | The core's catalog-wide clamp on profile **maxima** was retracted; only a neighbour's **default** still reaches this profile | core ADR 0001, ADR 0007 |
 | [WAC-02](#wac-02) | roadmap §3 | `StructuralDepth` is a ceiling-class dimension the core already supports as a high-water mark | the core's metering surface |
 | [WAC-03](#wac-03) | roadmap §3, §12, §20 | No guest-observable `memory.grow` refusal exists on the shipped contract, in any spelling | the shipped core |
 | [WAC-04](#wac-04) | roadmap §7 | Two of the malformed-input bullets are `ResourceExhaustion`, not `InvalidArtifact` | the roadmap itself, against the core's status set |
@@ -81,7 +82,7 @@ Ordered by the roadmap section they land in, so this file can be read beside the
 | [WAC-07](#wac-07) | roadmap §20 | The argument channel is graded strong by both profiles, and the two gradings are reconciled | the other profile's dated grading |
 | [WAC-08](#wac-08) | ledger; roadmap header; delivery WA-0 | **Placement is settled by the core.** This profile is product projects inside `Broiler.VM`, at a path it already occupies — WA-0 does not decide it | core ADR 0001, 2026-08-31 |
 | [WAC-09](#wac-09) | roadmap §5 | The composition root cannot be named `Broiler.VM.Profile.WebAssembly.Composition.*`; that name fires rule A8 on the first build | rules A8, A11, A13 |
-| [WAC-10](#wac-10) | delivery §21, WA-0 | The three guest-load **defaults** cannot be `Unconstrained`; the catalog refuses such a descriptor | the core's descriptor validation |
+| [WAC-10](#wac-10) | delivery §21, WA-0; gates §23 and §25 | The three guest-load **defaults** cannot be `Unconstrained`; the catalog refuses such a descriptor | the core's descriptor validation |
 | [WAC-11](#wac-11) | roadmap §5 | A profile's own siblings sit outside the two-assembly reference set, and rule A11 exempts a same-family sibling | ADR 0011 P1, ADR 0001 rev 5 |
 | [WAC-12](#wac-12) | roadmap §5 | The cross-profile boundary rule exists and binds this family in both directions today | rule N2 |
 | [WAC-13](#wac-13) | delivery §21, WA-0 | The public API baseline cannot be taken by loading a profile assembly; it is described from build output | the sibling profile's dated finding |
@@ -90,7 +91,9 @@ Ordered by the roadmap section they land in, so this file can be read beside the
 ### WAC-01
 
 **Where:** roadmap [section 3](roadmap.md#3-what-the-core-already-gives-this-profile-and-what-it-refuses)
-and [section 17](roadmap.md#17-the-cross-profile-boundary-the-javascript-api-for-webassembly).
+and [section 17](roadmap.md#17-the-cross-profile-boundary-the-javascript-api-for-webassembly); the
+stop conditions of gates [section 25](roadmap.gates.md#25-risks-and-stop-conditions); the ledger's
+unopened-dependency table.
 
 **What the plan said.** The core clamped every runtime ceiling to the tightest **maximum** in the
 catalog, so two profiles in one image constrained each other through their maxima as well as their
@@ -157,7 +160,7 @@ operation continues — and that is the specification's behaviour rather than th
 preference. So the gap is not a local design problem to be worked around: **WA-5 cannot choose a
 memory representation until it is resolved**, and section 20 carries a refusable retention member
 as this profile's one *blocking* ask rather than a filed one. **The other intended profile's dated
-grading records no position on it** — its amendment table has ten rows and none is this one — so
+grading records no position on it** — no row of its amendment table is this one — so
 the core's procedural question about the other profile is, for this row, still unanswered.
 
 **Authority and date.** The shipped core's metering behaviour, read rather than inferred from the
@@ -307,7 +310,10 @@ and the sibling profile's dated record of A8 firing on its first build, 2026-08-
 
 ### WAC-10
 
-**Where:** delivery [section 21](roadmap.delivery.md#21-milestones), WA-0's next action.
+**Where:** delivery [section 21](roadmap.delivery.md#21-milestones), WA-0's next action and exit
+gate; the evidence matrix of gates [section 23](roadmap.gates.md#23-test-and-evidence-matrix) and
+the stop conditions of [section 25](roadmap.gates.md#25-risks-and-stop-conditions); the ledger's
+WA-0 row.
 
 **What the plan said.** That WA-0 publishes the three guest-load **defaults** as `Unconstrained`,
 with the reason recorded.
@@ -396,7 +402,8 @@ carried this clause open across two milestones before closing it.
 
 ### WAC-14
 
-**Where:** gates [section 19](roadmap.gates.md#19-measurement-discipline).
+**Where:** gates [section 19](roadmap.gates.md#19-measurement-discipline), and WA-5's exit gate in
+delivery [section 21](roadmap.delivery.md#21-milestones).
 
 **What the plan said.** That the declared repetition count — the number without which "retained
 repetitions" is a release gate nobody can fail — is **fixed at WA-1**.
@@ -408,8 +415,10 @@ had been assigned to a milestone that publishes none.
 
 **The count belongs to WA-5**, which is the first milestone whose gate demands a retained
 measurement: the native frame cost it derives the `CallDepth` default from, and the proportionality
-fixture it retains per operation family. WA-10's measurement lane inherits the count rather than
-fixing a second one — a count fixed by two milestones is not a fixed count.
+fixture it retains per operation family. WA-5's exit gate now carries the clause that declares it —
+no gate carried it under the old reading either, which is the second half of the defect — and
+WA-10's measurement lane uses that count rather than fixing a second one, because a count fixed by
+two milestones is not a fixed count.
 
 **Why this is worth an entry on a profile that has built nothing.** It costs nothing to correct now
 and would have cost a milestone later: WA-1 would have closed without the number, and WA-5 would
@@ -489,8 +498,9 @@ every one of them.
   Retrieving, hashing and archiving third-party material is a human action nobody has performed.
 - **The reconciliation of two profiles' declared defaults** — it belongs to whichever component
   composes both, and that component does not exist and has no owner.
-- **Everything else.** Every milestone WA-0 through WA-10 is `Not started`, and this list names
-  only the questions the plan itself flags as open rather than the work it has not begun.
+- **Everything else.** No milestone has started — the [ledger](roadmap.status.md) holds each state —
+  and this list names only the questions the plan itself flags as open rather than the work it has
+  not begun.
 
 ---
 

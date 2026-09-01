@@ -917,11 +917,13 @@ plans, schedules or gates anything here, and no item identifier from it appears 
 profile's documents — in either direction, deliberately, because a roadmap that cited its origin's
 plans would re-create the dependency the fork exists to avoid.
 
-**Two mark legends exist in one repository, and the difference between them is granularity rather
-than subject.** The component's own legend has nine marks in two vocabularies — four evidence
-verdicts about a piece of evidence, and five review verdicts about a gate clause. This profile's
-ledger publishes three, and they are one evidence verdict about a whole milestone row. Both legends
-therefore contain evidence verdicts, which is exactly why a mark from one used in the other's
+**Two mark legends exist in one repository, and rule H1's own words for them are different
+vocabularies about different subjects.** The component's own legend has nine marks in two
+vocabularies — four evidence verdicts about a piece of evidence, and five review verdicts about a
+gate clause in a bundle. This profile's ledger publishes three, and they are one evidence verdict
+about a whole milestone row. So a granularity reading covers at most four of the nine and misses
+the five outright, while the subject reading covers all of them. Both legends do
+contain evidence verdicts, which is exactly why a mark from one used in the other's
 documents is a rule violation rather than a harmless synonym — and why the rule decides which
 legend governs a document **by path and not by content**: deciding from what a document contains
 would let a document choose its own vocabulary by using it.
