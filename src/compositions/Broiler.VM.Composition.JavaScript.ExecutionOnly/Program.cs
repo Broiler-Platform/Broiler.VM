@@ -156,22 +156,29 @@ internal static class Program
         {
             if (!CorpusReplay.Agrees(entries[index], first[index]))
             {
-                // Every compared field is printed, the position among them. An earlier revision
-                // printed four of the five, so a position regression reported an expected and an
-                // observed answer that read identically - a true sentence nobody can act on, which
-                // is the one thing a control log may not produce.
+                // Every compared field is printed, the position and the exhausted pair among
+                // them. An earlier revision printed four of the five, so a position regression
+                // reported an expected and an observed answer that read identically - a true
+                // sentence nobody can act on, which is the one thing a control log may not
+                // produce. The dimension and the scope arrived with the same defect and were
+                // caught the same way: the control that maps one exhaustion status onto its
+                // neighbour moves nothing else, so a message without the pair printed both sides
+                // as ResourceExhaustion/CeilingReached/0/-/-.
                 disagreements.Add(
                     $"{entries[index].Name}: expected " +
                     $"{entries[index].Outcome}/{entries[index].Reason}/{entries[index].DiagnosticCode}/" +
-                    $"{entries[index].Completion}/{entries[index].Position}, observed " +
+                    $"{entries[index].Completion}/{entries[index].Position}/" +
+                    $"{entries[index].Dimension}/{entries[index].Scope}, observed " +
                     $"{first[index].Outcome}/{first[index].Reason}/{first[index].DiagnosticCode}/" +
-                    $"{first[index].Completion}/{first[index].Position} (hash {first[index].HashStatus})");
+                    $"{first[index].Completion}/{first[index].Position}/" +
+                    $"{first[index].Dimension}/{first[index].Scope} (hash {first[index].HashStatus})");
             }
             else if (verbose)
             {
                 Console.WriteLine(
                     $"     entry {entries[index].Name}: {first[index].Outcome}/{first[index].Reason}/" +
-                    $"{first[index].DiagnosticCode}/{first[index].Completion}/{first[index].Position}");
+                    $"{first[index].DiagnosticCode}/{first[index].Completion}/{first[index].Position}/" +
+                    $"{first[index].Dimension}/{first[index].Scope}");
             }
         }
 
@@ -228,6 +235,84 @@ internal static class Program
             ? ("every-invalid-artifact-carries-a-diagnostic-code", true,
                 $"{entries.Count(entry => entry.Outcome == "InvalidArtifact")} entries, each with a code")
             : ("every-invalid-artifact-carries-a-diagnostic-code", false, string.Join(", ", uncoded));
+
+        foreach (var check in ExhaustionChecks(entries))
+        {
+            yield return check;
+        }
+    }
+
+    /// <summary>
+    /// The exhaustion half of the corpus: one entry per dimension a verification can exhaust, each
+    /// naming the dimension and the scope its answer carried.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Why this is a check at all.</b> An exhaustion answer carries no diagnostic code, so the
+    /// registry's both-directions binding - which is what holds every other refusal in this profile
+    /// to a case that provokes it - reaches none of them. Without these two checks the corpus could
+    /// lose an exhaustion entry, or grow a host mode nothing exercises, and every other check here
+    /// would stay green.
+    /// </para>
+    /// <para>
+    /// <b>What it is not.</b> The dimensions compared here are the ones this composition declares a
+    /// tight mode for, so a dimension the verifier can answer and no mode reaches would pass. That
+    /// is the architecture rule's half of the binding, read off the verifier's own source, and it
+    /// is deliberately not repeated here: this root cannot see the verifier's source, and a second
+    /// hand-written list of seven would agree with whichever of the two it was copied from.
+    /// </para>
+    /// </remarks>
+    private static IEnumerable<(string, bool, string)> ExhaustionChecks(ReplayEntry[] entries)
+    {
+        // Every exhaustion row names a pair, and every row that is not an exhaustion names
+        // neither. The second half matters as much as the first: a dimension written beside a
+        // normal completion is a claim about a budget nothing ran out of.
+        var misnamed = entries
+            .Where(entry => string.Equals(entry.Outcome, "ResourceExhaustion", StringComparison.Ordinal)
+                ? entry.Dimension == "-" || entry.Scope == "-"
+                : entry.Dimension != "-" || entry.Scope != "-")
+            .Select(entry => $"{entry.Name}: {entry.Outcome} with {entry.Dimension}/{entry.Scope}")
+            .ToArray();
+
+        var exhaustions = entries
+            .Where(entry => string.Equals(entry.Outcome, "ResourceExhaustion", StringComparison.Ordinal))
+            .ToArray();
+
+        yield return misnamed.Length == 0
+            ? ("an-exhaustion-names-a-dimension-and-a-scope-and-nothing-else-does", true,
+                $"{exhaustions.Length} exhaustion entries name a pair, {entries.Length - exhaustions.Length} name none")
+            : ("an-exhaustion-names-a-dimension-and-a-scope-and-nothing-else-does", false,
+                string.Join("; ", misnamed));
+
+        // And one entry per dimension this host can tighten, in both directions: a mode with no
+        // entry is a dimension nothing pins, and an entry naming a dimension no mode tightens is a
+        // row whose answer this composition cannot have provoked.
+        var pinned = exhaustions
+            .Select(entry => entry.Dimension)
+            .ToHashSet(StringComparer.Ordinal);
+
+        var declared = Hosts.TightModes
+            .Select(mode => mode.Dimension.ToString())
+            .ToHashSet(StringComparer.Ordinal);
+
+        var unpinned = declared.Except(pinned, StringComparer.Ordinal).Order(StringComparer.Ordinal).ToArray();
+        var unprovokable = pinned.Except(declared, StringComparer.Ordinal).Order(StringComparer.Ordinal).ToArray();
+        var duplicated = exhaustions
+            .GroupBy(entry => entry.Dimension, StringComparer.Ordinal)
+            .Where(group => group.Count() > 1)
+            .Select(group => $"{group.Key} is pinned by {group.Count()} entries")
+            .ToArray();
+
+        var complaints = unpinned.Select(dimension => $"{dimension} is tightened by a mode and no entry pins it")
+            .Concat(unprovokable.Select(dimension => $"{dimension} is pinned by an entry and no mode tightens it"))
+            .Concat(duplicated)
+            .ToArray();
+
+        yield return complaints.Length == 0
+            ? ("every-dimension-this-host-can-tighten-is-pinned-by-one-entry", true,
+                $"{pinned.Count} dimensions, one entry each: {string.Join(", ", pinned.Order(StringComparer.Ordinal))}")
+            : ("every-dimension-this-host-can-tighten-is-pinned-by-one-entry", false,
+                string.Join("; ", complaints));
     }
 
     // ---- the contract loop -----------------------------------------------------------------

@@ -596,12 +596,13 @@ surfaces that do not exist may not be read as covering them *(corrected: JSC-23)
   and diagnostic code on JIT, trimmed, and Native AOT hosts, the verifier throws on none, control
   entries verify successfully, and a repeat leaves no residue; **each of the seven budget
   dimensions [section 7](roadmap.md#7-the-bytecode-format-and-the-verifier) names as an exhaustion
-  answer — the reader's structural depth, section count, declared counts and artifact bytes; the
-  allocator's allocated bytes and the work charge's verifier work; and the poll's wall clock — is
+  answer — the reader's structural depth, section count and declared counts; the allocator's
+  allocated bytes and the work charge's verifier work; the poll's wall clock; and artifact bytes,
+  which the core answers one call before this verifier is entered — is
   reached by a corpus entry of its own that records the dimension and the scope it named**, which
   needs a manifest column for the pair, because an exhaustion answer carries no diagnostic code and
   the registry's both-directions binding therefore reaches none of the seven
-  *(corrected: JSC-39)*; where a dimension is unreachable at
+  *(corrected: JSC-39, JSC-41)*; where a dimension is unreachable at
   the manifest this milestone closes against, the bundle names it, names the milestone that makes it
   reachable, and carries the entry as owed rather than as absent — the clause
   [the map](#25-the-chapter-milestone-and-gate-map) and

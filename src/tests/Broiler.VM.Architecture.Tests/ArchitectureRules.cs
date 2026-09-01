@@ -947,6 +947,103 @@ internal static class ArchitectureRules
         }
     }
 
+    /// <summary>
+    /// N11: every budget dimension the profile can answer a resource exhaustion on is pinned by a
+    /// corpus entry that records the dimension and the scope the answer named, and every pair a
+    /// corpus entry records is one the profile can answer and names members of the core's own two
+    /// enumerations.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>This is N7's clause for the answers N7 cannot reach.</b> The registry's both-directions
+    /// binding is keyed on a diagnostic code, and a resource exhaustion carries none: the category
+    /// and the reason are all a corpus row would otherwise hold, and they are the same two values
+    /// for a section-count ceiling and a structural-depth one. The dimension and the scope are
+    /// what tell them apart, so they are what a corpus entry has to record and this is what holds
+    /// the corpus to the verifier that produces them.
+    /// </para>
+    /// <para>
+    /// <b>Both directions, and they fail differently.</b> A dimension the profile answers and no
+    /// entry pins is an arm nothing exercises - the defect this rule was written for. A dimension
+    /// an entry pins and the profile never answers is a row recording an answer this profile
+    /// cannot give, which is either a stale entry or a claim about the core that belongs in the
+    /// core's own suite.
+    /// </para>
+    /// <para>
+    /// <b>One asymmetry is deliberate and is not a violation.</b> A site's scope is the scope the
+    /// verifier can attribute unaided; where the answer is charged through the meter, the meter
+    /// reports the level that actually refused and the observed scope is that one instead. So the
+    /// scopes are held to the core's vocabulary rather than to the site, and the entry records
+    /// what was observed.
+    /// </para>
+    /// </remarks>
+    internal static IEnumerable<string> N11(
+        IReadOnlyList<DiagnosticRegistry.ExhaustionAnswer> answers,
+        IReadOnlyList<DiagnosticRegistry.CorpusOutcome> corpus,
+        IReadOnlyCollection<string> dimensions,
+        IReadOnlyCollection<string> scopes)
+    {
+        var exhaustions = corpus
+            .Where(static row => string.Equals(row.Outcome, "ResourceExhaustion", StringComparison.Ordinal))
+            .ToArray();
+
+        foreach (var answer in answers)
+        {
+            if (!dimensions.Contains(answer.Dimension, StringComparer.Ordinal))
+            {
+                yield return
+                    $"{answer.File}:{answer.Line} answers with {answer.Dimension}, which is not a " +
+                    $"member of {DiagnosticRegistry.DimensionType}";
+
+                continue;
+            }
+
+            if (!exhaustions.Any(row => string.Equals(row.Dimension, answer.Dimension, StringComparison.Ordinal)))
+            {
+                yield return
+                    $"the profile answers a resource exhaustion on {answer.Dimension} at " +
+                    $"{answer.File}:{answer.Line}, and no corpus entry pins that dimension";
+            }
+        }
+
+        foreach (var row in exhaustions)
+        {
+            if (!dimensions.Contains(row.Dimension, StringComparer.Ordinal))
+            {
+                yield return
+                    $"corpus entry {row.Name} records the dimension {row.Dimension}, which is not " +
+                    $"a member of {DiagnosticRegistry.DimensionType}";
+            }
+            else if (!answers.Any(answer =>
+                string.Equals(answer.Dimension, row.Dimension, StringComparison.Ordinal)))
+            {
+                yield return
+                    $"corpus entry {row.Name} records the dimension {row.Dimension}, and no site " +
+                    "in the profile answers on it";
+            }
+
+            if (!scopes.Contains(row.Scope, StringComparer.Ordinal))
+            {
+                yield return
+                    $"corpus entry {row.Name} records the scope {row.Scope}, which is not a " +
+                    $"member of {DiagnosticRegistry.ScopeType}";
+            }
+        }
+
+        // And the vacuity clause. A profile that answers no exhaustion at all, or a manifest with
+        // no exhaustion row, would satisfy every loop above by quantifying over nothing - which is
+        // exactly the state this rule exists to detect the return of.
+        if (answers.Count == 0)
+        {
+            yield return "the profile answers no resource exhaustion at all, so this rule is quantifying over nothing";
+        }
+
+        if (exhaustions.Length == 0)
+        {
+            yield return "the corpus pins no exhaustion at all, so this rule is quantifying over nothing";
+        }
+    }
+
     // ---- Group B: compiled metadata ---------------------------------------------------------
 
     /// <summary>B1: an assembly references nothing outside the framework.</summary>

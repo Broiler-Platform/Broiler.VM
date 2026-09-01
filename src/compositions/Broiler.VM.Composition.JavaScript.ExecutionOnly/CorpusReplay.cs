@@ -12,7 +12,9 @@ internal sealed record ReplayEntry(
     string Reason,
     int DiagnosticCode,
     string Completion,
-    string Position);
+    string Position,
+    string Dimension,
+    string Scope);
 
 /// <summary>What one replayed entry actually did.</summary>
 internal sealed record ReplayObservation(
@@ -22,6 +24,8 @@ internal sealed record ReplayObservation(
     int DiagnosticCode,
     string Completion,
     string Position,
+    string Dimension,
+    string Scope,
     string HashStatus);
 
 /// <summary>
@@ -35,11 +39,18 @@ internal sealed record ReplayObservation(
 /// recorded beside every entry.
 /// </para>
 /// <para>
-/// <b>Three entries are replayed under a host rather than under bytes.</b> A resource exhaustion
-/// needs a runtime with a tight ceiling, a cancellation needs a token that is already cancelled,
-/// and an unsupported profile needs a descriptor naming a profile the catalog does not hold. Their
-/// bytes are the same well-formed artifact as a control entry's, so what the row proves is a
-/// property of the host and not of the program.
+/// <b>Nine entries are replayed under a host rather than under bytes.</b> A resource exhaustion
+/// needs a runtime with a tight ceiling and there is one per dimension a verification can exhaust,
+/// a cancellation needs a token that is already cancelled, and an unsupported profile needs a
+/// descriptor naming a profile the catalog does not hold. Their bytes are the same well-formed
+/// artifact as a control entry's, so what the row proves is a property of the host and not of the
+/// program.
+/// </para>
+/// <para>
+/// <b>An exhaustion row observes a dimension and a scope, and every other row observes neither.</b>
+/// An exhaustion answer carries no diagnostic code - the column is zero on all nine - so the pair
+/// is the only thing that identifies which refusal happened, and a row that recorded the category
+/// alone would be satisfied by a verifier that exhausted the wrong budget.
 /// </para>
 /// </remarks>
 internal static class CorpusReplay
@@ -63,7 +74,7 @@ internal static class CorpusReplay
 
             var parts = line.Split('|');
 
-            if (parts.Length != 8)
+            if (parts.Length != 10)
             {
                 throw new InvalidOperationException($"corpus manifest row has {parts.Length} columns: {line}");
             }
@@ -76,7 +87,9 @@ internal static class CorpusReplay
                 parts[4],
                 int.Parse(parts[5], System.Globalization.CultureInfo.InvariantCulture),
                 parts[6],
-                parts[7]));
+                parts[7],
+                parts[8],
+                parts[9]));
         }
 
         return entries.ToArray();
@@ -105,7 +118,8 @@ internal static class CorpusReplay
 
         if (runtime is null)
         {
-            return new ReplayObservation(entry.Name, "HostFailure", failure, 0, "-", "-", hashStatus);
+            return new ReplayObservation(
+                entry.Name, "HostFailure", failure, 0, "-", "-", "-", "-", hashStatus);
         }
 
         var descriptor = Hosts.Descriptor(entry.Mode);
@@ -127,6 +141,8 @@ internal static class CorpusReplay
                 verified.Diagnostics.ProfileDiagnosticCode,
                 "-",
                 Position(entry, in verified),
+                Dimension(in verified),
+                Scope(in verified),
                 hashStatus);
         }
 
@@ -139,6 +155,8 @@ internal static class CorpusReplay
                 instantiated.Outcome.ToString(),
                 instantiated.Reason.ToString(),
                 instantiated.Diagnostics.ProfileDiagnosticCode,
+                "-",
+                "-",
                 "-",
                 "-",
                 hashStatus);
@@ -160,8 +178,44 @@ internal static class CorpusReplay
             verified.Diagnostics.ProfileDiagnosticCode,
             completion,
             Position(entry, in verified),
+            Dimension(in verified),
+            Scope(in verified),
             hashStatus);
     }
+
+    /// <summary>The dimension a verification exhausted, and <c>-</c> where it exhausted none.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Read only where the outcome is an exhaustion.</b> The two fields are present on every
+    /// diagnostics record and carry the first member of each enumeration where nothing was
+    /// exhausted, so formatting them unconditionally would write <c>Fuel</c> and <c>Aggregate</c>
+    /// beside sixty entries that exhausted nothing - a value that looks like an observation, is
+    /// not one, and would be compared against a manifest column somebody had to fill in with it.
+    /// </para>
+    /// <para>
+    /// This is the whole reason the pair is recorded at all: an exhaustion answer carries no
+    /// diagnostic code, so <c>ResourceExhaustion/CeilingReached/0</c> is the same triple for a
+    /// section-count ceiling and a structural-depth one, and the corpus could not tell a verifier
+    /// that refuses the right artifact for the wrong reason from one that does not.
+    /// </para>
+    /// </remarks>
+    private static string Dimension(in VmVerificationResult verified) =>
+        verified.Outcome == VmOutcome.ResourceExhaustion
+            ? verified.Diagnostics.ExhaustedDimension.ToString()
+            : "-";
+
+    /// <summary>The scope that refused, and <c>-</c> where nothing did.</summary>
+    /// <remarks>
+    /// The scope is not decoration beside the dimension. The reader's four ceilings are compared
+    /// inside a verification and answer at <c>Artifact</c>; the three allowances are charged
+    /// through the meter, which reports the level that actually refused - so the same profile
+    /// answers at two different scopes depending on which budget ran out, and a row recording the
+    /// dimension alone would hide that.
+    /// </remarks>
+    private static string Scope(in VmVerificationResult verified) =>
+        verified.Outcome == VmOutcome.ResourceExhaustion
+            ? verified.Diagnostics.ExhaustedScope.ToString()
+            : "-";
 
     /// <summary>
     /// The four fields of the position a verification answered with, as the manifest writes them.
@@ -196,5 +250,7 @@ internal static class CorpusReplay
         string.Equals(expected.Reason, observed.Reason, StringComparison.Ordinal) &&
         expected.DiagnosticCode == observed.DiagnosticCode &&
         string.Equals(expected.Completion, observed.Completion, StringComparison.Ordinal) &&
-        string.Equals(expected.Position, observed.Position, StringComparison.Ordinal);
+        string.Equals(expected.Position, observed.Position, StringComparison.Ordinal) &&
+        string.Equals(expected.Dimension, observed.Dimension, StringComparison.Ordinal) &&
+        string.Equals(expected.Scope, observed.Scope, StringComparison.Ordinal);
 }

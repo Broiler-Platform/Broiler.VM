@@ -298,6 +298,102 @@ internal static class DiagnosticRegistry
     internal static string CorpusText =>
         File.ReadAllText(Path.Combine(ComponentGraph.Root, CorpusPath));
 
+    /// <summary>One place the profile answers a resource exhaustion, and the pair it names.</summary>
+    internal sealed record ExhaustionAnswer(string File, int Line, string Dimension, string Scope);
+
+    /// <summary>One corpus row, reduced to what an exhaustion binding reads.</summary>
+    internal sealed record CorpusOutcome(string Name, string Outcome, string Dimension, string Scope);
+
+    /// <summary>The contract factory that mints a resource-exhaustion answer.</summary>
+    internal const string ExhaustionFactory = "ResourceExhaustion";
+
+    /// <summary>The core enumerations an exhaustion answer names one member of each of.</summary>
+    internal const string DimensionType = "VmBudgetDimension";
+
+    /// <summary>The scope half of that pair.</summary>
+    internal const string ScopeType = "VmBudgetScope";
+
+    /// <summary>
+    /// Every dimension the profile assembly can answer a resource exhaustion on, with the scope
+    /// each site names and the line it is on.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Syntax and not semantics, for the reason <see cref="EmissionSites"/> gives: rule A11 keeps
+    /// the profile assembly out of this project's reference set, so there is no symbol resolution
+    /// and a site is recognised by the shape it is written in - a call to the contract's
+    /// <c>ResourceExhaustion</c> factory naming one member of each enumeration.
+    /// </para>
+    /// <para>
+    /// <b>What that costs, stated rather than glossed.</b> A site that computed its dimension
+    /// instead of naming it would not be found. The rule states the limit by asserting the count
+    /// it expects to see, so a verifier that grew a computed arm fails this rule rather than
+    /// passing it quietly - which is the same shape as the vocabulary clause in N6.
+    /// </para>
+    /// </remarks>
+    internal static IReadOnlyList<ExhaustionAnswer> ExhaustionAnswers(
+        IEnumerable<AssuranceSourceFile> files)
+    {
+        var answers = new List<ExhaustionAnswer>();
+
+        foreach (var file in files)
+        {
+            foreach (var invocation in file.Tree.GetRoot()
+                .DescendantNodes()
+                .OfType<InvocationExpressionSyntax>())
+            {
+                if (invocation.Expression is not MemberAccessExpressionSyntax callee ||
+                    callee.Name.Identifier.ValueText != ExhaustionFactory)
+                {
+                    continue;
+                }
+
+                var named = invocation.ArgumentList.Arguments
+                    .SelectMany(static argument => argument.DescendantNodesAndSelf())
+                    .OfType<MemberAccessExpressionSyntax>()
+                    .ToArray();
+
+                var dimension = named
+                    .Where(static access => access.Expression.ToString() == DimensionType)
+                    .Select(static access => access.Name.Identifier.ValueText)
+                    .FirstOrDefault();
+
+                if (dimension is null)
+                {
+                    continue;
+                }
+
+                var scope = named
+                    .Where(static access => access.Expression.ToString() == ScopeType)
+                    .Select(static access => access.Name.Identifier.ValueText)
+                    .FirstOrDefault();
+
+                answers.Add(new ExhaustionAnswer(
+                    file.RelativePath,
+                    file.Tree.GetLineSpan(invocation.Span).StartLinePosition.Line + 1,
+                    dimension,
+                    scope ?? "(none)"));
+            }
+        }
+
+        return answers;
+    }
+
+    /// <summary>Every row of a retained corpus manifest, with its outcome and its exhausted pair.</summary>
+    /// <remarks>
+    /// The two columns are read positionally, like the diagnostic code above, and a row too short
+    /// to carry them is dropped rather than defaulted: a manifest written before the columns
+    /// existed must fail this binding rather than satisfy it with a blank.
+    /// </remarks>
+    internal static IReadOnlyList<CorpusOutcome> CorpusOutcomes(string text) => text
+        .Split('\n')
+        .Select(static line => line.TrimEnd('\r'))
+        .Where(static line => line.Length > 0 && line[0] != '#')
+        .Select(static line => line.Split('|'))
+        .Where(static parts => parts.Length >= 10)
+        .Select(static parts => new CorpusOutcome(parts[0], parts[3], parts[8], parts[9]))
+        .ToArray();
+
     /// <summary>One member that answers with a position, and whether it builds one itself.</summary>
     internal sealed record PositionProducer(string File, string Member, bool Constructs);
 

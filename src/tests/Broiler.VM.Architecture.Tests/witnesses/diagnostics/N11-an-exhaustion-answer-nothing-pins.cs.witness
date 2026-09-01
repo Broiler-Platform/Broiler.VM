@@ -1,0 +1,25 @@
+// A verifier that answers resource exhaustions the retained corpus does not pin.
+//
+// A resource exhaustion carries no diagnostic code, so the registry's both-directions binding -
+// which reaches every other refusal this profile makes - reaches none of these. The dimension and
+// the scope are all that tell one exhaustion from another, and rule N11 is what holds each of them
+// to a corpus entry that provokes it.
+//
+// Two arms, failing for two different reasons. The first names a dimension the core does declare
+// and that no corpus entry pins, which is the arm-nobody-exercises defect the rule was written
+// for. The second names a member of nothing, which is what a renamed or invented dimension looks
+// like to a reader that resolves no symbols - and it must be reported as such rather than treated
+// as one more unpinned arm.
+
+namespace Broiler.VM.Profile.JavaScript;
+
+internal sealed class JavaScriptVerifier
+{
+    private static VmVerifierOutcome HostCallsRanOut() =>
+        VmVerifierOutcome.ResourceExhaustion(
+            VmBudgetDimension.HostCalls, VmBudgetScope.Artifact);
+
+    private static VmVerifierOutcome SomethingNobodyDeclared() =>
+        VmVerifierOutcome.ResourceExhaustion(
+            VmBudgetDimension.ReadaheadWindow, VmBudgetScope.Artifact);
+}
