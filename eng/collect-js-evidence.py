@@ -621,8 +621,10 @@ def compositions(arguments, out, corpus):
 # graph or about an annotation. A language semantic is not in the suite at all - rule A11 forbids a
 # test project to reference a profile assembly, so the behavioural evidence is the composition
 # root's own run - and a corpus that could not detect a semantic regression would be a directory of
-# bytes rather than a gate. These four are judged by running the execution-only root against the
-# retained corpus, which is the thing that would have to notice.
+# bytes rather than a gate. Every control below is judged by running the execution-only root against
+# the retained corpus, which is the thing that would have to notice. The set grows; the count is
+# read off the list rather than written into this comment, because a comment that carries a total
+# is a comment that goes stale on the next entry - which this one did.
 CORPUS_CONTROLS = [
     (
         "the-soak-stops-noticing-a-per-cycle-leak",

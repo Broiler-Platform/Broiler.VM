@@ -96,6 +96,7 @@ Ordered by the roadmap section they land in, so this file can be read beside the
 | [WAC-21](#wac-21) | roadmap §9; delivery §21 | WA-5's proportionality clause is scoped to the families it ships; its named control was an instruction WA-8 introduces | roadmap §6's manifest allocation |
 | [WAC-22](#wac-22) | roadmap §1, §4.3, §5, §15; delivery §21; gates §23, §24, §25 | The harness cannot be a test project: rule A11 forbids one to reference a profile, so it is a never-advertised composition root and the scan changes with it | rule A11; [WAC-13](#wac-13) |
 | [WAC-23](#wac-23) | roadmap §9; delivery §21; gates §23, §25 | The `LiveBytes`-breach question the ledger had open becomes a ninth row of the entry-gate decision | ledger's WA-5 row; the map's blank-cell rule |
+| [WAC-24](#wac-24) | delivery §21, §27; gates §24, §25; ledger §3 | Two halves of section 7's third obligation were called gate clauses and written into no gate: the dimension that changes side, and the core record this profile falsifies | roadmap §7; the core's metering-split record |
 
 ### WAC-01
 
@@ -706,6 +707,47 @@ representation, since a representation that cannot express the answer is one thi
 
 **Authority and date.** [The ledger's WA-5 row](roadmap.status.md#2-current-milestone-status), read
 against the map's blank-cell rule; 2026-09-01.
+
+### WAC-24
+
+**Where:** delivery [section 21](roadmap.delivery.md#21-milestones), WA-2's and WA-10's exit gates;
+delivery [section 27](roadmap.delivery.md#27-the-chapter-milestone-and-gate-map), the chapter-7 row;
+gates [section 24](roadmap.gates.md#24-release-gates) gate 1 and
+[section 25](roadmap.gates.md#25-risks-and-stop-conditions); ledger section 3.
+
+**What the plan said.** Roadmap
+[section 7](roadmap.md#7-the-artifact-the-decoder-and-one-disagreement-with-the-core) states three
+obligations following from decoding integers here rather than through the core, and says each "is a
+WA-2 gate clause rather than a note". **Only one and a half of them were.** WA-2's gate carried the
+count-bound ordering and the scan for calls to the core's canonical readers. It did not carry the
+third obligation's two remaining halves: that **the support table says which budget dimension
+changes side**, and that **the core's own metering-split record is made conditional**, which
+section 7 asserts in the present tense as though the edit had happened.
+
+**What replaced it.** WA-2's gate names the dimension that changes side — `DeclaredCount` leaving
+the core-metered row while `SectionCount`, `StructuralDepth` and `ArtifactBytes` stay where they
+are — and reads the core's record against that answer, confirming the conditional reading or filing
+a correction with its owner and recording the row as open. WA-10's gate and release gate 1 carry the
+naming into the support table. Gates [section 25](roadmap.gates.md#25-risks-and-stop-conditions)
+gains the risk, and the ledger's unopened-dependency table gains the row.
+
+**Why the second half needed a home rather than a sentence.** The core's record obliges every
+profile to route declared counts through the binary package. This profile establishes that a format
+admitting padded encodings cannot, which makes the record false about the first product profile that
+would meet it — and **a component that falsifies another component's record and reports only its own
+side has fixed its support table and left the defect standing**. Nothing in this plan owned that
+until now: it was neither an amendment, since no contract changes, nor a local decision, since the
+record is not this profile's. It is a correction this profile owes the core, and an owed correction
+with no gate behind it is one nobody files.
+
+**What it does not change.** The integer decision, the local resolution, and the scan are untouched,
+and no milestone moved. The plan's own claim that all three obligations were gate clauses is what
+was false; two of them now are.
+
+**Authority and date.** Roadmap
+[section 7](roadmap.md#7-the-artifact-the-decoder-and-one-disagreement-with-the-core)'s third
+obligation, read against WA-2's and WA-10's exit gates and the core's metering-split record;
+2026-09-01.
 
 ---
 

@@ -590,7 +590,17 @@ surfaces that do not exist may not be read as covering them *(corrected: JSC-23)
   fuzz surfaces.
 - **Objective exit gate:** Every entry in the full corpus produces its recorded outcome, reason,
   and diagnostic code on JIT, trimmed, and Native AOT hosts, the verifier throws on none, control
-  entries verify successfully, and a repeat leaves no residue; a **mutated corpus entry** proves
+  entries verify successfully, and a repeat leaves no residue; **each of the four budget dimensions
+  [section 7](roadmap.md#7-the-bytecode-format-and-the-verifier) names as an exhaustion answer —
+  structural depth, section count, declared counts and artifact bytes — is reached by a corpus entry
+  of its own that records the dimension and the scope it named**, which needs a manifest column for
+  the pair, because an exhaustion answer carries no diagnostic code and the registry's
+  both-directions binding therefore reaches none of the four; where a dimension is unreachable at
+  the manifest this milestone closes against, the bundle names it, names the milestone that makes it
+  reachable, and carries the entry as owed rather than as absent — the clause
+  [the map](#25-the-chapter-milestone-and-gate-map) and
+  [section 21](roadmap.gates.md#21-test-and-evidence-matrix) both put on this milestone and which
+  this gate did not carry *(corrected: JSC-37)*; a **mutated corpus entry** proves
   the replay detects a changed observed triple; each fuzz session retains its corpus identity,
   its iteration budget with a stated floor, its runtime settings, and **every minimized
   counterexample**, and any counterexample is closed by a **named regression, never an allow-list
@@ -878,6 +888,16 @@ the gaps it was built to find:
   argument or the release gates, agreed by the map, and never written into the exit gate that would
   have to fail without it — which is the one failure mode a map read in only one direction cannot
   catch.
+- **A fifth was found after that sweep, and its route is why the pattern is now stated generally
+  rather than as four instances** *(corrected: JSC-37)*.
+  [JSC-35](roadmap.corrections.md#jsc-35) added the four exhaustion-dimension corpus entries to
+  [section 7](roadmap.md#7-the-bytecode-format-and-the-verifier) and to
+  [section 21](roadmap.gates.md#21-test-and-evidence-matrix), and the chapter-7 row above named JS-9
+  as owing them — and JS-9's exit gate said nothing. **A correction is an edit to the plan and
+  inherits the plan's own failure modes**, so a sweep that reads the release gates against the
+  milestones cannot see a requirement that has just been added to neither. The rule this map now
+  holds is the general one: **a requirement is not in the programme until an exit gate would fail
+  without it**, whatever introduced it — a chapter, a release gate, or a correction.
 - **One release gate is owned by no chapter, and the map is how that was found.** Gate 13 asks that
   the holders of diagnostics, cancellation, rollback, format-version rejection, corpus and
   suite-revision drift, **vulnerability response**, and recertification each be named. No chapter

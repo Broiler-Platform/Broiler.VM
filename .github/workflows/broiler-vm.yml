@@ -161,6 +161,11 @@ jobs:
       # across those platforms, about 153KB, 158KB and 388KB, and the ratio did not move. What a
       # shared runner makes unattributable is the byte count, and this check no longer reads one.
       #
+      # Those runs retained nothing - this lane collects no bundle - so the numbers above are the
+      # rationale for putting the step here and are evidence for nothing. No bundle cites them and
+      # the profile's ledger states none of them, which is its own update rule 10 rather than
+      # modesty: a figure with no retained record behind it is not a figure that document may carry.
+      #
       # The band is 1.20 and a per-cycle leak of 8 bytes reads 1.57, so this lane fails on a leak
       # rather than merely hosting a check that cannot.
       - name: Publish and run the JavaScript composition roots as Native AOT

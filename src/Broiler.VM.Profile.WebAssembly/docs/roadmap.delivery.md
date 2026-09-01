@@ -52,7 +52,12 @@ scope control a copied codebase gets for free from the shape of what it copied.
   slot** *(corrected: WAC-10)*. The maxima need no such care: they bind this profile's own modules
   alone, and `Unconstrained` is available to them. Then the nullable and unsafe-code positions, and
   the intended specification revision and suite revision, marked provisional until a human has
-  retrieved, hashed, and archived them.
+  retrieved, hashed, and archived them. **Recording an intended revision is a scheduling record and
+  not a pin, and this milestone's gate closes nothing on it**: a revision nobody has retrieved is a
+  pin in name only, the two rows in the ledger stay open with their owner, and
+  [section 26](roadmap.gates.md#26-specification-and-platform-references) puts the pin actually
+  taken at WA-2 and WA-4. The value of writing an intention down is that it names an owner and a
+  candidate for a later checkout to compare against — not that it discharges anything.
 
   **Placement is not on this list**: the core's topology record rules that a language profile is a
   set of product projects in the `Broiler.VM` component and names the path this profile already
@@ -185,7 +190,16 @@ scope control a copied codebase gets for free from the shape of what it copied.
   data-count pairs whose identifiers and order disagree**; a name that is not well-formed UTF-8 is
   rejected with its own diagnostic, including the cases the platform's own decoder would accept;
   a scan asserts the profile assembly contains no call to the core's canonical variable-length
-  readers and no second implementation of the count-bound comparison; the decode fuzz session
+  readers and no second implementation of the count-bound comparison; **the dimension that changes
+  side is named** — declining the guarded count reader moves `DeclaredCount` out of the core's
+  core-metered row into its profile-charged one for this profile, while `SectionCount` and
+  `StructuralDepth` stay core-metered and `ArtifactBytes` stays unevadable — recorded here as the
+  bundle's own statement and carried to the support table at WA-10; **and the core's metering-split
+  record is read against that answer**, which as written obliges every profile to route counts
+  through the binary package: either it is confirmed to carry the conditional reading, or a
+  correction to it is filed with its owner and the ledger records the row as open with that holder,
+  because a core record this profile has falsified and not reported is a defect this milestone
+  leaves behind *(corrected: WAC-24)*; the decode fuzz session
   retains its corpus identity, its iteration budget with a stated floor, its runtime settings, and
   every minimized counterexample, and any counterexample is closed by a **named regression, never an
   allow-list entry**; the specification pin is recorded with its hash and the human action that took
@@ -535,7 +549,11 @@ scope control a copied codebase gets for free from the shape of what it copied.
   determinism does not reach**; it names **which core primitives this profile uses and which it
   replaces**, because
   [section 7](roadmap.md#7-the-artifact-the-decoder-and-one-disagreement-with-the-core) makes that
-  a deviation rather than a detail; it uses a vocabulary that never reads as a bare yes, gives
+  a deviation rather than a detail, **and which budget dimension changes side as a consequence** —
+  `DeclaredCount` becoming this profile's own charge where the core's split calls it core-metered,
+  with the other three dimensions of that row unmoved — because a reader of the core's split who is
+  not told which row this profile leaves will attribute a check to the core that the core is not
+  performing *(corrected: WAC-24)*; it uses a vocabulary that never reads as a bare yes, gives
   every row an evidence cell naming a rule or a retained artifact, names a deterministic failure
   or an exclusion for every unimplemented capability — threads, shared memory, multi-result host
   imports, and the JavaScript API among them — distinguishes what the contract admits from what
@@ -668,7 +686,7 @@ gate with no owning milestone is a gate nobody can close.
 | 4 No seed | **no milestone delivers it** — it is the starting position, and its consequence is the origin distribution every bundle publishes | Assurance and review | 10 | owner and reviewer the same person |
 | 5 Package boundaries and the graph | WA-0, **including the harness-placement finding: a test project may not reference a profile assembly, so the harness roots are composition roots** | Dependency architecture | 2 | the extraction gate unanswered; an advertised closure reaching the ingestion path |
 | 6 Feature manifests | WA-0 allocates; WA-1 mints the first; each increment extends | Identity and registration; Conformance | 1, 8 | the manifest set drifting upward |
-| 7 The artifact and the decoder | WA-2 | Decoding | 3 | the canonical-reader regression; the lost count-bound ordering; section order by identifier |
+| 7 The artifact and the decoder | WA-2, **which also names the dimension that changes side and reads the core's metering-split record against it**; WA-10 carries the naming into the support table | Decoding | 3, **1** | the canonical-reader regression; the lost count-bound ordering; section order by identifier; **a core record this profile falsified and did not report** |
 | 8 Validation | WA-3 | Validation | 3 | validation drifting into first execution |
 | 9 The value, store, and frame model | WA-5, **nine rows now: the `LiveBytes`-breach row joins the eight** | Value model and store | 4 | a late value and frame ABI decision |
 | 10 Execution on the core lifecycle | WA-1 (the loop end to end); WA-5 (the interpreter) | Execution and traps | 4 | a trap conflated with an exhaustion |

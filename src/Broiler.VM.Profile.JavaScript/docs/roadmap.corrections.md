@@ -120,6 +120,7 @@ rather than a decision record.
 | [JSC-34](#jsc-34) | roadmap §5; gates §21 | The fuzz mutator and the soak are in a composition root too, not only the corpus — so the execution-only closure carries them | the shipped composition roots, against rules A11 and A12 |
 | [JSC-35](#jsc-35) | roadmap §7; gates §21 | Each of the four exhaustion dimensions gets a corpus entry, because an exhaustion answer carries no code and the registry's binding cannot reach it | the corpus manifest, against rule N7 |
 | [JSC-36](#jsc-36) | delivery §19, §25 | Four clauses the release gates require and the map assigns, written into no exit gate — one defect with four instances | gates §22 gates 1 and 13; gates §24 |
+| [JSC-37](#jsc-37) | delivery §19, §25 | A fifth instance, and the first one a correction itself created: JSC-35's exhaustion entries were written into the evidence matrix and the map, and into no exit gate | gates §21; [JSC-35](#jsc-35); the map's blank-cell rule |
 
 ### JSC-01
 
@@ -1097,6 +1098,44 @@ here advances or narrows a milestone: every one of the four was already required
 **Authority and date.** [Gates section 22](roadmap.gates.md#22-release-gates) gates 1 and 13, and
 [section 24](roadmap.gates.md#24-specification-and-platform-references), read against the exit
 gates of JS-3a, JS-5 and JS-10 and against the map's blank-cell rule; 2026-09-01.
+
+### JSC-37
+
+**Where:** delivery [section 19](roadmap.delivery.md#19-milestones), JS-9's exit gate; delivery
+[section 25](roadmap.delivery.md#25-the-chapter-milestone-and-gate-map), the closing bullets.
+
+**What the plan said.** That JS-9 closes when the full corpus replays to its recorded triples on
+three publish modes, a mutated entry is detected, the fuzz sessions retain what they must, the soak
+reaches a plateau, and the aggregate-budget exercises hold. **Nothing in that gate mentioned the
+four exhaustion dimensions**, while [JSC-35](#jsc-35) had already written them into roadmap
+[section 7](roadmap.md#7-the-bytecode-format-and-the-verifier) and into gates
+[section 21](roadmap.gates.md#21-test-and-evidence-matrix), and the map's chapter-7 row had already
+named JS-9 as owing them.
+
+**What replaced it.** JS-9's exit gate carries the clause: an entry per dimension, recording the
+dimension and the scope, with a manifest column for the pair — and, where a dimension is
+unreachable at the manifest the milestone closes against, the bundle names it and the milestone that
+makes it reachable rather than passing over it.
+
+**Why this one is worth its own entry rather than a line in [JSC-36](#jsc-36).** It is the same
+defect, but it arrived **by a different route and after the sweep that was supposed to find them
+all**. JSC-36's four were clauses the release gates had always asked for and no exit gate had ever
+carried. This one was *created* on the same day, by a correction that added a requirement to the
+argument and to the evidence matrix, agreed it in the map, and stopped there. **A correction is an
+edit to the plan and is therefore subject to the plan's own failure modes**, which the sweep did not
+allow for: it read the gates against the milestones, and the thing that had just moved was neither.
+The pattern the map now carries is the general one — a requirement is not in the programme until an
+exit gate would fail without it, whatever introduced it.
+
+**What it does not change.** No release gate moved, the requirement is JSC-35's rather than new, and
+nothing here advances or narrows a milestone. What the corpus actually reaches today — one dimension
+by an entry, one by an ordering assertion, two by nothing, and no manifest column for the dimension
+and the scope — is a fact about the checkout and is recorded in the
+[ledger](roadmap.status.md#2-current-milestone-status)'s JS-9 row, not here.
+
+**Authority and date.** [JSC-35](#jsc-35) and gates
+[section 21](roadmap.gates.md#21-test-and-evidence-matrix), read against JS-9's exit gate and the
+map's blank-cell rule; 2026-09-01.
 
 ---
 
