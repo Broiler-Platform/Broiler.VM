@@ -176,7 +176,7 @@
       "id": "A11",
       "owningAdr": "0001",
       "status": "Active",
-      "statement": "No project outside the composition-root allow-list references a profile assembly matching Broiler.VM.Profile.* or Com.Example.*. The allow-list is every project under src/compositions/. The fixture profile is out of scope: its test-only path is what contains it, and A12 forbids it inside a composition root.",
+      "statement": "No project outside the composition-root allow-list references a profile assembly matching Broiler.VM.Profile.* or Com.Example.*, except a sibling in the SAME profile family, keyed on the language segment - so the JavaScript lowering may reference the JavaScript format and a JavaScript project referencing a WebAssembly one is still a violation, which rule N2 asserts in both directions. The allow-list is every project under src/compositions/. The fixture profile is out of scope: its test-only path is what contains it, and A12 forbids it inside a composition root. ADR 0001 revision 5 owns the exemption; without it the format pivot is illegal.",
       "evidence": "Project files",
       "activationMilestone": null,
       "nonVacuousWhen": "Two consumer profiles exist at VM-3 and two composition roots reference them, so the rule has subjects on both sides rather than only a witness.",

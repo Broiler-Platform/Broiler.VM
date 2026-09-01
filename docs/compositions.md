@@ -144,6 +144,36 @@ writes the tokenizer and the static semantics. What this root lowers is a
 programmatic builder, so it is recorded here as a demonstration and claims no
 label. JS-3b claims the label with a publish-and-run gate of its own.
 
+**What the two JavaScript roots contain beyond the image each demonstrates,
+because a label describes a reference set and not a file inventory.** The
+execution-only root carries the retained corpus's replay, the ordering
+assertions over every entry of it, the fuzz mutator, the soak over recycled
+runtimes and the shared-aggregate-budget exercises. The slice-compiler root
+carries the corpus writer and the cross-profile catalog checks with the
+neighbour descriptor those need. **All of it is in the closure each root
+publishes**, and that is forced rather than chosen: every one of those drives a
+profile's own verifier and executor, rule A11 forbids a test project to
+reference a profile assembly, and rule A12 forbids a composition root to
+reference the fixture assembly. There is nowhere else for them to be, and a
+corpus a test project produced would in any case be a corpus the product path
+never exercised.
+
+Two consequences a reader should meet here rather than in a closure report.
+**Rule K4's "no test assembly" clause is satisfied by the assembly boundary
+while the property is weaker than it reads** - no test *assembly* is present,
+and a mutator and a soak driver are. And **an advertised composition may not
+carry any of this**: section 1's set is empty, both roots are demonstrations,
+and a root proposed for advertisement has to answer for its closure separately.
+That is one more reason none is advertised today.
+
+**This is prose rather than a ninth column, deliberately.** The columns are the
+claims a rule reads back - profiles, assemblies, siblings, capabilities, loads,
+evidence - and each has a mechanical counterpart in the checkout that K1 to K4
+compare it against. What a root contains beyond its label has no such
+counterpart: a scan cannot tell a soak driver from an interpreter, so a column
+would be a field nothing could check, sitting in a table where every other field
+is checked. Naming it here keeps the distinction visible.
+
 **The neighbour profile the slice-compiler root composes for its cross-profile
 checks is defined inside that root**, not referenced as an assembly, which is why
 its Profiles column names one profile. It exists so that a neighbour's maxima and

@@ -122,7 +122,7 @@ profile; what a language costs is that language's own.
 | **Rollback** | Exercised, not described. A consumer restores one package set from a feed, then is rolled back to the previous one and still restores, builds and runs - and prints the informational version it actually loaded, so the transcript shows which set answered. `feed-consumer.log` in the current bundle |
 | **Format-version rejection** | Deterministic and repeatable; asserted from a package consumer's position by the sample |
 | **Envelope recovery** | Not applicable at contract version 1: there is no persisted envelope to recover |
-| **Vulnerability response** | The owner named in [ADR 0012](adr/0012-ownership-and-support-claims.md) holds all six roles, security included. There is no separate security contact and no published disclosure timeline, which is a gap this table names rather than hides |
+| **Vulnerability response** | The owner named in [ADR 0012](adr/0012-security-ownership-and-support-matrix.md) holds all six roles, security included. There is no separate security contact and no published disclosure timeline, which is a gap this table names rather than hides |
 | **Recertification** | Required when the SDK or runtime, core contract version, package graph, host capability surface, Native AOT settings, RID matrix, cache identity, resource defaults, or representative workload changes. Each evidence bundle carries its own triggers in section 8 |
 | **Support lifetime** | None stated. A preview with no accepted milestone has no support commitment, and inventing one here would be the untruthful claim section 16 forbids |
 

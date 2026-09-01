@@ -88,6 +88,14 @@ internal static class HostLifetimeChecks
     /// while the ratio did not move. That is the whole case: what a shared runner makes
     /// unattributable is the byte count, and this check no longer reads one.
     /// </para>
+    /// <para>
+    /// <b>Those readings retain nothing and are rationale rather than evidence.</b> They were taken
+    /// in dispatched lane runs, which collect no bundle and keep no configuration, so they are why
+    /// the band above is what it is and they are cited as evidence by no bundle and by no row of
+    /// the profile's ledger - which under its update rule 10 may carry no figure without a retained
+    /// record behind it. What the checkout holds is the check, the band, and the control that makes
+    /// it fail.
+    /// </para>
     /// </remarks>
     internal static IEnumerable<(string Name, bool Passed, string Detail)> Run(string directory)
     {
@@ -194,11 +202,11 @@ internal static class HostLifetimeChecks
     }
 
     /// <summary>
-    /// Two thousand create-run-dispose cycles reach a heap plateau.
+    /// The soak's cycles of create, run and dispose reach a heap plateau.
     /// </summary>
     /// <remarks>
-    /// <b>What this can and cannot show.</b> It shows that recycling a runtime two thousand times
-    /// does not grow the managed heap without bound, which is what a per-cycle leak looks like.
+    /// <b>What this can and cannot show.</b> It shows that recycling a runtime for the cycle count
+    /// above does not grow the managed heap without bound, which is what a per-cycle leak looks like.
     /// It does not measure anything: the band is loose, the collection is forced, and a managed
     /// heap number on one machine is not a figure. JS-5 owns measurement and
     /// [section 17](../../../src/Broiler.VM.Profile.JavaScript/docs/roadmap.gates.md) owns its rules.
@@ -237,13 +245,14 @@ internal static class HostLifetimeChecks
             // 500 cycles out to 20,000 showed one step and then a heap that did not move for
             // 19,500 consecutive cycles.
             //
-            // THE BAND IS UNCHANGED at 2.0. Widening it was the available shortcut and is the one
-            // thing the measurement rules forbid, because a wider band hides the next real leak
-            // as happily as this false one. Sensitivity is preserved by lengthening the run
-            // instead: with the baseline at the midpoint, a per-cycle leak L over N cycles reads
-            // (B + N*L) / (B + N*L/2), which grows towards 2.0 as N grows, so the longer run buys
-            // back more than the later baseline costs. A negative control injects a per-cycle
-            // retention and this check still fails.
+            // THE BAND WAS NOT WIDENED - it was TIGHTENED, from 2.0 to the constant above.
+            // Widening was the available shortcut and is the one thing the measurement rules
+            // forbid, because a wider band hides the next real leak as happily as this false one.
+            // Moving the baseline to the midpoint would have made 2.0 structurally unfailable: a
+            // per-cycle leak L over N cycles reads (B + N*L) / (B + N*L/2), which rises towards
+            // 2.0 and never reaches it. Sensitivity comes from the tighter band and the longer
+            // run together, and the constant's own remarks derive it from both ends. A negative
+            // control injects a per-cycle retention, which is what found that 2.0 could not fail.
             if (cycle == SoakCycles / 2)
             {
                 settled = Collected();

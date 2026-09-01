@@ -871,9 +871,14 @@ Three obligations follow, and each is a WA-2 gate clause rather than a note:
    reader moves `DeclaredCount` out of the second row into the third for this profile. `SectionCount`
    and `StructuralDepth` stay core-metered, because this profile still enters and exits sections
    through the core; `ArtifactBytes` stays unevadable, because the reader's own construction
-   enforces it whatever the caller does. So exactly one dimension migrates, this profile names it,
-   and the core's obligation row is made conditional rather than absolute — because as written it is
-   already false for the first product profile that will exist.
+   enforces it whatever the caller does. So exactly one dimension migrates and this profile names
+   it — at WA-2 in the bundle and at WA-10 in the support table, each a gate clause of its own.
+   **And the core's obligation row has to become conditional rather than absolute, which is a
+   correction this profile owes the core rather than one it can make**: as written that row is
+   already false for the first product profile that will exist, and a component that reports only
+   its own side of a falsification has fixed its support table and left the defect standing. WA-2
+   reads the record against this answer and either confirms it or files the correction with its
+   owner *(corrected: WAC-24)*.
 
 [Section 20](#20-amendments-and-this-profiles-duty-as-the-counterweight) carries the amendment
 candidate this produces — a padding-tolerant reader in the core's binary package, parameterized by
