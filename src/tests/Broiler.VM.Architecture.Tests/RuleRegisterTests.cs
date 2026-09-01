@@ -289,13 +289,15 @@ public sealed class RuleRegisterTests
         // JS-0 mints group N - four rules over the JavaScript profile family's project graph -
         // and JS-3a adds six more: five over the published diagnostic registry and the position
         // encoding, and N10 over the family's own public-API baseline, which closes a clause JS-0
-        // opened. Neither milestone changes the other two counts: the one Vacuous row is B3, which
-        // nothing in the graph can violate, and the one Deferred row still awaits its own
-        // milestone.
-        Assert.Equal(73, byStatus["Active"]);
+        // opened. JS-9 adds N11, which binds the answers the registry cannot reach: a resource
+        // exhaustion carries no diagnostic code, so its dimension and scope are bound to a corpus
+        // entry instead. None of the three milestones changes the other two counts: the one
+        // Vacuous row is B3, which nothing in the graph can violate, and the one Deferred row
+        // still awaits its own milestone.
+        Assert.Equal(74, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(75, Loaded.Rules.Count);
+        Assert.Equal(76, Loaded.Rules.Count);
     }
 
     private static Register Load()

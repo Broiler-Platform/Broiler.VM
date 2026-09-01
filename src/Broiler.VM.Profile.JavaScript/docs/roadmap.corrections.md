@@ -124,6 +124,7 @@ rather than a decision record.
 | [JSC-38](#jsc-38) | ledger §2; delivery §19, §25; bundle JS-9-001 | The fuzz target is seeded mutation and was called coverage-guided; the guidance section 7 asks for was in no exit gate | the fuzz target's own source; ledger update rules 2 and 4 |
 | [JSC-39](#jsc-39) | roadmap §7; gates §21; delivery §19; ledger §2 | The verifier names seven exhaustion dimensions, not four, and JSC-35's binding covered four of seven arms | the verifier's own source; the corpus manifest; rule N7 |
 | [JSC-40](#jsc-40) | roadmap §5, §14; gates §21; delivery §19, §25 | The conformance harness is a never-advertised composition root, not a test project, and the ingestion scan is over advertised closures rather than published ones | rule A11; the composition register's advertised set |
+| [JSC-41](#jsc-41) | roadmap §7; ledger §2 | The artifact-bytes exhaustion is the core's answer and no host ceiling reaches the verifier's own arm for it; six of the seven dimensions are this profile's to answer | the core's verification path; the retained corpus manifest |
 
 ### JSC-01
 
@@ -1408,3 +1409,42 @@ A release that publishes a question truthfully has not closed it.
    reading was** — that account is this file's, and repeating it in the plan is the inline
    correction coming back. Stating the *current* reading as forcefully as the section needs is not
    a summary; it is the plan doing its job.
+
+### JSC-41
+
+**Where:** roadmap [section 7](roadmap.md#7-the-bytecode-format-and-the-verifier), the
+resource-exhaustion bullet's artifact-bytes clause; the
+[ledger](roadmap.status.md#2-current-milestone-status)'s JS-9 row.
+
+**What the plan said.** That all four of the reader's ceilings — structural depth, section count,
+declared counts and artifact bytes — are compared against the effective ceilings the core
+materialized before the first byte was read and **answered through the bounded reader's own
+statuses**. [JSC-39](#jsc-39) restated the same four the same way when it added the other three.
+
+**What was actually true.** Three of the four are. Artifact bytes is not, and no host ceiling can
+make it be: the core compares the payload length against the same effective vector the reader would
+be handed, one call **before** the verifier is entered, and answers the exhaustion itself. The
+verifier's two artifact-bytes arms — the bounded reader's constructor, and the code section
+declaring a length past the bound — are therefore unreachable through the core's verification path.
+The second is unreachable by arithmetic as well as by ordering: a section's declared length is
+bounded by the bytes remaining, which is bounded by the payload length, which the core has already
+compared. Both arms are **defensive**, in the sense [rule N7](roadmap.status.md#2-current-milestone-status)
+already uses for a diagnostic code no artifact reaches, and the ordering assertions reach the first
+of them by calling the verifier directly with bounds of their own.
+
+**What replaced it.** Section 7 names the party that answers each of the seven rather than
+attributing four to the reader. The corpus entry for artifact bytes records the dimension and the
+scope the answer named, which is what its gate clause asks of it, and the ledger's JS-9 row states
+that the answer is the core's — so a reader counting this profile's own exhaustion arms counts six
+provoked by a host and one that is a defensive arm behind a check it does not own.
+
+**What it does not change.** The dimension and the scope are the same pair either way, and no arm
+is wrong: a verifier that trusts the core to have pre-checked would be a verifier whose safety
+depends on its caller. The exhaustion bullet still names seven dimensions and the gate still asks
+for seven entries. What moved is which of them is evidence about this profile's verifier and which
+is evidence about the core's ordering — a distinction the entry could not carry while the plan said
+the reader answered all four.
+
+**Authority and date.** The core's verification path, read against the reader's constructor and the
+code section's own bound; the retained corpus manifest, whose artifact-bytes entry is answered
+before the verifier is called; 2026-09-01.

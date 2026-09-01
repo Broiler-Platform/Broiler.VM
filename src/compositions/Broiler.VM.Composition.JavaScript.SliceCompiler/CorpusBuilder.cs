@@ -17,6 +17,8 @@ internal sealed record CorpusEntry(
     int DiagnosticCode,
     string Completion,
     string Position,
+    string Dimension,
+    string Scope,
     byte[] Bytes);
 
 /// <summary>
@@ -36,11 +38,18 @@ internal sealed record CorpusEntry(
 /// entry rather than as a count that looks large enough.
 /// </para>
 /// <para>
-/// Three entries carry a mode other than <c>default</c>, and they are the three that cannot be
+/// Nine entries carry a mode other than <c>default</c>, and they are the nine that cannot be
 /// produced by bytes alone: a resource exhaustion needs a runtime with a tight ceiling, a
 /// cancellation needs a token that is already cancelled, and an unsupported profile needs a
-/// descriptor naming a profile the catalog does not hold. The bytes for all three are the same
+/// descriptor naming a profile the catalog does not hold. The bytes for all nine are the same
 /// well-formed artifact, which is the point - what differs is the host, not the program.
+/// </para>
+/// <para>
+/// <b>Seven of the nine are exhaustions, one per dimension a verification of this profile can
+/// exhaust</b>, and each records the dimension and the scope its answer named. An exhaustion
+/// carries no diagnostic code, so the diagnostic column is zero on all seven and the pair is the
+/// only thing that distinguishes them; a corpus that recorded the category alone would be
+/// satisfied by a verifier that refused the right artifact for the wrong reason.
 /// </para>
 /// </remarks>
 internal static class CorpusBuilder
@@ -265,16 +274,40 @@ internal static class CorpusBuilder
             JavaScriptDiagnosticCodes.UnknownOpcode,
             "2:3:7:5"),
 
-        // ---- the three that need a host rather than bytes ----------------------------------------------
-        new CorpusEntry(
-            "a-section-count-ceiling-this-host-declined",
-            "tight-sections",
-            "ResourceExhaustion",
-            "CeilingReached",
-            0,
-            "-",
-            Unpinned,
-            SliceLowering.Addition()),
+        // ---- the seven exhaustions, one per dimension a verification can exhaust ------------------------
+        //
+        // A CEILING is compared and answers CeilingReached; an ALLOWANCE is charged and answers
+        // AllowanceExhausted. The two reasons are the core's, not this profile's, and writing the
+        // wrong one here is a row that fails rather than a row that quietly agrees.
+        //
+        // The four ceilings are the bounded reader's, compared inside the verification, and each
+        // answers at Artifact scope - the scope the verification itself runs under. The artifact-
+        // bytes row is the exception among them: the core compares the payload length against the
+        // same effective ceiling one call BEFORE the verifier is entered, so this row records the
+        // core's answer and the reader's own artifact-bytes arm is defensive. The ordering
+        // assertions reach that arm, by calling the verifier directly with bounds of their own.
+        Exhausted("an-artifact-larger-than-this-host-admits", "tight-artifact-bytes",
+            "CeilingReached", "ArtifactBytes", "Artifact"),
+        Exhausted("a-section-count-ceiling-this-host-declined", "tight-sections",
+            "CeilingReached", "SectionCount", "Artifact"),
+        Exhausted("a-declared-count-ceiling-this-host-declined", "tight-declared-count",
+            "CeilingReached", "DeclaredCount", "Artifact"),
+        Exhausted("a-structural-depth-ceiling-this-host-declined", "tight-structural-depth",
+            "CeilingReached", "StructuralDepth", "Artifact"),
+
+        // The three allowances are charged through the meter, and the meter reports the LEVEL that
+        // refused rather than the scope the verifier can attribute unaided. All three are declared
+        // at runtime creation here, so all three answer Runtime - which is why the scope is a
+        // column and not a constant: the same profile answers at two scopes depending on which
+        // budget ran out.
+        Exhausted("an-allocation-this-host-declined", "tight-allocated-bytes",
+            "AllowanceExhausted", "AllocatedBytes", "Runtime"),
+        Exhausted("a-verifier-work-allowance-this-host-spent", "tight-verifier-work",
+            "AllowanceExhausted", "VerifierWork", "Runtime"),
+        Exhausted("a-wall-clock-allowance-already-spent", "tight-wall-clock",
+            "AllowanceExhausted", "WallClock", "Runtime"),
+
+        // ---- the two that need a host and are not exhaustions -------------------------------------------
         new CorpusEntry(
             "a-token-that-was-already-cancelled",
             "cancelled",
@@ -283,6 +316,8 @@ internal static class CorpusBuilder
             0,
             "-",
             Unpinned,
+            Unnamed,
+            Unnamed,
             SliceLowering.Addition()),
         new CorpusEntry(
             "a-profile-the-catalog-does-not-hold",
@@ -292,15 +327,31 @@ internal static class CorpusBuilder
             0,
             "-",
             Unpinned,
+            Unnamed,
+            Unnamed,
             SliceLowering.Addition()),
     ];
 
     private static CorpusEntry Ok(string name, byte[] bytes, string completion) =>
-        new(name, "default", "Normal", "NormalCompleted", 0, completion, Unpinned, bytes);
+        new(name, "default", "Normal", "NormalCompleted", 0, completion, Unpinned, Unnamed, Unnamed, bytes);
 
     private static CorpusEntry Invalid(
         string name, byte[] bytes, string reason, int code, string position = Unpinned) =>
-        new(name, "default", "InvalidArtifact", reason, code, "-", position, bytes);
+        new(name, "default", "InvalidArtifact", reason, code, "-", position, Unnamed, Unnamed, bytes);
+
+    /// <summary>
+    /// One exhaustion entry: a well-formed program, a host that declined it on one dimension, and
+    /// the pair the answer must name.
+    /// </summary>
+    /// <remarks>
+    /// The bytes are the same well-formed program every time, and deliberately so. What separates
+    /// these seven rows is the host each is presented to, so a row that failed because its bytes
+    /// were malformed would be proving something about the artifact writer instead.
+    /// </remarks>
+    private static CorpusEntry Exhausted(
+        string name, string mode, string reason, string dimension, string scope) =>
+        new(name, mode, "ResourceExhaustion", reason, 0, "-", Unpinned, dimension, scope,
+            SliceLowering.Addition());
 
     /// <summary>
     /// The position column of a row that does not pin one.
@@ -316,6 +367,17 @@ internal static class CorpusBuilder
     /// pins nothing says so.
     /// </remarks>
     private const string Unpinned = "-";
+
+    /// <summary>
+    /// The dimension and scope columns of a row whose answer exhausted nothing.
+    /// </summary>
+    /// <remarks>
+    /// Written on every row that is not an exhaustion, rather than left blank, because the replay
+    /// reads what the answer carried and the two fields are present on every diagnostics record: a
+    /// row that left them empty would be compared against whichever member of each enumeration
+    /// happens to be first.
+    /// </remarks>
+    private const string Unnamed = "-";
 
     // ---- the byte-level variants -------------------------------------------------------------------
 

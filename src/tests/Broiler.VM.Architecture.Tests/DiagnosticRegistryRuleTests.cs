@@ -214,6 +214,101 @@ public sealed class DiagnosticRegistryRuleTests
             violation => violation.Contains("builds no position at all", StringComparison.Ordinal));
     }
 
+    [Fact]
+    public void N11_Every_Dimension_The_Profile_Can_Exhaust_Is_Pinned_By_A_Corpus_Entry()
+    {
+        var profile = AssuranceSources.Files
+            .Where(static file => file.Assembly == "Broiler.VM.Profile.JavaScript")
+            .ToArray();
+
+        var answers = DiagnosticRegistry.ExhaustionAnswers(profile);
+        var corpus = DiagnosticRegistry.CorpusOutcomes(DiagnosticRegistry.CorpusText);
+
+        Assert.Empty(ArchitectureRules.N11(answers, corpus, Dimensions, Scopes));
+
+        // Non-vacuous, and the figure the clause is about: the profile answers on seven dimensions
+        // - the bounded reader's four ceilings, the allocator's bytes, the link stage's work charge
+        // and the poll's wall clock - from more sites than that, and seven corpus entries pin them
+        // one for one.
+        var answered = answers
+            .Select(static answer => answer.Dimension)
+            .ToHashSet(StringComparer.Ordinal);
+
+        Assert.Equal(7, answered.Count);
+        Assert.True(answers.Count > answered.Count);
+        Assert.Equal(
+            7,
+            corpus.Count(static row => row.Outcome == "ResourceExhaustion"));
+
+        // The scopes are held to the core's vocabulary and NOT to the site, because they honestly
+        // differ: a reader ceiling is compared inside the verification and answers at Artifact,
+        // and an allowance is charged through the meter, which reports the level that refused.
+        // Both are in the corpus and a rule that demanded the site's scope would fail on the four
+        // that are right.
+        Assert.Equal(
+            ["Artifact", "Runtime"],
+            corpus.Where(static row => row.Outcome == "ResourceExhaustion")
+                .Select(static row => row.Scope)
+                .Distinct(StringComparer.Ordinal)
+                .Order(StringComparer.Ordinal)
+                .ToArray());
+
+        var witness = WitnessFile("N11-an-exhaustion-answer-nothing-pins.cs.witness");
+
+        var violations = ArchitectureRules
+            .N11(DiagnosticRegistry.ExhaustionAnswers([witness]), corpus, Dimensions, Scopes)
+            .ToArray();
+
+        Assert.Contains(violations, violation => violation.Contains(
+            "answers a resource exhaustion on HostCalls", StringComparison.Ordinal));
+        Assert.Contains(violations, violation => violation.Contains(
+            "answers with ReadaheadWindow, which is not a member of VmBudgetDimension",
+            StringComparison.Ordinal));
+
+        // The other direction, over the real manifest with one thing altered: an entry recording a
+        // dimension this profile never answers, and one recording a scope the core does not have.
+        // A stale entry is as much a broken binding as a missing one - it records an answer
+        // nothing in this component can give.
+        var doctored = corpus
+            .Select(static row => row.Dimension == "WallClock" ? row with { Dimension = "NestedLoadBytes" } : row)
+            .Select(static row => row.Dimension == "SectionCount" ? row with { Scope = "Universe" } : row)
+            .ToArray();
+
+        var stale = ArchitectureRules.N11(answers, doctored, Dimensions, Scopes).ToArray();
+
+        Assert.Contains(stale, violation => violation.Contains(
+            "records the dimension NestedLoadBytes, and no site in the profile answers on it",
+            StringComparison.Ordinal));
+        Assert.Contains(stale, violation => violation.Contains(
+            "records the scope Universe, which is not a member of VmBudgetScope",
+            StringComparison.Ordinal));
+        Assert.Contains(stale, violation => violation.Contains(
+            "answers a resource exhaustion on WallClock", StringComparison.Ordinal));
+
+        // And the vacuity clause in both halves: a profile that answers nothing and a corpus that
+        // pins nothing each report themselves rather than passing.
+        Assert.Contains(
+            ArchitectureRules.N11([], corpus, Dimensions, Scopes),
+            violation => violation.Contains("answers no resource exhaustion at all", StringComparison.Ordinal));
+
+        Assert.Contains(
+            ArchitectureRules.N11(answers, [], Dimensions, Scopes),
+            violation => violation.Contains("pins no exhaustion at all", StringComparison.Ordinal));
+    }
+
+    /// <summary>
+    /// The two core vocabularies an exhaustion answer names one member of each of, read from the
+    /// enumerations themselves.
+    /// </summary>
+    /// <remarks>
+    /// Held to the core's own types rather than to a list written here, for the reason rule N6
+    /// gives about reason names: this project does reference the contract assembly, so a list would
+    /// be a second copy that could disagree with it.
+    /// </remarks>
+    private static readonly string[] Dimensions = Enum.GetNames<VmBudgetDimension>();
+
+    private static readonly string[] Scopes = Enum.GetNames<VmBudgetScope>();
+
     private static string Witness(string fileName) => File.ReadAllText(WitnessPath(fileName));
 
     private static AssuranceSourceFile WitnessFile(string fileName) =>

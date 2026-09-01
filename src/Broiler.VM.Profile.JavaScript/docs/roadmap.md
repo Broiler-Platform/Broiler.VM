@@ -852,21 +852,28 @@ answer. Each bullet below states which category it produces.
   the declared manifest — see [section 9](#9-the-semantic-front-end-and-lowering), which makes
   early errors a verification stage rather than a parser side effect;
 - **`ResourceExhaustion`** — **seven dimensions from three sources, and the verifier names every
-  one of them** *(corrected: JSC-35, JSC-39)*: structural depth, section count, declared counts and
-  artifact bytes, against the effective ceilings the core materialized before the first byte was
-  read and answered through the bounded reader's own statuses; allocated bytes and verifier work,
-  refused by the bounded allocator and by the work charge the verifier makes over the code it
-  links; and the wall clock, which the verifier's poll names when it stops for a budget rather than
-  for a token. Each names one dimension and one scope, and none of them is an invalid-artifact
-  answer: the artifact is well formed and this image declined to admit it. **Each of the seven gets
-  a corpus entry of its own, and the reason is that nothing else would bind them**: an exhaustion
-  answer carries no profile diagnostic code, so the registry's both-directions binding — which is
-  what holds every invalid-artifact arm to a named case — does not reach this bullet at all, and it
-  reaches the allocator's arm and the poll's arm no more than the reader's. A dimension named here
-  and reached by no entry is an arm whose category is asserted by prose, in exactly the place
-  [section 21](roadmap.gates.md#21-test-and-evidence-matrix) names *a ceiling breach recorded as
-  an invalid artifact* as a release blocker. Where a dimension is unreachable at the current
-  manifest, the entry is owed by the milestone that makes it reachable and the bundle says which;
+  one of them** *(corrected: JSC-35, JSC-39, JSC-41)*: structural depth, section count and declared
+  counts, against the effective ceilings the core materialized before the first byte was read and
+  answered through the bounded reader's own statuses; allocated bytes and verifier work, refused by
+  the bounded allocator and by the work charge the verifier makes over the code it links; the wall
+  clock, which the verifier's poll names when it stops for a budget rather than for a token; and
+  artifact bytes, which **the core answers before this verifier is entered** — it compares the
+  payload length against the same effective vector the reader would be handed, so the verifier's
+  own two artifact-bytes arms are defensive and no host ceiling reaches them. Each names one
+  dimension and one scope, and none of them is an invalid-artifact answer: the artifact is well
+  formed and this image declined to admit it. **Each of the seven gets a corpus entry of its own,
+  and the reason is that nothing else would bind them**: an exhaustion answer carries no profile
+  diagnostic code, so the registry's both-directions binding — which is what holds every
+  invalid-artifact arm to a named case — does not reach this bullet at all, and it reaches the
+  allocator's arm and the poll's arm no more than the reader's. Each entry records the **pair** the
+  answer named rather than the dimension alone, because the scope is not a constant across the
+  seven: a reader ceiling is compared inside the verification and answers at the artifact scope,
+  while an allowance is charged through the meter, which reports the level that actually refused. A
+  dimension named here and reached by no entry is an arm whose category is asserted by prose, in
+  exactly the place [section 21](roadmap.gates.md#21-test-and-evidence-matrix) names *a ceiling
+  breach recorded as an invalid artifact* as a release blocker. Where a dimension is unreachable at
+  the current manifest, the entry is owed by the milestone that makes it reachable and the bundle
+  says which;
 - **`InvalidArtifact`** — any host assumption the artifact declares, checked against the
   capabilities the verification context reports as registered. An artifact that names an import the
   composition does not carry is refused at verification rather than at first call, and a

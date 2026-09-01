@@ -54,6 +54,9 @@ MIRROR = os.path.join(
     "src", "compositions", "Broiler.VM.Composition.JavaScript.SliceCompiler", "CorpusBuilder.cs")
 FIXTURES_PROJECT = os.path.join(
     "src", "tests", "Broiler.VM.Fixtures", "Broiler.VM.Fixtures.csproj")
+CORPUS_MANIFEST = os.path.join("src", "tests", "corpus", "js-1", "corpus.manifest")
+EXECUTION_ONLY_HOSTS = os.path.join(
+    "src", "compositions", "Broiler.VM.Composition.JavaScript.ExecutionOnly", "Hosts.cs")
 
 # The two composition roots the register lists for this profile, with the slug rules K3 and K4 use
 # to find their retained artefacts: the last dot-separated segment, lowercased.
@@ -370,6 +373,18 @@ CONTROLS = [
             "    public const uint MaximumEntryNameBytes = 256;\n\n"
             "    /// <summary>An addition nobody recorded.</summary>\n"
             "    public const uint UnrecordedCeiling = 7;"),
+    ),
+    (
+        "N11-an-exhaustion-dimension-nothing-pins",
+        "One exhaustion entry's dimension column is changed to a dimension this profile never "
+        "answers. Nothing else in the row moves - the category and the reason are the same two "
+        "values for every ceiling breach, and the diagnostic column is zero on all seven because "
+        "an exhaustion answer carries no code - so the registry's binding, which is what holds "
+        "every other refusal to a case, notices nothing. Rule N11 must report BOTH halves: a "
+        "dimension the verifier answers on that no entry now pins, and an entry pinning a "
+        "dimension no site answers on.",
+        CORPUS_MANIFEST,
+        lambda text: text.replace("|WallClock|Runtime", "|HostCalls|Runtime"),
     ),
     (
         "J3-a-profile-fingerprint-is-stale",
@@ -768,6 +783,32 @@ CORPUS_CONTROLS = [
             "            {\n"
             "                return VmExecutionStep.ContractViolation(VmReason.AllowanceExhausted);\n"
             "            }"),
+    ),
+    (
+        "a-tight-ceiling-stops-being-tight",
+        "The wall-clock allowance the tight mode states is raised from zero to the profile's own "
+        "default, so the host stops declining and the artifact verifies and runs. This is the "
+        "control for the seven exhaustion entries: their bytes are a well-formed program and what "
+        "refuses them is the host, so a mode that quietly stopped refusing would leave seven rows "
+        "recording an answer nothing produced.",
+        EXECUTION_ONLY_HOSTS,
+        lambda text: text.replace(
+            '("tight-wall-clock", VmBudgetDimension.WallClock, 0UL)',
+            '("tight-wall-clock", VmBudgetDimension.WallClock, 10_000UL)'),
+    ),
+    (
+        "an-exhaustion-answers-the-neighbouring-dimension",
+        "The bounded reader's structural-depth status is mapped onto the section-count dimension. "
+        "Both are ceilings, both answer CeilingReached, and both carry no diagnostic code - so the "
+        "outcome, the reason and the code are unchanged on every row and the only thing that moves "
+        "is the dimension one entry records. This is the injection the dimension column exists "
+        "for, and before that column no row in this corpus could have noticed it. Rule N11 fails "
+        "on the same injection from the other side, which is the point of having both: the rule "
+        "sees an arm nothing answers on, and the replay sees an artifact answered wrongly.",
+        PROFILE_VERIFIER,
+        lambda text: text.replace(
+            "VmBudgetDimension.StructuralDepth, VmBudgetScope.Artifact",
+            "VmBudgetDimension.SectionCount, VmBudgetScope.Artifact"),
     ),
     (
         "the-verifier-stops-refusing-unreachable-code",

@@ -77,10 +77,16 @@ internal static class Program
         const string Eol = "\n";
 
         manifest.Append("# broiler.javascript.slice retained corpus, format version 1").Append(Eol);
-        manifest.Append("# name|sha256|mode|outcome|reason|diagnostic|completion|position").Append(Eol);
+        manifest
+            .Append("# name|sha256|mode|outcome|reason|diagnostic|completion|position|dimension|scope")
+            .Append(Eol);
         manifest
             .Append("# position is sectionIndex:byteOffset:coordinate0:coordinate1, or - where the row ")
             .Append("pins no position")
+            .Append(Eol);
+        manifest
+            .Append("# dimension and scope are the budget dimension a resource exhaustion named and ")
+            .Append("the scope that refused, or - where the row is not an exhaustion")
             .Append(Eol);
 
         foreach (var entry in entries)
@@ -96,7 +102,9 @@ internal static class Program
                 .Append(entry.DiagnosticCode.ToString(System.Globalization.CultureInfo.InvariantCulture))
                 .Append('|')
                 .Append(entry.Completion).Append('|')
-                .Append(entry.Position)
+                .Append(entry.Position).Append('|')
+                .Append(entry.Dimension).Append('|')
+                .Append(entry.Scope)
                 .Append(Eol);
         }
 
