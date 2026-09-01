@@ -148,16 +148,33 @@ AT-11.
 
 ### Profiles
 
-The JavaScript and WebAssembly profiles are separate components with their own roadmaps and their
-own ledgers. They are **not planned or tracked here**, no row above depends on either, and no
-profile result closes a core gate. Section 9 of the roadmap records only what they are expected to
-require of the core contract.
+The JavaScript and WebAssembly profiles are **product project families in this component**, at
+`src/Broiler.VM.Profile.<Language>*`, each with its own roadmap, ledger, decision series and gates
+in the project directory whose assembly they describe. They are **not planned or tracked here**,
+no row above depends on either, and no profile result closes a core gate: update rule 6 is what
+keeps that true now that the trees are in this repository rather than beside it. Section 9 of the
+roadmap records only what they are expected to require of the core contract.
 
-A profile roadmap may open once VM-1's contract is accepted. It is implemented but not accepted, so
-no profile roadmap may open yet. The JavaScript profile additionally
-carries a seeding precondition recorded in its own roadmap: it starts from a named snapshot copy
-of the legacy component taken after that component's in-flight fix programme lands, as a fork with
-no dependency edge in either direction.
+*Corrected 2026-09-01.* This section previously said the profiles were **separate components**, and
+that **no profile roadmap may open yet** because VM-1's contract is implemented and not accepted.
+Both readings were written before ADR 0001's 2026-08-31 revision, which rules that a language
+profile is a set of product projects in Broiler.VM rather than a component of its own and names the
+paths they occupy. And the second was overtaken by this file's own **update rule 8**: human review
+gates a release and not a development step, so a profile may open its plan and build against the
+contract *as implemented*, recording acceptance as a blocker on the milestones that need it. The
+correction is recorded rather than silently rewritten because a reader who takes this section at
+its word would conclude that work which exists in this checkout cannot exist.
+
+**What is unchanged, and it is the part that matters here.** No profile status is recorded in this
+file, no profile bundle advances a row above, and no core gate cites a profile result — update
+rule 6 says so and is not weakened by the placement. **No profile ships**: every profile project
+declares no `PackageId` and carries `IsPackable=false`, the packable set is exactly the three core
+assemblies, and rule N4 asserts both halves, which is what keeps the support table's "the core
+ships no language profile" true while a profile family sits in `src/`.
+
+The JavaScript profile additionally carries a seeding precondition recorded in its own roadmap: it
+starts from a named snapshot copy of the legacy component taken after that component's in-flight fix
+programme lands, as a fork with no dependency edge in either direction.
 
 ---
 
@@ -202,8 +219,11 @@ claimed RID; analyzer success alone is not a publish-and-run result.
    gathered for an older or different population is not silently carried forward. A core contract
    amendment is such a change: record the new version and state, per affected record, what
    recertifies unchanged, what must be re-collected, and what is superseded.
-6. Do not record profile work here. A profile's status belongs to that profile's own ledger, and a
-   profile result never advances a row in this file.
+6. Do not record profile work here. A profile's status belongs to that profile's own ledger —
+   `src/Broiler.VM.Profile.<Language>/docs/roadmap.status.md`, in this repository since ADR 0001's
+   2026-08-31 revision — and a profile result never advances a row in this file. **Sharing a
+   repository is not sharing a ledger**, and the rule is load-bearing in exactly the way it was
+   before the trees moved.
 7. A milestone moves to `Accepted` only after its owner and reviewer confirm that every objective
    exit condition for that record is covered. Record the decision date and evidence-bundle ID in
    the affected row.
@@ -233,8 +253,9 @@ claimed RID; analyzer success alone is not a publish-and-run result.
 Until such updates are recorded, the table in section 2 remains the complete Broiler.VM status:
 **VM-0 through VM-6 are all in progress and unaccepted**, each with a retained evidence bundle, and
 no release capability is claimed. Core contract version 1 is implemented and runs; it is not
-accepted, no milestone has a review decision, and no language profile ships. `linux-x64` and
-`win-x64` have each published and run, on one machine each and with no CI lane that has ever
+accepted, no milestone has a review decision, and no language profile ships — the profile project
+family in `src/` is non-packable, and the packable set is exactly the three core assemblies.
+`linux-x64` and `win-x64` have each published and run, on one machine each and with no CI lane that has ever
 executed, so neither is a claimed RID.
 
 *Corrected 2026-08-31.* This paragraph previously read "VM-0 and VM-1 are in progress and

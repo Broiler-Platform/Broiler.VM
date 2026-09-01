@@ -12,11 +12,15 @@ authority, diagnostics, and composition evidence. It owns no opcode set, no valu
 and no language semantics of its own.
 
 This roadmap plans the core only. **JavaScript** and **WebAssembly** are the two intended first
-profiles, each a separate component with its own roadmap written after the core contract is
-accepted. Section 9 records what those profiles are expected to require, so the contract is
-designed for them rather than retrofitted to them. Sections 10 and 11 record where compilation
-lives and how a host gets from source to an artifact without any tooling, and section 12 records
-the boundary against the legacy `Broiler.JS` component, which Broiler.VM does not depend on.
+profiles. Each is a family of product projects **in this component**, at
+`src/Broiler.VM.Profile.<Language>*`, with its own roadmap, ledger, decisions and gates in the
+project directory whose assembly they describe — not a component with a repository of its own.
+Their plans are open and are not this document's; no row of this roadmap tracks one, and no profile
+result closes a core gate. Section 9 records what those profiles are expected to require, so the
+contract is designed for them rather than retrofitted to them. Sections 10 and 11 record where
+compilation lives and how a host gets from source to an artifact without any tooling, and
+section 12 records the boundary against the legacy `Broiler.JS` component, which Broiler.VM does
+not depend on.
 
 ---
 
@@ -27,7 +31,7 @@ test names, and release manifests must qualify the term when ambiguity is possib
 
 | Term | Meaning in this roadmap |
 |---|---|
-| **VM profile** | A bytecode language plus its format, feature/version manifest, verifier, value/frame model, and executor. It is a separate component that references the core; the core never references it. |
+| **VM profile** | A bytecode language plus its format, feature/version manifest, verifier, value/frame model, and executor. It is a **family of product projects in this component**, at `src/Broiler.VM.Profile.<Language>*`, that references the core; the core never references one, and no profile references another. *(Revised 2026-08-31: this row read "a separate component", written when no product profile existed. ADR 0001's dated revision rules that a language profile is a set of product projects in Broiler.VM rather than a component of its own, and rule A11 was changed in the same revision to admit a sibling in the same profile family. What is unchanged is every direction of dependency this row states.)* |
 | **Core contract version** | The numbered revision of the profile-neutral lifecycle, operation-result, resource-authority, guest-initiated-load, external-control, and host-capability contract frozen by VM-0 and implemented by VM-1. Profiles and artifacts version independently of it. |
 | **Feature manifest** | The exact language surface accepted by one version of a profile. The core fixes the manifest's shape and identity rules; a profile fixes its content. A profile name alone is never a conformance claim, and neither is a manifest name: a manifest claims only what its own retained oracle run shows. |
 | **Built-in profile** | A profile whose factory and dependencies are directly referenced at build time and rooted in a static catalog. A built-in may be Broiler-provided or application-local; it is never discovered at run time. |
@@ -83,8 +87,13 @@ Each VM profile owns:
 - source compilers, parsers, or text formats in the core;
 - a debug wire protocol, a cross-profile inspection API, or a profile-neutral breakpoint model.
   VM-0 freezes only the external-suspension transitions that a profile-owned debug surface needs;
-- delivering the JavaScript or WebAssembly profile. Those are separate components with their own
-  roadmaps, and no gate in this document depends on either existing; and
+- delivering the JavaScript or WebAssembly profile. Each is a product project family in this
+  component with its own roadmap, ledger and gates, none of which this document plans or tracks,
+  and no gate here depends on either existing. **The tree containing a profile and the packages
+  shipping one are different claims**: every profile project declares no `PackageId` and carries
+  `IsPackable=false`, which is what keeps
+  [gate 1](#15-release-gates)'s "no language profile ships with the core" true while the profiles
+  sit in `src/`; and
 - performance claims about any language. The core measures only its own overhead.
 
 ---
@@ -268,7 +277,7 @@ project shells and an explicit assembly/package budget.
 | Bounded input primitives | `Broiler.VM.Binary` | Checked readers, variable-length integer decoding, bounded framing, and allocation guards used by the core envelope and by every profile verifier. Contains no format, no schema, and no semantics. |
 | Core runtime | `Broiler.VM.Runtime` | Builder, immutable catalog, bounded load/execute lifecycle, resource authority, guest-initiated-load mediation, cancellation, diagnostics, and ownership. References abstractions and binary primitives only. |
 | Fixture profile | `Broiler.VM.Fixtures` *(test-only)* | The trivial profile and application-local consumer profile used to prove contracts and closures. Never referenced by a product package. |
-| Profile (future) | `Broiler.VM.Profile.<Language>` | One language: format, verifier, value/frame model, executor, imports, conformance. References the core; never references another profile. **One product assembly is the default**; section 10 splits the format out only where Broiler compiles the language itself, and a profile that consumes a format an external toolchain produces has nothing for a format assembly to hold apart. The frozen "exactly two core assemblies" reference set is a set of **Broiler.VM-owned** assemblies: a profile component's own siblings are not members of it, which ADR 0011 P1 and ADR 0001 now state rather than leave to be inferred from a rationale that is entirely about excluding the runtime. |
+| Profile | `Broiler.VM.Profile.<Language>` *(product projects in this component, non-packable; ADR 0001's 2026-08-31 revision)* | One language: format, verifier, value/frame model, executor, imports, conformance. References the core; never references another profile. **One product assembly is the default**; section 10 splits the format out only where Broiler compiles the language itself, and a profile that consumes a format an external toolchain produces has nothing for a format assembly to hold apart. The frozen "exactly two core assemblies" reference set is a set of **Broiler.VM-owned** assemblies: a profile component's own siblings are not members of it, which ADR 0011 P1 and ADR 0001 now state rather than leave to be inferred from a rationale that is entirely about excluding the runtime. |
 
 Single-profile and multi-profile composition roots are explicit packages or samples, never a
 runtime option that removes an already rooted profile. No new assembly is accepted merely to
@@ -652,7 +661,18 @@ created under one shared aggregate budget — so a two-profile composition root 
 
 Neither profile is planned by this roadmap and no core gate depends on either. They are recorded
 here so the contract is designed against real requirements rather than an imagined average
-language, and so that a later profile roadmap can be written without renegotiating the core.
+language, and so that a profile roadmap can be written without renegotiating the core.
+
+**Both plans now exist, and neither is this document's.** They live at
+`src/Broiler.VM.Profile.<Language>/docs/`, each with its own roadmap, ledger, decision series and
+release gates, and the placement is ADR 0001's 2026-08-31 revision rather than a staging
+convenience. Two consequences are this section's to state. What a profile plan says it *expects* of
+the core belongs below and is this roadmap's design input; what it says about its own milestones,
+evidence or state belongs to its own ledger, which
+[update rule 6](roadmap.status.md#4-update-rules) keeps out of this component's. And the lists
+below are kept current against those plans rather than against the expectations this section was
+first written from — a requirement a profile has since dropped or sharpened is a requirement
+the contract was designed against for no reason.
 
 ### JavaScript
 
@@ -708,9 +728,18 @@ than process failures; imported memories, tables, and globals with declared alia
 rules across instances; and a pinned specification and conformance-suite revision that its own
 manifest fixes.
 
+It also expects one thing version 1 cannot express, and it is the one candidate amendment with no
+local workaround behind it: **a refusable retention member on the metering surface.** Its
+specification requires `memory.grow` to answer the guest with a negative result when growth is
+refused, VM-0's item 7 records that no retained-state dimension can carry a guest-observable
+refusal, and gating on a charge does not recover one. Recorded here because
+[section 2](#core-contract-version-and-amendment)'s procedure is currently unexecutable, so this is
+the sharpest live example of a blocker this component holds rather than a profile's own delay.
+
 It is also expected to need **no** parser, **no** text format, and **no** guest-initiated loads in
 its first version, which makes it the useful counterweight when judging whether a proposed core
-feature is genuinely general or is one language's need in disguise.
+feature is genuinely general or is one language's need in disguise — and the row above is that
+counterweight working: a profile with none of those three still meets the wall.
 
 Its conformance corpus is distributed as text scripts, so its roadmap will need a test-only
 ingestion path. The core's obligation is only the general rule already in section 14: test tooling
@@ -958,10 +987,21 @@ never complete because its design appears here.
      including the charging hook for work done inside a host capability, which is the one candidate
      both intended profiles independently rate general, and the argument channel, whose scope and
      strength the two profiles currently record differently.
-  7. **Whether a retained-state dimension can carry a guest-observable refusal.** It cannot today —
-     the retention report returns nothing and the refusal is latched for the next charge or poll —
-     and a profile whose language requires an observable refusal must gate on a charge instead.
+  7. **Whether a retained-state dimension can carry a guest-observable refusal.** It cannot: the
+     retention report returns nothing and the refusal is latched for the next charge or poll.
      Recording it costs a sentence; discovering it costs a memory representation.
+
+     *Corrected 2026-09-01, and the correction removes an escape rather than adding one.* This item
+     used to close "and a profile whose language requires an observable refusal must gate on a
+     charge instead", which read as a profile-side workaround and is not one. Read off the shipped
+     core rather than inferred from the contract: a refused `TryCharge` at any scope latches
+     exhaustion on the meter, and the core rewrites the completed step as `ResourceExhaustion`
+     whatever the profile does with the `false` it was handed. **There is no guest-observable budget
+     refusal on core contract version 1, in any spelling.** So this is an amendment question and not
+     a profile's design problem, which is the difference between a sentence in a profile's plan and
+     a milestone it cannot start — an intended profile has met exactly that wall, and
+     [section 2](#core-contract-version-and-amendment) records what an unexecutable procedure then
+     costs.
 - **Dependencies:** Named ownership for the core contract and its amendments. No dependency on any
   profile, on the legacy component, or on the legacy component's in-flight work.
 - **Objective exit gate:** An acyclic shell graph builds; architecture tests express every
@@ -1137,12 +1177,18 @@ VM-0 graph, ownership, core contract version 1
             │    └→ VM-4 lifecycle, concurrency, diagnostics hardening
             │         ├→ VM-5 core overhead baselines
             │         └→ VM-6 package, publish, recertify
-            └→ (profile roadmaps begin against the accepted contract)
+            └→ (profile roadmaps build against the IMPLEMENTED contract;
+                acceptance blocks the milestones their own ledgers name)
 ```
 
-A profile roadmap may begin as soon as VM-1's contract is accepted, and its own gates belong to
-its own component. Nothing in VM-0 through VM-6 waits for a profile, and no profile result closes
-a core gate.
+A profile roadmap's gates are its own, nothing in VM-0 through VM-6 waits for a profile, and no
+profile result closes a core gate. **What a profile waits on is narrower than this note used to
+say.** It read "a profile roadmap may begin as soon as VM-1's contract is accepted"; under
+[update rule 8](roadmap.status.md#4-update-rules) — human review gates a release and not a
+development step — a profile may open its plan and build against the contract **as implemented**,
+and what waits on acceptance is each milestone its own ledger records as blocked, with this
+component named as the holder. The distinction is the profiles' to draw and their ledgers draw it;
+what this note owes is not to assert the stronger version *(revised 2026-09-01)*.
 
 ---
 
