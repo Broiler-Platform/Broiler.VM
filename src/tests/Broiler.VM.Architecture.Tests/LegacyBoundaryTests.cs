@@ -24,8 +24,31 @@ namespace Broiler.VM.Architecture.Tests;
 /// repository, which milestone VM-0 does not own; ADR 0001 records that as a recommendation.
 /// </para>
 /// </remarks>
-public sealed class LegacyBoundaryTests
+public sealed class LegacyBoundaryTests(Xunit.Abstractions.ITestOutputHelper output)
 {
+    /// <summary>
+    /// The switch that makes this test write into the retained bundle, per the convention rules
+    /// M1, J-group and the fixture corpus already use.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Without it this test rewrote retained evidence on every run.</b> It wrote
+    /// <c>d1-outcome.txt</c> into the CURRENT milestone's bundle unconditionally, stamping the
+    /// running machine's absolute checkout path into it - so any contributor running the suite
+    /// dirtied a bundle collected on another machine, and the lane did it on every push. A bundle
+    /// is immutable evidence collected deliberately by a person; a test run is not a collection,
+    /// and the one thing it may not do is edit the record it is supposed to be judged against.
+    /// </para>
+    /// <para>
+    /// <b>The previous fix relocated the defect rather than removing it.</b> An earlier version
+    /// wrote to a literal <c>vm-0</c>, so every later run rewrote a retained VM-0 line with the
+    /// path of whichever machine ran last; that was corrected to the current milestone's bundle,
+    /// which made the overwritten bundle the current one instead of an old one. The write itself
+    /// was the defect, not its destination.
+    /// </para>
+    /// </remarks>
+    private const string WriteVariable = "BROILER_EVIDENCE_WRITE";
+
     [Fact]
     public void D1_No_Project_Outside_The_Component_References_Into_It()
     {
@@ -107,22 +130,34 @@ public sealed class LegacyBoundaryTests
     }
 
     /// <summary>
-    /// Writes which branch rule D1 took to the evidence bundle, so that "inconclusive" and
-    /// "scanned and clean" are distinguishable after the fact.
+    /// Reports which branch rule D1 took, so that "inconclusive" and "scanned and clean" are
+    /// distinguishable after the fact.
     /// </summary>
     /// <remarks>
-    /// A test run reports only pass or fail, and D1 has a third outcome that must not be
-    /// collapsed into the first. The file is part of the retained bundle rather than console
-    /// output because the bundle is what a reviewer reads.
+    /// <para>
+    /// A test run reports only pass or fail, and D1 has a third outcome that must not be collapsed
+    /// into the first. <b>Every</b> run says which branch it took, through the test's own output,
+    /// so a contributor reading a local run is not left guessing either.
+    /// </para>
+    /// <para>
+    /// <b>Only a collection writes it into the bundle</b>, because that file is retained evidence
+    /// and a bundle is what a reviewer reads. The distinction the outcome draws is about the run
+    /// that produced a bundle's logs; a run that produces no bundle has nothing to record, and
+    /// writing anyway is how a retained artefact ends up describing a machine that collected
+    /// nothing. The collection script sets <see cref="WriteVariable"/> for its own test step and
+    /// for no other, so the controls it runs - each of which is a further <c>dotnet test</c> over a
+    /// deliberately broken tree - cannot overwrite the record with an injected run's answer.
+    /// </para>
     /// </remarks>
-    /// <remarks>
-    /// It goes into the bundle of the milestone the rule register declares, not into a literal
-    /// <c>vm-0</c>. The literal meant every later run rewrote a retained VM-0 line with the path
-    /// of whichever machine ran last - so the bundle a reviewer reads for VM-0 recorded a machine
-    /// that collected nothing for it.
-    /// </remarks>
-    private static void RecordOutcome(string outcome)
+    private void RecordOutcome(string outcome)
     {
+        output.WriteLine("Rule D1: " + outcome);
+
+        if (!string.Equals(Environment.GetEnvironmentVariable(WriteVariable), "1", StringComparison.Ordinal))
+        {
+            return;
+        }
+
         var directory = Path.Combine(
             ComponentGraph.Root, "docs", "evidence", ComponentGraph.CurrentEvidenceDirectory);
 

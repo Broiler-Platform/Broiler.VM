@@ -224,7 +224,7 @@ CONTROLS = [
 ]
 
 
-def run(command, shell=False, cwd=None):
+def run(command, shell=False, cwd=None, extra_env=None):
     """
     Run a command and return (exit code, combined output).
 
@@ -233,8 +233,13 @@ def run(command, shell=False, cwd=None):
     walking up from the working directory, and running them from the root would silently give them
     the component's sources and the component's build properties - which is the one thing a
     pristine consumer must not have.
+
+    `extra_env` is how a step opts into writing a retained artefact. It is per call and never
+    global, because most of what this script runs is a `dotnet test` over a DELIBERATELY BROKEN
+    tree - the negative controls - and a switch set for the whole process would let an injected
+    run overwrite the record the clean run wrote.
     """
-    environment = dict(os.environ, DOTNET_CLI_UI_LANGUAGE="en")
+    environment = dict(os.environ, DOTNET_CLI_UI_LANGUAGE="en", **(extra_env or {}))
     completed = subprocess.run(
         command,
         cwd=cwd or ROOT,
@@ -851,7 +856,16 @@ def main():
     write(os.path.join(out, "build.log"), build.strip() + "\n")
 
     print("  2 test")
-    _, test = run(["dotnet", "test", SOLUTION, "-c", "Release"])
+    # BROILER_EVIDENCE_WRITE is set for THIS test step and for no other. Rule D1 has three
+    # outcomes where a test run reports two, and the third - inconclusive, because no aggregate
+    # checkout sits above the component - has to be distinguishable in the bundle from a scan that
+    # found nothing. The switch exists because the write used to be unconditional: every ordinary
+    # `dotnet test` rewrote the retained d1-outcome.txt with the running machine's absolute path,
+    # so a contributor's run dirtied a bundle collected elsewhere and the CI lane did it on every
+    # push. A collection may write the record; nothing else may.
+    _, test = run(
+        ["dotnet", "test", SOLUTION, "-c", "Release"],
+        extra_env={"BROILER_EVIDENCE_WRITE": "1"})
     write(os.path.join(out, "test.log"), test.strip() + "\n")
 
     print("  3 pack")
