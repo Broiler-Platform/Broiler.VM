@@ -87,6 +87,10 @@ Ordered by the roadmap section they land in, so this file can be read beside the
 | [WAC-12](#wac-12) | roadmap §5 | The cross-profile boundary rule exists and binds this family in both directions today | rule N2 |
 | [WAC-13](#wac-13) | delivery §21, WA-0 | The public API baseline cannot be taken by loading a profile assembly; it is described from build output | the sibling profile's dated finding |
 | [WAC-14](#wac-14) | gates §19 | The declared repetition count belongs to WA-5, the first milestone whose gate demands a figure — not WA-1 | delivery §21, WA-1 and WA-5 |
+| [WAC-15](#wac-15) | roadmap §4.4; delivery §21, §27; gates §23 | The suite's attribution row and the standing-claim confirmation move from WA-0 to WA-4, the milestone that first ingests a suite file | gate 11; ledger section 3 |
+| [WAC-16](#wac-16) | roadmap §20; delivery §21, §27; gates §24, §25 | The one opened amendment gets a holder, an unblock condition, and a fallback that is WA-10's release decision rather than WA-5's | [WAC-03](#wac-03); gates §25's own stop condition |
+| [WAC-17](#wac-17) | roadmap §20; delivery §21, §27; gates §24 | The amendment register answers nothing at release, but its **state** is published there rather than inferred | gate 1; roadmap §20's unexecutable procedure |
+| [WAC-18](#wac-18) | delivery §21, §27; gates §24 | The support table names the declared-default vector's reconciliation as unowned, rather than publishing the vector and stopping | ledger section 3; gate 1 |
 
 ### WAC-01
 
@@ -427,6 +431,133 @@ have retained figures under rules naming a milestone that never set them.
 **Authority and date.** The delivery file's own WA-1 and WA-5 gates, read against the rule,
 2026-09-01.
 
+### WAC-15
+
+**Where:** roadmap
+[section 4.4](roadmap.md#44-licence-attribution-and-one-notice-that-must-change); delivery
+[section 21](roadmap.delivery.md#21-milestones), WA-0 and WA-4; delivery
+[section 27](roadmap.delivery.md#27-the-chapter-milestone-and-gate-map); gates
+[section 23](roadmap.gates.md#23-test-and-evidence-matrix).
+
+**What the plan said.** That **WA-0** lands the row in the host component's notice carrying the
+ingested suite's attribution, and confirms or amends the core's standing third-party claim against
+what this profile's tree will contain, with the release owner co-signing. It was an exit-gate clause
+of a milestone that deliberately writes no product code.
+
+**What replaced it.** WA-0 **records the obligation**, names its owner, and names the release owner
+who co-signs it. **WA-4 lands the row**, in the same change that first ingests a suite file, with
+modified files marked and the standing-claim confirmation taken there too. WA-10 re-confirms against
+the shipped tree, which it already did.
+
+**Why the earlier reading could not close.** What an attribution row carries forward is the ingested
+material's own notice content, and this tree holds none of it at WA-0: the suite revision is not
+resolved until WA-4, retrieving and archiving third-party material is a human action the ledger
+records as unperformed, and the standing-claim confirmation is a claim about tree contents that do
+not exist yet. A row written at WA-0 would have been an attribution for material nobody had
+retrieved — which is the failure gate 11 exists to prevent, not an early discharge of it — and
+a confirmation written there would have been a claim about a hypothetical tree.
+
+**What is unchanged.** The obligation itself, its owner, the co-signature, and the stop: an
+attribution obligation discovered during a publish is a stop, and adopting the host component's
+notice file discharges none of it.
+
+**Authority and date.** [Release gate 11](roadmap.gates.md#24-release-gates), read against
+[section 4.3](roadmap.md#43-what-is-acquired-rather-than-written), which makes retrieval a human
+action and puts the suite's commit at WA-4, and against
+[section 3 of the ledger](roadmap.status.md#3-open-external-dependencies), whose conformance-suite
+row records the revision unpinned and the licence consequences unconfirmed; 2026-09-01.
+
+### WAC-16
+
+**Where:** roadmap
+[section 20](roadmap.md#20-amendments-and-this-profiles-duty-as-the-counterweight); delivery
+[section 21](roadmap.delivery.md#21-milestones), WA-5 and WA-10; delivery
+[section 27](roadmap.delivery.md#27-the-chapter-milestone-and-gate-map); gates
+[section 24](roadmap.gates.md#24-release-gates) and
+[section 25](roadmap.gates.md#25-risks-and-stop-conditions).
+
+**What the plan said.** The refusable retention member is *opened rather than filed*, because
+[WAC-03](#wac-03) establishes there is no local resolution and WA-5 cannot choose a memory
+representation without it — stated beside the observation that the amendment procedure is
+unexecutable, with no holder, no unblock condition, and nothing said about what WA-5 does if the
+answer never comes.
+
+**What replaced it.** The row is written down as the external dependency it is. **Holder:** the
+core's contract and release owners. **Unblock condition:** a minted amendment carrying a
+co-signature, or a recorded refusal. **An unanswered row makes WA-5 `Blocked` rather than merely
+late** at the moment WA-3 would otherwise let it start, recorded with its blocker in the ledger like
+any other. And the fallback — a memory whose growth
+refusal is not guest-observable — is **WA-10's release decision**, published in the support table
+as a named deviation from what the specification says `memory.grow` answers, rather than WA-5's to
+take quietly in order to keep moving.
+
+**Why the earlier reading was not enough.** "Opened" described this profile's intent and not the
+programme's state. An amendment that cannot be minted is not an answer that is merely late, so a
+milestone gated on one has the shape of a blocked milestone and belongs in the ledger as one —
+and a plan that names no fallback is a plan whose fallback is taken by whoever reaches the wall
+first, unpublished. Naming it as a release decision is what keeps
+[gate 1](roadmap.gates.md#24-release-gates) able to see it.
+
+**What is unchanged.** The grade — strong, blocking, and the counterweight test passing — and
+the absence of any local resolution. Nothing here makes the row admissible, and nothing here
+weakens WA-5's exit gate: a guest-observable growth refusal is still what that gate asks for, and a
+release that ships the fallback ships a published deviation rather than a quiet one.
+
+**Authority and date.** [WAC-03](#wac-03), read against
+[section 25](roadmap.gates.md#25-risks-and-stop-conditions)'s own stop condition that a milestone
+blocked by a named external dependency is recorded with its holder and its unblock condition;
+2026-09-01.
+
+### WAC-17
+
+**Where:** roadmap
+[section 20](roadmap.md#20-amendments-and-this-profiles-duty-as-the-counterweight); delivery
+[section 21](roadmap.delivery.md#21-milestones), WA-10; delivery
+[section 27](roadmap.delivery.md#27-the-chapter-milestone-and-gate-map); gates
+[section 24](roadmap.gates.md#24-release-gates), gate 1.
+
+**What the plan said.** Every row but one filed and held, none admissible until it names a merged or
+approved capability, and the procedure unexecutable. The map recorded the consequence as a blank:
+the chapter appears in no evidence area and closes no release gate.
+
+**What replaced it.** The blank was right about the **answers** and wrong about the **state**. Every
+held row is a capability this profile does not provide — a multi-result host import refused
+rather than truncated, a `v128` split under a published encoding — and gate 1 already refuses a
+support table that leaves an unimplemented capability unnamed. So **WA-10 publishes the register's
+state**: per row, filed, held or opened, the deterministic failure or exclusion it leaves standing,
+and that the procedure is unexecutable and why. The gate is over the publication and never over the
+answer.
+
+**What this does not change.** No row becomes admissible because a release names it, no grade moves,
+and the counterweight table's refusals stay recorded rather than blocking.
+
+**Authority and date.** [Gate 1](roadmap.gates.md#24-release-gates), which admits no unnamed
+unimplemented capability, read against section 20's own record that the procedure is unexecutable;
+2026-09-01.
+
+### WAC-18
+
+**Where:** delivery [section 21](roadmap.delivery.md#21-milestones), WA-10; delivery
+[section 27](roadmap.delivery.md#27-the-chapter-milestone-and-gate-map), the chapter-3 row; gates
+[section 24](roadmap.gates.md#24-release-gates), gate 1.
+
+**What the plan said.** WA-0 publishes the fifteen defaults with the cross-profile consequence
+stated in the decision, the *Composed-profile safety* evidence row proves a neighbour feels them,
+and [section 17](roadmap.md#17-the-cross-profile-boundary-the-javascript-api-for-webassembly) names
+the reconciliation as belonging to whichever component composes both. Nothing required the
+**support table** to say any of it, so a reader of the published table met a default vector with no
+statement about who reconciles it.
+
+**What replaced it.** WA-10 publishes the vector as the neighbour-facing half **with its
+reconciliation named as unowned**, and gate 1 refuses a table that does not. The reconciliation is
+not deferred to the release and is not this profile's to take at any milestone: the component that
+would own it does not exist and has no owner.
+
+**Authority and date.** [Section 3 of the ledger](roadmap.status.md#3-open-external-dependencies),
+whose cross-profile row records that no component composing two profiles exists or is planned, read
+against [gate 1](roadmap.gates.md#24-release-gates)'s rule that no row reads as a bare yes;
+2026-09-01.
+
 ---
 
 ## 3. Rejections
@@ -484,20 +615,36 @@ A reader using this file to tell settled from unsettled needs the other half of 
 are carried by the plan as **questions**. **The [ledger](roadmap.status.md) is the authority** for
 every one of them.
 
+**Where a question cannot be answered by this component at all, the plan names the point at which
+its *state* is recorded, and that is not the same as answering it.** Four of the entries below are
+of that kind — the retention amendment, the argument channel, the two third-party pins, and the
+reconciliation of two profiles' declared defaults — and each says where the state lands. A release
+that publishes a question truthfully has not closed it.
+
 - **Where the store lives relative to a core instance state** — the single most consequential open
   question in the plan. Three readings exist, one is rejected, and
   [section 11](roadmap.md#11-the-store-instances-and-linking) names the milestone that chooses
   between the other two.
 - **The guest-observable `memory.grow` refusal** — [WAC-03](#wac-03) establishes that no spelling
   exists on the shipped contract. What is open is the amendment, which is **opened as blocking
-  rather than filed and held** — the one row in this plan that is — and what WA-5 does if it is not
-  answered.
-- **The argument channel** — reconciled with the other profile and filed, not scheduled. The
-  amendment procedure is currently unexecutable.
+  rather than filed and held** — the one row in this plan that is. It now carries a holder and an
+  unblock condition, an unanswered row makes WA-5 **`Blocked`** rather than merely late once WA-3
+  would otherwise let it start, and **the
+  fallback is WA-10's release decision** published as a named deviation — see
+  [WAC-16](#wac-16). None of that answers it.
+- **The argument channel, and every other row of section 20** — reconciled with the other profile
+  and filed, not scheduled. The amendment procedure is currently unexecutable. **State recorded at
+  WA-10**, which publishes the register row by row with the deterministic failure or exclusion each
+  held row leaves standing — see [WAC-17](#wac-17). Publishing a held row does not make it
+  admissible.
 - **The specification revision and the conformance-suite revision** — neither is pinned.
   Retrieving, hashing and archiving third-party material is a human action nobody has performed.
+  **The suite's licence and attribution obligation waits on the same action** and lands at WA-4 with
+  the ingestion, not at WA-0 — see [WAC-15](#wac-15).
 - **The reconciliation of two profiles' declared defaults** — it belongs to whichever component
-  composes both, and that component does not exist and has no owner.
+  composes both, and that component does not exist and has no owner. **Named as unowned in the
+  support table at WA-10** — see [WAC-18](#wac-18) — which publishes the position and
+  reconciles nothing.
 - **Everything else.** No milestone has started — the [ledger](roadmap.status.md) holds each state —
   and this list names only the questions the plan itself flags as open rather than the work it has
   not begun.

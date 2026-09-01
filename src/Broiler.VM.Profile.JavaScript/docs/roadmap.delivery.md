@@ -245,7 +245,14 @@ answered by whichever of the two ran late.
   own seam — per [section 9](roadmap.md#9-the-semantic-front-end-and-lowering)'s boundary
   question, which this milestone answers. Then pin a suite revision and build the harness, the
   self-check, the sharding, the merge, the scope manifests, and the audit command, and score the
-  slice manifest.
+  slice manifest. **In the change that first ingests a suite file, land the ingested suite's
+  attribution row in the host component's notice**, mark modified suite files as changed, and
+  re-confirm the core's standing third-party claim against what the ingestion adds to the tree, or
+  amend it, with the release owner co-signing — the second of this component's two licence
+  obligations, which
+  [section 4.5](roadmap.md#45-licence-attribution-and-one-notice-that-must-change)'s seed change
+  does not discharge and which no milestone before this one can take, because the notice content
+  is the suite's own and does not exist here until the revision is retrieved.
 - **Dependencies:** **JS-1 only.** Deliberately not JS-2, not the copy, and not core acceptance.
 - **Objective exit gate:** The public API baseline clause carried from JS-0 closes here, over a
   baseline of this family's own, described from the build output **without loading or running
@@ -272,7 +279,15 @@ answered by whichever of the two ran late.
   regression tests run before any shard starts; **no aggregate percentage is published, then or
   ever**; the effective limit vector each run was obtained under is published with its totals,
   because a total obtained under generous ceilings is not the total a product with tight ones would
-  get; and a scan asserts the suite ingestion path, its cache, and every suite file appear in
+  get; **the ingested suite's attribution row is landed in the host component's notice in the same
+  change that first ingests a suite file, modified files are marked as changed, and the core's
+  standing third-party claim is re-confirmed against what the ingestion adds to the tree or amended,
+  with the release owner co-signing** —
+  a clause no earlier milestone could close, because
+  [section 4.5](roadmap.md#45-licence-attribution-and-one-notice-that-must-change)'s notice change
+  is the seed's and the suite's own notice content is not in this checkout until the revision is
+  retrieved *(corrected: JSC-30)*; and a scan asserts the suite ingestion path, its cache, and
+  every suite file appear in
   no product package and no closure report, with a negative control that adds a product reference to
   the ingestion path and observes the scan fail.
 - **Seed:** Nothing is copied. Every mechanism here is this component's own code, and **no total,
@@ -597,6 +612,20 @@ surfaces that do not exist may not be read as covering them *(corrected: JSC-23)
   Publish the support table and the composition register. Claim a RID only where a retained bundle
   published and ran the named composition on it. Run the release gate that refuses the tree while
   any relevant unit lacks a human decision.
+
+  **Three records this milestone takes because no earlier one can, and each is a state rather than
+  a decision.** Publish the state of
+  [section 18](roadmap.md#18-amendments-this-profile-expects-to-ask-of-the-core)'s amendment
+  register — per row, filed, held or opened, the deterministic failure or named exclusion it leaves
+  standing, and that the procedure is unexecutable — because a held amendment is a capability this
+  profile does not provide and gate 1 already requires every one of those to be named. Record this
+  profile's half of the extraction-gate comparison, or record that its first condition is
+  unsatisfied and what would satisfy it; the condition is a second product profile's verifier
+  having merged, which this component cannot schedule, so the state is recorded here whatever it is
+  and **no verdict is recorded at all**. And name the declared-default vector as the neighbour-facing
+  half whose reconciliation is unowned, because
+  [section 15](roadmap.md#15-deployment-compositions-native-aot-and-the-browser-embedding) puts that
+  reconciliation in a component that does not exist *(corrected: JSC-31, JSC-32, JSC-33)*.
 - **Dependencies:** JS-3a and JS-9 for evidence, JS-8 for the composition set, JS-0 for the
   packaging ruling, and **a named human reading every relevant unit** — the largest
   single-owner task in the programme, decomposed and scheduled rather than assumed.
@@ -625,7 +654,17 @@ surfaces that do not exist may not be read as covering them *(corrected: JSC-23)
   previous package set runs unchanged; the release gate refuses on each of its conditions, naming
   each blocker by its declaration, with a negative control proving the generator cannot invent a
   reviewer; a named human decision exists on **every** relevant unit before the first publish;
-  every suppression is inventoried with an owner and a reachability argument; and no figure,
+  every suppression is inventoried with an owner and a reachability argument; **the amendment
+  register's state is published, row by row, with the deterministic failure or named exclusion each
+  held row leaves standing and with the procedure's unexecutability stated** — asserted by a rule
+  that fails when a row of
+  [section 18](roadmap.md#18-amendments-this-profile-expects-to-ask-of-the-core) has no
+  corresponding published state; **the extraction-gate state is recorded — this profile's half, or
+  the first condition unsatisfied with what would satisfy it — and a scan asserts no verdict and no
+  identifier from another profile component appears in it**; **the declared-default vector is
+  published as the neighbour-facing half with its reconciliation named as unowned**, so a browser
+  composition meets it in the table rather than in a resource exhaustion naming a dimension this
+  profile did not breach; and no figure,
   total, claim, or platform result from any other component appears anywhere.
 - **Seed:** Nothing. Every figure is this component's own, from this component's own lane and
   commit.
@@ -754,9 +793,9 @@ gate with no owning milestone is a gate nobody can close.
 |---|---|---|---|---|
 | 1 Terminology and support claims | JS-0 fixes the identity; JS-10 issues the table | Identity and registration | 1 | untruthful published claim |
 | 2 Engineering invariants | every milestone; each invariant is asserted by the milestone that could first violate it | all rows | 3, 4 | several |
-| 3 What the core gives and refuses | JS-0 (the two vectors and the matrix); JS-1 (the descriptor half of the two-profile test); JS-8 (its `eval`-refusal half) | Identity and registration; Composed-profile safety | 2 | declared defaults reaching a neighbour |
+| 3 What the core gives and refuses | JS-0 (the two vectors and the matrix); JS-1 (the descriptor half of the two-profile test); JS-8 (its `eval`-refusal half); JS-10 publishes the defaults as the neighbour-facing half and names the reconciliation unowned | Identity and registration; Composed-profile safety | 1, 2 | declared defaults reaching a neighbour |
 | 4 The seed | JS-2 | Front end; Licence and attribution | 12 | the seed becomes a dependency |
-| 5 Package boundaries and the graph | JS-0 | Dependency architecture | 2 | placement assumed rather than decided; the extraction gate unanswered |
+| 5 Package boundaries and the graph | JS-0; JS-10 records the extraction-gate state, which no earlier milestone can, and no verdict | Dependency architecture | 2 | placement assumed rather than decided; the extraction gate unanswered |
 | 6 Feature manifests | JS-0 allocates; JS-1 mints the first; each increment extends | Identity and registration; Conformance | 1, 9 | the manifest set drifts upward |
 | 7 The format and the verifier | JS-1 builds it; JS-9 attacks it | Format and verifier safety | 3 | a check migrates into first execution |
 | 8 The value, frame, and call model | JS-4 (the ABI); JS-5 (the measured numbers and the charging) | Value model and storage; Executor and lifecycle; Measurement | 4, 10 | a late value-representation decision; unproportional charging |
@@ -765,11 +804,11 @@ gate with no owning milestone is a gate nobody can close.
 | 11 Guest-initiated loads | JS-8 | Guest loads and policy | 5 | — |
 | 12 Suspension | JS-7 | Suspension | 4 | — |
 | 13 Realms, agents, and the host boundary | JS-5 (binding and translation); JS-9 (agents under one parent) | Host boundary | 6 | a shared parent read as isolation; mutable optimization state reachable from a shared handle |
-| 14 The conformance oracle | JS-3a | Conformance | 9 | the oracle reports a failure as a pass; an aggregate percentage |
+| 14 The conformance oracle | JS-3a, which also lands the ingested suite's attribution | Conformance; Licence and attribution | 9, 12 | the oracle reports a failure as a pass; an aggregate percentage |
 | 15 Compositions, Native AOT, the browser | JS-1, JS-3b and JS-8 build them; JS-10 advertises one | Native AOT | 7 | a publish cited for another kind; an implied `WebAssembly` namespace |
 | 16 Persistence and the code cache | **no milestone delivers it**, by decision; JS-8 carries the exclusion clause and JS-10 measures the reopening trigger | Format and verifier safety | 3 | a second verifier, or a build-time shortcut past the one |
 | 17 Measurement discipline | JS-10 stands up the lane; JS-4 produces the first figure it governs and fixes the repetition count | Measurement | 10 | — |
-| 18 Amendments | JS-0 grades them; **every row is filed and held** rather than scheduled, and none is admissible until it names a merged or approved capability | — | — | a requirement with no core row; the programme stalling on a precondition this component does not control |
+| 18 Amendments | JS-0 grades them; **every row is filed and held** rather than scheduled, and none is admissible until it names a merged or approved capability; **JS-10 publishes the register's state** | Identity and registration | 1 | a requirement with no core row; the programme stalling on a precondition this component does not control |
 | — the standard library, which chapter 6's allocation admits rather than a chapter of its own | JS-6 | Standard library | 1, 9 | dynamic code hiding in the library |
 | — the assurance floor and the review debt, which are repository policy rather than this plan's argument | JS-0 adopts the host component's mechanism and records what adoption costs; JS-10 gates the release on it | Assurance and review | 11 | unreviewed units accumulating; owner and reviewer the same person |
 | — packaging and consumers | JS-10 | Packaging and consumers | 8 | — |
@@ -783,9 +822,14 @@ the gaps it was built to find:
   would be a second serialization path with nothing to hold it to the first. The chapter exists to
   keep the design reachable at no cost, and its only obligations on this programme are one gate
   clause at JS-8 and one measurement at JS-10.
-- **[Section 18](roadmap.md#18-amendments-this-profile-expects-to-ask-of-the-core) closes no gate
-  and appears in no evidence area.** Every row in it is filed and held; the amendment procedure is
-  unexecutable while one person holds the minting role and both co-signing roles.
+- **[Section 18](roadmap.md#18-amendments-this-profile-expects-to-ask-of-the-core) delivers
+  nothing and now closes one gate.** Every row in it is filed and held; the amendment procedure is
+  unexecutable while one person holds the minting role and both co-signing roles, so no milestone
+  can schedule an answer. What a milestone *can* do is publish the state, and JS-10 does: a held
+  amendment is a capability this profile does not provide, and gate 1 already refuses a support
+  table that leaves an unimplemented capability unnamed. **The gate is over the publication and
+  never over the answer** — a release that named every row and moved none of them passes it, which
+  is the honest shape *(corrected: JSC-31)*.
 - **Three areas of the evidence matrix have no chapter of their own** — the standard library, the
   assurance floor, and packaging — because each is admitted by a chapter rather than argued by one.
   They are listed above so that no evidence area is left without a milestone.

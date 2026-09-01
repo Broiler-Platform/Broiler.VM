@@ -583,16 +583,29 @@ commit.
 The conformance suite and the reference material are Apache-2.0, and ingesting them means carrying
 the obligations of that licence: retain the notices, mark modified files as changed, and carry the
 NOTICE content forward. **The licence and notice files that discharge those obligations are the
-host component's**, adopted rather than duplicated, so what WA-0 lands is a row in the host's
-notice carrying the ingested suite's attribution rather than a file of its own
+host component's**, adopted rather than duplicated, so what this profile lands is a row in the
+host's notice carrying the ingested suite's attribution rather than a file of its own
 *(corrected: WAC-08)*.
+
+**WA-0 records the position; WA-4 lands the row, and the split is forced by the obligation
+itself.** What a notice carries forward is the ingested material's own content, and there is none
+in this tree until the suite revision is retrieved, hashed and archived — a human action, and the
+same one [section 4.3](#43-what-is-acquired-rather-than-written) records the specification pin
+waiting on. So WA-0 names the obligation, its owner, and the release owner who co-signs it, and
+lands no row; **WA-4 lands it in the same change that first ingests a suite file**, which is the
+earliest change in which there is anything to attribute. A row written at WA-0 would be an
+attribution for material nobody has retrieved, which is the failure the release gate exists to
+prevent rather than an early discharge of it *(corrected: WAC-15)*.
 
 One consequence reaches outside this component and must not be discovered at release time: **the
 core component's third-party notice currently asserts that nothing it ships is vendored or
 copied.** That assertion is scoped to the core's own packages and stays true — but only if it stays
 scoped, and this component is about to place a large body of third-party test material in the same
-repository tree. WA-0 carries an explicit item to confirm the scoping or to amend the notice, with
-the release owner co-signing. An attribution obligation discovered during a publish is a stop.
+repository tree. **The confirmation is WA-4's for the same reason**: it is a claim about what this
+tree contains, and until the ingestion lands there is nothing in the tree to test it against. WA-4
+carries the explicit item to confirm the scoping or to amend the notice, with the release owner
+co-signing, and WA-10 re-confirms it against the shipped tree. An attribution obligation discovered
+during a publish is a stop.
 
 A second consequence is smaller and easier to get wrong: **the suite is test material, and a
 support table must never present a suite file as this component's own evidence of anything except
@@ -1833,3 +1846,26 @@ are held by one person, so no co-signature would be independent. Every row here 
 held rather than scheduled — the refusable retention member is opened, because no local resolution
 exists and WA-5 cannot choose a memory representation without it — and none is admissible until it
 names a merged or approved capability.
+
+**The one opened row is an external dependency and is written down as one.** Its holder is the
+core's contract and release owners; its unblock condition is a minted amendment carrying a
+co-signature, or a recorded refusal. Neither is something this component can schedule, and an
+unexecutable procedure is not an answer that is merely late. So an unanswered row makes WA-5
+**`Blocked`** rather than merely late at the moment WA-3 would otherwise let it start, recorded
+with its holder and its unblock condition — and if it
+is refused or never answered, **the fallback is a release decision and not a milestone one**: a
+memory whose growth refusal is not guest-observable is a published deviation from what the
+specification says `memory.grow` answers, and WA-10 names it in the support table with its
+deterministic behaviour. Taking that fallback quietly inside WA-5 to keep the milestone moving is
+what this paragraph exists to forbid *(corrected: WAC-16)*.
+
+**Because none of these can be answered here, the register's *state* is published at release.**
+WA-10 states, per row of the ask table above, whether it is filed, held or opened, and the
+deterministic failure or named exclusion the row leaves standing — a multi-result host import
+refused rather than truncated, a `v128` split under a published encoding, an argument carried in an
+entry-point encoding — and the fact that the procedure is unexecutable and why. A held amendment
+is a capability this profile does not provide, and
+[release gate 1](roadmap.gates.md#24-release-gates) already admits no unnamed unimplemented
+capability, so a reader meets it in the support table rather than in a link failure. **This is a
+publication obligation and not a schedule**: nothing above becomes admissible because a release
+names it *(corrected: WAC-17)*.

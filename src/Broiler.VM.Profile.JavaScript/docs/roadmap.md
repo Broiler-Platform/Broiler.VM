@@ -598,6 +598,16 @@ copied. That assertion is scoped to the core's own packages and stays true — b
 stays scoped. JS-2 carries an explicit item to confirm the scoping, or to amend the notice, with
 the release owner co-signing. An attribution obligation discovered during a publish is a stop.
 
+**This section is the seed's obligation and it is not this component's only one.** The conformance
+suite is separately licensed third-party material that this component also ingests, and carrying a
+notice forward requires having the notice: the suite's own content is not in this checkout until
+the revision is retrieved, hashed and archived, which is a human action nobody has performed. That
+obligation is [section 14](#14-the-conformance-oracle)'s and lands at JS-3a, in the change that
+first ingests a suite file, together with the re-confirmation of the core's standing claim against
+what the ingestion adds to the tree. Neither obligation discharges the other, and
+[release gate 12](roadmap.gates.md#22-release-gates) checks both against the shipped tree
+*(corrected: JSC-30)*.
+
 ### 4.6 This document is the plan
 
 Nothing in the seed component plans, schedules, or gates anything here, and no item identifier
@@ -1294,6 +1304,15 @@ to score anything: it is to prove that a failing test comes back as a failure.
   diagnostic registry and the corpus already apply to their own pinned revisions.
 - **The ingestion path ships nowhere.** A scan asserts the suite harness appears in no product
   package and in no published closure.
+- **The ingested suite carries its own attribution obligation, and JS-3a lands it.** The suite is
+  separately licensed third-party material, and
+  [section 4.5](#45-licence-attribution-and-one-notice-that-must-change)'s notice change is the
+  seed's and covers none of it. The content a notice must carry forward is the suite's own, so it
+  does not exist in this checkout until the revision is retrieved, hashed and archived — which is
+  the same human action the pin above waits on. The row therefore lands in the host component's
+  notice **in the same change that first ingests a suite file**, which is JS-3a's, and no earlier
+  milestone can close it: an attribution written for material nobody has retrieved is an
+  attribution for material nobody has read *(corrected: JSC-30)*.
 
 Two things this section deliberately refuses. **No total, manifest entry, known-gap entry, or
 triage finding from any other component is carried across** — the method is copied, the results
@@ -1539,6 +1558,16 @@ veto over a core amendment would be a profile-to-profile dependency established 
 than by reference, which is what the extraction gate's fourth condition exists to prevent. Every row
 above is therefore filed and held rather than scheduled, and none is admissible until it names a
 merged or approved capability.
+
+**Because none of them can be answered here, the register's *state* is published at release rather
+than left to be inferred.** JS-10 states, per row above, whether it is filed, held or opened, and
+the deterministic failure or named exclusion the row leaves standing in the meantime — a
+multi-result host capability refused rather than truncated, a wider value split under a published
+encoding, a caller that must lower a program to pass an argument — together with the fact that the
+amendment procedure is unexecutable and why. A held amendment is a capability this profile does not
+provide, so a reader meets it in the support table, where every unimplemented capability already
+has to be named, rather than in a refusal. **This is a publication obligation and not a schedule**:
+nothing above becomes admissible because a release names it *(corrected: JSC-31)*.
 
 **One capability this profile deliberately does not ask for**, because the counterweight duty runs
 in both directions and a table that only ever asks is not a position. A **refusable retention member
