@@ -979,64 +979,26 @@ def fuzz_session(corpus, seed=1, iterations=25_000):
 # replay compares a different field for each: a control's completion VALUE and a malformed entry's
 # diagnostic code. A check that only ever mutated one of the two would leave the other half of the
 # comparison unexercised.
-MUTATED_ENTRIES = ("addition", "an-unknown-opcode")
+# The corpus-integrity harness lives in eng/corpus-integrity.py rather than here, and it moved
+# there when it acquired a second caller. The CI lane runs the same discipline against the
+# PUBLISHED Native AOT image, where this function runs it through `dotnet run`; one discipline
+# written twice is one discipline that diverges on its first edit. What stays here is the choice
+# of replay command and the retention of what the harness printed.
+CORPUS_INTEGRITY = os.path.join("eng", "corpus-integrity.py")
 
 
 def corpus_integrity(out, corpus):
-    """Flip one byte of a retained entry and require the replay to notice."""
-    log = [
-        "JS-9's exit gate asks that a MUTATED CORPUS ENTRY prove the replay detects a changed",
-        "observed triple. Every other control in this bundle injects into SOURCE; this one injects",
-        "into the retained bytes, which is the other direction and the one that would otherwise be",
-        "taken on trust - a corpus is only evidence while the thing that reads it would notice if",
-        "the bytes moved.",
-        "",
-        "Each entry is mutated by one byte, replayed, restored byte for byte, and replayed again.",
-        "A restore that does not reproduce the original stops the run rather than leaving the",
-        "corpus modified.",
-        "",
-    ]
+    """Run the shared corpus-integrity harness against this collection's replay command."""
+    code, output = run([
+        sys.executable, CORPUS_INTEGRITY, "--corpus", corpus_relative(corpus), "--",
+        "dotnet", "run", "--project", EXECUTION_ONLY, "-c", "Release", "--no-build",
+        "--", "--corpus", corpus])
 
-    passed = 0
+    if not output.endswith("\n"):
+        output += "\n"
 
-    for name in MUTATED_ENTRIES:
-        path = os.path.join(corpus_relative(corpus), name + ".bjsb")
-        original = read_bytes(path)
-
-        # The last byte, which is inside the last section's body rather than in the header - so
-        # what moves is the artifact's content and not the magic, and the replay has to reach a
-        # real comparison rather than refusing at the first four bytes.
-        mutated = bytearray(original)
-        mutated[-1] ^= 0xFF
-
-        overwrite_bytes(path, bytes(mutated))
-        injected_code, injected_output = replay(corpus)
-        overwrite_bytes(path, original)
-
-        if read_bytes(path) != original:
-            raise SystemExit("corpus integrity check did not restore " + path)
-
-        reverted_code, _ = replay(corpus)
-
-        verdict = "PASS" if injected_code != 0 and reverted_code == 0 else "FAIL"
-        passed += 1 if verdict == "PASS" else 0
-
-        log.append("[" + name + "] " + verdict)
-        log.append("    file:      " + path)
-        log.append("    mutation:  the last byte, exclusive-or 0xFF")
-        log.append("    injected:  exit " + str(injected_code))
-        log.append("    reverted:  exit " + str(reverted_code))
-        log.extend(
-            "      " + line.strip()
-            for line in injected_output.splitlines()
-            if line.strip().startswith("FAIL"))
-        log.append("")
-
-    log.append(
-        "entries mutated: " + str(len(MUTATED_ENTRIES)) + "; detected: " + str(passed))
-
-    write(os.path.join(out, "corpus-integrity.log"), "\n".join(log) + "\n")
-    return passed
+    write(os.path.join(out, "corpus-integrity.log"), output)
+    return code
 
 
 def corpus_relative(corpus):

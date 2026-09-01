@@ -3,3 +3,7 @@ obj/
 .vs/
 *.user
 artifacts/
+
+# Python bytecode, from running the scripts in eng/ directly.
+__pycache__/
+*.pyc
