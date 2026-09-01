@@ -66,13 +66,25 @@ revision of that record before a fourth `PackageId` may appear; rule A6 asserts 
 | RID | Publish and run | Status |
 |---|---|---|
 | `linux-x64` | JIT, trimmed self-contained, Native AOT | **Demonstrated.** Every collection in `docs/evidence/` was taken on it, publishing and running the fixtures host, both composition roots and the package-only sample with trim and AOT warnings as errors |
-| `win-x64` | — | **Not claimed.** The Native AOT publish needs a `vcvars64` environment that no collection has had. EX-42 |
-| `osx-x64`, `osx-arm64`, `linux-arm64` | — | **Not claimed.** Never attempted |
+| `win-x64` | JIT, trimmed self-contained, Native AOT — **in the CI lane only** | **Not claimed.** No retained collection exists on it. The CI lane publishes and runs every composition root here as Native AOT on a stock runner, which is what a claim would need to be *about* and is not a claim. EX-45. **The reason this row used to give is withdrawn**: the publish does not need a `vcvars64` environment, it needs `vswhere.exe` on `PATH`, which ADR 0001 records and the lane confirms — EX-42 |
+| `osx-arm64` | JIT, trimmed self-contained, Native AOT — **in the CI lane only** | **Not claimed.** As above: attempted and passing in the lane, retained in no collection. EX-45 |
+| `osx-x64`, `linux-arm64` | — | **Not claimed.** Never attempted, by the lane or by a collection |
 
-**One machine, one RID, no CI lane has ever run.** That is EX-45, and it is the widest limit on
-everything in this table: a support claim for a platform nothing has published on would be exactly
-the untruthful claim section 16 stops a release for. The workflow in `.github/workflows/` exists
-and has never run on a hosted runner.
+**One machine, one RID for every retained collection.** That is EX-45, and it is still the widest
+limit on everything in this table — but its old wording said "no CI lane has ever run", and that is
+no longer true. The lane in `.github/workflows/` runs on hosted runners and passes, publishing and
+running every composition root as Native AOT on three RIDs.
+
+**That moves no row above, and the reason is the one distinction this table rests on.** A support
+claim is made on a *retained collection*: a bundle in `docs/evidence/`, collected deliberately by a
+person, naming its machine, its SDK, its effective configuration and its raw outputs. The lane
+collects none of that — its own header says so — so a green job is evidence that the component
+builds and runs somewhere, and evidence of nothing a reader could check twice. **A workflow that
+has not run is a plan; a workflow that has run is still not a bundle.**
+
+What did change is the honesty of the gap. A reader was previously told that nothing had ever
+published on `win-x64` or `osx-arm64`; something has, repeatedly. The rows stay unclaimed because
+no collection exists on them, which is a narrower and truer reason than the one they carried.
 
 ---
 

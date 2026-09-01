@@ -12,10 +12,17 @@
 # baselines in `docs/baselines.md` would be actively false. The gate asks for drift checks in CI
 # and for evidence in bundles, and those are different things.
 #
-# HONESTY NOTE, and it belongs at the top rather than in a footnote: at the time this file was
-# written it had NEVER RUN. No hosted runner has executed it, the RID matrix below is aspirational
-# for every entry except linux-x64, and `docs/support.md` claims no platform on the strength of
-# this file existing. A workflow that has not run is a plan, and the support table says so.
+# HONESTY NOTE, and it belongs at the top rather than in a footnote. When this file was written it
+# had NEVER RUN, and it said so here. It has run since - on ubuntu-latest, windows-latest and
+# macos-latest, publishing and running every composition root as Native AOT on linux-x64, win-x64
+# and osx-arm64 - so the RID matrix below is no longer aspirational for the three entries it names.
+#
+# What has NOT changed is the sentence that matters: `docs/support.md` still claims no platform on
+# the strength of this lane, and it should not. A workflow that has not run is a plan; a workflow
+# that HAS run is still not a bundle. The block above says why - this lane collects no evidence,
+# names no machine, and retains no configuration - so a RID moves from unclaimed to claimed on a
+# deliberate collection into docs/evidence/ and on nothing else. ADR 0001's 2026-09-01 revision
+# records both halves.
 
 name: broiler-vm
 
