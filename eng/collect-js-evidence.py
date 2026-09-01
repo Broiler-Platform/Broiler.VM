@@ -40,6 +40,9 @@ COMPILER_PROJECT = os.path.join(
 PROFILE_MARKER = os.path.join(PROFILE_ROOT, "AssemblyMarker.cs")
 PROFILE_VALUE = os.path.join(PROFILE_ROOT, "JavaScriptValue.cs")
 PROFILE_EXECUTOR = os.path.join(PROFILE_ROOT, "JavaScriptExecutor.cs")
+HOST_LIFETIME_CHECKS = os.path.join(
+    "src", "compositions", "Broiler.VM.Composition.JavaScript.ExecutionOnly",
+    "HostLifetimeChecks.cs")
 PROFILE_VERIFIER = os.path.join(PROFILE_ROOT, "JavaScriptVerifier.cs")
 PROFILE_POSITION = os.path.join(PROFILE_ROOT, "JavaScriptPosition.cs")
 FORMAT_SOURCE = os.path.join(
@@ -627,6 +630,27 @@ def compositions(arguments, out, corpus):
 # bytes rather than a gate. These four are judged by running the execution-only root against the
 # retained corpus, which is the thing that would have to notice.
 CORPUS_CONTROLS = [
+    (
+        "the-soak-stops-noticing-a-per-cycle-leak",
+        "Sixty-four bytes are retained per soak cycle - the smallest leak this check is "
+        "worth having. THIS CONTROL EXISTS BECAUSE ITS ABSENCE HID A DEFECT. The band was "
+        "2.0 against a baseline taken at cycle 99, and on 2026-09-01 that combination was "
+        "found to fail on correct code under Native AOT - while a midpoint baseline at the "
+        "same band could not have failed on ANY linear leak, because the ratio "
+        "(B + N*L) / (B + N*L/2) rises towards 2.0 and never reaches it. A check nothing "
+        "ever made fail is a check nobody knows the shape of, and this is the one that "
+        "would have said so.",
+        HOST_LIFETIME_CHECKS,
+        lambda text: text.replace(
+            "internal static class HostLifetimeChecks\n{",
+            "internal static class HostLifetimeChecks\n{\n"
+            "    private static readonly List<byte[]> Leak = new();\n").replace(
+            '            using var runtime = Hosts.Runtime("default", out _);\n'
+            "\n            if (runtime is not null && RunOnce(runtime, bytes) == VmOutcome.Normal)",
+            '            using var runtime = Hosts.Runtime("default", out _);\n'
+            "            Leak.Add(new byte[64]);\n"
+            "\n            if (runtime is not null && RunOnce(runtime, bytes) == VmOutcome.Normal)"),
+    ),
     (
         "the-language-guards-division-by-zero",
         "Division by zero is made a fault, which is what a calculator does and not what the "
