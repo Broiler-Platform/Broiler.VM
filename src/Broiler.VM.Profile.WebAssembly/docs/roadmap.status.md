@@ -4,7 +4,10 @@
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [WebAssembly profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
-gates; this ledger records whether those gates have accepted evidence.
+gates; this ledger records whether those gates have accepted evidence. Where the core changed, a
+sibling's dated finding settled something, or the plan replaced its own earlier reading, the plan
+carries the new reading and [the corrections and rejections](roadmap.corrections.md) carry what it
+replaced — **that file records no status and advances nothing here**.
 
 **At this snapshot, every milestone WA-0 through WA-10 is `Not started`.** The component has no
 source tree, no solution, no project, no descriptor, no decoder, no pinned specification revision,
@@ -12,9 +15,13 @@ no pinned suite revision, no evidence bundle, and no assurance record. What exis
 and this ledger. No milestone is complete because its design appears in the roadmap, and nothing in
 this component may be described as implemented, validated, accepted, supported, or published.
 
-The component also has no repository of its own yet. The two documents are staged in the aggregate
-repository beside the components they will sit next to; **WA-0 owns the placement decision** and
-moving them is part of it, not a side effect of it.
+**Placement is settled and this profile already occupies the answer.** The core's topology record
+rules that a language profile is a set of product projects in the `Broiler.VM` component rather
+than a component of its own, and names `src/Broiler.VM.Profile.WebAssembly/` — where these
+documents sit. So the assurance system, the rule register and the licence and notice files are the
+host component's, adopted rather than duplicated, and what this profile stands up of its own is its
+evidence-bundle contract and collection script and its own group in the rule register. **WA-0 no
+longer owns placement**; it owns everything about this profile that the topology does not fix.
 
 **This component has no seed.** Nothing is copied, no snapshot is taken, and no fork exists. Every
 line will be written here. That removes a whole family of blockers the other intended first
@@ -81,7 +88,7 @@ three is what lets the other two be read when a row first earns one.
 
 | Verdict | Milestone | State | Current evidence | Immediate evidence-producing action |
 |---|---|---|---|---|
-| [NONE] | **WA-0 — boundary, placement, identity, assurance floor** | **Not started** | None. No project, no rule register, no assurance manifest, no licence or notice file, no evidence-collection script, and no declared limit vectors. | Take the placement decision with the core's topology owner co-signing, then stand up the shell graph and the architecture rule register with both halves of the no-edge-to-another-profile rule, the no-product-reference-to-the-harness rule, and a negative control for each. **Publish the fifteen hard maxima and fifteen defaults, with the three guest-load *defaults* explicitly `Unconstrained`** — a dimension declared inapplicable in the budget matrix is a statement about what this profile charges, not a licence to write a zero into the vector a neighbour adopts — and add the two-profile catalog test that catches the mistake. The maxima need no such care: since 2026-08-31 they bind this profile's own modules alone. Nothing else in this component may land first. |
+| [NONE] | **WA-0 — boundary, identity, assurance floor** | **Not started** | None. No project, no rule group, no evidence-collection script, and no declared limit vectors. Placement is not among them: the core's topology record settled it and this profile occupies the path it names. | Stand up the shell graph and this profile's own group in the component's rule register, with a negative control for each rule; the cross-family rule already exists and binds this family, so what is owed is the control that proves it bites on these projects. **Publish the fifteen hard maxima and fifteen defaults, with the three guest-load *defaults* as a large finite value stated as a number** — a dimension declared inapplicable in the budget matrix is a statement about what this profile charges, not a licence to write a zero into the vector a neighbour adopts, and **`Unconstrained` is refused outright for a default by the catalog** — and add the two-profile catalog test that catches both mistakes. The maxima need no such care: they bind this profile's own modules alone. Nothing else in this profile may land first. |
 | [NONE] | **WA-1 — the whole contract loop on a slice module** | **Not started** | None. No descriptor, no decoder, no validator, no executor, no composition root. | After WA-0: mint the slice manifest, define format version 1 as a bare module, and drive one module through verify, instantiate, and invoke in a composition that publishes and runs under Native AOT. The entry-point encoding is decided here or it is decided by accident later; the `StructuralDepth` declaration is no longer open, roadmap [section 3](roadmap.md#3-what-the-core-already-gives-this-profile-and-what-it-refuses) having closed it as `Charged` once the metering surface's retain/release pair was read correctly. |
 | [NONE] | **WA-2 — the decoder, the integer decision, the malformed corpus** | **Blocked** (recorded as `Not started` above the blocker, because no work has begun either) | None. No decoder, no corpus, no specification pin. | **Blocked on one named external dependency and one unopened human action.** See section 3. |
 | [NONE] | **WA-3 — validation and the diagnostic registry** | **Not started** | None. No validator, no diagnostic registry, no invalid-module corpus. | After WA-2: implement the specification's single-pass algorithm, publish the registry bound in both directions, and prove malformed-before-invalid with a case that fails when the phases are fused. |
