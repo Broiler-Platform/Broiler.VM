@@ -43,13 +43,13 @@ public enum JavaScriptValueKind : byte
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>This representation is provisional and JS-4 settles it.</b> Decision JSD-0004 and roadmap
-/// section 8 make the value representation a gate on entry to JS-4 rather than that milestone's
-/// first task, because the standard library is typed against whatever answer it gets. What is
-/// here is the smallest thing that is honestly JavaScript over three primitive types: a kind and
-/// a double, sixteen bytes, no heap allocation and no boxing. It is not a claim about what the
-/// full surface will use, and no fixture, figure or Native AOT probe in this milestone may be
-/// read as one.
+/// <b>This representation is provisional and JS-4 lands what replaces it.</b> Decision JSD-0011
+/// and roadmap section 8 make the value representation a gate on entry to JS-4 rather than that
+/// milestone's first task, because the standard library is typed against whatever answer it
+/// gets. What is here is the smallest thing that is honestly JavaScript over three primitive
+/// types: a kind and a double, sixteen bytes, no heap allocation and no boxing. It is not a
+/// claim about what the full surface will use, and no fixture, figure or Native AOT probe in
+/// this milestone may be read as one.
 /// </para>
 /// <para>
 /// <b>Why a tagged value rather than a bare double.</b> A profile that represented the slice as
