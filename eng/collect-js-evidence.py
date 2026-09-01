@@ -55,6 +55,8 @@ MIRROR = os.path.join(
 FIXTURES_PROJECT = os.path.join(
     "src", "tests", "Broiler.VM.Fixtures", "Broiler.VM.Fixtures.csproj")
 CORPUS_MANIFEST = os.path.join("src", "tests", "corpus", "js-1", "corpus.manifest")
+FUZZ_TARGET = os.path.join(
+    "src", "compositions", "Broiler.VM.Composition.JavaScript.ExecutionOnly", "Fuzzing.cs")
 EXECUTION_ONLY_HOSTS = os.path.join(
     "src", "compositions", "Broiler.VM.Composition.JavaScript.ExecutionOnly", "Hosts.cs")
 
@@ -785,6 +787,18 @@ CORPUS_CONTROLS = [
             "            }"),
     ),
     (
+        "the-guidance-loop-stops-keeping-new-answers",
+        "The fuzz session's seed pool stops adding a mutant whose published answer nothing has "
+        "reached, so the loop offers, counts and remembers - and keeps nothing. Every figure a "
+        "session prints about its guidance stays plausible and the seed set silently stays the "
+        "retained corpus, which is the state JSC-38 corrected this component for reporting as "
+        "coverage-guided. The composition's own wiring check is what notices.",
+        FUZZ_TARGET,
+        lambda text: text.replace(
+            "        if (artifacts.Count < ceiling)",
+            "        if (false && artifacts.Count < ceiling)"),
+    ),
+    (
         "a-tight-ceiling-stops-being-tight",
         "The wall-clock allowance the tight mode states is raised from zero to the profile's own "
         "default, so the host stops declining and the artifact verifies and runs. This is the "
@@ -941,7 +955,26 @@ def fuzz(out, corpus):
 # found something, and this is that demonstration. Each one is a defect a hand-written corpus entry
 # also catches - that is what the corpus is for - and what these show is that a session reaches the
 # same class from bytes nobody wrote.
+# Each fuzz control names the exit code the injected session must produce. ONE is a finding -
+# exit 1, the code a counterexample uses - and the others are session-integrity codes: a session
+# that cannot be read as covering what it claims exits non-zero with a code of its own, and a
+# control for one of those clauses has to be judged against that code rather than against a
+# finding it was never going to produce.
 FUZZ_CONTROLS = [
+    (
+        "the-session-stops-offering-mutants-to-the-seed-pool",
+        "The feedback loop's offer is deleted, so the session draws every mutant from the retained "
+        "corpus and never grows its seed set. NOTHING ELSE IN A SESSION'S OUTPUT MOVES - the "
+        "histogram, the counterexample count and the verified count are all unchanged - which is "
+        "why the session counts its own offers and refuses to be read as guided when the count is "
+        "short. Exit 5, not 1: this is a session that may not be believed rather than a defect it "
+        "found.",
+        FUZZ_TARGET,
+        lambda text: text.replace(
+            "            pool.Consider(input, Coverage(observation));",
+            "            _ = Coverage(observation);"),
+        5,
+    ),
     (
         "the-constant-index-is-admitted-unchecked",
         "The verifier stops checking a LoadConstant operand against the pool size. The artifact "
@@ -953,6 +986,7 @@ FUZZ_CONTROLS = [
         lambda text: text.replace(
             "            return index < constantCount\n                ? Ok",
             "            return true\n                ? Ok"),
+        1,
     ),
 ]
 
@@ -963,16 +997,18 @@ def fuzz_controls(out, corpus):
         "These controls are judged by a FUZZ SESSION. A session that reports no counterexample is",
         "worth what the demonstration that it would have reported one is worth, and nothing more.",
         "",
-        "A control PASSES when the session exits 1 - a finding - while injected, and 0 after the",
-        "revert. Any other exit code is a session that failed for a reason unrelated to the",
-        "injection, and is not a pass.",
+        "A control PASSES when the injected session exits with the code its own row names, and 0",
+        "after the revert. Any other exit code is a session that failed for a reason unrelated to",
+        "the injection, and is not a pass. Most rows name 1 - a finding - and a row about a clause",
+        "the session judges about ITSELF names that clause's own code, because a session that may",
+        "not be believed is not a session that found something.",
         "",
     ]
 
     passed = 0
     skipped = 0
 
-    for name, why, path, mutate in FUZZ_CONTROLS:
+    for name, why, path, mutate, expected in FUZZ_CONTROLS:
         original = read(path)
         mutated = mutate(original)
 
@@ -1002,18 +1038,20 @@ def fuzz_controls(out, corpus):
         if os.path.isdir(findings):
             shutil.rmtree(findings)
 
-        verdict = "PASS" if injected_code == 1 and reverted_code == 0 else "FAIL"
+        verdict = "PASS" if injected_code == expected and reverted_code == 0 else "FAIL"
         passed += 1 if verdict == "PASS" else 0
 
         log.append("[" + name + "] " + verdict)
         log.append("    why:       " + why)
         log.append("    file:      " + path)
-        log.append("    injected:  exit " + str(injected_code))
+        log.append(
+            "    injected:  exit " + str(injected_code) + " (expected " + str(expected) + ")")
         log.append("    reverted:  exit " + str(reverted_code))
         log.extend(
             "      " + line.strip()
             for line in injected_output.splitlines()
-            if "FINDING" in line or "minimized" in line or line.strip().startswith("a verified"))
+            if "FINDING" in line or "minimized" in line or "may not be read as guided" in line
+            or line.strip().startswith("a verified"))
         log.append("")
 
     log.append(

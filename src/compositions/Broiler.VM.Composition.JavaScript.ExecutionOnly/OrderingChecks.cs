@@ -56,10 +56,32 @@ internal sealed class RecordingMeter : IVmMeter
     }
 
     /// <inheritdoc/>
+    /// <remarks>
+    /// <para>
+    /// A poll refuses only where the stated wall-clock ceiling is zero, and that is the whole of
+    /// the emulation. The core's meter refuses a poll for three causes - a cancelled token, a
+    /// spent wall clock, and a profile that went too long between polls - and of the three only
+    /// the wall clock is a ceiling this meter is given.
+    /// </para>
+    /// <para>
+    /// <b>Zero rather than a small number, and it is not a clock reading.</b> This meter holds no
+    /// clock: a ceiling that had to be compared against elapsed time would make a fuzz session's
+    /// answer depend on how busy the machine was, which is exactly the property every session here
+    /// is built not to have. A zero ceiling says <em>this host's allowance is already spent</em>,
+    /// which is a fact about the host and reaches the same arm of the verifier.
+    /// </para>
+    /// <para>
+    /// <b>Until this arm existed the verifier's poll refusal was unreachable from a root</b>, so
+    /// the branch that decides between a cancellation and a wall-clock exhaustion was reached by
+    /// no session and no check - a branch whose two answers are the difference between a caller
+    /// who changed their mind and a budget that ran out.
+    /// </para>
+    /// </remarks>
     public bool Poll()
     {
-        events.Add(new MeterEvent("poll", default, 0));
-        return true;
+        events.Add(new MeterEvent("poll", VmBudgetDimension.WallClock, 0));
+
+        return ceilings[VmBudgetDimension.WallClock] != 0;
     }
 
     /// <inheritdoc/>

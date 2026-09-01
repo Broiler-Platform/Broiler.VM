@@ -611,13 +611,18 @@ surfaces that do not exist may not be read as covering them *(corrected: JSC-23)
   the replay detects a changed observed triple; each fuzz session retains its corpus identity,
   its iteration budget with a stated floor, its runtime settings, and **every minimized
   counterexample**, and any counterexample is closed by a **named regression, never an allow-list
-  entry**; **each fuzz session is coverage-guided — it observes what a mutant reached and keeps
+  entry**; **each fuzz session is guided — it observes what a mutant reached and keeps
   the mutants that reached something new as further seeds, so its seed set grows with the surface
   it explores rather than staying the retained corpus** — and a session that mutates a fixed seed
   set is seeded mutation, which its bundle says in those words and which closes nothing here,
   because that is the discipline [section 7](roadmap.md#7-the-bytecode-format-and-the-verifier)
   and [section 21](roadmap.gates.md#21-test-and-evidence-matrix) both ask for and this gate did
-  not carry *(corrected: JSC-38)*; the compile-time nesting bound holds under fuzz; a soak over a recorded number of
+  not carry *(corrected: JSC-38)*; **what a session observes is the answer this profile publishes
+  and not an edge, so the bundle states that bound where it states the guidance, and a session
+  judges its own loop rather than its growth — every mutant it drew was offered to the seed pool,
+  and the pool keeps a new answer while refusing a repeat — because how much a seed set grows is a
+  fact about the corpus and a gate that failed on it would fail harder the better the corpus got**
+  *(corrected: JSC-42)*; the compile-time nesting bound holds under fuzz; a soak over a recorded number of
   lifecycle cycles across recycled runtimes reaches a stated heap plateau and a disposed runtime
   leaves no per-thread state, each with a named regression that fails when the fix is reverted;
   two runtimes under one aggregate budget together spend no more than the parent's allowance,

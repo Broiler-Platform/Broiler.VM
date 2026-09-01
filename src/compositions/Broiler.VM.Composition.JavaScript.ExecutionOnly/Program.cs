@@ -75,6 +75,7 @@ internal static class Program
                 SuspensionIsUnreachableHere(),
                 OperandStackIsSizedFromVerification(addition),
                 TheCallerBufferMayChangeAfterwards(addition),
+                TheGuidanceLoopIsWired(),
             };
 
             checks.AddRange(ReplayChecks(corpus, verbose));
@@ -262,6 +263,21 @@ internal static class Program
     /// hand-written list of seven would agree with whichever of the two it was copied from.
     /// </para>
     /// </remarks>
+    /// <summary>
+    /// The fuzz session's guidance loop keeps a new answer and refuses one already reached.
+    /// </summary>
+    /// <remarks>
+    /// Here as well as at the start of every session, because a publish that never fuzzes would
+    /// otherwise carry no evidence that the loop works - and the sessions are the one thing in
+    /// this composition whose adjective a correction has already had to take away once.
+    /// </remarks>
+    private static (string, bool, string) TheGuidanceLoopIsWired()
+    {
+        var (wired, detail) = Fuzzing.GuidanceLoopIsWired();
+
+        return ("the-fuzz-guidance-loop-is-wired", wired, detail);
+    }
+
     private static IEnumerable<(string, bool, string)> ExhaustionChecks(ReplayEntry[] entries)
     {
         // Every exhaustion row names a pair, and every row that is not an exhaustion names
