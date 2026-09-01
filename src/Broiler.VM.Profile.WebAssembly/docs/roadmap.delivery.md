@@ -65,9 +65,11 @@ scope control a copied codebase gets for free from the shape of what it copied.
   costs something as a dated deviation. What this milestone stands up of its own is the part
   adoption cannot supply: **this profile's own evidence-bundle contract and collection script**,
   because a bundle collected by the host's script would merge two ledgers, and its own group in the
-  rule register. **Adoption does not discharge the attribution**: land a row in the host's notice
-  carrying the ingested suite's attribution, and confirm or amend the core's standing third-party
-  claim against what this profile's tree will contain.
+  rule register. **Adoption does not discharge the attribution, and this milestone cannot land
+  it**: record the obligation, name its owner, and name the release owner who co-signs it — then
+  leave the notice row and the standing-claim confirmation to WA-4, because a notice carries the
+  ingested material's own content forward and there is none in this tree until the suite revision is
+  retrieved *(corrected: WAC-15)*.
 - **Dependencies:** Named ownership. No dependency on any core milestone's acceptance.
 - **Objective exit gate:** An acyclic shell graph builds Release with zero warnings; architecture
   rules express every forbidden edge — including **both halves** of the no-edge-to-another-profile
@@ -89,9 +91,11 @@ scope control a copied codebase gets for free from the shape of what it copied.
   no byte — and a negative control proves it refuses to write a reviewer identifier no source line
   carries; the release-mode gate names each blocking declaration individually rather than counting
   them; the evidence-collection script exists and this milestone's own bundle was produced by it;
-  the host component's notice carries a row for the ingested suite's attribution, landed by this
-  milestone rather than inherited from adoption; and the core's third-party claim is confirmed
-  scoped or amended, with the release owner's co-signature recorded.
+  and the licence obligation is recorded with its owner and its co-signer named. **The notice row
+  and the standing-claim confirmation are not on this list**: each is a claim about what this tree
+  contains, and it contains no ingested material until WA-4, so
+  [section 4.4](roadmap.md#44-licence-attribution-and-one-notice-that-must-change) puts both at
+  WA-4 and WA-4's gate closes them *(corrected: WAC-15)*.
 - **Deliberately not done:** No product code. No decoder, no descriptor, no project that references
   a core package. A milestone that stands up an assurance system and also writes a verifier cannot
   demonstrate that the assurance system caught anything.
@@ -235,7 +239,11 @@ scope control a copied codebase gets for free from the shape of what it copied.
   sharding, the merge, the scope manifests, and the audit command. Implement the script commands
   the malformed and invalid families need, and implement registration and the two module forms even
   though nothing yet consumes them, so that WA-6 does not discover the harness cannot express its
-  own tests. Run the malformed and invalid families and set the ratchet for them.
+  own tests. Run the malformed and invalid families and set the ratchet for them. **In the change
+  that first ingests a suite file, land the ingested suite's attribution row in the host
+  component's notice**, mark modified files as changed, and confirm the core's standing third-party
+  claim stays scoped or amend it, with the release owner co-signing — the licence work WA-0
+  recorded and could not land.
 - **Dependencies:** WA-2 and WA-3 for something to score. **Not** WA-5: this milestone exists
   because those two families need no execution.
 - **Objective exit gate:** The suite revision is pinned to an immutable commit, resolved once before
@@ -251,7 +259,12 @@ scope control a copied codebase gets for free from the shape of what it copied.
   selection are each named configuration failures; the failure manifest is proved to be a queue by a
   case where a listed path still fails and a case where a hand-written entry does not survive; the
   harness, merge, audit, and scope tooling each carry their own regression tests run before any
-  shard starts; and **a scan asserts the script reader, the corpus store, the encoder, and every
+  shard starts; **the ingested suite's attribution row is landed in the host component's notice in
+  the same change that first ingests a suite file, modified files are marked as changed, and the
+  core's standing third-party claim is confirmed scoped or amended with the release owner
+  co-signing** — the clause WA-0 recorded and carried, because a notice cannot carry forward
+  content this tree did not hold *(corrected: WAC-15)*; and **a scan asserts the script reader, the
+  corpus store, the encoder, and every
   suite file appear in no product package and in no closure report**, with a negative control that
   adds a product reference to the script reader and observes the scan fail.
 - **Deliberately not done:** No aggregate percentage is published, then or ever. The two families
@@ -277,7 +290,15 @@ scope control a copied codebase gets for free from the shape of what it copied.
   And **the refusable retention member of
   [section 20](roadmap.md#20-amendments-and-this-profiles-duty-as-the-counterweight)**, which is
   the one amendment this profile opens rather than files: no local resolution exists, and the
-  memory representation cannot be chosen until it is answered *(corrected: WAC-03)*.
+  memory representation cannot be chosen until it is answered *(corrected: WAC-03)*. **It is an
+  external dependency and is recorded as one**: the holder is the core's contract and release
+  owners, and the unblock condition is a minted amendment carrying a co-signature, or a recorded
+  refusal. **An unanswered row makes this milestone `Blocked` rather than merely late at the
+  moment WA-3 would otherwise let it start**, recorded with its blocker, its holder and its unblock
+  condition; and the fallback — if it is refused or
+  never answered — is **a release decision taken at WA-10 with the deviation named in the
+  support table**, never one taken quietly here to keep the milestone moving
+  *(corrected: WAC-16)*.
 - **Objective exit gate:** The numbered ABI decision exists with all eight rows, with fixtures and
   Native AOT representation probes retained; every executor answer is one of the five step kinds
   and a scan asserts no profile code names a core outcome category; **every trap in the closed
@@ -464,6 +485,21 @@ scope control a copied codebase gets for free from the shape of what it copied.
   Publish the support table and the composition register. Claim a RID only where a retained bundle
   published and ran the composition on it. Run the release gate that refuses the tree while any
   relevant unit lacks a human decision.
+
+  **Three records this milestone takes because no earlier one can, and each is a state rather than
+  a decision.** Publish the state of
+  [section 20](roadmap.md#20-amendments-and-this-profiles-duty-as-the-counterweight)'s amendment
+  register — per row, filed, held or opened, the deterministic failure or named exclusion it
+  leaves standing, and that the procedure is unexecutable — because a held amendment is a
+  capability this profile does not provide and gate 1 already requires every one of those to be
+  named. **If the refusable retention member was refused or never answered, name the resulting
+  deviation**: a `memory.grow` refusal that is not guest-observable is a departure from what the
+  specification says that instruction answers, and it is published as one rather than discovered by
+  a suite run. And name the declared-default vector as the neighbour-facing half whose
+  reconciliation is unowned, because
+  [section 17](roadmap.md#17-the-cross-profile-boundary-the-javascript-api-for-webassembly) puts
+  that reconciliation in a component that does not exist
+  *(corrected: WAC-16, WAC-17, WAC-18)*.
 - **Dependencies:** WA-4 and WA-9 for evidence, WA-7 for the composition, WA-0 for the packaging
   ruling, and **a named human reading every relevant unit** — the largest single-owner task in the
   programme, decomposed and scheduled rather than assumed.
@@ -497,7 +533,16 @@ scope control a copied codebase gets for free from the shape of what it copied.
   and a reachability argument; **the operational holders release gate 12 asks for are each named —
   diagnostics, cancellation, rollback, format-version rejection, specification- and suite-revision
   drift, vulnerability response, and recertification** — with a vacant one recorded vacant rather
-  than passed to whoever is available; and no figure, total, claim, or platform result from any
+  than passed to whoever is available; **the amendment register's state is published, row by row,
+  with the deterministic failure or named exclusion each held row leaves standing and with the
+  procedure's unexecutability stated** — asserted by a rule that fails when a row of
+  [section 20](roadmap.md#20-amendments-and-this-profiles-duty-as-the-counterweight) has no
+  corresponding published state, **and, where the refusable retention member was not answered, the
+  resulting `memory.grow` deviation is named with its deterministic behaviour**; **the declared
+  default vector is published as the neighbour-facing half with its reconciliation named as
+  unowned**, so a browser composition meets it in the table rather than in a resource exhaustion
+  naming a dimension this profile does not use; and no figure, total, claim, or platform result
+  from any
   other component appears anywhere.
 - **Deliberately not done:** No comparison against any other WebAssembly engine, in either
   direction, however easy it would be to run one.
@@ -594,7 +639,7 @@ gate with no owning milestone is a gate nobody can close.
 |---|---|---|---|---|
 | 1 Terminology and support claims | WA-0 fixes the identity; WA-10 issues the table | Identity and registration | 1 | determinism claimed too broadly |
 | 2 Engineering invariants | every milestone; each invariant is asserted by the milestone that could first violate it | all rows | 3, 4 | several |
-| 3 What the core gives and refuses | WA-0 (the two vectors and the matrix); WA-1 (the descriptor) | Identity and registration; Composed-profile safety | 2 | declared defaults reaching a neighbour; a shared aggregate parent read as isolation |
+| 3 What the core gives and refuses | WA-0 (the two vectors and the matrix); WA-1 (the descriptor); WA-10 publishes the defaults as the neighbour-facing half and names the reconciliation unowned | Identity and registration; Composed-profile safety | 1, 2 | declared defaults reaching a neighbour; a shared aggregate parent read as isolation |
 | 4 No seed | **no milestone delivers it** — it is the starting position, and its consequence is the origin distribution every bundle publishes | Assurance and review | 10 | owner and reviewer the same person |
 | 5 Package boundaries and the graph | WA-0 | Dependency architecture | 2 | the extraction gate unanswered |
 | 6 Feature manifests | WA-0 allocates; WA-1 mints the first; each increment extends | Identity and registration; Conformance | 1, 8 | the manifest set drifting upward |
@@ -611,9 +656,9 @@ gate with no owning milestone is a gate nobody can close.
 | 17 The cross-profile boundary | **no milestone delivers it** — this profile owns none of the JavaScript API and says so | Composed-profile safety | 1 | an implied working JavaScript API |
 | 18 Persistence and the code cache | **no milestone delivers it**, by decision; WA-10 measures the reopening trigger | Decoding | 3 | — |
 | 19 Measurement discipline | WA-10 stands up the lane; WA-5 produces the first figures it governs and declares the repetition count | Measurement | 9 | — |
-| 20 Amendments | **no milestone delivers the grading** — section 20 states each grade itself; **one row is opened rather than held**, the refusable retention member, and WA-5's dependencies name it | — | — | a requirement with no core row; the programme stalling on a precondition this component does not control |
+| 20 Amendments | **no milestone delivers the grading** — section 20 states each grade itself; **one row is opened rather than held**, the refusable retention member, and WA-5's dependencies name it; **WA-10 publishes the register's state** and names the deviation an unanswered retention row leaves | Identity and registration | 1 | a requirement with no core row; the programme stalling on a precondition this component does not control |
 | — proportional charging, which chapter 2's invariant 7 fixes rather than a chapter of its own | WA-5 | Execution and traps | 4 | unproportional charging |
-| — licence and attribution, which chapter 4.4 argues for rather than a chapter of its own | WA-0 lands the row in the host's notice; WA-10 confirms the standing claim | Licence and attribution | 11 | — |
+| — licence and attribution, which chapter 4.4 argues for rather than a chapter of its own | WA-0 records the obligation and names its co-signer; **WA-4 lands the row and the standing-claim confirmation with the ingestion**, because a notice cannot carry forward content this tree does not hold; WA-10 re-confirms against the shipped tree | Licence and attribution | 11 | — |
 | — packaging and consumers | WA-10 | Packaging and consumers | 7 | — |
 | — operational ownership: diagnostics, cancellation, rollback, format-version rejection, specification- and suite-revision drift, **vulnerability response**, recertification | WA-10 names every owner | Assurance and review | 12 | a role held by nobody |
 
@@ -635,7 +680,13 @@ it was built to find:
   member blocks, because [WAC-03](roadmap.corrections.md#wac-03) establishes there is no local
   workaround and WA-5 cannot choose a memory representation without it. **A blocking ask is the one
   case where an amendment row belongs in a milestone's dependency list**, and WA-5's dependencies
-  name it.
+  name it — with its holder, its unblock condition, and the fallback named as WA-10's decision
+  rather than WA-5's, because a milestone that takes a fallback to keep moving is how a deviation
+  ships unpublished *(corrected: WAC-16)*.
+- **The chapter delivers no answers and now closes one gate.** No milestone can schedule an
+  amendment nobody can mint, and none is asked to; what a milestone *can* do is publish the state,
+  and WA-10 does. The gate is over the publication and never over the answer, so a release that
+  names every row and moves none of them passes it *(corrected: WAC-17)*.
 - **[Section 2](roadmap.md#2-engineering-invariants)'s invariants are deliberately everywhere.** An
   invariant is not a milestone's deliverable; it is a property every later milestone must not break.
 - **One release gate is owned by no chapter, and the map is how that was found.** Gate 12 asks that

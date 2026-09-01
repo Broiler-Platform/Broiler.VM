@@ -74,9 +74,13 @@ Four rules govern the set:
 Minted in the order the readings were replaced, and indexed below by the roadmap section each
 lands in, so this file can be read beside the plan either way. Every
 entry below is dated **2026-08-31** — the day JS-0, JS-1, JS-3a and JS-9 landed together with the
-decision records that settle them — except where a row says otherwise. **A single date is a fact
+decision records that settle them — except where an entry says otherwise, and every entry carries
+its own date. **A single date is a fact
 about this programme's history, not a filing convention**: the plan was written before any of it
-existed and met its first implementation all at once.
+existed and met its first implementation all at once. **A later date is a different fact**: an
+entry carrying one is a reading the plan replaced when it was read against its own gates rather
+than against an implementation, which is why its authority is a gate, a ledger row, or the map
+rather than a decision record.
 
 | ID | Where | In one line | Authority |
 |---|---|---|---|
@@ -109,6 +113,10 @@ existed and met its first implementation all at once.
 | [JSC-27](#jsc-27) | roadmap §8 | The value representation is neither candidate the plan offered, and an interpreter frame is a heap object | [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md) |
 | [JSC-28](#jsc-28) | roadmap §9 | Every diagnostic code is `core-result` today; "half the registry" was a projection stated as a fact | [JSD-0009](decisions/0009-the-diagnostic-registry-and-the-position-encoding.md) |
 | [JSC-29](#jsc-29) | roadmap §18 | Seven of ten amendment rows named no counterweight position; four of those seven had a recorded and contrary one | the other profile's own roadmap |
+| [JSC-30](#jsc-30) | roadmap §4.5, §14; delivery §19, §25 | The ingested suite's attribution is a second licence obligation the seed's notice change never covered, and it lands at JS-3a | gate 12; ledger section 3 |
+| [JSC-31](#jsc-31) | roadmap §18; delivery §19, §25; gates §22 | The amendment register answers nothing at release, but its **state** is published there rather than inferred | gate 1; roadmap §18's unexecutable procedure |
+| [JSC-32](#jsc-32) | gates §23; delivery §19, §25 | The extraction-gate state is recorded at JS-10 regardless, because no mechanism-owning milestone could be sure of having anything to record | gates §23's own stop condition; the map's blank-cell rule |
+| [JSC-33](#jsc-33) | delivery §19, §25; gates §22 | The support table names the declared-default vector's reconciliation as unowned, rather than publishing the vector and stopping | ledger section 3; gate 1 |
 
 ### JSC-01
 
@@ -872,6 +880,120 @@ filed and not on how general it is.
 **Authority and date.** The other intended profile's own roadmap, read against this table,
 2026-08-31.
 
+### JSC-30
+
+**Where:** roadmap [section 4.5](roadmap.md#45-licence-attribution-and-one-notice-that-must-change)
+and [section 14](roadmap.md#14-the-conformance-oracle); delivery
+[section 19](roadmap.delivery.md#19-milestones), JS-3a; delivery
+[section 25](roadmap.delivery.md#25-the-chapter-milestone-and-gate-map).
+
+**What the plan said.** One licence obligation, argued in section 4.5 and landed by JS-2 —
+the seed is Apache-2.0, a copy carries the notices forward, and JS-2's gate closes it in the same
+change that introduces the copied tree. [Release gate 12](roadmap.gates.md#22-release-gates) and
+the evidence matrix additionally demanded **the ingested conformance suite's own attribution**, and
+nothing in the plan said where that one came from: no chapter argued for it, JS-3a ingests the suite
+and its gate was silent about it, and the map handed the whole *Licence and attribution* evidence
+area to chapter 4 and JS-2.
+
+**What replaced it.** Two obligations, named apart and landed apart. Section 4.5 stays the seed's
+and says so. The suite's is section 14's, and **JS-3a lands it**, in the same change that first
+ingests a suite file — with modified files marked and the core's standing third-party claim
+re-confirmed against what the ingestion adds to the tree, or amended, the release owner
+co-signing. The map's chapter-14 row carries that evidence
+area and gate 12 beside its conformance cells.
+
+**Why it could not be landed earlier, which is the whole reason it moved rather than being added to
+JS-2.** What a notice carries forward is the ingested material's own content, and that content is
+not in this checkout until the suite revision is retrieved, hashed and archived — the human action
+the ledger records as unperformed and the same one JS-3a's pin waits on. A row written at JS-0 or
+JS-2 would be an attribution for material nobody has read, which is the failure gate 12 exists to
+prevent rather than an early discharge of it.
+
+**Authority and date.** [Release gate 12](roadmap.gates.md#22-release-gates) and the *Licence and
+attribution* row of [section 21](roadmap.gates.md#21-test-and-evidence-matrix), read against
+[section 3 of the ledger](roadmap.status.md#3-open-external-dependencies), whose conformance-suite
+row records the revision unpinned and its licence and attribution obligations unexamined;
+2026-09-01.
+
+### JSC-31
+
+**Where:** roadmap [section 18](roadmap.md#18-amendments-this-profile-expects-to-ask-of-the-core);
+delivery [section 19](roadmap.delivery.md#19-milestones), JS-10; delivery
+[section 25](roadmap.delivery.md#25-the-chapter-milestone-and-gate-map);
+[gates section 22](roadmap.gates.md#22-release-gates), gate 1.
+
+**What the plan said.** Every row filed and held, none admissible until it names a merged or
+approved capability, and the procedure unexecutable while one person holds the minting role and
+both co-signing roles. The map recorded the consequence as a deliberate blank: section 18 *closes
+no gate and appears in no evidence area*.
+
+**What replaced it.** The blank was right about the **answers** and wrong about the **state**. No
+milestone can schedule an amendment nobody can mint, and none is asked to. But every held row is a
+capability this profile does not provide, and gate 1 already refuses a support table that leaves an
+unimplemented capability unnamed — so **JS-10 publishes the register's state**: per row, whether it
+is filed, held or opened, the deterministic failure or named exclusion it leaves standing, and that
+the procedure is unexecutable and why. The gate is over the publication and never over the answer,
+so a release that names every row and moves none of them passes it.
+
+**What this does not change.** No row becomes admissible because a release names it, no grade
+moves, and no counterweight position is re-read. The amendment procedure is exactly as unexecutable
+after this correction as before it; what changed is that a reader meets the consequence in the
+support table instead of in a refusal.
+
+**Authority and date.** [Gate 1](roadmap.gates.md#22-release-gates), which admits no unnamed
+unimplemented capability, read against section 18's own record that the procedure is unexecutable;
+2026-09-01.
+
+### JSC-32
+
+**Where:** [gates section 23](roadmap.gates.md#23-risks-and-stop-conditions), the extraction-gate
+row; delivery [section 19](roadmap.delivery.md#19-milestones), JS-10; delivery
+[section 25](roadmap.delivery.md#25-the-chapter-milestone-and-gate-map), the chapter-5 row.
+
+**What the plan said.** This profile supplies its half of the comparison when a second product
+profile's implementation has merged, *recorded at the milestone that owns the mechanism*; where the
+second implementation has not merged, it records the first condition unsatisfied. The stop condition
+was that an unrecorded state is a failure.
+
+**What replaced it.** The same obligation, plus a milestone that can always discharge it: recorded
+at the mechanism-owning milestone **where the condition is already met, and at JS-10 regardless**.
+
+**Why the earlier reading could not close.** Whether a second implementation has merged is a
+schedule this component does not hold and may never see. No mechanism-owning milestone's gate
+carried the clause, and none could be written to, because such a milestone can pass at a moment
+when there is nothing to compare against and nothing to record. A stop condition over an unrecorded
+state needs one point at which the state must exist whichever way it fell, and the release is that
+point.
+
+**What is unchanged.** No verdict is recorded, then or ever — a verdict changes the core graph and
+is the core architecture owner's — and no identifier from another profile component appears in this
+component's documents, which JS-10's gate asserts by scan rather than by intention.
+
+**Authority and date.** [Section 23](roadmap.gates.md#23-risks-and-stop-conditions)'s own stop
+condition, read against [section 25](roadmap.delivery.md#25-the-chapter-milestone-and-gate-map)'s
+rule that a blank delivering cell is a finding; 2026-09-01.
+
+### JSC-33
+
+**Where:** delivery [section 19](roadmap.delivery.md#19-milestones), JS-10; delivery
+[section 25](roadmap.delivery.md#25-the-chapter-milestone-and-gate-map), the chapter-3 row;
+[gates section 22](roadmap.gates.md#22-release-gates), gate 1.
+
+**What the plan said.** The fifteen defaults are published with the maxima, and the
+*Composed-profile safety* evidence row records the defaults as the neighbour-facing half.
+Reconciling two profiles' declarations belongs to whichever component composes both. Nothing
+required the **support table** to say either thing, so a reader of the published table met a default
+vector with no statement about who reconciles it.
+
+**What replaced it.** JS-10 publishes the vector as the neighbour-facing half **with its
+reconciliation named as unowned**, and gate 1 refuses a table that does not. The reconciliation
+itself is not deferred to the release and is not this component's to take at any milestone: the
+component that would own it does not exist.
+
+**Authority and date.** [Section 3 of the ledger](roadmap.status.md#3-open-external-dependencies),
+whose declared-defaults row records the reconciliation as still unowned, read against
+[gate 1](roadmap.gates.md#22-release-gates)'s rule that no row reads as a bare yes; 2026-09-01.
+
 ---
 
 ## 3. Rejections
@@ -965,22 +1087,38 @@ are carried by the plan as **questions**, and nothing below has been decided. **
 [ledger](roadmap.status.md) is the authority** for every one of them; this list exists only so that
 an open question is not mistaken for a correction nobody wrote down.
 
+**Where a question cannot be answered by this component at all, the plan names the point at which
+its *state* is recorded, and that is not the same as answering it.** Four of the entries below are
+of that kind — the amendment register, the extraction-gate comparison, the reconciliation of two
+profiles' declared defaults, and the two third-party pins — and each says where the state lands.
+A release that publishes a question truthfully has not closed it.
+
 - **Where the verification boundary falls** — whether the verifier re-derives every early error
   from artifact bytes, and what a doubly-bad artifact answers. JS-3b owns it. JS-3a settled only
   the narrower question it was asked: which half of the diagnostic registry a code belongs to.
 - **The direct-`eval` decision** — whether the seed's textual heuristic is replaced by a decision
   the front end records during binding analysis, or declared an intentional documented
   approximation with its deviation published. JS-8 owns it.
-- **The argument-channel amendment** — filed and held, not scheduled. The amendment procedure is
-  currently unexecutable: no amendment has been minted, and the minting role and both co-signing
-  roles are held by one person.
+- **The argument-channel amendment, and every other row of section 18** — filed and held, not
+  scheduled. The amendment procedure is currently unexecutable: no amendment has been minted, and
+  the minting role and both co-signing roles are held by one person. **State recorded at JS-10**,
+  which publishes the register row by row with the deterministic failure or exclusion each held row
+  leaves standing — see [JSC-31](#jsc-31). Publishing a held row does not make it admissible.
+- **The extraction-gate comparison** — its first condition is a second product profile's verifier
+  having merged, which is a schedule this component does not hold. **State recorded at JS-10** as
+  this profile's half or as the condition unsatisfied, with **no verdict**, which is the core
+  architecture owner's — see [JSC-32](#jsc-32).
 - **The language-specification edition and the conformance-suite revision** — neither is pinned.
   Retrieving, hashing and archiving third-party material is a human action nobody has performed,
-  and the ledger carries each as a named exclusion.
+  and the ledger carries each as a named exclusion. **The suite's licence and attribution obligation
+  waits on the same action** and lands at JS-3a with the ingestion — see [JSC-30](#jsc-30).
 - **The reconciliation of two profiles' declared defaults** — it belongs to whichever component
-  composes both, and that component does not exist and has no owner.
+  composes both, and that component does not exist and has no owner. **Named as unowned in the
+  support table at JS-10** — see [JSC-33](#jsc-33) — which publishes the position and reconciles
+  nothing.
 - **Human review** — nothing in this profile has been read by a human, and nothing that will be
-  copied arrives reviewed.
+  copied arrives reviewed. It gates the release rather than any development step, and
+  [gate 11](roadmap.gates.md#22-release-gates) is where it bites.
 
 ---
 
