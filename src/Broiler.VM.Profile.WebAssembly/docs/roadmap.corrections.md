@@ -79,8 +79,8 @@ Ordered by the roadmap section they land in, so this file can be read beside the
 | [WAC-05](#wac-05) | roadmap §13 | A `funcref` is excluded because the capability channel carries values, not because no callback direction exists | roadmap §17 |
 | [WAC-06](#wac-06) | roadmap §18 | The persisted key carries the declared hard maxima, not the effective limit vector | core ADR 0006 |
 | [WAC-07](#wac-07) | roadmap §20 | The argument channel is graded strong by both profiles, and the two gradings are reconciled | the other profile's dated grading |
-| [WAC-08](#wac-08) | ledger; roadmap header, §5 | **Placement is settled by the core.** This profile is product projects inside `Broiler.VM`, at a path it already occupies — WA-0 does not decide it | core ADR 0001, 2026-08-31 |
-| [WAC-09](#wac-09) | roadmap §5 | The composition root cannot be named `Broiler.VM.Profile.WebAssembly.Composition.*`; that name fires rule A8 on the first build | rules A8, A11, A12 |
+| [WAC-08](#wac-08) | ledger; roadmap header; delivery WA-0 | **Placement is settled by the core.** This profile is product projects inside `Broiler.VM`, at a path it already occupies — WA-0 does not decide it | core ADR 0001, 2026-08-31 |
+| [WAC-09](#wac-09) | roadmap §5 | The composition root cannot be named `Broiler.VM.Profile.WebAssembly.Composition.*`; that name fires rule A8 on the first build | rules A8, A11, A13 |
 | [WAC-10](#wac-10) | delivery §21, WA-0 | The three guest-load **defaults** cannot be `Unconstrained`; the catalog refuses such a descriptor | the core's descriptor validation |
 | [WAC-11](#wac-11) | roadmap §5 | A profile's own siblings sit outside the two-assembly reference set, and rule A11 exempts a same-family sibling | ADR 0011 P1, ADR 0001 rev 5 |
 | [WAC-12](#wac-12) | roadmap §5 | The cross-profile boundary rule exists and binds this family in both directions today | rule N2 |
@@ -128,8 +128,8 @@ lands exactly at the ceiling — the failure mode the earlier reading feared is 
 prevents.
 
 **The earlier reading was internally inconsistent as well as wrong**, which is the part worth
-keeping: this profile already applies exactly that discipline to `LiveBytes`, declared two rows
-above as reported on growth and released on disposal.
+keeping: this profile already applies exactly that discipline to `LiveBytes`, declared earlier in
+the same table as reported on growth and released on disposal.
 
 **Authority and date.** The core's metering surface, read against the row, 2026-08-31.
 
@@ -156,8 +156,9 @@ spelling of a guest-observable `memory.grow` refusal on the shipped contract at 
 operation continues — and that is the specification's behaviour rather than this profile's
 preference. So the gap is not a local design problem to be worked around: **WA-5 cannot choose a
 memory representation until it is resolved**, and section 20 carries a refusable retention member
-as this profile's one *blocking* ask rather than a filed one. The other intended profile has no
-construct that needs it and neither files nor obstructs it.
+as this profile's one *blocking* ask rather than a filed one. **The other intended profile's dated
+grading records no position on it** — its amendment table has ten rows and none is this one — so
+the core's procedural question about the other profile is, for this row, still unanswered.
 
 **Authority and date.** The shipped core's metering behaviour, read rather than inferred from the
 contract, 2026-08-31.
@@ -170,9 +171,10 @@ the list of what the decoder rejects.
 **What the plan said.** That every bullet in the malformed-input list produces the same outcome
 category, `InvalidArtifact` with a decode reason, a diagnostic code and a byte position.
 
-**What replaced it.** Two of them do not. **A vector length beyond the effective declared-count
-ceiling, and artifact bytes beyond theirs, are `ResourceExhaustion` naming one dimension and one
-scope** — the module is well formed and this image declined to admit it, which is the rule
+**What replaced it.** Two bullets do not. **A vector length beyond the effective declared-count
+ceiling, and structural depth and artifact bytes beyond theirs, are `ResourceExhaustion` naming one
+dimension and one scope** — the module is well formed and this image declined to admit it, which is
+the rule
 section 8 applies to every other implementation limit and the one the core states for the whole
 bounded-read status set.
 
@@ -247,8 +249,8 @@ register, which is how a capability gets approved at the wrong width.
 
 ### WAC-08
 
-**Where:** the [ledger](roadmap.status.md)'s opening, the roadmap header, and
-[section 5](roadmap.md#5-package-boundaries-and-the-dependency-graph).
+**Where:** the [ledger](roadmap.status.md)'s opening, the roadmap header, and delivery
+[section 21](roadmap.delivery.md#21-milestones), WA-0.
 
 **What the plan said.** That this component has no repository of its own yet, that its two
 documents are staged in the aggregate repository beside the components they will sit next to, and
@@ -299,8 +301,9 @@ under `src/compositions/`, beside the composition roots already there.
 **This is the sibling profile's finding, not a prediction.** It proposed the same shape, built it,
 and the rule fired. Recording it here costs nothing and saves this profile the same cycle.
 
-**Authority and date.** Rules A8, A11 and A12 as registered, and the sibling profile's dated
-record of hitting them, 2026-08-31.
+**Authority and date.** Rules A8, A11 and A13 as registered — **A12 and the composition register
+are what hold the corrected name**, which is the other half of why the rename is the right fix —
+and the sibling profile's dated record of A8 firing on its first build, 2026-08-31.
 
 ### WAC-10
 
@@ -477,8 +480,9 @@ every one of them.
   [section 11](roadmap.md#11-the-store-instances-and-linking) names the milestone that chooses
   between the other two.
 - **The guest-observable `memory.grow` refusal** — [WAC-03](#wac-03) establishes that no spelling
-  exists on the shipped contract. What is open is the amendment, which is filed as blocking, and
-  what WA-5 does if it is not answered.
+  exists on the shipped contract. What is open is the amendment, which is **opened as blocking
+  rather than filed and held** — the one row in this plan that is — and what WA-5 does if it is not
+  answered.
 - **The argument channel** — reconciled with the other profile and filed, not scheduled. The
   amendment procedure is currently unexecutable.
 - **The specification revision and the conformance-suite revision** — neither is pinned.

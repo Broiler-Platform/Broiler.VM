@@ -385,7 +385,7 @@ not drift:
 | `ArtifactBytes` | Charged | Enforced by the core's reader over the payload. |
 | `SectionCount` | Charged | WebAssembly sections are literal, so this dimension has a direct referent for once. Custom sections count. |
 | `DeclaredCount` | Charged | Every vector length in the binary format — types, functions, locals, elements, data, fields, and the rest. |
-| `StructuralDepth` | Charged | Section framing and block nesting, as a *high-water mark* rather than a running total, **which the core supports directly**: the metering surface is four members, and its retain/release pair exists precisely for the eight ceiling-class dimensions, of which this is one. Only a ceiling-class dimension releases; an allowance never refunds. So the discipline is **charge on entry, release on exit**, and the refusal lands exactly at the ceiling rather than accumulating across a long function of many sequential shallow blocks. It is the same discipline this table declares two rows above for `LiveBytes`. Section framing is core-metered through the reader in any case. **WA-1 records the charge sites, not the question** *(corrected: WAC-02)*. |
+| `StructuralDepth` | Charged | Section framing and block nesting, as a *high-water mark* rather than a running total, **which the core supports directly**: the metering surface is four members, and its retain/release pair exists precisely for the eight ceiling-class dimensions, of which this is one. Only a ceiling-class dimension releases; an allowance never refunds. So the discipline is **charge on entry, release on exit**, and the refusal lands exactly at the ceiling rather than accumulating across a long function of many sequential shallow blocks. It is the same discipline this table declares earlier for `LiveBytes`. Section framing is core-metered through the reader in any case. **WA-1 records the charge sites, not the question** *(corrected: WAC-02)*. |
 | `NestedLoadDepth` | NotApplicable, **default a large finite value** | No guest-initiated loads at any manifest this roadmap allocates. The maximum may be whatever this profile likes - it binds this profile's artifacts alone. **The default is the half that reaches a neighbour**, and getting it wrong is a cross-profile defect: see below. |
 | `NestedLoadFanOut` | NotApplicable, **default a large finite value** | As above. |
 | `NestedLoadBytes` | NotApplicable, **default a large finite value** | As above. |
@@ -849,10 +849,11 @@ revision, and a corpus entry exists for every adjacent pair the table forbids.
   byte position.
 
 **Those bullets do not all produce the same outcome category, and the split is load-bearing.**
-Six of them are `InvalidArtifact` with a decode reason, a diagnostic code, and a byte position. Two
-are not: **a vector length beyond the effective declared-count ceiling, and artifact bytes beyond
-theirs, are `ResourceExhaustion` naming one dimension and one scope** *(corrected: WAC-04)* — the
-module is well formed and this image declined to admit it, which is the same rule
+Most are `InvalidArtifact` with a decode reason, a diagnostic code, and a byte position. **Two are
+not — the vector-length bullet and the structural-depth-and-artifact-bytes bullet — and between
+them they name three dimensions: each is `ResourceExhaustion` naming one dimension and one scope**
+*(corrected: WAC-04)* — the module is well formed and this image declined to admit it, which is the
+same rule
 [section 8](#8-validation) applies to every other implementation limit and the same one the core
 rules for the whole bounded-read status set. The distinction is not cosmetic here: every corpus
 entry pins its observed ⟨outcome, reason, diagnostic code⟩ triple and replays it across three

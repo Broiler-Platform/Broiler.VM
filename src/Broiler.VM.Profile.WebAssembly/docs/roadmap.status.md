@@ -75,8 +75,9 @@ evidence shows. It is not a reviewer's finding and not a change of state. Every 
 
 **This table is this document family's mark legend, and rule H1 reads it.** The vocabulary is
 closed and has three members, and it is the same vocabulary every profile ledger in this component
-uses; the component's own nine-member legend in `HUMAN_REVIEW.md` is a different vocabulary about
-different subjects, and a mark from it appearing here is a rule violation. Only one of the three
+uses; the component's own nine-member legend in `HUMAN_REVIEW.md` is a different vocabulary at a
+different granularity — its evidence verdicts are about one piece of evidence, these are about a
+whole milestone row — and a mark from it appearing here is a rule violation. Only one of the three
 is in use today, which is what a ledger with no retained evidence looks like — publishing all
 three is what lets the other two be read when a row first earns one.
 
