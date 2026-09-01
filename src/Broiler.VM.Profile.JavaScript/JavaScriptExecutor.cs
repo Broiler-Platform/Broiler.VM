@@ -336,9 +336,9 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
 
     /// <summary>What one operand slot costs, for the retention report.</summary>
     /// <remarks>
-    /// A figure this profile states about its own representation rather than measures, and JSD-0004
-    /// records that the representation is provisional until JS-4. It is used only to report
-    /// retention, never to size anything.
+    /// A figure this profile states about its own representation rather than measures, and JSD-0011
+    /// decides the representation that replaces it at JS-4. It is used only to report retention,
+    /// never to size anything.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=BA2AAF
     // Broiler-Human:        PENDING
