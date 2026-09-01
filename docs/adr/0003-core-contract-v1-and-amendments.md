@@ -663,6 +663,15 @@ moment it hosts another profile. Row 6 is recorded at that scope. The lesson the
 paragraph is kept for is that a register entry describing a disagreement outlives
 the disagreement unless someone re-reads it.
 
+*Corrected 2026-09-01: row 10 said the WebAssembly roadmap declined nested
+instantiation outright.* It records it **not needed** - the weakest verdict in
+that roadmap's table, which reserves "not needed, and actively declined" and
+"refused" for other rows and did not give this one either. The distinction is
+this record's own: row 3 of the counterweight check separates a profile that is
+**unaffected** from one that **records a refusal**, and a refusal is the reading
+row 10 asserted. The reason quoted was right and the classification was not,
+which is the same failure the paragraph above keeps its lesson for.
+
 | # | Candidate | What would drive it | Classes touched | Clause it must clear | Owning ADR |
 |---|---|---|---|---|---|
 | 1 | Relax the ceiling component of the cross-runtime sharing predicate from exact equality to element-wise subsumption (a handle no looser than the receiving runtime) | a host sharing one compiled artifact across realms whose runtimes carry different ceilings | 4 | breaking under the third stated consequence of section 7: a refusal becomes a success | 0006 |
@@ -673,7 +682,7 @@ the disagreement unless someone re-reads it.
 | 6 | A typed argument channel on the invocation request | a module that is nothing but exported functions with typed signatures, whose conformance suite invokes them with arguments end to end; and a profile hosting another one, where an export call is a typed call whose arguments originate on the other side | 2 | AD2: the entry-point name is a request field, so widening it must not re-scope any existing category | 0005 |
 | 7 | Multiple results on a host capability | a calling convention admitting more than one result, whose second result has nowhere to go and is refused rather than truncated | 7 | AD3: a capability signature is a declared shape and widening it must not weaken the declaration rules | 0011 |
 | 8 | A wider value slot on the capability channel | one value type in one instruction family that does not fit the current slot; splitting works and needs a published encoding | 7 | AD5: a profile compiled against the narrow slot must still compile | 0011 |
-| 10 | Nested instantiation of a guest-loaded handle | a module system whose dependency must become its own instance rather than run in the requesting frame; the JavaScript roadmap names it and grades it moderate, and the WebAssembly roadmap declines it outright, having no instruction that asks for code while running | 5, 1 | AD4 - it must be opt-in through a descriptor declaration - and AD1, because it makes a nesting-depth bound live that is presently unreachable | 0008 |
+| 10 | Nested instantiation of a guest-loaded handle | a module system whose dependency must become its own instance rather than run in the requesting frame; the JavaScript roadmap names it and grades it moderate, and the WebAssembly roadmap records it **not needed** rather than refused, having no instruction that asks for code while running | 5, 1 | AD4 - it must be opt-in through a descriptor declaration - and AD1, because it makes a nesting-depth bound live that is presently unreachable | 0008 |
 | 9 | A refusable retention member on the metering surface | a language whose guest must observe a refused growth and continue, where the retention report returns nothing and the refusal is latched for the next charge or poll | 3 | AD3: it must not let a profile learn a remaining value, which is the asymmetry the four-member surface exists to hold | 0007 |
 | 11 | A refusal cause on the bounded allocator, and a refusing scope on the bounded-reading meter | a verifier that must tell a caller which bound refused it. `VmBoundedAllocator` collapses five distinct causes into a bare `false`, `VmBoundedReadStatus.AllocationRefused` is produced by no core member as a result, and `IVmBoundedAllocationMeter.TryReserve` returns `bool`, so the scope that actually refused is discarded and every merged verifier in this tree hardcodes `Artifact`. Registered rather than taken: both members are on the frozen surface, so widening them is an amendment and not an edit, and the shape is fixed here while it is cheap. Found 2026-08-31 while reading the three merged verifiers against each other. |
 
