@@ -148,17 +148,21 @@ jobs:
       # chose to collect. A publish-and-run gate that covers two of the four composition roots
       # in the checkout is a gate over the half nobody was worried about.
       #
-      # The soak is deliberately NOT requested here, and the reason is not that it fails. It is a
-      # heap-plateau band over 2,000 cycles - a reading of a heap on a machine, which this
-      # component's own measurement rules refuse to treat as a figure - and an ephemeral shared
-      # runner is the one place it can be attributed to nothing. Every other check in these two
-      # binaries is a total function of the corpus and the build, so a disagreement between this
-      # lane and a bundle collected on a workstation is a defect rather than a runner. The
-      # evidence script passes --soak and this lane does not; the summary line each binary prints
-      # says which run it was, so a green log here cannot be read as the soak passing.
+      # The soak's heap plateau runs here too, and it did not always. It was excluded on the
+      # ground that a heap-plateau band on an ephemeral shared runner can be attributed to
+      # nothing - which was correct about the check as it then stood, since that compared an
+      # ABSOLUTE reading at cycle 99 against one at the end. The corrected check compares two
+      # readings in one process on one machine, which is a ratio, and the objection does not
+      # reach a ratio.
       #
-      # The soak's own Native AOT failure is an OPEN clause of JS-9, recorded in the profile's
-      # ledger with the band it breaches and with the instruction not to widen that band.
+      # That was not assumed. An experiment recorded 27 samples - three attempts, three runs,
+      # three operating systems - and every one passed: 0.97 on linux-x64, 0.97 on win-x64, 0.90
+      # on osx-arm64, with no variation at the hundredth. The absolute heaps differed hugely
+      # across those platforms, about 153KB, 158KB and 388KB, and the ratio did not move. What a
+      # shared runner makes unattributable is the byte count, and this check no longer reads one.
+      #
+      # The band is 1.20 and a per-cycle leak of 8 bytes reads 1.57, so this lane fails on a leak
+      # rather than merely hosting a check that cannot.
       - name: Publish and run the JavaScript composition roots as Native AOT
         shell: bash
         run: |
@@ -184,8 +188,7 @@ jobs:
           done
 
       # The fuzz sessions and the corpus-integrity mutation were collection-only for the same
-      # reason the roots were: nobody had put them here. Unlike the soak there is no reason to keep
-      # them out. A session is a total function of its seed and its seed corpus - no wall clock, no
+      # reason the roots were: nobody had put them here. A session is a total function of its seed and its seed corpus - no wall clock, no
       # thread count - so it decides the same on a runner as on a workstation, and four sessions of
       # 25,000 iterations each cost well under a second on the published image. A check that is
       # deterministic, fast and currently run by one person on one machine is the definition of one
