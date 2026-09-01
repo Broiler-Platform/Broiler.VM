@@ -1,5 +1,25 @@
 # Evidence bundle JS-9-003
 
+> ### Correction, 2026-09-01 — this bundle's summary contradicted its own log
+>
+> **What this file said.** That `publish-and-run.log` shows *"6 publishes, 6 runs, all exit 0"*.
+>
+> **What the log shows.** `[executiononly/aot] run exit 1`, and
+> `broiler-js-execution-only: 1 of 18 checks FAILED`. **Five of the six runs exit 0.** The failing
+> check is `recycled-runtimes-reach-a-heap-plateau`, under **Native AOT only**: the heap goes from
+> 68,608 bytes after 100 cycles to 157,720 after 2,000, a factor of **2.30 against a band of 2.0**.
+> JIT and trimmed pass the same check on the same code, at 0.95 and 0.93.
+>
+> **No log byte was edited.** The logs were always right; this file's summary of them was not, and
+> the summary is what a reader reads first. The rows below are corrected in place and an exclusion
+> is added; what was retained is untouched.
+>
+> **Why it is recorded here rather than only in the ledger.** A bundle whose summary reports the
+> passing half of its own run is the failure mode this component's whole method exists to prevent,
+> and a correction filed somewhere else would leave the bundle still saying it.
+> [Ledger update rule 2](../../roadmap.status.md#5-update-rules) is the rule that was broken:
+> *state what it demonstrated, **including its failures and its exclusions***.
+
 **Milestone:** JS-9. **What this bundle adds:** the corpus-integrity check — *a mutated corpus
 entry proves the replay detects a changed observed triple* — which is **the last clause of JS-9's
 exit gate that needs nothing this profile has not built**.
@@ -55,7 +75,7 @@ JS-3a added the position column for. Both were detected: 2 mutated, 2 detected.
 | Whole test suite | `suite.log` | 207 contract tests and 138 architecture tests passed |
 | Assurance gate mode | `assurance-gate.log` | Passed |
 | Assurance release mode | `assurance-release.log` | **Refused, as it must** |
-| Publish and run, both roots × three modes | `publish-and-run.log` | **6 publishes, 6 runs, all exit 0**, 18 checks per run |
+| Publish and run, both roots × three modes | `publish-and-run.log` | 6 publishes; **5 of 6 runs exit 0**, 18 checks per run — the Native AOT run of the execution-only root **exits 1 on one check**, see the correction above |
 | Fuzz sessions | `fuzz.log` | 4 sessions, 100,000 iterations, 0 findings |
 | **Corpus integrity** | `corpus-integrity.log` | **2 entries mutated, 2 detected** |
 | Negative controls, suite-judged | `negative-controls.log` | 16 injected, 16 caught, 0 skipped |
@@ -83,7 +103,11 @@ row waits on something that is itself blocked.
 1. **Everything in the table above.** The milestone is `In progress` for three exercises and no
    more.
 2. **The plateau is a band, not a figure.** No number in the soak may be cited as a measurement;
-   JS-5 owns measurement.
+   JS-5 owns measurement. **And under Native AOT it FAILS**, at a factor of 2.30 against a band
+   of 2.0, which makes that run exit 1: JS-9's gate clause asking that a soak reach a stated
+   heap plateau is **open on that mode**, this bundle does not close it and does not diagnose
+   it, and the band must not be widened to make it pass — an envelope widened after seeing a
+   candidate is a measurement defect.
 3. **A clean fuzz session is a statement about what the mutator reached**, and JS-9-001 records
    three things the tool got wrong that only running it against a deliberate defect exposed.
 4. **One RID, one machine.** `win-x64`.

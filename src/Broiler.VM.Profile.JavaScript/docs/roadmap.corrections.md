@@ -117,6 +117,9 @@ rather than a decision record.
 | [JSC-31](#jsc-31) | roadmap §18; delivery §19, §25; gates §22 | The amendment register answers nothing at release, but its **state** is published there rather than inferred | gate 1; roadmap §18's unexecutable procedure |
 | [JSC-32](#jsc-32) | gates §23; delivery §19, §25 | The extraction-gate state is recorded at JS-10 regardless, because no mechanism-owning milestone could be sure of having anything to record | gates §23's own stop condition; the map's blank-cell rule |
 | [JSC-33](#jsc-33) | delivery §19, §25; gates §22 | The support table names the declared-default vector's reconciliation as unowned, rather than publishing the vector and stopping | ledger section 3; gate 1 |
+| [JSC-34](#jsc-34) | roadmap §5; gates §21 | The fuzz mutator and the soak are in a composition root too, not only the corpus — so the execution-only closure carries them | the shipped composition roots, against rules A11 and A12 |
+| [JSC-35](#jsc-35) | roadmap §7; gates §21 | Each of the four exhaustion dimensions gets a corpus entry, because an exhaustion answer carries no code and the registry's binding cannot reach it | the corpus manifest, against rule N7 |
+| [JSC-36](#jsc-36) | delivery §19, §25 | Four clauses the release gates require and the map assigns, written into no exit gate — one defect with four instances | gates §22 gates 1 and 13; gates §24 |
 
 ### JSC-01
 
@@ -993,6 +996,107 @@ component that would own it does not exist.
 **Authority and date.** [Section 3 of the ledger](roadmap.status.md#3-open-external-dependencies),
 whose declared-defaults row records the reconciliation as still unowned, read against
 [gate 1](roadmap.gates.md#22-release-gates)'s rule that no row reads as a bare yes; 2026-09-01.
+
+### JSC-34
+
+**Where:** roadmap [section 5](roadmap.md#5-package-boundaries-and-the-dependency-graph), the
+test-only row and the new subsection beside it; gates
+[section 21](roadmap.gates.md#21-test-and-evidence-matrix), the dependency-architecture row.
+
+**What the plan said.** That the test-only row holds "conformance host, fuzz host, soak host, bench
+host", each "never referenced by a product project and never present in a published closure", with
+exactly one carve-out: the retained corpus, which a composition root writes because a corpus a test
+project produced would be a corpus the product path never exercised.
+
+**What replaced it.** The carve-out is larger than one row. **The fuzz mutator, the soak over
+recycled runtimes, and the shared-aggregate-budget exercises are in a composition root too**, for a
+reason the corpus argument does not cover and that the rules settle rather than taste: each drives
+this profile's own verifier and executor, a test project may not reference a profile assembly, and
+a composition root may not reference the core's fixture assembly. There is nowhere else for them to
+be, and the implementation already reasons this way in its own source.
+
+**Why the earlier reading matters enough to record.** A reader of the old row would have expected a
+`Broiler.VM.JavaScript.Fuzz.Host` under `src/tests/` and would have found none — and, more
+consequentially, would have read
+[section 15](roadmap.md#15-deployment-compositions-native-aot-and-the-browser-embedding)'s
+`execution-only` row as a file inventory. It is not. The execution-only image publishes a closure
+that contains a mutator and a soak driver, and **the closure gate's "no test assembly" clause is
+satisfied by the assembly boundary while the property is weaker than it reads.** Section 5 now says
+so where a reader meets it, rather than leaving it to be inferred from a closure report that counts
+assemblies.
+
+**What it does not change.** No test *assembly* is in any closure, no advertised composition
+exists, and nothing about the reference sets moved. What moved is the plan's account of what a
+composition root contains, and the register now records it.
+
+**Authority and date.** The shipped composition roots, read against the host component's active
+rules on where a profile assembly may be referenced from and what a composition root may reference;
+2026-09-01.
+
+### JSC-35
+
+**Where:** roadmap [section 7](roadmap.md#7-the-bytecode-format-and-the-verifier), the
+resource-exhaustion bullet of the verifier's rejection list; gates
+[section 21](roadmap.gates.md#21-test-and-evidence-matrix), the format-and-verifier row.
+
+**What the plan said.** That the verifier answers `ResourceExhaustion` naming structural depth,
+section count, declared counts or artifact bytes, each with one dimension and one scope — with no
+statement of what binds any of the four to a case.
+
+**What replaced it.** **Each of the four gets a corpus entry of its own**, and the bullet now says
+why nothing else would serve. Every invalid-artifact arm is held to a named case by the diagnostic
+registry, bound in both directions by rules the register carries. **An exhaustion answer carries no
+profile diagnostic code**, so the registry does not reach this bullet at all — which makes the
+four dimensions the one part of the rejection list whose category rests on prose. That is precisely
+where [section 21](roadmap.gates.md#21-test-and-evidence-matrix) already names *a ceiling breach
+recorded as an invalid artifact* as a release blocker, so the gap was between two clauses that each
+assumed the other covered it.
+
+**What this is not.** It is not a claim that the arms are wrong: the verifier maps every one of the
+core's bounded-read statuses onto its correct category today. It is a claim that one of the four is
+reached by a retained entry, one is reached incidentally by an ordering check, one is reached only
+inside a fuzz session, and one is reached by nothing — and that a reader of the plan could not
+have learned any of that from the plan.
+
+**Authority and date.** The retained corpus manifest read against roadmap section 7's own list, and
+against rule N7's both-directions binding, which by construction covers only coded rejections;
+2026-09-01.
+
+### JSC-36
+
+**Where:** delivery [section 19](roadmap.delivery.md#19-milestones), the exit gates of JS-3a, JS-5
+and JS-10; delivery [section 25](roadmap.delivery.md#25-the-chapter-milestone-and-gate-map).
+
+**What the plan said.** Four things, each stated somewhere and gated nowhere:
+
+- [Section 24](roadmap.gates.md#24-specification-and-platform-references) and the ledger both put
+  the **language-specification pin** on JS-3a. JS-3a's exit gate named only the suite revision.
+- [Gate 1](roadmap.gates.md#22-release-gates) requires the support table to carry the **pinned
+  specification edition and suite revision** and **the list of surfaces this profile declares
+  varying rather than fixed**. JS-10's exit gate carried neither.
+- [Gate 13](roadmap.gates.md#22-release-gates) requires the **operational holders** to be named,
+  and the map's own closing bullet says "JS-10 names them or the gate refuses". JS-10's exit gate
+  did not mention them.
+- JS-5's gate required "a proportionality fixture for each named operation family of section 8" —
+  a list that includes regular-expression matching, which arrives with the matcher at JS-6, and the
+  string and array families, which arrive with the library.
+
+**What replaced it.** Each clause is now written into the exit gate that would have to fail without
+it, and JS-5's is scoped to the families its own increment ships.
+
+**Why these are one entry rather than four.** They are one defect with four instances, and naming
+it is worth more than naming them: **a clause stated in the argument or in the release gates,
+agreed by the map, and never written into an exit gate.** A release gate cannot refuse a tree at a
+milestone that has already closed, and the map records who *should* close a clause rather than
+testing that anyone can — so a map read in one direction confirms coverage that does not exist.
+The map's closing bullets now carry the pattern, not only the four instances.
+
+**What it does not change.** No release gate moved, no clause is new to the programme, and nothing
+here advances or narrows a milestone: every one of the four was already required of a release.
+
+**Authority and date.** [Gates section 22](roadmap.gates.md#22-release-gates) gates 1 and 13, and
+[section 24](roadmap.gates.md#24-specification-and-platform-references), read against the exit
+gates of JS-3a, JS-5 and JS-10 and against the map's blank-cell rule; 2026-09-01.
 
 ---
 

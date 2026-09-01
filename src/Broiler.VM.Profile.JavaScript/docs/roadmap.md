@@ -633,7 +633,26 @@ reference each other, and the lowering must be absent from an execution-only clo
 | Profile | `Broiler.VM.Profile.JavaScript` | Descriptor, verifier, executor, value and frame model, object model, standard library, host imports, payload projections. References the two core assemblies and the format. |
 | Lowering | `Broiler.VM.Profile.JavaScript.Compiler` | Tokenizer, syntax tree, static semantics, and source-to-bytecode lowering. A **sibling** of the profile, not a part of it. References the format; never referenced by the profile. |
 | Composition roots | `Broiler.VM.Composition.JavaScript.*` | One per named deployment composition. The only projects that know which profiles and capabilities an image contains. **Not under the `Broiler.VM.Profile.` prefix**: every architecture rule that identifies a profile assembly keys on that prefix, so a composition root under it would be a profile assembly to the rule that forbids a profile from referencing the runtime — which a composition root must do *(corrected: JSC-06)*. Non-packable unless the composition register advertises them. |
-| Test-only | conformance host, fuzz host, soak host, bench host | Never referenced by a product project and never present in a published closure. **The retained corpus is not in this row**: it is written by a composition root, which is neither a test project nor a fixture and whose published closure is the product path itself, because a corpus a test project produced would be a corpus the product path never exercised. What is test-only is the tooling that *judges* it. |
+| Test-only | the tooling that **judges** a retained artifact rather than producing it | Never referenced by a product project and never present in a published closure. **What produces evidence is not in this row, and the list of exceptions is longer than it first looked** *(corrected: JSC-34)*: the retained corpus, the fuzz mutator, the soak, and the aggregate-budget exercises are all written by composition roots, because each has to drive this profile's own verifier and executor and a test project may not reference a profile assembly. A corpus a test project produced would in any case be a corpus the product path never exercised. |
+
+### What a composition root contains that its label does not describe
+
+**A composition root is a product project, and this component's roots carry more than the image
+they demonstrate.** The execution-only root holds the corpus replay, the ordering assertions, the
+fuzz mutator, the soak over recycled runtimes and the shared-aggregate-budget exercises, and every
+one of them is in the closure it publishes. That is forced rather than chosen: each has to drive
+this profile's own verifier and executor, and the core's rules forbid a test project to reference a
+profile assembly and forbid a composition root to reference the core's fixture assembly. There is
+nowhere else for them to be.
+
+Two consequences are stated here so a reader meets them before a closure report does
+*(corrected: JSC-34)*. **The `execution-only` label describes a reference set and not a file
+inventory** — [section 15](#15-deployment-compositions-native-aot-and-the-browser-embedding)'s
+table says what the image *can do*, which is verify and execute and not compile, and the assembly
+count is what carries that claim. And **the closure gate's "no test assembly" clause is satisfied
+by the assembly boundary while the property is weaker than it reads**: no test *assembly* is
+present, and a mutator and a soak driver are. A root that is ever advertised has to answer for
+that separately, which is one more reason none is advertised today.
 
 Whether the profile assembly itself later splits further — a value and object model separated from
 the standard library, for instance — is **deferred and not decided**: the single-assembly default
@@ -825,7 +844,15 @@ answer. Each bullet below states which category it produces.
 - **`ResourceExhaustion`** — structural depth, section count, declared counts, and artifact bytes,
   against the effective ceilings the core materialized before the first byte was read. Each names
   one dimension and one scope, and none of them is an invalid-artifact answer: the artifact is
-  well formed and this image declined to admit it;
+  well formed and this image declined to admit it. **Each of the four gets a corpus entry of its
+  own, and the reason is that nothing else would bind them** *(corrected: JSC-35)*: an exhaustion
+  answer carries no profile diagnostic code, so the registry's both-directions binding — which is
+  what holds every invalid-artifact arm to a named case — does not reach this bullet at all. A
+  dimension named here and reached by no entry is an arm whose category is asserted by prose, in
+  exactly the place [section 21](roadmap.gates.md#21-test-and-evidence-matrix) names *a ceiling
+  breach recorded as an invalid artifact* as a release blocker. Where a dimension is unreachable at
+  the current manifest, the entry is owed by the milestone that makes it reachable and the bundle
+  says which;
 - **`InvalidArtifact`** — any host assumption the artifact declares, checked against the
   capabilities the verification context reports as registered. An artifact that names an import the
   composition does not carry is refused at verification rather than at first call, and a
@@ -1333,6 +1360,13 @@ the most likely misreading of this table:
 | `execution-only` | Format, verifier, executor, standard library. **No tokenizer, no lowering.** | The approved precompiled surface verifies and executes under Native AOT |
 | `narrow-runtime-compiler` | The above plus tokenizer, static semantics, and lowering for a named restricted surface | Approved source is compiled and executed inside the published Native AOT application |
 | `general-runtime-compiler` | The above for the approved general surface | Approved general source is compiled and executed inside the published Native AOT application |
+
+**A label describes a reference set, not a file inventory.** What the rows above say is what an
+image *can do* — verify and execute, or also compile — and the assembly count is what carries
+that claim. It is not a statement that nothing else is in the closure:
+[section 5](#5-package-boundaries-and-the-dependency-graph) records that this component's
+roots also carry the corpus replay, the ordering assertions, the fuzz mutator and the soak,
+because the rules leave nowhere else for them to be *(corrected: JSC-34)*.
 
 **A label separates two images, never two modes of one.** Where a composition and its
 compiler-bearing neighbour differ, they differ by a reference and therefore by a closure — because

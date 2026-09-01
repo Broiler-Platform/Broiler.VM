@@ -71,9 +71,16 @@ scope control a copied codebase gets for free from the shape of what it copied.
   ingested material's own content forward and there is none in this tree until the suite revision is
   retrieved *(corrected: WAC-15)*.
 - **Dependencies:** Named ownership. No dependency on any core milestone's acceptance.
-- **Objective exit gate:** An acyclic shell graph builds Release with zero warnings; architecture
+- **Objective exit gate:** An acyclic shell graph builds Release with zero warnings; **the harness
+  roots are composition roots under `src/compositions/` and not test projects, and the graph proves
+  it rather than the prose asserting it** — a test project referencing this profile is refused by
+  the host component's own active rule, which is why
+  [section 5](roadmap.md#5-package-boundaries-and-the-dependency-graph) settles the placement
+  before a shell exists, and the register records which roots are advertised and which never are
+  *(corrected: WAC-22)*; architecture
   rules express every forbidden edge — including **both halves** of the no-edge-to-another-profile
-  rule and the no-product-reference-to-the-harness rule — each with a passing witness and a
+  rule and the rule that no **advertised** root reaches the script reader, the corpus store or the
+  encoder — each with a passing witness and a
   negative control that fails when injected and passes after revert; a scan asserts no source file,
   project file, or build item resolves outside the component root, and an unresolvable build item
   is **reported rather than skipped**; **a two-profile catalog test composes this descriptor beside
@@ -118,8 +125,9 @@ scope control a copied codebase gets for free from the shape of what it copied.
   high-water mark *(corrected: WAC-02)*. **Take the entry-point decision of
   [section 10](roadmap.md#10-execution-mapping-webassembly-onto-the-core-lifecycle) and record its
   encoding**, including its behaviour on an export name containing the encoding's own separator.
-  Write the test-only binary encoder that generates corpus entries. Stand up the `execution-only`
-  composition root with a closure self-report mode.
+  Write the binary encoder that generates corpus entries, in a harness root rather than a test
+  project *(corrected: WAC-22)*. Stand up the `execution-only`
+  composition root with a closure self-report mode, and the first harness root beside it.
 - **Dependencies:** WA-0. Deliberately **not** core acceptance: the point of this milestone is to
   find contract defects against a surface small enough to read in an afternoon.
 - **Objective exit gate:** The named composition **publishes and runs** on every claimed RID — the
@@ -148,7 +156,8 @@ scope control a copied codebase gets for free from the shape of what it copied.
   The slice corpus replays identically twice with no residue, contains at least one successful
   control entry, and the verifier throws on none of it.
 - **Deliberately not done:** No memory, no table, no global, no import, no float, no linking. The
-  binary encoder is test-only from its first line and is never referenced by a product project.
+  binary encoder is out of the advertised closure from its first line, and no advertised root
+  references it.
 
 ### WA-2 — The decoder, the integer decision, and the malformed corpus
 
@@ -265,8 +274,10 @@ scope control a copied codebase gets for free from the shape of what it copied.
   co-signing** — the clause WA-0 recorded and carried, because a notice cannot carry forward
   content this tree did not hold *(corrected: WAC-15)*; and **a scan asserts the script reader, the
   corpus store, the encoder, and every
-  suite file appear in no product package and in no closure report**, with a negative control that
-  adds a product reference to the script reader and observes the scan fail.
+  suite file appear in no package and in **no advertised composition's** closure report** — not in
+  "no closure report", because the harness root that contains them publishes one of its own
+  *(corrected: WAC-22)* — with a negative control that
+  adds a reference to the script reader **from the execution root** and observes the scan fail.
 - **Deliberately not done:** No aggregate percentage is published, then or ever. The two families
   scored here are reported as themselves.
 
@@ -278,7 +289,8 @@ scope control a copied codebase gets for free from the shape of what it copied.
   its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** Take the [section 9](roadmap.md#9-the-value-store-and-frame-model) decision as
   a numbered decision stating its consequence in both directions, **before any interpreter source
-  is written**, with all eight rows including the vector-width row that only matters later.
+  is written**, with all nine rows including the vector-width row that only matters later and
+  the `LiveBytes`-breach row the amendment below decides the shape of.
   Implement the store for a single module: memories, tables, globals, and their metering.
   Implement the interpreter over the numeric and control surface, memory loads and stores,
   `memory.grow`, and `call` and `call_indirect` within one module. Implement traps as typed
@@ -299,7 +311,7 @@ scope control a copied codebase gets for free from the shape of what it copied.
   never answered — is **a release decision taken at WA-10 with the deviation named in the
   support table**, never one taken quietly here to keep the milestone moving
   *(corrected: WAC-16)*.
-- **Objective exit gate:** The numbered ABI decision exists with all eight rows, with fixtures and
+- **Objective exit gate:** The numbered ABI decision exists with all nine rows, with fixtures and
   Native AOT representation probes retained; every executor answer is one of the five step kinds
   and a scan asserts no profile code names a core outcome category; **every trap in the closed
   list is produced by a named case and arrives as a typed payload behind a profile fault**, with
@@ -315,15 +327,22 @@ scope control a copied codebase gets for free from the shape of what it copied.
   corpus and the fuzz corpus; a deliberately non-polling variant completes as a profile fault with
   the poll-bound reason and the runtime poisoned to accept only disposal; **a proportionality
   fixture exists for each named operation family of
-  [section 9](roadmap.md#9-the-value-store-and-frame-model)**, each with an unsimplified control,
+  [section 9](roadmap.md#9-the-value-store-and-frame-model) *that this milestone ships*** — which
+  is `memory.grow` and nothing else, because the bulk-memory and table families arrive at WA-8,
+  `array.*` at the manifest that admits it, and segment initialisation at WA-7, and each family's
+  fixture arrives with its instructions *(corrected: WAC-21)* — each with an unsimplified control,
   each showing fuel charged as a monotone non-decreasing function of input magnitude and at least
-  the declared ceiling, with the declared function and granularity recorded — and `memory.fill`
-  over a large memory is a named negative control that a flat charge fails; a deliberately
+  the declared ceiling, with the declared function and granularity recorded — and **`memory.grow`
+  over a large delta is the named negative control here that a flat charge fails**, `memory.fill`
+  being WA-8's because the instruction is; a deliberately
   non-charging variant is detected and reported as a contract violation; two runtimes read one
   shareable handle concurrently with no synchronisation and a **structural scan** asserts no
   memory, table, global, or mutable cache is reachable from a handle, with the scan's mechanism
   and its residual stated; the memory representation decision names its own per-RID limits and
-  does not foreclose section 17's boundary; and the `assert_return`, `assert_trap`, and
+  does not foreclose section 17's boundary; **the ABI decision's `LiveBytes`-breach row is answered
+  in both directions and its answer is exercised** — whether an aggregate breach may terminate an
+  operation at all, and what a guest observes when it does, by a named case per arm of whatever the
+  row decides *(corrected: WAC-23)*; and the `assert_return`, `assert_trap`, and
   `assert_exhaustion` families are scored for the single-module subset of the suite with their own
   ratchets.
 - **Deliberately not done:** No imports, no linking, no second module in a store.
@@ -541,8 +560,14 @@ scope control a copied codebase gets for free from the shape of what it copied.
   resulting `memory.grow` deviation is named with its deterministic behaviour**; **the declared
   default vector is published as the neighbour-facing half with its reconciliation named as
   unowned**, so a browser composition meets it in the table rather than in a resource exhaustion
-  naming a dimension this profile does not use; and no figure, total, claim, or platform result
-  from any
+  naming a dimension this profile does not use; **the core's standing third-party claim is
+  re-confirmed against the shipped tree, or amended, with the release owner co-signing, and the
+  host component's notice is checked to still carry the ingested suite's attribution row** — the
+  clause [section 4.4](roadmap.md#44-licence-attribution-and-one-notice-that-must-change) and
+  [the map](#27-the-chapter-milestone-and-gate-map) both put on this milestone and which
+  [release gate 11](roadmap.gates.md#24-release-gates) refuses a publish without, WA-4's landing of
+  the row being a claim about the tree *at ingestion* rather than about the tree *at release*;
+  and no figure, total, claim, or platform result from any
   other component appears anywhere.
 - **Deliberately not done:** No comparison against any other WebAssembly engine, in either
   direction, however easy it would be to run one.
@@ -639,20 +664,20 @@ gate with no owning milestone is a gate nobody can close.
 |---|---|---|---|---|
 | 1 Terminology and support claims | WA-0 fixes the identity; WA-10 issues the table | Identity and registration | 1 | determinism claimed too broadly |
 | 2 Engineering invariants | every milestone; each invariant is asserted by the milestone that could first violate it | all rows | 3, 4 | several |
-| 3 What the core gives and refuses | WA-0 (the two vectors and the matrix); WA-1 (the descriptor); WA-10 publishes the defaults as the neighbour-facing half and names the reconciliation unowned | Identity and registration; Composed-profile safety | 1, 2 | declared defaults reaching a neighbour; a shared aggregate parent read as isolation |
+| 3 What the core gives and refuses | WA-0 (the two vectors); **WA-1 (the budget declaration matrix and the descriptor that carries it)**; WA-10 publishes the defaults as the neighbour-facing half and names the reconciliation unowned | Identity and registration; Composed-profile safety | 1, 2 | declared defaults reaching a neighbour; a shared aggregate parent read as isolation |
 | 4 No seed | **no milestone delivers it** — it is the starting position, and its consequence is the origin distribution every bundle publishes | Assurance and review | 10 | owner and reviewer the same person |
-| 5 Package boundaries and the graph | WA-0 | Dependency architecture | 2 | the extraction gate unanswered |
+| 5 Package boundaries and the graph | WA-0, **including the harness-placement finding: a test project may not reference a profile assembly, so the harness roots are composition roots** | Dependency architecture | 2 | the extraction gate unanswered; an advertised closure reaching the ingestion path |
 | 6 Feature manifests | WA-0 allocates; WA-1 mints the first; each increment extends | Identity and registration; Conformance | 1, 8 | the manifest set drifting upward |
 | 7 The artifact and the decoder | WA-2 | Decoding | 3 | the canonical-reader regression; the lost count-bound ordering; section order by identifier |
 | 8 Validation | WA-3 | Validation | 3 | validation drifting into first execution |
-| 9 The value, store, and frame model | WA-5 | Value model and store | 4 | a late value and frame ABI decision |
+| 9 The value, store, and frame model | WA-5, **nine rows now: the `LiveBytes`-breach row joins the eight** | Value model and store | 4 | a late value and frame ABI decision |
 | 10 Execution on the core lifecycle | WA-1 (the loop end to end); WA-5 (the interpreter) | Execution and traps | 4 | a trap conflated with an exhaustion |
 | 11 The store, instances, and linking | WA-6 takes the store decision; WA-5 is written against it | Value model and store; Linking and host boundary | 5 | the store decision taken late |
 | 12 Traps and exhaustion | WA-5 | Execution and traps | 4 | deep recursion terminating the process |
 | 13 Memories, tables, globals, host boundary | WA-6 | Linking and host boundary | 5 | mutable state reachable from a shared handle |
 | 14 Suspension and threads | **no milestone delivers it, by decision** — nothing is declared at any allocated manifest, and section 14 names what would change that | Identity and registration | 1 | — |
 | 15 The conformance oracle | WA-4 | Conformance | 8 | the oracle reporting a failure as a pass; an aggregate percentage |
-| 16 Compositions, Native AOT, the browser | WA-1 builds the one root; WA-10 advertises it | Native AOT | 6 | the test-only ingestion path reaching a product closure |
+| 16 Compositions, Native AOT, the browser | WA-1 builds the one advertised root and the first harness root beside it; WA-10 advertises the first | Native AOT | 6 | the ingestion path reaching an advertised closure |
 | 17 The cross-profile boundary | **no milestone delivers it** — this profile owns none of the JavaScript API and says so | Composed-profile safety | 1 | an implied working JavaScript API |
 | 18 Persistence and the code cache | **no milestone delivers it**, by decision; WA-10 measures the reopening trigger | Decoding | 3 | — |
 | 19 Measurement discipline | WA-10 stands up the lane; WA-5 produces the first figures it governs and declares the repetition count | Measurement | 9 | — |
@@ -689,6 +714,19 @@ it was built to find:
   names every row and moves none of them passes it *(corrected: WAC-17)*.
 - **[Section 2](roadmap.md#2-engineering-invariants)'s invariants are deliberately everywhere.** An
   invariant is not a milestone's deliverable; it is a property every later milestone must not break.
+- **Five things a read of this map against the gates surfaced have been folded back into the gates,
+  which is the map working rather than a defect in it.** Two were clauses a release gate asks for
+  that no exit gate closed: **release gate 11's licence re-confirmation**, which section 4.4 and the
+  licence row both put on WA-10 while WA-10's gate said nothing about it; and the **budget
+  declaration matrix**, which row 3 above assigned to WA-0 while
+  [section 3](roadmap.md#3-what-the-core-already-gives-this-profile-and-what-it-refuses) assigns it
+  to WA-1 and WA-0's action list never mentioned it. Two were gates that could not be met as
+  written: **WA-5's proportionality clause**, which demanded a fixture for every family section 9
+  names and a negative control over an instruction WA-8 introduces *(corrected: WAC-21)*; and **the
+  ratchet**, defined as the first *accepted* totals for a floor that WA-4's own exit gate sets
+  *(corrected: WAC-19)*. The fifth was a decision with no home: **what a `LiveBytes` breach does to
+  an operation**, which the ledger had opened beside the ABI and which section 9 now carries as a
+  row of its own *(corrected: WAC-23)*.
 - **One release gate is owned by no chapter, and the map is how that was found.** Gate 12 asks that
   the holders of diagnostics, cancellation, rollback, format-version rejection, specification- and
   suite-revision drift, **vulnerability response**, and recertification each be named. No chapter

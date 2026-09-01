@@ -1,5 +1,25 @@
 # Evidence bundle JS-9-002
 
+> ### Correction, 2026-09-01 — this bundle's summary contradicted its own log
+>
+> **What this file said.** That `publish-and-run.log` shows *"6 publishes, 6 runs, all exit 0"*.
+>
+> **What the log shows.** `[executiononly/aot] run exit 1`, and
+> `broiler-js-execution-only: 1 of 18 checks FAILED`. **Five of the six runs exit 0.** The failing
+> check is `recycled-runtimes-reach-a-heap-plateau`, under **Native AOT only**: the heap goes from
+> 68,608 bytes after 100 cycles to 157,720 after 2,000, a factor of **2.30 against a band of 2.0**.
+> JIT and trimmed pass the same check on the same code, at 0.95 and 0.93.
+>
+> **No log byte was edited.** The logs were always right; this file's summary of them was not, and
+> the summary is what a reader reads first. The rows below are corrected in place and an exclusion
+> is added; what was retained is untouched.
+>
+> **Why it is recorded here rather than only in the ledger.** A bundle whose summary reports the
+> passing half of its own run is the failure mode this component's whole method exists to prevent,
+> and a correction filed somewhere else would leave the bundle still saying it.
+> [Ledger update rule 2](../../roadmap.status.md#5-update-rules) is the rule that was broken:
+> *state what it demonstrated, **including its failures and its exclusions***.
+
 **Milestone:** JS-9. **What this bundle adds to [JS-9-001](../js-9/README.md):** the two
 **host-level exercises** its exit gate names — sibling runtimes under one aggregate budget, and a
 soak over recycled runtimes.
@@ -54,9 +74,20 @@ the mistake the next person writing one of these will make.
 
 ## The soak
 
-| Check | What it observed |
+| Mode | What it observed |
 |---|---|
-| `recycled-runtimes-reach-a-heap-plateau` | **2,000 of 2,000** create-verify-instantiate-invoke-dispose cycles completed; the heap went from **81,776 bytes after 100 cycles to 77,808 after 2,000** — a factor of **0.95** against a band of 2.0 |
+| JIT | **2,000 of 2,000** create-verify-instantiate-invoke-dispose cycles completed; the heap went from **81,776 bytes after 100 cycles to 77,808 after 2,000** — a factor of **0.95** against a band of 2.0. **PASS** |
+| Trimmed | 2,000 of 2,000 completed; **56,400 → 52,448**, a factor of **0.93**. **PASS** |
+| Native AOT | 2,000 of 2,000 completed; **68,608 → 157,720**, a factor of **2.30** against a band of 2.0. **FAIL**, and the run exits 1 |
+
+**The third row is the one this file used to omit.** All three modes run the same check over the
+same code and the same corpus; two settle below their starting point and one grows by a factor
+of 2.3. Whether that is a per-cycle retention this profile causes under Native AOT or a band
+that is wrong for an AOT heap is **not answered here and is not answerable from this bundle** —
+it needs a measurement, and JS-5 owns measurement. What must not happen is the band being
+widened to make the check pass: [section 17](../../roadmap.gates.md#17-measurement-discipline)
+names *an envelope widened after seeing a candidate* as a measurement defect, and a plateau
+band is an envelope.
 
 **The band is loose on purpose and the check says so in its own text.** A managed heap does not
 return to a number, it returns to a range, and a check comparing two byte counts for equality would
@@ -75,13 +106,15 @@ state against steady state rather than steady state against a process that has j
 | Whole test suite | `suite.log` | 207 contract tests and 138 architecture tests passed |
 | Assurance gate mode | `assurance-gate.log` | Passed |
 | Assurance release mode | `assurance-release.log` | **Refused, as it must** |
-| Publish and run, both roots × three modes | `publish-and-run.log` | **6 publishes, 6 runs, all exit 0**, **18 checks** per run |
+| Publish and run, both roots × three modes | `publish-and-run.log` | 6 publishes; **5 of 6 runs exit 0**, 18 checks per run — the Native AOT run of the execution-only root **exits 1 on one check**, see the correction above |
 | Fuzz sessions | `fuzz.log` | 4 sessions, 100,000 iterations, 0 findings |
 | Negative controls, suite-judged | `negative-controls.log` | 16 injected, 16 caught, 0 skipped |
 | Negative controls, corpus-judged | `corpus-controls.log` | **9** injected, 9 caught, 0 skipped |
 | Negative controls, fuzz-judged | `fuzz-controls.log` | 1 injected, 1 caught, 0 skipped |
 
-**Both exercises run in every published mode**, so they are observed under Native AOT as well as
+**Both exercises run in every published mode** — which is how the plateau's Native AOT
+failure was observable at all, and why it is above rather than absent. They are observed under
+Native AOT as well as
 under JIT.
 
 ### The control for this bundle
@@ -112,5 +145,8 @@ and that only an exercise built for it can see.
 5. **No session or soak budget.** Four seeds, 25,000 iterations each, 2,000 cycles: stated so a run
    is reproducible, not because any of them is a number something justifies. JS-9 owns choosing.
 6. **The plateau is a band, not a figure.** No number in it may be cited as a measurement.
+7. **The plateau check FAILS under Native AOT and this bundle does not close it.** The run exits 1;
+   JS-9's gate clause asking that a soak reach a stated heap plateau is **open on that mode**, and
+   the ledger's JS-9 row carries it. Nothing here diagnoses it.
 7. **One RID, one machine.** `win-x64`. A heap number on one machine is not a heap number.
 8. **Nothing is reviewed.** Every relevant unit in this component is `HUMAN_PENDING`.
