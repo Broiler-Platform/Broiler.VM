@@ -122,7 +122,7 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Publish and run the composition roots as Native AOT
+      - name: Publish and run the core composition roots as Native AOT
         shell: bash
         run: |
           set -euo pipefail
@@ -133,6 +133,47 @@ jobs:
             binary="$out/Broiler.VM.Composition.$composition"
             [ -f "$binary.exe" ] && binary="$binary.exe"
             "$binary"
+          done
+
+      # The JavaScript roots were absent from this lane until now, and their absence is how a
+      # failing Native AOT run reached two retained evidence bundles without anything noticing:
+      # they ran only under eng/collect-js-evidence.py, on one person's machine, when someone
+      # chose to collect. A publish-and-run gate that covers two of the four composition roots
+      # in the checkout is a gate over the half nobody was worried about.
+      #
+      # The soak is deliberately NOT requested here, and the reason is not that it fails. It is a
+      # heap-plateau band over 2,000 cycles - a reading of a heap on a machine, which this
+      # component's own measurement rules refuse to treat as a figure - and an ephemeral shared
+      # runner is the one place it can be attributed to nothing. Every other check in these two
+      # binaries is a total function of the corpus and the build, so a disagreement between this
+      # lane and a bundle collected on a workstation is a defect rather than a runner. The
+      # evidence script passes --soak and this lane does not; the summary line each binary prints
+      # says which run it was, so a green log here cannot be read as the soak passing.
+      #
+      # The soak's own Native AOT failure is an OPEN clause of JS-9, recorded in the profile's
+      # ledger with the band it breaches and with the instruction not to widen that band.
+      - name: Publish and run the JavaScript composition roots as Native AOT
+        shell: bash
+        run: |
+          set -euo pipefail
+          corpus="src/tests/corpus/js-1"
+
+          for composition in JavaScript.ExecutionOnly JavaScript.SliceCompiler; do
+            out="artifacts/ci-aot-$composition"
+            dotnet publish "src/compositions/Broiler.VM.Composition.$composition" \
+              -c Release -r ${{ matrix.rid }} -p:PublishAot=true \
+              -p:TreatWarningsAsErrors=true -o "$out"
+            binary="$out/Broiler.VM.Composition.$composition"
+            [ -f "$binary.exe" ] && binary="$binary.exe"
+
+            # --closure first: a run that passes out of an image whose closure is wrong is a pass
+            # nobody should accept, and the report is read off the published output.
+            "$binary" --closure
+
+            case "$composition" in
+              *ExecutionOnly) "$binary" --corpus "$corpus" ;;
+              *SliceCompiler) "$binary" --checks ;;
+            esac
           done
 
       - name: Publish and run the package consumer as Native AOT

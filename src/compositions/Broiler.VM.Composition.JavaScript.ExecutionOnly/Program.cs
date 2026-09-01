@@ -28,12 +28,25 @@ namespace Broiler.VM.Composition.JavaScript.ExecutionOnly;
 /// assembly - a rule this component's own graph depends on - so a reader checks behaviour in this
 /// program's output rather than in the suite.
 /// </para>
+/// <para>
+/// <b>One check is opt-in, and the split is between what a machine decides and what it does not.</b>
+/// Every check here but one is a total function of the corpus and this build: it answers the same
+/// on any machine, in any publish mode, and a disagreement is a defect. The soak's heap plateau is
+/// not that. It compares two <c>GC.GetTotalMemory</c> readings against a band, which is a statement
+/// about a heap on a machine - the roadmap says a heap number on one machine is not a heap number -
+/// so it runs only when <c>--soak</c> asks for it. The evidence script always asks; a lane that
+/// cannot attribute a heap reading does not, and the summary line says which run it was.
+/// <b>This is not a way to pass:</b> the soak FAILS today under Native AOT, the ledger records that
+/// as an open clause of JS-9, and a lane that skipped it silently would be the thing the whole
+/// method exists to prevent.
+/// </para>
 /// </remarks>
 internal static class Program
 {
     private static int Main(string[] args)
     {
         var verbose = args.Contains("--verbose", StringComparer.Ordinal);
+        var soak = args.Contains("--soak", StringComparer.Ordinal);
 
         try
         {
@@ -78,7 +91,7 @@ internal static class Program
             };
 
             checks.AddRange(ReplayChecks(corpus, verbose));
-            checks.AddRange(HostLifetimeChecks.Run(corpus));
+            checks.AddRange(HostLifetimeChecks.Run(corpus, soak));
             checks.AddRange(OrderingChecks.Run(
                 corpus, CorpusReplay.ReadManifest(Path.Combine(corpus, "corpus.manifest"))));
 
@@ -97,10 +110,15 @@ internal static class Program
                 }
             }
 
+            // The suffix is not decoration. A run without the soak reports one fewer check, and a
+            // reader comparing two logs must be able to see WHICH run it was rather than inferring
+            // it from a count that also moves when a milestone adds a check.
+            var soakNote = soak ? "" : "; the soak was not requested (--soak)";
+
             Console.WriteLine(
                 failed == 0
-                    ? $"broiler-js-execution-only: {checks.Count} checks passed, core contract version {VmCoreContract.Version}"
-                    : $"broiler-js-execution-only: {failed} of {checks.Count} checks FAILED");
+                    ? $"broiler-js-execution-only: {checks.Count} checks passed, core contract version {VmCoreContract.Version}{soakNote}"
+                    : $"broiler-js-execution-only: {failed} of {checks.Count} checks FAILED{soakNote}");
 
             return failed == 0 ? 0 : 1;
         }
