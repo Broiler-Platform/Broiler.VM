@@ -1,10 +1,16 @@
 # Broiler.VM.Profile.WebAssembly roadmap status
 
-**Last updated:** 2026-08-30
+**Last updated:** 2026-09-01
+
+**This file is part of the [WebAssembly profile roadmap](roadmap.md)**, which
+[names every file](roadmap.md#how-this-roadmap-is-split).
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [WebAssembly profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
-gates; this ledger records whether those gates have accepted evidence.
+gates; this ledger records whether those gates have accepted evidence. Where the core changed, a
+sibling's dated finding settled something, or the plan replaced its own earlier reading, the plan
+carries the new reading and [the corrections and rejections](roadmap.corrections.md) carry what it
+replaced — **that file records no status and advances nothing here**.
 
 **At this snapshot, every milestone WA-0 through WA-10 is `Not started`.** The component has no
 source tree, no solution, no project, no descriptor, no decoder, no pinned specification revision,
@@ -12,9 +18,13 @@ no pinned suite revision, no evidence bundle, and no assurance record. What exis
 and this ledger. No milestone is complete because its design appears in the roadmap, and nothing in
 this component may be described as implemented, validated, accepted, supported, or published.
 
-The component also has no repository of its own yet. The two documents are staged in the aggregate
-repository beside the components they will sit next to; **WA-0 owns the placement decision** and
-moving them is part of it, not a side effect of it.
+**Placement is fixed by the core's topology record**, which rules that a language profile is a set
+of product projects in the `Broiler.VM` component rather than a component of its own, and names
+`src/Broiler.VM.Profile.WebAssembly/` — where these documents sit. The assurance system, the rule
+register and the licence and notice files are therefore the host component's, adopted rather than
+duplicated, and what this profile stands up of its own is its evidence-bundle contract, its
+collection script, and its group in the rule register. WA-0 owns everything about this profile that
+the topology does not fix *(corrected: WAC-08)*.
 
 **This component has no seed.** Nothing is copied, no snapshot is taken, and no fork exists. Every
 line will be written here. That removes a whole family of blockers the other intended first
@@ -68,10 +78,12 @@ evidence shows. It is not a reviewer's finding and not a change of state. Every 
 
 **This table is this document family's mark legend, and rule H1 reads it.** The vocabulary is
 closed and has three members, and it is the same vocabulary every profile ledger in this component
-uses; the component's own nine-member legend in `HUMAN_REVIEW.md` is a different vocabulary about
-different subjects, and a mark from it appearing here is a rule violation. Only one of the three
-is in use today, which is what a ledger with no retained evidence looks like — publishing all
-three is what lets the other two be read when a row first earns one.
+uses; the component's own nine-member legend in `HUMAN_REVIEW.md` is, in rule H1's own words, a
+different vocabulary about a different subject — its four evidence verdicts are stated about a
+piece of evidence and its five review verdicts about a gate clause in a bundle, where these three
+are stated about a whole milestone row — and a mark from it appearing here is a rule violation.
+Only one of the three is in use today, which is what a ledger with no retained evidence looks
+like — publishing all three is what lets the other two be read when a row first earns one.
 
 | Mark | Meaning |
 |---|---|
@@ -81,15 +93,15 @@ three is what lets the other two be read when a row first earns one.
 
 | Verdict | Milestone | State | Current evidence | Immediate evidence-producing action |
 |---|---|---|---|---|
-| [NONE] | **WA-0 — boundary, placement, identity, assurance floor** | **Not started** | None. No project, no rule register, no assurance manifest, no licence or notice file, no evidence-collection script, and no declared limit vectors. | Take the placement decision with the core's topology owner co-signing, then stand up the shell graph and the architecture rule register with both halves of the no-edge-to-another-profile rule, the no-product-reference-to-the-harness rule, and a negative control for each. **Publish the fifteen hard maxima and fifteen defaults, with the three guest-load *defaults* explicitly `Unconstrained`** — a dimension declared inapplicable in the budget matrix is a statement about what this profile charges, not a licence to write a zero into the vector a neighbour adopts — and add the two-profile catalog test that catches the mistake. The maxima need no such care: since 2026-08-31 they bind this profile's own modules alone. Nothing else in this component may land first. |
-| [NONE] | **WA-1 — the whole contract loop on a slice module** | **Not started** | None. No descriptor, no decoder, no validator, no executor, no composition root. | After WA-0: mint the slice manifest, define format version 1 as a bare module, and drive one module through verify, instantiate, and invoke in a composition that publishes and runs under Native AOT. The entry-point encoding is decided here or it is decided by accident later; the `StructuralDepth` declaration is no longer open, roadmap [section 3](roadmap.md#3-what-the-core-already-gives-this-profile-and-what-it-refuses) having closed it as `Charged` once the metering surface's retain/release pair was read correctly. |
+| [NONE] | **WA-0 — boundary, identity, assurance floor** | **Not started** | None. No project, no rule group, no evidence-collection script, and no declared limit vectors. Placement is not among them: the core's topology record settled it and this profile occupies the path it names. | Stand up the shell graph and this profile's own group in the component's rule register, with a negative control for each rule; the cross-family rule already exists and binds this family, so what is owed is the control that proves it bites on these projects. **Publish the fifteen hard maxima and fifteen defaults, with the three guest-load *defaults* as a large finite value stated as a number** — a dimension declared inapplicable in the budget matrix is a statement about what this profile charges, not a licence to write a zero into the vector a neighbour adopts, and **`Unconstrained` is refused outright for a default by the catalog** — and add the two-profile catalog test that catches both mistakes. The maxima need no such care: they bind this profile's own modules alone. Nothing else in this profile may land first. |
+| [NONE] | **WA-1 — the whole contract loop on a slice module** | **Not started** | None. No descriptor, no decoder, no validator, no executor, no composition root. | After WA-0: mint the slice manifest, define format version 1 as a bare module, and drive one module through verify, instantiate, and invoke in a composition that publishes and runs under Native AOT. The entry-point encoding is decided here or it is decided by accident later; `StructuralDepth` is declared `Charged` by roadmap [section 3](roadmap.md#3-what-the-core-already-gives-this-profile-and-what-it-refuses) and what this milestone records is its charge sites *(corrected: WAC-02)*. |
 | [NONE] | **WA-2 — the decoder, the integer decision, the malformed corpus** | **Blocked** (recorded as `Not started` above the blocker, because no work has begun either) | None. No decoder, no corpus, no specification pin. | **Blocked on one named external dependency and one unopened human action.** See section 3. |
 | [NONE] | **WA-3 — validation and the diagnostic registry** | **Not started** | None. No validator, no diagnostic registry, no invalid-module corpus. | After WA-2: implement the specification's single-pass algorithm, publish the registry bound in both directions, and prove malformed-before-invalid with a case that fails when the phases are fused. |
 | [NONE] | **WA-4 — the oracle** | **Not started** | None. No suite pin, no script reader, no harness, no self-check fixture. | After WA-3, and in parallel with WA-5. This is the milestone whose value is lost by serialising it: the malformed and invalid families can be scored before any interpreter exists, and that is the main structural advantage this profile has. |
 | [NONE] | **WA-5 — value model, store, interpreter** | **Not started** | None. The value and frame ABI decision is **open**, and roadmap [section 9](roadmap.md#9-the-value-store-and-frame-model) makes it a gate on entry rather than this milestone's first task. A second decision is now open beside it: whether a `LiveBytes` aggregate breach may terminate an operation, given that a retained-state dimension cannot carry a guest-observable refusal and section 12 requires a refused `memory.grow` to be exactly that. | Open both decisions now — neither needs code, both can be prepared against WA-1 rather than waiting on the acceptance gate, and the ABI's vector-width row is the one whose late answer invalidates the others. |
 | [NONE] | **WA-6 — linking, host imports, the store decision** | **Not started** | None. The store reading of roadmap [section 11](roadmap.md#11-the-store-instances-and-linking) is **open**, with three candidates and one already rejected. | Open the store decision now — it needs no code either — and cost the naming channel for the runtime-scoped reading, because that is the part with no contract member behind it. |
 | [NONE] | **WA-7 — `core1` complete and the embedding seam** | **Not started** | None. No manifest is minted, no seam exists. | After WA-6. |
-| [NONE] | **WA-8 — the second standardised group and the vector family** | **Not started** | None. No manifest beyond the slice is planned to exist before this point. | After WA-7. The extraction-gate verdict of roadmap [section 25](roadmap.gates.md#25-risks-and-stop-conditions) is recorded here, because this is the first point at which a second validator exists to compare. |
+| [NONE] | **WA-8 — the second standardised group and the vector family** | **Not started** | None. No manifest beyond the slice is planned to exist before this point. | After WA-7. This is the first point at which a second validator exists to compare, so this milestone supplies **this profile's half** of the extraction-gate comparison of roadmap [section 25](roadmap.gates.md#25-risks-and-stop-conditions) — file paths, source revision, correspondence table — and records that it supplied it, or records that the first condition is unsatisfied. **It records no verdict**: that is the core architecture owner's and can only be filed in the core's own set. |
 | [NONE] | **WA-9 — adversarial input, aggregate budgets, soak** | **Not started** | None. No fuzz target, no soak host, no aggregate-budget exercise. | After WA-8, though the malformed corpus grows from WA-1 onward rather than starting here. |
 | [NONE] | **WA-10 — baselines, packaging, support table, release gate** | **Not started** | None. No measurement lane, no baseline register, no package, no support table, no human review decision on anything. | After WA-9, and after a named human has read every relevant unit — which is the largest single-owner task in the programme and must be scheduled, not assumed. |
 
@@ -128,8 +140,8 @@ Three further dependencies are **unopened rather than blocked**, and naming them
 | Unopened dependency | Why it is not a blocker yet | What opens it |
 |---|---|---|
 | **The specification revision has not been retrieved, hashed, or archived.** Retrieving and archiving a third-party document is a human action, not a build step. Until it is performed, every reference in the roadmap is a discovery link and the pin is provisional. | Nobody has been asked to do it, which is a scheduling gap and not a dependency. | WA-0 records the intended revision and names an owner; WA-2's gate requires the pin actually taken, or a named exclusion. |
-| **The conformance suite revision has not been pinned**, and the licence and attribution consequences of ingesting it into this tree have not been confirmed. | Same. | WA-0 publishes the licence and notice and confirms or amends the core's standing third-party claim, with the release owner co-signing. WA-4 resolves the commit. |
-| **The cross-profile boundary of roadmap [section 17](roadmap.md#17-the-cross-profile-boundary-the-javascript-api-for-webassembly) has no owner.** A browser that runs WebAssembly through JavaScript needs a component that composes two profiles, and none exists or is planned. Roadmap section 17 now also records the two frozen facts that shape it — a guest-initiated load may not name another profile, and cross-runtime reentry is legal and is the route the seam takes — so the price is written down even though nobody is paying it. | It is outside this component by construction, and this component's obligation is to price it rather than to pay it. | A browser-integration component, whenever one is opened. That component owns the two-profile composition's closure report, its Native AOT evidence, its shared aggregate budget, and the reconciliation of two profiles' *defaults* — their maxima stopped being coupled on 2026-08-31, when the core removed a catalog-wide clamp its own record never authorised. Until it exists, WA-0's defaults record states the cross-profile consequence, which is the half this component can discharge alone. |
+| **The conformance suite revision has not been pinned**, and the licence and attribution consequences of ingesting it into this tree have not been confirmed. | Same. | WA-0 lands the attribution row in the host component's notice and confirms or amends the core's standing third-party claim, with the release owner co-signing. WA-4 resolves the commit. |
+| **The cross-profile boundary of roadmap [section 17](roadmap.md#17-the-cross-profile-boundary-the-javascript-api-for-webassembly) has no owner.** A browser that runs WebAssembly through JavaScript needs a component that composes two profiles, and none exists or is planned. Roadmap section 17 now also records the two frozen facts that shape it — a guest-initiated load may not name another profile, and cross-runtime reentry is legal and is the route the seam takes — so the price is written down even though nobody is paying it. | It is outside this component by construction, and this component's obligation is to price it rather than to pay it. | A browser-integration component, whenever one is opened. That component owns the two-profile composition's closure report, its Native AOT evidence, its shared aggregate budget, and the reconciliation of two profiles' *defaults*; their maxima are not coupled and reach no neighbour *(corrected: WAC-01)*. Until it exists, WA-0's defaults record states the cross-profile consequence, which is the half this component can discharge alone. |
 
 ---
 

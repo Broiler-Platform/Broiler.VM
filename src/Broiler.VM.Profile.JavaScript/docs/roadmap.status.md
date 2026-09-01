@@ -4,15 +4,18 @@
 
 **Authority:** This file is the authoritative current-evidence ledger for the milestones in the
 [JavaScript profile roadmap](roadmap.md). The roadmap defines planned work and objective exit
-gates; this ledger records whether those gates have accepted evidence.
+gates; this ledger records whether those gates have accepted evidence. Where implementation or a
+dated decision replaced something the roadmap used to say, the plan carries the new reading and
+[the corrections and rejections](roadmap.corrections.md) carry what it replaced — **that file
+records no status and advances nothing here**.
 
 **At this snapshot, JS-0, JS-1, JS-3a and JS-9 are `In progress`, JS-2 is blocked, and the
-remaining rows are `Not started`.** What exists is one feature manifest, one format version, a verifier, an
-executor, a descriptor admitted by a catalog, a hand-written lowering, two composition roots that
-publish and run on one RID under JIT, trimming and Native AOT, a 60-entry retained corpus, a
-published diagnostic-code registry, a frozen public-API baseline, twelve decision records, ten
-registered architecture rules, eight evidence bundles, a fuzz target over two surfaces and
-twenty-six negative controls. There is
+remaining rows are `Not started`.** What exists is one feature manifest, one format version, a
+verifier, an executor, a descriptor admitted by a catalog, a hand-written lowering, two composition
+roots that publish and run on one RID under JIT, trimming and Native AOT, a retained corpus, a
+published diagnostic-code registry, a frozen public-API baseline, a decision series, this profile's
+own group in the rule register, retained evidence bundles, and a fuzz target with its negative
+controls — each counted by section 2 below and by the record that holds it, not here. There is
 **no tokenizer, no static-semantic stage, no object model, no standard library, no suspension, no
 guest-initiated load, no snapshot and no conformance harness**. No milestone is complete because
 its design appears in the roadmap, **nothing here has been reviewed by a human**, and nothing in
@@ -23,12 +26,18 @@ component of its own: it is a family of product projects inside `Broiler.VM`, at
 `src/Broiler.VM.Profile.JavaScript*`, with its roadmap and decisions in the profile assembly's own
 project directory. The profile's half is [JSD-0001](decisions/0001-placement-identity-and-assembly-topology.md);
 the core's half is ADR 0001 revision 5, which authorises the three projects and revises rule A11
-so that a profile may reference its own format sibling. **Four things the roadmap assumed would be
-this component's own are now the host component's** - the assurance system, the rule register, the
-API baseline and the licence and notice files - and each is recorded as a dated deviation in
-[JSD-0006](decisions/0006-assurance-evidence-and-rules-adoption.md) rather than dropped. **What is
-not shared is evidence:** a JS bundle is cited only by this ledger, a core bundle only by the
-core's, and update rule 6 below is unchanged.
+so that a profile may reference its own format sibling. **Three things the roadmap assumed would be
+this component's own are the host component's** - the assurance system and the rule register in
+which this profile holds group N, each recorded as a dated deviation in
+[JSD-0006](decisions/0006-assurance-evidence-and-rules-adoption.md) rather than dropped, and the
+licence and notice files, which
+[JSD-0001](decisions/0001-placement-identity-and-assembly-topology.md) records as the host's and
+which no deviation covers because adopting them costs this profile nothing. **A fourth,
+the API baseline, was adopted at JS-0 and became this family's own at JS-3a**, because the host's
+describer cannot reach a profile assembly without a project reference rule A11 forbids;
+[JSD-0012](decisions/0012-the-profile-api-baseline-and-where-its-clause-lives.md) records it and
+rule N10 holds it. **What is not shared is evidence:** a JS bundle is cited only by this ledger, a
+core bundle only by the core's, and update rule 6 below is unchanged.
 
 ---
 
@@ -49,6 +58,13 @@ gets recorded:
 - **Inherited material** is anything copied from the seed. It carries **no status of its own**.
   A copied file is unvalidated and unreviewed in this component on the day it lands, however long
   it has existed elsewhere.
+
+A fifth thing is deliberately **not** a category here. **A correction to the plan is not evidence
+and does not appear in this ledger's tables.** When implementation invalidates, rejects or
+re-scopes something the roadmap said, the roadmap is edited and
+[the corrections and rejections](roadmap.corrections.md) record what it said before — a change of
+*plan*, never a change of *state*. A milestone whose scope was corrected has moved no row here,
+and a row here moves only on evidence.
 
 **Work in other components is not this component's evidence.** In particular, no conformance
 result, benchmark, measurement, review decision, or Native AOT sample produced by the legacy
@@ -109,7 +125,8 @@ Four rows are `[PARTIAL]` and the remaining eight are `[NONE]`.
 needs a scoring target and not a copied front end, so leaving it fused put this component's only
 external correctness signal behind both of the blockers in section 3 when it needed to be behind
 neither. Twelve rows, not eleven. Nothing is accepted under either shape, so the split changes no
-evidence claim — it changes what a reader is told is schedulable today.
+evidence claim — it changes what a reader is told is schedulable today. The split is recorded as
+[JSC-15](roadmap.corrections.md#jsc-15) and the delivery file carries the same shape.
 
 | Verdict | Milestone | State | Current evidence | Immediate evidence-producing action |
 |---|---|---|---|---|
@@ -118,9 +135,9 @@ evidence claim — it changes what a reader is told is schedulable today.
 | [NONE] | **JS-2 — seeding snapshot and front-end ingest** | **Blocked** (recorded as `Not started` above the blocker, because no work has begun either) | None. No snapshot has been taken. The candidate identity in roadmap [section 4.1](roadmap.md#41-the-snapshot-identity) is a recorded candidate, not a taken snapshot. | **Blocked on two named external dependencies.** See section 3. |
 | [PARTIAL] | **JS-3a — diagnostic registry, position encoding, pinned suite, the oracle** | **In progress** | [Bundle JS-3A-001](evidence/js-3a/README.md), which is **the registry half of this milestone and not the oracle half**. [`docs/diagnostics/registry.txt`](diagnostics/registry.txt) is published at revision 1, one row per code, each naming the member that declares it, **the one core reason every emission carries**, the stage that refuses, **which half of the registry it belongs to**, the case that reaches it, and the revision its meaning dates from. **Five rules, N5 through N9, bind it to four independently written artefacts** — the code vocabulary, every emission site in the profile assembly, the retained corpus, and the composition's deliberately restated constants — plus the position factories, so no one edit can make it agree with everything. The corpus grew from 51 to **59 entries** to close the backward binding, and **37 of the 40 rows are reached by a named entry**. Decision [JSD-0009](decisions/0009-the-diagnostic-registry-and-the-position-encoding.md) records the registry, its two halves and the position encoding; the encoding is pinned by four corpus rows through a new manifest column, and landing it **corrected a conflation in which every link- and walk-stage diagnostic reported a code-section offset under the artifact-relative marker**. `EntryStackNotEmpty` was declared at JS-1 and emitted by nothing; it is refused on the edge now, which also removes an order-dependence in which code an artifact provoked. **Twenty-two negative controls**, seven of them judged by the corpus rather than by the suite. **And one clause that was not this milestone's** — the public API baseline, open since JS-0 and parked at JS-3b behind two blockers it did not need — is discharged here by rule N10 and a baseline of the family's own, per [JSD-0012](decisions/0012-the-profile-api-baseline-and-where-its-clause-lives.md). | **The oracle half of the exit gate is untouched, and it is the larger half.** No suite revision is pinned, no harness, self-check, sharding, merge, audit or scope tooling exists, no per-host-mode totals are published and no ratchet is set; the suite-revision dependency in section 3 is still open and a human has to retrieve, hash and archive the suite before it can close. Within the registry half: **three rows are reachable from no artifact**, named and reasoned about in JSD-0009 with the admitting list held in rule N7 rather than in the registry; **no `embedder-seam` code exists**, because the front end that would mint one is JS-3b's, so that half of the split is declared and not exercised; four corpus rows pin a position and fifty-five pin none; one RID, one machine. |
 | [NONE] | **JS-3b — static semantics as one verification stage, and the lowering** | **Not started** | None. No consolidated early-error stage, no strict-mode ruling, no lowering, no recorded answer for where the verification boundary falls. | After JS-2, and after JS-3a supplies the registry its diagnostics land in. Record the boundary decision of roadmap [section 9](roadmap.md#9-the-semantic-front-end-and-lowering) before writing the stage that depends on it. |
-| [NONE] | **JS-4 — value representation and object model** | **Not started** | No implementation of any kind: no object model, no property storage, no string, no frame object and no executor change. **What exists is the entry gate, taken on 2026-08-31**: decision [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md) records all eight rows of roadmap [section 8](roadmap.md#8-the-value-frame-and-call-model)'s ABI, each with what it buys, what it costs and what would falsify it. **A taken entry gate is not a started milestone** and this row does not move: roadmap section 8 makes the ABI a gate on entry rather than JS-4's first task, and JS-4 itself depends on JS-2, which is blocked. | **The stop condition is lifted and a milestone is re-scoped.** JSD-0011 answers the representation with *replace* — this profile keeps its own tagged struct rather than adopting the seed's boxed hierarchy, because it already has a struct value model with an executor written against it and a 59-entry corpus pinning its semantics, so adopting the hierarchy would move the rewrite onto JS-1's executor rather than avoid one. Section 23's second half therefore fires: **JS-6 is re-scoped from a copy to a rewrite, before it starts**. Next: JS-4's own gate needs the object model and the copy, and waits on JS-2. |
+| [NONE] | **JS-4 — value representation and object model** | **Not started** | No implementation of any kind: no object model, no property storage, no string, no frame object and no executor change. **What exists is the entry gate, taken on 2026-08-31**: decision [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md) records all eight rows of roadmap [section 8](roadmap.md#8-the-value-frame-and-call-model)'s ABI, each with what it buys, what it costs and what would falsify it. **A taken entry gate is not a started milestone** and this row does not move: roadmap section 8 makes the ABI a gate on entry rather than JS-4's first task, and JS-4 itself depends on JS-2, which is blocked. | **The entry gate is taken.** JSD-0011 answers the representation with *replace* — this profile keeps its own tagged struct rather than adopting the seed's boxed hierarchy, because it already has a struct value model with an executor written against it and a retained corpus pinning its semantics, so adopting the hierarchy would move the rewrite onto JS-1's executor rather than avoid one. What that answer does to JS-6's scope is a change of plan and is recorded as one, at [JSC-17](roadmap.corrections.md#jsc-17). Next: JS-4's own gate needs the object model and the copy, and waits on JS-2. |
 | [NONE] | **JS-5 — executor, abrupt completion, budgets** | **Not started** | None. No interpreter, no charging model, no measured `CallDepth`. | After JS-4. |
-| [NONE] | **JS-6 — the standard library** | **Not started** | None. **Re-scoped on 2026-08-31, before it starts**, by [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md): the library is a **rewrite against this profile's value struct, not a copy re-typed**, because the seed's library is typed against a boxed value base type this profile does not adopt. The storage half of the copy table is untouched — shapes, the transition table, element arrays and the named-property store are about storage keyed by a value rather than about the value's representation. The satellite-acquisition dependency was opened at JS-0 and has a named owner. | The re-scope is the whole of what has changed here, and it changes the milestone's size rather than its order. What it must now carry that a copy would not: its own scope estimate, its own review budget — a rewrite is unreviewed code written here rather than unreviewed code copied here, and both count — and an exclusion list published on the day it lands, because a rewritten library is smaller than a copied one and the difference is a support claim. |
+| [NONE] | **JS-6 — the standard library** | **Not started** | None. The milestone's scope is a **rewrite against this profile's value struct, not a copy re-typed** — the plan says so, on [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md)'s answer and recorded at [JSC-17](roadmap.corrections.md#jsc-17), because the seed's library is typed against a boxed value base type this profile does not adopt. The storage half of the copy table is untouched — shapes, the transition table, element arrays and the named-property store are about storage keyed by a value rather than about the value's representation. The satellite-acquisition dependency was opened at JS-0 and has a named owner. | The re-scope is the whole of what has changed here, and it changes the milestone's size rather than its order. What it must now carry that a copy would not: its own scope estimate, its own review budget — a rewrite is unreviewed code written here rather than unreviewed code copied here, and both count — and an exclusion list published on the day it lands, because a rewritten library is smaller than a copied one and the difference is a support claim. |
 | [NONE] | **JS-7 — suspension** | **Not started** | None. The continuation design needs no copied code and may be opened early. | After JS-5 and JS-6. |
 | [NONE] | **JS-8 — guest-initiated loads and the three compositions** | **Not started** | None. No guest-load declaration, no mediator adapter, no composition registers a provider or declines to. | After JS-7. |
 | [PARTIAL] | **JS-9 — adversarial input, agents, soak** | **In progress** | [Bundle JS-9-001](evidence/js-9/README.md): a **coverage-guided fuzz target over two of roadmap [section 7](roadmap.md#7-the-bytecode-format-and-the-verifier)'s four surfaces** — the verifier, and the executor over verified-but-adversarial artifacts. Four retained sessions of 25,000 iterations each, seeded from the 60-entry manifest, with **no counterexample**: about four thousand mutants verified and were instantiated and invoked, and every fault the executor produced carried this profile's own typed payload. A session is a total function of its seed and its seed corpus — no wall clock, no thread count — and **a session that answers the same way every time, or that never reaches the executor, exits non-zero** rather than reporting clean iterations it did not earn. One fuzz control: the verifier's constant-index check removed, found at a named iteration, reverted. **[Bundle JS-9-002](evidence/js-9-002/README.md) adds the two host-level exercises**: two runtimes under one aggregate budget spend one total — 28 invocations completed and 100 refused, the parent spending exactly its allowance, and **which sibling was refused is deliberately not asserted** because the order is a race; disposing a parent with a live child is refused and accepted after; a sealed parent admits no further runtime; and a soak of **2,000 create-run-dispose cycles** reaches a heap plateau. **[Bundle JS-9-003](evidence/js-9-003/README.md)** adds the last clause of the gate that needs nothing unbuilt: a **mutated corpus entry** — one byte of a control entry and one of a malformed entry — is detected by the replay, which reports the changed triple *and* the hash mismatch, and is restored byte for byte. Every other control in this component injects into source; that one injects into the retained bytes, which is the direction that would otherwise be taken on trust. | **Two of the four surfaces are not fuzzed because they do not exist** — the source tokenizer and parser, and the regular-expression matcher — and a session may not be read as covering them. **The corpus is still slice-scope, not full-format**; there is no retained-bytes report over an object model that does not exist; no agents; and no session or soak budget — the seeds, the iteration counts and the cycle count are stated so a run is reproducible, not because any of them is a number something justifies. The soak's plateau is a band and not a measurement. The corpus grows from JS-1 onward, which is why this could start before JS-8. |
@@ -149,8 +166,8 @@ Stated positively, because a table of empty rows invites a reader to fill them i
   record has a shape; JS-2 records what was actually taken, and may differ. Bundle JS-0-001
   re-derives that candidate from the checkout and matches on all four revisions, which says the
   record is reproducible and says nothing about a snapshot having happened.
-- **A taken decision is not implemented code.** Eleven decision records exist and two of them
-  decide things no line in this checkout does yet: [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md)
+- **A taken decision is not implemented code.** Two records decide things no line in this checkout
+  does yet: [JSD-0011](decisions/0011-the-value-frame-and-call-abi.md)
   fixes an eight-row ABI whose object model, frame object and string are all unwritten, and
   [JSD-0005](decisions/0005-the-seed-waited-on-set-and-snapshot-stop-condition.md) rules on a
   snapshot nobody has taken. Each says so in its own text; this bullet is here because a reader
@@ -177,7 +194,7 @@ deleted.
 | Blocker | Holder | Unblock condition | Note |
 |---|---|---|---|
 | **The core contract is not accepted.** Every core milestone is in progress and unaccepted, and the core's review record is unsigned. The core roadmap's own seeding conditions require the copy to be adapted to an accepted contract rather than a moving one. | The Broiler.VM core's architecture and release owners | A recorded human review decision on the core's contract surface, at a named contract version | This blocks JS-2 onward. It does **not** block JS-0 or JS-1, which build against the contract as implemented — a distinction the roadmap's delivery order states and this ledger holds it to. |
-| ~~**The seed's waited-on set has not been itemised.**~~ **Closed 2026-08-31** by [JSD-0005](decisions/0005-the-seed-waited-on-set-and-snapshot-stop-condition.md): a dated ruling on each of the five items — one `Wait`, four `Do not wait` — plus a stop condition, **2026-11-30 or 400 further commits on the seed's default branch, whichever comes first**, after which the snapshot is taken as-is and the remaining waited-on item is re-derived on this side of the fork. | This component's architecture owner | Met | The closure removes the open-ended postponement roadmap [section 23](roadmap.gates.md#23-risks-and-stop-conditions) names as a risk. **It does not unblock JS-2**, which still waits on the row above. |
+| **The seed's waited-on set.** **Closed 2026-08-31** by [JSD-0005](decisions/0005-the-seed-waited-on-set-and-snapshot-stop-condition.md): a dated ruling on each of the five items — one `Wait`, four `Do not wait` — plus a stop condition, **2026-11-30 or 400 further commits on the seed's default branch, whichever comes first**, after which the snapshot is taken as-is and the remaining waited-on item is re-derived on this side of the fork. | This component's architecture owner | Met | The closure removes the open-ended postponement roadmap [section 23](roadmap.gates.md#23-risks-and-stop-conditions) names as a risk. **It does not unblock JS-2**, which still waits on the row above. |
 
 Four further dependencies were **unopened rather than blocked** — an unopened dependency has no
 holder and no unblock condition, which is a weaker position than a blocked one, not a stronger
@@ -262,10 +279,6 @@ milestone is accepted, no snapshot has been taken, no language surface is suppor
 composition is advertised, no runtime identifier is claimed, no measurement or conformance result
 exists, and nothing has been reviewed.**
 
-**This paragraph was wrong for two milestones before JS-3a corrected it**, and how it went wrong
-is worth keeping. It was written when the component was empty and it said so — "JS-0 through JS-10
-are not started, no source exists" — and it stayed word for word while JS-0 and JS-1 landed a
-verifier, an executor, a lowering and two composition roots above it. Section 2 was right the
-whole time. A closing summary that restates a table rather than pointing at it is a second copy of
-the status, and the second copy is the one that goes stale; this one now restates only what no
-milestone can change without changing the table.
+A closing summary that restates a table rather than pointing at it is a second copy of the status,
+and the second copy is the one that goes stale. This one restates only what no milestone can
+change without changing the table *(corrected: JSC-20)*.

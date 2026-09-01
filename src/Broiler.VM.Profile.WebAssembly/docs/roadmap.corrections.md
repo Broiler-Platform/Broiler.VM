@@ -1,0 +1,523 @@
+# Broiler.VM.Profile.WebAssembly roadmap — corrections and rejections
+
+**Last updated:** 2026-09-01
+
+**This file is part of the [Broiler.VM.Profile.WebAssembly roadmap](roadmap.md)**, which
+[names every file](roadmap.md#how-this-roadmap-is-split). It carries no numbered section of the
+plan, because it is not part of the argument: like the [evidence ledger](roadmap.status.md), it is
+a record, and it numbers its own sections.
+
+**What this file is.** The plan's dated history. The roadmap states what is planned, in the
+present tense, in one voice. When the core changed underneath it, or a sibling profile's dated
+decision settled something it had left open, or the document corrected its own earlier reading,
+the roadmap is edited to say the new thing — and the reading it replaced is recorded here, with
+its date and its authority.
+
+**What this file is not.** It is not the ledger: [roadmap.status.md](roadmap.status.md) is the
+authority for what has been accepted, and nothing here advances a milestone. It answers one
+question a roadmap cannot answer about itself: *which sentence of the plan changed, when, and on
+whose authority.*
+
+**Why this profile needs one at all**, given that it has written no code. Every correction below
+comes from somewhere other than this component's own implementation, and that is exactly why they
+are easy to miss:
+
+1. **The core moved.** A defect in the core's ceiling resolution was found and removed, and this
+   plan had two sections written around it.
+2. **A sibling profile went first.** The other intended first profile has landed milestones, taken
+   a dated decision series, and met build failures this plan would meet identically. Where its
+   findings are the core's rules rather than its own language's, they are this profile's findings
+   too, available for free and before the build that would otherwise teach them.
+3. **The document corrected itself.** Three of the readings below were caught by reading this plan
+   against itself rather than against anything outside it, and each retraction was written inline
+   where the reading had been — which is the practice this file exists to end.
+
+A plan with no implementation is not a plan with no history. **It is the one most likely to be
+read as though every sentence in it were still load-bearing.**
+
+---
+
+## 1. Reading this file
+
+Every entry carries the same five fields, and an entry with a missing field is an incomplete
+record rather than a short one:
+
+| Field | What it holds |
+|---|---|
+| **ID** | `WAC-nn`, minted once and never reused. Referenced from the roadmap where the correction is load-bearing at the point of reading. |
+| **Where** | The roadmap file and section the correction lands in. |
+| **What the plan said** | The reading that was replaced, stated fairly enough that someone who planned against it recognises it. |
+| **What replaced it** | The reading the roadmap now carries. |
+| **Authority and date** | The core ADR, core source, sibling record, or ledger row that settles it, and the date. **An entry with no authority outside this file is not a correction; it is an opinion**, and does not belong here. |
+
+Four rules govern the set:
+
+- **The roadmap never carries a correction inline.** Where the settled statement is enough, the
+  roadmap states it and says nothing about what it replaced. Where a reader of that section may
+  have planned against the earlier reading, it carries a bare *(corrected: WAC-nn)* and **no
+  account of what that reading was** — that account is this file's. Stating the *current* reading
+  as forcefully as the section needs is not a summary; it is the plan doing its job.
+- **An entry records a changed reading, not a changed sentence.** An edit that sharpens wording,
+  fixes a tense or repairs a reference without changing what the plan means gets no entry.
+- **An entry is never edited away.** A correction a later change reverses gets its own new entry
+  naming the one it reverses.
+- **Nothing here is a status claim.** Every entry describes a change to a *plan*. **No milestone of
+  this profile has started**; the [ledger](roadmap.status.md) is the authority for every state, and
+  no entry below is evidence that any line of this profile has been written.
+
+---
+
+## 2. Corrections
+
+Ordered by the roadmap section they land in, so this file can be read beside the plan.
+
+| ID | Where | In one line | Authority |
+|---|---|---|---|
+| [WAC-01](#wac-01) | roadmap §3, §17; gates §25 | The core's catalog-wide clamp on profile **maxima** was retracted; only a neighbour's **default** still reaches this profile | core ADR 0001, ADR 0007 |
+| [WAC-02](#wac-02) | roadmap §3 | `StructuralDepth` is a ceiling-class dimension the core already supports as a high-water mark | the core's metering surface |
+| [WAC-03](#wac-03) | roadmap §3, §12, §20 | No guest-observable `memory.grow` refusal exists on the shipped contract, in any spelling | the shipped core |
+| [WAC-04](#wac-04) | roadmap §7 | Two of the malformed-input bullets are `ResourceExhaustion`, not `InvalidArtifact` | the roadmap itself, against the core's status set |
+| [WAC-05](#wac-05) | roadmap §13 | A `funcref` is excluded because the capability channel carries values, not because no callback direction exists | roadmap §17 |
+| [WAC-06](#wac-06) | roadmap §18 | The persisted key carries the declared hard maxima, not the effective limit vector | core ADR 0006 |
+| [WAC-07](#wac-07) | roadmap §20 | The argument channel is graded strong by both profiles, and the two gradings are reconciled | the other profile's dated grading |
+| [WAC-08](#wac-08) | ledger; roadmap header; delivery WA-0 | **Placement is settled by the core.** This profile is product projects inside `Broiler.VM`, at a path it already occupies — WA-0 does not decide it | core ADR 0001, 2026-08-31 |
+| [WAC-09](#wac-09) | roadmap §5 | The composition root cannot be named `Broiler.VM.Profile.WebAssembly.Composition.*`; that name fires rule A8 on the first build | rules A8, A11, A13 |
+| [WAC-10](#wac-10) | delivery §21, WA-0; gates §23 and §25 | The three guest-load **defaults** cannot be `Unconstrained`; the catalog refuses such a descriptor | the core's descriptor validation |
+| [WAC-11](#wac-11) | roadmap §5 | A profile's own siblings sit outside the two-assembly reference set, and rule A11 exempts a same-family sibling | ADR 0011 P1, ADR 0001 rev 5 |
+| [WAC-12](#wac-12) | roadmap §5 | The cross-profile boundary rule exists and binds this family in both directions today | rule N2 |
+| [WAC-13](#wac-13) | delivery §21, WA-0 | The public API baseline cannot be taken by loading a profile assembly; it is described from build output | the sibling profile's dated finding |
+| [WAC-14](#wac-14) | gates §19 | The declared repetition count belongs to WA-5, the first milestone whose gate demands a figure — not WA-1 | delivery §21, WA-1 and WA-5 |
+
+### WAC-01
+
+**Where:** roadmap [section 3](roadmap.md#3-what-the-core-already-gives-this-profile-and-what-it-refuses)
+and [section 17](roadmap.md#17-the-cross-profile-boundary-the-javascript-api-for-webassembly); the
+stop conditions of gates [section 25](roadmap.gates.md#25-risks-and-stop-conditions); the ledger's
+unopened-dependency table.
+
+**What the plan said.** The core clamped every runtime ceiling to the tightest **maximum** in the
+catalog, so two profiles in one image constrained each other through their maxima as well as their
+defaults. Section 3 said all of the cross-profile hazard about the maxima, and section 17's third
+cross-profile point said the maxima clamped each other too.
+
+**What replaced it.** The clamp was a defect against the core's own record — which always placed a
+profile maximum at verification, against the profile the artifact names — and it has been removed.
+**This profile's maxima are its own business**: they bind its own modules and reach no profile
+composed beside it.
+
+**What survives, moved one column across.** A neighbour's tight **default** still reaches this
+profile wherever a host adopts defaults rather than stating ceilings, because at runtime creation
+no profile has been selected and the tightest default in the catalog is the only safe answer. It is
+a smaller exposure — a host that states explicit ceilings never meets it — but not an absent one,
+and section 17 keeps it as a coordination obligation between two independently owned components.
+
+**Authority and date.** The core's removal of the clamp and the correction of the core records that
+described it, 2026-08-31.
+
+### WAC-02
+
+**Where:** roadmap [section 3](roadmap.md#3-what-the-core-already-gives-this-profile-and-what-it-refuses),
+the `StructuralDepth` row of the budget matrix.
+
+**What the plan said.** That the core did not support charging `StructuralDepth` as a high-water
+mark, so a long function of many sequential shallow blocks would accumulate a running total and be
+refused for depth it never actually reached.
+
+**What replaced it.** The core does support it, and the row was reasoning from `TryCharge` alone.
+The metering surface has four members, and the **retain/release pair exists precisely for the eight
+ceiling-class dimensions**, of which this is one: only a ceiling-class dimension releases, and an
+allowance never refunds. So the discipline is charge on entry, release on exit, and the refusal
+lands exactly at the ceiling — the failure mode the earlier reading feared is the one the pair
+prevents.
+
+**The earlier reading was internally inconsistent as well as wrong**, which is the part worth
+keeping: this profile already applies exactly that discipline to `LiveBytes`, declared earlier in
+the same table as reported on growth and released on disposal.
+
+**Authority and date.** The core's metering surface, read against the row, 2026-08-31.
+
+### WAC-03
+
+**Where:** roadmap [section 3](roadmap.md#3-what-the-core-already-gives-this-profile-and-what-it-refuses),
+[section 12](roadmap.md#12-traps-exhaustion-and-why-neither-is-a-process-failure), and
+[section 20](roadmap.md#20-amendments-and-this-profiles-duty-as-the-counterweight).
+
+**What the plan said.** That a refused `memory.grow` could be made guest-observable locally, by
+admitting or refusing growth on a `TryCharge` of `AllocatedBytes` with `LiveBytes` reported for
+accounting only. On that reading the requirement was satisfiable inside this profile and no
+amendment was needed.
+
+**What replaced it.** It does not work against the shipped core. **A refused `TryCharge` at any
+scope latches exhaustion on the meter, and the core then rewrites the completed step as
+`ResourceExhaustion` regardless of what the profile did with the `false` it was handed.** So a
+charge cannot serve as a refusable, guest-observable check, and the retention report returns
+nothing, so a ceiling-class dimension cannot carry a guest-observable refusal either. **There is no
+spelling of a guest-observable `memory.grow` refusal on the shipped contract at all.**
+
+**Why this is the most consequential entry in the file.** Section 12 requires a refused
+`memory.grow` to be guest-observable and non-terminating — the module decides what to do and the
+operation continues — and that is the specification's behaviour rather than this profile's
+preference. So the gap is not a local design problem to be worked around: **WA-5 cannot choose a
+memory representation until it is resolved**, and section 20 carries a refusable retention member
+as this profile's one *blocking* ask rather than a filed one. **The other intended profile's dated
+grading records no position on it** — no row of its amendment table is this one — so
+the core's procedural question about the other profile is, for this row, still unanswered.
+
+**Authority and date.** The shipped core's metering behaviour, read rather than inferred from the
+contract, 2026-08-31.
+
+### WAC-04
+
+**Where:** roadmap [section 7](roadmap.md#7-the-artifact-the-decoder-and-one-disagreement-with-the-core),
+the list of what the decoder rejects.
+
+**What the plan said.** That every bullet in the malformed-input list produces the same outcome
+category, `InvalidArtifact` with a decode reason, a diagnostic code and a byte position.
+
+**What replaced it.** Two bullets do not. **A vector length beyond the effective declared-count
+ceiling, and structural depth and artifact bytes beyond theirs, are `ResourceExhaustion` naming one
+dimension and one scope** — the module is well formed and this image declined to admit it, which is
+the rule
+section 8 applies to every other implementation limit and the one the core states for the whole
+bounded-read status set.
+
+**Why the distinction is not cosmetic.** Every corpus entry pins its observed ⟨outcome, reason,
+diagnostic code⟩ triple and replays it across three publish modes, so **an entry recorded under the
+wrong category passes** and encodes the wrong answer permanently — and the published mapping table
+would have been built wrong from the first entry.
+
+**Authority and date.** The roadmap itself, read against the core's bounded-read status set,
+2026-08-31.
+
+### WAC-05
+
+**Where:** roadmap [section 13](roadmap.md#13-memories-tables-globals-and-the-host-boundary).
+
+**What the plan said.** That a `funcref` crossing to the host is excluded because no callback
+direction exists.
+
+**What replaced it.** A callback direction does exist —
+[section 17](roadmap.md#17-the-cross-profile-boundary-the-javascript-api-for-webassembly) records
+that cross-runtime reentry is legal and is exactly how a host calls back into a guest. The real
+reason is narrower and survives: **the capability channel this profile binds carries values, not
+callable references**, and manufacturing a callable host object out of a store-owned function
+reference would mean this profile publishing a projection whose identity, lifetime and reentrancy
+rules it would then own on the embedder's behalf.
+
+**What that changes about the plan.** The exclusion stands, but its scope shrinks: once the
+reference-types manifest opens, an exported `funcref` is representable inside the store and in a
+result payload as an opaque profile-owned reference. It is not projectable as a *callable host
+object*, which is a much smaller claim than "excluded".
+
+**Authority and date.** The roadmap's own section 17, read against the bullet, 2026-08-31.
+
+### WAC-06
+
+**Where:** roadmap [section 18](roadmap.md#18-persistence-and-the-code-cache).
+
+**What the plan said.** That the persisted cache key includes the **effective limit vector**.
+
+**What replaced it.** It does not, and cannot. The effective vector is part of the handle's
+*in-process* identity — which is why two runtimes with different ceilings do not share a handle —
+but it is a timing-dependent, process-local quantity, and persisting it would produce a key that
+never recurs. What the key carries instead is the composition-invariant half: **this profile's
+declared hard maxima**, which is what actually varies between two images and does recur.
+
+**Correctness does not depend on it.** Loading always re-validates, and re-validation recomputes
+the vector, so a persisted module never carries a ceiling decision forward.
+
+**Authority and date.** The core's persisted-envelope key set, which states the term-by-term split
+between in-process handle identity and the persisted key, 2026-08-31.
+
+### WAC-07
+
+**Where:** roadmap [section 20](roadmap.md#20-amendments-and-this-profiles-duty-as-the-counterweight).
+
+**What the plan said.** That the argument channel was this profile's ask and the other intended
+profile graded the same capability **weak**, reasoning from a browser that compiles a *program*
+rather than a call.
+
+**What replaced it.** The other profile re-graded it **strong**, on the same arguments-only scope,
+and recorded why: a fixed-entry-point profile stops being unaffected the moment it hosts this one,
+because an export call is a typed call whose arguments originate over there. **The two gradings
+are reconciled, and this row is filed rather than blocked** — the core's procedure asks each
+amendment record to state the other profile's position, and that position now agrees.
+
+**What did not change.** The scope is still arguments and not results. The typed payload already
+carries results, and several of them, so multi-value returns are expressible today; filing argument
+and result as one amendment would put two differently-scoped versions of one capability into the
+register, which is how a capability gets approved at the wrong width.
+
+**Authority and date.** The other intended profile's dated grading, 2026-08-31.
+
+### WAC-08
+
+**Where:** the [ledger](roadmap.status.md)'s opening, the roadmap header, and delivery
+[section 21](roadmap.delivery.md#21-milestones), WA-0.
+
+**What the plan said.** That this component has no repository of its own yet, that its two
+documents are staged in the aggregate repository beside the components they will sit next to, and
+that **WA-0 owns the placement decision** — moving them being part of that decision rather than a
+side effect of it.
+
+**What replaced it.** **The core took the decision, and this profile already occupies the answer.**
+A dated revision of the core's topology record rules that *a language profile is a set of product
+projects in the Broiler.VM component rather than a component of its own*, and names the two paths
+it fixes — including `src/Broiler.VM.Profile.WebAssembly/`, which is where these documents sit as
+you read them. A profile's roadmap documents live inside the project directory whose assembly they
+describe.
+
+**What follows, and none of it is WA-0's to decide any more.** The assurance system, the
+architecture rule register and the licence and notice files are the **host component's**, adopted
+rather than duplicated, because one repository policy implemented twice is the drift the platform's
+assurance policy exists to prevent. What a profile still stands up of its own is the part adoption
+cannot supply: its **evidence-bundle contract and collection script**, because a bundle collected
+by the host's script would merge two ledgers, and its **own group in the rule register**.
+
+**What WA-0 still owns.** Everything that is this profile's rather than the topology's: the profile
+ID and package identity, the assembly topology within the placement, the manifest allocation and
+the `DET` position, the composition label, the two limit vectors, and the specification and suite
+pins. The milestone did not shrink to nothing; it lost one decision and gained a settled premise.
+
+**Authority and date.** The core's topology record, dated revision of 2026-08-31, which names this
+profile's path explicitly rather than by implication from the sibling's.
+
+### WAC-09
+
+**Where:** roadmap [section 5](roadmap.md#5-package-boundaries-and-the-dependency-graph), the
+candidate-assembly table.
+
+**What the plan said.** That the composition root is named
+`Broiler.VM.Profile.WebAssembly.Composition.Execution`.
+
+**What replaced it.** It cannot be, and the reason is a collision rather than a preference.
+**Every architecture rule that identifies a profile assembly keys on the `Broiler.VM.Profile.`
+prefix**, so a composition root under that prefix *is* a profile assembly to those rules — and the
+rule that forbids a profile project from referencing `Broiler.VM.Runtime` would fire on the first
+build, because a composition root must reference the runtime. The rule that bounds where a profile
+assembly may be referenced from reads a **path** allow-list, `src/compositions/`, which that name
+does not put the project under either.
+
+**The name follows the core's own convention**: `Broiler.VM.Composition.WebAssembly.Execution`,
+under `src/compositions/`, beside the composition roots already there.
+
+**This is the sibling profile's finding, not a prediction.** It proposed the same shape, built it,
+and the rule fired. Recording it here costs nothing and saves this profile the same cycle.
+
+**Authority and date.** Rules A8, A11 and A13 as registered — **A12 and the composition register
+are what hold the corrected name**, which is the other half of why the rename is the right fix —
+and the sibling profile's dated record of A8 firing on its first build, 2026-08-31.
+
+### WAC-10
+
+**Where:** delivery [section 21](roadmap.delivery.md#21-milestones), WA-0's next action and exit
+gate; the evidence matrix of gates [section 23](roadmap.gates.md#23-test-and-evidence-matrix) and
+the stop conditions of [section 25](roadmap.gates.md#25-risks-and-stop-conditions); the ledger's
+WA-0 row.
+
+**What the plan said.** That WA-0 publishes the three guest-load **defaults** as `Unconstrained`,
+with the reason recorded.
+
+**What replaced it.** **The catalog refuses such a descriptor.** The core's descriptor validation
+rejects any `LimitDefaults` carrying an unconstrained slot, and the reason beside it is that a
+default meaning unbounded would make adopting the profile default identical to declaring no ceiling
+at all — which the core's invariant that omission never means unbounded forbids. A profile's hard
+**maxima** may use `Unconstrained`; its **defaults** may not.
+
+**What WA-0 publishes instead** is a **large finite value, stated as a number, with the reason
+recorded** — and with what the number does not buy recorded beside it: a finite default still
+participates in the catalog-wide tightest-default fold, so a host that adopts defaults still gets
+the tightest of them, and the cross-profile hazard is bounded rather than removed. Naming the
+residue is the point; a default that looked free would hide it.
+
+**Why this entry exists at all.** Roadmap section 3 already carried the corrected reading while the
+delivery file still carried the retracted one — **two files of one plan disagreeing on a value that
+would have failed at catalog construction**. The correction had been made in the argument and not
+propagated to the milestone that executes it, which is the failure the chapter-to-milestone map in
+[section 27](roadmap.delivery.md#27-the-chapter-milestone-and-gate-map) now exists to catch.
+
+**Authority and date.** The core's descriptor validation, read directly, 2026-09-01.
+
+### WAC-11
+
+**Where:** roadmap [section 5](roadmap.md#5-package-boundaries-and-the-dependency-graph).
+
+**What the plan said.** That the profile's Broiler.VM reference set is exactly the two core
+assemblies, full stop — written when it was an open question whether a profile's own sibling
+assembly counted as a member of that set.
+
+**What replaced it.** The set is of **Broiler.VM-owned** assemblies, and a profile family's own
+siblings — a format assembly, a lowering, a composition root — are not members of it. The core
+states this in its profile-obligation record, and its topology record exempts a sibling **in the
+same profile family**, keyed on the language segment, from the rule that otherwise forbids
+referencing a `Broiler.VM.Profile.*` assembly from outside a composition root.
+
+**Why it matters here even though this profile has one assembly.** Section 5 keeps a second product
+assembly available as a dated decision — an execution-only image carrying no vector interpreter is
+a real product. **That split is legal when it is taken**, and would not have been under the earlier
+reading. What stays illegal in both readings is an edge to *another language's* family, which the
+exemption is deliberately keyed to exclude.
+
+**Authority and date.** ADR 0011's obligation P1, editorial revision of 2026-08-31, and ADR 0001
+revision 5.
+
+### WAC-12
+
+**Where:** roadmap [section 5](roadmap.md#5-package-boundaries-and-the-dependency-graph).
+
+**What the plan said.** That no edge in either direction reaches any other Broiler profile
+**component**, to be asserted by an architecture rule with a passing witness and a negative
+control — written as work for WA-0.
+
+**What replaced it.** Two things. The unit is a **family**, not a component, which follows from
+[WAC-08](#wac-08). And **the rule exists and passes today**, in both directions, with its own
+witnesses: it was minted by the sibling profile's first milestone and its subject is every
+`Broiler.VM.Profile.<Language>` family, this one included. WA-0 inherits a rule rather than writing
+one, and what it owns is the negative control that proves the rule bites on *this* family's
+projects once they exist.
+
+**Authority and date.** Rule N2 as registered, 2026-08-31.
+
+### WAC-13
+
+**Where:** delivery [section 21](roadmap.delivery.md#21-milestones), WA-0's exit gate.
+
+**What the plan said.** That WA-0's gate is met when "the public API baseline mechanism exists and
+compares in both directions, with an injected member failing it and a deleted member failing it
+too" — with no statement of how a baseline over a profile assembly is taken.
+
+**What replaced it.** The obvious route does not work, and the sibling profile established that at
+cost. The host component's describer describes a surface by **loading** an assembly, which needs a
+project reference that the architecture rules forbid a test project to hold on a profile. The route
+that works describes the family from its **build output** with a metadata load context, which
+reflects **without running anything** — so it needs neither the reference the rules forbid nor the
+execution this profile's own invariants forbid.
+
+**What WA-0 should expect.** The clause is real and stays; what changes is that it is not free, and
+a milestone that budgets an afternoon for "stand up the baseline" has mis-scoped it. The sibling
+carried this clause open across two milestones before closing it.
+
+**Authority and date.** The sibling profile's dated record of the obstacle and the route taken,
+2026-08-31.
+
+### WAC-14
+
+**Where:** gates [section 19](roadmap.gates.md#19-measurement-discipline), and WA-5's exit gate in
+delivery [section 21](roadmap.delivery.md#21-milestones).
+
+**What the plan said.** That the declared repetition count — the number without which "retained
+repetitions" is a release gate nobody can fail — is **fixed at WA-1**.
+
+**What replaced it.** WA-1 produces no figure. Its gate is the contract loop: the five verifier
+outcomes, the five step kinds, a descriptor admitted by a catalog, a composition that publishes and
+runs. Nothing in it is a measurement, so a rule binding the first bundle that publishes a figure
+had been assigned to a milestone that publishes none.
+
+**The count belongs to WA-5**, which is the first milestone whose gate demands a retained
+measurement: the native frame cost it derives the `CallDepth` default from, and the proportionality
+fixture it retains per operation family. WA-5's exit gate now carries the clause that declares it —
+no gate carried it under the old reading either, which is the second half of the defect — and
+WA-10's measurement lane uses that count rather than fixing a second one, because a count fixed by
+two milestones is not a fixed count.
+
+**Why this is worth an entry on a profile that has built nothing.** It costs nothing to correct now
+and would have cost a milestone later: WA-1 would have closed without the number, and WA-5 would
+have retained figures under rules naming a milestone that never set them.
+
+**Authority and date.** The delivery file's own WA-1 and WA-5 gates, read against the rule,
+2026-09-01.
+
+---
+
+## 3. Rejections
+
+An option considered and refused is not a correction: nothing in the plan changed, and the record
+of the refusal is what makes the choice reviewable. **This profile has no decision series yet** —
+WA-0 mints the first — so unlike its sibling, every rejection below is the plan's own, and each
+stays in the roadmap where a reader meets it. They are indexed here so this file is a complete
+answer to "what has this programme refused".
+
+| What is refused | Why, in one line | Where |
+|---|---|---|
+| A second execution arm, a JIT, or any tiering into dynamic code | The core forbids dynamic code in a product closure, and there is no second tier for a promotion to reach | roadmap §1 non-goals |
+| A second decoder or validator | Whatever validates a module is this profile's verifier, reached through the core's one verification entry point | roadmap §1 non-goals |
+| A format assembly of its own | This profile has no compiler, so there is nothing for a pivot to hold apart; creating one would be creating an assembly to shorten a file | roadmap §5 |
+| The specification's lazy-validation permission | A deferred check is a check reported as a trap, and this profile's invariants make validation total | roadmap §8 |
+| The core's canonical variable-length integer reader, for module immediates | The specification requires padded encodings inside a byte budget and production toolchains emit them; the decoder reads its own | roadmap §7 |
+| A cross-profile value channel in the core | A shared mutable region is shared semantics by another name, and the price is paid at the embedder's seam where it is visible | roadmap §17, §20 |
+| An in-process producer input form | Every byte this profile runs arrives from outside the trust boundary, so serialization is its input rather than a critical-path cost | roadmap §20 |
+| Nested instantiation through the mediator | The language has no instruction that asks for code while running | roadmap §20 |
+| Declaring suspension or threads at any allocated manifest | Declaring a capability nothing exercises would make the descriptor claim what the evidence does not show | roadmap §14 |
+| A design hostable only by a second core state machine | Exactly one core state machine and one core contract version exist in a product graph at any time | roadmap §20 |
+
+**One refusal is this profile's counterweight duty rather than its own need**, and it is worth
+separating: [section 20](roadmap.md#20-amendments-and-this-profiles-duty-as-the-counterweight)'s
+"what this profile does **not** need" table records capabilities another language profile might
+reasonably ask for and this one declines to co-sign. **A counterweight that only ever asks is not
+one**, and that table is the duty discharged.
+
+---
+
+## 4. Hazards a reader will meet
+
+Notes addressed to a reader rather than to the plan. Neither changes what is built.
+
+**The word *profile* collides, and no rename fixes it.** The specification has its own profiles —
+`DET`, its deterministic profile, and `FUL`, its full one — and the core has profiles in the sense
+this whole document is about. Wherever the roadmap says *profile* unqualified it means the core's
+sense; the specification's sense is always written `DET` or `FUL` or spelled out. This profile
+implements `DET`, which [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)
+records as a refinement rather than a subset.
+
+**A sibling profile is further along, and its evidence is not this profile's.** The other intended
+first profile has landed milestones and retained bundles. **No total, measurement, review decision
+or Native AOT sample of its own establishes anything here**, and no gate in this plan may cite one.
+What *does* transfer is the core's rules as it discovered them — a rule that fires on any
+`Broiler.VM.Profile.*` assembly fires on this family's too — and those arrive as corrections above
+rather than as evidence.
+
+---
+
+## 5. Open, and therefore not corrected
+
+A reader using this file to tell settled from unsettled needs the other half of the answer. These
+are carried by the plan as **questions**. **The [ledger](roadmap.status.md) is the authority** for
+every one of them.
+
+- **Where the store lives relative to a core instance state** — the single most consequential open
+  question in the plan. Three readings exist, one is rejected, and
+  [section 11](roadmap.md#11-the-store-instances-and-linking) names the milestone that chooses
+  between the other two.
+- **The guest-observable `memory.grow` refusal** — [WAC-03](#wac-03) establishes that no spelling
+  exists on the shipped contract. What is open is the amendment, which is **opened as blocking
+  rather than filed and held** — the one row in this plan that is — and what WA-5 does if it is not
+  answered.
+- **The argument channel** — reconciled with the other profile and filed, not scheduled. The
+  amendment procedure is currently unexecutable.
+- **The specification revision and the conformance-suite revision** — neither is pinned.
+  Retrieving, hashing and archiving third-party material is a human action nobody has performed.
+- **The reconciliation of two profiles' declared defaults** — it belongs to whichever component
+  composes both, and that component does not exist and has no owner.
+- **Everything else.** No milestone has started — the [ledger](roadmap.status.md) holds each state —
+  and this list names only the questions the plan itself flags as open rather than the work it has
+  not begun.
+
+---
+
+## 6. Update rules
+
+1. **Correct the roadmap; record the correction here.** Edit the plan to say the new thing in its
+   own voice, then add an entry. A roadmap sentence that narrates its own history is the state this
+   file exists to remove.
+2. **One entry per changed reading, minted in order, never reused, never edited away.**
+3. **An entry names an authority outside this file** — a core ADR, core source, a sibling record,
+   or a ledger row.
+4. **Cite records, do not copy them.** Two copies of an argument drift on the first edit.
+5. **Transcribe no moving count.** A number a later milestone changes is named by the record that
+   holds it.
+6. **This file records no status**, never uses the ledger's mark vocabulary, and never says
+   anything is accepted, validated or supported.
+7. **A sibling profile's finding enters here only where its subject is the core.** Where the
+   sibling decided something about *its own language*, this profile's plan is unaffected and no
+   entry is minted. Where it hit a rule that binds every profile family, the finding is this
+   profile's too and arrives before the build that would otherwise teach it.

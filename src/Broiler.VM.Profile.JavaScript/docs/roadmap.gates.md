@@ -7,7 +7,13 @@ references.
 **Section numbers are global and do not change when a section moves**, so
 this file holding 17 before 21 is intentional rather than an error.
 
-The [evidence ledger](roadmap.status.md) is the authority for what has been accepted.
+The [evidence ledger](roadmap.status.md) is the authority for what has been accepted, and
+[the corrections and rejections](roadmap.corrections.md) hold what an earlier reading of any gate
+or risk below said before implementation replaced it. **A risk row is never deleted because it
+fired**: a register that removes the rows that caught something teaches nothing, so a fired stop
+condition stays in [section 23](#23-risks-and-stop-conditions) with its outcome recorded, and a
+row that has been *narrowed*, one whose stop condition has *fired*, and one *discharged in part*
+are three different states that the row itself says apart *(corrected: JSC-19)*.
 
 ---
 
@@ -17,12 +23,18 @@ Every figure this component publishes obeys the same rules, and the rules are st
 figures are interesting. **The rules are the core's, restated here only because a reader of this
 document must be able to check a figure without leaving it** — the authority is the core's baseline
 register, and where the two ever differ the register wins. Two things this component adds that a
-restatement alone would lose: a **declared repetition count**, fixed at JS-1 and published with
-every bundle, because "retained repetitions" is a release gate nobody can fail without a number;
-and the discipline of reading the core's own record of *what measuring found*, since two of the
-defects its measurement lane caught were correctness defects no behavioural test saw, and one of
-them was in the guest-load fan-out counter this profile's mediator depends on. **JS-8 reads that
-record before designing the mediator adapter.**
+restatement alone would lose: a **declared repetition count**, published with every bundle that
+carries a figure, because "retained repetitions" is a release gate nobody can fail without a
+number; and the discipline of reading the core's own record of *what measuring found*, since two
+of the defects its measurement lane caught were correctness defects no behavioural test saw, and
+one of them was in the guest-load fan-out counter this profile's mediator depends on. **JS-8 reads
+that record before designing the mediator adapter.**
+
+**These rules bind the first bundle that publishes a figure**; they do not describe a discipline a
+milestone has already exercised, and the ledger is where a reader learns whether any bundle yet
+carries one. The repetition count is fixed by **JS-4, the first milestone whose gate demands a
+figure** — a retained figure per value kind, under these rules by name — and JS-5 and JS-10's
+measurement lane inherit it rather than fixing a second one *(corrected: JSC-18)*.
 
 1. **A control that is the same workload minus the thing being measured.** A difference between
    two different programs is a comparison, not an attribution.
@@ -70,7 +82,7 @@ either direction, at any point.
 | Conformance | pinned suite revision; self-check with failing **and** passing fixtures before every shard, plus an injected-and-reverted scoring regression; per-host-mode totals; negative-metadata totals; merge configuration-failure kinds; failure manifest as a queue; ratchet not regressed; per-manifest attribution; the harness's own regression suite | a failing test reported as a pass, a mode selecting files and executing none, a green run with zero executed tests, a regression against the ratchet, a claimed manifest whose totals show it failing |
 | Native AOT | publish-and-run per claimed RID per composition, warnings as errors, closure report attached; execution-only and runtime-compiler evidence kept separate; suppressions inventoried with owner and reachability | an AOT claim derived from a property, an analyzer, or a non-AOT publish; a closure containing a test, reflection, or dynamic-code assembly; one composition's publish cited for another |
 | Packaging and consumers | package count and identity; produced metadata declaring no foreign dependency; pristine-feed consumer restore-and-run; exercised rollback | a package that resolves a dependency from the internet, a packable identity outside the dated budget, a rollback that does not run |
-| Assurance and review | generator fixed point; refusal-to-invent-a-reviewer negative control; per-declaration blocker naming; origin distribution published; review-mark vocabulary | a generated artifact differing from what the generator would write, a reviewer identifier no source line carries, a stale fingerprint at publish, an unreviewed relevant unit at release |
+| Assurance and review | generator fixed point; refusal-to-invent-a-reviewer negative control; per-declaration blocker naming; origin distribution published; review-mark vocabulary; **the family's public surface frozen in a baseline of its own, described without loading or executing anything and compared in both directions** | a generated artifact differing from what the generator would write, a reviewer identifier no source line carries, a stale fingerprint at publish, an unreviewed relevant unit at release, a public member added or removed with no baseline movement |
 | Licence and attribution | upstream derivation carried; modified files marked as changed; the ingested conformance suite's own attribution; the aggregate-repository notice gaining a row in the same change that introduces the copied tree; the core's standing third-party claim confirmed scoped or amended with the release owner co-signing | a notice that omits a copied or ingested tree, an attribution obligation discovered during a publish, a standing claim elsewhere falsified by what this component ships **or by what its tree contains** |
 | Composed-profile safety | a two-profile catalog test with a deliberately hostile neighbour, proving a neighbour's maxima do not reach this profile's artifacts and its adopted defaults do; this profile's fifteen maxima and fifteen defaults published, with the defaults recorded as the neighbour-facing half | a default set so tight that a neighbour adopting it is strangled, a maximum mistaken for a neighbour-facing declaration, or a composition hosting two profiles closing a gate with no such test |
 | Measurement | evidence class declared; immutable pre-run manifest; comparable control; A/A lane; every repetition; effective-configuration attestation; register bound to log in both directions | a figure without a control, an envelope widened after seeing a candidate, an effective-versus-requested mismatch, a cross-profile or cross-component comparison |
@@ -99,7 +111,7 @@ A `Broiler.VM.Profile.JavaScript` preview or stable release must satisfy all app
 2. **Graph and registration:** the graph is acyclic and matches its manifest; the profile
    reference set is exactly the two core assemblies plus whatever the core's placement ruling
    admits for this component's own siblings; **no edge reaches a legacy component and no edge
-   reaches another Broiler.VM profile component, in either direction, each with both halves
+   reaches another Broiler.VM profile family, in either direction, each with both halves
    witnessed**; registration is static and typed, with no reflection, dynamic loading, IL emit, or
    module initializer anywhere in a product closure.
 3. **Correctness and safety:** the malformed corpus replays with zero unexplained differences on
@@ -124,7 +136,12 @@ A `Broiler.VM.Profile.JavaScript` preview or stable release must satisfy all app
    trim and AOT warnings treated as errors, closure reports attached, suppressions reviewed and
    scoped. *A linker annotation without execution is insufficient.*
 8. **Packages and consumers:** the packable set matches its dated budget; produced metadata
-   declares no foreign dependency; a pristine consumer restores and runs; rollback is exercised.
+   declares no foreign dependency; a pristine consumer restores and runs; rollback is exercised;
+   and **whatever this milestone makes packable is frozen in a baseline of its own**, compared in
+   both directions so an addition and a removal each fail. The family's build-output baseline is
+   not that baseline: it freezes what a composition root in this repository can bind to rather
+   than what a consumer outside it can, which is why it can be described without loading or
+   executing the assemblies it covers. The packaging decision is where the two are reconciled.
 9. **Conformance:** a release-candidate run of the pinned suite exists from an exact commit with
    retained artifacts; the ratchet is not regressed; every claimed manifest has its own totals;
    the failure manifest is generated from that run; the effective limit vector each run was
@@ -138,9 +155,9 @@ A `Broiler.VM.Profile.JavaScript` preview or stable release must satisfy all app
 11. **Human review:** no package is published, no RID is claimed, no support table is issued, and
     no milestone moves to accepted until a named human has recorded a decision on every relevant
     code unit, bound to that declaration's fingerprint.
-12. **Licence and attribution:** this component's licence and notices carry the upstream
-    derivation and the ingested conformance suite's own attribution, modified files are marked as
-    changed, the aggregate-repository notice names this component in the same change that
+12. **Licence and attribution:** the host component's licence and notices carry this profile's
+    upstream derivation and the ingested conformance suite's own attribution, modified files are
+    marked as changed, the aggregate-repository notice names this component in the same change that
     introduces its copied tree, and no standing third-party claim elsewhere is falsified by what
     this component ships **or by what its tree contains**.
 13. **Operations:** diagnostics, cancellation, rollback, format-version rejection, corpus and
@@ -160,10 +177,10 @@ what recertifies unchanged, what must be re-collected, and what is superseded.
 | Risk | Mitigation / stop condition |
 |---|---|
 | The copied seed quietly becomes a dependency — through a package reference, a shared-source item resolving outside the root, or a fix ported back across the fork. | Both halves are architecture rules with per-clause witnesses, including an item rule that **reports rather than skips** an unresolved build path; the restore configuration makes a legacy package reference unresolvable rather than merely detected; the snapshot is a recursive commit set. **Stop: a build edge in either direction, or a fix ported across the fork, stops the milestone. Fixes do not flow across the fork and neither side is the other's upstream.** |
-| The value-representation decision is taken late or implicitly, and the standard library lands typed against a base type this profile then cannot change. | The decision is numbered, states its consequence in both directions, and is a gate on entry to JS-4. **Stop: no standard-library source file is copied while the decision is open; if the answer is replace, JS-6 is re-scoped from a copy to a rewrite before it starts, not during it.** |
+| The value-representation decision is taken late or implicitly, and the standard library lands typed against a base type this profile then cannot change. | The decision is numbered, states its consequence in both directions, and is a gate on entry to JS-4. **Stop: no standard-library source file is copied while the decision is open; if the answer is replace, JS-6 is re-scoped from a copy to a rewrite before it starts, not during it.** **This stop condition has fired and was honoured**: the answer is replace and JS-6 was re-scoped before starting *(corrected: JSC-17)*. The row stays because the mitigation is what a later representation change would meet again. |
 | A verification check migrates out of verification into first execution, because a lazily compiling engine naturally defers function-body checks. | Invalid-artifact is illegal at instantiation, invocation, and resume by the core's own stage matrix; the corpus asserts every structural rejection happens at verification. **Stop: a late check reported as a language fault is a release blocker, because it makes a malformed artifact indistinguishable from a language error and silently hollows out the corpus.** |
 | The oracle reports a failure as a pass, or a green run means nothing. | Failing **and** passing self-check fixtures run before every shard, with an injected-and-reverted scoring regression; per-host-mode totals; configuration failures rather than green results; a ratchet no later run may regress. **Stop: a self-check mismatch stops the run, a green run with zero executed tests is never a pass, and a regression against the ratchet fails the milestone.** |
-| This profile's declared **defaults** silently constrain a second profile composed beside it in a browser, or a neighbour's constrain this profile, wherever the host adopts defaults rather than stating ceilings. | JS-0 records the fifteen maxima and fifteen defaults with [section 3](roadmap.md#3-what-the-core-already-gives-this-profile-and-what-it-refuses)'s split stated inside the decision — maxima bind this profile's own artifacts, defaults are catalog-wide; a two-profile catalog test with a deliberately hostile neighbour catches it rather than a reader; [section 15](roadmap.md#15-deployment-compositions-native-aot-and-the-browser-embedding) names the reconciliation as belonging to whichever component composes both. **Stop: `eval` refused with a resource exhaustion naming a dimension this profile did not breach is a defect in the composition, not in the guest.** The maxima half of this risk was retired on 2026-08-31 when the core removed a catalog-wide clamp its own record never authorised. |
+| This profile's declared **defaults** silently constrain a second profile composed beside it in a browser, or a neighbour's constrain this profile, wherever the host adopts defaults rather than stating ceilings. | JS-0 records the fifteen maxima and fifteen defaults with [section 3](roadmap.md#3-what-the-core-already-gives-this-profile-and-what-it-refuses)'s split stated inside the decision — maxima bind this profile's own artifacts, defaults are catalog-wide; a two-profile catalog test with a deliberately hostile neighbour catches it rather than a reader; [section 15](roadmap.md#15-deployment-compositions-native-aot-and-the-browser-embedding) names the reconciliation as belonging to whichever component composes both. **The risk is the defaults and only the defaults**: a maximum binds the artifacts of the profile that declared it and reaches no neighbour *(corrected: JSC-01)*. **Stop: `eval` refused with a resource exhaustion naming a dimension this profile did not breach is a defect in the composition, not in the guest.** |
 | The extraction gate is never answered, and the same mechanism — a diagnostic registry, a conformance harness, an assurance floor, a bounded-read projection — is written twice and diverges on the first edit. | This profile supplies its half of the comparison when a second product profile's implementation has merged: file paths, source revision, and a correspondence table, recorded at the milestone that owns the mechanism. It records **no verdict**, because a verdict changes the core graph and because no identifier from another profile component may appear here. Where the second implementation has not merged, it records that the first condition is unsatisfied and names what would satisfy it. **Stop: the verdict is the core architecture owner's and may be either, and an unsatisfied first condition is not a failure — but an unrecorded state is.** |
 | An aggregate conformance percentage is published, and a strong parser hides an absent library surface — or the reverse. | Per-host-mode and per-manifest totals with their own ratchets, the effective limit vector published beside them, and a release gate that forbids an aggregate. **Stop: a single percentage is not a result this component publishes, at any point, for any audience.** |
 | Determinism is claimed more broadly than it holds, and a corpus entry pins an answer the specification lets vary. | [Section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted) names every surface this profile fixes and every surface it declares varying, the support table carries the list, and no corpus entry is written over an unlisted varying surface. **Stop: a determinism claim that a legitimate variation falsifies is an untruthful support claim, and a corpus entry over a varying surface is a test that fails for a reason that is not a defect.** |
@@ -175,7 +192,7 @@ what recertifies unchanged, what must be re-collected, and what is superseded.
 | Dynamic code hides inside the standard library, where an emitter-reference scan does not look — a compiled-mode regular expression emitting and retaining a method per pattern. | A separate metadata test with its own witness for the compiled-mode call site, independent of the emitter-reference scan; routing through the from-scratch matcher. **Stop: if the matcher cannot carry the pinned surface, ship interpreted-only and record the consequence; do not reintroduce the compiled path.** |
 | A JavaScript requirement maps onto no row of the core's profile checklist, and pressure builds to work around it inside the core. | [Section 18](roadmap.md#18-amendments-this-profile-expects-to-ask-of-the-core)'s amendment proposals, each naming the driving capability, the profile-owned design tried and rejected, and the counterweight check — or a recorded refusal. **Stop: a design that can only be hosted by a second core state machine is refused; exactly one core state machine and one core contract version exist in the product graph at any time, and no language-specific path is added to the core's execution loop.** |
 | Placement or assembly topology is assumed rather than decided, and the layout is illegal under rules that are active today. | Placement, the profile-ID and package-ID pairing, and the assembly topology are dated decisions with the core's topology owner co-signing, each enforced by a registered rule with a witness. **Stop: no product code lands while placement is open, and no milestone assumes a sibling layout works today.** |
-| The programme stalls indefinitely on preconditions this component does not control. | The waited-on set is itemised per open item with a stated reason; a snapshot-as-is date or commit-count budget is recorded with a named owner; decisions needing no copied code are opened against JS-1. **Stop: a milestone blocked by a named external dependency is recorded blocked with its holder and its unblock condition — lack of scheduling is not a blocker, and an unaccepted contract is.** |
+| The programme stalls indefinitely on preconditions this component does not control. | The waited-on set is itemised per open item with a stated reason; a snapshot-as-is date and commit-count budget are recorded with a named owner; decisions and milestones needing no copied code are opened against JS-1. **The seed half of this risk is discharged** — the set is ruled on item by item and the stop condition has a date *(corrected: JSC-03, JSC-04)*; the core-acceptance half is open and belongs to the core. **Stop: a milestone blocked by a named external dependency is recorded blocked with its holder and its unblock condition — lack of scheduling is not a blocker, and an unaccepted contract is.** |
 | Mutable optimization state becomes reachable from a shared handle, or is keyed process-globally so two runtimes collide. | Program-relative slots owned and reclaimed with the program, function, or runtime; the same-slot-index eviction test; the two-runtime key and shape isolation test with its named falsifier; nothing warmed or process-local is serialized. **Stop: any such reachability is a defect, not a tuning option, and the milestone does not close over it.** |
 | A shared aggregate parent is treated as isolation for multi-tenant agents. | [Section 13](roadmap.md#13-realms-agents-and-the-host-boundary) states the channel property; hosts requiring isolation must not share a parent; no test asserts which sibling observes a shared-parent exhaustion. **Stop: an isolation claim over a shared parent is an untruthful support claim.** |
 | The manifest set drifts upward one increment at a time, because each increment looks small and manifests are opaque to the core. | Each increment mints one identity with a reviewed scope, extends the corpus, and re-runs the oracle against the ratchet; the accepted set is published in every support claim. **Stop: an increment published without its own retained oracle run and corpus extension is not accepted, and no increment may be justified by claiming an earlier manifest implies it.** |
@@ -199,7 +216,10 @@ links below are discovery entry points, **not substitutes for the pinned manifes
 - **The language specification edition**, pinned by immutable revision identifier, retrieved,
   hashed, and archived. Retrieving, hashing, and archiving a third-party document is a **human
   action**: until someone performs it the pin is provisional and carries a named exclusion in the
-  ledger. JS-0 records the intended edition; JS-3a records the pin that was actually taken.
+  ledger, which is where a reader learns whether it is still open. Recording an intended edition
+  nobody has retrieved would be a
+  pin in name only, so **JS-3a records the pin it actually takes** rather than an earlier milestone
+  recording one it intends, and no manifest is accepted against an unpinned edition.
 - **The conformance suite revision**, the immutable commit resolved once before any shard starts,
   never a branch name, together with the scope manifests mapping this component's assemblies to
   suite path prefixes.

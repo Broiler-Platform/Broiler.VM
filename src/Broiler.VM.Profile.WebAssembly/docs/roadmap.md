@@ -1,10 +1,24 @@
 # Broiler.VM.Profile.WebAssembly roadmap
 
-**Status:** Proposed component roadmap for the WebAssembly language profile of the Broiler.VM
-execution core. [The evidence ledger](roadmap.status.md) is the authority for what has been
-accepted; at the time of writing it records **WA-0 through WA-10 as not started**, and it records
-that the component has no source tree, no descriptor, no pinned specification revision, and no
-evidence bundle. No milestone is complete because its design appears here.
+**Status:** Proposed roadmap for the WebAssembly language profile of the Broiler.VM execution core.
+
+**[The evidence ledger](roadmap.status.md) is the authority for what has been accepted, and this
+document transcribes none of it.** What this plan states about the present is only what no
+milestone can change without changing the ledger in the same breath — **no line of this profile has
+been written**: no source tree, no descriptor, no decoder, no pinned specification revision, no
+pinned suite revision, and no evidence bundle. No milestone is complete because its design appears
+here.
+
+**Where it lives.** This profile is a family of product projects **inside the `Broiler.VM`
+component**, at `src/Broiler.VM.Profile.WebAssembly/`, and not a component with its own repository:
+the core's topology record rules that a language profile is a set of product projects in that
+component rather than a component of its own, and names this path. Three mechanisms are therefore
+the host component's, adopted rather than duplicated — the assurance system, the architecture rule
+register, and the licence and notice files. What this profile stands up inside them is a rule group
+of its own, which WA-0 writes and which no register holds today. **What is not shared is
+evidence**: every gate here is closed by this profile's own bundles, no result from another
+component is cited, and the ledgers stay apart. Where the text below says "this
+component", read "this profile" *(corrected: WAC-08)*.
 
 `Broiler.VM.Profile.WebAssembly` is a **language profile**: one artifact format, one decoder, one
 validator, one store and instance model, one interpreter, one linker, one set of host imports, and
@@ -32,22 +46,34 @@ disagreement, and it changes this component's first design decision.
 
 ### How this roadmap is split
 
-This plan is three files and one ledger. The argument stays whole in this file; the
-milestones and the gate material have their own, because they are read one entry at a time
-rather than start to finish.
+This plan is three files, a ledger, and a record of corrections. The argument stays whole in this
+file; the milestones and the gate material have their own, because they are read one entry at a
+time rather than start to finish.
 
 | File | Sections | What it carries |
 |---|---|---|
 | `roadmap.md` — this file | 1–18, 20 | The argument: what this profile is, what the core gives it and refuses it, how each piece works, and what it will ask of the core. |
-| [`roadmap.delivery.md`](roadmap.delivery.md) | 21–22 | The milestones and the order they are delivered in. |
+| [`roadmap.delivery.md`](roadmap.delivery.md) | 21–22, 27 | The milestones, the order they are delivered in, and the map that ties every chapter to the milestone that delivers it and the gate that closes it. |
 | [`roadmap.gates.md`](roadmap.gates.md) | 19, 23–26 | The measurement rules, the test and evidence matrix, the release gates, the stop conditions, and the references. |
 | [`roadmap.status.md`](roadmap.status.md) | — | The evidence ledger. It, and not any file above, is the authority for what has been accepted. |
+| [`roadmap.corrections.md`](roadmap.corrections.md) | — | The corrections and rejections, `WAC-nn`. What an earlier reading of this plan said, what replaced it, when, and on whose authority — and every option this programme refuses. |
 
-Two rules keep the split cheap and are not negotiable. **Section numbers are global and do
-not change when a section moves**, so every reference written before the split still resolves
-and the gates file holding 19 before 23 is intentional rather than an error. And **milestone
-identifiers are never written as links**: `WA-0` through `WA-10` are the join key between this
-plan and the ledger, and they stay bare.
+Four rules keep the split cheap and are not negotiable.
+
+**Section numbers are global and do not change when a section moves**, so every reference written
+before the split still resolves, the gates file holding 19 before 23 is intentional rather than an
+error, and a new chapter takes the next unused number rather than a gap. **Milestone identifiers
+are never written as links**: `WA-0` through `WA-10` are the join key between this plan and the
+ledger, and they stay bare. **No count, inventory, or status the ledger already holds is
+transcribed into any of the three plan files** — the ledger's own update rule 10, applied to the
+documents a reader opens first. Two things are not transcription: a structural fact the plan itself
+fixes, such as how many dimensions the core's budget vocabulary has; and this file's opening
+statement that nothing has been built, which no milestone can change without changing the ledger in
+the same breath. And **a correction is never written inline**: where
+the core changed, a sibling's dated finding settled something, or this document replaced its own
+earlier reading, the plan states the new reading in its own voice and
+[`roadmap.corrections.md`](roadmap.corrections.md) holds what it replaced. A section carries a bare
+*(corrected: WAC-nn)* only where a reader may have planned against the earlier reading.
 
 ### Contents
 
@@ -77,6 +103,7 @@ plan and the ledger, and they stay bare.
 24. [Release gates](roadmap.gates.md#24-release-gates) · `roadmap.gates.md`
 25. [Risks and stop conditions](roadmap.gates.md#25-risks-and-stop-conditions) · `roadmap.gates.md`
 26. [Specification and platform references](roadmap.gates.md#26-specification-and-platform-references) · `roadmap.gates.md`
+27. [The chapter, milestone, and gate map](roadmap.delivery.md#27-the-chapter-milestone-and-gate-map) · `roadmap.delivery.md`
 
 ---
 
@@ -265,7 +292,7 @@ core's byte primitives instead of calling the core's `TryReadVarUInt32`.
     is genuinely general or one language's need in disguise.
     [Section 20](#20-amendments-and-this-profiles-duty-as-the-counterweight) discharges that duty
     explicitly, and does so without a dependency edge, a citation, or a shared item identifier in
-    either direction with any other profile component.
+    either direction with any other profile family.
 
 ---
 
@@ -363,8 +390,8 @@ not drift:
 | `ArtifactBytes` | Charged | Enforced by the core's reader over the payload. |
 | `SectionCount` | Charged | WebAssembly sections are literal, so this dimension has a direct referent for once. Custom sections count. |
 | `DeclaredCount` | Charged | Every vector length in the binary format — types, functions, locals, elements, data, fields, and the rest. |
-| `StructuralDepth` | Charged | Section framing and block nesting, as a *high-water mark* rather than a running total — **which the core already supports and an earlier draft of this row said it did not.** The relevant members are not `TryCharge` alone: the metering surface is four members, and the retain/release pair exists precisely for the eight ceiling-class dimensions, of which this is one. Only a ceiling-class dimension releases; an allowance never refunds. So the discipline is charge on entry, release on exit, and the refusal lands exactly at the ceiling on a long function of many sequential shallow blocks — the failure mode the earlier draft feared is the one the pair prevents. This profile already applies the same discipline to `LiveBytes`, which is declared in this same table as reported on growth and released on disposal — so the earlier reading was internally inconsistent as well as wrong. Section framing is core-metered through the reader in any case. **WA-1 records the charge sites and the one caution below, not the question.** |
-| `NestedLoadDepth` | NotApplicable, **default a large finite value** | No guest-initiated loads at any manifest this roadmap allocates. The maximum may be whatever this profile likes - it binds this profile's artifacts alone. **The default is the half that reaches a neighbour**, and getting it wrong is a cross-profile defect: see below. |
+| `StructuralDepth` | Charged | Section framing and block nesting, as a *high-water mark* rather than a running total, **which the core supports directly**: the metering surface is four members, and its retain/release pair exists precisely for the eight ceiling-class dimensions, of which this is one. Only a ceiling-class dimension releases; an allowance never refunds. So the discipline is **charge on entry, release on exit**, and the refusal lands exactly at the ceiling rather than accumulating across a long function of many sequential shallow blocks. It is the same discipline this table declares earlier for `LiveBytes`. Section framing is core-metered through the reader in any case. **WA-1 records the charge sites, not the question** *(corrected: WAC-02)*. |
+| `NestedLoadDepth` | NotApplicable, **default a large finite value** | No guest-initiated loads at any manifest this roadmap allocates. The maximum may be whatever this profile likes — it binds this profile's artifacts alone. **The default is the half that reaches a neighbour**, and getting it wrong is a cross-profile defect: see below. |
 | `NestedLoadFanOut` | NotApplicable, **default a large finite value** | As above. |
 | `NestedLoadBytes` | NotApplicable, **default a large finite value** | As above. |
 | `LiveRuntimes` | Charged | Core-metered; this profile adds nothing. |
@@ -375,13 +402,12 @@ handed back at the point of retention: it is latched, and the operation observes
 charge or poll. **A ceiling-class dimension therefore cannot carry a guest-observable refusal.**
 [Section 12](#12-traps-exhaustion-and-why-neither-is-a-process-failure) requires a refused
 `memory.grow` to be guest-observable and non-terminating — the module decides what to do and the
-operation continues — and the obvious route to that, admitting or refusing growth on a `TryCharge`
-of `AllocatedBytes` with `LiveBytes` reported for accounting only, **does not work against the
-shipped core, which this roadmap checked rather than assumed.** A refused `TryCharge` at any scope
-latches exhaustion on the meter, and the core then rewrites the completed step as
-`ResourceExhaustion` regardless of what the profile did with the `false` it was handed. So a
-charge cannot be used as a refusable, guest-observable check: **there is no spelling of a
-guest-observable `memory.grow` refusal on the shipped contract at all.** The same latch makes the
+operation continues. **Gating on a charge does not deliver that, and this is read off the shipped
+core rather than inferred from the contract:** a refused `TryCharge` at any scope latches
+exhaustion on the meter, and the core then rewrites the completed step as `ResourceExhaustion`
+regardless of what the profile did with the `false` it was handed. So a charge cannot serve as a
+refusable, guest-observable check, and **there is no spelling of a guest-observable `memory.grow`
+refusal on the shipped contract at all** *(corrected: WAC-03)*. The same latch makes the
 aggregate `LiveBytes` case worse rather than better, since the guest has already observed a
 *successful* grow before the operation aborts — which is precisely the outcome
 [section 12](#12-traps-exhaustion-and-why-neither-is-a-process-failure) forbids. **WA-5 cannot
@@ -396,7 +422,8 @@ else's asks.
 profile hard maximum is **not** a statement of what this profile uses; the defaults are that. The
 maximum is the most this profile would tolerate a host granting, and it binds **this profile's own
 modules and nobody else's** — verification intersects the host's ceiling with the maxima of the
-profile the artifact names, and with no other profile's.
+profile the artifact names, and with no other profile's, so a tight maximum here constrains a
+neighbour not at all *(corrected: WAC-01)*.
 
 **The default is the declaration that reaches other profiles.** A host that adopts profile
 defaults rather than stating numbers gets the *tightest default in the catalog*, per dimension,
@@ -428,13 +455,6 @@ finite value, stated as a number, with the reason recorded** — and records wha
 buy: a finite default still participates in the catalog-wide tightest-default fold, so a host that
 adopts defaults still gets the tightest of them, and the cross-profile hazard is bounded rather than
 removed. Naming the residue is the point; a default that looked free would hide it.
-
-*Corrected 2026-08-31.* Until then the same paragraph said all of this about the **maxima**, because
-the core also clamped every runtime ceiling to the tightest maximum in the catalog. That clamp was a
-defect against the core's own record, which always placed a profile maximum at verification against
-the selected profile, and it has been removed. This profile's maxima are now its own business; the
-obligation moved one column across to the defaults, which is a smaller exposure — a host that states
-explicit ceilings never meets it at all — but not an absent one.
 
 ### What the core refuses to do for this profile
 
@@ -540,10 +560,12 @@ commit.
   validation, linking, trapping, and execution separately; and it will not accept a partial
   implementation quietly. There is no gentle on-ramp, which is why WA-4 builds the harness before
   the interpreter exists rather than after.
-- **A greenfield component still has an assurance floor to build.** The annotation grammar, the
-  generated review report, the fingerprint binding, the release-mode gate, the evidence-bundle
-  contract, and the collection script are this component's own code and are not smaller for the
-  tree being empty. WA-0 is that work and nothing else.
+- **A greenfield profile still has an assurance floor to reach.** The annotation grammar, the
+  generated review report, the fingerprint binding and the release-mode gate are the host
+  component's and are adopted; what this profile writes of its own is the part adoption cannot
+  supply — its evidence-bundle contract, its collection script, and its group in the rule
+  register — and none of it is smaller for the tree being empty. WA-0 is that work and nothing
+  else *(corrected: WAC-08)*.
 
 ### 4.3 What is acquired rather than written
 
@@ -560,7 +582,10 @@ commit.
 
 The conformance suite and the reference material are Apache-2.0, and ingesting them means carrying
 the obligations of that licence: retain the notices, mark modified files as changed, and carry the
-NOTICE content forward. This component's own licence and notice file satisfy that on its own terms.
+NOTICE content forward. **The licence and notice files that discharge those obligations are the
+host component's**, adopted rather than duplicated, so what WA-0 lands is a row in the host's
+notice carrying the ingested suite's attribution rather than a file of its own
+*(corrected: WAC-08)*.
 
 One consequence reaches outside this component and must not be discovered at release time: **the
 core component's third-party notice currently asserts that nothing it ships is vendored or
@@ -593,27 +618,35 @@ assembly**, and a split needs a justification that names the boundary it enforce
 | Logical boundary | Candidate assembly | Responsibility and dependency rule |
 |---|---|---|
 | Profile | `Broiler.VM.Profile.WebAssembly` | Descriptor, decoder, validator, verified module, store and instance model, linker, interpreter, host imports, payload projections. References exactly the two core assemblies and nothing else Broiler-owned. |
-| Composition root | `Broiler.VM.Profile.WebAssembly.Composition.Execution` | The one named deployment composition. The only project that knows which profiles and capabilities an image contains. Non-packable unless the composition register advertises it. |
+| Composition root | `Broiler.VM.Composition.WebAssembly.Execution` | The one named deployment composition, under `src/compositions/`. The only project that knows which profiles and capabilities an image contains. **Not under the `Broiler.VM.Profile.` prefix**: the rule forbidding a profile project from referencing the runtime identifies a profile assembly by that prefix, so a composition root named under it would be a profile assembly to that rule — and referencing the runtime is exactly what a composition root must do. The rule bounding where a profile assembly may be referenced *from* is keyed on the path `src/compositions/` rather than on the name, so it is satisfied by where this root sits whatever it is called, and it is the runtime rule and not that one that the name would break *(corrected: WAC-09)*. Non-packable unless the composition register advertises it. |
 | Test-only | conformance host, script reader, corpus store and encoder, fuzz host, soak host, bench host | Never referenced by a product project and never present in a published closure. |
 
 ```text
-Broiler.VM.Abstractions              ──→ (nothing)
-Broiler.VM.Binary                    ──→ (nothing)
-…Profile.WebAssembly                 ──→ Abstractions + Binary
-composition root                     ──→ Broiler.VM.Runtime + the profile
-conformance / corpus / fuzz hosts    ──→ the profile  (never referenced by any product project)
+Broiler.VM.Abstractions               ──→ (nothing)
+Broiler.VM.Binary                     ──→ (nothing)
+…Profile.WebAssembly                  ──→ Abstractions + Binary
+…Composition.WebAssembly.Execution    ──→ Broiler.VM.Runtime + the profile
+conformance / corpus / fuzz hosts     ──→ the profile  (never referenced by any product project)
 ```
 
 The rules the verified graph must retain, whatever the names become:
 
 - the profile's Broiler.VM reference set is **exactly** the two core assemblies — no reference to
   the core runtime, no package reference to a third core package, no `InternalsVisibleTo` in
-  either direction;
-- **no edge in either direction reaches any other Broiler profile component**, asserted by an
-  architecture rule with a passing witness and a negative control, including the inbound half. Two
-  profiles in one browser image are composed by a composition root; they are not linked to each
-  other, and [section 17](#17-the-cross-profile-boundary-the-javascript-api-for-webassembly)
-  depends on that staying true;
+  either direction. **A profile family's own siblings sit outside that set**: it is a set of
+  *Broiler.VM-owned* assemblies, and the rule that otherwise forbids referencing a
+  `Broiler.VM.Profile.*` assembly from outside a composition root exempts a sibling **in the same
+  family**, keyed on the language segment. This profile has one product assembly and needs no
+  sibling today; what the exemption buys is that the second assembly the last bullet keeps
+  available is legal when it is taken *(corrected: WAC-11)*;
+- **no edge in either direction reaches any other Broiler profile family**, asserted by an
+  architecture rule with a passing witness and a negative control, including the inbound half.
+  **That rule exists and passes today** — its subject is every `Broiler.VM.Profile.<Language>`
+  family, this one included — so WA-0 inherits it and owns the negative control that proves it
+  bites on this family's projects once they exist *(corrected: WAC-12)*. Two profiles in one
+  browser image are composed by a composition root; they are not linked to each other, and
+  [section 17](#17-the-cross-profile-boundary-the-javascript-api-for-webassembly) depends on that
+  staying true;
 - no product project references a test project, a fixture, a corpus, or a conformance host, and no
   product project references the text-format reader or the binary encoder;
 - every namespace matches its assembly;
@@ -825,11 +858,12 @@ revision, and a corpus entry exists for every adjacent pair the table forbids.
 - anything the pinned specification calls malformed, with this profile's own diagnostic code and a
   byte position.
 
-**Those bullets do not all produce the same outcome category, and an earlier draft of this
-paragraph said they did.** Six of them are `InvalidArtifact` with a decode reason, a diagnostic
-code, and a byte position. Two are not: **a vector length beyond the effective declared-count
-ceiling, and artifact bytes beyond theirs, are `ResourceExhaustion` naming one dimension and one
-scope** — the module is well formed and this image declined to admit it, which is the same rule
+**Those bullets do not all produce the same outcome category, and the split is load-bearing.**
+Seven are `InvalidArtifact` with a decode reason, a diagnostic code, and a byte position. **Two are
+not — the vector-length bullet and the structural-depth-and-artifact-bytes bullet — and between
+them they name three dimensions: each is `ResourceExhaustion` naming one dimension and one scope**
+*(corrected: WAC-04)* — the module is well formed and this image declined to admit it, which is the
+same rule
 [section 8](#8-validation) applies to every other implementation limit and the same one the core
 rules for the whole bounded-read status set. The distinction is not cosmetic here: every corpus
 entry pins its observed ⟨outcome, reason, diagnostic code⟩ triple and replays it across three
@@ -935,7 +969,7 @@ evidence available that the core's fifteen dimensions were not invented for one 
 | Specification permits a limit on | This profile enforces it as |
 |---|---|
 | Number of types, functions, tables, memories, globals, tags, imports, exports, element and data segments, struct fields, parameters and results, locals | `DeclaredCount`, against the effective ceiling, before the count is used |
-| Nesting depth of control instructions | `StructuralDepth`, subject to the WA-1 decision in [section 3](#3-what-the-core-already-gives-this-profile-and-what-it-refuses) |
+| Nesting depth of control instructions | `StructuralDepth`, charged as a high-water mark per [section 3](#3-what-the-core-already-gives-this-profile-and-what-it-refuses), with WA-1 recording the charge sites |
 | Module size, section size, function body size | `ArtifactBytes` and the section framing |
 | Number of sections | `SectionCount` |
 | Instructions in a function, instructions in a constant expression, `br_table` label count, `array.new_fixed` length | `DeclaredCount` and `VerifierWork` |
@@ -1184,13 +1218,13 @@ So a design must say where the store lives, and **there are exactly three places
 | **B — one artifact, one link set** | Whatever one `IVmInstanceState` holds, but an artifact carries several modules | A container: N modules plus a link plan | Entirely within contract, verified as one unit, and deterministic — the handle means *this whole set links*. But it needs a second format version and a Broiler-invented container, which is the thing [section 7](#7-the-artifact-the-decoder-and-one-disagreement-with-the-core) argued against; and a browser that instantiates modules as it fetches them cannot use it. |
 | **C — one runtime, one store** | Executor-scoped: the executor is created once per runtime and holds the store; each `IVmInstanceState` is one module instance's handle into it | One module, bare | Semantically the specification's own shape, keeps bare payloads, and supports incremental instantiation. But the store now outlives every individual instance, disposal order becomes a real design problem, and **there is no contract channel that names an instance for a later module to import from.** |
 
-### What this roadmap fixes now, and what WA-5 decides
+### What this roadmap fixes now, and what WA-6 decides
 
 **Reading A is rejected here.** No milestone may deliver it, because a profile that cannot link
-cannot run the suite and cannot host a real toolchain, and discovering that at WA-5 would mean
+cannot run the suite and cannot host a real toolchain, and discovering that at WA-6 would mean
 rewriting the store.
 
-**WA-5 chooses between B and C, as a numbered decision with its consequence stated in both
+**WA-6 chooses between B and C, as a numbered decision with its consequence stated in both
 directions**, and it chooses before the linker is written rather than during it. The inputs are
 recorded now so the decision is not taken on taste:
 
@@ -1212,8 +1246,8 @@ recorded now so the decision is not taken on taste:
   modules uses version 2. **The readings are not exclusive**, and the honest possibility that WA-5
   should evaluate is that this profile wants both: C for the store's shape, B for the case where a
   set really is one deployable unit.
-- **The suite forces the issue and dates it.** WA-4 stands the harness up and WA-5 is the first
-  milestone that can score a linking file. A decision deferred past WA-5 is a decision the
+- **The suite forces the issue and dates it.** WA-4 stands the harness up and WA-6 is the first
+  milestone that can score a linking file. A decision deferred past WA-6 is a decision the
   conformance run makes by failing.
 
 ### What is fixed regardless of the reading
@@ -1304,7 +1338,7 @@ declared. Four properties are fixed here:
   [Section 19](roadmap.gates.md#19-measurement-discipline)'s measurement lane exists partly to
   publish that cost honestly rather than to hide it.
 - **The representation decision names its own limits.** Whether a memory is a managed array, a
-  pinned buffer, or a reserved virtual range with guard pages is a WA-6 decision with Native AOT
+  pinned buffer, or a reserved virtual range with guard pages is a WA-5 decision with Native AOT
   and per-RID consequences, and a virtual-reservation strategy that works on one platform and not
   another is a claim about RIDs, not about the profile.
 - **A successful growth invalidates every view a host holds over that memory.** Growth may
@@ -1376,17 +1410,17 @@ The channel itself is narrow and its narrowness shapes the manifests:
   profile uses it rather than inventing one. Two obligations follow: an `externref` never leaves
   its runtime, and a table holding external references is reported to the meter as retaining them
   so that a store cannot pin unbounded host state invisibly.
-- **A `funcref` crossing to the host has no channel and is excluded** — and the reason is narrower
-  than an earlier draft of this bullet gave. It is *not* that no callback direction exists: section
-  17 records that cross-runtime reentry is legal and is exactly how a host calls back into a guest.
-  The reason is that **the capability channel this profile binds carries values, not callable
-  references**, and manufacturing a callable host object out of a store-owned function reference
-  would mean this profile publishing a projection whose identity, lifetime, and reentrancy rules it
-  would then own on the embedder's behalf. Once the reference-types manifest opens, an exported
-  `funcref` is representable inside the store and in a result payload as an opaque profile-owned
-  reference, and is not projectable as a callable host object. **Stable identity across the seam —
-  the same export handed out twice being recognisably the same thing — is the embedder's rule and is
-  written in no document today**; WA-6's export projection records that it does not foreclose one.
+- **A `funcref` crossing to the host has no channel and is excluded** — and the reason is narrow.
+  It is *not* that no callback direction exists: section 17 records that cross-runtime reentry is
+  legal and is exactly how a host calls back into a guest. The reason is that **the capability
+  channel this profile binds carries values, not callable references** *(corrected: WAC-05)*, and
+  manufacturing a callable host object out of a store-owned function reference would mean this
+  profile publishing a projection whose identity, lifetime, and reentrancy rules it would then own
+  on the embedder's behalf. Once the reference-types manifest opens, an exported `funcref` is
+  representable inside the store and in a result payload as an opaque profile-owned reference, and
+  is not projectable as a callable host object. **Stable identity across the seam — the same export
+  handed out twice being recognisably the same thing — is the embedder's rule and is written in no
+  document today**; WA-6's export projection records that it does not foreclose one.
 
 No CLR type crosses the boundary in either direction. Arguments and results are the core's transfer
 types, and diagnostics carry identity and position without carrying host state.
@@ -1410,7 +1444,7 @@ Three things follow that are worth stating so nobody has to rediscover them:
 - **The frame model is designed to be capturable anyway.** This costs nothing today and is the one
   thing that cannot be retrofitted: a frame model that lives on the CLR stack cannot later be
   moved to the heap without rewriting the interpreter.
-  [Section 9](#9-the-value-store-and-frame-model)'s frame row says so, and WA-6's exit gate asks
+  [Section 9](#9-the-value-store-and-frame-model)'s frame row says so, and WA-5's exit gate asks
   for the design rather than the implementation.
 - **`Unwind` is simple here, and its simplicity is temporary.** WebAssembly has no user-visible
   finalisation, so terminal unwinding releases memories, tables, and host references and stops. The
@@ -1660,11 +1694,10 @@ follow, and each is a thing a browser team will meet:
    not at all. But a host that adopts profile defaults rather than stating ceilings gets the tightest
    in the catalog, so the two components' *default* vectors are coupled whether or not anyone
    intended it, and a stingy default here is felt over there. That is a coordination obligation
-   between two independently owned components, smaller than the one this point used to describe -
-   a host stating explicit ceilings never meets it - but real. **WA-0 records this profile's defaults
-   with that consequence stated**, and the browser composition - wherever it lives - owns the
-   reconciliation. Until 2026-08-31 this point said the maxima clamped each other too; that was a
-   defect in the core, not a property of the contract, and it has been removed.
+   between two independently owned components — a host stating explicit ceilings never meets it,
+   which makes it a bounded obligation rather than an unavoidable one, but real. **WA-0 records this
+   profile's defaults with that consequence stated**, and the browser composition — wherever it
+   lives — owns the reconciliation *(corrected: WAC-01)*.
 4. **The trap-to-exception mapping is the embedder's, and the exception-to-trap mapping is
    worse.** A WebAssembly trap surfacing into JavaScript becomes a JavaScript error object; a
    JavaScript exception thrown from an imported function must unwind WebAssembly frames. This
@@ -1679,9 +1712,9 @@ follow, and each is a thing a browser team will meet:
 - **It commits to not foreclosing it.** Where a design choice inside this profile would make the
   boundary harder — a memory representation that cannot be handed out as a contiguous region, an
   export projection that cannot enumerate, an opaque reference model with no stable identity — the
-  choice is recorded with that consequence noted at the milestone that takes it. WA-6's memory
-  representation row and WA-7's export projection each carry that clause.
-- **It commits to naming the owner.** A browser integration is a consumer of two profile components
+  choice is recorded with that consequence noted at the milestone that takes it. WA-5's memory
+  representation row and WA-6's export projection each carry that clause.
+- **It commits to naming the owner.** A browser integration is a consumer of two profile families
   and belongs to whichever component composes them. This roadmap's obligation is to make the price
   visible before that component exists, not to pay it.
 
@@ -1712,10 +1745,10 @@ What this roadmap does instead is fix the design so it stays reachable, at no co
   capabilities are excluded, so an unrelated composition change does not invalidate every entry.
   This profile cites the core's tuple rather than restating it.
 
-  **The *effective* limit vector is deliberately not in the key**, and an earlier draft of this row
-  had it. It is part of the handle's in-process identity — which is why two runtimes with different
-  ceilings do not share a handle — but it is a timing-dependent, process-local quantity, and
-  persisting it would produce a key that never recurs. Correctness does not depend on it, for the
+  **The *effective* limit vector is deliberately not in the key** *(corrected: WAC-06)*. It is part
+  of the handle's in-process identity — which is why two runtimes with different ceilings do not
+  share a handle — but it is a timing-dependent, process-local quantity, and persisting it would
+  produce a key that never recurs. Correctness does not depend on it, for the
   reason the next bullet already gives: loading always re-validates, and re-validation recomputes
   the vector, so a persisted module never carries a ceiling decision forward. What the key needs is
   the composition-invariant half — **this profile's declared hard maxima**, which is what actually
@@ -1761,13 +1794,13 @@ table below records what this profile **needs**, and the section after it record
 
 | Candidate | Why it is needed | Strength |
 |---|---|---|
-| **An argument channel on invocation** — arguments only, deliberately | An invocation request carries one entry-point name. A WebAssembly module is a set of exported functions with typed signatures and nothing else, and the conformance suite is built end to end on calling them with arguments. [Section 10](#10-execution-mapping-webassembly-onto-the-core-lifecycle)'s answer (1) works and is a text encoding of a typed call. **The scope is arguments and not results**: the typed payload already carries results and several of them, so multi-value returns are expressible today, and filing argument and result as one amendment would put two differently-scoped versions of one capability into the register — which is how a capability gets approved at the wrong width. | **The strongest in this document.** A profile with no parser, no text format, no dynamic loads, and no notion of a program still needs it — which is precisely the test the core wrote this profile in to apply. **The other intended profile now grades the same capability strong**, on the same arguments-only scope, having corrected an earlier draft that graded it weak by reasoning from a browser that compiles a *program* rather than a call — reasoning that stops holding the moment it hosts this profile, since an export call is a typed call whose arguments originate over there. **The two gradings are therefore reconciled and this row is filed rather than blocked**: the core's procedure asks each amendment record to state the other profile's position, and that position is now recorded and agrees. Opened against WA-1's recorded encoding and the cost that encoding actually imposes, not against distaste for it. |
+| **An argument channel on invocation** — arguments only, deliberately | An invocation request carries one entry-point name. A WebAssembly module is a set of exported functions with typed signatures and nothing else, and the conformance suite is built end to end on calling them with arguments. [Section 10](#10-execution-mapping-webassembly-onto-the-core-lifecycle)'s answer (1) works and is a text encoding of a typed call. **The scope is arguments and not results**: the typed payload already carries results and several of them, so multi-value returns are expressible today, and filing argument and result as one amendment would put two differently-scoped versions of one capability into the register — which is how a capability gets approved at the wrong width. | **The strongest in this document.** A profile with no parser, no text format, no dynamic loads, and no notion of a program still needs it — which is precisely the test the core wrote this profile in to apply. **The other intended profile grades the same capability strong**, on the same arguments-only scope, and its ground is the one that matters here: reasoning from a browser that compiles a *program* rather than a call stops holding the moment that profile hosts this one, since an export call is a typed call whose arguments originate over there. **The two gradings are reconciled and this row is filed rather than blocked** *(corrected: WAC-07)*: the core's procedure asks each amendment record to state the other profile's position, and that position is now recorded and agrees. Opened against WA-1's recorded encoding and the cost that encoding actually imposes, not against distaste for it. |
 | **A padding-tolerant variable-length integer reader in the core's binary package** | The core's readers accept canonical encodings only; the specification requires padded ones inside a byte budget; production toolchains emit padded immediates. [Section 7](#7-the-artifact-the-decoder-and-one-disagreement-with-the-core) resolves it locally by decoding integers in this profile. | **Moderate, and honestly so.** It is general to any format that inherits this encoding, and there are several. It is *not* something the core needs for its own envelope, and the local resolution works. Opened only if a second profile meets the same wall, which is exactly the extraction gate's own standard. |
 | **Multi-result host capabilities** | The capability channel returns one 64-bit value. A WebAssembly host import with two results has nowhere to put the second, so it is a named link failure. | **Moderate.** Any profile whose calling convention admits multiple results meets it. Until then this profile refuses the import deterministically rather than truncating, and the refusal is published. |
 | **A wider value slot on the capability channel** | `v128` does not fit in a 64-bit slot. Splitting works and needs a published encoding; a wider slot would not. | **Weak.** This is one type in one instruction family. Recorded so it is not mistaken for the previous row. |
 | **A charging hook for work done inside a host capability** | Wall clock covers a slow capability; it does not cover one that allocates on this profile's behalf. | **Strong: general**, and this profile reaches it by the same route any other would. |
 | **A persisted envelope** | [Section 18](#18-persistence-and-the-code-cache). | **Strong: general**, and already admitted by contract. It needs a gate rather than an amendment. |
-| **A refusable retention member on the metering surface** | [Section 3](#3-what-the-core-already-gives-this-profile-and-what-it-refuses): the retention report returns nothing, so a ceiling-class dimension cannot carry a guest-observable refusal, while [section 12](#12-traps-exhaustion-and-why-neither-is-a-process-failure) requires a refused `memory.grow` to be exactly that. The local resolution an earlier draft recorded — admit growth on a charge, report retention for accounting only — **does not work against the shipped core**: a refused `TryCharge` latches exhaustion and the core rewrites the completed step as `ResourceExhaustion`, so no spelling of a guest-observable refusal exists on the current contract. | **Strong, and blocking.** Any profile with host-visible retained state that the language can ask to grow meets it, which is the counterweight test passing — and unlike every other row in this table there is no local workaround to fall back on. **WA-5 cannot choose a memory representation until this is filed and answered**, so this is the one row this profile opens rather than holds. |
+| **A refusable retention member on the metering surface** | [Section 3](#3-what-the-core-already-gives-this-profile-and-what-it-refuses): the retention report returns nothing, so a ceiling-class dimension cannot carry a guest-observable refusal, while [section 12](#12-traps-exhaustion-and-why-neither-is-a-process-failure) requires a refused `memory.grow` to be exactly that. **No local resolution exists.** Admitting or refusing growth on a charge, with retention reported for accounting only, does not work against the shipped core: a refused `TryCharge` latches exhaustion and the core rewrites the completed step as `ResourceExhaustion`, so no spelling of a guest-observable refusal exists on the current contract *(corrected: WAC-03)*. | **Strong, and blocking.** Any profile with host-visible retained state that the language can ask to grow meets it, which is the counterweight test passing — and unlike every other row in this table there is no local workaround to fall back on. **WA-5 cannot choose a memory representation until this is filed and answered**, so this is the one row this profile opens rather than holds. |
 
 ### What this profile does **not** need, and says so
 
@@ -1796,5 +1829,7 @@ profile-to-profile dependency established by governance rather than by reference
 what the extraction gate's fourth condition exists to prevent. Saying "this profile would not
 co-sign it" is a counterweight answer for the record and not a decision. And the procedure is
 currently **unexecutable**: no amendment has been minted, and the minting and both co-signing roles
-are held by one person, so no co-signature would be independent. Every row here is filed and held
-rather than scheduled, and none is admissible until it names a merged or approved capability.
+are held by one person, so no co-signature would be independent. Every row here but one is filed and
+held rather than scheduled — the refusable retention member is opened, because no local resolution
+exists and WA-5 cannot choose a memory representation without it — and none is admissible until it
+names a merged or approved capability.

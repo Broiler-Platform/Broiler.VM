@@ -1,11 +1,15 @@
 # Broiler.VM.Profile.WebAssembly roadmap — delivery
 
 **This file is part of the [Broiler.VM.Profile.WebAssembly roadmap](roadmap.md)**, which
-[names every file](roadmap.md#how-this-roadmap-is-split). It carries sections 21–22:
-the milestones and the order they are delivered in. **Section numbers are global and do not
+[names every file](roadmap.md#how-this-roadmap-is-split). It carries sections 21–22 and 27:
+the milestones, the order they are delivered in, and the map that ties every chapter of the plan to
+the milestone that delivers it and the gate that closes it. **Section numbers are global and do not
 change when a section moves**, so a reference written to any section below still resolves here.
 
-The [evidence ledger](roadmap.status.md) is the authority for what has been accepted.
+The [evidence ledger](roadmap.status.md) is the authority for what has been accepted, and
+[the corrections and rejections](roadmap.corrections.md) hold what an earlier reading of any
+milestone below said before the core, a sibling's finding, or this plan's own redrafting replaced
+it.
 
 ---
 
@@ -14,62 +18,80 @@ The [evidence ledger](roadmap.status.md) is the authority for what has been acce
 The [status ledger](roadmap.status.md) is the authority for what has been accepted. This section
 states planned work and objective exit gates only.
 
-Three things run through every milestone and are stated once. **The core is implemented, not
-accepted**, so WA-0 and WA-1 build against implemented contracts while WA-2 onward additionally
-depend on the core contract being accepted — a gate this component does not hold. **Owner and
-reviewer roles are named per milestone**; where one person holds several, the non-independence is
-recorded as a limit on what these gates prove, not resolved by assertion. And because there is no
-seed, every milestone's fourth row states **what it deliberately does not do**, which is the scope
-control a copied codebase gets for free from the shape of what it copied.
+**Every milestone below has the same six parts, in the same order, and nothing else**: **Owner**,
+**Ledger**, **Next action**, **Dependencies**, **Objective exit gate**, **Deliberately not done**.
 
-### WA-0 — Boundary, placement, identity, and the assurance floor
+Three things run through every one of them and are stated once. **The core's contract being
+implemented and the core's contract being accepted are two different inputs**, so WA-0 and WA-1
+need only the first while WA-2 onward additionally need the second — a gate this profile does not
+hold. **Owner and reviewer roles are named per milestone**; where one person holds several, the
+non-independence is recorded as a limit on what these gates prove, not resolved by assertion. And
+because there is no seed, every milestone states **what it deliberately does not do**, which is the
+scope control a copied codebase gets for free from the shape of what it copied.
 
-- **Owner:** profile architecture owner, with the core's topology owner co-signing placement and
-  the release owner co-signing the licence position.
+### WA-0 — Boundary, identity, and the assurance floor
+
+- **Owner:** profile architecture owner, with the core's topology owner co-signing the assembly
+  topology and the release owner co-signing the licence position.
+- **Ledger:** WA-0's row in
+  [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
+  its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** Decide and record, each as a dated decision with a registered rule and a
-  passing witness: where this component lives relative to the core and the aggregate repository;
-  the profile ID and the `Broiler.*` package identity it obliges, **with the manifest-namespace
-  consequence of the spelling stated**; the assembly topology of
+  passing witness: the profile ID and the `Broiler.*` package identity it obliges, **with the
+  manifest-namespace consequence of the spelling stated**; the assembly topology of
   [section 5](roadmap.md#5-package-boundaries-and-the-dependency-graph) and the single-assembly
   default; the feature manifest allocation of
   [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted) and the `DET`
   position; the one composition label; **the fifteen profile hard maxima and the fifteen defaults,
   with [section 17](roadmap.md#17-the-cross-profile-boundary-the-javascript-api-for-webassembly)'s
   cross-profile consequence stated in the record, and with the three guest-load *defaults*
-  published as `Unconstrained` and the reason recorded** — a dimension declared inapplicable in
-  the budget matrix is a statement about what this profile charges and not a licence to write a
-  zero into the vector a neighbour adopts. The maxima need no such care: they bind this profile's
-  own modules alone; the nullable and unsafe-code positions; and the intended specification
-  revision and suite revision, marked provisional until a human has retrieved, hashed, and
-  archived them. Stand up this component's own assurance system — annotation grammar, exemption
-  predicate, generated review report, fingerprint binding, release-mode gate — and its own
-  evidence-bundle contract and collection script. Publish the licence and third-party notice, and
-  confirm or amend the core's standing third-party claim. **The annotation grammar, the exemption
-  predicate, the review-state machine, the fingerprint definition and the release-gate semantics
-  are repository policy, not this component's inventions**: they are recorded in the platform's
-  `CODE-ASSURANCE.md` and the policy it names, and this milestone implements them rather than
-  redefining them. Record the deviation if any of the
-  five has to differ, because a second implementation that quietly diverges is what the core's
-  extraction gate exists to catch.
+  published as a large finite value, stated as a number, with the reason recorded** — a dimension
+  declared inapplicable in the budget matrix is a statement about what this profile charges and not
+  a licence to write a zero into the vector a neighbour adopts, and **`Unconstrained` is not
+  available here either: the catalog refuses a descriptor whose defaults carry an unconstrained
+  slot** *(corrected: WAC-10)*. The maxima need no such care: they bind this profile's own modules
+  alone, and `Unconstrained` is available to them. Then the nullable and unsafe-code positions, and
+  the intended specification revision and suite revision, marked provisional until a human has
+  retrieved, hashed, and archived them.
+
+  **Placement is not on this list**: the core's topology record rules that a language profile is a
+  set of product projects in the `Broiler.VM` component and names the path this profile already
+  occupies *(corrected: WAC-08)*.
+  **Adopt** the host component's assurance system, rule register, and licence and notice files
+  rather than standing up a second of each — the annotation grammar, the exemption predicate, the
+  review-state machine, the fingerprint definition and the release-gate semantics are repository
+  policy recorded in the platform's `CODE-ASSURANCE.md`, and a second implementation that quietly
+  diverges is what the core's extraction gate exists to catch — and record every place adoption
+  costs something as a dated deviation. What this milestone stands up of its own is the part
+  adoption cannot supply: **this profile's own evidence-bundle contract and collection script**,
+  because a bundle collected by the host's script would merge two ledgers, and its own group in the
+  rule register. **Adoption does not discharge the attribution**: land a row in the host's notice
+  carrying the ingested suite's attribution, and confirm or amend the core's standing third-party
+  claim against what this profile's tree will contain.
 - **Dependencies:** Named ownership. No dependency on any core milestone's acceptance.
 - **Objective exit gate:** An acyclic shell graph builds Release with zero warnings; architecture
   rules express every forbidden edge — including **both halves** of the no-edge-to-another-profile
   rule and the no-product-reference-to-the-harness rule — each with a passing witness and a
   negative control that fails when injected and passes after revert; a scan asserts no source file,
-  project file, or build item resolves outside the component root, and an unresolvable build item is
-  **reported rather than skipped**; **a two-profile catalog test composes this descriptor beside a
-  second profile that declares guest-initiated loads and proves that this profile's maxima reach that
-  profile's work not at all, while its adopted defaults do**, with a negative control that writes a
-  zero into one guest-load *default*, adopts defaults rather than stating ceilings, and observes the
-  neighbour's nested load refused with a resource exhaustion naming a dimension this profile does not
-  use; the public API baseline mechanism exists and compares in both
-  directions, with an injected member failing it and a deleted member failing it too; the assurance
-  generator is a fixed point — a regeneration moves no byte — and a negative control proves it
-  refuses to write a reviewer identifier no source line carries; the release-mode gate names each
-  blocking declaration individually rather than counting them; the evidence-collection script exists
-  and this milestone's own bundle was produced by it; the licence and notice carry the Apache-2.0
-  text and the attribution the ingested suite will require; and the core's third-party claim is
-  confirmed scoped or amended, with the release owner's co-signature recorded.
+  project file, or build item resolves outside the component root, and an unresolvable build item
+  is **reported rather than skipped**; **a two-profile catalog test composes this descriptor beside
+  a second profile that declares guest-initiated loads and proves that this profile's maxima reach
+  that profile's work not at all, while its adopted defaults do**, with a negative control that
+  writes a zero into one guest-load *default*, adopts defaults rather than stating ceilings, and
+  observes the neighbour's nested load refused with a resource exhaustion naming a dimension this
+  profile does not use; **a descriptor whose guest-load defaults are unconstrained is refused by
+  the catalog, by a named negative case**, so the finite value above is held to by a test rather
+  than by a sentence; the public API baseline for this family exists and compares in both
+  directions, with an injected member failing it and a deleted member failing it too, **described
+  from the build output without loading or executing the assemblies it describes** — a describer
+  that loads one needs a project reference the architecture rules forbid a test project to hold on
+  a profile *(corrected: WAC-13)*; the assurance generator is a fixed point — a regeneration moves
+  no byte — and a negative control proves it refuses to write a reviewer identifier no source line
+  carries; the release-mode gate names each blocking declaration individually rather than counting
+  them; the evidence-collection script exists and this milestone's own bundle was produced by it;
+  the host component's notice carries a row for the ingested suite's attribution, landed by this
+  milestone rather than inherited from adoption; and the core's third-party claim is confirmed
+  scoped or amended, with the release owner's co-signature recorded.
 - **Deliberately not done:** No product code. No decoder, no descriptor, no project that references
   a core package. A milestone that stands up an assurance system and also writes a verifier cannot
   demonstrate that the assurance system caught anything.
@@ -77,16 +99,19 @@ control a copied codebase gets for free from the shape of what it copied.
 ### WA-1 — The whole contract loop on the smallest module that is still WebAssembly
 
 - **Owner:** profile contract owner, with release and AOT review of the composition root.
+- **Ledger:** WA-1's row in
+  [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
+  its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** Mint `broiler.webassembly.slice` and define format version 1 as a bare module.
   Write the decoder for the slice's subset of the grammar over the core's byte primitives, with
   this profile's own variable-length integer readers and its own bound-before-use count reader.
   Write the validator for the slice. Implement all seven core-facing types, including the
   allocation-meter adapter and the bounds projection. Fill every descriptor row in one full-arity
   construction, with the rows [section 9](roadmap.md#9-the-value-store-and-frame-model) owns
-  marked **provisional** and each naming the milestone that will settle it. **Take the
-  `StructuralDepth` declaration decision of
-  [section 3](roadmap.md#3-what-the-core-already-gives-this-profile-and-what-it-refuses) and
-  record it.** **Take the entry-point decision of
+  marked **provisional** and each naming the milestone that will settle it. **Record the
+  `StructuralDepth` charge sites** that
+  [section 3](roadmap.md#3-what-the-core-already-gives-this-profile-and-what-it-refuses) fixes as a
+  high-water mark *(corrected: WAC-02)*. **Take the entry-point decision of
   [section 10](roadmap.md#10-execution-mapping-webassembly-onto-the-core-lifecycle) and record its
   encoding**, including its behaviour on an export name containing the encoding's own separator.
   Write the test-only binary encoder that generates corpus entries. Stand up the `execution-only`
@@ -124,6 +149,9 @@ control a copied codebase gets for free from the shape of what it copied.
 ### WA-2 — The decoder, the integer decision, and the malformed corpus
 
 - **Owner:** verification-boundary owner.
+- **Ledger:** WA-2's row in
+  [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
+  its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** Complete the decoder over the whole binary grammar the allocated manifests will
   need, including every section, the section-order table derived from the pinned revision, UTF-8
   name validation as the specification defines it, the data count section's relationship to the
@@ -157,6 +185,9 @@ control a copied codebase gets for free from the shape of what it copied.
 ### WA-3 — Validation as one verification stage, and the diagnostic registry
 
 - **Owner:** verification-boundary owner.
+- **Ledger:** WA-3's row in
+  [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
+  its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** Implement the specification's single-pass validation algorithm over the value,
   control, and initialization stacks, with the polymorphic treatment of unreachable code. Implement
   every module-level validation rule the allocated manifests need. Publish and version the
@@ -180,8 +211,9 @@ control a copied codebase gets for free from the shape of what it copied.
   and **not** `InvalidArtifact`, by its own case per limit the profile enforces — **including the
   two decoder families
   [section 7](roadmap.md#7-the-artifact-the-decoder-and-one-disagreement-with-the-core)
-  reclassifies**, the over-ceiling vector length and the over-ceiling artifact size, each with a
-  corpus entry recording the exhaustion triple rather than an invalid-artifact one; **a nesting
+  reclassifies**, the over-ceiling vector length and the over-ceiling structural depth and artifact
+  size — three dimensions across the two — each with a corpus entry recording the exhaustion triple
+  rather than an invalid-artifact one *(corrected: WAC-04)*; **a nesting
   corpus generated to the effective `StructuralDepth` ceiling and one level beyond it is refused
   as `ResourceExhaustion` naming a dimension rather than terminating the process, on every claimed
   RID under Native AOT** — a stack overflow is uncatchable and kills the host, so "the validator
@@ -196,6 +228,9 @@ control a copied codebase gets for free from the shape of what it copied.
 
 - **Owner:** conformance owner, with the verification-boundary owner for the scoring of the two
   families this milestone can run.
+- **Ledger:** WA-4's row in
+  [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
+  its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** Pin the suite revision. Build the script reader, the harness, the self-check, the
   sharding, the merge, the scope manifests, and the audit command. Implement the script commands
   the malformed and invalid families need, and implement registration and the two module forms even
@@ -225,6 +260,9 @@ control a copied codebase gets for free from the shape of what it copied.
 ### WA-5 — The value model, the store, and the interpreter
 
 - **Owner:** profile runtime owner.
+- **Ledger:** WA-5's row in
+  [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
+  its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** Take the [section 9](roadmap.md#9-the-value-store-and-frame-model) decision as
   a numbered decision stating its consequence in both directions, **before any interpreter source
   is written**, with all eight rows including the vector-width row that only matters later.
@@ -236,6 +274,10 @@ control a copied codebase gets for free from the shape of what it copied.
   the charging granularity, and the cancellation poll bound from measurement. Catch every internal
   exception at this profile's own adapter.
 - **Dependencies:** WA-3. The ABI decision is a **gate on entry**, not this milestone's first task.
+  And **the refusable retention member of
+  [section 20](roadmap.md#20-amendments-and-this-profiles-duty-as-the-counterweight)**, which is
+  the one amendment this profile opens rather than files: no local resolution exists, and the
+  memory representation cannot be chosen until it is answered *(corrected: WAC-03)*.
 - **Objective exit gate:** The numbered ABI decision exists with all eight rows, with fixtures and
   Native AOT representation probes retained; every executor answer is one of the five step kinds
   and a scan asserts no profile code names a core outcome category; **every trap in the closed
@@ -245,7 +287,10 @@ control a copied codebase gets for free from the shape of what it copied.
   observes the negative answer, and the allowance was not spent; **a call-stack exhaustion is
   `ResourceExhaustion` naming `CallDepth` and its scope rather than terminating the process**, on
   every claimed RID under Native AOT, with the `CallDepth` default derived from a retained,
-  reproducible frame-cost measurement per RID; **no exception escapes the interpreter** across the
+  reproducible frame-cost measurement per RID; **this milestone's bundle is the first to publish a
+  figure, so it declares the repetition count
+  [section 19](roadmap.gates.md#19-measurement-discipline) requires** and WA-10's lane uses that
+  one rather than fixing a second; **no exception escapes the interpreter** across the
   corpus and the fuzz corpus; a deliberately non-polling variant completes as a profile fault with
   the poll-bound reason and the runtime poisoned to accept only disposal; **a proportionality
   fixture exists for each named operation family of
@@ -267,6 +312,9 @@ control a copied codebase gets for free from the shape of what it copied.
 ### WA-6 — Linking: imports, exports, the store decision, and host capabilities
 
 - **Owner:** profile runtime owner with the host-capability owner.
+- **Ledger:** WA-6's row in
+  [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
+  its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** **Take the [section 11](roadmap.md#11-the-store-instances-and-linking)
   decision** between the link-set artifact and the runtime-scoped store, as a numbered decision
   with the naming channel resolved and its consequence stated in both directions, before the
@@ -304,6 +352,9 @@ control a copied codebase gets for free from the shape of what it copied.
 ### WA-7 — `broiler.webassembly.core1` complete, and the embedding seam
 
 - **Owner:** profile runtime owner with the API owner for the seam.
+- **Ledger:** WA-7's row in
+  [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
+  its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** Complete the first full manifest: element and data segments with their
   initialisation ordering, the start function, imported and exported memories, tables, and globals
   with their compatibility rules, custom sections ignored correctly, and every remaining edge the
@@ -332,6 +383,9 @@ control a copied codebase gets for free from the shape of what it copied.
 ### WA-8 — The second standardised group, and the vector family
 
 - **Owner:** profile runtime owner.
+- **Ledger:** WA-8's row in
+  [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
+  its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** Mint `broiler.webassembly.core2` and implement its surface: sign-extension
   operators, non-trapping conversions, multi-value blocks and results, reference types, bulk
   memory and table instructions, and the data count section's execution-side consequences. Then
@@ -368,6 +422,9 @@ control a copied codebase gets for free from the shape of what it copied.
 ### WA-9 — Adversarial input, aggregate budgets, and soak
 
 - **Owner:** profile security owner with the fuzz-corpus owner.
+- **Ledger:** WA-9's row in
+  [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
+  its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** Grow the malformed corpus to the full accepted surface. **Fuzz both
   untrusted-input surfaces** — the decoder and validator over arbitrary bytes, and the interpreter
   over validated-but-adversarial modules — with recorded seeds, budgets, and runtime settings.
@@ -396,6 +453,9 @@ control a copied codebase gets for free from the shape of what it copied.
 ### WA-10 — Baselines, packaging, the support table, and the release gate
 
 - **Owner:** release owner with the package, security, API, performance, and documentation owners.
+- **Ledger:** WA-10's row in
+  [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
+  its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
 - **Next action:** Stand up the controlled measurement lane and take this component's own
   baselines under [section 19](roadmap.gates.md#19-measurement-discipline), including verification
   throughput per byte across a range of module sizes and cold-start cost — the two figures
@@ -434,8 +494,11 @@ control a copied codebase gets for free from the shape of what it copied.
   refuses on each of its conditions, naming each blocker by its declaration, with a negative
   control proving the generator cannot invent a reviewer; a named human decision exists on
   **every** relevant unit before the first publish; every suppression is inventoried with an owner
-  and a reachability argument; and no figure, total, claim, or platform result from any other
-  component appears anywhere.
+  and a reachability argument; **the operational holders release gate 12 asks for are each named —
+  diagnostics, cancellation, rollback, format-version rejection, specification- and suite-revision
+  drift, vulnerability response, and recertification** — with a vacant one recorded vacant rather
+  than passed to whoever is available; and no figure, total, claim, or platform result from any
+  other component appears anywhere.
 - **Deliberately not done:** No comparison against any other WebAssembly engine, in either
   direction, however easy it would be to run one.
 
@@ -444,11 +507,11 @@ control a copied codebase gets for free from the shape of what it copied.
 ## 22. Delivery order
 
 ```text
-     WA-0  boundary, placement, identity, assurance floor, evidence contract
+     WA-0  boundary, identity, assurance floor, evidence contract
         │        no product code
         │
         └→ WA-1  the whole contract loop on a slice module, publish-and-run
-             │        ←── the entry-point and StructuralDepth decisions land here
+             │        ←── the entry-point decision lands here
              │
              └→ WA-2  the decoder, the integer decision, the malformed corpus
                   │        ←── (core contract accepted): external gate, held by
@@ -512,3 +575,72 @@ What this ordering does and does not imply:
   [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s allocation
   table, not a judgement made per commit, and in particular **not the fact that the specification
   ships its features in one version.**
+
+---
+
+## 27. The chapter, milestone, and gate map
+
+Three files describe one programme, each organised for its own kind of reading — the argument by
+subject, the milestones by sequence, the gate material by evidence class and again by failure mode.
+**Nothing in that arrangement guarantees they cover the same ground**, and the two ways they can
+fail are opposite and equally quiet: a chapter that argues for something no milestone delivers, and
+a gate that demands something no chapter designed.
+
+This map is the join. It is read in both directions, and **a blank cell is a finding**: a chapter
+with no delivering milestone is a plan for work nobody scheduled, and an evidence area or a release
+gate with no owning milestone is a gate nobody can close.
+
+| Chapter | Delivered by | Evidence area, [section 23](roadmap.gates.md#23-test-and-evidence-matrix) | Release gate, [section 24](roadmap.gates.md#24-release-gates) | Stop condition, [section 25](roadmap.gates.md#25-risks-and-stop-conditions) |
+|---|---|---|---|---|
+| 1 Terminology and support claims | WA-0 fixes the identity; WA-10 issues the table | Identity and registration | 1 | determinism claimed too broadly |
+| 2 Engineering invariants | every milestone; each invariant is asserted by the milestone that could first violate it | all rows | 3, 4 | several |
+| 3 What the core gives and refuses | WA-0 (the two vectors and the matrix); WA-1 (the descriptor) | Identity and registration; Composed-profile safety | 2 | declared defaults reaching a neighbour; a shared aggregate parent read as isolation |
+| 4 No seed | **no milestone delivers it** — it is the starting position, and its consequence is the origin distribution every bundle publishes | Assurance and review | 10 | owner and reviewer the same person |
+| 5 Package boundaries and the graph | WA-0 | Dependency architecture | 2 | the extraction gate unanswered |
+| 6 Feature manifests | WA-0 allocates; WA-1 mints the first; each increment extends | Identity and registration; Conformance | 1, 8 | the manifest set drifting upward |
+| 7 The artifact and the decoder | WA-2 | Decoding | 3 | the canonical-reader regression; the lost count-bound ordering; section order by identifier |
+| 8 Validation | WA-3 | Validation | 3 | validation drifting into first execution |
+| 9 The value, store, and frame model | WA-5 | Value model and store | 4 | a late value and frame ABI decision |
+| 10 Execution on the core lifecycle | WA-1 (the loop end to end); WA-5 (the interpreter) | Execution and traps | 4 | a trap conflated with an exhaustion |
+| 11 The store, instances, and linking | WA-6 takes the store decision; WA-5 is written against it | Value model and store; Linking and host boundary | 5 | the store decision taken late |
+| 12 Traps and exhaustion | WA-5 | Execution and traps | 4 | deep recursion terminating the process |
+| 13 Memories, tables, globals, host boundary | WA-6 | Linking and host boundary | 5 | mutable state reachable from a shared handle |
+| 14 Suspension and threads | **no milestone delivers it, by decision** — nothing is declared at any allocated manifest, and section 14 names what would change that | Identity and registration | 1 | — |
+| 15 The conformance oracle | WA-4 | Conformance | 8 | the oracle reporting a failure as a pass; an aggregate percentage |
+| 16 Compositions, Native AOT, the browser | WA-1 builds the one root; WA-10 advertises it | Native AOT | 6 | the test-only ingestion path reaching a product closure |
+| 17 The cross-profile boundary | **no milestone delivers it** — this profile owns none of the JavaScript API and says so | Composed-profile safety | 1 | an implied working JavaScript API |
+| 18 Persistence and the code cache | **no milestone delivers it**, by decision; WA-10 measures the reopening trigger | Decoding | 3 | — |
+| 19 Measurement discipline | WA-10 stands up the lane; WA-5 produces the first figures it governs and declares the repetition count | Measurement | 9 | — |
+| 20 Amendments | **no milestone delivers the grading** — section 20 states each grade itself; **one row is opened rather than held**, the refusable retention member, and WA-5's dependencies name it | — | — | a requirement with no core row; the programme stalling on a precondition this component does not control |
+| — proportional charging, which chapter 2's invariant 7 fixes rather than a chapter of its own | WA-5 | Execution and traps | 4 | unproportional charging |
+| — licence and attribution, which chapter 4.4 argues for rather than a chapter of its own | WA-0 lands the row in the host's notice; WA-10 confirms the standing claim | Licence and attribution | 11 | — |
+| — packaging and consumers | WA-10 | Packaging and consumers | 7 | — |
+| — operational ownership: diagnostics, cancellation, rollback, format-version rejection, specification- and suite-revision drift, **vulnerability response**, recertification | WA-10 names every owner | Assurance and review | 12 | a role held by nobody |
+
+**What the map shows that no single file does.** The first four are deliberate; the last is the gap
+it was built to find:
+
+- **Four chapters are delivered by no milestone, and each for its own reason.** Chapter 4 describes
+  the starting position rather than work. Chapter 14 declares nothing on purpose — declaring a
+  capability nothing exercises would make the descriptor claim what the evidence does not show.
+  Chapter 18 keeps a design reachable at no cost while the core implements no persisted envelope.
+  Chapter 17 is the fourth, and it gets its own bullet below because its reason is ownership rather
+  than decision.
+- **Chapter 17 is the one this profile owns least and states most.** It delivers nothing because the
+  JavaScript API for WebAssembly belongs to whichever component composes two profiles. What it
+  produces is a price made visible before that component exists, and a support-table exclusion so a
+  reader never infers the namespace works.
+- **[Section 20](roadmap.md#20-amendments-and-this-profiles-duty-as-the-counterweight) has one row
+  that is not filed and held.** Every other amendment candidate waits; the refusable retention
+  member blocks, because [WAC-03](roadmap.corrections.md#wac-03) establishes there is no local
+  workaround and WA-5 cannot choose a memory representation without it. **A blocking ask is the one
+  case where an amendment row belongs in a milestone's dependency list**, and WA-5's dependencies
+  name it.
+- **[Section 2](roadmap.md#2-engineering-invariants)'s invariants are deliberately everywhere.** An
+  invariant is not a milestone's deliverable; it is a property every later milestone must not break.
+- **One release gate is owned by no chapter, and the map is how that was found.** Gate 12 asks that
+  the holders of diagnostics, cancellation, rollback, format-version rejection, specification- and
+  suite-revision drift, **vulnerability response**, and recertification each be named. No chapter
+  argues for it, because it is an operational obligation rather than a design one — and this profile
+  ships a decoder and an interpreter over untrusted input, so a release with no named holder for a
+  report about either is not a release. WA-10's exit gate names them or the gate refuses.

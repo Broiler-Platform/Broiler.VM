@@ -50,8 +50,8 @@ leave a browser team believing the core bounds something it does not.
 - **It does not foreclose the seam.** Where a design choice in this profile would make the seam
   harder - a host-object model with no stable identity, a realm model that cannot hold a foreign
   exotic object, a transfer surface that cannot carry an opaque reference - the choice is recorded
-  with that consequence noted at the milestone that takes it. JS-4 and JS-13's realm model are
-  where this bites first.
+  with that consequence noted at the milestone that takes it. JS-4, which takes the object model
+  and routes the front end and the executor through a realm object, is where this bites first.
 - **It names the owner.** A browser integration is a consumer of two profile families and belongs
   to whichever component composes them. That component owns the two-profile composition's closure
   report, its Native AOT evidence, its shared aggregate budget, and the reconciliation of two
