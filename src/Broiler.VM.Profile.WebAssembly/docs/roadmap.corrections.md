@@ -97,6 +97,8 @@ Ordered by the roadmap section they land in, so this file can be read beside the
 | [WAC-22](#wac-22) | roadmap §1, §4.3, §5, §15; delivery §21; gates §23, §24, §25 | The harness cannot be a test project: rule A11 forbids one to reference a profile, so it is a never-advertised composition root and the scan changes with it | rule A11; [WAC-13](#wac-13) |
 | [WAC-23](#wac-23) | roadmap §9; delivery §21; gates §23, §25 | The `LiveBytes`-breach question the ledger had open becomes a ninth row of the entry-gate decision | ledger's WA-5 row; the map's blank-cell rule |
 | [WAC-24](#wac-24) | delivery §21, §27; gates §24, §25; ledger §3 | Two halves of section 7's third obligation were called gate clauses and written into no gate: the dimension that changes side, and the core record this profile falsifies | roadmap §7; the core's metering-split record |
+| [WAC-25](#wac-25) | delivery §21, WA-0 and WA-1; delivery §27; ledger §2 | Three clauses of WA-0's gate need a descriptor or a composition root that WA-0's own scope lands neither of; each is carried to WA-1 | WA-0's scope line; rules A11 and A12 |
+| [WAC-26](#wac-26) | roadmap §20; ledger §3 | The other intended profile has recorded its position on the refusable retention member — unaffected — so the row's counterweight field is no longer empty | the other intended profile's dated grading, addendum of 2026-09-01; ADR 0003's counterweight row |
 
 ### WAC-01
 
@@ -748,6 +750,70 @@ was false; two of them now are.
 [section 7](roadmap.md#7-the-artifact-the-decoder-and-one-disagreement-with-the-core)'s third
 obligation, read against WA-2's and WA-10's exit gates and the core's metering-split record;
 2026-09-01.
+
+### WAC-25
+
+**Where:** delivery [section 21](roadmap.delivery.md#21-milestones), WA-0's and WA-1's exit gates;
+delivery [section 27](roadmap.delivery.md#27-the-chapter-milestone-and-gate-map); the
+[ledger](roadmap.status.md#2-current-milestone-status)'s WA-0 row.
+
+**What the plan said.** That WA-0's gate is met when, among other things, "the harness roots are
+composition roots under `src/compositions/` ... and the graph proves it rather than the prose
+asserting it"; when "a two-profile catalog test composes this descriptor beside a second profile";
+and when "a descriptor whose guest-load defaults are unconstrained is refused by the catalog, by a
+named negative case" — beside a scope line saying WA-0 lands "no product code ... no descriptor,
+no project that references a core package".
+
+**What replaced it.** The three clauses are carried to WA-1, and WA-1's gate closes them. Each
+needs something WA-0's own scope forbids. A harness root is a composition root, and rule A12
+admits no root that references no core package and composes no profile, so no harness root can
+stand in a shell graph and nothing in that graph can prove where one sits. The two-profile test
+composes a descriptor WA-1 builds. And the unconstrained-default case has to build a descriptor
+and drive it through a catalog, which rule A11 leaves nowhere but a root. What WA-0 keeps is what
+it can do: settle and record the placement, and prove that the rule which would refuse a
+harness-shaped test project bites, by a negative control over one.
+
+**How it arose, which is the part worth keeping.** Two of the three clauses were written on
+2026-09-01, with [WAC-10](#wac-10) and [WAC-22](#wac-22), into the gate of the milestone that
+*owns the decision* rather than the one that can first *run the test* — so the map's rule that a
+requirement is not in the programme until an exit gate would fail without it was satisfied in
+letter and failed in effect, because a clause can sit in an exit gate that cannot fail on it. The
+sibling profile's first milestone met the same catalog test the same way and carried it to its
+second, in words its gate still carries.
+
+**What it does not change.** The placement finding, the finite defaults, the two-profile test
+itself, and the negative control that writes a zero into a guest-load default. Only the milestone
+that can first run each of them moved.
+
+**Authority and date.** WA-0's own scope line, read against its gate; rules A11 and A12 as
+registered; 2026-09-01.
+
+### WAC-26
+
+**Where:** roadmap [section 20](roadmap.md#20-amendments-and-this-profiles-duty-as-the-counterweight),
+the refusable-retention row; the [ledger](roadmap.status.md#3-open-external-dependencies)'s
+section 3.
+
+**What the plan said.** [WAC-03](#wac-03) recorded that the other intended profile's dated grading
+"records no position on" the refusable retention member, so the core procedure's counterweight
+question was, for this row, unanswered — and the row in section 20 carried no position while the
+argument-channel row beside it carried one.
+
+**What replaced it.** The other intended profile has recorded its position in its dated grading,
+by an addendum of 2026-09-01: **unaffected**. It has no construct that needs a guest-observable
+budget refusal and treats that as a property to preserve rather than a coincidence, so it neither
+files the row nor obstructs it. That is the second of the three answers the core's procedure
+admits — could use it, unaffected, refuses it — and it means this row, the one row this profile
+opens rather than holds and so the one most likely to be filed first, can be filed with its
+counterweight field complete rather than blank.
+
+**What it does not change.** The grade — strong, blocking, and the counterweight test passing —
+and the blocker, which is the procedure's unexecutability and nothing the other profile holds.
+WAC-03's sentence was true when written and is overtaken rather than edited.
+
+**Authority and date.** The other intended profile's dated grading, addendum of 2026-09-01, read
+against ADR 0003's counterweight row, which asks whether the other intended profile could use a
+capability, is unaffected, or records a refusal; 2026-09-01.
 
 ---
 

@@ -852,10 +852,15 @@ FUZZ_SESSIONS = ((1, 25_000), (2, 25_000), (3, 25_000), (4, 25_000))
 def fuzz(out, corpus):
     """Run the retained fuzz sessions and keep everything they printed, findings included."""
     log = [
-        "Coverage-guided fuzzing over the two of roadmap section 7's four surfaces that exist:",
+        "Seeded mutation fuzzing over the two of roadmap section 7's four surfaces that exist:",
         "the verifier, and the executor over verified-but-adversarial artifacts. The source",
         "tokenizer and parser and the regular-expression matcher are surfaces this profile has",
         "not written, and a session may not be read as covering them.",
+        "",
+        "NOT coverage-guided. The mutator draws every mutant from the fixed seed corpus and takes",
+        "no feedback from what a mutant reached, so the guidance section 7's second discipline",
+        "asks for is an open clause of JS-9 and no session in this log closes it. An earlier",
+        "version of this header said coverage-guided; JSC-38 records the correction.",
         "",
         "Each session is a total function of its seed and the seed corpus. A session that answers",
         "the same way every time, or that never reaches the executor, exits NON-ZERO rather than",
