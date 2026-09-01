@@ -69,41 +69,34 @@ internal static class HostLifetimeChecks
     private const double PlateauBand = 1.20;
 
     /// <summary>
-    /// The host-level exercises. The first three are total functions of this build; the fourth is
-    /// a reading of a heap on a machine and runs only when <paramref name="soak"/> asks for it.
+    /// The host-level exercises: three aggregate-budget properties and the soak's heap plateau.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <b>The split is not about which one passes.</b> The three aggregate-budget exercises decide
-    /// the same way on any machine and in any publish mode - a shared parent spends one total, a
-    /// parent with a live child refuses disposal, a sealed parent admits nothing - so a
-    /// disagreement between two runs of them is a defect in this profile. The plateau compares two
-    /// <c>GC.GetTotalMemory</c> readings taken 1,900 cycles apart against a band; what it decides
-    /// depends on the collector, the publish mode and the machine, which is why the roadmap calls
-    /// it a plateau check and not a measurement and why no number in it may be cited as one.
+    /// <b>The plateau was briefly opt-in and is not any more, and the reason it stopped being so
+    /// is measured.</b> It was excluded from the CI lane on the ground that a heap reading on an
+    /// ephemeral shared runner can be attributed to nothing. That was written against the OLD
+    /// check, which compared an absolute reading at cycle 99 against one at the end - and it was
+    /// right about absolute readings. The corrected check compares two readings in ONE process on
+    /// ONE machine, which is a ratio.
     /// </para>
     /// <para>
-    /// <b>It is failing today and is not skipped to hide that.</b> Under Native AOT the reading
-    /// grows by a factor of 2.30 against a band of 2.0, deterministically; JIT and trimmed settle
-    /// at 0.95 and 0.93 on the same code. The ledger carries it as an open clause of JS-9 and
-    /// forbids widening the band to close it. What this parameter decides is which lanes attribute
-    /// a heap reading, not whether the reading is reported: the evidence script always passes
-    /// <c>--soak</c>, and the summary line names the run that did not.
+    /// <b>Asked of runners rather than argued.</b> Twenty-seven samples over three dispatched runs,
+    /// three attempts each on three operating systems: 0.97 on linux-x64, 0.97 on win-x64, 0.90 on
+    /// osx-arm64, every one of them passing, with no run-to-run variation at the hundredth. The
+    /// absolute heaps differed enormously across those platforms - about 153KB, 158KB and 388KB -
+    /// while the ratio did not move. That is the whole case: what a shared runner makes
+    /// unattributable is the byte count, and this check no longer reads one.
     /// </para>
     /// </remarks>
-    internal static IEnumerable<(string Name, bool Passed, string Detail)> Run(
-        string directory, bool soak)
+    internal static IEnumerable<(string Name, bool Passed, string Detail)> Run(string directory)
     {
         var bytes = File.ReadAllBytes(Path.Combine(directory, "a-counting-loop.bjsb"));
 
         yield return SiblingsSpendOneTotal(bytes);
         yield return AParentWithLiveChildrenRefusesDisposal(bytes);
         yield return ASealedParentAdmitsNoFurtherRuntime();
-
-        if (soak)
-        {
-            yield return RecycledRuntimesReachAPlateau(bytes);
-        }
+        yield return RecycledRuntimesReachAPlateau(bytes);
     }
 
     /// <summary>

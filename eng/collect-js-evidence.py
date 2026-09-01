@@ -583,14 +583,8 @@ def compositions(arguments, out, corpus):
             log.append("[" + slug + "/" + mode + "] --closure exit " + str(catalog.returncode)
                        + "\n" + catalogs[mode])
 
-            # --soak is passed HERE and nowhere else. The plateau check is a reading of a heap on
-            # a machine rather than a total function of this build, so the composition root makes
-            # it opt-in and CI does not opt in - a lane on an ephemeral shared runner cannot
-            # attribute a heap number to anything. An evidence collection can: it names its machine,
-            # its RID and its publish mode in this bundle. Dropping the flag here would narrow what
-            # a bundle covers, which is the opposite of what making it opt-in was for.
             run_arguments = (
-                [executable, "--corpus", corpus, "--soak", "--verbose"] if slug == "executiononly"
+                [executable, "--corpus", corpus, "--verbose"] if slug == "executiononly"
                 else [executable, "--checks", "--verbose"])
 
             result = subprocess.run(
