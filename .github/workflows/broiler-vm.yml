@@ -13,9 +13,13 @@
 # and for evidence in bundles, and those are different things.
 #
 # HONESTY NOTE, and it belongs at the top rather than in a footnote. When this file was written it
-# had NEVER RUN, and it said so here. It has run since - on ubuntu-latest, windows-latest and
-# macos-latest, publishing and running every composition root as Native AOT on linux-x64, win-x64
-# and osx-arm64 - so the RID matrix below is no longer aspirational for the three entries it names.
+# had NEVER RUN, and it said so here. It has run since - on ubuntu-latest and windows-latest,
+# publishing and running every composition root as Native AOT on linux-x64 and win-x64 - so the RID
+# matrix below is no longer aspirational for either entry it names. It ran on macos-latest and
+# osx-arm64 too, until 2026-09-01: that RID is one ADR 0012 marks RESERVED, no head in the
+# consuming repository targets macOS, and a lane publishing a RID the declared matrix does not
+# hold is drift towards a claim the ADR forbids rather than extra assurance. The revision there
+# records the withdrawal and the arm64 gap it leaves named rather than covered.
 #
 # What has NOT changed is the sentence that matters: `docs/support.md` still claims no platform on
 # the strength of this lane, and it should not. A workflow that has not run is a plan; a workflow
@@ -115,9 +119,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # EXACTLY ADR 0012's declared RID matrix, and it is the consuming repository's head
+          # matrix for the same reason the ADR gives: those two RIDs are the ones a head
+          # publishes, so they are the ones on which a claim could ever be collected. A lane
+          # entry for a RID the ADR marks reserved is a publish nothing consumes and a row the
+          # support table may never carry - the 2026-09-01 revision of ADR 0012 records why the
+          # third entry was withdrawn, and what the consuming repository's Android head leaves
+          # open that no entry here can close.
           - { os: ubuntu-latest, rid: linux-x64 }
           - { os: windows-latest, rid: win-x64 }
-          - { os: macos-latest, rid: osx-arm64 }
     steps:
       - uses: actions/checkout@v4
 
@@ -157,7 +167,9 @@ jobs:
       #
       # That was not assumed. An experiment recorded 27 samples - three attempts, three runs,
       # three operating systems - and every one passed: 0.97 on linux-x64, 0.97 on win-x64, 0.90
-      # on osx-arm64, with no variation at the hundredth. The absolute heaps differed hugely
+      # on osx-arm64, with no variation at the hundredth. The third of those RIDs left the matrix
+      # on 2026-09-01 and the reading is left here as it was taken, because an experiment is a
+      # record of what ran. The absolute heaps differed hugely
       # across those platforms, about 153KB, 158KB and 388KB, and the ratio did not move. What a
       # shared runner makes unattributable is the byte count, and this check no longer reads one.
       #
