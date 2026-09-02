@@ -106,6 +106,19 @@ the exact closure this register exists to describe.
 | `Broiler.VM.Composition.Workbench` | demonstration | `com.example.calculator`, `com.example.ledger` | `Com.Example.Calculator`, `Com.Example.Ledger` | none | `com.example.ledger.stamp` (optional import of `com.example.ledger`; the calculator imports nothing) | none registered | `docs/evidence/vm-6` |
 | `Broiler.VM.Composition.JavaScript.ExecutionOnly` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format` | none registered | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-1` |
 | `Broiler.VM.Composition.JavaScript.SliceCompiler` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler` | none registered | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-1` |
+| `Broiler.VM.Composition.JavaScript.Android` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format` | none registered | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-001` |
+
+**The Android head composes exactly what the execution-only root composes**, and
+that is the point of it rather than an accident: it names the profile and not the
+lowering, so the execution-only property travels onto a device unchanged. What
+differs is the target framework, which is the only way an Android RID can be
+published at all, and the checks it runs - the corpus replay and the ordering
+assertions, compiled from the execution-only root's own source rather than
+re-implemented. It runs neither the soak nor the fuzz sessions: those are
+wall-clock and heap-shaped, and an emulator is neither a machine nor a stable
+one. **Its evidence is a collection taken on an emulator**, which the bundle's
+own exclusions say in those words: an emulator is not a device, and the RID that
+ran is `android-x64` because that is the emulator's architecture.
 
 **Why the single-profile root registers a capability nothing imports.** It is
 the demonstration that registering a capability never implies a provider. The

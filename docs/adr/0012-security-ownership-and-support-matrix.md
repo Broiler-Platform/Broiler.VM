@@ -227,10 +227,11 @@ untruthful support claim section 16 stops for.
 ## Decision - the declared RID matrix, and what "claimed" costs
 
 The declared RID matrix for Broiler.VM core compositions is
-{ win-x64, linux-x64, linux-arm64, win-arm64, osx-arm64, osx-x64 } - two at VM-0
-(a decision on paper; no file at VM-0) and four added on 2026-09-01 by the
-revisions at the end of this record, which take it to every cell of a
-three-toolchain by two-architecture grid. Declaring a RID means the component intends to collect publish-and-run
+{ win-x64, linux-x64, linux-arm64, win-arm64, osx-arm64, osx-x64, android-x64 } -
+two at VM-0 (a decision on paper; no file at VM-0), four added on 2026-09-01 by
+the revisions at the end of this record, which take it to every cell of a
+three-toolchain by two-architecture grid, and one added on 2026-09-02 which is
+not in that grid at all and is declared on the rule's other limb. Declaring a RID means the component intends to collect publish-and-run
 evidence for it and will accept a recertification trigger when it changes. It is
 not a claim.
 
@@ -243,7 +244,9 @@ not a claim.
 | osx-arm64 | Declared, not claimed - **added 2026-09-01** | The **clang-into-Mach-O** toolchain, which no row above reaches: a different object format, a different linker, `dyld` rather than a loader either other row uses, and an ad-hoc code signature Apple silicon requires before a produced binary will execute at all. That last one is a publish step the other four do not have |
 | osx-x64 | Declared, not claimed - **added 2026-09-01** | The remaining cell: Mach-O and x64. Its ground is the weakest of the six and is stated as such - the toolchain is reached by the row above and the architecture by three others, so what it adds is the pair. Collectible only on the successor Intel image; `macos-13` is retired and a job naming it queues for a runner that never arrives |
 | *(none)* | Reserved - no evidence | The category is empty as of 2026-09-01. It is kept rather than deleted because a reserved RID is a thing this record still forbids a support table to name, and a category nobody can find is a rule nobody applies |
-| android-arm64, android-x64 | Excluded pending pinned Native AOT platform references | Broiler.VM holds no evidence that ILCompiler Native AOT targets an Android RID, and the three Microsoft pages section 17 requires are unpinned: docs/platform-references.md (VM-0 decision on paper; no file at VM-0) is not created. See EX-32 |
+| android-x64 | Declared, not claimed - **added 2026-09-02** | The first RID declared on the **consumer** limb rather than the grid limb: the consuming repository's Android head ships `android-arm64;android-x64`, and this is the one of the two whose evidence a lane can collect. It is a **fourth runtime family** and not a fourth toolchain cell - Mono rather than CoreCLR, with neither trimming nor any AOT - so it belongs to no row of the grid and covers what every row of the grid cannot |
+| android-arm64 | **Published and not run** | The head builds it and nothing executes it: an arm64 emulator on an x64 host is not usable, and this component has no device. Publishing without running is what section 15 gate 5 refuses to accept, so the RID is not declared. Its lane step exists anyway, so an arm64 build breaking is a red job rather than a later discovery |
+| ios-arm64, iossimulator-* | Excluded pending a harness | **ios-arm64 is a device RID**: publishing needs an Apple signing identity and running needs a tethered device, so no hosted lane can satisfy publish-and-run for it at any cost. The simulator RIDs need a head this component has not written. See EX-32 |
 | browser-wasm and every wasm RID | Excluded | Terminology freeze, below |
 
 The grounding for choosing the first two is that the surrounding repository
@@ -669,4 +672,59 @@ bundle nor a date for one.
 **What is not edited.** The four revisions above stand as written, including the
 one this entry corrects. It was right about the rule and wrong about macOS, and
 both halves are worth leaving where a reader meets them.
+
+---
+
+### 2026-09-02 - android-x64, and the first RID declared on the other limb
+
+**What the record said.** That the Android RIDs are excluded because "Broiler.VM
+holds no evidence that ILCompiler Native AOT targets an Android RID" - a reason
+the 2026-09-01 revision had already corrected to the true one: no
+Android-targeted project and no harness that can run what is published. And that
+the matrix is the six-cell grid, closed, with a seventh RID able to come only
+from the consumer limb.
+
+**What replaced it.** The harness exists. `Broiler.VM.Composition.JavaScript.Android`
+is a composition root targeting `net10.0-android36.0` that composes exactly what
+the execution-only root composes, carries the retained corpus into its image, and
+runs the corpus replay and the ordering assertions on a booted Android system.
+Bundle **JS-ANDROID-001** retains a collection from it: 66 corpus entries
+replayed to their recorded answers, twice, with the four ordering assertions -
+six checks, on Mono, on Android.
+
+So `android-x64` is declared, and it is **the first RID declared on the consumer
+limb**. Until now every declared RID filled a cell of the Native AOT grid. This
+one fills none: Android is a **fourth runtime family** - Mono rather than
+CoreCLR, with neither trimming nor any AOT - and what justifies it is the other
+half of the rule, that a consumer publishes it. The consuming repository's
+Android head ships `android-arm64;android-x64`.
+
+**`android-arm64` is published and not run, so it is not declared.** The head
+builds it and nothing executes it: an arm64 emulator on an x64 host is not usable
+and this component has no device. Section 15 gate 5 asks for publish **and** run,
+and a RID whose evidence stops at a build is exactly what the first clause of
+this record's rule refuses. The lane publishes it anyway, so that an arm64 build
+breaking is a red job rather than a discovery made later.
+
+**iOS is excluded for a reason of a different kind, and it is worth stating
+because it does not dissolve with effort.** `ios-arm64` is a **device** RID:
+publishing it needs an Apple signing identity and running it needs a tethered
+device. No hosted runner has either, so no lane can satisfy publish-and-run for
+it at any cost - only a self-hosted Mac with a device attached. The simulator
+RIDs are reachable in principle and need a head this component has not written.
+
+**What a green Android job may not be read as**, in the same words the head's own
+project file uses: not Native AOT - Mono's AOT is off and ILCompiler is not
+involved at all; not trimming - it is off, as it is on the consuming repository's
+head; and not a device - an emulator is not one, which the bundle's exclusions
+say first.
+
+**What it does not settle.** No RID claim moves. Seven declared, one -
+`linux-x64` - with a retained desktop collection behind it, and now one
+device-family collection that claims nothing either. The Android head runs
+neither the soak nor the fuzz sessions, and has **no negative control**, which
+the bundle records as a gap rather than a decision.
+
+**What is not edited.** The five revisions above stand as written, including the
+one that called the grid closed. It was closed on the limb it was about.
 

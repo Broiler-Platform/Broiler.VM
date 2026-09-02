@@ -1,0 +1,9 @@
+# closure Broiler.VM.Composition.JavaScript.Android rid=android-x64
+
+[mono] 6 non-framework assemblies
+Broiler.VM.Abstractions
+Broiler.VM.Binary
+Broiler.VM.Composition.JavaScript.Android
+Broiler.VM.Profile.JavaScript
+Broiler.VM.Profile.JavaScript.Format
+Broiler.VM.Runtime

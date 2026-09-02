@@ -115,6 +115,20 @@
       ]
     },
     {
+      "path": "src/compositions/Broiler.VM.Composition.JavaScript.Android/Broiler.VM.Composition.JavaScript.Android.csproj",
+      "assemblyName": "Broiler.VM.Composition.JavaScript.Android",
+      "rootNamespace": "Broiler.VM.Composition.JavaScript.Android",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Runtime",
+        "Broiler.VM.Profile.JavaScript"
+      ]
+    },
+    {
       "path": "src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj",
       "assemblyName": "Broiler.VM.Composition.JavaScript.ExecutionOnly",
       "rootNamespace": "Broiler.VM.Composition.JavaScript.ExecutionOnly",
