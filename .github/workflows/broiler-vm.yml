@@ -21,10 +21,15 @@
 # claim the ADR forbids rather than extra assurance. The SAME DAY the matrix gained linux-arm64 by
 # a decision of its own, and that entry has now run too: ubuntu-24.04-arm published and ran every
 # composition root as Native AOT on arm64 at the first attempt, with no tooling this file installs.
-# win-arm64 followed, for the toolchain-and-architecture pair no other entry compiles. ADR 0012
-# carries every movement, the limit on the arm64 rows - an instruction set shared with
-# android-arm64 and nothing else - and the rule the matrix follows, which is worth reading before
-# a fifth entry is added to it.
+# win-arm64 followed, then both macOS RIDs, and every one of the six published and ran on the first
+# attempt it was given a runner for. ADR 0012 carries every movement, the limit on the arm64 rows -
+# an instruction set shared with android-arm64 and nothing else - and the rule the matrix follows.
+#
+# ONE FLAKE IS RECORDED HERE rather than left for whoever meets it. Of three win-arm64 attempts on
+# 2026-09-01, one failed - in actions/setup-dotnet, installing the SDK, with an access violation
+# and `Internal CLR error`, before a line of this component was built. It passed on either side of
+# that. A green matrix is a statement about six publishes that happened, not a promise that the
+# hosted images are reliable, and the arm64 Windows image is the one that has misbehaved so far.
 #
 # What has NOT changed is the sentence that matters: `docs/support.md` still claims no platform on
 # the strength of this lane, and it should not. A workflow that has not run is a plan; a workflow
@@ -140,18 +145,25 @@ jobs:
           # off, not the packaging, not the head. ADR 0012's third 2026-09-01 revision carries
           # the same limit, because a reader meeting this matrix should not have to find it.
           #
-          # win-arm64 covers the pair neither of those reaches: the WINDOWS Native AOT toolchain
-          # targeting arm64. win-x64 compiles that toolchain for x64, linux-arm64 compiles arm64
-          # through a different one, and the MSVC link path targeting arm64 is compiled by
-          # nothing else here. ADR 0012's fourth revision of the same date states the rule all
-          # four rows follow, which is worth knowing before adding a fifth: a RID is declared when
-          # its evidence is collectible on a lane AND it is either published by a consumer or
-          # covers an architecture or toolchain no declared RID already reaches. A runner existing
-          # is the first half and not the second, which is why macOS stays reserved.
+          # The matrix is a GRID and every cell is filled: three Native AOT toolchains by two
+          # architectures. MSVC into PE-COFF, clang into ELF, clang into Mach-O; x64 and arm64.
+          # ADR 0012's fifth 2026-09-01 revision states the rule and this shape - a RID is
+          # declared when its evidence is collectible on a lane AND it fills a cell no declared
+          # RID fills. Six cells, six rows, nothing redundant and nothing left. A seventh RID
+          # cannot come from this rule, because there is no seventh cell: it would have to come
+          # from a CONSUMER, which is where android-* and ios-* sit and why they stay excluded -
+          # not for want of a cell but for want of a harness that can run one.
           - { os: ubuntu-latest, rid: linux-x64 }
           - { os: windows-latest, rid: win-x64 }
           - { os: ubuntu-24.04-arm, rid: linux-arm64 }
           - { os: windows-11-arm, rid: win-arm64 }
+          - { os: macos-latest, rid: osx-arm64 }
+          # macos-13 is RETIRED and the difference matters to whoever edits this next: a label
+          # that no longer resolves does not fail, it queues, so the job waits for a runner that
+          # is never coming and the run never completes. That is how this entry was written -
+          # macos-13 first, queued indefinitely, then the successor Intel image, which picked it
+          # up in seconds and passed.
+          - { os: macos-15-intel, rid: osx-x64 }
     steps:
       - uses: actions/checkout@v4
 

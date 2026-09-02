@@ -587,7 +587,7 @@ section 8's extraction gate forbids, so VM-0 does not.
 | `assurance.manifest.json` | exists since VM-1: `assurance.manifest.json` | **Generated.** One entry per code unit in the three product assemblies, exempt and relevant alike, and one per covered file, each with a fingerprint. A change-detection record and not a review: an entry says what a declaration hashed to, never that anyone read it. Rule J7 holds it to the tree. |
 | `.gitattributes` | not created (VM-0 decision on paper; no file at VM-0) | The component contains no shell script, so there is no line-ending rule to fix yet. |
 | `global.json` | not created (VM-0 decision on paper; no file at VM-0) | No SDK pin; see Exclusion EX-03. |
-| `.github/workflows/` | exists since VM-1: `.github/workflows/` | Three lanes, and none publishes. `review.yml` regenerates every assurance artefact on a pull request, commits what moved, and then asserts that what is on disk is what the generator would write. `release.yml` runs that same gate and then the release gate - Rule J11 - before it packs, and stops at `dotnet pack`: pushing to a feed needs a credential this repository does not hold. The component ran no CI of its own at VM-0, which Exclusion EX-06 records; these lanes discharge that early and only in part, because they fire on a pull request and on a tag and nothing else. `broiler-vm.yml` was added at VM-6 to run the graph, catalog, AOT and drift checks. **It has now run on hosted runners and passes**, on `ubuntu-latest` and `windows-latest`, publishing and running every composition root as Native AOT on `linux-x64` and `win-x64`; it did the same on `macos-latest` and `osx-arm64` until the second 2026-09-01 revision withdrew that entry as outside ADR 0012's declared matrix, and it gained an `ubuntu-24.04-arm` job for `linux-arm64` and a `windows-11-arm` job for `win-arm64` when the third and fourth revisions of that date widened the matrix to them. No revision settles **any RID claim**, because a lane is not an evidence bundle. |
+| `.github/workflows/` | exists since VM-1: `.github/workflows/` | Three lanes, and none publishes. `review.yml` regenerates every assurance artefact on a pull request, commits what moved, and then asserts that what is on disk is what the generator would write. `release.yml` runs that same gate and then the release gate - Rule J11 - before it packs, and stops at `dotnet pack`: pushing to a feed needs a credential this repository does not hold. The component ran no CI of its own at VM-0, which Exclusion EX-06 records; these lanes discharge that early and only in part, because they fire on a pull request and on a tag and nothing else. `broiler-vm.yml` was added at VM-6 to run the graph, catalog, AOT and drift checks. **It has now run on hosted runners and passes**, on `ubuntu-latest` and `windows-latest`, publishing and running every composition root as Native AOT on `linux-x64` and `win-x64`; it did the same on `macos-latest` and `osx-arm64` until the second 2026-09-01 revision withdrew that entry as outside ADR 0012's declared matrix, and it gained jobs for `linux-arm64`, `win-arm64`, `osx-arm64` and `osx-x64` as the third, fourth and fifth revisions of that date widened the matrix to every cell of a three-toolchain by two-architecture grid - which readmits the `osx-arm64` the second revision had withdrawn, by an argument rather than by a job. No revision settles **any RID claim**, because a lane is not an evidence bundle. |
 | `docs/compositions.md` | exists at VM-3: docs/compositions.md | The composition and RID register. It carries the schema, the advertised set - empty at core contract version 1 - the two demonstration compositions, and what each was published and run for. Rule A11's allow-list is a path rather than a constant now, and group K holds the register to the checkout. Exclusion EX-08 is closed; revision 1 records it. |
 | `docs/platform-references.md` | not created (VM-0 decision on paper; no file at VM-0) | The section 17 pinned-revision table. ADR 0012 records why it is absent and what closes it. |
 | `docs/support.md` | deferred to VM-6 | The public support table. ADR 0012 records that none is published at VM-0. |
@@ -1308,4 +1308,32 @@ lane follows the matrix, as it now does in both directions.
 bundle, so no RID claim moves.
 
 **What is not edited.** The four revisions above stand as written.
+
+---
+
+### 2026-09-01 - six jobs, and one of them is a RID this lane dropped in the morning
+
+**What the record said.** The revision above: that the lane runs four RIDs after
+ADR 0012 declared `win-arm64`.
+
+**What is now true.** It runs six. ADR 0012's fifth revision of the same date
+declares both macOS RIDs - `osx-arm64` for the clang-into-Mach-O toolchain that
+no other declared RID reaches, `osx-x64` for the remaining cell of the grid - and
+records that the entry which called macOS reserved had read only the
+*architecture* limb of its own rule. `osx-arm64` is therefore the same RID the
+second revision withdrew from this lane that morning, back by a stated ground
+rather than by the drift that had put it there.
+
+**Two things worth carrying here, because they are about the lane rather than the
+matrix.** A job naming the retired `macos-13` label does not fail - it queues for
+a runner that never arrives, so the run hangs; the successor Intel image took the
+same job in seconds. And one `win-arm64` attempt of three failed inside
+`actions/setup-dotnet` with an access violation before any build, passing either
+side of it.
+
+**What it does not settle.** Nothing this lane ever settles: it collects no
+bundle, so no RID claim moves.
+
+**What is not edited.** The five revisions above stand as written, the withdrawal
+included.
 
