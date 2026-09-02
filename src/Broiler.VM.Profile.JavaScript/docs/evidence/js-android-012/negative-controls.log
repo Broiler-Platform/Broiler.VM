@@ -1,0 +1,60 @@
+# Negative controls for the five rules restated as message lists on 2026-09-02.
+#
+# Each injects into a real file, runs the rule's own test class with the report on,
+# records BOTH the suite verdict and the rule's own messages, and restores the file by
+# copying back a backup taken before the edit.
+#
+# The verdict is the suite's exit code, as every control in this component has been.
+# What is new is the second line: the sentence the rule itself produced.
+
+==============================================================================
+C1-a-produced-package-is-named-wrong
+  file:    docs/evidence/vm-6/pack.log
+  suite:   FAILED (the rule rejected it)
+  C1 said:
+      [C1] 2 message(s)
+      the pack produced a nupkg for Broiler.VM.Bnary, which is not one of the three declared packages
+      the pack produced no nupkg for Broiler.VM.Binary
+==============================================================================
+C1-a-fourth-nupkg-duplicates-a-declared-one
+  file:    docs/evidence/vm-6/pack.log
+  suite:   FAILED (the rule rejected it)
+  C1 said:
+      [C1] 1 message(s)
+      the pack log names 4 nupkg files for 3 declared packages
+==============================================================================
+C1-the-written-count-disagrees-with-the-names
+  file:    docs/evidence/vm-6/pack.log
+  suite:   FAILED (the rule rejected it)
+  C1 said:
+      [C1] 1 message(s)
+      the pack log counts 4 nupkg, and 3 packages are declared
+==============================================================================
+C3-a-package-description-names-a-language
+  file:    docs/evidence/vm-6/nuspecs.txt
+  suite:   FAILED (the rule rejected it)
+  C3 said:
+      [C3] 2 message(s)
+      a produced package's id, title, description, tags or release notes names the language javascript
+      a produced package's id, title, description, tags or release notes names the language java
+==============================================================================
+E1-the-record-declares-a-version-the-build-does-not-implement
+  file:    docs/adr/0003-core-contract-v1-and-amendments.md
+  suite:   FAILED (the rule rejected it)
+  E1 said:
+      [E1] 1 message(s)
+      0003-core-contract-v1-and-amendments.md declares Core contract version 2, and the build implements 1
+==============================================================================
+M1-the-baseline-omits-an-exported-member
+  file:    docs/api/public-api.txt
+  suite:   FAILED (the rule rejected it)
+  M1 said:
+      [M1] 1 message(s)
+      exported but not declared: Broiler.VM.Abstractions Broiler.VM.VmCoreContract.MinimumSupportedVersion : const System.Int32 = 1
+==============================================================================
+N10-the-baseline-omits-an-exported-member
+  file:    src/Broiler.VM.Profile.JavaScript/docs/api/public-api.txt
+  suite:   FAILED (the rule rejected it)
+  N10 said:
+      [N10] 1 message(s)
+      exported but not declared: Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JavaScriptFormat.CeilingConstants : const System.UInt32 = 65536

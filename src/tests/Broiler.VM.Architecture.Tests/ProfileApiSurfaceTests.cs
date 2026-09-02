@@ -35,6 +35,71 @@ public sealed class ProfileApiSurfaceTests
 
     private const string WriteSwitch = "BROILER_API_WRITE";
 
+    /// <summary>Whether this run regenerates the baseline rather than asserting against it.</summary>
+    private static bool Writing =>
+        string.Equals(Environment.GetEnvironmentVariable(WriteSwitch), "1", StringComparison.Ordinal);
+
+    /// <summary>
+    /// N10's clean direction over this checkout.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Like M1, N10 was excluded from the rule-message report on a reading of its shape rather
+    /// than of its body</b>, and like M1 its comparison has always been a message list. What is
+    /// genuinely new here is the two non-vacuity clauses, which were assertions the report could
+    /// not see and are messages now.
+    /// </para>
+    /// <para>
+    /// They are the clauses that most needed saying. A run that has not built the profile
+    /// describes nothing, an empty surface compared against an empty baseline agrees, and the
+    /// report would have written "N10: 0 message(s)" - the rule's way of saying it is satisfied -
+    /// for a run in which it had read no assembly at all.
+    /// </para>
+    /// </remarks>
+    private static List<string> N10Violations() => N10Violations(ProfileApiSurface.Describe());
+
+    /// <inheritdoc cref="N10Violations()"/>
+    private static List<string> N10Violations(IReadOnlyList<string> surface)
+    {
+        var found = ProfileApiSurface.Found().Count;
+
+        if (found != ProfileApiSurface.FamilyAssemblies.Length)
+        {
+            return
+            [
+                $"the describer found {found} of the family's " +
+                $"{ProfileApiSurface.FamilyAssemblies.Length} assemblies on disk, so this rule " +
+                "compared a partial surface",
+            ];
+        }
+
+        return surface.Count == 0
+            ? ["the describer produced no surface, so this rule compared nothing"]
+            : Violations(surface, Read(Path()));
+    }
+
+    /// <summary>Writes what N10 said about this checkout, when asked to.</summary>
+    /// <remarks>
+    /// Its own file rather than group N's, because <c>DiagnosticRegistryRuleTests</c> writes that
+    /// one and xunit runs test classes in parallel: two classes appending to a single name is an
+    /// interleaved file, which is the reason the report is per-group in the first place.
+    /// </remarks>
+    [Fact]
+    public void RuleMessages_For_N10_Are_Written_When_Asked_For()
+    {
+        RuleReport.Write("N10",
+        [
+            ("N10", () => Writing ? [] : N10Violations()),
+        ]);
+
+        if (RuleReport.Destination is { } destination)
+        {
+            Assert.True(
+                File.Exists(System.IO.Path.Combine(destination, "N10.txt")),
+                "a report for N10 was asked for and none was written");
+        }
+    }
+
     [Fact]
     public void N10_The_Profile_Family_Surface_Is_Exactly_What_Its_Baseline_Declares()
     {
@@ -45,13 +110,13 @@ public sealed class ProfileApiSurfaceTests
         Assert.Equal(ProfileApiSurface.FamilyAssemblies.Length, ProfileApiSurface.Found().Count);
         Assert.NotEmpty(surface);
 
-        if (string.Equals(Environment.GetEnvironmentVariable(WriteSwitch), "1", StringComparison.Ordinal))
+        if (Writing)
         {
             Write(surface);
             return;
         }
 
-        var violations = Violations(surface, Read(Path()));
+        var violations = N10Violations(surface);
 
         Assert.True(
             violations.Count == 0,

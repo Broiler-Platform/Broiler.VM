@@ -39,6 +39,27 @@ rather than reporting the one that exists. The last two would need an input the 
 which is a different claim wearing this one's clothes. **Neither is a thing a reporting mechanism
 may do quietly**, so both are named here instead.
 
+> **Correction, 2026-09-02.** The rewrite was asked for and done loudly, in
+> [Bundle JS-ANDROID-012](../js-android-012/README.md), which takes the count to **73 of 76** and
+> corrects this table in three places.
+>
+> - **`M1` and `N10` do not assert equalities and never did.** Both compare a surface against a
+>   baseline through a `Violations(...)` helper that has returned `exported but not declared:` /
+>   `declared but not exported:` messages since each rule was written; the test asserts
+>   `violations.Count == 0` over that list. They needed a report entry, not a rewrite. The survey
+>   behind this table sorted rules by counting assertion forms and never opened their bodies.
+> - **`C3`'s messages existed too.** Its clean direction already computed the list of languages
+>   found in package text and passed it to `Assert.Empty`; the list was simply never phrased as
+>   messages. An absence is reportable exactly when something can be named as present.
+> - **`E5`'s reason was wrong in kind.** It is **Deferred**, superseded at VM-1, its activation
+>   milestone is `never`, and `RuleRegisterTests` requires that no test assert it. Reporting it
+>   would mean writing the rule the register says is not asserted — an objection about whether the
+>   rule exists rather than about how it is written. It stays unreported for that reason instead.
+>
+> `C1` and `E1` were correctly described and are genuinely restated as message lists. **`J10` and
+> `J11` are unchanged**, and the reason above still stands. **Nothing in the reports below is
+> edited.**
+
 ## 3. Results
 
 Thirteen reports over a clean checkout, unedited: `clean-A.txt`, `clean-A7.txt`, `clean-A14.txt`,
