@@ -1,0 +1,49 @@
+# Negative controls for J10 and J11, the last two rules the report reached.
+#
+# J11 cannot be judged the way every other control in this component is. Its test
+# asserts NotEmpty over this checkout on an ordinary run - every relevant unit is
+# HUMAN_PENDING, which the owner's ruling permits - so an injected blocker turns a
+# non-empty list into a longer one and J11's own assertion never moves. The suite
+# still goes red, through OTHER rules. The rule's own report is the only instrument
+# that can say J11 saw the defect.
+#
+# Each control prints the suite verdict, the messages the rule gained against its
+# clean baseline, and every rule whose message count moved.
+
+# Baseline: what every rule says about the clean checkout.
+# suite: PASSED
+# J10 baseline: 0 message(s)
+# J11 baseline: 905 message(s)
+
+==============================================================================
+J10-a-high-unit-loses-its-falsification-criterion
+  file:  src/Broiler.VM.Binary/VmBoundedAllocator.cs
+  suite: FAILED
+  J10 gained 1 message(s):
+      src/Broiler.VM.Binary/VmBoundedAllocator.cs(105): Broiler.VM.VmBoundedAllocator.TryAllocateExact<T>(in VmReadBounds, IVmBoundedAllocationMeter, ulong, out T[]) is assessed Security=High and carries no '// Broiler-Falsified-If:' line, so nothing at the declaration says what would make it wrong
+  J11 gained 5 message(s):
+      src/Broiler.VM.Binary/VmBoundedAllocator.cs(12) is not what the generator would write.   on disk:   // Criteria:         3/3   generated: // Criteria:         2/3   Run: BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release
+      CODE-ASSURANCE.md(153) is not what the generator would write.   on disk:   | Units carrying a criterion | 114 |   generated: | Units carrying a criterion | 113 |   Run: BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release
+      HUMAN_REVIEW.md(139) is not what the generator would write.   on disk:   | `src/Broiler.VM.Binary/VmBoundedAllocator.cs` | 3 | 3 | 0 | 3 | Low | High | 3/3 |   generated: | `src/Broiler.VM.Binary/VmBoundedAllocator.cs` | 3 | 3 | 0 | 3 | Low | High | 2/3 |   Run: BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release
+      src/Broiler.VM.Binary/VmBoundedAllocator.cs(105): Broiler.VM.VmBoundedAllocator.TryAllocateExact<T>(in VmReadBounds, IVmBoundedAllocationMeter, ulong, out T[]) is assessed Security=High and carries no '// Broiler-Falsified-If:' line, so nothing at the declaration says what would make it wrong
+      src/Broiler.VM.Binary/VmBoundedAllocator.cs(105): Broiler.VM.VmBoundedAllocator.TryAllocateExact<T>(in VmReadBounds, IVmBoundedAllocationMeter, ulong, out T[]) is HUMAN_PENDING and its human line reads 'PENDING'
+  every rule whose message count moved: J10, J11, J5
+==============================================================================
+J11-a-recorded-fingerprint-is-not-what-the-declaration-hashes-to
+  file:  src/Broiler.VM.Binary/VmBoundedAllocator.cs
+  suite: FAILED
+  J11 gained 1 message(s):
+      src/Broiler.VM.Binary/VmBoundedAllocator.cs(103) is not what the generator would write.   on disk:       // Broiler-AI:           Origin=AI; Spec=ADR-0007 s6; IP=Low; Security=High; Resources=8; Fingerprint=000000   generated:     // Broiler-AI:           Origin=AI; Spec=ADR-0007 s6; IP=Low; Security=High; Resources=8; Fingerprint=5185F6   Run: BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release
+  every rule whose message count moved: J11, J3, J5
+==============================================================================
+J11-an-assurance-comment-is-attached-to-no-declaration
+  file:  src/Broiler.VM.Binary/VmBoundedReader.cs
+  suite: FAILED
+  J11 gained 28 message(s):
+      src/Broiler.VM.Binary/VmBoundedReader.cs(12) is not what the generator would write.   on disk:   // Criteria:         20/19   generated: // Criteria:         19/18   Run: BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release
+      CODE-ASSURANCE.md(53) is not what the generator would write.   on disk:   | Low | 466 |   generated: | Low | 467 |   Run: BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release
+      HUMAN_REVIEW.md(141) is not what the generator would write.   on disk:   | `src/Broiler.VM.Binary/VmBoundedReader.cs` | 36 | 22 | 14 | 22 | Low | High | 20/19 |   generated: | `src/Broiler.VM.Binary/VmBoundedReader.cs` | 36 | 22 | 14 | 22 | Low | High | 19/18 |   Run: BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release
+      src/Broiler.VM.Binary/VmBoundedReader.cs(49): an assurance comment that is attached to no declaration
+      src/Broiler.VM.Binary/VmBoundedReader.cs(50): carries a '// Broiler-Falsified-If:' line that stands between no '// Broiler-AI:' line and '// Broiler-Human:' line
+      src/Broiler.VM.Binary/VmBoundedReader.cs(51): line 51 does not open with '// Broiler-AI:'
+  every rule whose message count moved: J11, J3, J5

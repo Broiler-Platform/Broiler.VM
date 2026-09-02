@@ -104,18 +104,28 @@ internal static class RuleReport
 /// <c>LegacyBoundaryTests</c>, <c>ApiSurfaceTests</c> and <c>ProfileApiSurfaceTests</c>.
 /// </para>
 /// <para>
-/// <b>Seventy-three of the register's seventy-six rules are reported, and the three that are not
-/// are named rather than left as an absence a reader has to notice.</b>
+/// <b>Seventy-five of the register's seventy-six rules are reported. The one that is not is
+/// named rather than left as an absence a reader has to notice.</b>
 /// </para>
 /// <list type="bullet">
 /// <item><b>E5</b> is <b>Deferred</b> and superseded at VM-1 by V1 and V2. No test asserts it,
 /// because <c>RuleRegisterTests</c> requires that none does. A report on it would be writing the
-/// rule the register says is not asserted.</item>
-/// <item><b>J10</b> and <b>J11</b> assert their clean direction over WITNESS inputs rather than
-/// over the checkout, so there is no "what this rule said here" to write down.</item>
+/// rule the register says is not asserted. <b>This is the only rule the mechanism cannot
+/// reach</b>, and it cannot reach it because the rule is not there.</item>
 /// </list>
 /// <para>
-/// <b>The count moved twice, and both moves were corrections rather than additions.</b> It was 46
+/// <b>J11 is the one rule that is not silent on a clean checkout, and that is the rule working.</b>
+/// Every relevant unit in this component is <c>HUMAN_PENDING</c>, which ledger update rule 8
+/// permits, so the release gate has 905 things to say about this tree and its own test asserts
+/// <c>NotEmpty</c> on an ordinary run. Silence is therefore NOT the universal shape of a clean
+/// report, and a reader who assumed it was would read J11's report as a broken harness. It is the
+/// list of what a publish is waiting on.
+/// </para>
+/// <para>
+/// <b>The count moved three times, and every move was a correction rather than an addition.</b>
+/// It was 73 while J10 and J11 were said to assert their clean direction over witness inputs; both
+/// tests assert over a witness in the MIDDLE and over the checkout LAST, and that exclusion was
+/// written from the witness clause without reading to the end of either test. It was 46
 /// while thirty rules were called unreportable for asserting inline; fifteen of those already had
 /// a named helper returning a collection and needed no extraction at all, and seven were extracted
 /// as a MOVE - the test calling the extracted function, because two implementations of one rule is

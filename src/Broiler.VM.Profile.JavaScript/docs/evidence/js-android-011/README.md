@@ -56,9 +56,16 @@ may do quietly**, so both are named here instead.
 >   would mean writing the rule the register says is not asserted — an objection about whether the
 >   rule exists rather than about how it is written. It stays unreported for that reason instead.
 >
-> `C1` and `E1` were correctly described and are genuinely restated as message lists. **`J10` and
-> `J11` are unchanged**, and the reason above still stands. **Nothing in the reports below is
-> edited.**
+> `C1` and `E1` were correctly described and are genuinely restated as message lists. **Nothing in
+> the reports below is edited.**
+>
+> **Second correction, 2026-09-02.** The `J10` / `J11` row above is wrong too, and
+> [Bundle JS-ANDROID-013](../js-android-013/README.md) takes the count to **75 of 76**. Both tests
+> assert over a witness **in the middle** and over the checkout **last** — J10 over
+> `ProductUnits`, J11 over `AssuranceGenerator.Current` — so this exclusion was written from the
+> witness clause without reading to the end of either test. That is the third exclusion in this
+> chain to describe a rule's shape rather than its body. **`E5` is now the only unreported rule**,
+> and only because it is a Deferred row no test may assert.
 
 ## 3. Results
 

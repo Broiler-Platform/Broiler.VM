@@ -1,0 +1,29 @@
+# what group V's rules said about this checkout
+#
+# Reported, not judged. A rule with no lines said nothing, which is what a clean
+# checkout looks like; a rule that threw is recorded as throwing.
+
+[V1] 0 message(s)
+
+[V2] 0 message(s)
+
+[V3] 0 message(s)
+
+[V4] 0 message(s)
+
+[V5] 0 message(s)
+
+[V6] 0 message(s)
+
+[V7] 0 message(s)
+
+[V8] 0 message(s)
+
+[V9] 0 message(s)
+
+[V10] 0 message(s)
+
+[V11] 0 message(s)
+
+[V12] 0 message(s)
+
