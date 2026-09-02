@@ -254,105 +254,40 @@ public sealed class CompositionRegisterTests
     }
 
     /// <summary>
-    /// Writes what each group K rule actually said about this checkout, when asked to.
+    /// Writes what each group K rule said about this checkout, when asked to.
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// <b>THIS REPORTS AND DOES NOT JUDGE</b>, and the distinction is the whole reason it can
-    /// exist beside the four tests above without being a second copy of them. They assert that the
-    /// rules are silent; this writes down what they say. Nothing here can make a defect pass,
-    /// because nothing here is what a defect has to get past.
-    /// </para>
-    /// <para>
-    /// <b>Why it was built.</b> Every negative control in this component is judged by an exit code:
-    /// the suite went red, or it did not. That is enough while one injection maps to one rule, and
-    /// it stopped being enough when K2's seven clauses each got a control - the suite reports that
-    /// K2 went red and xunit prints an empty-collection assertion WITHOUT the collection, so which
-    /// clause an injection reached was argued from its shape read against the rule's source rather
-    /// than observed. Four retained bundles say so in their exclusions. With this, a control log
-    /// can quote the sentence the rule itself produced.
-    /// </para>
-    /// <para>
-    /// <b>It runs only when asked</b>, through <c>BROILER_RULE_MESSAGES</c> naming a file, so an
-    /// ordinary suite run neither writes anything nor pays for it. When it is asked, it asserts
-    /// that it wrote something: a reporter that silently produced nothing would be worse than
-    /// absent, because the control reading its output would report no messages and look like a
-    /// clean rule rather than a broken harness.
-    /// </para>
-    /// <para>
-    /// <b>Scope, stated because it will look like less than it is.</b> Group K only. The four
-    /// rules here take their inputs from this class's own helpers, so the report is over exactly
-    /// what the tests above compare; a report over another group would need that group's inputs
-    /// and is a separate piece of work. A rule that THROWS is recorded as throwing rather than
-    /// crashing the report, because two of these four used to throw on a row naming a composition
-    /// the checkout does not have.
-    /// </para>
+    /// The mechanism and its reasons live on <see cref="RuleReport"/>; what is here is group K's
+    /// inputs, which are this class's own. The report is over exactly what the four tests above
+    /// compare - a report over different inputs would answer a question nobody asked.
     /// </remarks>
     [Fact]
-    public void RuleMessages_Are_Written_When_A_Report_Is_Asked_For()
+    public void RuleMessages_For_Group_K_Are_Written_When_Asked_For()
     {
-        var destination = Environment.GetEnvironmentVariable("BROILER_RULE_MESSAGES");
+        RuleReport.Write("K",
+        [
+            ("K1", () => CompositionRules.K1(Roots, Rows)),
+            ("K2", () => Registered.SelectMany(row => CompositionRules.K2(
+                row,
+                ComponentGraph.Projects
+                    .Single(candidate => string.Equals(
+                        candidate.AssemblyName, row.Composition, StringComparison.Ordinal))
+                    .ReferencedAssemblyNames.ToArray(),
+                Baseline(row.Composition)))),
+            ("K3", () => Registered.SelectMany(row => CompositionRules.K3(
+                row.Composition,
+                BaselineText(Slug(row.Composition)),
+                RetainedFor(row, $"catalog-{Slug(row.Composition)}.txt")))),
+            ("K4", () => Registered.SelectMany(row =>
+                CompositionRules.K4(row, ClosureModesFor(row)))),
+        ]);
 
-        if (string.IsNullOrWhiteSpace(destination))
+        if (RuleReport.Destination is { } destination)
         {
-            return;
+            Assert.True(
+                File.Exists(Path.Combine(destination, "K.txt")),
+                "a report for group K was asked for and none was written");
         }
-
-        var lines = new List<string>
-        {
-            "# what each group K rule said about this checkout",
-            "#",
-            "# Written by RuleMessages_Are_Written_When_A_Report_Is_Asked_For, which reports and",
-            "# does not judge. A rule with no lines below said nothing, which is what a clean",
-            "# checkout looks like; a rule that threw is recorded as throwing.",
-            string.Empty,
-        };
-
-        Report(lines, "K1", () => CompositionRules.K1(Roots, Rows));
-
-        Report(lines, "K2", () => Registered.SelectMany(row => CompositionRules.K2(
-            row,
-            ComponentGraph.Projects
-                .Single(candidate => string.Equals(
-                    candidate.AssemblyName, row.Composition, StringComparison.Ordinal))
-                .ReferencedAssemblyNames.ToArray(),
-            Baseline(row.Composition))));
-
-        Report(lines, "K3", () => Registered.SelectMany(row => CompositionRules.K3(
-            row.Composition,
-            BaselineText(Slug(row.Composition)),
-            RetainedFor(row, $"catalog-{Slug(row.Composition)}.txt"))));
-
-        Report(lines, "K4", () => Registered.SelectMany(row =>
-            CompositionRules.K4(row, ClosureModesFor(row))));
-
-        File.WriteAllLines(destination, lines);
-
-        Assert.True(
-            File.Exists(destination),
-            "the rule-message report was asked for and wrote nothing, which a control reading it " +
-            "would report as a silent rule rather than as a broken harness");
-    }
-
-    /// <summary>Runs one rule and writes what it said, or that it threw.</summary>
-    private static void Report(List<string> lines, string rule, Func<IEnumerable<string>> run)
-    {
-        try
-        {
-            var messages = run().ToArray();
-
-            lines.Add($"[{rule}] {messages.Length} message(s)");
-            lines.AddRange(messages.Select(message => "    " + message.Replace("\n", " ", StringComparison.Ordinal)));
-        }
-        catch (Exception failure)
-        {
-            // A throwing rule is a fact about the input worth writing down rather than an error
-            // in the reporter. Two of these four threw on a phantom register row until the row
-            // with no subject was left to K1.
-            lines.Add($"[{rule}] THREW {failure.GetType().Name}: {failure.Message}");
-        }
-
-        lines.Add(string.Empty);
     }
 
     private static CompositionRules.CatalogTable Baseline(string composition) =>

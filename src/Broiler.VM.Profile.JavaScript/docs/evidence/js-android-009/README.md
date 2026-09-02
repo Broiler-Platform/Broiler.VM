@@ -62,6 +62,12 @@ downstream of it by construction.
 1. **Group K only.** The four rules here take their inputs from one test class's helpers; a report
    over another group needs that group's inputs and is a separate piece of work. The other
    seventeen controls in `CONTROLS` still have only an exit code behind them.
+
+   > **Correction, 2026-09-02.** Done, for every group whose rules are functions:
+   > [Bundle JS-ANDROID-010](../js-android-010/README.md) reports **46 of the register's 76 rules**
+   > across groups A, B, K, N and V. The other thirty assert inline - the rule IS the test body -
+   > so there is nothing for a reporter to call, and that bundle names them rather than counting
+   > them out. **Nothing in the log below is edited.**
 2. **A message is what a rule said, not proof that the rule is right.** The report quotes; it does
    not check. A rule whose message is misleading would produce a misleading line here.
 3. **This is a SCOPED run**, twelve rows of twenty-nine, not the control matrix.

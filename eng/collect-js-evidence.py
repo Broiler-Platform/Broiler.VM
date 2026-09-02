@@ -165,15 +165,24 @@ def suite(messages=None):
     return completed.returncode, (completed.stdout or "") + (completed.stderr or "")
 
 
-def rule_messages(path):
-    """The rule messages a run wrote, as log lines, or a line saying it wrote none."""
-    if not os.path.exists(path):
+def rule_messages(directory):
+    """
+    The rule messages a run wrote, as log lines, or a line saying it wrote none.
+
+    BROILER_RULE_MESSAGES names a DIRECTORY with one file per rule group, because xunit runs test
+    classes in parallel and one file would interleave. A group whose rules were all silent
+    contributes nothing here, which is what a clean group looks like.
+    """
+    if not os.path.isdir(directory):
         return ["      (the run wrote no rule-message report)"]
 
-    lines = [
-        "      " + line.rstrip()
-        for line in io.open(path, encoding="utf-8").read().splitlines()
-        if line.strip() and not line.startswith("#") and "0 message(s)" not in line]
+    lines = []
+
+    for name in sorted(os.listdir(directory)):
+        lines.extend(
+            "      " + line.rstrip()
+            for line in io.open(os.path.join(directory, name), encoding="utf-8").read().splitlines()
+            if line.strip() and not line.startswith("#") and "0 message(s)" not in line)
 
     return lines or ["      (every rule was silent, which for an injected run is itself a finding)"]
 
@@ -666,11 +675,9 @@ def controls(out):
             continue
 
         overwrite(path, mutated)
-        messages = os.path.join(ROOT, "artifacts", "rule-messages.txt")
-        os.makedirs(os.path.dirname(messages), exist_ok=True)
-
-        if os.path.exists(messages):
-            os.remove(messages)
+        messages = os.path.join(ROOT, "artifacts", "rule-messages")
+        shutil.rmtree(messages, ignore_errors=True)
+        os.makedirs(messages, exist_ok=True)
 
         injected_code, injected_output = suite(messages)
         overwrite(path, original)

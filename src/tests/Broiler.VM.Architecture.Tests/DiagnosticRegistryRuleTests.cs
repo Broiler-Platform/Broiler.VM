@@ -309,6 +309,49 @@ public sealed class DiagnosticRegistryRuleTests
 
     private static readonly string[] Scopes = Enum.GetNames<VmBudgetScope>();
 
+    /// <summary>
+    /// Writes what each registry rule said about this checkout, when asked to.
+    /// </summary>
+    /// <remarks>
+    /// The mechanism lives on <see cref="RuleReport"/>. What is here is these rules' inputs, which
+    /// are this class's own statics - the same ones the tests above compare, so the report answers
+    /// the question those tests ask rather than a neighbouring one. N1 through N4 are swept over
+    /// the project graph and are reported with group A, where that sweep lives; N10 is asserted in
+    /// another class by another shape, and the report's scope note names it.
+    /// </remarks>
+    [Fact]
+    public void RuleMessages_For_The_Registry_Rules_Are_Written_When_Asked_For()
+    {
+        var profile = AssuranceSources.Files
+            .Where(static file => file.Assembly == "Broiler.VM.Profile.JavaScript")
+            .ToArray();
+
+        RuleReport.Write("N",
+        [
+            ("N5", () => ArchitectureRules.N5(Registry, Vocabulary, DiagnosticRegistry.Revision)),
+            ("N6", () => ArchitectureRules.N6(Registry, Sites, Vocabulary)),
+            ("N7", () => ArchitectureRules.N7(
+                Registry, DiagnosticRegistry.CorpusCases(DiagnosticRegistry.CorpusText))),
+            ("N8", () => ArchitectureRules.N8(
+                Registry, DiagnosticRegistry.Mirror(Parse(DiagnosticRegistry.MirrorPath)))),
+            ("N9", () => ArchitectureRules.N9(
+                DiagnosticRegistry.PositionProducers(profile),
+                DiagnosticRegistry.NamedPositionConstructions(profile))),
+            ("N11", () => ArchitectureRules.N11(
+                DiagnosticRegistry.ExhaustionAnswers(profile),
+                DiagnosticRegistry.CorpusOutcomes(DiagnosticRegistry.CorpusText),
+                Dimensions,
+                Scopes)),
+        ]);
+
+        if (RuleReport.Destination is { } destination)
+        {
+            Assert.True(
+                File.Exists(Path.Combine(destination, "N.txt")),
+                "a report for the registry rules was asked for and none was written");
+        }
+    }
+
     private static string Witness(string fileName) => File.ReadAllText(WitnessPath(fileName));
 
     private static AssuranceSourceFile WitnessFile(string fileName) =>
