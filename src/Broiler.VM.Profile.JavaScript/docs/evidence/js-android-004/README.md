@@ -51,6 +51,13 @@ one control tells a reader less than a scoped run of the set it belongs to.
 1. **K2 still has no control of its own.** It fires here as a side effect of the K3 injection, as
    it did in JS-ANDROID-003. An injection whose *subject* is K2 — a register row whose declared
    profile assemblies disagree with the reference set — is not written.
+
+   > **Correction, 2026-09-02.** Written, and by a different clause than this exclusion guessed:
+   > [Bundle JS-ANDROID-005](../js-android-005/README.md) has the row claim a profile its own
+   > catalog table does not report, which fires **K2 alone** — K1 counts identities against
+   > assemblies and both counts hold, K3 reads two files neither of which moves, and K4 reads
+   > assemblies rather than identities. Group K now has a control per rule over this row.
+   > **Nothing in the log below is edited.**
 2. **This is a SCOPED run, not the control matrix.** Three rows of twenty. The full matrix is what
    `eng/collect-js-evidence.py` collects, and no run of it is retained here.
 3. **One direction of K1 is exercised, not both.** The control removes a row for a root that
