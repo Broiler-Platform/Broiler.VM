@@ -1,0 +1,26 @@
+These controls are judged by an ANDROID HEAD THAT RAN. Nothing in the other tables can:
+a suite may not reference a profile assembly, and the corpus replay and the fuzz session
+are both desktop processes. A control PASSES when the injected run does not print the
+sentinel and the reverted run does.
+
+An application hands no exit code to a harness, so the sentinel's ABSENCE is what a
+broken run and a failed check have in common - which is the direction this reads. A
+control that looked for the word FAIL would pass on a run that never started.
+
+[the-extraction-changes-one-byte] PASS
+    why:       The resource extraction flips one byte on its way to the cache directory. THIS IS THE CONTROL FOR AN ANDROID-SPECIFIC CLAIM: the corpus travels into this image as embedded resources and is written out before the replay opens it, and the bundle's argument that the round trip cannot corrupt the evidence rests on the replay re-hashing every entry. Until this control ran, that argument was asserted rather than shown. The injected run must report a hash MISMATCH rather than a passing replay.
+    file:      src\compositions\Broiler.VM.Composition.JavaScript.Android\MainActivity.cs
+    injected:  sentinel ABSENT
+    reverted:  sentinel present
+      FAIL corpus-replay: addition, division-by-zero, zero-over-zero, negative-zero-division, remainder-takes-the-dividends-sign, bitwise-or-goes-through-to-int32, unsigned-shift-goes-through-to-uint32, comparison-produces-a-boolean, not-a-number-is-not-itself, a-boolean-adds-as-one, strict-equality-compares-kinds, an-unassigned-local-is-undefined, a-counting-loop, a-taken-conditional, an-untaken-conditional, two-entry-points, wrong-magic, unsupported-format-version, a-manifest-this-build-does-not-accept, a-manifest-identity-longer-than-the-format-admits, an-overlong-variable-length-integer, trailing-bytes, an-unknown-section-kind, a-duplicated-section, sections-out-of-order, no-code-section, a-section-shorter-than-it-declared, a-truncated-payload, more-frames-than-the-slice-has, a-declared-maximum-above-the-formats-own-ceiling, an-interned-name-the-manifest-excludes, an-unknown-constant-tag, a-boolean-constant-that-is-neither, more-constants-than-the-limits-section-admits, a-constant-count-far-beyond-what-the-artifact-carries, an-exception-region-the-manifest-excludes, a-suspension-target-the-manifest-excludes, an-unknown-opcode, a-code-section-of-no-length, an-instruction-whose-operand-runs-off-the-end, a-jump-out-of-range, a-jump-into-an-operand, an-operand-stack-underflow, an-operand-stack-deeper-than-declared, two-paths-reaching-one-offset-at-different-heights, an-instruction-no-entry-point-reaches, code-that-falls-off-the-end, a-constant-index-past-the-pool, a-local-index-past-the-frame, a-return-that-leaves-more-than-the-completion-value, no-entry-point, a-duplicated-entry-point, an-entry-point-inside-an-operand, a-position-row-inside-an-operand, an-entry-point-name-of-no-length, an-entry-point-reached-with-operands-on-the-stack, a-refusal-covered-by-the-second-position-row, an-artifact-larger-than-this-host-admits, a-section-count-ceiling-this-host-declined, a-declared-count-ceiling-this-host-declined, a-structural-depth-ceiling-this-host-declined, an-allocation-this-host-declined, a-verifier-work-allowance-this-host-spent, a-wall-clock-allowance-already-spent, a-token-that-was-already-cancelled, a-profile-the-catalog-does-not-hold
+      1 of 6 checks FAILED
+
+[the-language-guards-division-by-zero-on-the-device] PASS
+    why:       Division by zero is made a fault in the PROFILE, which is what a calculator does and not what the language does - the same injection a desktop corpus control uses. It is judged here by a device run instead, and that is the point: it shows this head detects a real engine regression on Android rather than only detecting its own plumbing. The corpus entry recording Infinity must stop agreeing, on the device.
+    file:      src\Broiler.VM.Profile.JavaScript\JavaScriptExecutor.cs
+    injected:  sentinel ABSENT
+    reverted:  sentinel present
+      FAIL corpus-replay: division-by-zero, zero-over-zero, negative-zero-division, not-a-number-is-not-itself
+      1 of 6 checks FAILED
+
+android controls run: 2; passed: 2; SKIPPED: 0

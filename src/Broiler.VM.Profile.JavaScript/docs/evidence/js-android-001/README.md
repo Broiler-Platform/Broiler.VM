@@ -72,6 +72,14 @@ injects into a source file and is judged by a suite, a replay or a fuzz session 
 run; nothing here can inject into a source file and re-run an emulator without a harness that does
 not exist yet. The CI lane's Android job is where a control would live, and it is owed.
 
+> **Correction, 2026-09-02.** The gap is closed and this section's last sentence guessed wrong
+> about where. The controls are in the collection script, not the lane, for the reason every other
+> control in this component is: a control belongs to a bundle, and the lane retains nothing.
+> [Bundle JS-ANDROID-002](../js-android-002/README.md) carries two of them - one for the resource
+> extraction this bundle's own argument rests on, one for a language semantic - both passing.
+> **Nothing in the log below is edited**, and the sentence above stands as what was true when this
+> collection was taken.
+
 ## 7. Exclusions — what this bundle does not show
 
 1. **An emulator is not a device.** Nothing here is evidence about phone hardware, a real GPU, a

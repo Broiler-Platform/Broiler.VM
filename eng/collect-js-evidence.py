@@ -27,6 +27,7 @@ import platform
 import shutil
 import subprocess
 import sys
+import time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SOLUTION = "Broiler.VM.slnx"
@@ -57,6 +58,10 @@ FIXTURES_PROJECT = os.path.join(
 CORPUS_MANIFEST = os.path.join("src", "tests", "corpus", "js-1", "corpus.manifest")
 FUZZ_TARGET = os.path.join(
     "src", "compositions", "Broiler.VM.Composition.JavaScript.ExecutionOnly", "Fuzzing.cs")
+ANDROID_PROJECT = os.path.join(
+    "src", "compositions", "Broiler.VM.Composition.JavaScript.Android")
+ANDROID_HEAD = os.path.join(ANDROID_PROJECT, "MainActivity.cs")
+ANDROID_PACKAGE = "com.broiler.vm.composition.javascript.android"
 EXECUTION_ONLY_HOSTS = os.path.join(
     "src", "compositions", "Broiler.VM.Composition.JavaScript.ExecutionOnly", "Hosts.cs")
 
@@ -1067,6 +1072,191 @@ def fuzz_controls(out, corpus):
     return passed, skipped
 
 
+# The android controls: injections judged by a RUN ON A DEVICE.
+#
+# The bundle that first collected the Android head recorded having no negative control, and named
+# that a gap rather than a decision. This is the gap closed. Nothing in the tables above can judge
+# this head: a suite may not reference a profile assembly, the corpus replay judges a desktop
+# process, and a fuzz session is a desktop process too. What judges an Android head is an Android
+# head that ran, so these controls inject, build, install, launch and read logcat.
+#
+# A control PASSES when the injected run does NOT print the sentinel and the reverted run does.
+# The direction matters for the same reason it matters in the lane: an application hands no exit
+# code to anything, so the evidence that a run happened is the sentinel, and its absence is what a
+# broken run and a failed check have in common.
+ANDROID_CONTROLS = [
+    (
+        "the-extraction-changes-one-byte",
+        "The resource extraction flips one byte on its way to the cache directory. THIS IS THE "
+        "CONTROL FOR AN ANDROID-SPECIFIC CLAIM: the corpus travels into this image as embedded "
+        "resources and is written out before the replay opens it, and the bundle's argument that "
+        "the round trip cannot corrupt the evidence rests on the replay re-hashing every entry. "
+        "Until this control ran, that argument was asserted rather than shown. The injected run "
+        "must report a hash MISMATCH rather than a passing replay.",
+        ANDROID_HEAD,
+        lambda text: text.replace(
+            "            stream.CopyTo(file);",
+            "            var injected = new System.IO.MemoryStream();\n"
+            "            stream.CopyTo(injected);\n"
+            "            var raw = injected.ToArray();\n"
+            "            raw[^1] ^= 0xFF;\n"
+            "            file.Write(raw, 0, raw.Length);"),
+    ),
+    (
+        "the-language-guards-division-by-zero-on-the-device",
+        "Division by zero is made a fault in the PROFILE, which is what a calculator does and not "
+        "what the language does - the same injection a desktop corpus control uses. It is judged "
+        "here by a device run instead, and that is the point: it shows this head detects a real "
+        "engine regression on Android rather than only detecting its own plumbing. The corpus "
+        "entry recording Infinity must stop agreeing, on the device.",
+        PROFILE_EXECUTOR,
+        lambda text: text.replace(
+            "                    stack[top - 2] = JavaScriptValue.Number(\n"
+            "                        stack[top - 2].ToNumber() / stack[top - 1].ToNumber());",
+            "                    if (stack[top - 1].ToNumber() == 0)\n"
+            "                    {\n"
+            "                        return VmExecutionStep.Faulted(new JavaScriptFault(\n"
+            "                            ProfileId, JavaScriptErrorKind.RangeError, \"guarded\"));\n"
+            "                    }\n\n"
+            "                    stack[top - 2] = JavaScriptValue.Number(\n"
+            "                        stack[top - 2].ToNumber() / stack[top - 1].ToNumber());"),
+    ),
+]
+
+ANDROID_SENTINEL = "broiler-js-android: 6 checks passed"
+
+
+def adb():
+    """The adb this machine has, or None when there is no Android SDK to drive."""
+    roots = [
+        os.environ.get("ANDROID_SDK_ROOT"),
+        os.environ.get("ANDROID_HOME"),
+        os.path.join("C:\\", "Program Files (x86)", "Android", "android-sdk"),
+    ]
+
+    for root in roots:
+        if not root:
+            continue
+
+        for name in ("adb.exe", "adb"):
+            candidate = os.path.join(root, "platform-tools", name)
+
+            if os.path.exists(candidate):
+                return candidate
+
+    return None
+
+
+def android_run(tool):
+    """Reinstall the head, launch it, and answer what logcat holds for its tag."""
+    # UNINSTALLED FIRST, and this is what made the first run of these controls meaningless. After
+    # a revert the build is up to date, MSBuild skips the Install target in five seconds, and the
+    # device keeps running the APK the INJECTED build put there - so the reverted run reproduces
+    # the injection and every control reports FAIL for the same wrong reason. Removing the package
+    # makes each install a real one.
+    subprocess.run([tool, "uninstall", ANDROID_PACKAGE], cwd=ROOT, capture_output=True, text=True)
+
+    # AND THE INTERMEDIATES GO WITH IT. An Android build that changes a source file and rebuilds
+    # in place can produce an APK whose Java stubs no longer match its managed side; the result is
+    # UnsatisfiedLinkError on n_onCreate at launch, which reads as a code fault and is a stale
+    # obj/ directory. A harness that edits, builds, reverts and builds again hits it every time,
+    # so each run here starts from nothing. It costs about a minute per build and buys a result
+    # that means what it says.
+    for stale in ("obj", "bin"):
+        shutil.rmtree(os.path.join(ROOT, ANDROID_PROJECT, stale), ignore_errors=True)
+
+    code, output = run([
+        "dotnet", "build", ANDROID_PROJECT, "-c", "Release", "-f", "net10.0-android36.0",
+        "-p:RuntimeIdentifier=android-x64", "-t:Install", "--nologo"])
+
+    if code != 0:
+        return code, output
+
+    subprocess.run([tool, "logcat", "-c"], cwd=ROOT, capture_output=True, text=True)
+    subprocess.run(
+        [tool, "shell", "monkey", "-p", ANDROID_PACKAGE, "-c",
+         "android.intent.category.LAUNCHER", "1"],
+        cwd=ROOT, capture_output=True, text=True)
+    time.sleep(30)
+
+    return run([tool, "logcat", "-d", "-s", "broiler-js-android:*"])
+
+
+def android_controls(out):
+    """Each control is injected, judged by a run on a device, and reverted."""
+    log = [
+        "These controls are judged by an ANDROID HEAD THAT RAN. Nothing in the other tables can:",
+        "a suite may not reference a profile assembly, and the corpus replay and the fuzz session",
+        "are both desktop processes. A control PASSES when the injected run does not print the",
+        "sentinel and the reverted run does.",
+        "",
+        "An application hands no exit code to a harness, so the sentinel's ABSENCE is what a",
+        "broken run and a failed check have in common - which is the direction this reads. A",
+        "control that looked for the word FAIL would pass on a run that never started.",
+        "",
+    ]
+
+    tool = adb()
+
+    if tool is None:
+        log.append(
+            "SKIPPED ENTIRELY - no Android SDK on this machine, so no control here was injected. "
+            "That is a GAP in this collection and not a smaller total.")
+        write(os.path.join(out, "android-controls.log"), "\n".join(log) + "\n")
+        return 0, len(ANDROID_CONTROLS)
+
+    passed = 0
+    skipped = 0
+
+    for name, why, path, mutate in ANDROID_CONTROLS:
+        original = read(path)
+        mutated = mutate(original)
+
+        if mutated == original:
+            skipped += 1
+            log.append("[" + name + "] SKIPPED - the injection changed nothing; the anchor moved.")
+            log.append("    file: " + path)
+            log.append("")
+            continue
+
+        overwrite(path, mutated)
+        injected_code, injected_output = android_run(tool)
+        overwrite(path, original)
+
+        if read(path) != original:
+            raise SystemExit("control " + name + " did not restore " + path)
+
+        reverted_code, reverted_output = android_run(tool)
+
+        injected_sentinel = ANDROID_SENTINEL in injected_output
+        reverted_sentinel = ANDROID_SENTINEL in reverted_output
+        verdict = "PASS" if not injected_sentinel and reverted_sentinel else "FAIL"
+        passed += 1 if verdict == "PASS" else 0
+
+        log.append("[" + name + "] " + verdict)
+        log.append("    why:       " + why)
+        log.append("    file:      " + path)
+        log.append("    injected:  sentinel " + ("present" if injected_sentinel else "ABSENT"))
+        log.append("    reverted:  sentinel " + ("present" if reverted_sentinel else "ABSENT"))
+        log.extend(
+            "      " + line.split("broiler-js-android:")[-1].strip()
+            for line in injected_output.splitlines()
+            if "FAIL" in line or "MISMATCH" in line or "unhandled" in line)
+        log.append("")
+
+    log.append(
+        "android controls run: " + str(len(ANDROID_CONTROLS)) + "; passed: " + str(passed) +
+        "; SKIPPED: " + str(skipped))
+
+    if skipped:
+        log.append(
+            "A SKIPPED control is a GAP, not a smaller total: its anchor has moved, so the "
+            "injection it names was never made.")
+
+    write(os.path.join(out, "android-controls.log"), "\n".join(log) + "\n")
+    return passed, skipped
+
+
 def fuzz_session(corpus, seed=1, iterations=25_000):
     """Rebuild and run one fuzz session, returning its exit code and output."""
     code, text = run(["dotnet", "build", SOLUTION, "-c", "Release", "--nologo"])
@@ -1202,7 +1392,8 @@ def main():
         _, suite_skipped = controls(out)
         _, corpus_skipped = corpus_controls(out, corpus, arguments)
         _, fuzz_skipped = fuzz_controls(out, corpus)
-        skipped = suite_skipped + corpus_skipped + fuzz_skipped
+        _, android_skipped = android_controls(out)
+        skipped = suite_skipped + corpus_skipped + fuzz_skipped + android_skipped
 
     hashes(out, [
         SOLUTION,
