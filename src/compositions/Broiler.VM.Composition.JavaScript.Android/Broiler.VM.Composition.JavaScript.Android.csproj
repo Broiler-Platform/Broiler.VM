@@ -1,0 +1,93 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Composition.JavaScript.Android</RootNamespace>
+    <AssemblyName>Broiler.VM.Composition.JavaScript.Android</AssemblyName>
+
+    <!-- Overrides Directory.Build.props, which sets net10.0 for every other project here.
+         An Android head cannot be net10.0: the RID this composition exists to reach is only
+         publishable from an Android target framework, which is the whole reason this project
+         is a separate root rather than a mode of the execution-only one. -->
+    <TargetFramework>net10.0-android36.0</TargetFramework>
+    <SupportedOSPlatformVersion>26.0</SupportedOSPlatformVersion>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <ApplicationId>com.broiler.vm.composition.javascript.android</ApplicationId>
+    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationDisplayVersion>0.1.0</ApplicationDisplayVersion>
+
+    <!-- The declared RID set of this root, and the reason it is stated rather than passed on the
+         command line: ADR 0012 declares android-arm64 and this is the project that can publish
+         it. android-x64 is the emulator's architecture on an x64 host and is carried so a
+         contributor without an arm64 device can run the same image. -->
+    <RuntimeIdentifiers>android-arm64;android-x64</RuntimeIdentifiers>
+
+    <!-- Not advertised, not packable - the same claim rule N4 holds over every project in the
+         JavaScript family, for the same reason: packaging is JS-10's decision. -->
+    <IsPackable>false</IsPackable>
+
+    <!-- Trimming and Mono's AOT are BOTH OFF, and the consuming repository's Android head sets
+         exactly these two properties to exactly these values. Android runs Mono, not CoreCLR:
+         the trimming this component's desktop roots assert is a different mechanism on a
+         different runtime, and RunAOTCompilation is Mono's ahead-of-time compiler and not the
+         ILCompiler every Native AOT claim in this component is about.
+
+         SO THIS ROOT IS EVIDENCE ABOUT NEITHER. What it answers is whether this component's
+         verifier and executor run on an Android RID at all; a reader who takes a green run here
+         as a Native AOT result has read it as the thing it is furthest from. The two properties
+         are stated rather than defaulted because the Android SDK turns AOT on in Release and
+         then refuses the build for the trimming it implies - which is how this pair was found. -->
+    <RunAOTCompilation>false</RunAOTCompilation>
+    <PublishTrimmed>false</PublishTrimmed>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <!--
+    THE SAME CLOSURE AS THE EXECUTION-ONLY ROOT, AND THE SAME ABSENCE.
+
+    It names the profile and not the lowering, so this image cannot turn source into an artifact
+    however it is invoked - the execution-only property, carried onto a device. What differs from
+    the desktop root is the target framework and nothing about what is composed.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" />
+  </ItemGroup>
+
+  <!--
+    THE CHECKS ARE THE EXECUTION-ONLY ROOT'S OWN SOURCE, COMPILED HERE.
+
+    Not re-implemented, and the distinction is the point of the whole harness. What this root
+    exists to answer is whether THIS COMPONENT'S CODE verifies and executes on an Android RID -
+    a re-implementation would answer whether a second piece of code does, which is a question
+    nobody asked. Rule A3 forbids an item resolving outside the component root and these resolve
+    inside it; nothing here reaches for a file this repository does not hold.
+
+    Three files and not the fourth: Program.cs is the desktop driver and carries a Main, which an
+    Android application already has. This root writes its own driver instead, and that driver is
+    the only code in it that is not shared.
+  -->
+  <ItemGroup>
+    <Compile Include="..\Broiler.VM.Composition.JavaScript.ExecutionOnly\Hosts.cs" Link="Shared\Hosts.cs" />
+    <Compile Include="..\Broiler.VM.Composition.JavaScript.ExecutionOnly\CorpusReplay.cs" Link="Shared\CorpusReplay.cs" />
+    <Compile Include="..\Broiler.VM.Composition.JavaScript.ExecutionOnly\OrderingChecks.cs" Link="Shared\OrderingChecks.cs" />
+  </ItemGroup>
+
+  <!--
+    THE RETAINED CORPUS, CARRIED INTO THE IMAGE.
+
+    An Android application has no working directory a test harness can drop files into, so the
+    corpus travels as embedded resources and the driver writes them to the application's cache
+    directory before the replay opens them. That round trip is not a weakness of the evidence:
+    every entry is re-hashed by the replay it feeds, so an extraction that changed one byte
+    fails the run rather than passing quietly.
+  -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\tests\corpus\js-1\*.bjsb" LogicalName="corpus.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="..\..\tests\corpus\js-1\corpus.manifest" LogicalName="corpus.corpus.manifest" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,25 @@
+--------- beginning of main
+09-02 07:59:12.737  6679  6679 I broiler-js-android: ok   corpus-replay: 66 entries replayed to their recorded answers
+09-02 07:59:12.739  6679  6679 I broiler-js-android: ok   corpus-replays-twice-with-no-residue: both passes agreed row for row
+09-02 07:59:12.739  6679  6679 I broiler-js-android: ok   ceilings-are-materialised-before-the-first-byte-is-read: ResourceExhaustion/ArtifactBytes over 89 bytes against a ceiling of 4, with 0 meter events; 66 corpus entries are held to the two checks below
+09-02 07:59:12.739  6679  6679 I broiler-js-android: ok   a-well-formed-artifact-does-charge-for-what-it-allocates: addition charges 88 allocated bytes and 97 work units across 91 meter events
+09-02 07:59:12.739  6679  6679 I broiler-js-android: ok   a-declaration-past-its-bound-sizes-nothing: 4 entries refused with zero allocated bytes: a-constant-count-far-beyond-what-the-artifact-carries, more-constants-than-the-limits-section-admits, a-declared-maximum-above-the-formats-own-ceiling, more-frames-than-the-slice-has
+09-02 07:59:12.739  6679  6679 I broiler-js-android: ok   allocation-is-proportional-to-the-bytes-present-not-to-what-they-declare: 66 entries under 64 allocated bytes per artifact byte; the highest is 2.9 at a-counting-loop
+09-02 07:59:12.748  6679  6679 I broiler-js-android: catalog| # broiler-vm-composition core-contract-version=1
+09-02 07:59:12.748  6679  6679 I broiler-js-android: catalog| composition Broiler.VM.Composition.JavaScript.Android
+09-02 07:59:12.748  6679  6679 I broiler-js-android: catalog| label execution-only
+09-02 07:59:12.748  6679  6679 I broiler-js-android: catalog| carries-lowering no
+09-02 07:59:12.748  6679  6679 I broiler-js-android: catalog| profiles 1
+09-02 07:59:12.748  6679  6679 I broiler-js-android: catalog| profile broiler.javascript Broiler.VM.Profile.JavaScript 1 0
+09-02 07:59:12.748  6679  6679 I broiler-js-android: catalog| manifest broiler.javascript.slice
+09-02 07:59:12.748  6679  6679 I broiler-js-android: catalog| format-versions 1 1
+09-02 07:59:12.873  6679  6679 I broiler-js-android: closure| # closure Broiler.VM.Composition.JavaScript.Android rid=android-x64
+09-02 07:59:12.873  6679  6679 I broiler-js-android: closure| 
+09-02 07:59:12.873  6679  6679 I broiler-js-android: closure| [mono] 6 non-framework assemblies
+09-02 07:59:12.873  6679  6679 I broiler-js-android: closure| Broiler.VM.Abstractions
+09-02 07:59:12.873  6679  6679 I broiler-js-android: closure| Broiler.VM.Binary
+09-02 07:59:12.873  6679  6679 I broiler-js-android: closure| Broiler.VM.Composition.JavaScript.Android
+09-02 07:59:12.874  6679  6679 I broiler-js-android: closure| Broiler.VM.Profile.JavaScript
+09-02 07:59:12.874  6679  6679 I broiler-js-android: closure| Broiler.VM.Profile.JavaScript.Format
+09-02 07:59:12.874  6679  6679 I broiler-js-android: closure| Broiler.VM.Runtime
+09-02 07:59:12.874  6679  6679 I broiler-js-android: broiler-js-android: 6 checks passed, core contract version 1

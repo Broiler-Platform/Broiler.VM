@@ -155,9 +155,10 @@ public sealed class PackageRuleTests
     [Fact]
     public void A14_Every_Project_Outside_The_Solution_Is_A_Sample()
     {
-        // The loophole that narrowing group A to the solution would otherwise open. The graph
-        // rules now read Broiler.VM.slnx rather than globbing the tree, so a project file that is
-        // in neither the solution nor samples/ is a project NOTHING governs - not A1's reference
+        // The loophole that narrowing group A to the solutions would otherwise open. The graph
+        // rules read the solutions ComponentGraph.SolutionFiles names rather than globbing the
+        // tree, so a project file that is in none of them and not under samples/ is a project
+        // NOTHING governs - not A1's reference
         // rules, not A5's packability rule, not A7's manifest equality. It would be invisible
         // rather than allowed, which is worse.
         //

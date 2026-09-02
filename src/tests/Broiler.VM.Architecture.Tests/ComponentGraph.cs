@@ -144,14 +144,45 @@ internal static class ComponentGraph
             .ToArray();
     }
 
-    private static IEnumerable<string> SolutionProjectPaths()
+    /// <summary>
+    /// The solutions that together are the frozen project graph.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Named here rather than globbed, and that is the whole safeguard.</b> The graph rules read
+    /// solutions rather than the tree, so <em>which</em> solutions decides what those rules govern -
+    /// and a glob for <c>*.slnx</c> would let a project escape every group A rule by arriving with
+    /// a solution of its own. Adding one is an edit to this list, which is a review, exactly as
+    /// rule N7's list of unreachable diagnostic codes is.
+    /// </para>
+    /// <para>
+    /// <b>Why there are two.</b> <c>Broiler.VM.slnx</c> must build on any machine with the .NET SDK
+    /// and nothing else; the mobile heads target frameworks that need a workload, and one of them
+    /// needs Xcode. Putting them in the main solution would make the ordinary build - the one a
+    /// contributor runs before pushing - fail without an installation this component has never
+    /// required. The consuming repository reached the same shape for the same reason and keeps its
+    /// Android head in a solution of its own.
+    /// </para>
+    /// </remarks>
+    /// <remarks>
+    /// A property and not a field, and the difference is load-bearing rather than stylistic:
+    /// static field initializers run in textual order, <see cref="Projects"/> is declared above
+    /// this and reads it, and as a field this list was still null when that ran - which failed
+    /// every test that touches the graph with one type-initializer exception and no clue in it.
+    /// </remarks>
+    internal static string[] SolutionFiles => ["Broiler.VM.slnx", "Broiler.VM.Mobile.slnx"];
+
+    private static IEnumerable<string> SolutionProjectPaths() =>
+        SolutionFiles.SelectMany(ProjectPathsIn);
+
+    private static IEnumerable<string> ProjectPathsIn(string name)
     {
-        var solution = Path.Combine(Root, "Broiler.VM.slnx");
+        var solution = Path.Combine(Root, name);
 
         if (!File.Exists(solution))
         {
             throw new FileNotFoundException(
-                "Broiler.VM.slnx is the frozen project graph and the architecture rules read it. " +
+                $"{name} is part of the frozen project graph and the architecture rules read it. " +
                 "Without it there is nothing to hold the checkout to.", solution);
         }
 

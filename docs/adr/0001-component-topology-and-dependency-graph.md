@@ -1337,3 +1337,44 @@ bundle, so no RID claim moves.
 **What is not edited.** The five revisions above stand as written, the withdrawal
 included.
 
+---
+
+### 2026-09-02 - a second solution, and a composition root that is an application
+
+**What the record said.** That `Broiler.VM.slnx` is the frozen project graph and
+the group A rules read it, with rule A14 reporting any project file it does not
+list that is not a sample.
+
+**What is now true.** The graph is the union of the solutions
+`ComponentGraph.SolutionFiles` names, and there are two:
+`Broiler.VM.slnx` and `Broiler.VM.Mobile.slnx`. Every group A rule governs both
+sets identically - A7's edge multiset, A11's profile-reference rule, A12's
+composition-root shape, A14's own complement. **The named list is the safeguard**:
+a glob for `*.slnx` would let a project escape every one of those rules by
+arriving with a solution of its own, so adding a solution is an edit to the test
+assembly, which is a review.
+
+**Why the split exists at all.** `Broiler.VM.slnx` must build on a machine with
+the .NET SDK and nothing else. The mobile heads target frameworks that need a
+workload, and an iOS one would need Xcode; folding them in would make the
+ordinary build - the one a contributor runs before pushing - fail without an
+installation this component has never required. The consuming repository reached
+the same shape for the same reason and keeps its Android head in a solution of
+its own.
+
+**And the first composition root that is an application rather than a console
+program.** `Broiler.VM.Composition.JavaScript.Android` composes what the
+execution-only root composes and differs by its target framework, which is the
+only way an Android RID can be published at all. Its checks are the
+execution-only root's own source files, compiled into it rather than
+re-implemented: the question it exists to answer is whether *this component's
+code* runs there, and a re-implementation would answer a question about a second
+piece of code. Rule A3 permits it - those items resolve inside the component
+root, which is what A3 is about.
+
+**What it does not settle.** No RID claim moves, and the head's collection -
+bundle JS-ANDROID-001 - is a collection on an emulator, which the bundle's own
+exclusions put first.
+
+**What is not edited.** Every revision above stands as written.
+

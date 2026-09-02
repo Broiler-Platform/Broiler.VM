@@ -294,3 +294,97 @@ jobs:
           binary="../../artifacts/ci-sample-aot/Broiler.VM.Sample.FeedConsumer"
           [ -f "$binary.exe" ] && binary="$binary.exe"
           "$binary"
+
+  # THE ANDROID HEAD, ON AN EMULATOR.
+  #
+  # Split out for the reason the consuming repository splits its own: the workload costs several
+  # minutes the other jobs should not pay for, and Broiler.VM.slnx deliberately does not carry the
+  # head - a contributor must be able to build this component with the .NET SDK and nothing else.
+  # Broiler.VM.Mobile.slnx carries it, ComponentGraph.SolutionFiles names both, and every group A
+  # rule governs the head through that union.
+  #
+  # WHAT IT PROVES AND WHAT IT DOES NOT. The emulator is x86_64, so what runs is android-x64.
+  # android-arm64 is published by this job and executed by nothing, which is why ADR 0012 declares
+  # the first and not the second. A green result here is not evidence about Native AOT either:
+  # Android runs Mono, and the head sets PublishTrimmed and RunAOTCompilation to false.
+  android:
+    name: android head (emulator)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      # net10.0-android needs the workload for the Mono runtime packs; without it the restore
+      # fails outright rather than degrading, which is the behaviour to want.
+      - name: Install the Android workload
+        run: dotnet workload install android
+
+      - name: Build the mobile solution
+        run: dotnet build Broiler.VM.Mobile.slnx -c Release
+
+      # KVM is what makes an x86_64 emulator usable rather than glacial. The runner has the device
+      # and not the permission, which is the one line of setup this job needs.
+      - name: Enable KVM
+        run: |
+          set -euo pipefail
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # Hand-rolled rather than a third-party action, and deliberately: this repository pins two
+      # actions, both first-party, and an emulator action would be a supply-chain dependency for
+      # what is fifteen lines of sdkmanager and adb.
+      - name: Boot an emulator and run the head
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdk="$ANDROID_SDK_ROOT"
+          image="system-images;android-36;google_apis;x86_64"
+
+          yes | "$sdk/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null
+          "$sdk/cmdline-tools/latest/bin/sdkmanager" "$image" "platform-tools" > /dev/null
+          echo no | "$sdk/cmdline-tools/latest/bin/avdmanager" create avd \
+            -n broiler -k "$image" --force
+
+          "$sdk/emulator/emulator" -avd broiler -no-window -no-audio -no-boot-anim \
+            -no-snapshot -gpu swiftshader_indirect &
+
+          "$sdk/platform-tools/adb" wait-for-device
+          until [ "$("$sdk/platform-tools/adb" shell getprop sys.boot_completed | tr -d '\r')" = "1" ]; do
+            sleep 5
+          done
+
+          # The emulator is x86_64, so this is the RID that runs. The head reads its own RID off
+          # the device and prints it into the closure report, so the log says which one it was
+          # rather than which one the publish asked for.
+          dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Android \
+            -c Release -f net10.0-android36.0 -p:RuntimeIdentifier=android-x64 -t:Install
+
+          "$sdk/platform-tools/adb" logcat -c
+          "$sdk/platform-tools/adb" shell monkey \
+            -p com.broiler.vm.composition.javascript.android \
+            -c android.intent.category.LAUNCHER 1
+          sleep 40
+          "$sdk/platform-tools/adb" logcat -d -s broiler-js-android:* | tee android.log
+
+          # THE DIRECTION OF THIS CHECK IS THE POINT. It greps for the sentinel rather than for a
+          # failure, so a crash, a failure to start and a failed check are all failures - an
+          # application does not hand an exit code to a runner, and a job that looked for the word
+          # FAILED would pass on a run that never happened.
+          grep -q "broiler-js-android: 6 checks passed" android.log
+
+      - name: Publish for android-arm64
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Published and NOT run: no arm64 emulator boots on an x64 host at a usable speed, and
+          # ADR 0012 does not declare a RID whose evidence stops at a build. This step exists so
+          # that the arm64 build breaking is a red job rather than a discovery made later.
+          dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.Android \
+            -c Release -f net10.0-android36.0 -p:RuntimeIdentifier=android-arm64

@@ -1,0 +1,17 @@
+<Solution>
+  <!--
+    THE MOBILE HEADS, IN A SOLUTION OF THEIR OWN.
+
+    Not because they are a different kind of project - they are composition roots and every group A
+    rule governs them - but because Broiler.VM.slnx must build on a machine with the .NET SDK and
+    nothing else. These target frameworks need a workload, and the iOS one needs Xcode, so folding
+    them into the main solution would make the build a contributor runs before pushing fail without
+    an installation this component has never required.
+
+    ComponentGraph.SolutionFiles names this file. A project listed in neither solution is one no
+    rule governs, and rule A14 reports it rather than letting it be invisible.
+  -->
+  <Folder Name="/compositions/">
+    <Project Path="src/compositions/Broiler.VM.Composition.JavaScript.Android/Broiler.VM.Composition.JavaScript.Android.csproj" />
+  </Folder>
+</Solution>
