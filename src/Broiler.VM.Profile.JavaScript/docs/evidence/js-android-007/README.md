@@ -39,7 +39,14 @@ and eight suite runs to reprint it would be cost without a reader.
 1. **All three fire K2 and K3, and none could be otherwise.** Every clause here lives in the
    catalog table, and the catalog table is half of what K3 compares. Co-firing is a fact about the
    rule set rather than a defect in the injection.
-2. **THE CLAUSE ATTRIBUTION IS AN ARGUMENT, NOT AN OBSERVATION.** The suite reports that K2 went
+2. **THE CLAUSE ATTRIBUTION IS AN ARGUMENT, NOT AN OBSERVATION.**
+
+   > **Correction, 2026-09-02.** It is an observation now.
+   > [Bundle JS-ANDROID-009](../js-android-009/README.md) adds a reporter that writes what each
+   > group K rule said, and its log carries the rules' own messages for all twelve controls -
+   > including two of the three here producing more clauses than their rows name. This exclusion
+   > is closed, and the same one in JS-ANDROID-006 and -008 with it. **Nothing in the log below is
+   > edited.** The suite reports that K2 went
    red and no more — xunit prints an empty-collection assertion without printing the collection —
    so which clause each injection reaches is argued from the injection's shape read against the
    rule's source, and stated in the row. Nothing in the log confirms it. A harness that reported

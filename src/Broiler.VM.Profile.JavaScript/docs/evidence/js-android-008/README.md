@@ -54,5 +54,9 @@ for something that does not exist.
    them; two suite runs to reprint eleven rows would be cost without a reader.
 2. **The clause attribution limit stands**, as JS-ANDROID-007 states it: the suite reports that a
    rule went red and no more.
+
+   > **Correction, 2026-09-02.** Retired by
+   > [Bundle JS-ANDROID-009](../js-android-009/README.md), whose reporter writes the rules' own
+   > messages. **Nothing in the log below is edited.**
 3. **This is a SCOPED run**, two rows of twenty-nine, not the control matrix.
 4. **Nothing here runs on a device**, no milestone moves, and nothing is reviewed.

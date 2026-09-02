@@ -1,0 +1,122 @@
+SCOPED RUN - the twelve controls over the composition register and the Android head's
+declared artefacts, with WHAT EACH RULE SAID.
+
+A control PASSES when the injected suite exits non-zero and the reverted suite exits 0. The
+lines under `said:` are the rules' own messages, read from the report the injected run wrote.
+
+THIS RETIRES A LIMIT FOUR BUNDLES CARRIED. Until now a control over one clause of K2 could
+not be told from a control over another: the suite reports that K2 went red and xunit prints
+an empty-collection assertion without the collection, so the clause was argued from the
+injection's shape rather than observed. It is observed here.
+
+[K1-the-register-names-a-composition-the-checkout-does-not-have] PASS
+    injected:  exit 1 | reverted: exit 0
+    fired:     K1
+    said:
+      [K1] 1 message(s)
+          docs/compositions.md names Broiler.VM.Composition.Deleted, which is not a composition root in the checkout
+
+[K1-the-register-loses-the-android-row] PASS
+    injected:  exit 1 | reverted: exit 0
+    fired:     K1
+    said:
+      [K1] 1 message(s)
+          Broiler.VM.Composition.JavaScript.Android has 0 rows in docs/compositions.md, not exactly one
+
+[K2-the-register-claims-a-profile-the-android-head-does-not-compose] PASS
+    injected:  exit 1 | reverted: exit 0
+    fired:     K2
+    said:
+      [K2] 1 message(s)
+          Broiler.VM.Composition.JavaScript.Android: the catalog composed [broiler.javascript] and the register declares [com.example.absent]
+
+[K2-the-android-row-declares-a-profile-assembly-nothing-references] PASS
+    injected:  exit 1 | reverted: exit 0
+    fired:     K2, K4
+    said:
+      [K2] 3 message(s)
+          Broiler.VM.Composition.JavaScript.Android declares profile assembly Com.Example.Ledger and does not reference it
+          Broiler.VM.Composition.JavaScript.Android: the catalog composed [broiler.javascript] and the register declares [broiler.javascript, com.example.ledger]
+          Broiler.VM.Composition.JavaScript.Android: the catalog reported package identities [Broiler.VM.Profile.JavaScript] and the register declares [Broiler.VM.Profile.JavaScript, Com.Example.Ledger]
+      [K4] 1 message(s)
+          Broiler.VM.Composition.JavaScript.Android [mono] ships [Broiler.VM.Abstractions, Broiler.VM.Binary, Broiler.VM.Composition.JavaScript.Android, Broiler.VM.Profile.JavaScript, Broiler.VM.Profile.JavaScript.Format, Broiler.VM.Runtime] rather than [Broiler.VM.Abstractions, Broiler.VM.Binary, Broiler.VM.Composition.JavaScript.Android, Broiler.VM.Profile.JavaScript, Broiler.VM.Profile.JavaScript.Format, Broiler.VM.Runtime, Com.Example.Ledger]
+
+[K2-the-android-row-declares-a-different-profile-than-it-references] PASS
+    injected:  exit 1 | reverted: exit 0
+    fired:     K2, K4
+    said:
+      [K2] 3 message(s)
+          Broiler.VM.Composition.JavaScript.Android references Broiler.VM.Profile.JavaScript, which the register declares as neither a profile assembly nor a sibling
+          Broiler.VM.Composition.JavaScript.Android declares profile assembly Com.Example.Ledger and does not reference it
+          Broiler.VM.Composition.JavaScript.Android: the catalog reported package identities [Broiler.VM.Profile.JavaScript] and the register declares [Com.Example.Ledger]
+      [K4] 2 message(s)
+          Broiler.VM.Composition.JavaScript.Android [mono] ships Broiler.VM.Profile.JavaScript, which it does not declare
+          Broiler.VM.Composition.JavaScript.Android [mono] ships [Broiler.VM.Abstractions, Broiler.VM.Binary, Broiler.VM.Composition.JavaScript.Android, Broiler.VM.Profile.JavaScript, Broiler.VM.Profile.JavaScript.Format, Broiler.VM.Runtime] rather than [Broiler.VM.Abstractions, Broiler.VM.Binary, Broiler.VM.Composition.JavaScript.Android, Broiler.VM.Profile.JavaScript.Format, Broiler.VM.Runtime, Com.Example.Ledger]
+
+[the-register-row-loses-a-cell] PASS
+    injected:  exit 1 | reverted: exit 0
+    fired:     K1, K2, K3, K4
+    said:
+      [K1] THREW TypeInitializationException: The type initializer for 'Broiler.VM.Architecture.Tests.CompositionRegisterTests' threw an exception.
+      [K2] THREW TypeInitializationException: The type initializer for 'Broiler.VM.Architecture.Tests.CompositionRegisterTests' threw an exception.
+      [K3] THREW TypeInitializationException: The type initializer for 'Broiler.VM.Architecture.Tests.CompositionRegisterTests' threw an exception.
+      [K4] THREW TypeInitializationException: The type initializer for 'Broiler.VM.Architecture.Tests.CompositionRegisterTests' threw an exception.
+
+[K2-the-android-catalog-table-names-a-different-composition] PASS
+    injected:  exit 1 | reverted: exit 0
+    fired:     K2, K3
+    said:
+      [K2] 1 message(s)
+          Broiler.VM.Composition.JavaScript.Android: the catalog table names Broiler.VM.Composition.JavaScript.ExecutionOnly
+      [K3] 1 message(s)
+          Broiler.VM.Composition.JavaScript.Android: the catalog drifted from its baseline   baseline: # broiler-vm-composition core-contract-version=1 / composition Broiler.VM.Composition.JavaScript.ExecutionOnly / label execution-only / carries-lowering no / profiles 1 / profile broiler.javascript Broiler.VM.Profile.JavaScript 1 0 / manifest broiler.javascript.slice / format-versions 1 1   retained: # broiler-vm-composition core-contract-version=1 / composition Broiler.VM.Composition.JavaScript.Android / label execution-only / carries-lowering no / profiles 1 / profile broiler.javascript Broiler.VM.Profile.JavaScript 1 0 / manifest broiler.javascript.slice / format-versions 1 1
+
+[K2-the-catalog-reports-a-package-identity-the-register-does-not-declare] PASS
+    injected:  exit 1 | reverted: exit 0
+    fired:     K2, K3
+    said:
+      [K2] 1 message(s)
+          Broiler.VM.Composition.JavaScript.Android: the catalog reported package identities [Broiler.VM.Profile.WebAssembly] and the register declares [Broiler.VM.Profile.JavaScript]
+      [K3] 1 message(s)
+          Broiler.VM.Composition.JavaScript.Android: the catalog drifted from its baseline   baseline: # broiler-vm-composition core-contract-version=1 / composition Broiler.VM.Composition.JavaScript.Android / label execution-only / carries-lowering no / profiles 1 / profile broiler.javascript Broiler.VM.Profile.WebAssembly 1 0 / manifest broiler.javascript.slice / format-versions 1 1   retained: # broiler-vm-composition core-contract-version=1 / composition Broiler.VM.Composition.JavaScript.Android / label execution-only / carries-lowering no / profiles 1 / profile broiler.javascript Broiler.VM.Profile.JavaScript 1 0 / manifest broiler.javascript.slice / format-versions 1 1
+
+[K2-the-catalog-composes-the-same-profile-twice] PASS
+    injected:  exit 1 | reverted: exit 0
+    fired:     K2, K3
+    said:
+      [K2] 3 message(s)
+          Broiler.VM.Composition.JavaScript.Android: the catalog composed [broiler.javascript, broiler.javascript] and the register declares [broiler.javascript]
+          Broiler.VM.Composition.JavaScript.Android: the catalog reported package identities [Broiler.VM.Profile.JavaScript, Broiler.VM.Profile.JavaScript] and the register declares [Broiler.VM.Profile.JavaScript]
+          Broiler.VM.Composition.JavaScript.Android composes broiler.javascript 2 times
+      [K3] 1 message(s)
+          Broiler.VM.Composition.JavaScript.Android: the catalog drifted from its baseline   baseline: # broiler-vm-composition core-contract-version=1 / composition Broiler.VM.Composition.JavaScript.Android / label execution-only / carries-lowering no / profiles 1 / profile broiler.javascript Broiler.VM.Profile.JavaScript 1 0 / profile broiler.javascript Broiler.VM.Profile.JavaScript 1 0 / manifest broiler.javascript.slice / format-versions 1 1   retained: # broiler-vm-composition core-contract-version=1 / composition Broiler.VM.Composition.JavaScript.Android / label execution-only / carries-lowering no / profiles 1 / profile broiler.javascript Broiler.VM.Profile.JavaScript 1 0 / manifest broiler.javascript.slice / format-versions 1 1
+
+[K2-a-profile-claims-the-reserved-label-under-a-foreign-package] PASS
+    injected:  exit 1 | reverted: exit 0
+    fired:     K2, K3
+    said:
+      [K2] 2 message(s)
+          Broiler.VM.Composition.JavaScript.Android: the catalog reported package identities [Com.Example.Ledger] and the register declares [Broiler.VM.Profile.JavaScript]
+          Broiler.VM.Composition.JavaScript.Android composes broiler.javascript, which claims the reserved first label, under package identity 'Com.Example.Ledger'
+      [K3] 1 message(s)
+          Broiler.VM.Composition.JavaScript.Android: the catalog drifted from its baseline   baseline: # broiler-vm-composition core-contract-version=1 / composition Broiler.VM.Composition.JavaScript.Android / label execution-only / carries-lowering no / profiles 1 / profile broiler.javascript Com.Example.Ledger 1 0 / manifest broiler.javascript.slice / format-versions 1 1   retained: # broiler-vm-composition core-contract-version=1 / composition Broiler.VM.Composition.JavaScript.Android / label execution-only / carries-lowering no / profiles 1 / profile broiler.javascript Broiler.VM.Profile.JavaScript 1 0 / manifest broiler.javascript.slice / format-versions 1 1
+
+[K3-the-android-catalog-baseline-drifts-from-what-the-head-printed] PASS
+    injected:  exit 1 | reverted: exit 0
+    fired:     K2, K3
+    said:
+      [K2] 2 message(s)
+          Broiler.VM.Composition.JavaScript.Android: the catalog composed [broiler.javascript, com.example.stowaway] and the register declares [broiler.javascript]
+          Broiler.VM.Composition.JavaScript.Android: the catalog reported package identities [Broiler.VM.Profile.JavaScript, Com.Example.Stowaway] and the register declares [Broiler.VM.Profile.JavaScript]
+      [K3] 1 message(s)
+          Broiler.VM.Composition.JavaScript.Android: the catalog drifted from its baseline   baseline: # broiler-vm-composition core-contract-version=1 / composition Broiler.VM.Composition.JavaScript.Android / label execution-only / carries-lowering no / profiles 1 / profile broiler.javascript Broiler.VM.Profile.JavaScript 1 0 / manifest broiler.javascript.slice / format-versions 1 1 / profile com.example.stowaway Com.Example.Stowaway 1 0   retained: # broiler-vm-composition core-contract-version=1 / composition Broiler.VM.Composition.JavaScript.Android / label execution-only / carries-lowering no / profiles 1 / profile broiler.javascript Broiler.VM.Profile.JavaScript 1 0 / manifest broiler.javascript.slice / format-versions 1 1
+
+[K4-the-android-closure-ships-an-assembly-the-register-does-not-declare] PASS
+    injected:  exit 1 | reverted: exit 0
+    fired:     K4
+    said:
+      [K4] 2 message(s)
+          Broiler.VM.Composition.JavaScript.Android [mono] ships Broiler.VM.Profile.WebAssembly, which it does not declare
+          Broiler.VM.Composition.JavaScript.Android [mono] ships [Broiler.VM.Abstractions, Broiler.VM.Binary, Broiler.VM.Composition.JavaScript.Android, Broiler.VM.Profile.JavaScript, Broiler.VM.Profile.WebAssembly, Broiler.VM.Runtime] rather than [Broiler.VM.Abstractions, Broiler.VM.Binary, Broiler.VM.Composition.JavaScript.Android, Broiler.VM.Profile.JavaScript, Broiler.VM.Profile.JavaScript.Format, Broiler.VM.Runtime]
+
+controls run: 12; passed: 12

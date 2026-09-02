@@ -141,11 +141,41 @@ def overwrite_bytes(path, payload):
         handle.write(payload)
 
 
-def suite():
-    """Build and run the whole solution. The gate is the suite, so a control is judged by it."""
-    return run([
+def suite(messages=None):
+    """
+    Build and run the whole solution. The gate is the suite, so a control is judged by it.
+
+    When `messages` names a file, the run also writes what each group K rule SAID - see
+    RuleMessages_Are_Written_When_A_Report_Is_Asked_For. That is reporting and not judging: the
+    exit code still decides the control, and the messages are what let a log name the CLAUSE an
+    injection reached rather than only the rule.
+    """
+    command = [
         "dotnet", "test", SOLUTION, "-c", "Release", "--nologo",
-        "-p:TreatWarningsAsErrors=true"])
+        "-p:TreatWarningsAsErrors=true"]
+
+    if messages is None:
+        return run(command)
+
+    environment = dict(os.environ, BROILER_RULE_MESSAGES=messages)
+    completed = subprocess.run(
+        command, cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace",
+        env=environment)
+
+    return completed.returncode, (completed.stdout or "") + (completed.stderr or "")
+
+
+def rule_messages(path):
+    """The rule messages a run wrote, as log lines, or a line saying it wrote none."""
+    if not os.path.exists(path):
+        return ["      (the run wrote no rule-message report)"]
+
+    lines = [
+        "      " + line.rstrip()
+        for line in io.open(path, encoding="utf-8").read().splitlines()
+        if line.strip() and not line.startswith("#") and "0 message(s)" not in line]
+
+    return lines or ["      (every rule was silent, which for an injected run is itself a finding)"]
 
 
 def identity(arguments, out):
@@ -636,7 +666,13 @@ def controls(out):
             continue
 
         overwrite(path, mutated)
-        injected_code, injected_output = suite()
+        messages = os.path.join(ROOT, "artifacts", "rule-messages.txt")
+        os.makedirs(os.path.dirname(messages), exist_ok=True)
+
+        if os.path.exists(messages):
+            os.remove(messages)
+
+        injected_code, injected_output = suite(messages)
         overwrite(path, original)
 
         if read(path) != original:
@@ -657,6 +693,11 @@ def controls(out):
             f"      {line.strip()}"
             for line in injected_output.splitlines()
             if "[FAIL]" in line)
+
+        # WHAT THE RULES SAID, not only which test went red. The suite reports an empty-collection
+        # assertion without printing the collection, so a control over one clause of a many-clause
+        # rule could not be told from a control over another. These lines are the rules' own.
+        log.extend(rule_messages(messages))
         log.append("")
 
     log.append(
