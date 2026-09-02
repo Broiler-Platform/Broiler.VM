@@ -15,11 +15,14 @@
 # HONESTY NOTE, and it belongs at the top rather than in a footnote. When this file was written it
 # had NEVER RUN, and it said so here. It has run since - on ubuntu-latest and windows-latest,
 # publishing and running every composition root as Native AOT on linux-x64 and win-x64 - so the RID
-# matrix below is no longer aspirational for either entry it names. It ran on macos-latest and
-# osx-arm64 too, until 2026-09-01: that RID is one ADR 0012 marks RESERVED, no head in the
-# consuming repository targets macOS, and a lane publishing a RID the declared matrix does not
-# hold is drift towards a claim the ADR forbids rather than extra assurance. The revision there
-# records the withdrawal and the arm64 gap it leaves named rather than covered.
+# matrix below is not aspirational for either of those. It ran on macos-latest and osx-arm64 too,
+# until 2026-09-01: that RID is one ADR 0012 marks RESERVED, no head in the consuming repository
+# targets macOS, and a lane publishing a RID the declared matrix does not hold is drift towards a
+# claim the ADR forbids rather than extra assurance. The SAME DAY the matrix gained linux-arm64 by
+# a decision of its own, and that entry has now run too: ubuntu-24.04-arm published and ran every
+# composition root as Native AOT on arm64 at the first attempt, with no tooling this file installs.
+# So no entry below is aspirational. ADR 0012 carries both movements and the limit on the third -
+# an instruction set shared with android-arm64 and nothing else.
 #
 # What has NOT changed is the sentence that matters: `docs/support.md` still claims no platform on
 # the strength of this lane, and it should not. A workflow that has not run is a plan; a workflow
@@ -119,15 +122,24 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # EXACTLY ADR 0012's declared RID matrix, and it is the consuming repository's head
-          # matrix for the same reason the ADR gives: those two RIDs are the ones a head
-          # publishes, so they are the ones on which a claim could ever be collected. A lane
-          # entry for a RID the ADR marks reserved is a publish nothing consumes and a row the
-          # support table may never carry - the 2026-09-01 revision of ADR 0012 records why the
-          # third entry was withdrawn, and what the consuming repository's Android head leaves
-          # open that no entry here can close.
+          # EXACTLY ADR 0012's declared RID matrix, which is three since 2026-09-01. The first
+          # two are the RIDs a head in the consuming repository publishes, so they are the ones
+          # on which a claim could ever be collected; a lane entry for a RID the ADR marks
+          # reserved is a publish nothing consumes and a row the support table may never carry,
+          # which is why osx-arm64 was withdrawn the same day.
+          #
+          # linux-arm64 is declared for the ARCHITECTURE and not for a consumer, and the
+          # distinction is the whole of what this entry proves. Nothing publishes it: the
+          # consuming repository has no arm64 head, and the head that does ship arm64 ships it
+          # as android-arm64 on Mono, which this component cannot target. So this job is the only
+          # place arm64 code generation and arm64 Native AOT are compiled at all - and a green
+          # result here is NOT Android coverage. It shares an instruction set with android-arm64
+          # and nothing else: not the runtime, not the trimming configuration that head turns
+          # off, not the packaging, not the head. ADR 0012's third 2026-09-01 revision carries
+          # the same limit, because a reader meeting this matrix should not have to find it.
           - { os: ubuntu-latest, rid: linux-x64 }
           - { os: windows-latest, rid: win-x64 }
+          - { os: ubuntu-24.04-arm, rid: linux-arm64 }
     steps:
       - uses: actions/checkout@v4
 

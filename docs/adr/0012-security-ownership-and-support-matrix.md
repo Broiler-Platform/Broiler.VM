@@ -226,25 +226,29 @@ untruthful support claim section 16 stops for.
 
 ## Decision - the declared RID matrix, and what "claimed" costs
 
-The declared RID matrix for Broiler.VM core compositions is exactly
-{ win-x64, linux-x64 } (VM-0 decision on paper; no file at VM-0). Declaring a
-RID means the component intends to collect publish-and-run evidence for it and
-will accept a recertification trigger when it changes. It is not a claim.
+The declared RID matrix for Broiler.VM core compositions is
+{ win-x64, linux-x64, linux-arm64 } - two at VM-0 (a decision on paper; no file
+at VM-0) and the third added on 2026-09-01 by the revision at the end of this
+record. Declaring a RID means the component intends to collect publish-and-run
+evidence for it and will accept a recertification trigger when it changes. It is
+not a claim.
 
 | RID | Status at core contract version 1 | Basis |
 |---|---|---|
 | win-x64 | Declared, not claimed | A publish lane for it already exists in the surrounding repository, so the evidence is collectible rather than hypothetical |
 | linux-x64 | Declared, not claimed | As above |
-| win-arm64, linux-arm64, osx-x64, osx-arm64 | Reserved - no evidence | The name may appear in a composition register marked reserved. It may never appear in a support table |
+| linux-arm64 | Declared, not claimed - **added 2026-09-01** | **Declared for the architecture and not for a consumer**, which is what makes it different from the two rows above and is why it is spelled out. The surrounding repository publishes no arm64 head, and its Android head - the one that ships `android-arm64` - runs Mono and cannot be reached from here at all. This row is the only way the component exercises arm64 code generation and arm64 Native AOT, and hosted arm64 Linux runners make that evidence collectible rather than hypothetical, which is the same test the two rows above pass. **It stands for no other RID**: a green result here says nothing about Mono, about the Android runtime, about a head that turns trimming off, or about macOS |
+| win-arm64, osx-x64, osx-arm64 | Reserved - no evidence | The name may appear in a composition register marked reserved. It may never appear in a support table |
 | android-arm64, android-x64 | Excluded pending pinned Native AOT platform references | Broiler.VM holds no evidence that ILCompiler Native AOT targets an Android RID, and the three Microsoft pages section 17 requires are unpinned: docs/platform-references.md (VM-0 decision on paper; no file at VM-0) is not created. See EX-32 |
 | browser-wasm and every wasm RID | Excluded | Terminology freeze, below |
 
-The grounding for choosing two is that the surrounding repository already
-publishes those two RIDs and no other on a lane that runs on both host
-operating systems. That is observed state in another component, not
+The grounding for choosing the first two is that the surrounding repository
+already publishes those two RIDs and no other on a lane that runs on both host
+operating systems; the grounding for the third is in its own row and is a
+different kind of reason. Both are observed state in another component, not
 Broiler.VM evidence - the ledger's section 1 forbids treating another
-component's work as evidence here, and nothing above is offered as such. It
-explains only why declaring four or six RIDs would create a matrix with no
+component's work as evidence here, and nothing above is offered as such. They
+explain only why declaring four or six RIDs would create a matrix with no
 lane on which any future claim could ever be collected.
 
 **Terminology freeze.** In Broiler.VM, "WebAssembly" always names a guest VM
@@ -487,4 +491,56 @@ none to remove.
 rejections intact. This entry is where a reader learns that the lane spent two
 days wider than the matrix it was meant to implement, and what the Android head
 does to the exclusion's reasoning.
+
+---
+
+### 2026-09-01 - linux-arm64 is declared, and what a green job on it may not be read as
+
+**What the record said.** The revision above, written earlier the same day: that
+the declared matrix is { win-x64, linux-x64 }, that `linux-arm64` is *Reserved -
+no evidence*, and - in its closing paragraph - that substituting `linux-arm64`
+for the withdrawn `osx-arm64` "was considered and refused", leaving the arm64 gap
+"named rather than covered", with the note that widening the matrix to arm64
+"is a decision with a grounding of its own, and it is not taken here."
+
+**What replaced it.** The decision is taken here. `linux-arm64` moves out of the
+reserved row and into the declared matrix, which is three RIDs, and the lane
+publishes and runs every composition root on it. The earlier entry was right that
+this needs a grounding rather than a swap, and wrong to leave the gap open once
+one exists: **the product ships arm64 and nothing in this component compiled a
+line for it.**
+
+**The grounding, and it is not the one the other two rows have.** Those two are
+declared because a consumer publishes them. Nothing publishes `linux-arm64` - the
+surrounding repository has no arm64 head, and the head that does ship arm64 ships
+it as `android-arm64` on Mono, which this component cannot target. So this row is
+declared for **the architecture**: it is the only way the component exercises
+arm64 code generation and arm64 Native AOT, and hosted arm64 Linux runners make
+that evidence collectible rather than hypothetical - the same test the other two
+rows pass, met by a different route.
+
+**What a green job on it may not be read as, stated because the objection that
+delayed this decision was a good one.** It is not Android coverage. It shares an
+instruction set with `android-arm64` and nothing else: not the runtime - Mono,
+not CoreCLR - not the trimming configuration, which that head turns off, not the
+packaging, and not the head. A reader who concludes from this row that the
+Android head is exercised has made exactly the substitution the earlier revision
+refused, and the reason that refusal was right is that a proxy nobody labelled
+would have carried the same false reading with none of this paragraph attached to
+it. The row is declared **with its limit written into the matrix**, which is the
+difference between a stated scope and a silent proxy.
+
+**What it does not settle.** No RID claim moves. Declaring is not claiming, and
+this row is the definition's own case: the component now intends to collect
+publish-and-run evidence for `linux-arm64` and accepts a recertification trigger
+when it changes. `linux-x64` remains the one RID with retained collections behind
+it; `win-x64` and now `linux-arm64` are attempted in a lane that retains nothing.
+The Android exclusion is untouched and its reason is the one the revision above
+corrected: no Android-targeted project and no device or emulator harness.
+
+**What is not edited.** Both revisions above stand as written. The first recorded
+the withdrawal of a reserved RID from the lane; the second recorded that widening
+to arm64 was not taken that day. This entry is where a reader learns it was taken
+the same day, on a decision made after the objection was heard, and what the
+objection bought - the limit above, which the matrix now carries.
 
