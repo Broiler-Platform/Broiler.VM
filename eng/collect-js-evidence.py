@@ -62,6 +62,11 @@ ANDROID_PROJECT = os.path.join(
     "src", "compositions", "Broiler.VM.Composition.JavaScript.Android")
 ANDROID_HEAD = os.path.join(ANDROID_PROJECT, "MainActivity.cs")
 ANDROID_PACKAGE = "com.broiler.vm.composition.javascript.android"
+ANDROID_CATALOG_BASELINE = os.path.join(
+    "src", "tests", "Broiler.VM.Architecture.Tests", "catalogs", "android.catalog.txt")
+ANDROID_CLOSURE = os.path.join(
+    "src", "Broiler.VM.Profile.JavaScript", "docs", "evidence", "js-android-001",
+    "closure-android.txt")
 EXECUTION_ONLY_HOSTS = os.path.join(
     "src", "compositions", "Broiler.VM.Composition.JavaScript.ExecutionOnly", "Hosts.cs")
 
@@ -392,6 +397,33 @@ CONTROLS = [
         "dimension no site answers on.",
         CORPUS_MANIFEST,
         lambda text: text.replace("|WallClock|Runtime", "|HostCalls|Runtime"),
+    ),
+    (
+        "K3-the-android-catalog-baseline-drifts-from-what-the-head-printed",
+        "The checked-in catalog baseline for the Android head gains a profile line the head never "
+        "printed. THE POINT IS THAT THE RULE REACHES THIS ROW: K3 already has a rejecting "
+        "direction in its own test, doctored in memory over the FIRST register row, which is a "
+        "desktop composition - so nothing showed that the rule reads the Android row's baseline "
+        "and the Android row's retained table. A composition registered with artefacts no rule "
+        "actually compares is a row that looks governed and is not. It trips K2 as well, and that "
+        "is honest rather than sloppy: a catalog naming a profile the register does not name is "
+        "two rules' business, and an injection chosen to trip exactly one of them would be one "
+        "that flatters a rule rather than one a defect would look like.",
+        ANDROID_CATALOG_BASELINE,
+        lambda text: text + "profile com.example.stowaway Com.Example.Stowaway 1 0\n",
+    ),
+    (
+        "K4-the-android-closure-ships-an-assembly-the-register-does-not-declare",
+        "The retained closure report for the Android head loses its format sibling and gains the "
+        "OTHER PROFILE FAMILY'S assembly - the one thing rule N2 exists to keep out of a "
+        "JavaScript image. It injects into RETAINED BYTES rather than into source, which is the "
+        "direction the corpus-integrity control already takes and the one that would otherwise be "
+        "taken on trust: a closure report is a file, and a file nobody checks is a file that can "
+        "say anything. K4 must report the assembly the row does not declare.",
+        ANDROID_CLOSURE,
+        lambda text: text.replace(
+            "Broiler.VM.Profile.JavaScript.Format",
+            "Broiler.VM.Profile.WebAssembly"),
     ),
     (
         "J3-a-profile-fingerprint-is-stale",
