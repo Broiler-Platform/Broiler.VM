@@ -174,6 +174,57 @@ public sealed class AssuranceRuleTests
     /// for the attachment would pass all three.
     /// </para>
     /// </remarks>
+    /// <summary>
+    /// Writes what each group J rule said about this checkout, when asked to.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The mechanism lives on <see cref="RuleReport"/>. Each entry calls the SAME helper its test
+    /// calls, over the same inputs - not a re-implementation, which is the only way a report and
+    /// the rule it reports on cannot drift apart.
+    /// </para>
+    /// <para>
+    /// <b>J10 and J11 are not here, and the reason is not effort.</b> Their clean direction is
+    /// asserted over a WITNESS input rather than over this checkout - J10 over units read from a
+    /// witness file, J11 over a release plan built from witness text - so there is no "what this
+    /// rule said about the checkout" to write down. Reporting them would mean choosing an input
+    /// the test does not use, which is a different claim wearing this one's clothes.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void RuleMessages_For_Group_J_Are_Written_When_Asked_For()
+    {
+        RuleReport.Write("J",
+        [
+            ("J1", () => CoverageViolations(ProductUnits)),
+            ("J2", () => VocabularyViolations(ProductUnits)),
+            ("J3", () => AssuranceGenerator.WriteRequested
+                ? []
+                : FingerprintViolations(AssuranceScanner.Units)),
+            ("J4", () => InventedApprovalViolations(
+                AssuranceSources.Files, AssuranceGenerator.Current.Artefacts)),
+            ("J5", () => AssuranceGenerator.WriteRequested
+                ? []
+                : AssuranceGenerator.StaleArtefacts(AssuranceGenerator.Current.Artefacts)),
+            ("J6", () => AssuranceSources.DirectiveViolations(AssuranceSources.Files)),
+            ("J7", () => AssuranceGenerator.WriteRequested
+                ? []
+                : AssuranceManifest.Violations(
+                    AssuranceSources.Files, AssuranceScanner.Units, ManifestOnDisk())),
+            ("J8", () => AssuranceArtefactShape.ManifestHeaderViolations(AssuranceManifest.Header)),
+            ("J9", () => AssuranceReviewClaims.Violations(
+                AssuranceReviewClaims.GeneratedText(AssuranceGenerator.Current.Artefacts),
+                ProductUnits)),
+        ]);
+
+        if (RuleReport.Destination is { } destination)
+        {
+            Assert.True(
+                File.Exists(Path.Combine(destination, "J.txt")),
+                "a report for group J was asked for and none was written");
+        }
+    }
+
     [Fact]
     public void J1_Every_Relevant_Unit_Carries_An_Annotation()
     {

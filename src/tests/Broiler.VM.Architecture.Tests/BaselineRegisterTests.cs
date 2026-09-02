@@ -59,6 +59,26 @@ public sealed class BaselineRegisterTests
     // L1
     // -------------------------------------------------------------------------------------
 
+    /// <summary>Writes what L1 said about this checkout, when asked to.</summary>
+    /// <remarks>
+    /// The same helper the test calls, over the same inputs. See <see cref="RuleReport"/>.
+    /// </remarks>
+    [Fact]
+    public void RuleMessages_For_Group_L_Are_Written_When_Asked_For()
+    {
+        RuleReport.Write("L",
+        [
+            ("L1", () => Violations(RegisterRows(ReadRegister()), LoggedMeasurements(ReadLog()))),
+        ]);
+
+        if (RuleReport.Destination is { } destination)
+        {
+            Assert.True(
+                File.Exists(Path.Combine(destination, "L.txt")),
+                "a report for group L was asked for and none was written");
+        }
+    }
+
     [Fact]
     public void L1_The_Register_Declares_Exactly_What_The_Retained_Log_Measured()
     {

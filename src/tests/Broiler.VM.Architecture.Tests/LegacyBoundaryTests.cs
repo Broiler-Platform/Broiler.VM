@@ -49,6 +49,52 @@ public sealed class LegacyBoundaryTests(Xunit.Abstractions.ITestOutputHelper out
     /// </remarks>
     private const string WriteVariable = "BROILER_EVIDENCE_WRITE";
 
+    /// <summary>
+    /// D1's clean direction: nothing outside the component references into it.
+    /// </summary>
+    /// <remarks>
+    /// Takes the aggregate root as an argument rather than finding it, because whether there IS
+    /// one is the inconclusive branch the test reports separately - a rule that scanned nothing
+    /// and a rule that found nothing are different answers, and this function is only about the
+    /// second.
+    /// </remarks>
+    private static IEnumerable<string> D1Violations(string aggregateRoot) => Directory
+        .EnumerateFiles(aggregateRoot, "*.csproj", SearchOption.AllDirectories)
+        .Where(static path => !path.StartsWith(ComponentGraph.Root, StringComparison.OrdinalIgnoreCase))
+        .Where(static path => !IsUnderBuildOutput(path))
+        .Where(static path => ReferencesTheComponent(path, ComponentGraph.Root))
+        .Select(path => Path.GetRelativePath(aggregateRoot, path));
+
+    /// <summary>
+    /// Writes what D1 said about this checkout, when asked to.
+    /// </summary>
+    /// <remarks>
+    /// <b>A checkout with no aggregate above it reports the inconclusive branch as a message</b>
+    /// rather than as silence. Silence here would be indistinguishable from a scan that found
+    /// nothing, which is exactly the confusion the test's own RecordOutcome exists to prevent.
+    /// </remarks>
+    [Fact]
+    public void RuleMessages_For_Group_D_Are_Written_When_Asked_For()
+    {
+        var aggregate = Directory.GetParent(ComponentGraph.Root);
+        var scannable = aggregate is not null &&
+            File.Exists(Path.Combine(aggregate.FullName, ".gitmodules"));
+
+        RuleReport.Write("D",
+        [
+            ("D1", () => scannable
+                ? D1Violations(aggregate!.FullName)
+                : ["INCONCLUSIVE - no aggregate checkout above the component root, so D1 scanned nothing"]),
+        ]);
+
+        if (RuleReport.Destination is { } destination)
+        {
+            Assert.True(
+                File.Exists(Path.Combine(destination, "D.txt")),
+                "a report for group D was asked for and none was written");
+        }
+    }
+
     [Fact]
     public void D1_No_Project_Outside_The_Component_References_Into_It()
     {
@@ -68,13 +114,7 @@ public sealed class LegacyBoundaryTests(Xunit.Abstractions.ITestOutputHelper out
             return;
         }
 
-        var violations = Directory
-            .EnumerateFiles(aggregate.FullName, "*.csproj", SearchOption.AllDirectories)
-            .Where(path => !path.StartsWith(ComponentGraph.Root, StringComparison.OrdinalIgnoreCase))
-            .Where(static path => !IsUnderBuildOutput(path))
-            .Where(path => ReferencesTheComponent(path, ComponentGraph.Root))
-            .Select(path => Path.GetRelativePath(aggregate.FullName, path))
-            .ToArray();
+        var violations = D1Violations(aggregate.FullName).ToArray();
 
         RecordOutcome(
             $"SCANNED - aggregate checkout at {aggregate.FullName}; " +

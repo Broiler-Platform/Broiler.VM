@@ -74,22 +74,51 @@ public sealed class ProjectFileRuleTests
             ComponentGraph.Witness("A6-fourth-package-id.csproj.witness")));
     }
 
+    /// <summary>Writes what A7 said about this checkout, when asked to.</summary>
+    /// <remarks>
+    /// A7 is reported apart from the rest of group A because it is not a per-project sweep: it is
+    /// one multiset comparison over the whole graph, so it has one answer rather than one per
+    /// project. See <see cref="RuleReport"/>.
+    /// </remarks>
     [Fact]
-    public void A7_Declared_Edges_Match_The_Graph_Manifest_Exactly()
+    public void RuleMessages_For_A7_Are_Written_When_Asked_For()
     {
-        var actual = ComponentGraph.Projects
-            .SelectMany(static project => project.ReferencedAssemblyNames
-                .Select(target => new GraphManifest.Edge(project.AssemblyName, target)))
-            .OrderBy(static edge => edge.From, StringComparer.Ordinal)
-            .ThenBy(static edge => edge.To, StringComparer.Ordinal)
-            .ToArray();
+        RuleReport.Write("A7", [("A7", A7Violations)]);
+
+        if (RuleReport.Destination is { } destination)
+        {
+            Assert.True(
+                File.Exists(Path.Combine(destination, "A7.txt")),
+                "a report for A7 was asked for and none was written");
+        }
+    }
+
+    /// <summary>
+    /// A7's clean direction: the resolved edge multiset against the graph manifest.
+    /// </summary>
+    /// <remarks>
+    /// Extracted so a report can call it, and the test calls it rather than keeping a copy.
+    /// The local function comes with it: a multiset comparison whose counting helper lived
+    /// elsewhere would be two halves of one rule in two places.
+    /// </remarks>
+    /// <summary>The edges the checkout actually declares, which both the rule and its witness use.</summary>
+    private static IReadOnlyList<GraphManifest.Edge> A7Edges() => ComponentGraph.Projects
+        .SelectMany(static project => project.ReferencedAssemblyNames
+            .Select(target => new GraphManifest.Edge(project.AssemblyName, target)))
+        .OrderBy(static edge => edge.From, StringComparer.Ordinal)
+        .ThenBy(static edge => edge.To, StringComparer.Ordinal)
+        .ToArray();
+
+    private static IEnumerable<string> A7Violations()
+    {
+        var actual = A7Edges();
 
         // A MULTISET comparison, not a set difference. LINQ's Except deduplicates both operands,
         // so a project that declares the same ProjectReference twice would compare equal to one
         // that declares it once - and a duplicate edge is exactly the drift this rule exists to
         // catch. Both directions are reported: an edge the component grew without amending
         // ADR 0001, and an edge the manifest promises that the checkout no longer has.
-        var difference = Counted(actual, +1)
+        return Counted(actual, +1)
             .Concat(Counted(ArchitectureRules.DeclaredEdges, -1))
             .GroupBy(static entry => entry.Edge, StringComparer.Ordinal)
             .Select(static group => (Edge: group.Key, Delta: group.Sum(static entry => entry.Sign)))
@@ -99,15 +128,19 @@ public sealed class ProjectFileRuleTests
                 : $"manifest has {-entry.Delta} more: {entry.Edge}")
             .OrderBy(static message => message, StringComparer.Ordinal);
 
-        Assert.Empty(difference);
-
         static IEnumerable<(string Edge, int Sign)> Counted(
             IEnumerable<GraphManifest.Edge> edges, int sign) =>
             edges.Select(edge => ($"{edge.From} -> {edge.To}", sign));
+    }
+
+    [Fact]
+    public void A7_Declared_Edges_Match_The_Graph_Manifest_Exactly()
+    {
+        Assert.Empty(A7Violations());
 
         // The witness: an edge that is not in the manifest is seen as added.
         var witness = ComponentGraph.Witness("A8-profile-references-runtime.csproj.witness");
-        var withWitness = actual
+        var withWitness = A7Edges()
             .Concat(witness.ReferencedAssemblyNames
                 .Select(target => new GraphManifest.Edge(witness.AssemblyName, target)));
 

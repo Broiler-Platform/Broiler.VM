@@ -59,6 +59,15 @@ are a doctored checkout:
 ## 4. Exclusions — what this bundle does not show
 
 1. **Thirty rules have no report**, for the structural reason in section 1.
+
+   > **Correction, 2026-09-02.** Twenty-two of the thirty are reported by
+   > [Bundle JS-ANDROID-011](../js-android-011/README.md), and section 1's reason was right about
+   > the shape and wrong about the remedy: fifteen of them already had a named helper returning a
+   > collection, so the report calls it and nothing was extracted; seven had a collection built
+   > inline, extracted as a MOVE with the test now calling the extracted function. **Eight remain**
+   > — six assert equalities or an absence rather than producing messages, and two assert their
+   > clean direction over a witness input rather than over the checkout. **Nothing in the reports
+   > below is edited.**
 2. **A message is what a rule said, not proof that the rule is right.** The report quotes; it does
    not check.
 3. **The clean reports are this checkout on this machine.** They are a floor, not a measurement.
