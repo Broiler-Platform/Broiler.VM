@@ -55,6 +55,12 @@ one the row is about rather than an unrelated red.
    injection rather than as the subject of a control, and K1 — which holds the register and the
    checkout to the same composition set — has none at all. It is what would notice the head being
    deleted from the register, or a fourth root arriving unregistered.
+
+   > **Correction, 2026-09-02.** K1's half of this exclusion is closed by
+   > [Bundle JS-ANDROID-004](../js-android-004/README.md), which deletes the Android row from the
+   > register and shows K1 failing **alone** — the other three rules iterate the rows, so a
+   > deleted row is one they no longer check. K2's half stands: it still fires only as a side
+   > effect. **Nothing in the log below is edited.**
 3. **Nothing here runs on a device.** These are suite controls over files. What the head does on
    Android is JS-ANDROID-001's and JS-ANDROID-002's subject.
 4. **Nothing here is reviewed**, and no milestone moves.

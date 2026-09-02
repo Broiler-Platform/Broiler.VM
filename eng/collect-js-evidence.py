@@ -62,6 +62,7 @@ ANDROID_PROJECT = os.path.join(
     "src", "compositions", "Broiler.VM.Composition.JavaScript.Android")
 ANDROID_HEAD = os.path.join(ANDROID_PROJECT, "MainActivity.cs")
 ANDROID_PACKAGE = "com.broiler.vm.composition.javascript.android"
+COMPOSITION_REGISTER = os.path.join("docs", "compositions.md")
 ANDROID_CATALOG_BASELINE = os.path.join(
     "src", "tests", "Broiler.VM.Architecture.Tests", "catalogs", "android.catalog.txt")
 ANDROID_CLOSURE = os.path.join(
@@ -397,6 +398,25 @@ CONTROLS = [
         "dimension no site answers on.",
         CORPUS_MANIFEST,
         lambda text: text.replace("|WallClock|Runtime", "|HostCalls|Runtime"),
+    ),
+    (
+        "K1-the-register-loses-the-android-row",
+        "The Android head's row is deleted from docs/compositions.md while the root stays in the "
+        "checkout. K1 ALREADY REJECTS THIS SHAPE THREE WAYS - an undocumented root, a phantom row, "
+        "a bad kind - and all three are asserted over lists built in memory inside its own test. "
+        "So what was shown is that the function rejects; what was not shown is that the RULE READS "
+        "THE REAL REGISTER AND THE REAL CHECKOUT. This is the injection a real drift takes: a root "
+        "lands, or is renamed, and the register is not updated. The other rules stay silent on it "
+        "by construction - K2, K3 and K4 iterate the rows, so a deleted row is a row they no "
+        "longer check - which is why this failure is K1's alone and why nothing else would have "
+        "caught it.",
+        COMPOSITION_REGISTER,
+        lambda text: text.replace(
+            "| `Broiler.VM.Composition.JavaScript.Android` | demonstration | `broiler.javascript` "
+            "| `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format` | none "
+            "registered | none registered | "
+            "`src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-001` |\n",
+            ""),
     ),
     (
         "K3-the-android-catalog-baseline-drifts-from-what-the-head-printed",
