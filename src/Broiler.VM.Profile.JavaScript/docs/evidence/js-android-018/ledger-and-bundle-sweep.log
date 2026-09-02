@@ -1,0 +1,177 @@
+# The sweep of the two ledgers and every evidence bundle, 2026-09-02.
+#
+# The STALE markers on BUNDLE lines are false positives BY DESIGN and are left in the
+# log rather than filtered out: a bundle is a dated, immutable record, so a figure it
+# states was true on its collection date. vm-1's '54 rules' is not a defect; it is what
+# the register held at VM-1. The markers are what a naive comparison produces, and
+# keeping them shows the reader exactly which judgment the sweep could not make.
+#
+# The LEDGER lines are the finding. Both ledgers are live documents.
+
+what the tree says now: {"files": 61, "units": 1987, "annotations": 905, "artefacts": 64, "edges": 59, "product assemblies": 3, "packable assemblies": 3, "composition roots": 5, "family assemblies": 3, "ADR files": 12, "rules": 77}
+
+LEDGER  src/Broiler.VM.Profile.JavaScript/docs/roadmap.status.md  (10)
+      45 covered source files
+      45 files <-- STALE, tree says 61
+      41 units <-- STALE, tree says 1987
+      48 artefacts <-- STALE, tree says 64
+      three packable assemblies
+      eight edges
+      Two composition roots
+      two composition roots
+      77 rules ok
+      Five rules
+
+LEDGER  docs/roadmap.status.md  (3)
+      three packable assemblies
+      four rules
+      Two rules
+
+BUNDLE  docs/evidence/vm-0/README.md  (4)
+      28 rules <-- STALE, tree says 77
+      nine rules
+      six rules
+      28 rules <-- STALE, tree says 77
+
+BUNDLE  docs/evidence/vm-1/README.md  (29)
+      496 units <-- STALE, tree says 1987
+      543 units <-- STALE, tree says 1987
+      689 units <-- STALE, tree says 1987
+      forty-four units
+      sixty-nine units
+      two units
+      two units
+      1,592 units <-- STALE, tree says 1987
+      forty-four units
+      Sixty-nine units
+      three product assemblies
+      three product assemblies
+      54 rules <-- STALE, tree says 77
+      38 rules <-- STALE, tree says 77
+      43 rules <-- STALE, tree says 77
+      43 rules <-- STALE, tree says 77
+      48 rules <-- STALE, tree says 77
+      48 rules <-- STALE, tree says 77
+      49 rules <-- STALE, tree says 77
+      49 rules <-- STALE, tree says 77
+      50 rules <-- STALE, tree says 77
+      50 rules <-- STALE, tree says 77
+      52 rules <-- STALE, tree says 77
+      52 rules <-- STALE, tree says 77
+      53 rules <-- STALE, tree says 77
+      53 rules <-- STALE, tree says 77
+      54 rules <-- STALE, tree says 77
+      Four rules
+      five rules
+
+BUNDLE  docs/evidence/vm-2/README.md  (2)
+      two artefacts
+      three product assemblies
+
+BUNDLE  docs/evidence/vm-3/README.md  (3)
+      three product assemblies
+      two composition roots
+      Six rules
+
+BUNDLE  docs/evidence/vm-5/README.md  (2)
+      three packable assemblies
+      five rules
+
+BUNDLE  docs/evidence/vm-6/README.md  (1)
+      three packable assemblies
+
+BUNDLE  src/Broiler.VM.Profile.JavaScript/docs/evidence/js-1/README.md  (1)
+      Two composition roots
+
+BUNDLE  src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-003/README.md  (3)
+      two rules
+      two rules
+      three rules
+
+BUNDLE  src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-004/README.md  (1)
+      two files
+
+BUNDLE  src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-005/README.md  (2)
+      two rules
+      four rules
+
+BUNDLE  src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-008/README.md  (1)
+      three rules
+
+BUNDLE  src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-009/README.md  (2)
+      four rules
+      76 rules <-- STALE, tree says 77
+
+BUNDLE  src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-010/README.md  (4)
+      76 rules <-- STALE, tree says 77
+      46 rules <-- STALE, tree says 77
+      Thirty rules
+      73 of 76
+
+BUNDLE  src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-011/README.md  (7)
+      76 rules <-- STALE, tree says 77
+      46 rules <-- STALE, tree says 77
+      68 rules <-- STALE, tree says 77
+      Eight rules
+      68 of 76
+      73 of 76
+      75 of 76
+
+BUNDLE  src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-012/README.md  (11)
+      five rules
+      76 rules <-- STALE, tree says 77
+      five rules
+      76 rules <-- STALE, tree says 77
+      73 rules <-- STALE, tree says 77
+      73 rules <-- STALE, tree says 77
+      Three rules
+      Five rules
+      73 of 76
+      75 of 76
+      73 of 76
+
+BUNDLE  src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-013/README.md  (5)
+      Forty-four units
+      79 units <-- STALE, tree says 1987
+      two rules
+      76 rules <-- STALE, tree says 77
+      75 of 76
+
+BUNDLE  src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-014/README.md  (5)
+      Forty-four units
+      three units
+      eight edges
+      77 rules ok
+      77 rules ok
+
+BUNDLE  src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-015/README.md  (9)
+      eight edges
+      Eight edges
+      Eight edges
+      two composition roots
+      two composition roots
+      two composition roots
+      two composition roots
+      Five composition roots
+      77 rules ok
+
+BUNDLE  src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-016/README.md  (5)
+      45 files <-- STALE, tree says 61
+      three packable assemblies
+      four review documents
+      four review documents
+      77 rules ok
+
+BUNDLE  src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-017/README.md  (10)
+      45 files <-- STALE, tree says 61
+      45 files <-- STALE, tree says 61
+      four units
+      three annotations
+      689 annotations <-- STALE, tree says 905
+      three annotations
+      three annotations
+      Forty-eight artefacts
+      three product assemblies
+      77 rules ok
+
+totals: {'LEDGER': 13, 'BUNDLE': 107}
