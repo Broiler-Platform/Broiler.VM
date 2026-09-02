@@ -358,8 +358,22 @@ jobs:
           # fetch an image says so on stdout and then `avdmanager` fails for a reason that reads
           # like an AVD problem; hiding the first message costs the next reader the whole trail.
           "$sdk/cmdline-tools/latest/bin/sdkmanager" "$image" "platform-tools"
-          echo no | "$sdk/cmdline-tools/latest/bin/avdmanager" create avd \
-            -n broiler -k "$image" --force
+          # STDIN FROM /dev/null, not from `echo no`. avdmanager asks whether to build a custom
+          # hardware profile; piping one line answers that question and leaves the tool reading a
+          # closed pipe, and it then exits WITHOUT creating the AVD and without a non-zero status.
+          # The failure surfaced four steps later as `Unknown AVD name [broiler]` from the
+          # emulator, which is the last place a reader would look for it. An explicit device
+          # profile means there is nothing to ask about in the first place.
+          "$sdk/cmdline-tools/latest/bin/avdmanager" create avd \
+            -n broiler -k "$image" --device pixel_6 --force < /dev/null
+
+          # And the AVD is CHECKED rather than assumed, for the reason above: the tool that
+          # creates it can decline to and still exit 0.
+          if ! "$sdk/emulator/emulator" -list-avds | grep -qx broiler; then
+            echo "avdmanager exited cleanly and created no AVD named broiler"
+            "$sdk/emulator/emulator" -list-avds || true
+            exit 1
+          fi
 
           # The emulator's own output goes to a file rather than to the void, because when it
           # fails to start it explains itself there and nowhere else.
