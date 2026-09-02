@@ -1,0 +1,23 @@
+A witness for rule J12's second clause: a register row that types the figures back in
+rather than citing them.
+
+Three shapes, on purpose. The defect this rule was minted for wrote its figure as a WORD,
+so a rule that read digits only would have been green over the sentence that actually
+rotted; the table line is the report's own row, copied into prose where it cannot be kept
+current; and the digit form is what a well-meaning correction types back in.
+
+    Forty-four units are assessed High or Critical, 3 of them carry a criterion, and the
+    report's table said | Required and missing | 41 | when this was written.
+
+The sentences below carry figures and no count of units against the criterion requirement,
+so they are not this rule's business and must not be reported: a register may count
+whatever else it likes, and a row that discusses falsification criteria while counting
+something else is discussing the subject rather than restating a figure.
+
+    Forty-eight artefacts are in the plan, one per covered product source file.
+
+    Every assurance annotation parses as two adjacent comment lines, or three where a
+    falsification criterion stands between them.
+
+    A tree may be published only when its record says five things at once, one of which is
+    that every unit assessed Security=High carries a falsification criterion.

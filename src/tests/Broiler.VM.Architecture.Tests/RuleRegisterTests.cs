@@ -294,10 +294,10 @@ public sealed class RuleRegisterTests
         // entry instead. None of the three milestones changes the other two counts: the one
         // Vacuous row is B3, which nothing in the graph can violate, and the one Deferred row
         // still awaits its own milestone.
-        Assert.Equal(74, byStatus["Active"]);
+        Assert.Equal(75, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(76, Loaded.Rules.Count);
+        Assert.Equal(77, Loaded.Rules.Count);
     }
 
     private static Register Load()
