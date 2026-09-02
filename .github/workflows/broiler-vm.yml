@@ -19,8 +19,10 @@
 # until 2026-09-01: that RID is one ADR 0012 marks RESERVED, no head in the consuming repository
 # targets macOS, and a lane publishing a RID the declared matrix does not hold is drift towards a
 # claim the ADR forbids rather than extra assurance. The SAME DAY the matrix gained linux-arm64 by
-# a decision of its own, so the third entry below is aspirational until this file's first run on an
-# arm64 runner and is inside the declared matrix either way. ADR 0012 carries both movements.
+# a decision of its own, and that entry has now run too: ubuntu-24.04-arm published and ran every
+# composition root as Native AOT on arm64 at the first attempt, with no tooling this file installs.
+# So no entry below is aspirational. ADR 0012 carries both movements and the limit on the third -
+# an instruction set shared with android-arm64 and nothing else.
 #
 # What has NOT changed is the sentence that matters: `docs/support.md` still claims no platform on
 # the strength of this lane, and it should not. A workflow that has not run is a plan; a workflow
