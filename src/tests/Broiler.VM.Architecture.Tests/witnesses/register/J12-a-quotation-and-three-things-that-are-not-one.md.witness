@@ -1,0 +1,26 @@
+A witness for rule J12's quotation exemption: one attributed quotation, which must not be
+reported, and three near-misses which must be.
+
+The exemption needs BOTH an attributing verb and a code span, because it is the one place in
+this rule where failing to recognise something lets a live figure through. The three below
+each have one half and not the other, and each carries a different figure - the clause
+reports a row and a claim, so three identical claims would collapse into one message and the
+test would pass while two of the three had stopped working.
+
+    The row said `45 covered source files are compared whole`, which stopped being true.
+
+Not exempt: a code span with no attributing verb before it. This is how a row would evade
+the clause by quoting itself.
+
+    The comparison covers `12 covered source files` in the current tree.
+
+Not exempt: an attributing verb with no code span. Reported speech is not a quotation, and
+the figure in it is the row's own.
+
+    The row said that 78 covered source files are compared whole.
+
+Not exempt: the verb is too far from the span. A sentence that wanders between the two is
+not attributing the one to the other.
+
+    The row said something that took a very long time indeed to write down and explain at
+    the length it deserved, concerning `93 covered source files`.
