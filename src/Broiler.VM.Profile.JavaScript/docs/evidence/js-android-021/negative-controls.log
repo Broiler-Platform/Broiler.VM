@@ -1,0 +1,38 @@
+# Controls for rule J12's quotation exemption, over the REAL register.
+#
+# THREE ARE CONTROLS: an injection the rule must report. THE FOURTH IS NOT, and says so.
+# It exercises the escape hatch the exemption creates - a live figure a row chose to
+# present as a quotation - and the suite stays GREEN on a stale number. That is the
+# limit JS-ANDROID-020 stated in prose, measured instead of asserted.
+#
+# What the exemption lets through is no longer silent: the report lists it on its own
+# line, so a reviewer auditing the hatch has the list rather than an absence.
+
+==============================================================================
+J12-a-code-span-with-no-verb-is-still-read
+  kind:  CONTROL - must be reported
+  what:  Half the exemption: a code span, and nothing attributing it. This is how a row would evade the clause by quoting itself, and it must not work.
+  suite: FAILED
+  J12 on the injected figure: reported  -> AS EXPECTED
+      the register row for D1 counts a subject the catalog computes without citing it: "45 covered source files" - a figure a human typed is current until the tree moves and silent when it does
+==============================================================================
+J12-a-verb-with-no-code-span-is-still-read
+  kind:  CONTROL - must be reported
+  what:  The other half: an attributing verb over reported speech. A paraphrase is the row's own sentence, not a quotation, and the figure in it is the row's own.
+  suite: FAILED
+  J12 on the injected figure: reported  -> AS EXPECTED
+      the register row for D1 counts a subject the catalog computes without citing it: "45 covered source files" - a figure a human typed is current until the tree moves and silent when it does
+==============================================================================
+J12-a-live-claim-inside-the-window-is-still-read
+  kind:  CONTROL - must be reported
+  what:  The implementation, not the design: a live figure standing BETWEEN the verb and the span it attributes. Blanking the whole match rather than the quoted group alone would swallow it, and the rule would be silently narrower than its own documentation.
+  suite: FAILED
+  J12 on the injected figure: reported  -> AS EXPECTED
+      the register row for D1 counts a subject the catalog computes without citing it: "45 covered source files" - a figure a human typed is current until the tree moves and silent when it does
+==============================================================================
+J12-a-quoted-live-claim-is-NOT-reported
+  kind:  LIMIT DEMONSTRATION - must NOT be reported
+  what:  NOT A CONTROL. The escape hatch, exercised: a live figure a row chose to present as a quotation. The suite stays green on a stale number, which is exactly what JS-ANDROID-020's first exclusion says and is worth measuring rather than asserting.
+  suite: PASSED
+  J12 on the injected figure: SILENT  -> AS EXPECTED
+  and the report traced it: the register row for D1 is quoting a figure rather than stating it, so this rule did not read it: "45 covered source files are compared whole"

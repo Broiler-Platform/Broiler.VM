@@ -75,6 +75,12 @@ while two of the three had stopped working.
 
 1. **The exemption is an escape hatch**, per section 2. Nothing here detects a row quoting a live
    claim to evade the clause, and no rule could without reading what the quotation is *about*.
+
+   > **Correction, 2026-09-02.** [Bundle JS-ANDROID-021](../js-android-021/README.md) measures
+   > this rather than leaving it asserted: an injection presents a live figure as a quotation and
+   > **the suite stays green on a stale number**. It is labelled a limit demonstration, not a
+   > control. The hatch is still not closed, but it is no longer silent - **the report lists what
+   > the exemption let through**, on its own line, so a reviewer has a list rather than an absence.
 2. **The verb list is a literal vocabulary**, which this component distrusts for good reason — rule
    J9's recogniser was defeated four times by rewording. The mitigation is that this one gates an
    exemption rather than a report, so an unrecognised verb costs a false report and not a missed
