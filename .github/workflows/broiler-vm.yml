@@ -347,7 +347,13 @@ jobs:
           sdk="$ANDROID_SDK_ROOT"
           image="system-images;android-36;google_apis;x86_64"
 
-          yes | "$sdk/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null
+          # Licences are accepted from a FILE and not from `yes |`. Under `set -o pipefail` the
+          # pipe form fails the step: sdkmanager stops reading, `yes` takes SIGPIPE, and the
+          # pipeline's status becomes its failure - `yes: standard output: Broken pipe`, which
+          # reads like a licence problem and is a shell one.
+          printf 'y
+%.0s' $(seq 1 50) > /tmp/android-licences
+          "$sdk/cmdline-tools/latest/bin/sdkmanager" --licenses < /tmp/android-licences > /dev/null
           "$sdk/cmdline-tools/latest/bin/sdkmanager" "$image" "platform-tools" > /dev/null
           echo no | "$sdk/cmdline-tools/latest/bin/avdmanager" create avd \
             -n broiler -k "$image" --force
