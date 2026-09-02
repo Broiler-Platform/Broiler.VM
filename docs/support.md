@@ -68,7 +68,8 @@ revision of that record before a fourth `PackageId` may appear; rule A6 asserts 
 | `linux-x64` | JIT, trimmed self-contained, Native AOT | **Demonstrated.** Every collection in `docs/evidence/` was taken on it, publishing and running the fixtures host, both composition roots and the package-only sample with trim and AOT warnings as errors |
 | `win-x64` | JIT, trimmed self-contained, Native AOT — **in the CI lane only** | **Not claimed.** No retained collection exists on it. The CI lane publishes and runs every composition root here as Native AOT on a stock runner, which is what a claim would need to be *about* and is not a claim. EX-45. **The reason this row used to give is withdrawn**: the publish does not need a `vcvars64` environment, it needs `vswhere.exe` on `PATH`, which ADR 0001 records and the lane confirms — EX-42 |
 | `linux-arm64` | JIT, trimmed self-contained, Native AOT — **in the CI lane only** | **Not claimed. Declared 2026-09-01**, and declared for the *architecture* rather than for a consumer: nothing publishes it, and it is the only place this component compiles arm64 at all. **A green job on it is not Android coverage** — it shares an instruction set with `android-arm64` and nothing else, not the runtime, not the trimming configuration, not the head. EX-45 |
-| `osx-x64`, `osx-arm64`, `win-arm64` | — | **Not claimed, and not declared.** ADR 0012 marks these reserved, and a reserved RID may never appear as a supported one. `osx-arm64` was attempted and passed in the CI lane until 2026-09-01, when the lane was brought back to the declared matrix — the ADR's revisions record the withdrawal, and that a reserved RID with a lane behind it is one edit away from being read as supported |
+| `win-arm64` | JIT, trimmed self-contained, Native AOT — **in the CI lane only** | **Not claimed. Declared 2026-09-01**, for the pair neither `win-x64` nor `linux-arm64` reaches: the Windows Native AOT toolchain targeting arm64. The limit on the row above applies here unchanged — this is not Android coverage either. EX-45 |
+| `osx-x64`, `osx-arm64` | — | **Not claimed, and not declared.** ADR 0012 marks these reserved, and a reserved RID may never appear as a supported one. A hosted runner exists for both, which is why the record states the rule rather than the list: collectible evidence is necessary and not sufficient, and macOS is published by no head and reaches no architecture or toolchain the declared four do not. `osx-arm64` was attempted and passed in the CI lane until 2026-09-01, when the lane was brought back to the declared matrix — the ADR's revisions record the withdrawal, and that a reserved RID with a lane behind it is one edit away from being read as supported |
 | `android-arm64`, `android-x64` | — | **Excluded.** The consuming repository's Android head is `net10.0-android36.0` on Mono with trimming off, so the exclusion's original reason — no evidence that ILCompiler Native AOT targets an Android RID — answers a question that head does not ask. The gap that would have to close first is narrower: this component has no Android-targeted project and no device or emulator harness, and *publish and run* on an Android RID means an application package and a device. EX-32 |
 
 **One machine, one RID for every retained collection.** That is EX-45, and it is still the widest
@@ -95,10 +96,11 @@ appear in a support table — so the row is gone and the lane entry with it. Not
 nothing is now unclaimed that was not: what a reader loses is a row that implied this component was
 going somewhere it has not decided to go.
 
-**One row arrived by the opposite route, and the difference is the point.** `linux-arm64` is not in
-this table because a lane runs on it; it is here because the matrix was widened by a dated decision
-that states what the row does and does not stand for, and the lane follows the matrix rather than
-leading it. That is the order the withdrawal above exists to restore.
+**Two rows arrived by the opposite route, and the difference is the point.** `linux-arm64` and
+`win-arm64` are not in this table because a lane runs on them; they are here because the matrix was
+widened by dated decisions that state what each row does and does not stand for, and the lane
+follows the matrix rather than leading it. That is the order the withdrawal above exists to
+restore.
 
 ---
 

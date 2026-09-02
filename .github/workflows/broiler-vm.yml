@@ -21,8 +21,10 @@
 # claim the ADR forbids rather than extra assurance. The SAME DAY the matrix gained linux-arm64 by
 # a decision of its own, and that entry has now run too: ubuntu-24.04-arm published and ran every
 # composition root as Native AOT on arm64 at the first attempt, with no tooling this file installs.
-# So no entry below is aspirational. ADR 0012 carries both movements and the limit on the third -
-# an instruction set shared with android-arm64 and nothing else.
+# win-arm64 followed, for the toolchain-and-architecture pair no other entry compiles. ADR 0012
+# carries every movement, the limit on the arm64 rows - an instruction set shared with
+# android-arm64 and nothing else - and the rule the matrix follows, which is worth reading before
+# a fifth entry is added to it.
 #
 # What has NOT changed is the sentence that matters: `docs/support.md` still claims no platform on
 # the strength of this lane, and it should not. A workflow that has not run is a plan; a workflow
@@ -137,9 +139,19 @@ jobs:
           # and nothing else: not the runtime, not the trimming configuration that head turns
           # off, not the packaging, not the head. ADR 0012's third 2026-09-01 revision carries
           # the same limit, because a reader meeting this matrix should not have to find it.
+          #
+          # win-arm64 covers the pair neither of those reaches: the WINDOWS Native AOT toolchain
+          # targeting arm64. win-x64 compiles that toolchain for x64, linux-arm64 compiles arm64
+          # through a different one, and the MSVC link path targeting arm64 is compiled by
+          # nothing else here. ADR 0012's fourth revision of the same date states the rule all
+          # four rows follow, which is worth knowing before adding a fifth: a RID is declared when
+          # its evidence is collectible on a lane AND it is either published by a consumer or
+          # covers an architecture or toolchain no declared RID already reaches. A runner existing
+          # is the first half and not the second, which is why macOS stays reserved.
           - { os: ubuntu-latest, rid: linux-x64 }
           - { os: windows-latest, rid: win-x64 }
           - { os: ubuntu-24.04-arm, rid: linux-arm64 }
+          - { os: windows-11-arm, rid: win-arm64 }
     steps:
       - uses: actions/checkout@v4
 

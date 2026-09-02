@@ -227,9 +227,9 @@ untruthful support claim section 16 stops for.
 ## Decision - the declared RID matrix, and what "claimed" costs
 
 The declared RID matrix for Broiler.VM core compositions is
-{ win-x64, linux-x64, linux-arm64 } - two at VM-0 (a decision on paper; no file
-at VM-0) and the third added on 2026-09-01 by the revision at the end of this
-record. Declaring a RID means the component intends to collect publish-and-run
+{ win-x64, linux-x64, linux-arm64, win-arm64 } - two at VM-0 (a decision on
+paper; no file at VM-0) and two arm64 entries added on 2026-09-01 by the
+revisions at the end of this record. Declaring a RID means the component intends to collect publish-and-run
 evidence for it and will accept a recertification trigger when it changes. It is
 not a claim.
 
@@ -238,7 +238,8 @@ not a claim.
 | win-x64 | Declared, not claimed | A publish lane for it already exists in the surrounding repository, so the evidence is collectible rather than hypothetical |
 | linux-x64 | Declared, not claimed | As above |
 | linux-arm64 | Declared, not claimed - **added 2026-09-01** | **Declared for the architecture and not for a consumer**, which is what makes it different from the two rows above and is why it is spelled out. The surrounding repository publishes no arm64 head, and its Android head - the one that ships `android-arm64` - runs Mono and cannot be reached from here at all. This row is the only way the component exercises arm64 code generation and arm64 Native AOT, and hosted arm64 Linux runners make that evidence collectible rather than hypothetical, which is the same test the two rows above pass. **It stands for no other RID**: a green result here says nothing about Mono, about the Android runtime, about a head that turns trimming off, or about macOS |
-| win-arm64, osx-x64, osx-arm64 | Reserved - no evidence | The name may appear in a composition register marked reserved. It may never appear in a support table |
+| win-arm64 | Declared, not claimed - **added 2026-09-01** | Declared for what neither row above reaches: the **Windows Native AOT toolchain on arm64**. `win-x64` exercises that toolchain on x64 and `linux-arm64` exercises arm64 through a different one, so the intersection - the MSVC link path this record's EX-42 correction is about, targeting arm64 - is compiled by nothing else in the matrix. Hosted Windows arm64 runners make the evidence collectible rather than hypothetical. **It stands for no other RID**, and the limit on the row above applies here unchanged |
+| osx-x64, osx-arm64 | Reserved - no evidence | The name may appear in a composition register marked reserved. It may never appear in a support table |
 | android-arm64, android-x64 | Excluded pending pinned Native AOT platform references | Broiler.VM holds no evidence that ILCompiler Native AOT targets an Android RID, and the three Microsoft pages section 17 requires are unpinned: docs/platform-references.md (VM-0 decision on paper; no file at VM-0) is not created. See EX-32 |
 | browser-wasm and every wasm RID | Excluded | Terminology freeze, below |
 
@@ -247,9 +248,13 @@ already publishes those two RIDs and no other on a lane that runs on both host
 operating systems; the grounding for the third is in its own row and is a
 different kind of reason. Both are observed state in another component, not
 Broiler.VM evidence - the ledger's section 1 forbids treating another
-component's work as evidence here, and nothing above is offered as such. They
-explain only why declaring four or six RIDs would create a matrix with no
-lane on which any future claim could ever be collected.
+component's work as evidence here, and nothing above is offered as such. The
+sentence that stood here said declaring four or six RIDs would create a matrix
+with no lane on which any future claim could ever be collected. **The count was
+never the test** and the 2026-09-01 revisions say so: the test is that a
+declared RID have a lane that can reach it, and what changed is which RIDs a
+hosted runner can reach, not the rule. Four are reachable now and four are
+declared.
 
 **Terminology freeze.** In Broiler.VM, "WebAssembly" always names a guest VM
 profile - a bytecode language the core may host - and never a host RID or a
@@ -543,4 +548,55 @@ the withdrawal of a reserved RID from the lane; the second recorded that widenin
 to arm64 was not taken that day. This entry is where a reader learns it was taken
 the same day, on a decision made after the objection was heard, and what the
 objection bought - the limit above, which the matrix now carries.
+
+---
+
+### 2026-09-01 - win-arm64, and the rule the matrix has been following all along
+
+**What the record said.** That the matrix is { win-x64, linux-x64, linux-arm64 },
+that `win-arm64` is *Reserved - no evidence*, and - in the VM-0 decision above -
+that the grounding for the original two "explains only why declaring four or six
+RIDs would create a matrix with no lane on which any future claim could ever be
+collected."
+
+**What replaced it.** `win-arm64` moves into the matrix, which is four, and the
+lane publishes and runs every composition root on it. The sentence about four is
+withdrawn: **the count was never the test.** What that paragraph was defending is
+that a declared RID must have a lane that can reach it - declaring what nothing
+can publish is a matrix of intentions - and hosted Windows and Linux arm64
+runners changed which RIDs a lane can reach. The rule did not move; the reachable
+set did.
+
+**Its grounding is the intersection nothing else compiles.** `win-x64` exercises
+the Windows Native AOT toolchain on x64. `linux-arm64` exercises arm64 through a
+different toolchain entirely. Neither compiles the MSVC link path - the one
+EX-42's correction above is about - **targeting arm64**, and that is what this row
+is for. It is the same shape of reason as `linux-arm64`'s and not a copy of it:
+that row covers an architecture the matrix did not reach, this one covers a
+toolchain-and-architecture pair it did not reach.
+
+**So the matrix is a rule now and not a list**, stated once here because four rows
+with four different justifications invite a fifth added by resemblance. A RID is
+declared when **both** hold: its evidence is collectible on a lane this component
+can run, **and** it is either published by a consumer or covers an architecture or
+toolchain no declared RID already reaches. The first clause is necessary and not
+sufficient, which is the half a reader is most likely to drop.
+
+**And that is why macOS stays reserved**, though it would pass the first clause
+easily - `macos-latest` is an arm64 runner and this lane published on it this
+morning. It fails the second: no head in the consuming repository targets macOS,
+and its architectures are already reached by the two arm64 rows and by `win-x64`.
+A RID declared because a runner exists for it is the matrix of intentions the
+paragraph above was written against.
+
+**What it does not settle.** No RID claim moves; declaring is not claiming, and
+none of the four has a retained collection except `linux-x64`. The Android
+exclusion is untouched: no Android-targeted project and no device or emulator
+harness, and no arm64 row here reaches it - `android-arm64` shares an instruction
+set with two declared RIDs and a runtime with neither.
+
+**What is not edited.** The three revisions above stand as written, including the
+second, which refused an arm64 RID as a silent proxy, and the third, which
+declared one with its limit written down. This entry adds the fourth row and the
+rule all four have been following.
 
