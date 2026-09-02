@@ -68,6 +68,13 @@ are a doctored checkout:
    > — six assert equalities or an absence rather than producing messages, and two assert their
    > clean direction over a witness input rather than over the checkout. **Nothing in the reports
    > below is edited.**
+   >
+   > **Second correction, 2026-09-02.** Five of those six are reported by
+   > [Bundle JS-ANDROID-012](../js-android-012/README.md), taking the count to **73 of 76**: `C1`,
+   > `C3` and `E1` restated as message lists, and `M1` and `N10` found to have returned message
+   > lists all along. The sixth, `E5`, stays unreported for a reason neither correction had right —
+   > it is a **Deferred** row the register forbids any test to assert. `J10` and `J11` are
+   > unchanged.
 2. **A message is what a rule said, not proof that the rule is right.** The report quotes; it does
    not check.
 3. **The clean reports are this checkout on this machine.** They are a floor, not a measurement.

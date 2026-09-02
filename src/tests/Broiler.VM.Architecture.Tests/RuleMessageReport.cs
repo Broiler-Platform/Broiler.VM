@@ -97,19 +97,33 @@ internal static class RuleReport
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>Forty-six of the register's seventy-six rules are here, and the split is not arbitrary.</b>
-/// Groups A, B, K, N and V express their rules as functions returning the messages they would
-/// report - <c>ArchitectureRules.A1</c>, <c>ApiBaselineRules.V5</c>, and so on - so a reporter can
-/// call one and write down the answer.
+/// <b>This class holds groups A, B and V. The other reports live beside the tests whose inputs
+/// they mirror</b>, in <c>CompositionRegisterTests</c>, <c>DiagnosticRegistryRuleTests</c>,
+/// <c>ReviewRecordRuleTests</c>, <c>AssuranceRuleTests</c>, <c>BaselineRegisterTests</c>,
+/// <c>CoreContractVersionTests</c>, <c>PackageRuleTests</c>, <c>ProjectFileRuleTests</c>,
+/// <c>LegacyBoundaryTests</c>, <c>ApiSurfaceTests</c> and <c>ProfileApiSurfaceTests</c>.
 /// </para>
 /// <para>
-/// <b>The other thirty cannot be reported by this mechanism, and saying why matters more than the
-/// count.</b> Groups C, D, E, H, J, L and M, plus A7, A14 and N10, assert inline: the rule IS the
-/// test body, with local helpers and assertions rather than a function returning messages. There
-/// is nothing for a reporter to call. Giving them one means extracting a function from each test -
-/// a refactor of the tests themselves, with the risk that the extracted function and the test
-/// drift apart, which is the defect this whole reporting idea exists to avoid. It is a separate
-/// piece of work and it is named here rather than left as an absence a reader has to notice.
+/// <b>Seventy-three of the register's seventy-six rules are reported, and the three that are not
+/// are named rather than left as an absence a reader has to notice.</b>
+/// </para>
+/// <list type="bullet">
+/// <item><b>E5</b> is <b>Deferred</b> and superseded at VM-1 by V1 and V2. No test asserts it,
+/// because <c>RuleRegisterTests</c> requires that none does. A report on it would be writing the
+/// rule the register says is not asserted.</item>
+/// <item><b>J10</b> and <b>J11</b> assert their clean direction over WITNESS inputs rather than
+/// over the checkout, so there is no "what this rule said here" to write down.</item>
+/// </list>
+/// <para>
+/// <b>The count moved twice, and both moves were corrections rather than additions.</b> It was 46
+/// while thirty rules were called unreportable for asserting inline; fifteen of those already had
+/// a named helper returning a collection and needed no extraction at all, and seven were extracted
+/// as a MOVE - the test calling the extracted function, because two implementations of one rule is
+/// the drift a report exists to prevent. It was 68 while six were called unreportable for
+/// asserting equalities or an absence; two of those six had returned message lists all along and
+/// were mis-sorted by a survey that read their shape without opening their bodies, three were
+/// genuinely restated as message lists on 2026-09-02 under Bundle JS-ANDROID-012, and the sixth is
+/// E5, which turned out not to be a rule this suite asserts at all.
 /// </para>
 /// <para>
 /// <b>Each report mirrors its tests' inputs exactly.</b> Where a test sweeps every project, so

@@ -37,6 +37,60 @@ public sealed class ApiSurfaceTests
 
     private const string WriteSwitch = "BROILER_API_WRITE";
 
+    /// <summary>
+    /// M1's clean direction over this checkout.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>M1 never needed rewriting, and four bundles said it did.</b> They recorded it among the
+    /// rules that "assert equalities between a value and a constant", which is not what it does:
+    /// <see cref="Violations"/> has returned a list of "exported but not declared" and "declared
+    /// but not exported" messages since M1 was written, and the test has always compared its count
+    /// to zero. The exclusion was a claim about a body nobody had read. It is worth recording as
+    /// exactly that, because a survey that classifies by shape will mis-sort whatever it does not
+    /// open.
+    /// </para>
+    /// <para>
+    /// The empty-surface clause is the only thing added here. The test asserts it separately
+    /// because it needs the surface anyway; the report needs it because a rule that described
+    /// nothing would compare nothing, find no disagreement, and report the silence of a satisfied
+    /// rule.
+    /// </para>
+    /// </remarks>
+    private static IReadOnlyList<string> M1Violations() => M1Violations(ApiSurface.Describe());
+
+    /// <inheritdoc cref="M1Violations()"/>
+    private static IReadOnlyList<string> M1Violations(IReadOnlyList<string> surface) =>
+        surface.Count == 0
+            ? ["the describer produced no public surface, so this rule compared nothing"]
+            : Violations(surface, Read(Path()));
+
+    /// <summary>Writes what M1 said about this checkout, when asked to.</summary>
+    /// <remarks>
+    /// Silent under the write switch, for the reason rules J3, J5 and J7 are: a run that is
+    /// REGENERATING the baseline has not compared anything against it, and reporting the
+    /// pre-regeneration disagreements would be reporting a comparison the rule declined to make.
+    /// </remarks>
+    [Fact]
+    public void RuleMessages_For_M1_Are_Written_When_Asked_For()
+    {
+        RuleReport.Write("M1",
+        [
+            ("M1", () => Writing ? [] : M1Violations()),
+        ]);
+
+        if (RuleReport.Destination is { } destination)
+        {
+            Assert.True(
+                File.Exists(System.IO.Path.Combine(destination, "M1.txt")),
+                "a report for M1 was asked for and none was written");
+        }
+    }
+
+    /// <summary>Whether this run regenerates the baseline rather than asserting against it.</summary>
+    private static bool Writing =>
+        string.Equals(Environment.GetEnvironmentVariable(WriteSwitch), "1", StringComparison.Ordinal);
+
     [Fact]
     public void M1_The_Public_Surface_Is_Exactly_What_The_Baseline_Declares()
     {
@@ -44,13 +98,13 @@ public sealed class ApiSurfaceTests
 
         Assert.NotEmpty(surface);
 
-        if (string.Equals(Environment.GetEnvironmentVariable(WriteSwitch), "1", StringComparison.Ordinal))
+        if (Writing)
         {
             Write(surface);
             return;
         }
 
-        var violations = Violations(surface, Read(Path()));
+        var violations = M1Violations(surface);
 
         Assert.True(
             violations.Count == 0,

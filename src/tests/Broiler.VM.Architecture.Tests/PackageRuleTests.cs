@@ -41,8 +41,27 @@ public sealed class PackageRuleTests
         "Broiler.VM.Runtime",
     ];
 
-    [Fact]
-    public void C1_A_Pack_Produces_Exactly_The_Three_Declared_Packages()
+    /// <summary>
+    /// C1's clean direction: the pack produced exactly the three declared packages, with symbols.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Rewritten from equalities into messages on 2026-09-02</b>, so a report can say WHICH
+    /// package the pack got wrong rather than only that it got something wrong. Four bundles
+    /// recorded C1 as unreportable because it compared two sequences rather than producing a list,
+    /// and that was a true description of how it was written rather than of what it claims.
+    /// </para>
+    /// <para>
+    /// <b>The rewrite preserves the rule's strength, and the length clause is why.</b> Two ordered
+    /// sequences compared with <c>Assert.Equal</c> disagree when one holds a duplicate; a
+    /// membership check over the same two does not. A pack that emitted
+    /// <c>Broiler.VM.Runtime.nupkg</c> twice and nothing for <c>Broiler.VM.Binary</c> would have
+    /// failed the old assertion, so the count of matched lines is checked as well as their
+    /// membership. Losing that would be exactly the quiet weakening this whole reporting exercise
+    /// exists to prevent.
+    /// </para>
+    /// </remarks>
+    private static IEnumerable<string> C1Violations()
     {
         var log = Retained("pack.log");
 
@@ -51,27 +70,58 @@ public sealed class PackageRuleTests
             .Select(match => (Name: match.Groups["name"].Value, Kind: match.Groups["kind"].Value))
             .ToArray();
 
-        Assert.Equal(
-            Packages.OrderBy(static name => name, StringComparer.Ordinal),
-            produced.Where(static entry => entry.Kind == "nupkg")
+        // Both kinds, on the same terms. A symbol package for each, and one apiece: a package
+        // without symbols is a package a consumer cannot step into, and the pack step is the only
+        // place that can be noticed.
+        foreach (var kind in new[] { "nupkg", "snupkg" })
+        {
+            var names = produced
+                .Where(entry => string.Equals(entry.Kind, kind, StringComparison.Ordinal))
                 .Select(static entry => entry.Name)
-                .OrderBy(static name => name, StringComparer.Ordinal));
+                .ToArray();
 
-        // A symbol package for each, and one apiece. A package without symbols is a package a
-        // consumer cannot step into, and the pack step is the only place that can be noticed.
-        Assert.Equal(
-            Packages.OrderBy(static name => name, StringComparer.Ordinal),
-            produced.Where(static entry => entry.Kind == "snupkg")
-                .Select(static entry => entry.Name)
-                .OrderBy(static name => name, StringComparer.Ordinal));
+            foreach (var stray in names
+                .Where(static name => !Packages.Contains(name, StringComparer.Ordinal))
+                .Distinct(StringComparer.Ordinal)
+                .OrderBy(static name => name, StringComparer.Ordinal))
+            {
+                yield return
+                    $"the pack produced a {kind} for {stray}, which is not one of the three " +
+                    "declared packages";
+            }
 
-        // And nothing else packed. Nine test-only projects and two composition roots are in the
-        // solution, and every one of them would be a package here if IsPackable had been
-        // forgotten. The counts the pack step wrote out are read rather than recomputed from the
-        // names above, so the two halves of this test can disagree.
-        Assert.Equal(3, Count(log, "nupkg: "));
-        Assert.Equal(3, Count(log, "snupkg: "));
+            foreach (var missing in Packages
+                .Where(name => !names.Contains(name, StringComparer.Ordinal))
+                .OrderBy(static name => name, StringComparer.Ordinal))
+            {
+                yield return $"the pack produced no {kind} for {missing}";
+            }
+
+            if (names.Length != Packages.Length)
+            {
+                yield return
+                    $"the pack log names {names.Length} {kind} files for {Packages.Length} " +
+                    "declared packages";
+            }
+
+            // And nothing else packed. Nine test-only projects and two composition roots are in
+            // the solution, and every one of them would be a package here if IsPackable had been
+            // forgotten. The counts the pack step wrote out are READ rather than recomputed from
+            // the names above, so the two halves of this rule can disagree.
+            var counted = Count(log, kind + ": ");
+
+            if (counted != Packages.Length)
+            {
+                yield return
+                    $"the pack log counts {counted} {kind}, and {Packages.Length} packages are " +
+                    "declared";
+            }
+        }
     }
+
+    [Fact]
+    public void C1_A_Pack_Produces_Exactly_The_Three_Declared_Packages() =>
+        Assert.Empty(C1Violations());
 
     /// <summary>C2's clean direction: no Broiler dependency outside the three packages.</summary>
     /// <remarks>
@@ -92,19 +142,22 @@ public sealed class PackageRuleTests
         .ToArray();
 
     /// <summary>
-    /// Writes what the reportable group C rule said about this checkout, when asked to.
+    /// Writes what group C's rules said about this checkout, when asked to.
     /// </summary>
     /// <remarks>
-    /// <b>C1 and C3 are not here.</b> C1 asserts equalities over package metadata rather than
-    /// producing a collection, and C3's clean direction is an assertion that a language name does
-    /// not appear - a search whose success is an absence, with no message list behind it.
-    /// Expressing either as messages would be writing a new rule rather than reporting the one
-    /// that exists.
+    /// <b>All three are here since 2026-09-02.</b> C1 and C3 were excluded while they were written
+    /// as equalities and as an absence; they are written as message lists now, and the decision to
+    /// restate them is recorded in Bundle JS-ANDROID-012 rather than taken quietly here.
     /// </remarks>
     [Fact]
     public void RuleMessages_For_Group_C_Are_Written_When_Asked_For()
     {
-        RuleReport.Write("C", [("C2", () => C2Violations(NuspecDependencies()))]);
+        RuleReport.Write("C",
+        [
+            ("C1", C1Violations),
+            ("C2", () => C2Violations(NuspecDependencies())),
+            ("C3", C3Violations),
+        ]);
 
         if (RuleReport.Destination is { } destination)
         {
@@ -140,33 +193,70 @@ public sealed class PackageRuleTests
             Assert.Contains(dependency, Packages, StringComparer.Ordinal));
     }
 
-    [Fact]
-    public void C3_No_Produced_Package_Names_A_Language_In_Its_Text()
+    /// <summary>
+    /// The language names a produced package may not carry.
+    /// </summary>
+    /// <remarks>
+    /// The core ships no language profile, and roadmap section 14 makes "a language capability
+    /// implied by package or API" a packaging failure. A package whose description mentioned one
+    /// would be implying exactly that to everyone who reads a feed listing.
+    /// </remarks>
+    private static readonly string[] Languages =
+    [
+        "javascript", "ecmascript", "typescript", "python", "lua", "ruby", "wasm",
+        "webassembly", "java", "c#", "csharp", "php", "perl",
+    ];
+
+    /// <summary>
+    /// C3's clean direction: no produced package's text names a language.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Rewritten from an absence into messages on 2026-09-02.</b> Four bundles recorded C3 as
+    /// unreportable because its clean direction is a search whose success is nothing being found,
+    /// "with no message list behind it". That was wrong on its own terms: the list of languages the
+    /// search DID find was already computed and then thrown at <c>Assert.Empty</c>, so the messages
+    /// existed and were merely never phrased as any. An absence is reportable exactly when
+    /// something can be named as present.
+    /// </para>
+    /// <para>
+    /// The empty-text clause is the one that matters more than the languages. A rule that searched
+    /// no text would find no language and report silence, and silence from a rule that looked at
+    /// nothing is indistinguishable from silence from a rule that looked and was satisfied - which
+    /// is the misreading the whole reporting mechanism exists to prevent, so it is a message here
+    /// rather than a bare assertion in a test the report cannot see.
+    /// </para>
+    /// </remarks>
+    private static IEnumerable<string> C3Violations()
     {
-        var manifests = Retained("nuspecs.txt");
-
-        // The core ships no language profile, and roadmap section 14 makes "a language capability
-        // implied by package or API" a packaging failure. A package whose description mentioned
-        // one would be implying exactly that to everyone who reads a feed listing.
-        string[] languages =
-        [
-            "javascript", "ecmascript", "typescript", "python", "lua", "ruby", "wasm",
-            "webassembly", "java", "c#", "csharp", "php", "perl",
-        ];
-
         var text = string.Join(
             "\n",
-            Regex.Matches(manifests, @"<(?<tag>id|title|description|tags|releaseNotes)>(?<text>[^<]*)</\k<tag>>")
+            Regex.Matches(
+                    Retained("nuspecs.txt"),
+                    @"<(?<tag>id|title|description|tags|releaseNotes)>(?<text>[^<]*)</\k<tag>>")
                 .Select(static match => match.Groups["text"].Value));
 
-        Assert.NotEqual(0, text.Length);
+        if (text.Length == 0)
+        {
+            yield return
+                "the retained nuspecs carry no id, title, description, tags or release notes " +
+                "text, so this rule searched nothing";
 
-        var named = languages
-            .Where(language => text.Contains(language, StringComparison.OrdinalIgnoreCase))
-            .ToArray();
+            yield break;
+        }
 
-        Assert.Empty(named);
+        foreach (var language in Languages
+            .Where(language => text.Contains(language, StringComparison.OrdinalIgnoreCase)))
+        {
+            yield return
+                $"a produced package's id, title, description, tags or release notes names " +
+                $"the language {language}";
+        }
     }
+
+    [Fact]
+    public void C3_No_Produced_Package_Names_A_Language_In_Its_Text() =>
+        Assert.Empty(C3Violations());
 
     [Fact]
     public void B3_No_Product_Assembly_Names_A_Broiler_Assembly_Outside_The_Component()

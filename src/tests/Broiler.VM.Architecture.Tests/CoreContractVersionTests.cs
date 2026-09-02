@@ -24,13 +24,56 @@ public sealed class CoreContractVersionTests
     private static readonly string[] ContractBearing =
         ["0002", "0003", "0004", "0005", "0006", "0007", "0008", "0009", "0010", "0011"];
 
-    [Fact]
-    public void E1_The_Version_Constants_Match_The_Core_Contract_Adr()
+    /// <summary>
+    /// E1's clean direction: ADR 0003's header fields and the constants agree.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Rewritten from two equalities into messages on 2026-09-02</b>, so a report can say which
+    /// of the two numbers disagreed and in which direction. A rule whose failure is
+    /// "Assert.Equal() Failure: 1 != 2" tells a reader which two values differed and nothing about
+    /// which field of which record produced them.
+    /// </para>
+    /// <para>
+    /// A MISSING field is a message rather than a separate assertion, which is a small widening and
+    /// a deliberate one: the old <c>HeaderInteger</c> helper asserted the field's existence before
+    /// comparing, so a record that had dropped the field failed with a different message from one
+    /// that had the field wrong. Both are the same defect - ADR 0003 no longer states the version
+    /// the build implements - and they read as one rule now.
+    /// </para>
+    /// </remarks>
+    private static IEnumerable<string> E1Violations()
     {
         var adr = Adrs.Single(static file => file.Number == "0003");
 
-        Assert.Equal(VmCoreContract.Version, HeaderInteger(adr, "Core contract version"));
-        Assert.Equal(VmCoreContract.MinimumSupportedVersion, HeaderInteger(adr, "Minimum supported version"));
+        return E1FieldViolations(adr, "Core contract version", VmCoreContract.Version)
+            .Concat(E1FieldViolations(
+                adr, "Minimum supported version", VmCoreContract.MinimumSupportedVersion));
+    }
+
+    /// <summary>One header field against the constant that implements it.</summary>
+    private static IEnumerable<string> E1FieldViolations(AdrFile adr, string field, int constant)
+    {
+        var declared = TryHeaderInteger(adr, field);
+
+        if (declared is null)
+        {
+            yield return
+                $"{adr.FileName} has no **{field}:** header field, and the build implements " +
+                $"{constant}";
+        }
+        else if (declared.Value != constant)
+        {
+            yield return
+                $"{adr.FileName} declares {field} {declared.Value}, and the build implements " +
+                $"{constant}";
+        }
+    }
+
+    [Fact]
+    public void E1_The_Version_Constants_Match_The_Core_Contract_Adr()
+    {
+        Assert.Empty(E1Violations());
 
         // The witness: a record whose header fields disagree with the constants.
         var witness = Witness("E1-wrong-contract-version-fields.md.witness");
@@ -63,16 +106,27 @@ public sealed class CoreContractVersionTests
     /// Writes what the reportable group E rules said about this checkout, when asked to.
     /// </summary>
     /// <remarks>
-    /// <b>E1 and E5 are not here.</b> E1 asserts two equalities between a header field and a
-    /// constant, and E5 asserts nothing that produces a collection at all; expressing either as
-    /// messages would be writing a new rule rather than reporting the one that exists, and a rule
-    /// nobody decided to change is not one a reporting mechanism may quietly restate.
+    /// <para>
+    /// <b>E1 joined them on 2026-09-02</b>, rewritten from two equalities into a message list.
+    /// </para>
+    /// <para>
+    /// <b>E5 is not here, and the reason recorded until 2026-09-02 was the wrong one.</b> Four
+    /// bundles said E5 "produces no collection at all", which read as a rule written in an awkward
+    /// shape. It is not: E5 is <b>Deferred</b>, superseded at VM-1 by V1 and V2, and its register
+    /// row names <c>never</c> as its activation milestone. <b>No test asserts it</b>, because
+    /// <c>RuleRegisterTests.Deferred_Rules_Are_Not_Asserted_And_Name_A_Later_Milestone</c> requires
+    /// that none does. Reporting what E5 said about this checkout would mean writing the rule the
+    /// register says is not asserted, which is a stronger objection than the one on record: the
+    /// other exclusions were about how a rule is written, and this one is about whether the rule
+    /// exists.
+    /// </para>
     /// </remarks>
     [Fact]
     public void RuleMessages_For_Group_E_Are_Written_When_Asked_For()
     {
         RuleReport.Write("E",
         [
+            ("E1", E1Violations),
             ("E2", E2Violations),
             ("E3", E3Violations),
             ("E4", E4Violations),
@@ -207,15 +261,10 @@ public sealed class CoreContractVersionTests
             .ToHashSet(StringComparer.Ordinal);
     }
 
-    private static int HeaderInteger(AdrFile adr, string field)
-    {
-        var value = TryHeaderInteger(adr, field);
-
-        Assert.True(value is not null, $"{adr.FileName} has no **{field}:** header field.");
-
-        return value!.Value;
-    }
-
+    // HeaderInteger, which asserted a field's existence and then returned it, was deleted on
+    // 2026-09-02 when E1 became a message list: E1FieldViolations reports a missing field as a
+    // message, so the assertion had no caller left. Keeping it would have left a helper that
+    // enforced a clause nothing enforced any more.
     private static int? TryHeaderInteger(AdrFile adr, string field)
     {
         var match = Regex.Match(adr.Text, $@"\*\*{Regex.Escape(field)}:\*\*\s*(?<value>\d+)");
