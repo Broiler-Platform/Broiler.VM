@@ -1,0 +1,35 @@
+SCOPED RUN - the four composition controls, and NOT the other seventeen.
+
+The full suite-control matrix is collected by eng/collect-js-evidence.py, which runs every
+row in CONTROLS. This run exercises the four that hold the Android head's REGISTRATION and
+the artefacts it declares. A scoped run is not the matrix and says so here.
+
+A control PASSES when the injected suite exits non-zero and the reverted suite exits 0. The
+TEST NAMES matter as much as the verdict: a control whose row names one rule and whose
+injection fires four has not shown that rule reaching anything.
+
+[K1-the-register-loses-the-android-row] PASS
+    file:      docs\compositions.md
+    injected:  exit 1
+    reverted:  exit 0
+    failed:    CompositionRegisterTests.K1_The_Register_And_The_Checkout_Name_The_Same_Compositions
+
+[K2-the-register-claims-a-profile-the-android-head-does-not-compose] PASS
+    file:      docs\compositions.md
+    injected:  exit 1
+    reverted:  exit 0
+    failed:    CompositionRegisterTests.K2_Each_Row_Agrees_With_The_Reference_Set_And_The_Catalog
+
+[K3-the-android-catalog-baseline-drifts-from-what-the-head-printed] PASS
+    file:      src\tests\Broiler.VM.Architecture.Tests\catalogs\android.catalog.txt
+    injected:  exit 1
+    reverted:  exit 0
+    failed:    CompositionRegisterTests.K2_Each_Row_Agrees_With_The_Reference_Set_And_The_Catalog, CompositionRegisterTests.K3_Each_Catalog_Baseline_Matches_What_The_Published_Composition_Printed
+
+[K4-the-android-closure-ships-an-assembly-the-register-does-not-declare] PASS
+    file:      src\Broiler.VM.Profile.JavaScript\docs\evidence\js-android-001\closure-android.txt
+    injected:  exit 1
+    reverted:  exit 0
+    failed:    CompositionRegisterTests.K4_Each_Published_Closure_Contains_Exactly_What_It_Declares
+
+controls run: 4; passed: 4

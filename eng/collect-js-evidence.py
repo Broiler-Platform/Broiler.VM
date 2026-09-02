@@ -419,6 +419,22 @@ CONTROLS = [
             ""),
     ),
     (
+        "K2-the-register-claims-a-profile-the-android-head-does-not-compose",
+        "The Android head's row claims it composes com.example.absent instead of the profile the "
+        "head's own catalog table reports. K2 IS THE ONLY RULE THAT COMPARES THOSE TWO: K1 counts "
+        "profile IDs against profile assemblies and both counts stay one, K3 compares the baseline "
+        "with the retained catalog and neither moves, and K4 reads assemblies rather than "
+        "identities. So this fires K2 alone, which is what makes it a control for K2 rather than "
+        "another injection K2 happens to notice - the gap JS-ANDROID-003 and JS-ANDROID-004 both "
+        "recorded, where K2 fired only as a side effect of the K3 row. The drift it imitates is a "
+        "register edited to say what someone believed a composition composes rather than what its "
+        "catalog table says it does.",
+        COMPOSITION_REGISTER,
+        lambda text: text.replace(
+            "| `Broiler.VM.Composition.JavaScript.Android` | demonstration | `broiler.javascript` |",
+            "| `Broiler.VM.Composition.JavaScript.Android` | demonstration | `com.example.absent` |"),
+    ),
+    (
         "K3-the-android-catalog-baseline-drifts-from-what-the-head-printed",
         "The checked-in catalog baseline for the Android head gains a profile line the head never "
         "printed. THE POINT IS THAT THE RULE REACHES THIS ROW: K3 already has a rejecting "
