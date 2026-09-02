@@ -1,0 +1,24 @@
+SCOPED RUN - the two K1 controls, one per direction.
+
+A control PASSES when the injected suite exits non-zero and the reverted suite exits 0.
+
+K1 IS THE RULE THE OTHER THREE DEPEND ON, and these are its two directions: a root the
+register does not name, and a row naming a composition the checkout does not have. Both fire
+K1 ALONE, which is the claim - and the second could not have until K2, K3 and K4 stopped
+assuming that every row has a project, a baseline and a retained closure to be wrong about.
+
+[K1-the-register-names-a-composition-the-checkout-does-not-have] PASS
+    file:      docs\compositions.md
+    injected:  exit 1
+    reverted:  exit 0
+    fired:     K1
+    crashed:   nothing threw
+
+[K1-the-register-loses-the-android-row] PASS
+    file:      docs\compositions.md
+    injected:  exit 1
+    reverted:  exit 0
+    fired:     K1
+    crashed:   nothing threw
+
+controls run: 2; passed: 2
