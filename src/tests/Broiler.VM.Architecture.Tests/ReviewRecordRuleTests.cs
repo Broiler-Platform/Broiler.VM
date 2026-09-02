@@ -68,6 +68,16 @@ public sealed class ReviewRecordRuleTests
     /// </remarks>
     private static IReadOnlyList<ReviewDocument> Corpus { get; } = LoadCorpus();
 
+    /// <summary>How many review documents this component carries.</summary>
+    /// <remarks>
+    /// The COUNT is internal rather than the corpus, because ReviewDocument is a private nested
+    /// type and widening it would export the review model to publish one number. Rule J12's
+    /// figure catalog cites this: rule H1's row used to state it as "the four review documents"
+    /// and to name "the two evidence-bundle READMEs", both of which stopped being true many
+    /// bundles ago.
+    /// </remarks>
+    internal static int CorpusCount => Corpus.Count;
+
     private const string HumanReviewName = "HUMAN_REVIEW.md";
 
     /// <summary>

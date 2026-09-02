@@ -93,6 +93,14 @@ times.
 4. **The five reworded claims lost information.** A11 no longer says how many consumer profiles
    exist, because nothing computes that; the row is weaker and honest rather than precise and
    unverifiable. A reader wanting the number must count.
+
+   > **Correction, 2026-09-02.** [Bundle JS-ANDROID-016](../js-android-016/README.md) adds the
+   > six figures those claims needed, and **all five state their numbers again** - A11 cites
+   > `{graph:consumer-profiles}`, H1 `{review:documents}`, K3 two composition figures, V12 the
+   > contract-set size and K2 rule K2's own arity. Two of the six are declared rather than
+   > derived, and the rows citing them say so. **H1's row carried a second stale claim** - "the
+   > two evidence-bundle READMEs" - which the count clause never saw because the figure was
+   > attached to a noun rather than to "exist".
 5. **The catalog is curated.** The report's tables reuse labels, so a catalog built by slugging
    every label would resolve a citation to whichever row it met first. Sixteen figures are
    catalogued; a row needing a seventeenth must add it.

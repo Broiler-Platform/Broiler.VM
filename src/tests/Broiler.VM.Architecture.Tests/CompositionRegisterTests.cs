@@ -45,6 +45,10 @@ public sealed class CompositionRegisterTests
     private static IEnumerable<CompositionRules.Row> Registered =>
         Rows.Where(static row => Roots.Contains(row.Composition, StringComparer.Ordinal));
 
+    /// <summary>How many registered compositions have a root in the checkout.</summary>
+    /// <remarks>Internal so rule J12's figure catalog can cite it rather than a row typing it.</remarks>
+    internal static int RegisteredCount => Registered.Count();
+
     [Fact]
     public void K1_The_Register_And_The_Checkout_Name_The_Same_Compositions()
     {

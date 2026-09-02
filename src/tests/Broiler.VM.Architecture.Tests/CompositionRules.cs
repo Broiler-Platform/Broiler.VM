@@ -146,6 +146,19 @@ internal static class CompositionRules
     /// third differs is the drift this rule exists to find, and no one of them is taken as the
     /// authority over the other two.
     /// </remarks>
+    /// <summary>The independent statements of one fact that <see cref="K2"/> holds to each other.</summary>
+    /// <remarks>
+    /// Named here so the register can CITE how many there are instead of a row typing "three".
+    /// This is the rule's own arity rather than a count of the tree, and rule J12's row says so:
+    /// a fourth source means editing this array, and every row citing it follows.
+    /// </remarks>
+    internal static readonly string[] FactSources =
+    [
+        "what the composition project links",
+        "what the register row says",
+        "what the running binary reports in its catalog table",
+    ];
+
     internal static IEnumerable<string> K2(
         Row row,
         IReadOnlyList<string> referencedAssemblies,
