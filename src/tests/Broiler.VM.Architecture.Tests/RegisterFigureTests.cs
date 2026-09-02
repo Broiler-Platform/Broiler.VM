@@ -303,6 +303,9 @@ public sealed class RegisterFigureTests
                     Rows, figures.TryGetValue("criteria:missing", out var missing) ? missing : 0))
                 .Concat(RegisterFigureRules.UncitedExistenceClaims(Rows))
                 .Concat(RegisterFigureRules.UncitedSubjectCounts(Rows))),
+            // Its own line, because these are NOT violations. A reader auditing the escape hatch
+            // needs the list; J12's count needs to stay a count of things wrong.
+            ("J12-exempt", () => RegisterFigureRules.ExemptedQuotations(Rows)),
         ]);
 
         if (RuleReport.Destination is { } destination)

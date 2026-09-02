@@ -481,6 +481,44 @@ internal static class RegisterFigureRules
         RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     /// <summary>
+    /// Every figure a row got out of this rule by quoting it. REPORTED, NEVER JUDGED.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The escape hatch leaves a trace.</b> A control injected a live claim a row had chosen to
+    /// present as a quotation, and the suite stayed green on a stale figure - the exemption working
+    /// as designed, and equally the abuse it makes possible. Silence was the wrong answer to that:
+    /// a reviewer had no way to see that anything had been exempted at all.
+    /// </para>
+    /// <para>
+    /// <b>These are not violations and must never be counted as any.</b> They go to their own line
+    /// in the report, so J12's own count stays a count of things wrong and a reader wanting to
+    /// audit the hatch has the list to audit. That is the reporter's job exactly: say what
+    /// happened, decide nothing.
+    /// </para>
+    /// <para>
+    /// Only quotations carrying something this rule WOULD have read are listed. A row quoting a
+    /// sentence with no figure in it exempted nothing, and listing it would bury the ones that
+    /// matter under every other quotation in the register.
+    /// </para>
+    /// </remarks>
+    internal static IEnumerable<string> ExemptedQuotations(
+        IEnumerable<(string Id, string Text)> rows) => rows
+        .SelectMany(row => AttributedQuote.Matches(Regex.Replace(row.Text, Citation, " "))
+            .Cast<Match>()
+            .Select(match => (row.Id, Quoted: match.Groups["quoted"].Value)))
+        .Where(found =>
+            Counts.Any(pattern => pattern.IsMatch(found.Quoted)) ||
+            Existence.IsMatch(found.Quoted) ||
+            Subjects.Any(pattern => pattern.IsMatch(found.Quoted)) ||
+            OutstandingVocabulary.Any(phrase =>
+                found.Quoted.Contains(phrase, StringComparison.OrdinalIgnoreCase)))
+        .Select(found =>
+            $"the register row for {found.Id} is quoting a figure rather than stating it, so " +
+            $"this rule did not read it: \"{Trim(found.Quoted)}\"")
+        .Distinct(StringComparer.Ordinal);
+
+    /// <summary>
     /// The text a shape clause reads: citations resolved away, attributed quotations blanked.
     /// </summary>
     /// <remarks>
