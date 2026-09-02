@@ -1378,3 +1378,29 @@ exclusions put first.
 
 **What is not edited.** Every revision above stands as written.
 
+### 2026-09-02 - the budget entry the revision above did not carry
+
+**What the record said.** The revision above adds
+`Broiler.VM.Composition.JavaScript.Android`, states what it composes, why it is
+an application rather than a console program, and what it does not settle. **It
+carries no budget paragraph.** Every other project-adding revision in this record
+carries one, and this record's budget section is what authorises a project set at
+all: it says the set "may not grow without a dated revision".
+
+**What is now true.** The graph goes from 19 projects and 55 edges to 20 and 59.
+**The packable set is unchanged at exactly three**, and the head carries the
+literal `<IsPackable>false</IsPackable>`.
+
+**How the omission was found, and why it could stand.** A sweep of this record's
+prose for figures the tree contradicts, run first over the status ledger and
+extended here. **Nothing compared this record's stated graph size to the graph.**
+Rule A7 holds `graph.manifest.json` to the project files and both are the tree,
+so a budget sentence that stopped being true was a sentence no rule read - the
+same shape as rule J10's register row, one document over. Rule **A15** reads the
+last budget sentence here and compares it to `ComponentGraph`, so the next
+project-adding revision that omits its budget fails the suite rather than waiting
+for a sweep.
+
+**What is not edited.** Every revision above stands as written, including the one
+this completes.
+

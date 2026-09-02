@@ -58,6 +58,13 @@ tests, green after the three corrections.
 
 1. **ADR prose was not swept.** JS-ANDROID-017's exclusion named three documents and this covers
    two. The ADRs are the third and they are the ones the register cites as authoritative.
+
+   > **Correction, 2026-09-02.** [Bundle JS-ANDROID-019](../js-android-019/README.md) sweeps
+   > the ADRs and the profile decision records. **One defect**, made in this same session: ADR
+   > 0001's revision for the Android composition root carries no budget paragraph, so the
+   > record's last stated graph size was one revision behind. Rule **A15** now reads that
+   > sentence. The other 94 figures are the decision itself rather than measurements, and were
+   > classified by reading.
 2. **No rule was minted.** The three corrections are prose fixes in live documents, and nothing
    stops the same figures going stale again — the exposure the register no longer has. Section 3
    says what a rule would need.
