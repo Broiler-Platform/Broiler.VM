@@ -1,0 +1,44 @@
+# Negative controls for rule J12, minted 2026-09-02.
+#
+# The first control is the point of the exercise: it puts the real stale sentence back
+# into J10's register row, in BOTH places the row is stored, because two agreeing copies
+# is exactly what made the defect invisible. A rule that only caught a disagreement
+# between the copies would be green on it.
+#
+# Each control reverts by copying back a backup AND touching the file. shutil.copy2
+# preserves the original timestamp, so a restored source looks older than the assembly
+# built from the injected one and MSBuild skips the rebuild - which silently ran the
+# fourth control, a markdown-only edit, against the third control's assembly. These
+# verdicts are from a re-run with that fixed.
+
+==============================================================================
+J12-the-original-defect-restored
+  what:  The sentence that was actually there, put back in BOTH stores. This is the defect J12 was minted for, and the register's own row-equality test is green on it.
+  files: src/tests/Broiler.VM.Architecture.Tests/AssuranceRegisterRows.cs, src/tests/Broiler.VM.Architecture.Tests/rules.register.json
+  suite: FAILED
+  J12 said:
+      the register row for J10 counts Forty-four units against the falsification-criterion requirement, and a figure a human typed goes stale where a citation cannot: "Forty-four units are assessed"
+      the register row for J10 counts three units against the falsification-criterion requirement, and a figure a human typed goes stale where a citation cannot: "three of them carry"
+      the register row for J10 says falsification criteria are outstanding, and the generated report states 'Required and missing | 0'
+==============================================================================
+J12-a-row-claims-redness-and-states-no-figure
+  what:  Clause three alone: the redness claim with no figure beside it, so clause two has nothing to find.
+  files: src/tests/Broiler.VM.Architecture.Tests/AssuranceRegisterRows.cs, src/tests/Broiler.VM.Architecture.Tests/rules.register.json
+  suite: FAILED
+  J12 said:
+      the register row for J10 says falsification criteria are outstanding, and the generated report states 'Required and missing | 0'
+==============================================================================
+J12-a-citation-is-replaced-by-a-typed-number
+  what:  Clause two alone: the CURRENT figure, typed in correctly. It is right today and that is the whole objection - it is right until the tree moves and silent when it does.
+  files: src/tests/Broiler.VM.Architecture.Tests/AssuranceRegisterRows.cs, src/tests/Broiler.VM.Architecture.Tests/rules.register.json
+  suite: FAILED
+  J12 said:
+      the register row for J10 counts 79 units against the falsification-criterion requirement, and a figure a human typed goes stale where a citation cannot: "79 units are assessed"
+==============================================================================
+J12-the-report-renames-a-metric
+  what:  Clause one: the generated report stops defining a metric the register cites, which is what a rename looks like from the register's side.
+  files: CODE-ASSURANCE.md
+  suite: FAILED
+  J12 said:
+      the register row for J10 cites the assurance figure {criteria:required}, and the generated report defines no such metric
+      the register row for J12 cites the assurance figure {criteria:required}, and the generated report defines no such metric

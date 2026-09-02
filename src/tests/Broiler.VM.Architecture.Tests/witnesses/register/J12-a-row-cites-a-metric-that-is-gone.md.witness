@@ -1,0 +1,9 @@
+A witness for rule J12's first clause: a register row citing an assurance figure the
+generated report does not define.
+
+This is the shape a row takes after the report's table is renamed or a metric is dropped.
+The citation still reads like a figure and resolves to nothing, which is the state a typed
+number reaches silently and a citation must not.
+
+    Every unit assessed Security=High carries a criterion, and {criteria:unitsthatwerenevercounted}
+    of them were written this milestone.

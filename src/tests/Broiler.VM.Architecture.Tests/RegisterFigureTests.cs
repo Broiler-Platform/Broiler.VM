@@ -1,0 +1,203 @@
+namespace Broiler.VM.Architecture.Tests;
+
+/// <summary>
+/// Group J's twelfth rule: the register cites the assurance figures rather than restating them.
+/// </summary>
+/// <remarks>
+/// <para>
+/// <b>Minted 2026-09-02, for a defect that had already happened.</b> Rule J10's register row said
+/// the rule was red and named 41 units of outstanding work while the generated report in the same
+/// repository said <c>| Required and missing | 0 |</c>. Bundle JS-ANDROID-013 corrected the row and
+/// recorded, as an exclusion, that the correction was prose and nothing compared it to the tree on
+/// any later day. This is the rule that exclusion named.
+/// </para>
+/// <para>
+/// <b>It is in group J because its subject is the assurance record</b>, which ADR 0012 owns: the
+/// figures it reads are the ones the generator writes, and the reason a register row may not carry
+/// its own copy is the reason rule J5 forbids a hand-maintained <c>Human-reviewed: 47/47</c>. It
+/// is not in the register's own unnumbered tests, because those hold the register's SHAPE - a row
+/// has a witness, a Deferred row names a later milestone - and this holds its CONTENT against
+/// something outside it.
+/// </para>
+/// </remarks>
+public sealed class RegisterFigureTests
+{
+    /// <summary>The generated component report, which is where the figures live.</summary>
+    private static string Report { get; } =
+        File.ReadAllText(Path.Combine(ComponentGraph.Root, "CODE-ASSURANCE.md"));
+
+    /// <summary>Every register row as one block of prose, which is what this rule reads.</summary>
+    private static IReadOnlyList<(string Id, string Text)> Rows { get; } =
+        RuleRegisterTests.Loaded.Rules
+            .Select(static rule => (
+                rule.Id,
+                Text: string.Join(
+                    " ", rule.Statement, rule.Evidence, rule.NonVacuousWhen,
+                    rule.PermanenceReason ?? string.Empty)))
+            .ToArray();
+
+    [Fact]
+    public void J12_The_Register_Cites_The_Assurance_Figures_Rather_Than_Restating_Them()
+    {
+        var figures = RegisterFigureRules.Figures(Report);
+
+        // Non-vacuous: the report really does define the three metrics, so a clean result is a
+        // comparison rather than a quantifier over an empty set. A report that had stopped
+        // carrying the table would make every clause below silently true.
+        Assert.Equal(RegisterFigureRules.Metrics.Count, figures.Count);
+
+        // ...and the register really does cite them, so clause one has something to resolve.
+        Assert.NotEmpty(Rows.Where(static row =>
+            row.Text.Contains("{criteria:", StringComparison.Ordinal)));
+
+        Assert.Empty(RegisterFigureRules.UnresolvableCitations(Rows, figures));
+        Assert.Empty(RegisterFigureRules.RestatedFigures(Rows));
+        Assert.Empty(RegisterFigureRules.OutstandingClaims(Rows, figures["missing"]));
+    }
+
+    [Fact]
+    public void J12_Rejects_A_Citation_The_Report_Cannot_Resolve()
+    {
+        var reported = Assert.Single(RegisterFigureRules.UnresolvableCitations(
+            Witness("J12-a-row-cites-a-metric-that-is-gone"),
+            RegisterFigureRules.Figures(Report)));
+
+        Assert.Contains("{criteria:unitsthatwerenevercounted}", reported, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void J12_Rejects_A_Row_That_Types_The_Figure_Back_In()
+    {
+        // The direction that matters. A row carrying no citation at all is the state J10's row was
+        // in when it went stale, so a rule that only checked citations would have been green over
+        // the defect it was minted for.
+        var reported = RegisterFigureRules.RestatedFigures(
+            Witness("J12-a-row-restates-a-figure")).ToArray();
+
+        // All three shapes, named separately, because a bare non-empty check would pin whichever
+        // fired first and two of the three would then be free to stop working.
+        Assert.Contains(reported, message =>
+            message.Contains("counts Forty-four units", StringComparison.Ordinal));
+        Assert.Contains(reported, message =>
+            message.Contains("counts 3 units", StringComparison.Ordinal));
+        Assert.Contains(reported, message =>
+            message.Contains("counts 41 units", StringComparison.Ordinal));
+
+        // ...and exactly three. The witness carries four further sentences that count something
+        // else while naming criteria - artefacts, comment lines, the clauses of a publish gate -
+        // and the first version of this rule reported all of them, because it tested for a figure
+        // and a criteria word in one sentence rather than for a figure counting units.
+        Assert.Equal(3, reported.Length);
+    }
+
+    [Fact]
+    public void J12_Rejects_A_Row_Claiming_Work_The_Report_Says_Is_Done()
+    {
+        var reported = Assert.Single(RegisterFigureRules.OutstandingClaims(
+            Witness("J12-a-row-claims-work-that-is-done"), missing: 0));
+
+        Assert.Contains("says falsification criteria are outstanding", reported, StringComparison.Ordinal);
+        Assert.Contains("Required and missing | 0", reported, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void J12_Rejects_A_Register_Silent_About_Work_The_Report_Names()
+    {
+        // The other direction, which is the same failure pointing the other way: the tree owes
+        // criteria and the register does not mention it. Driven over the REAL rows, so it is the
+        // register as it stands that must answer.
+        var reported = Assert.Single(RegisterFigureRules.OutstandingClaims(Rows, missing: 7));
+
+        Assert.Contains(
+            "states 7 unit(s) owe a falsification criterion", reported, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// The vocabularies do not fire on prose that means something else.
+    /// </summary>
+    /// <remarks>
+    /// Rule J9's recogniser was defeated four times by rewording, and the lesson recorded there is
+    /// that a vocabulary is a liability until someone checks what it already matches. Both of
+    /// these are checked against the register itself: the criteria vocabulary must match some rows
+    /// and not all of them, and the outstanding vocabulary must match none, because the tree owes
+    /// nothing. A vocabulary matching everything would make clause two fire on every row, and one
+    /// matching nothing would make it fire on none.
+    /// </remarks>
+    [Fact]
+    public void J12_The_Vocabularies_Are_Checked_Against_The_Register_They_Read()
+    {
+        // Every row that DISCUSSES criteria without counting units against them - and there are
+        // several, because group J is where the requirement is defined - must be silent. This is
+        // the assertion the first version of the rule failed: it reported sixteen figures across
+        // five rows, every one of them innocent.
+        var discussing = Rows
+            .Where(static row =>
+                row.Text.Contains("falsification criteri", StringComparison.OrdinalIgnoreCase))
+            .ToArray();
+
+        Assert.True(discussing.Length >= 4, "too few rows discuss criteria for this to mean much");
+        Assert.Empty(RegisterFigureRules.RestatedFigures(discussing));
+
+        // And the outstanding vocabulary matches no row at all, because nothing is outstanding.
+        Assert.Empty(Rows.Where(static row =>
+            RegisterFigureRules.OutstandingVocabulary.Any(phrase =>
+                row.Text.Contains(phrase, StringComparison.OrdinalIgnoreCase))));
+    }
+
+    [Fact]
+    public void J12_Holds_Its_Own_Register_Row_To_What_It_Proves()
+    {
+        var row = RuleRegisterTests.Loaded.Rules.Single(
+            static rule => string.Equals(rule.Id, "J12", StringComparison.Ordinal));
+
+        Assert.Equal("Active", row.Status);
+        Assert.Equal("0012", row.OwningAdr);
+        Assert.Null(row.ActivationMilestone);
+
+        // The row must state the limit rather than claim it closed the whole class. This rule
+        // reads three figures, and a register row can be wrong about anything else with nothing
+        // to stop it.
+        Assert.Contains("three", row.NonVacuousWhen, StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>Writes what J12 said about this checkout, when asked to.</summary>
+    [Fact]
+    public void RuleMessages_For_J12_Are_Written_When_Asked_For()
+    {
+        var figures = RegisterFigureRules.Figures(Report);
+
+        RuleReport.Write("J12",
+        [
+            ("J12", () => RegisterFigureRules.UnresolvableCitations(Rows, figures)
+                .Concat(RegisterFigureRules.RestatedFigures(Rows))
+                .Concat(RegisterFigureRules.OutstandingClaims(
+                    Rows, figures.TryGetValue("missing", out var missing) ? missing : 0))),
+        ]);
+
+        if (RuleReport.Destination is { } destination)
+        {
+            Assert.True(
+                File.Exists(Path.Combine(destination, "J12.txt")),
+                "a report for J12 was asked for and none was written");
+        }
+    }
+
+    /// <summary>
+    /// A witness register, read as rows rather than parsed as a register.
+    /// </summary>
+    /// <remarks>
+    /// One row per file, because these witnesses exist to be read by a human deciding whether the
+    /// rule is right, and a JSON register with one interesting field is a worse read than the
+    /// sentence itself.
+    /// </remarks>
+    private static IReadOnlyList<(string Id, string Text)> Witness(string name)
+    {
+        var path = Path.Combine(
+            ComponentGraph.Root, "src", "tests", "Broiler.VM.Architecture.Tests",
+            "witnesses", "register", name + ".md.witness");
+
+        Assert.True(File.Exists(path), $"Missing witness input {path}.");
+
+        return [(name[..3], File.ReadAllText(path))];
+    }
+}

@@ -115,6 +115,14 @@ looks like it is checking.**
    were true on 2026-09-02; nothing compares them to the tree on any later day, which is the defect
    in section 5 still standing. Closing it needs a rule that reads the generated figures, and that
    is a rule nobody has minted.
+
+   > **Correction, 2026-09-02.** That rule is minted:
+   > [Bundle JS-ANDROID-014](../js-android-014/README.md) lands **J12**, which does not compare
+   > the row's figure to the report's but removes the row's copy of it — a row that needs a figure
+   > cites one. J10's row carries three citations now, and this bundle's own correction to it,
+   > which quoted `| Required and missing | 0 |` with the digit in it, was itself an instance of
+   > the defect and is a citation too. **This exclusion is closed for the three criteria figures
+   > and stands for every other figure a register row states**, which J12's row records as EX-102.
 6. **A message is what a rule said, not proof that the rule is right.**
 7. **The clean reports are this checkout on this machine.** Nothing here runs on a device, no
    milestone moves, and nothing is reviewed.

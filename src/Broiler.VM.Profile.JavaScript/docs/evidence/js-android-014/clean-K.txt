@@ -1,0 +1,13 @@
+# what group K's rules said about this checkout
+#
+# Reported, not judged. A rule with no lines said nothing, which is what a clean
+# checkout looks like; a rule that threw is recorded as throwing.
+
+[K1] 0 message(s)
+
+[K2] 0 message(s)
+
+[K3] 0 message(s)
+
+[K4] 0 message(s)
+
