@@ -367,6 +367,15 @@ public sealed class CompositionRegisterTests
 
         Assert.Single(headers);
 
+        // The column count the header fixes, counted the way the rows below are counted: NON-EMPTY
+        // cells. Counting the split's length instead is a check that cannot fail - emptying a cell
+        // leaves the pipes where they are, so the split is the same length and only the non-empty
+        // count moves. The first version of this check did exactly that and passed the injection
+        // it was written to stop.
+        var columns = headers[0].Line
+            .Split('|', StringSplitOptions.TrimEntries)
+            .Count(static cell => cell.Length != 0);
+
         var rows = new List<CompositionRules.Row>();
 
         for (var index = headers[0].Index + 2; index < lines.Length; index++)
@@ -378,9 +387,32 @@ public sealed class CompositionRegisterTests
                 break;
             }
 
+            // AN EMPTY CELL IS A MALFORMED ROW AND NOT AN EMPTY VALUE, and until 2026-09-02 this
+            // parser silently disagreed. It drops empty cells before indexing, so emptying one
+            // does not produce an empty list - it shifts every column after it LEFT. A row whose
+            // profile-assembly cell was cleared came back declaring its SIBLING as its profile
+            // assembly, its capability column as its siblings, and an evidence path one column
+            // over; K1 stayed green because the two counts moved together, and the rules that did
+            // fire fired for reasons that had nothing to do with the edit.
+            //
+            // It was found by an injection that was supposed to test something else, which is the
+            // only reason it was found at all: a register is hand-maintained prose, and clearing
+            // a cell is exactly what someone does when a column stops applying. The count is
+            // checked against the header now, and a mismatch stops the read rather than producing
+            // a row nobody wrote.
             var cells = line.Split('|', StringSplitOptions.TrimEntries)
                 .Where(static cell => cell.Length != 0)
                 .ToArray();
+
+            if (cells.Length != columns)
+            {
+                throw new InvalidOperationException(
+                    $"docs/compositions.md line {index + 1} has {cells.Length} non-empty cells and " +
+                    $"the header has {columns}. An empty cell is a malformed row rather than an " +
+                    "empty value: this parser drops empty cells, so a cleared cell shifts every " +
+                    "column after it and yields a row nobody wrote. Write the cell's value, or the " +
+                    "word the column uses for nothing.");
+            }
 
             if (cells.Length < 4)
             {

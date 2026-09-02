@@ -1,0 +1,65 @@
+SCOPED RUN - the eight controls over the composition register and the Android head's
+declared artefacts, and NOT the other seventeen.
+
+A control PASSES when the injected suite exits non-zero and the reverted suite exits 0.
+
+THE GRANULARITY OF THIS LOG IS THE RULE, NOT THE CLAUSE. Four rows target a particular clause
+of K2 and what the suite reports is that K2 went red; which clause is argued from the
+injection's shape and stated in the row. xunit reports an empty-collection assertion without
+printing the collection, so the rule's own message does not reach this file - except where a
+row makes the PARSER stop, which throws and whose message does reach it.
+
+CO-FIRING IS NOT NOISE. Where a row says a second rule cannot not fire, it is because both
+read the same field of the register - a fact about the rule set rather than a defect in the
+injection.
+
+[K1-the-register-loses-the-android-row] PASS
+    file:      docs\compositions.md
+    injected:  exit 1
+    reverted:  exit 0
+    fired:     K1
+
+[K2-the-register-claims-a-profile-the-android-head-does-not-compose] PASS
+    file:      docs\compositions.md
+    injected:  exit 1
+    reverted:  exit 0
+    fired:     K2
+
+[K2-the-android-row-declares-a-profile-assembly-nothing-references] PASS
+    file:      docs\compositions.md
+    injected:  exit 1
+    reverted:  exit 0
+    fired:     K2, K4
+
+[K2-the-android-row-declares-a-different-profile-than-it-references] PASS
+    file:      docs\compositions.md
+    injected:  exit 1
+    reverted:  exit 0
+    fired:     K2, K4
+
+[the-register-row-loses-a-cell] PASS
+    file:      docs\compositions.md
+    injected:  exit 1
+    reverted:  exit 0
+    fired:     K1, K2, K3, K4
+    parser:    stopped the read and named the row, so no rule ran on a shifted row
+
+[K2-the-android-catalog-table-names-a-different-composition] PASS
+    file:      src\tests\Broiler.VM.Architecture.Tests\catalogs\android.catalog.txt
+    injected:  exit 1
+    reverted:  exit 0
+    fired:     K2, K3
+
+[K3-the-android-catalog-baseline-drifts-from-what-the-head-printed] PASS
+    file:      src\tests\Broiler.VM.Architecture.Tests\catalogs\android.catalog.txt
+    injected:  exit 1
+    reverted:  exit 0
+    fired:     K2, K3
+
+[K4-the-android-closure-ships-an-assembly-the-register-does-not-declare] PASS
+    file:      src\Broiler.VM.Profile.JavaScript\docs\evidence\js-android-001\closure-android.txt
+    injected:  exit 1
+    reverted:  exit 0
+    fired:     K4
+
+controls run: 8; passed: 8
