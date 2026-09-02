@@ -41,15 +41,55 @@ public sealed class CoreContractVersionTests
             TryHeaderInteger(witness, "Minimum supported version"));
     }
 
+    /// <summary>
+    /// E2's clean direction: every ADR declares whether it bears the contract.
+    /// </summary>
+    /// <remarks>
+    /// Extracted from the test so a report can call it, and the test CALLS IT rather than keeping
+    /// a copy - an extraction that left the assertion computing its own collection would be two
+    /// implementations of one rule, which is the drift a report exists to prevent.
+    /// </remarks>
+    private static IEnumerable<string> E2Violations() => Adrs
+        .Where(static adr => adr.CoreContractField is null)
+        .Select(static adr => $"{adr.FileName} has no **Core contract:** header field");
+
+    /// <summary>E3's clean direction: every contract-bearing ADR declares the current version.</summary>
+    private static IEnumerable<string> E3Violations() => Adrs
+        .Where(static adr => adr.IsContractBearing)
+        .Where(static adr => ExtractVersion(adr.CoreContractField!) != VmCoreContract.Version)
+        .Select(static adr => $"{adr.FileName} declares {adr.CoreContractField}");
+
+    /// <summary>
+    /// Writes what the reportable group E rules said about this checkout, when asked to.
+    /// </summary>
+    /// <remarks>
+    /// <b>E1 and E5 are not here.</b> E1 asserts two equalities between a header field and a
+    /// constant, and E5 asserts nothing that produces a collection at all; expressing either as
+    /// messages would be writing a new rule rather than reporting the one that exists, and a rule
+    /// nobody decided to change is not one a reporting mechanism may quietly restate.
+    /// </remarks>
+    [Fact]
+    public void RuleMessages_For_Group_E_Are_Written_When_Asked_For()
+    {
+        RuleReport.Write("E",
+        [
+            ("E2", E2Violations),
+            ("E3", E3Violations),
+            ("E4", E4Violations),
+        ]);
+
+        if (RuleReport.Destination is { } destination)
+        {
+            Assert.True(
+                File.Exists(Path.Combine(destination, "E.txt")),
+                "a report for group E was asked for and none was written");
+        }
+    }
+
     [Fact]
     public void E2_Every_Adr_Declares_Whether_It_Is_Contract_Bearing()
     {
-        var missing = Adrs
-            .Where(static adr => adr.CoreContractField is null)
-            .Select(static adr => $"{adr.FileName} has no **Core contract:** header field")
-            .ToArray();
-
-        Assert.Empty(missing);
+        Assert.Empty(E2Violations());
 
         var declared = Adrs
             .Where(static adr => adr.IsContractBearing)
@@ -65,13 +105,7 @@ public sealed class CoreContractVersionTests
     [Fact]
     public void E3_Every_Contract_Bearing_Adr_Declares_The_Current_Version()
     {
-        var wrong = Adrs
-            .Where(static adr => adr.IsContractBearing)
-            .Where(static adr => ExtractVersion(adr.CoreContractField!) != VmCoreContract.Version)
-            .Select(static adr => $"{adr.FileName} declares {adr.CoreContractField}")
-            .ToArray();
-
-        Assert.Empty(wrong);
+        Assert.Empty(E3Violations());
 
         // The witness: contract-bearing, but declaring a version the build does not implement.
         var witness = Witness("E3-wrong-declared-version.md.witness");
@@ -80,17 +114,41 @@ public sealed class CoreContractVersionTests
         Assert.NotEqual(VmCoreContract.Version, ExtractVersion(witness.CoreContractField!));
     }
 
+    /// <summary>E4's first clause: every ADR appears in the index.</summary>
+    private static IEnumerable<string> E4UnlistedViolations(string index) => Adrs
+        .Where(adr => !index.Contains(adr.FileName, StringComparison.Ordinal))
+        .Select(static adr => $"{adr.FileName} is not listed in the index");
+
+    /// <summary>E4's second clause: the index links nothing that is gone.</summary>
+    private static IEnumerable<string> E4StaleViolations(IEnumerable<string> linked) => linked
+        .Where(static file => !Adrs.Any(adr =>
+            string.Equals(adr.FileName, file, StringComparison.Ordinal)))
+        .Select(static file => $"the index links {file}, which does not exist");
+
+    /// <summary>E4's clean direction over this checkout, both clauses.</summary>
+    /// <remarks>
+    /// The third clause - every rule an ADR names is registered - stays in the test: it reads the
+    /// register through a helper the test owns, and moving it would move more than a rule.
+    /// </remarks>
+    private static IEnumerable<string> E4Violations()
+    {
+        var index = File.ReadAllText(Path.Combine(AdrDirectory, "README.md"));
+
+        var linked = System.Text.RegularExpressions.Regex
+            .Matches(index, @"\((?<file>\d{4}-[a-z0-9-]+\.md)\)")
+            .Select(static match => match.Groups["file"].Value)
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+
+        return E4UnlistedViolations(index).Concat(E4StaleViolations(linked));
+    }
+
     [Fact]
     public void E4_The_Index_Lists_Every_Adr_And_Every_Named_Rule_Is_Registered()
     {
         var index = File.ReadAllText(Path.Combine(AdrDirectory, "README.md"));
 
-        var unlisted = Adrs
-            .Where(adr => !index.Contains(adr.FileName, StringComparison.Ordinal))
-            .Select(static adr => $"{adr.FileName} is not listed in the index")
-            .ToArray();
-
-        Assert.Empty(unlisted);
+        Assert.Empty(E4UnlistedViolations(index));
 
         var linked = Regex
             .Matches(index, @"\((?<file>\d{4}-[a-z0-9-]+\.md)\)")
@@ -98,12 +156,7 @@ public sealed class CoreContractVersionTests
             .Distinct(StringComparer.Ordinal)
             .ToArray();
 
-        var stale = linked
-            .Where(file => !Adrs.Any(adr => string.Equals(adr.FileName, file, StringComparison.Ordinal)))
-            .Select(file => $"the index links {file}, which does not exist")
-            .ToArray();
-
-        Assert.Empty(stale);
+        Assert.Empty(E4StaleViolations(linked));
 
         // Every architecture rule an ADR names as "Rule <ID>" must have a register row, or the
         // register has stopped being the authority the evidence bundle quotes.

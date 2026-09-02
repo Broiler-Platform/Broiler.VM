@@ -227,6 +227,42 @@ public sealed class ReviewRecordRuleTests
     /// shape.
     /// </para>
     /// </remarks>
+    /// <summary>
+    /// Writes what each group H rule said about this checkout, when asked to.
+    /// </summary>
+    /// <remarks>
+    /// The mechanism lives on <see cref="RuleReport"/>. Each entry calls the SAME helper its test
+    /// calls, with the same inputs - not a re-implementation, which is the only way a report and
+    /// the rule it reports on cannot drift apart.
+    /// </remarks>
+    [Fact]
+    public void RuleMessages_For_Group_H_Are_Written_When_Asked_For()
+    {
+        var current = Figures(CurrentBundle);
+        var sourced = Corpus.Where(HasARetainedFigureSource).ToArray();
+
+        RuleReport.Write("H",
+        [
+            ("H1", () => UnpublishedMarkViolations(Corpus)
+                .Concat(LegendViolations(HumanReview, CoreLegend))),
+            ("H2", () => UndefinedCitationViolations(Corpus, ExclusionDefinitions(EvidenceBundles))
+                .Concat(ExclusionSectionViolations(EvidenceBundles))),
+            ("H3", () => Corpus.SelectMany(SourceLineCitations)),
+            ("H4", () => StatusViolations(HumanReview, AssuranceScanner.Units)
+                .Concat(AliasViolations(HumanReview, AssuranceScanner.Units))),
+            ("H5", () => sourced
+                .SelectMany(document => FigureViolations(document, AcceptableFigures(document)))
+                .Concat(RetainedFigureGuard(sourced, current))),
+        ]);
+
+        if (RuleReport.Destination is { } destination)
+        {
+            Assert.True(
+                File.Exists(Path.Combine(destination, "H.txt")),
+                "a report for group H was asked for and none was written");
+        }
+    }
+
     [Fact]
     public void H1_The_Mark_Vocabulary_Is_Closed()
     {

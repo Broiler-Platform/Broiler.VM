@@ -73,6 +73,47 @@ public sealed class PackageRuleTests
         Assert.Equal(3, Count(log, "snupkg: "));
     }
 
+    /// <summary>C2's clean direction: no Broiler dependency outside the three packages.</summary>
+    /// <remarks>
+    /// Takes the dependency ids rather than reading the nuspecs, because the test also asserts a
+    /// STRONGER property over the same list - that every dependency is one of the three - and a
+    /// function that re-read the file would give the two assertions two readings of it.
+    /// </remarks>
+    private static IEnumerable<string> C2Violations(IEnumerable<string> dependencies) => dependencies
+        .Where(static id => id.StartsWith("Broiler.", StringComparison.Ordinal))
+        .Where(static id => !Packages.Contains(id, StringComparer.Ordinal))
+        .Select(static id => $"a produced package declares the Broiler dependency {id}");
+
+    /// <summary>The dependency ids the retained nuspecs declare.</summary>
+    private static IReadOnlyList<string> NuspecDependencies() => Regex
+        .Matches(Retained("nuspecs.txt"), @"<dependency\s+id=""(?<id>[^""]+)""")
+        .Select(static match => match.Groups["id"].Value)
+        .Distinct(StringComparer.Ordinal)
+        .ToArray();
+
+    /// <summary>
+    /// Writes what the reportable group C rule said about this checkout, when asked to.
+    /// </summary>
+    /// <remarks>
+    /// <b>C1 and C3 are not here.</b> C1 asserts equalities over package metadata rather than
+    /// producing a collection, and C3's clean direction is an assertion that a language name does
+    /// not appear - a search whose success is an absence, with no message list behind it.
+    /// Expressing either as messages would be writing a new rule rather than reporting the one
+    /// that exists.
+    /// </remarks>
+    [Fact]
+    public void RuleMessages_For_Group_C_Are_Written_When_Asked_For()
+    {
+        RuleReport.Write("C", [("C2", () => C2Violations(NuspecDependencies()))]);
+
+        if (RuleReport.Destination is { } destination)
+        {
+            Assert.True(
+                File.Exists(Path.Combine(destination, "C.txt")),
+                "a report for group C was asked for and none was written");
+        }
+    }
+
     [Fact]
     public void C2_No_Produced_Package_Declares_A_Broiler_Dependency_Outside_The_Three()
     {
@@ -83,12 +124,7 @@ public sealed class PackageRuleTests
             .Distinct(StringComparer.Ordinal)
             .ToArray();
 
-        var stray = dependencies
-            .Where(static id => id.StartsWith("Broiler.", StringComparison.Ordinal))
-            .Where(id => !Packages.Contains(id, StringComparer.Ordinal))
-            .ToArray();
-
-        Assert.Empty(stray);
+        Assert.Empty(C2Violations(dependencies));
 
         // Stronger than the rule states, and it is the property the pristine feed consumer relies
         // on: EVERY declared dependency is one of the three, so nothing outside this component has
@@ -152,6 +188,31 @@ public sealed class PackageRuleTests
         }
     }
 
+    /// <summary>
+    /// A14's clean direction: every project outside the named solutions is a sample.
+    /// </summary>
+    /// <remarks>
+    /// Extracted so a report can call it, and the test calls it rather than keeping a copy: two
+    /// implementations of one rule is the drift a report exists to prevent.
+    /// </remarks>
+    private static IEnumerable<string> A14Violations() =>
+        ComponentGraph.ProjectsOutsideTheSolution
+            .Where(static path => !path.StartsWith("samples/", StringComparison.Ordinal));
+
+    /// <summary>Writes what A14 said about this checkout, when asked to.</summary>
+    [Fact]
+    public void RuleMessages_For_A14_Are_Written_When_Asked_For()
+    {
+        RuleReport.Write("A14", [("A14", A14Violations)]);
+
+        if (RuleReport.Destination is { } destination)
+        {
+            Assert.True(
+                File.Exists(Path.Combine(destination, "A14.txt")),
+                "a report for A14 was asked for and none was written");
+        }
+    }
+
     [Fact]
     public void A14_Every_Project_Outside_The_Solution_Is_A_Sample()
     {
@@ -165,11 +226,7 @@ public sealed class PackageRuleTests
         // ADR 0001 revision 4 authorises exactly one place for a project outside the graph, and it
         // authorises it for one reason: a pristine feed consumer cannot be a solution project,
         // because restoring it requires a pack to have already happened.
-        var stray = ComponentGraph.ProjectsOutsideTheSolution
-            .Where(static path => !path.StartsWith("samples/", StringComparison.Ordinal))
-            .ToArray();
-
-        Assert.Empty(stray);
+        Assert.Empty(A14Violations());
 
         // And samples/ is not an empty exemption someone could hide behind: the consumer that
         // justifies it is really there.
