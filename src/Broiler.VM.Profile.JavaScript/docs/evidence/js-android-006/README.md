@@ -65,6 +65,13 @@ and K4 controls re-run with them.
    and a consumer profile claiming the reserved first label. The last two are refusals the core
    makes at catalog construction, so an injection would have to forge a catalog table rather than
    edit a real one.
+
+   > **Correction, 2026-09-02.** All three are controlled by
+   > [Bundle JS-ANDROID-007](../js-android-007/README.md), and the last sentence above was wrong
+   > about what it would take: the catalog BASELINE is a real file this component checks in, so
+   > editing its profile line reaches every clause without forging anything. Two of the three
+   > injections differ by one prefix on one word, which is what isolates the reserved-label
+   > clause from the identity clause. **Nothing in the log below is edited.**
 3. **One direction of K1**, as JS-ANDROID-004 and -005 both record.
 4. **This is a SCOPED run**, eight rows of twenty-five, not the control matrix.
 5. **Nothing here runs on a device**, no milestone moves, and nothing is reviewed.

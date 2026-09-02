@@ -1,0 +1,32 @@
+SCOPED RUN - the three controls added on 2026-09-02 for K2's last uncontrolled clauses.
+
+The eight rows JS-ANDROID-006 retained are not re-run here: that log already says what they
+do, and eight suite runs to reprint it would be cost without a reader.
+
+A control PASSES when the injected suite exits non-zero and the reverted suite exits 0.
+
+ALL THREE FIRE K2 AND K3, and neither could be otherwise: every clause here lives in the
+catalog table, and the catalog table is half of what K3 compares. Which CLAUSE of K2 each
+reaches is argued from the injection's shape and stated in the row - the suite reports that
+K2 went red and no more, because xunit prints an empty-collection assertion without the
+collection.
+
+[K2-the-catalog-reports-a-package-identity-the-register-does-not-declare] PASS
+    file:      src\tests\Broiler.VM.Architecture.Tests\catalogs\android.catalog.txt
+    injected:  exit 1
+    reverted:  exit 0
+    fired:     K2, K3
+
+[K2-the-catalog-composes-the-same-profile-twice] PASS
+    file:      src\tests\Broiler.VM.Architecture.Tests\catalogs\android.catalog.txt
+    injected:  exit 1
+    reverted:  exit 0
+    fired:     K2, K3
+
+[K2-a-profile-claims-the-reserved-label-under-a-foreign-package] PASS
+    file:      src\tests\Broiler.VM.Architecture.Tests\catalogs\android.catalog.txt
+    injected:  exit 1
+    reverted:  exit 0
+    fired:     K2, K3
+
+controls run: 3; passed: 3

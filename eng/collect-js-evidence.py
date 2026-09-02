@@ -495,6 +495,48 @@ CONTROLS = [
             "composition Broiler.VM.Composition.JavaScript.ExecutionOnly"),
     ),
     (
+        "K2-the-catalog-reports-a-package-identity-the-register-does-not-declare",
+        "The catalog baseline's profile line keeps its profile ID and reports a different "
+        "Broiler-owned package identity. TARGET: K2's clause comparing the package identities the "
+        "catalog reported against the assemblies the register declares - the one that had co-fired "
+        "under every assembly-column injection and been nobody's subject. The replacement is "
+        "deliberately still `Broiler.*`, which is what keeps the reserved-label clause below "
+        "silent; the two controls differ by that prefix and by nothing else. K3 fires too and "
+        "cannot not: the baseline is half of what K3 compares.",
+        ANDROID_CATALOG_BASELINE,
+        lambda text: text.replace(
+            "profile broiler.javascript Broiler.VM.Profile.JavaScript 1 0",
+            "profile broiler.javascript Broiler.VM.Profile.WebAssembly 1 0"),
+    ),
+    (
+        "K2-the-catalog-composes-the-same-profile-twice",
+        "The catalog baseline gains a second copy of its profile line. TARGET: K2's duplicate "
+        "clause, which the core also refuses at catalog construction - this is the record-level "
+        "half, and it is what would catch a bundle DOCUMENTING a composition the runtime would "
+        "have refused. It fires the identity clauses as well, because two IDs where the register "
+        "declares one is a disagreement on every comparison K2 makes about them, and K3 because "
+        "the baseline moved.",
+        ANDROID_CATALOG_BASELINE,
+        lambda text: text.replace(
+            "profile broiler.javascript Broiler.VM.Profile.JavaScript 1 0\n",
+            "profile broiler.javascript Broiler.VM.Profile.JavaScript 1 0\n"
+            "profile broiler.javascript Broiler.VM.Profile.JavaScript 1 0\n"),
+    ),
+    (
+        "K2-a-profile-claims-the-reserved-label-under-a-foreign-package",
+        "The catalog baseline's profile line keeps the reserved `broiler` first label and reports "
+        "a package identity that is not Broiler-owned. TARGET: K2's reserved-label clause, and the "
+        "pairing is the point - the label is reserved FOR Broiler rather than forbidden, so what "
+        "the core refuses is the COMBINATION. This control and the package-identity one above "
+        "differ by one prefix on one word, which is the whole of what this clause adds: with "
+        "`Broiler.` the identity clause fires alone, and without it the reserved-label clause "
+        "fires as well.",
+        ANDROID_CATALOG_BASELINE,
+        lambda text: text.replace(
+            "profile broiler.javascript Broiler.VM.Profile.JavaScript 1 0",
+            "profile broiler.javascript Com.Example.Ledger 1 0"),
+    ),
+    (
         "K3-the-android-catalog-baseline-drifts-from-what-the-head-printed",
         "The checked-in catalog baseline for the Android head gains a profile line the head never "
         "printed. THE POINT IS THAT THE RULE REACHES THIS ROW: K3 already has a rejecting "
