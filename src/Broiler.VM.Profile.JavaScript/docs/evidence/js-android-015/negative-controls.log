@@ -1,0 +1,32 @@
+# Negative controls for rule J12's fourth clause, which closes the counted-existence class.
+#
+# The first two restore counts the register actually carried and the tree actually
+# contradicts. The third types in the CORRECT current figure and is reported anyway.
+#
+# Reverting touches each file: shutil.copy2 preserves the original timestamp and
+# MSBuild then reuses the assembly built from the injection.
+
+==============================================================================
+J12-a-row-states-an-edge-count-the-tree-contradicts
+  what:  The sentence rule A7's row actually carried. There are fifty-nine edges.
+  suite: FAILED
+  J12 said:
+      the register row for A7 states that Eight of something exist without citing a figure: "Eight edges exist" - a count of the tree written by hand is current until the tree moves and silent when it does
+==============================================================================
+J12-a-row-states-a-project-count-the-tree-contradicts
+  what:  Rule A4's real sentence. There are nine test-only projects.
+  suite: FAILED
+  J12 said:
+      the register row for A4 states that Five of something exist without citing a figure: "Five test-only projects exist" - a count of the tree written by hand is current until the tree moves and silent when it does
+==============================================================================
+J12-a-row-states-a-count-that-is-correct-today
+  what:  The CURRENT figure, typed in correctly. Reported anyway, which is the rule's claim: a right number and a stale number are the same object at different times.
+  suite: FAILED
+  J12 said:
+      the register row for A12 states that Five of something exist without citing a figure: "Five composition roots exist" - a count of the tree written by hand is current until the tree moves and silent when it does
+==============================================================================
+J12-a-row-cites-a-graph-figure-that-is-gone
+  what:  Clause one over the widened catalog: a citation naming a figure nothing computes.
+  suite: FAILED
+  J12 said:
+      the register row for A7 cites the figure {graph:arrows}, and the figure catalog defines no such metric

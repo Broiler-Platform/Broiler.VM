@@ -1,0 +1,23 @@
+A witness for rule J12's fourth clause: a register row asserting how many things exist,
+with the number typed in rather than cited.
+
+These are the shapes the register was actually found in. Eight rows carried counts the tree
+contradicted, and every one was green, because the test that holds a row to what the rules
+implement compares it against a copy of itself.
+
+    Five test-only projects exist that a product project could reference.
+
+    Eight edges exist at VM-0.
+
+    689 relevant units and 903 exempt ones exist across 1,592 code units.
+
+The sentences below must NOT be reported. The first names a record and the second a
+revision, and a rule that read those as counts would ask the register to cite a document's
+name; the third states a count of something that does not exist anywhere, which is prose
+about the rule rather than a claim about the tree.
+
+    ADR 0003 and VmCoreContract both exist at VM-0.
+
+    ADR 0001 revision 5 owns the exemption.
+
+    The rule exists because nothing else holds the boundary.

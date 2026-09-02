@@ -89,6 +89,14 @@ object seen at different times.
    artefacts, a number of units, a milestone, a date — with nothing here to stop it. **The general
    problem of prose that stops being true is not solved**, and this bundle does not claim it is.
    That is EX-102, stated in the row itself.
+
+   > **Correction, 2026-09-02.** [Bundle JS-ANDROID-015](../js-android-015/README.md) **narrows**
+   > EX-102 rather than closing it, and the distinction is now in the row. One class is closed
+   > completely — a claim that some number of things EXIST must cite its figure — and the catalog
+   > is widened from these three metrics to sixteen. **The sweep that did it found eight rows
+   > already wrong**, including one saying eight edges where the manifest holds fifty-nine, and
+   > one sentence carrying three wrong figures at once. Every figure worded outside that shape
+   > remains unchecked, and the general problem remains unsolvable by any rule.
 2. **The count clause is narrow by construction.** It recognises four ways of writing "this many
    units, against the criterion requirement". A claim worded outside them is not seen, which is the
    shape of EX-71 one document over. Narrowing was the fix for sixteen false reports and it bought

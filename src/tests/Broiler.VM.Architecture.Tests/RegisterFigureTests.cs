@@ -31,8 +31,12 @@ public sealed class RegisterFigureTests
         RuleRegisterTests.Loaded.Rules
             .Select(static rule => (
                 rule.Id,
+                // Newline-joined, not space-joined: the fields are separate prose and a claim
+                // must not be able to form across the seam between two of them. Rule V12's
+                // evidence ends "the five profile-facing contracts" and its next field opens
+                // "All five contracts exist", which read as one sentence when joined by a space.
                 Text: string.Join(
-                    " ", rule.Statement, rule.Evidence, rule.NonVacuousWhen,
+                    "\n", rule.Statement, rule.Evidence, rule.NonVacuousWhen,
                     rule.PermanenceReason ?? string.Empty)))
             .ToArray();
 
@@ -44,7 +48,10 @@ public sealed class RegisterFigureTests
         // Non-vacuous: the report really does define the three metrics, so a clean result is a
         // comparison rather than a quantifier over an empty set. A report that had stopped
         // carrying the table would make every clause below silently true.
-        Assert.Equal(RegisterFigureRules.Metrics.Count, figures.Count);
+        Assert.True(
+            figures.Count >= RegisterFigureRules.ReportMetrics.Count + 7,
+            $"the figure catalog resolved only {figures.Count} figures, so a citation could go " +
+            "unresolved for want of a catalog entry rather than for want of a metric");
 
         // ...and the register really does cite them, so clause one has something to resolve.
         Assert.NotEmpty(Rows.Where(static row =>
@@ -52,7 +59,8 @@ public sealed class RegisterFigureTests
 
         Assert.Empty(RegisterFigureRules.UnresolvableCitations(Rows, figures));
         Assert.Empty(RegisterFigureRules.RestatedFigures(Rows));
-        Assert.Empty(RegisterFigureRules.OutstandingClaims(Rows, figures["missing"]));
+        Assert.Empty(RegisterFigureRules.OutstandingClaims(Rows, figures["criteria:missing"]));
+        Assert.Empty(RegisterFigureRules.UncitedExistenceClaims(Rows));
     }
 
     [Fact]
@@ -87,6 +95,33 @@ public sealed class RegisterFigureTests
         // else while naming criteria - artefacts, comment lines, the clauses of a publish gate -
         // and the first version of this rule reported all of them, because it tested for a figure
         // and a criteria word in one sentence rather than for a figure counting units.
+        Assert.Equal(3, reported.Length);
+    }
+
+    [Fact]
+    public void J12_Rejects_A_Row_That_Counts_The_Tree_By_Hand()
+    {
+        var reported = RegisterFigureRules.UncitedExistenceClaims(
+            Witness("J12-a-row-counts-the-tree-by-hand")).ToArray();
+
+        // The three real shapes, each named. "Five test-only projects" and "Eight edges" were
+        // both wrong when this rule was minted - there are nine and fifty-nine - and 689/903/1592
+        // were three wrong figures in one sentence.
+        Assert.Contains(reported, message =>
+            message.Contains("that Five of something exist", StringComparison.Ordinal));
+        Assert.Contains(reported, message =>
+            message.Contains("that Eight of something exist", StringComparison.Ordinal));
+        // The third names 903 rather than 689, and that is the rule working as written: the
+        // figure it reports is the one ADJACENT to "exist". A sentence carrying several figures
+        // is flagged once, on the nearest, and a reader converting the row converts all of them.
+        // The limit is real and it is in the register row: this clause reports a sentence, not
+        // every number in it.
+        Assert.Contains(reported, message =>
+            message.Contains("that 903 of something exist", StringComparison.Ordinal));
+
+        // ...and nothing else. An ADR number, a revision number and a bare "the rule exists" are
+        // in the witness precisely because a rule reading them as counts would ask the register to
+        // cite a document's name.
         Assert.Equal(3, reported.Length);
     }
 
@@ -171,7 +206,8 @@ public sealed class RegisterFigureTests
             ("J12", () => RegisterFigureRules.UnresolvableCitations(Rows, figures)
                 .Concat(RegisterFigureRules.RestatedFigures(Rows))
                 .Concat(RegisterFigureRules.OutstandingClaims(
-                    Rows, figures.TryGetValue("missing", out var missing) ? missing : 0))),
+                    Rows, figures.TryGetValue("criteria:missing", out var missing) ? missing : 0))
+                .Concat(RegisterFigureRules.UncitedExistenceClaims(Rows))),
         ]);
 
         if (RuleReport.Destination is { } destination)

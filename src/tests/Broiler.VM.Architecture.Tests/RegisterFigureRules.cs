@@ -32,23 +32,8 @@ namespace Broiler.VM.Architecture.Tests;
 /// </remarks>
 internal static class RegisterFigureRules
 {
-    /// <summary>The metrics a row may cite, and the report line each is read from.</summary>
-    /// <remarks>
-    /// Read from the GENERATED REPORT rather than recomputed from the units. Recomputing would
-    /// make this rule a second implementation of the report's own counters, which is the drift the
-    /// citation is meant to remove; and the report is held to the units by rule J8 and to the
-    /// generator by rule J5, so reading it here is reading a figure two rules already keep honest.
-    /// </remarks>
-    internal static readonly IReadOnlyDictionary<string, string> Metrics =
-        new Dictionary<string, string>(StringComparer.Ordinal)
-        {
-            ["carrying"] = "Units carrying a criterion",
-            ["required"] = "Units required to carry one",
-            ["missing"] = "Required and missing",
-        };
-
     /// <summary>A citation of an assurance figure, as a row is required to write one.</summary>
-    internal const string Citation = @"\{criteria:(?<metric>[a-z]+)\}";
+    internal const string Citation = @"\{(?<metric>[a-z]+:[a-z-]+)\}";
 
     /// <summary>
     /// The shapes in which a row states a COUNT OF UNITS against the criteria requirement.
@@ -123,23 +108,87 @@ internal static class RegisterFigureRules
             RegexOptions.IgnoreCase | RegexOptions.Compiled))
         .ToArray();
 
-    /// <summary>The criteria figures the generated report carries.</summary>
+    /// <summary>
+    /// Figures the generated report carries, beyond the three about criteria.
+    /// </summary>
+    /// <remarks>
+    /// Curated rather than swept, because the report's tables reuse labels - <c>None</c>,
+    /// <c>Low</c> and <c>High</c> each head a row in two different tables - and a catalog built by
+    /// slugging every label would collide silently and resolve a citation to whichever row it met
+    /// first. Every entry here is a label that appears once.
+    /// </remarks>
+    internal static readonly IReadOnlyDictionary<string, string> ReportMetrics =
+        new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["criteria:carrying"] = "Units carrying a criterion",
+            ["criteria:required"] = "Units required to carry one",
+            ["criteria:missing"] = "Required and missing",
+            ["assurance:files"] = "Files scanned",
+            ["assurance:units"] = "Code units",
+            ["assurance:relevant"] = "Relevant",
+            ["assurance:exempt"] = "Exempt by predicate",
+            ["assurance:unverified"] = "Unverified",
+        };
+
+    /// <summary>
+    /// Every figure a register row may cite: the report's, the graph's and the records'.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The graph figures are computed the way the rules that read the graph compute them</b>,
+    /// from <see cref="ComponentGraph.Projects"/>, rather than parsed back out of a document. A
+    /// catalog that re-derived them would be a second opinion about the tree, and the register
+    /// would then cite a number no rule uses.
+    /// </para>
+    /// <para>
+    /// <b>Every figure here is one a register row was found stating by hand.</b> The catalog is
+    /// not speculative: rows A4, A7, A11, A12, K1, J1 and J4 each carried a count the tree
+    /// contradicted, and this is the set needed to say those things by citation instead.
+    /// </para>
+    /// </remarks>
     internal static IReadOnlyDictionary<string, int> Figures(string report)
     {
         var figures = new Dictionary<string, int>(StringComparer.Ordinal);
 
-        foreach (var (metric, label) in Metrics)
+        foreach (var (metric, label) in ReportMetrics)
         {
             var match = Regex.Match(
                 report,
-                @"^\|\s*" + Regex.Escape(label) + @"\s*\|\s*(?<value>\d+)\s*\|\s*$",
+                @"^\|\s*" + Regex.Escape(label) + @"\s*\|\s*(?<value>[\d,]+)\s*\|\s*$",
                 RegexOptions.Multiline);
 
             if (match.Success)
             {
-                figures[metric] = int.Parse(match.Groups["value"].Value);
+                figures[metric] = int.Parse(
+                    match.Groups["value"].Value.Replace(",", string.Empty, StringComparison.Ordinal));
             }
         }
+
+        var projects = ComponentGraph.Projects;
+
+        figures["graph:projects"] = projects.Count;
+        figures["graph:edges"] = projects.Sum(static project => project.ProjectReferences.Count);
+        figures["graph:packable"] = projects.Count(static project => project.PackageId is not null);
+        figures["graph:test-only"] = projects.Count(static project => project.IsTestOnly);
+        figures["graph:composition-roots"] = projects.Count(static project =>
+            project.AssemblyName.StartsWith("Broiler.VM.Composition.", StringComparison.Ordinal));
+        figures["graph:javascript-family"] = projects.Count(static project =>
+            project.AssemblyName.StartsWith("Broiler.VM.Profile.JavaScript", StringComparison.Ordinal));
+
+        var adrs = Directory
+            .EnumerateFiles(Path.Combine(ComponentGraph.Root, "docs", "adr"), "*.md")
+            .Where(static path => Regex.IsMatch(Path.GetFileName(path), @"^\d{4}-"))
+            .ToArray();
+
+        figures["docs:adrs"] = adrs.Length;
+
+        // Contract-bearing is the record's own declaration, read the way rule E2 reads it: a
+        // **Core contract:** field whose value opens with "version". Counting them any other way
+        // would give the register a figure no rule agrees with.
+        figures["docs:contract-bearing"] = adrs.Count(static path => Regex.IsMatch(
+            File.ReadAllText(path),
+            @"\*\*Core contract:\*\*\s*version",
+            RegexOptions.IgnoreCase));
 
         return figures;
     }
@@ -158,8 +207,8 @@ internal static class RegisterFigureRules
             .Select(match => (row.Id, Metric: match.Groups["metric"].Value)))
         .Where(cited => !figures.ContainsKey(cited.Metric))
         .Select(cited =>
-            $"the register row for {cited.Id} cites the assurance figure {{criteria:{cited.Metric}}}, " +
-            "and the generated report defines no such metric")
+            $"the register row for {cited.Id} cites the figure {{{cited.Metric}}}, and the " +
+            "figure catalog defines no such metric")
         .Distinct(StringComparer.Ordinal);
 
     /// <summary>
@@ -215,6 +264,47 @@ internal static class RegisterFigureRules
                 "carry none, and the register row for J10 does not say so";
         }
     }
+
+    /// <summary>A claim that some number of things EXIST, which is a claim about the tree.</summary>
+    /// <remarks>
+    /// The lookbehind keeps IDENTIFIERS out. `ADR 0003 and VmCoreContract both exist` is not a
+    /// count of anything, and neither is a revision, a section, an invariant or a rule number; a
+    /// rule that read them as figures would ask the register to cite a document's name.
+    /// </remarks>
+    private static readonly Regex Existence = new(
+        @"(?<!\b(?:ADR|revision|section|invariant|clause|rule)\s)(?<figure>" + FigureSource +
+        @")\s+(?<subject>[a-z][a-z\- ]{0,60}?)\s+exists?(?![\w-])",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+    /// <summary>
+    /// J12's fourth clause: a counted existence claim cites its figure rather than stating it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>This is the clause that closes the class, and it was minted because the class turned out
+    /// to be populated.</b> The first three clauses cover the three criteria figures. A sweep for
+    /// this shape - a number, a noun phrase, and the word "exist" - found eight rows asserting
+    /// counts the tree contradicts: A4 said five test-only projects where there are nine and two
+    /// composition roots where there are five, A7 said eight edges where there are fifty-nine, and
+    /// J1 said 689 relevant units, 903 exempt ones and 1,592 code units where the generated report
+    /// says 905, 1082 and 1987. Every one of them was green, because the row-equality test
+    /// compares a row to a copy of itself.
+    /// </para>
+    /// <para>
+    /// <b>The principle is one sentence: if the tree can compute it, cite it; if the tree cannot,
+    /// do not state it as a number.</b> A row whose subject has no figure in the catalog is not
+    /// exempt - it is a row asserting a count nothing can check, which is the thing this rule
+    /// exists to stop, and the fix is to say the sentence without the number.
+    /// </para>
+    /// </remarks>
+    internal static IEnumerable<string> UncitedExistenceClaims(
+        IEnumerable<(string Id, string Text)> rows) => rows
+        .SelectMany(row => Existence.Matches(Uncited(row.Text)).Cast<Match>()
+            .Select(match => (row.Id, Claim: match.Value, Figure: match.Groups["figure"].Value)))
+        .Select(found =>
+            $"the register row for {found.Id} states that {found.Figure} of something exist " +
+            $"without citing a figure: \"{Trim(found.Claim)}\" - a count of the tree written by " +
+            "hand is current until the tree moves and silent when it does");
 
     /// <summary>The text with its citations removed, so a citation is not read as a figure.</summary>
     private static string Uncited(string sentence) => Regex.Replace(sentence, Citation, " ");
