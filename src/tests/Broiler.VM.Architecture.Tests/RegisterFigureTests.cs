@@ -180,6 +180,45 @@ public sealed class RegisterFigureTests
         }
     }
 
+    /// <summary>
+    /// A quotation is not a claim, and the exemption that says so is narrow.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>This is the clause that was reconsidered rather than worked around.</b> Rule J12's row
+    /// fired on itself three times and rule A15's once, always for quoting the defect the rule was
+    /// minted for, and the repair each time was to paraphrase the quotation until its shape was
+    /// gone. Four repairs is a design, not a coincidence: a rule that forbids a sentence shape has
+    /// to give authors a way to SHOW that shape, or every row explaining why a rule exists pays
+    /// for it in evidence.
+    /// </para>
+    /// <para>
+    /// <b>The exemption is the one place here where a miss is unsafe</b>, so it needs both halves:
+    /// an attributing verb from a short list AND a code span. The witness carries three
+    /// near-misses with one half each, and all three must still be reported.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void J12_Does_Not_Report_An_Attributed_Quotation_And_Still_Reports_Every_Near_Miss()
+    {
+        var reported = RegisterFigureRules.UncitedSubjectCounts(
+            Witness("J12-a-quotation-and-three-things-that-are-not-one")).ToArray();
+
+        // Three near-misses: a code span with no verb, a verb with no code span, and a verb too
+        // far from its span. The attributed quotation is the fourth occurrence and is not here.
+        Assert.Equal(3, reported.Length);
+
+        foreach (var figure in new[] { "12", "78", "93" })
+        {
+            Assert.Contains(reported, message => message.Contains(
+                figure + " covered source files", StringComparison.Ordinal));
+        }
+
+        // ...and the quoted one is absent, which is the whole point.
+        Assert.DoesNotContain(reported, message =>
+            message.Contains("45 covered source files", StringComparison.Ordinal));
+    }
+
     [Fact]
     public void J12_Rejects_A_Row_Claiming_Work_The_Report_Says_Is_Done()
     {
@@ -228,10 +267,10 @@ public sealed class RegisterFigureTests
         Assert.True(discussing.Length >= 4, "too few rows discuss criteria for this to mean much");
         Assert.Empty(RegisterFigureRules.RestatedFigures(discussing));
 
-        // And the outstanding vocabulary matches no row at all, because nothing is outstanding.
-        Assert.Empty(Rows.Where(static row =>
-            RegisterFigureRules.OutstandingVocabulary.Any(phrase =>
-                row.Text.Contains(phrase, StringComparison.OrdinalIgnoreCase))));
+        // And the outstanding vocabulary claims nothing, because nothing is outstanding. Driven
+        // through the rule rather than over the raw text: J12's own row QUOTES the redness
+        // sentence it was minted for, and a check reading the raw text would report the quotation.
+        Assert.Empty(RegisterFigureRules.OutstandingClaims(Rows, missing: 0));
     }
 
     [Fact]

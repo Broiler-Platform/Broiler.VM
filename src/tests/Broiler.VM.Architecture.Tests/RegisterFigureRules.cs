@@ -284,9 +284,12 @@ internal static class RegisterFigureRules
     internal static IEnumerable<string> OutstandingClaims(
         IEnumerable<(string Id, string Text)> rows, int missing)
     {
+        // Reads the prepared text, like every other clause. A row is allowed to QUOTE a redness
+        // claim - rule J12's own row quotes the sentence it was minted for - and a clause that
+        // read the raw text would fire on the quotation while the shape clauses beside it did not.
         var claiming = rows
             .Where(static row => OutstandingVocabulary.Any(phrase =>
-                row.Text.Contains(phrase, StringComparison.OrdinalIgnoreCase)))
+                Uncited(row.Text).Contains(phrase, StringComparison.OrdinalIgnoreCase)))
             .ToArray();
 
         if (missing == 0)
@@ -423,7 +426,78 @@ internal static class RegisterFigureRules
         .Distinct(StringComparer.Ordinal);
 
     /// <summary>The text with its citations removed, so a citation is not read as a figure.</summary>
-    private static string Uncited(string sentence) => Regex.Replace(sentence, Citation, " ");
+    /// <summary>
+    /// The verbs by which a row attributes a figure to whatever SAID it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Deliberately short, because this list grants an exemption.</b> Everywhere else in this
+    /// component a vocabulary that fails to recognise something produces a false report, which is
+    /// the safe direction; here a verb wrongly matched means a live figure goes unread. So the
+    /// exemption needs BOTH a verb from this list AND a code span, and the list holds only verbs
+    /// whose object is a piece of text.
+    /// </para>
+    /// <para>
+    /// <b>"Read", "carries" and "names" are absent on purpose.</b> All three are ordinary words in
+    /// this register - "names every unit that owes one" - and each would hand out the exemption on
+    /// a sentence that is asserting rather than quoting.
+    /// </para>
+    /// </remarks>
+    internal static readonly string[] ReportingVerbs =
+    [
+        "said", "says", "saying", "stated", "states", "stating",
+        "opened with", "opened by", "quoted", "quotes", "quoting",
+        "wrote", "worded", "spelled", "reported",
+    ];
+
+    /// <summary>
+    /// A figure QUOTED from somewhere else, which is history and cannot go stale.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>This exists because the recogniser was wrong four times, always the same way.</b> Rule
+    /// J12's row fired on itself three times and rule A15's once, every one of them for quoting
+    /// the defect it was minted for: a register row that says why a rule exists has to be able to
+    /// show what the wrong sentence looked like. The repair each time was to paraphrase the
+    /// quotation until the shape was gone, which cost the row its evidence and would have cost the
+    /// next one too.
+    /// </para>
+    /// <para>
+    /// <b>A rule that forbids a sentence shape must give authors a way to quote that shape.</b>
+    /// This is that way, and it is better than the paraphrasing it replaces because it is VISIBLE:
+    /// a reader sees backticks and an attributing verb and knows the row is reporting rather than
+    /// claiming, where a paraphrase looks exactly like ordinary prose.
+    /// </para>
+    /// <para>
+    /// <b>It is an escape hatch, and the honest description is that it can be abused.</b> A row
+    /// could quote a live claim and evade the clause. What the design buys is that abuse must be
+    /// DELIBERATE - backticks and an attributing verb, both - where the paraphrase route was
+    /// available by accident to anyone who wrote a sentence slightly differently.
+    /// </para>
+    /// </remarks>
+    private static readonly Regex AttributedQuote = new(
+        @"\b(?:" + string.Join("|", ReportingVerbs.Select(Regex.Escape)) +
+        @")\b[^`\n]{0,72}`(?<quoted>[^`\n]*)`",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+    /// <summary>
+    /// The text a shape clause reads: citations resolved away, attributed quotations blanked.
+    /// </summary>
+    /// <remarks>
+    /// Blanked rather than deleted, so every offset in the row is unchanged and a message quoting
+    /// its surroundings still quotes the right ones.
+    /// </remarks>
+    private static string Uncited(string sentence) => AttributedQuote.Replace(
+        Regex.Replace(sentence, Citation, " "),
+        static match =>
+        {
+            var quoted = match.Groups["quoted"];
+            var offset = quoted.Index - match.Index;
+
+            return match.Value[..offset] +
+                new string(' ', quoted.Length) +
+                match.Value[(offset + quoted.Length)..];
+        });
 
     private static string Trim(string sentence) =>
         sentence.Length <= 120 ? sentence : sentence[..117] + "...";

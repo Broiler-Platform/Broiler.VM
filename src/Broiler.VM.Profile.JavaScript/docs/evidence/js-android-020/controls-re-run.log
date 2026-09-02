@@ -1,0 +1,138 @@
+# Every control minted for rules J12 and A15, re-run against the new recogniser.
+#
+# THIS IS THE EVIDENCE THAT MATTERS FOR THIS CHANGE. The quotation exemption can only
+# WEAKEN these rules - it removes text from what the clauses read - so the question is
+# not whether the new witness passes but whether any control that used to fire has
+# stopped. All eighteen still fire.
+
+### j12-controls
+
+==============================================================================
+J12-the-original-defect-restored
+  what:  The sentence that was actually there, put back in BOTH stores. This is the defect J12 was minted for, and the register's own row-equality test is green on it.
+  files: src/tests/Broiler.VM.Architecture.Tests/AssuranceRegisterRows.cs, src/tests/Broiler.VM.Architecture.Tests/rules.register.json
+  suite: FAILED
+  J12 said:
+      the register row for J10 counts Forty-four units against the falsification-criterion requirement, and a figure a human typed goes stale where a citation cannot: "Forty-four units are assessed"
+      the register row for J10 counts three units against the falsification-criterion requirement, and a figure a human typed goes stale where a citation cannot: "three of them carry"
+      the register row for J10 says falsification criteria are outstanding, and the generated report states 'Required and missing | 0'
+      the register row for J10 counts a subject the catalog computes without citing it: "Forty-four units" - a figure a human typed is current until the tree moves and silent when it does
+==============================================================================
+J12-a-row-claims-redness-and-states-no-figure
+  what:  Clause three alone: the redness claim with no figure beside it, so clause two has nothing to find.
+  files: src/tests/Broiler.VM.Architecture.Tests/AssuranceRegisterRows.cs, src/tests/Broiler.VM.Architecture.Tests/rules.register.json
+  suite: FAILED
+  J12 said:
+      the register row for J10 says falsification criteria are outstanding, and the generated report states 'Required and missing | 0'
+==============================================================================
+J12-a-citation-is-replaced-by-a-typed-number
+  what:  Clause two alone: the CURRENT figure, typed in correctly. It is right today and that is the whole objection - it is right until the tree moves and silent when it does.
+  files: src/tests/Broiler.VM.Architecture.Tests/AssuranceRegisterRows.cs, src/tests/Broiler.VM.Architecture.Tests/rules.register.json
+  suite: FAILED
+  J12 said:
+      the register row for J10 counts 79 units against the falsification-criterion requirement, and a figure a human typed goes stale where a citation cannot: "79 units are assessed"
+      the register row for J10 counts a subject the catalog computes without citing it: "79 units" - a figure a human typed is current until the tree moves and silent when it does
+==============================================================================
+J12-the-report-renames-a-metric
+  what:  Clause one: the generated report stops defining a metric the register cites, which is what a rename looks like from the register's side.
+  files: CODE-ASSURANCE.md
+  suite: FAILED
+  J12 said:
+      the register row for J10 cites the figure {criteria:required}, and the figure catalog defines no such metric
+      the register row for J12 cites the figure {criteria:required}, and the figure catalog defines no such metric
+### j12b-controls
+
+==============================================================================
+J12-a-row-states-an-edge-count-the-tree-contradicts
+  what:  The sentence rule A7's row actually carried. There are fifty-nine edges.
+  suite: FAILED
+  J12 said:
+      the register row for A7 states that Eight of something exist without citing a figure: "Eight edges exist" - a count of the tree written by hand is current until the tree moves and silent when it does
+      the register row for A7 counts a subject the catalog computes without citing it: "Eight edges" - a figure a human typed is current until the tree moves and silent when it does
+==============================================================================
+J12-a-row-states-a-project-count-the-tree-contradicts
+  what:  Rule A4's real sentence. There are nine test-only projects.
+  suite: FAILED
+  J12 said:
+      the register row for A4 states that Five of something exist without citing a figure: "Five test-only projects exist" - a count of the tree written by hand is current until the tree moves and silent when it does
+==============================================================================
+J12-a-row-states-a-count-that-is-correct-today
+  what:  The CURRENT figure, typed in correctly. Reported anyway, which is the rule's claim: a right number and a stale number are the same object at different times.
+  suite: FAILED
+  J12 said:
+      the register row for A12 states that Five of something exist without citing a figure: "Five composition roots exist" - a count of the tree written by hand is current until the tree moves and silent when it does
+      the register row for A12 counts a subject the catalog computes without citing it: "Five composition roots" - a figure a human typed is current until the tree moves and silent when it does
+==============================================================================
+J12-a-row-cites-a-graph-figure-that-is-gone
+  what:  Clause one over the widened catalog: a citation naming a figure nothing computes.
+  suite: FAILED
+  J12 said:
+      the register row for A7 cites the figure {graph:arrows}, and the figure catalog defines no such metric
+### j12c-controls
+
+==============================================================================
+J12-a-review-document-count-is-typed-back-in
+  what:  Rule H1's real sentence. It said four; the corpus holds many more, and nothing had a figure for it until this change.
+  suite: FAILED
+  J12 said:
+      the register row for H1 states that four of something exist without citing a figure: "four review documents that exist" - a count of the tree written by hand is current until the tree moves and silent when it does
+      the register row for H1 counts a subject the catalog computes without citing it: "four review documents" - a figure a human typed is current until the tree moves and silent when it does
+==============================================================================
+J12-a-consumer-profile-count-is-typed-back-in
+  what:  Rule A11's real sentence, which JS-ANDROID-015 had to delete the number from because nothing computed the subject.
+  suite: FAILED
+  J12 said:
+      the register row for A11 states that Two of something exist without citing a figure: "Two consumer profiles exist" - a count of the tree written by hand is current until the tree moves and silent when it does
+==============================================================================
+J12-a-contract-count-cites-a-metric-that-is-gone
+  what:  Clause one over a metric added by this change.
+  suite: FAILED
+  J12 said:
+      the register row for V12 cites the figure {contracts:profile-facings}, and the figure catalog defines no such metric
+### j12e-controls
+
+==============================================================================
+J12-a-covered-file-count-is-typed-back-in
+  what:  Rule J6's real sentence. There are 61 covered files, and the fourth clause could not see this shape at all.
+  suite: FAILED
+  J12 said:
+      the register row for J6 counts a subject the catalog computes without citing it: "45 files" - a figure a human typed is current until the tree moves and silent when it does
+==============================================================================
+J12-an-artefact-count-is-typed-back-in
+  what:  Rule J5's real sentence, spelled as a word. There are 64 artefacts.
+  suite: FAILED
+  J12 said:
+      the register row for J5 counts a subject the catalog computes without citing it: "Forty-eight artefacts" - a figure a human typed is current until the tree moves and silent when it does
+==============================================================================
+J12-an-annotation-count-is-typed-back-in
+  what:  Rule J2's real sentence. There are 905 annotated units.
+  suite: FAILED
+  J12 said:
+      the register row for J2 counts a subject the catalog computes without citing it: "689 annotations" - a figure a human typed is current until the tree moves and silent when it does
+==============================================================================
+J12-an-assembly-count-that-is-correct-today
+  what:  The CURRENT figure, typed in correctly, and reported anyway.
+  suite: FAILED
+  J12 said:
+      the register row for C1 counts a subject the catalog computes without citing it: "three product assemblies" - a figure a human typed is current until the tree moves and silent when it does
+### a15-controls
+
+==============================================================================
+A15-the-budget-revision-is-missing
+  what:  The exact state the record was in until this change: a project-adding revision with no budget paragraph, so the last stated size is one revision behind.
+  suite: FAILED
+  A15 said:
+      docs/adr/0001-component-topology-and-dependency-graph.md's last budget states 19 projects and the graph holds 20: a project was added without the dated revision that authorises it, or the revision omitted its budget paragraph
+      docs/adr/0001-component-topology-and-dependency-graph.md's last budget states 55 edges and the graph holds 59
+==============================================================================
+A15-the-edge-count-alone-is-wrong
+  what:  A revision that counted its projects and miscounted its edges - the half a reader is least likely to recompute.
+  suite: FAILED
+  A15 said:
+      docs/adr/0001-component-topology-and-dependency-graph.md's last budget states 57 edges and the graph holds 59
+==============================================================================
+A15-the-budget-states-projects-and-no-edges
+  what:  The older sentence shape, which states no edge count. Accepted for the historical revisions that use it and reported when it is the LAST one.
+  suite: FAILED
+  A15 said:
+      docs/adr/0001-component-topology-and-dependency-graph.md's last budget states a project count and no edge count, and the graph holds 59 edges

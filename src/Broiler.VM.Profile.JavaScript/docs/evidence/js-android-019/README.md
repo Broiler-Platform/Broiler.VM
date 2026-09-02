@@ -84,6 +84,13 @@ use that shape to explain why it exists**, and the register's rows are where thi
 why rules exist. The repair has been reported speech every time. If a fifth appears, the thing to
 reconsider is the recogniser, not the prose.
 
+> **Correction, 2026-09-02.** Reconsidered at four rather than five, in
+> [Bundle JS-ANDROID-020](../js-android-020/README.md). A figure is exempt when it is inside a
+> code span AND attributed by a reporting verb within 72 characters, so a row can quote the
+> sentence that was wrong. **All eighteen controls minted for J12 and A15 were re-run and all
+> eighteen still fire**, which is the only evidence that matters for an exemption: it can only
+> weaken the rules it applies to.
+
 ## 7. Exclusions — what this bundle does not show
 
 1. **A15 reads two figures**: the project count and the edge count. Everything else a budget
