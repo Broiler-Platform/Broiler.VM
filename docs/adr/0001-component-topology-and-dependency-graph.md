@@ -587,7 +587,7 @@ section 8's extraction gate forbids, so VM-0 does not.
 | `assurance.manifest.json` | exists since VM-1: `assurance.manifest.json` | **Generated.** One entry per code unit in the three product assemblies, exempt and relevant alike, and one per covered file, each with a fingerprint. A change-detection record and not a review: an entry says what a declaration hashed to, never that anyone read it. Rule J7 holds it to the tree. |
 | `.gitattributes` | not created (VM-0 decision on paper; no file at VM-0) | The component contains no shell script, so there is no line-ending rule to fix yet. |
 | `global.json` | not created (VM-0 decision on paper; no file at VM-0) | No SDK pin; see Exclusion EX-03. |
-| `.github/workflows/` | exists since VM-1: `.github/workflows/` | Three lanes, and none publishes. `review.yml` regenerates every assurance artefact on a pull request, commits what moved, and then asserts that what is on disk is what the generator would write. `release.yml` runs that same gate and then the release gate - Rule J11 - before it packs, and stops at `dotnet pack`: pushing to a feed needs a credential this repository does not hold. The component ran no CI of its own at VM-0, which Exclusion EX-06 records; these lanes discharge that early and only in part, because they fire on a pull request and on a tag and nothing else. `broiler-vm.yml` was added at VM-6 to run the graph, catalog, AOT and drift checks. **It has now run on hosted runners and passes**, on `ubuntu-latest`, `windows-latest` and `macos-latest`, publishing and running every composition root as Native AOT on `linux-x64`, `win-x64` and `osx-arm64`; revision 2026-09-01 records what that does and does not settle, and it settles **no RID claim**, because a lane is not an evidence bundle. |
+| `.github/workflows/` | exists since VM-1: `.github/workflows/` | Three lanes, and none publishes. `review.yml` regenerates every assurance artefact on a pull request, commits what moved, and then asserts that what is on disk is what the generator would write. `release.yml` runs that same gate and then the release gate - Rule J11 - before it packs, and stops at `dotnet pack`: pushing to a feed needs a credential this repository does not hold. The component ran no CI of its own at VM-0, which Exclusion EX-06 records; these lanes discharge that early and only in part, because they fire on a pull request and on a tag and nothing else. `broiler-vm.yml` was added at VM-6 to run the graph, catalog, AOT and drift checks. **It has now run on hosted runners and passes**, on `ubuntu-latest` and `windows-latest`, publishing and running every composition root as Native AOT on `linux-x64` and `win-x64`; it did the same on `macos-latest` and `osx-arm64` until the second 2026-09-01 revision withdrew that entry, because ADR 0012's declared matrix is the other two and no head in the consuming repository targets macOS. Neither revision settles **any RID claim**, because a lane is not an evidence bundle. |
 | `docs/compositions.md` | exists at VM-3: docs/compositions.md | The composition and RID register. It carries the schema, the advertised set - empty at core contract version 1 - the two demonstration compositions, and what each was published and run for. Rule A11's allow-list is a path rather than a constant now, and group K holds the register to the checkout. Exclusion EX-08 is closed; revision 1 records it. |
 | `docs/platform-references.md` | not created (VM-0 decision on paper; no file at VM-0) | The section 17 pinned-revision table. ADR 0012 records why it is absent and what closes it. |
 | `docs/support.md` | deferred to VM-6 | The public support table. ADR 0012 records that none is published at VM-0. |
@@ -1241,3 +1241,34 @@ would be the untruthful claim roadmap section 16 stops a release for.
 described what was true when it was written, and the append-only rule at the top
 of this section is what makes it worth reading; this entry is where a reader
 learns the sentence has been overtaken.
+
+---
+
+### 2026-09-01 - the lane's third RID is withdrawn
+
+**What the record said.** The revision above, written earlier the same day: that
+the lane had run on `ubuntu-latest`, `windows-latest` and `macos-latest`, and
+published and ran every composition root as Native AOT on `linux-x64`, `win-x64`
+and `osx-arm64`.
+
+**What is now true.** It runs the first two. `osx-arm64` is a RID ADR 0012 marks
+*Reserved - no evidence*, its declared matrix is exactly { win-x64, linux-x64 },
+and the ground that record gives for choosing two is that the consuming
+repository publishes those two and no other. It still does, and it has no macOS
+head - so the lane was publishing a RID nothing consumes and the support table
+was carrying a row for a RID the ADR says may never have one. ADR 0012's own
+2026-09-01 revision records the withdrawal, what the consuming repository's
+Android head does to the Android exclusion's reasoning, and the arm64 gap the
+withdrawal leaves named rather than covered.
+
+**What it does not settle.** Exactly what the revision above did not settle, and
+for the same reason: no RID claim moves, because this lane collects no bundle.
+The sentence that entry turned on is unaffected - a workflow that has run is
+still not a bundle - and withdrawing a lane entry removes a publish nobody
+consumed rather than any evidence, because none was retained.
+
+**What is not edited.** The revision above stands as written. It described what
+was true when it was written, on the day it was written, and this entry is where
+a reader learns the RID list in it has been narrowed by a decision recorded
+elsewhere.
+

@@ -423,3 +423,68 @@ subset that bears on it; neither reproduces all thirty-four sentences.
   revision, contract version, and covered bundle identifiers; treating a
   vacant role as delegated to whoever is available; and treating VM-0's
   `In progress` state as acceptance for any downstream purpose.
+
+---
+
+### 2026-09-01 - the lane's RID matrix is brought back to this one, and what the consuming repository's Android head leaves open
+
+**What the record said.** That the declared RID matrix is exactly
+{ win-x64, linux-x64 }; that win-arm64, linux-arm64, osx-x64 and osx-arm64 are
+*Reserved - no evidence*, whose own rule is that the name "may never appear in a
+support table"; and that android-arm64 and android-x64 are excluded because
+"Broiler.VM holds no evidence that ILCompiler Native AOT targets an Android RID"
+and the platform references are unpinned.
+
+**What was actually true.** The matrix above was right and nothing enforced it.
+`.github/workflows/broiler-vm.yml` published and ran every composition root on a
+third RID - `osx-arm64` - and `docs/support.md` gave that RID a row of its own in
+section 3. Neither is a claim, and both were drift in the direction of one: a
+reserved RID with a lane behind it and a table row in front of it is one edit
+away from being read as supported, which is the reading this record's own
+forbidding list exists to prevent.
+
+**What replaced it.** The lane's matrix is the declared matrix, and the support
+table's section 3 carries a row per declared RID and none for a reserved one.
+**The grounding sentence for choosing two did not have to change**, which is the
+part worth stating: it says the surrounding repository publishes those two RIDs
+and no other, and it still does - `Broiler.Browser.Windows` publishes `win-x64`
+under `Release-Windows` and `Broiler.Browser.Linux` publishes `linux-x64` under
+`Release-Linux`, and there is no macOS head. The matrix was already aligned with
+the consumer; the lane was not.
+
+**What the Android head changes, and it is the reason above the exclusion.**
+The consuming repository has a third head - `net10.0-android36.0`, ABIs
+`android-arm64;android-x64`, `PublishTrimmed=false` - which its CI builds with
+the Android workload. That head does not use Native AOT and does not run
+CoreCLR: it runs Mono. So the reason this record gives for excluding the Android
+RIDs - no evidence that ILCompiler Native AOT targets one - is a true sentence
+about a question the consumer does not ask. **The real gap is narrower and
+harder**: this component has no Android-targeted project and no device or
+emulator harness, so "publish and run" on an Android RID means an application
+package and a device, not a matrix row. The RIDs stay **Excluded**; the reason
+is now the one that would have to be answered to lift it, and EX-32's pinned
+references are a second condition rather than the only one.
+
+**And one gap this leaves named rather than covered.** The product ships arm64 -
+it is the Android head's primary ABI - and after this change no lane in this
+component exercises arm64 at all. The withdrawn `osx-arm64` job was the only one
+that ever did, and it covered the architecture and nothing else: not Mono, not
+the Android runtime, not the head. **Substituting one reserved RID for another -
+`linux-arm64` for `osx-arm64` - was considered and refused**, because a proxy
+that lets a reader conclude "arm64 is covered" is the same substitution this
+component corrects elsewhere, and because it would put the lane back outside the
+declared matrix on the day it was brought inside it. Widening the matrix to
+arm64 is a decision with a grounding of its own, and it is not taken here.
+
+**What it does not settle.** No RID claim moves in either direction, because no
+claim ever rested on the lane: a lane collects no bundle. `linux-x64` remains
+the one RID with retained collections behind it, `win-x64` remains attempted and
+unclaimed, and everything else remains unattempted. Withdrawing a lane entry
+removes a publish nobody consumed; it removes no evidence, because there was
+none to remove.
+
+**What is not edited.** The decision section above stands as written, matrix and
+rejections intact. This entry is where a reader learns that the lane spent two
+days wider than the matrix it was meant to implement, and what the Android head
+does to the exclusion's reasoning.
+
