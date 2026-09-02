@@ -184,11 +184,18 @@ public sealed class AssuranceRuleTests
     /// the rule it reports on cannot drift apart.
     /// </para>
     /// <para>
-    /// <b>J10 and J11 are not here, and the reason is not effort.</b> Their clean direction is
-    /// asserted over a WITNESS input rather than over this checkout - J10 over units read from a
-    /// witness file, J11 over a release plan built from witness text - so there is no "what this
-    /// rule said about the checkout" to write down. Reporting them would mean choosing an input
-    /// the test does not use, which is a different claim wearing this one's clothes.
+    /// <b>J10 and J11 joined on 2026-09-02, and the reason they were missing was a misreading.</b>
+    /// Three bundles said their clean direction is asserted over a WITNESS input rather than over
+    /// this checkout. Both tests assert over a witness in the MIDDLE and over the checkout LAST -
+    /// J10 over <c>ProductUnits</c>, J11 over <c>AssuranceGenerator.Current</c> - and the exclusion
+    /// was written from the witness clause without reading to the end of either test.
+    /// </para>
+    /// <para>
+    /// <b>J11 is the one rule here that is not silent on a clean checkout, and that is the rule
+    /// working.</b> Every relevant unit in this component is <c>HUMAN_PENDING</c>, which ledger
+    /// update rule 8 permits, so the release gate has something to say about this tree and its own
+    /// test asserts <c>NotEmpty</c> on an ordinary run. A report that showed it silent would be
+    /// reporting a tree nobody had checked as a tree ready to publish.
     /// </para>
     /// </remarks>
     [Fact]
@@ -215,6 +222,8 @@ public sealed class AssuranceRuleTests
             ("J9", () => AssuranceReviewClaims.Violations(
                 AssuranceReviewClaims.GeneratedText(AssuranceGenerator.Current.Artefacts),
                 ProductUnits)),
+            ("J10", () => AssuranceScanner.MissingFalsificationCriteria(ProductUnits)),
+            ("J11", () => AssuranceRelease.Blockers(AssuranceGenerator.Current)),
         ]);
 
         if (RuleReport.Destination is { } destination)
@@ -2666,10 +2675,15 @@ public sealed class AssuranceRuleTests
     /// instruction to whoever reviews the unit, and not part of what they certify.
     /// </para>
     /// <para>
-    /// <b>This rule is RED at this milestone, and the register row says so.</b> Three of the 44
-    /// units carry a criterion; 41 do not, and the rule names each of them. That is the clause
-    /// working: it is the list of work, and it is asserted last here so that a reader who runs the
-    /// suite sees the clause's own witnesses pass before they see what it names.
+    /// <b>This rule was RED when it was minted and is GREEN now, and the register row said
+    /// otherwise until 2026-09-02.</b> Three of the units carried a criterion then and the rule
+    /// named the other 41; seventy-nine units are assessed High today and every one carries one.
+    /// The row is corrected rather than the history erased, because how the stale claim survived
+    /// is the useful part: <see cref="AssertTheRegisterRowIsWhatTheRulesImplement"/> compares the
+    /// row against a hardcoded copy of itself, so two copies of a false claim agreed with each
+    /// other for as long as nobody read the tree. The clean direction is still asserted last, so
+    /// that a reader who runs the suite sees the clause's own witnesses pass before they see what
+    /// it names here.
     /// </para>
     /// </remarks>
     [Fact]
@@ -2748,9 +2762,13 @@ public sealed class AssuranceRuleTests
             AssuranceManifest.Render([allocator], before),
             AssuranceManifest.Render([reworded], after));
 
-        // The clean direction, LAST and currently red. Three units of the 44 the component assesses
-        // High carry a criterion and 41 do not; each is named, because the count is a number a
-        // reader can do nothing with and the name is the declaration they have to write it on.
+        // The clean direction, LAST and green since the criteria were written. Every unit the
+        // component assesses High carries one; each that did not was named here while the work was
+        // outstanding, because a count is a number a reader can do nothing with and a name is the
+        // declaration they have to write it on. Control
+        // J10-a-high-unit-loses-its-falsification-criterion in Bundle JS-ANDROID-013 deletes one
+        // from this tree and watches the rule name that unit, which is what shows the clause still
+        // reads the checkout now that the checkout satisfies it.
         var missing = AssuranceScanner.MissingFalsificationCriteria(ProductUnits);
 
         Assert.True(

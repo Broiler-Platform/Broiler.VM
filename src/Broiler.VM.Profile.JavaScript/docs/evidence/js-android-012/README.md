@@ -71,6 +71,15 @@ The register's row stays Deferred and unreported.
 direction is asserted over a **witness input** rather than over this checkout, so there is no "what
 this rule said here" to write down. Giving them one would need an input the test does not use.
 
+> **Correction, 2026-09-02.** That reason is wrong, and this bundle repeated it without checking
+> it. Both tests assert over a witness in the middle and over **the checkout** last — J10 over
+> `ProductUnits`, J11 over `AssuranceGenerator.Current`. Both are reported by
+> [Bundle JS-ANDROID-013](../js-android-013/README.md), which takes the count to **75 of 76** and
+> leaves `E5` as the only rule the mechanism does not reach. That bundle also found that **J11 is
+> not silent on a clean checkout** — it reports 905 blockers, every relevant unit being
+> `HUMAN_PENDING` — so this bundle's §4 claim that "every one of the 73 rules said nothing" is
+> true of the 73 it covered and is **not** a property of the report in general.
+
 ## 4. Results
 
 Fifteen reports over a clean checkout, unedited: `clean-A.txt`, `clean-A7.txt`, `clean-A14.txt`,
