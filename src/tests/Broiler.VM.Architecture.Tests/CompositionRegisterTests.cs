@@ -23,6 +23,28 @@ public sealed class CompositionRegisterTests
 
     private static readonly IReadOnlyList<CompositionRules.Row> Rows = ReadRegister();
 
+    /// <summary>
+    /// The rows that name a composition root the checkout actually has.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>K1 owns a row with no subject, and the three rules below presuppose one.</b> Each of them
+    /// asks a question about a row's artefacts - its project's reference set, its catalog baseline,
+    /// its retained closure - and a row naming a composition that does not exist has none of those
+    /// to be wrong about.
+    /// </para>
+    /// <para>
+    /// <b>Until 2026-09-02 they did not presuppose it, they assumed it.</b> A phantom row made K2
+    /// throw <c>Sequence contains no matching element</c> and K3 throw <c>FileNotFoundException</c>,
+    /// while K4 reported that the bundle had retained no closure report - a true sentence blaming
+    /// the wrong file. Three tests crashed or misattributed, and the one rule with something
+    /// accurate to say about the input was drowned by them. Skipping here is not a weakening: the
+    /// row is still reported, by K1, which is the rule whose subject it is.
+    /// </para>
+    /// </remarks>
+    private static IEnumerable<CompositionRules.Row> Registered =>
+        Rows.Where(static row => Roots.Contains(row.Composition, StringComparer.Ordinal));
+
     [Fact]
     public void K1_The_Register_And_The_Checkout_Name_The_Same_Compositions()
     {
@@ -55,7 +77,7 @@ public sealed class CompositionRegisterTests
     [Fact]
     public void K2_Each_Row_Agrees_With_The_Reference_Set_And_The_Catalog()
     {
-        foreach (var row in Rows)
+        foreach (var row in Registered)
         {
             var project = ComponentGraph.Projects.Single(candidate =>
                 string.Equals(candidate.AssemblyName, row.Composition, StringComparison.Ordinal));
@@ -115,7 +137,7 @@ public sealed class CompositionRegisterTests
     [Fact]
     public void K3_Each_Catalog_Baseline_Matches_What_The_Published_Composition_Printed()
     {
-        foreach (var row in Rows)
+        foreach (var row in Registered)
         {
             var slug = Slug(row.Composition);
 
@@ -141,7 +163,7 @@ public sealed class CompositionRegisterTests
     [Fact]
     public void K4_Each_Published_Closure_Contains_Exactly_What_It_Declares()
     {
-        foreach (var row in Rows)
+        foreach (var row in Registered)
         {
             Assert.Empty(CompositionRules.K4(row, ClosureModesFor(row)));
         }

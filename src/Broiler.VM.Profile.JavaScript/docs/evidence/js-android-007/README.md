@@ -45,5 +45,12 @@ and eight suite runs to reprint it would be cost without a reader.
    rule's source, and stated in the row. Nothing in the log confirms it. A harness that reported
    the rule's own messages would; this one does not have one.
 3. **One direction of K1**, as JS-ANDROID-004 through -006 all record.
+
+   > **Correction, 2026-09-02.** Both directions are controlled by
+   > [Bundle JS-ANDROID-008](../js-android-008/README.md), which closes this exclusion here and in
+   > JS-ANDROID-004, -005 and -006, where it says the same thing. **The reason it stood so long
+   > was a defect and not an inconvenience**: a phantom row made K2 and K3 throw and K4 blame the
+   > wrong file, and those three now leave a row with no subject to K1. **Nothing in the log below
+   > is edited.**
 4. **This is a SCOPED run**, three rows of twenty-eight, not the control matrix.
 5. **Nothing here runs on a device**, no milestone moves, and nothing is reviewed.

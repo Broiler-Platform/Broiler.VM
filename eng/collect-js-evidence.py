@@ -400,6 +400,32 @@ CONTROLS = [
         lambda text: text.replace("|WallClock|Runtime", "|HostCalls|Runtime"),
     ),
     (
+        "K1-the-register-names-a-composition-the-checkout-does-not-have",
+        "A row is added for Broiler.VM.Composition.Deleted, which no project in the checkout "
+        "builds. TARGET: K1's OTHER direction - the register naming something absent, which "
+        "JS-ANDROID-004 and every bundle after it recorded as exercised in memory and never over "
+        "the real file. It is the worse of the two directions: an undocumented root is a gap, "
+        "while a row for a composition that does not exist reads as a support claim for something "
+        "nobody can run. Until 2026-09-02 this injection could not be a control at all - K2 threw "
+        "on Single over a project that is not there, K3 threw on a catalog baseline that does not "
+        "exist, and K4 blamed a missing closure report - so three tests crashed or misattributed "
+        "around the one rule with something accurate to say. K2, K3 and K4 leave a row with no "
+        "subject to K1 now, and this fires K1 alone.",
+        COMPOSITION_REGISTER,
+        lambda text: text.replace(
+            "| `Broiler.VM.Composition.JavaScript.Android` | demonstration | `broiler.javascript` "
+            "| `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format` | none "
+            "registered | none registered | "
+            "`src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-001` |\n",
+            "| `Broiler.VM.Composition.JavaScript.Android` | demonstration | `broiler.javascript` "
+            "| `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format` | none "
+            "registered | none registered | "
+            "`src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-001` |\n"
+            "| `Broiler.VM.Composition.Deleted` | demonstration | `com.example.gone` | "
+            "`Com.Example.Gone` | none | none registered | none registered | "
+            "`docs/evidence/vm-6` |\n"),
+    ),
+    (
         "K1-the-register-loses-the-android-row",
         "The Android head's row is deleted from docs/compositions.md while the root stays in the "
         "checkout. K1 ALREADY REJECTS THIS SHAPE THREE WAYS - an undocumented root, a phantom row, "
