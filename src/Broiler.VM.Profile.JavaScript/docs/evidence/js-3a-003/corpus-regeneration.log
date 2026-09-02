@@ -1,0 +1,8 @@
+# The corpus after the change, regenerated and byte-identical to the corpus before it.
+#
+# This is the result that matters: the derivation reproduces every hand-computed pin
+# exactly, so nothing about the retained bytes or the recorded answers moved.
+
+(no CHANGED lines above means the regenerated corpus is identical)
+
+corpus rows: 66; rows pinning a position: 4

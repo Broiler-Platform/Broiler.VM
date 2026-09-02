@@ -164,14 +164,15 @@ internal static class CorpusBuilder
             JavaScriptDiagnosticCodes.SuspensionTargetOutsideManifest),
 
         // ---- the code section ---------------------------------------------------------------------
-        Invalid(
+        Pinned(
             "an-unknown-opcode",
-            Code([0xFF]),
+            UnknownOpcodeInCode(),
             "UnknownFeature",
             JavaScriptDiagnosticCodes.UnknownOpcode,
             // The link stage: the code section is the third frame, the offset is into IT, and the
             // artifact carries no position table - so both coordinates are the reserved zero.
-            "2:0:0:0"),
+            // Hand-computed, and kept as the answer the derivation has to reproduce.
+            handComputed: "2:0:0:0"),
         Invalid("a-code-section-of-no-length", EmptyCode(), "InconsistentStructure", JavaScriptDiagnosticCodes.EmptyCode),
         Invalid(
             "an-instruction-whose-operand-runs-off-the-end",
@@ -242,14 +243,15 @@ internal static class CorpusBuilder
             EntryIntoOperand(),
             "InconsistentStructure",
             JavaScriptDiagnosticCodes.EntryOffsetNotAnInstructionBoundary),
-        Invalid(
+        Pinned(
             "a-position-row-inside-an-operand",
             PositionIntoOperand(),
             "InconsistentStructure",
             JavaScriptDiagnosticCodes.MalformedPositionRow,
             // The row that is refused is the row that covers the offset, so this one reports its
-            // own line and column.
-            "2:1:1:1"),
+            // own line and column. Hand-computed against the format document, and kept as the
+            // answer the derivation has to reproduce.
+            handComputed: "2:1:1:1"),
         Invalid(
             "an-entry-point-name-of-no-length",
             NamelessEntry(),
@@ -267,12 +269,12 @@ internal static class CorpusBuilder
         // offset the second of two table rows covers, so an encoding that reported the first row,
         // reported no row, or reported the offset against the artifact rather than against the code
         // section would each produce a different manifest row.
-        Invalid(
+        Pinned(
             "a-refusal-covered-by-the-second-position-row",
             RefusalUnderASecondPositionRow(),
             "UnknownFeature",
             JavaScriptDiagnosticCodes.UnknownOpcode,
-            "2:3:7:5"),
+            handComputed: "2:3:7:5"),
 
         // ---- the seven exhaustions, one per dimension a verification can exhaust ------------------------
         //
@@ -340,6 +342,41 @@ internal static class CorpusBuilder
         new(name, "default", "InvalidArtifact", reason, code, "-", position, Unnamed, Unnamed, bytes);
 
     /// <summary>
+    /// An invalid entry whose position is DERIVED, held against the hand-computed answer.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The producer refuses to write a corpus whose two answers disagree.</b> The derivation
+    /// reads the section list and the position table this builder assembled; the hand-computed
+    /// string was written by a human against the format document. Neither is taken as the
+    /// authority over the other - they are compared, and a difference stops the write.
+    /// </para>
+    /// <para>
+    /// Keeping the literal is the point. A derivation that replaced it would be a second
+    /// implementation with nothing to check it, and the reason bundle JS-3A-001 gave for not
+    /// pinning more rows - that a hand-computed offset is a number no reader can check - is only
+    /// answered if the derivation reproduces the numbers a reader already checked.
+    /// </para>
+    /// </remarks>
+    private static CorpusEntry Pinned(
+        string name,
+        (byte[] Bytes, string Pin) built,
+        string reason,
+        int code,
+        string handComputed)
+    {
+        if (!string.Equals(built.Pin, handComputed, StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException(
+                $"The corpus entry {name} derives the position {built.Pin} from what the builder " +
+                $"wrote and its hand-computed position is {handComputed}. One of the two is " +
+                "wrong and this producer will not write a corpus until they agree.");
+        }
+
+        return Invalid(name, built.Bytes, reason, code, built.Pin);
+    }
+
+    /// <summary>
     /// One exhaustion entry: a well-formed program, a host that declined it on one dimension, and
     /// the pair the answer must name.
     /// </summary>
@@ -367,6 +404,70 @@ internal static class CorpusBuilder
     /// pins nothing says so.
     /// </remarks>
     private const string Unpinned = "-";
+
+    /// <summary>
+    /// The position a refusal should report, DERIVED from what this builder wrote.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Bundle JS-3A-001 recorded that only four rows pin a position, and gave two reasons that
+    /// are both true and not exhaustive.</b> Hand-computing an offset into bytes the producer
+    /// assembles gives a number no reader can check; asking the verifier for it records the answer
+    /// under test. This is the third way: the producer computes the position from ITS OWN
+    /// construction - the section it put the defect in, the offset it put it at, and the position
+    /// table it wrote - and the replay compares that against what the verifier computed from what
+    /// it READ.
+    /// </para>
+    /// <para>
+    /// <b>Two derivations of one fact, and they can disagree.</b> That is the shape rule K2 uses
+    /// for a composition's profile set and rule J8 uses for the report's own figures, and it is
+    /// what makes this a comparison rather than a recording. What it does NOT catch is a shared
+    /// misunderstanding of the encoding: if both sides read the covering row wrongly in the same
+    /// way, both agree. The four hand-computed pins stay exactly as they are for that reason -
+    /// they were written by a human against the format document, and the first thing this
+    /// derivation had to do was reproduce them.
+    /// </para>
+    /// </remarks>
+    private static string PinnedAt(
+        IReadOnlyList<JavaScriptArtifactWriter.Section> sections,
+        JavaScriptFormat.SectionKind kind,
+        uint byteOffset,
+        IReadOnlyList<(uint Offset, uint Line, uint Column)> positions)
+    {
+        var sectionIndex = -1;
+
+        for (var index = 0; index < sections.Count; index++)
+        {
+            if (sections[index].Kind == kind)
+            {
+                sectionIndex = index;
+                break;
+            }
+        }
+
+        if (sectionIndex < 0)
+        {
+            throw new InvalidOperationException(
+                $"This artifact carries no {kind} section, so a refusal cannot be pinned inside one.");
+        }
+
+        // The covering row is the LAST row at or before the offset, which is the encoding JSD-0009
+        // records. A refusal before the first row, or in an artifact with no table, reports the
+        // reserved zero pair rather than guessing.
+        uint line = 0;
+        uint column = 0;
+
+        foreach (var row in positions)
+        {
+            if (row.Offset <= byteOffset)
+            {
+                line = row.Line;
+                column = row.Column;
+            }
+        }
+
+        return string.Join(':', sectionIndex, byteOffset, line, column);
+    }
 
     /// <summary>
     /// The dimension and scope columns of a row whose answer exhausted nothing.
@@ -534,21 +635,39 @@ internal static class CorpusBuilder
     /// - so the manifest records <c>2:3:7:5</c> and an encoding that reported the artifact-relative
     /// offset, the first row, or no row at all would each write a different one.
     /// </remarks>
-    private static byte[] RefusalUnderASecondPositionRow() => JavaScriptArtifactWriter.Write(
-        Manifest,
+    /// <summary>
+    /// The entry whose point is the POSITION rather than the code, with its pin derived.
+    /// </summary>
+    /// <remarks>
+    /// The unknown opcode's offset is FOUND in the code bytes rather than restated beside them,
+    /// so moving the byte moves the pin and no third place has to be remembered.
+    /// </remarks>
+    private static (byte[] Bytes, string Pin) RefusalUnderASecondPositionRow()
+    {
+        (uint Offset, uint Line, uint Column)[] positions = [(0u, 1u, 1u), (3u, 7u, 5u)];
+        byte[] code = [(byte)JavaScriptOpcode.LoadConstant, 0x00, 0x00, 0xFF];
+
+        JavaScriptArtifactWriter.Section[] sections =
         [
             Limits(),
             new JavaScriptArtifactWriter.Section(
                 JavaScriptFormat.SectionKind.Constants,
                 JavaScriptArtifactWriter.Constants([JavaScriptArtifactWriter.NumberConstant(1)])),
-            new JavaScriptArtifactWriter.Section(
-                JavaScriptFormat.SectionKind.Code,
-                [(byte)JavaScriptOpcode.LoadConstant, 0x00, 0x00, 0xFF]),
+            new JavaScriptArtifactWriter.Section(JavaScriptFormat.SectionKind.Code, code),
             Entries([(SliceLowering.MainEntry, 0u)]),
             new JavaScriptArtifactWriter.Section(
                 JavaScriptFormat.SectionKind.Positions,
-                JavaScriptArtifactWriter.Positions([(0u, 1u, 1u), (3u, 7u, 5u)])),
-        ]);
+                JavaScriptArtifactWriter.Positions(positions)),
+        ];
+
+        return (
+            JavaScriptArtifactWriter.Write(Manifest, sections),
+            PinnedAt(
+                sections,
+                JavaScriptFormat.SectionKind.Code,
+                (uint)Array.IndexOf(code, (byte)0xFF),
+                positions));
+    }
 
     private static byte[] FormatVersion(uint version) =>
         JavaScriptArtifactWriter.Write(Manifest, StandardSections(), formatVersion: version);
@@ -673,6 +792,38 @@ internal static class CorpusBuilder
     /// The pool holds one Number and the frame holds one local, so a variant can address either
     /// in range or out of it without changing anything else about the artifact.
     /// </remarks>
+    /// <summary>
+    /// A code section carrying one unknown opcode, with its pin derived.
+    /// </summary>
+    /// <remarks>
+    /// The offset is FOUND in the bytes rather than stated beside them, and the empty position
+    /// table is passed explicitly: an artifact with no table reports the reserved zero pair, which
+    /// JSD-0009 says is what "not known" means and is not the same as a table the derivation
+    /// forgot to look at.
+    /// </remarks>
+    private static (byte[] Bytes, string Pin) UnknownOpcodeInCode()
+    {
+        byte[] code = [0xFF];
+
+        JavaScriptArtifactWriter.Section[] sections =
+        [
+            Limits(),
+            new JavaScriptArtifactWriter.Section(
+                JavaScriptFormat.SectionKind.Constants,
+                JavaScriptArtifactWriter.Constants([JavaScriptArtifactWriter.NumberConstant(1)])),
+            new JavaScriptArtifactWriter.Section(JavaScriptFormat.SectionKind.Code, code),
+            Entries([(SliceLowering.MainEntry, 0u)]),
+        ];
+
+        return (
+            JavaScriptArtifactWriter.Write(Manifest, sections),
+            PinnedAt(
+                sections,
+                JavaScriptFormat.SectionKind.Code,
+                (uint)Array.IndexOf(code, (byte)0xFF),
+                []));
+    }
+
     private static byte[] Code(byte[] code) => JavaScriptArtifactWriter.Write(
         Manifest,
         [
@@ -757,18 +908,31 @@ internal static class CorpusBuilder
             Entries([(SliceLowering.MainEntry, 1u)]),
         ]);
 
-    private static byte[] PositionIntoOperand()
+    /// <summary>A position row pointing into an operand, with its pin derived.</summary>
+    /// <remarks>
+    /// The refused row is the row that covers the offset, so this artifact reports its own line
+    /// and column - which is why the offset the pin is taken at is the row's own offset.
+    /// </remarks>
+    private static (byte[] Bytes, string Pin) PositionIntoOperand()
     {
+        (uint Offset, uint Line, uint Column)[] positions = [(1u, 1u, 1u)];
         var standard = StandardSections();
 
-        return JavaScriptArtifactWriter.Write(
-            Manifest,
-            [
-                standard[0], standard[1], standard[2], standard[3],
-                new JavaScriptArtifactWriter.Section(
-                    JavaScriptFormat.SectionKind.Positions,
-                    JavaScriptArtifactWriter.Positions([(1u, 1u, 1u)])),
-            ]);
+        JavaScriptArtifactWriter.Section[] sections =
+        [
+            standard[0], standard[1], standard[2], standard[3],
+            new JavaScriptArtifactWriter.Section(
+                JavaScriptFormat.SectionKind.Positions,
+                JavaScriptArtifactWriter.Positions(positions)),
+        ];
+
+        return (
+            JavaScriptArtifactWriter.Write(Manifest, sections),
+            PinnedAt(
+                sections,
+                JavaScriptFormat.SectionKind.Code,
+                positions[0].Offset,
+                positions));
     }
 
     /// <summary>

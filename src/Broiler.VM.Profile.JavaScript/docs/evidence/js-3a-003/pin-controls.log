@@ -1,0 +1,24 @@
+# Controls for the derived corpus positions, 2026-09-02.
+#
+# The producer states each section-naming position TWICE - derived from what it wrote,
+# and hand-computed against the format document - and refuses to write when the two
+# disagree. Each injection breaks one side: the human's, the producer's, the artifact's.
+
+==============================================================================
+the-hand-computed-answer-is-changed
+  what:  The human's side. A reviewer who mistypes a column, or who updates a pin to match a verifier they should have questioned, is stopped here.
+  build: ok
+  write: REFUSED (exit 2)
+      broiler-js-slice-compiler: unhandled InvalidOperationException: The corpus entry a-refusal-covered-by-the-second-position-row derives the position 2:3:7:5 from what the builder wrote and its hand-computed position is 2:3:7:6. One of the two is wrong and this producer will not write a corpus until they agree.
+==============================================================================
+the-derivation-reads-the-wrong-section
+  what:  The producer's side. A derivation that looked up the wrong section would give every future pin a plausible wrong index, and nothing but the hand-computed answers would notice.
+  build: ok
+  write: REFUSED (exit 2)
+      broiler-js-slice-compiler: unhandled InvalidOperationException: The corpus entry a-refusal-covered-by-the-second-position-row derives the position 1:3:7:5 from what the builder wrote and its hand-computed position is 2:3:7:5. One of the two is wrong and this producer will not write a corpus until they agree.
+==============================================================================
+the-position-table-loses-its-second-row
+  what:  The artifact's side. Dropping the covering row changes what the entry is FOR - it is the entry whose refusal is under the SECOND row - and the pin follows the bytes.
+  build: ok
+  write: REFUSED (exit 2)
+      broiler-js-slice-compiler: unhandled InvalidOperationException: The corpus entry a-refusal-covered-by-the-second-position-row derives the position 2:3:1:1 from what the builder wrote and its hand-computed position is 2:3:7:5. One of the two is wrong and this producer will not write a corpus until they agree.
