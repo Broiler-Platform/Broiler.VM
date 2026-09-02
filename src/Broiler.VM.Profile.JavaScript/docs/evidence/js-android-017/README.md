@@ -75,6 +75,12 @@ actually carried**:
 1. **The sweep covered the REGISTER only.** The same shape lives in evidence bundles, in the
    status ledger and in ADR prose, and nothing here looked at any of them. A figure in this
    bundle's own text is unchecked.
+
+   > **Correction, 2026-09-02.** [Bundle JS-ANDROID-018](../js-android-018/README.md) sweeps the
+   > two ledgers and all 27 bundles. **Three live claims were stale**, two of them the profile
+   > ledger's own limit statements, which understated the evidence. **The bundle hits are false
+   > positives by construction** - a bundle is dated and immutable, so a figure it states was true
+   > when collected - and no bundle figure was touched. **ADR prose is still unswept.**
 2. **The vocabulary is fifteen subjects.** A figure bound to a countable noun outside it —
    `bundles`, `exclusions`, `logs`, `rows`, `members`, `types` — is invisible, and rule H2's
    `Thirty-two exclusions` and `two bundles` are two such claims left standing in this pass.
