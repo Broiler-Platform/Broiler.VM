@@ -353,17 +353,42 @@ jobs:
           # reads like a licence problem and is a shell one.
           seq 50 | sed 's/.*/y/' > /tmp/android-licences
           "$sdk/cmdline-tools/latest/bin/sdkmanager" --licenses < /tmp/android-licences > /dev/null
-          "$sdk/cmdline-tools/latest/bin/sdkmanager" "$image" "platform-tools" > /dev/null
+
+          # NOT redirected to /dev/null, and the first draft was. An sdkmanager that fails to
+          # fetch an image says so on stdout and then `avdmanager` fails for a reason that reads
+          # like an AVD problem; hiding the first message costs the next reader the whole trail.
+          "$sdk/cmdline-tools/latest/bin/sdkmanager" "$image" "platform-tools"
           echo no | "$sdk/cmdline-tools/latest/bin/avdmanager" create avd \
             -n broiler -k "$image" --force
 
+          # The emulator's own output goes to a file rather than to the void, because when it
+          # fails to start it explains itself there and nowhere else.
           "$sdk/emulator/emulator" -avd broiler -no-window -no-audio -no-boot-anim \
-            -no-snapshot -gpu swiftshader_indirect &
+            -no-snapshot -gpu swiftshader_indirect -camera-back none -camera-front none \
+            > /tmp/emulator.log 2>&1 &
 
-          "$sdk/platform-tools/adb" wait-for-device
-          until [ "$("$sdk/platform-tools/adb" shell getprop sys.boot_completed | tr -d '\r')" = "1" ]; do
+          # BOUNDED, and the bound is the point. The first draft waited for sys.boot_completed in
+          # an unbounded loop: when the emulator did not come up the step spun until the job's
+          # own timeout and reported nothing, which is the least useful way for CI to fail. This
+          # gives up after five minutes and prints what the emulator said.
+          booted=no
+          for _ in $(seq 1 60); do
+            state="$("$sdk/platform-tools/adb" get-state 2>/dev/null || true)"
+            if [ "$state" = "device" ]; then
+              if [ "$("$sdk/platform-tools/adb" shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = "1" ]; then
+                booted=yes
+                break
+              fi
+            fi
             sleep 5
           done
+
+          if [ "$booted" != "yes" ]; then
+            echo "the emulator did not report sys.boot_completed within five minutes"
+            "$sdk/platform-tools/adb" devices || true
+            tail -60 /tmp/emulator.log || true
+            exit 1
+          fi
 
           # The emulator is x86_64, so this is the RID that runs. The head reads its own RID off
           # the device and prints it into the closure report, so the log says which one it was
