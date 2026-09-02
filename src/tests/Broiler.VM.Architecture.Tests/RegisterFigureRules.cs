@@ -190,6 +190,44 @@ internal static class RegisterFigureRules
             @"\*\*Core contract:\*\*\s*version",
             RegexOptions.IgnoreCase));
 
+        // A consumer profile is what a composition root reaches for that is not the core: the
+        // three packable assemblies are what EVERY root references, so subtracting them leaves
+        // exactly the profiles being consumed. Defined this way rather than by name-matching
+        // ".Profile.", because the fixture profiles are deliberately not named that - rule A11's
+        // subject is what a root consumes, not what a project is called.
+        var roots = projects
+            .Where(static project => project.AssemblyName.StartsWith(
+                "Broiler.VM.Composition.", StringComparison.Ordinal))
+            .ToArray();
+
+        var core = projects
+            .Where(static project => project.PackageId is not null)
+            .Select(static project => project.AssemblyName)
+            .ToHashSet(StringComparer.Ordinal);
+
+        figures["graph:consumer-profiles"] = roots
+            .SelectMany(static root => root.ProjectReferences)
+            .Where(reference => !core.Contains(reference))
+            .Distinct(StringComparer.Ordinal)
+            .Count();
+
+        figures["review:documents"] = ReviewRecordRuleTests.CorpusCount;
+        figures["composition:registered"] = CompositionRegisterTests.RegisteredCount;
+
+        figures["composition:catalog-tables"] = Directory
+            .EnumerateFiles(
+                Path.Combine(
+                    ComponentGraph.Root, "docs", "evidence", ComponentGraph.CurrentEvidenceDirectory),
+                "catalog-*.txt")
+            .Count();
+
+        // Two figures that are NOT counts of the tree, and the row citing each says so. They are
+        // the arity of a rule and the size of a declared contract set: numbers fixed by a decision
+        // rather than by what the checkout grew into. Citing them still beats retyping them, since
+        // a decision that changes updates one array and every row citing it follows.
+        figures["composition:fact-sources"] = CompositionRules.FactSources.Length;
+        figures["contracts:profile-facing"] = ApiBaselineRules.ProfileFacingContracts.Length;
+
         return figures;
     }
 

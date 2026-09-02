@@ -1,0 +1,22 @@
+# Negative controls for the six figures added so five reworded claims could say their
+# numbers again. Each injection is against a claim that had NO figure before this
+# change, so each shows the catalog reaching a subject it could not reach.
+
+==============================================================================
+J12-a-review-document-count-is-typed-back-in
+  what:  Rule H1's real sentence. It said four; the corpus holds many more, and nothing had a figure for it until this change.
+  suite: FAILED
+  J12 said:
+      the register row for H1 states that four of something exist without citing a figure: "four review documents that exist" - a count of the tree written by hand is current until the tree moves and silent when it does
+==============================================================================
+J12-a-consumer-profile-count-is-typed-back-in
+  what:  Rule A11's real sentence, which JS-ANDROID-015 had to delete the number from because nothing computed the subject.
+  suite: FAILED
+  J12 said:
+      the register row for A11 states that Two of something exist without citing a figure: "Two consumer profiles exist" - a count of the tree written by hand is current until the tree moves and silent when it does
+==============================================================================
+J12-a-contract-count-cites-a-metric-that-is-gone
+  what:  Clause one over a metric added by this change.
+  suite: FAILED
+  J12 said:
+      the register row for V12 cites the figure {contracts:profile-facings}, and the figure catalog defines no such metric
