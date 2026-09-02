@@ -1,0 +1,25 @@
+A witness for rule A15: a topology record whose budget stops one revision short of the
+graph it authorises.
+
+This is the real shape the record was in on 2026-09-02. The revision that added the Android
+composition root states what the head composes, why it is an application rather than a
+console program, and what it does not settle - and carries no budget paragraph. The last
+stated size therefore remained the one before it.
+
+### 2026-08-31 - the JS-1 roots
+
+**The budget.** JS-1 adds two projects and no packable assembly.
+
+The graph goes from 17 projects and 46 edges to 19 and 55. **The packable set is
+unchanged at exactly three.**
+
+### 2026-09-02 - a second solution, and a composition root that is an application
+
+**And the first composition root that is an application rather than a console program.**
+`Broiler.VM.Composition.JavaScript.Android` composes what the execution-only root composes
+and differs by its target framework.
+
+**What it does not settle.** No RID claim moves, and the head's collection is on an
+emulator.
+
+**What is not edited.** Every revision above stands as written.
