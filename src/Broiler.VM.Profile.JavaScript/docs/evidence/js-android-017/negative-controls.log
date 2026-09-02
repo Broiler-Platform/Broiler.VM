@@ -1,0 +1,29 @@
+# Negative controls for rule J12's fifth clause: a figure bound to a countable subject.
+#
+# Every injection is a sentence the register ACTUALLY CARRIED until this change, and
+# every one of the first three was stale by hundreds.
+
+==============================================================================
+J12-a-covered-file-count-is-typed-back-in
+  what:  Rule J6's real sentence. There are 61 covered files, and the fourth clause could not see this shape at all.
+  suite: FAILED
+  J12 said:
+      the register row for J6 counts a subject the catalog computes without citing it: "45 files" - a figure a human typed is current until the tree moves and silent when it does
+==============================================================================
+J12-an-artefact-count-is-typed-back-in
+  what:  Rule J5's real sentence, spelled as a word. There are 64 artefacts.
+  suite: FAILED
+  J12 said:
+      the register row for J5 counts a subject the catalog computes without citing it: "Forty-eight artefacts" - a figure a human typed is current until the tree moves and silent when it does
+==============================================================================
+J12-an-annotation-count-is-typed-back-in
+  what:  Rule J2's real sentence. There are 905 annotated units.
+  suite: FAILED
+  J12 said:
+      the register row for J2 counts a subject the catalog computes without citing it: "689 annotations" - a figure a human typed is current until the tree moves and silent when it does
+==============================================================================
+J12-an-assembly-count-that-is-correct-today
+  what:  The CURRENT figure, typed in correctly, and reported anyway.
+  suite: FAILED
+  J12 said:
+      the register row for C1 counts a subject the catalog computes without citing it: "three product assemblies" - a figure a human typed is current until the tree moves and silent when it does

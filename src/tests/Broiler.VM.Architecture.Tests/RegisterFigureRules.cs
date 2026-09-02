@@ -228,6 +228,12 @@ internal static class RegisterFigureRules
         figures["composition:fact-sources"] = CompositionRules.FactSources.Length;
         figures["contracts:profile-facing"] = ApiBaselineRules.ProfileFacingContracts.Length;
 
+        // Read from the plan rather than computed as "files plus three", so that a fourth kind of
+        // generated artefact is counted the day it is added rather than the day someone
+        // remembers. Rows J5, J8 and J9 each said forty-eight, which was files-plus-three when
+        // there were forty-five files.
+        figures["assurance:artefacts"] = AssuranceGenerator.Current.Artefacts.Count;
+
         return figures;
     }
 
@@ -343,6 +349,78 @@ internal static class RegisterFigureRules
             $"the register row for {found.Id} states that {found.Figure} of something exist " +
             $"without citing a figure: \"{Trim(found.Claim)}\" - a count of the tree written by " +
             "hand is current until the tree moves and silent when it does");
+
+    /// <summary>
+    /// The countable subjects a figure may be bound to only by citing one.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Every phrase here names a subject the figure catalog computes.</b> That is the whole
+    /// discipline: the clause below reports a figure bound to one of these, and the reader's fix
+    /// is a citation that already exists rather than a new metric or a shrug. A subject with no
+    /// metric does not belong on this list, because the rule would then report a sentence nobody
+    /// could repair.
+    /// </para>
+    /// <para>
+    /// <b>What is deliberately absent</b> is every noun this register counts while describing a
+    /// RULE rather than the tree - clauses, rounds, witnesses, copies, halves, shapes, questions,
+    /// derivations, edits. Those are prose about design, they do not move when the checkout moves,
+    /// and a rule that demanded citations for them would be asking the register to stop explaining
+    /// itself.
+    /// </para>
+    /// </remarks>
+    internal static readonly string[] CountableSubjects =
+    [
+        "covered source files",
+        "covered product source files",
+        "source files",
+        "files",
+        "units",
+        "annotations",
+        "artefacts",
+        "pieces of generated text",
+        "product assemblies",
+        "packable assemblies",
+        "family assemblies",
+        "edges",
+        "composition roots",
+        "ADR files",
+        "review documents",
+    ];
+
+    private static readonly Regex[] Subjects = CountableSubjects
+        .Select(static subject => new Regex(
+            FigureSource + @"\s+(?<subject>" + Regex.Escape(subject) + @")(?![\w-])",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled))
+        .ToArray();
+
+    /// <summary>
+    /// J12's fifth clause: a figure bound to a countable subject cites rather than states.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The clause the fourth one could not see.</b> Rule J12's fourth clause reads adjacency to
+    /// the word "exist", and rule H1's row said "the two evidence-bundle READMEs" - a figure bound
+    /// to a NOUN, invisible to it, and wrong. That was found by reading, which is not a method.
+    /// </para>
+    /// <para>
+    /// <b>Sweeping for the shape found the whole assurance family stale.</b> Seven rows said 45
+    /// covered source files where there are 61, three said 48 artefacts where there are 64, and
+    /// the unit figures - 689 annotated, 903 exempt, 1,592 in the tree - were each several hundred
+    /// short of what the generated report states. The tree grew when the JavaScript profile came
+    /// under coverage; the register did not.
+    /// </para>
+    /// </remarks>
+    internal static IEnumerable<string> UncitedSubjectCounts(
+        IEnumerable<(string Id, string Text)> rows) => rows
+        .SelectMany(row => Subjects
+            .SelectMany(pattern => pattern.Matches(Uncited(row.Text)).Cast<Match>())
+            .Select(match => (row.Id, Claim: match.Value)))
+        .Select(found =>
+            $"the register row for {found.Id} counts a subject the catalog computes without " +
+            $"citing it: \"{Trim(found.Claim)}\" - a figure a human typed is current until the " +
+            "tree moves and silent when it does")
+        .Distinct(StringComparer.Ordinal);
 
     /// <summary>The text with its citations removed, so a citation is not read as a figure.</summary>
     private static string Uncited(string sentence) => Regex.Replace(sentence, Citation, " ");

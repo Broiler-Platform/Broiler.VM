@@ -61,6 +61,7 @@ public sealed class RegisterFigureTests
         Assert.Empty(RegisterFigureRules.RestatedFigures(Rows));
         Assert.Empty(RegisterFigureRules.OutstandingClaims(Rows, figures["criteria:missing"]));
         Assert.Empty(RegisterFigureRules.UncitedExistenceClaims(Rows));
+        Assert.Empty(RegisterFigureRules.UncitedSubjectCounts(Rows));
     }
 
     [Fact]
@@ -123,6 +124,60 @@ public sealed class RegisterFigureTests
         // in the witness precisely because a rule reading them as counts would ask the register to
         // cite a document's name.
         Assert.Equal(3, reported.Length);
+    }
+
+    [Fact]
+    public void J12_Rejects_A_Row_That_Binds_A_Figure_To_A_Countable_Subject()
+    {
+        var reported = RegisterFigureRules.UncitedSubjectCounts(
+            Witness("J12-a-row-binds-a-figure-to-a-noun")).ToArray();
+
+        // The three sentences the register actually carried, each stale by hundreds.
+        Assert.Contains(reported, message =>
+            message.Contains("\"45 covered product source files\"", StringComparison.Ordinal));
+        Assert.Contains(reported, message =>
+            message.Contains("\"Forty-eight artefacts\"", StringComparison.Ordinal));
+        Assert.Contains(reported, message =>
+            message.Contains("\"689 annotations\"", StringComparison.Ordinal));
+
+        // ...and nothing else. The witness carries a chosen witness set, a count of a rule's own
+        // clauses and a record number, none of which measures the tree. A vocabulary that read
+        // those would be asking the register to stop explaining itself.
+        Assert.Equal(3, reported.Length);
+    }
+
+    /// <summary>
+    /// Every countable subject the fifth clause names is one the catalog can answer for.
+    /// </summary>
+    /// <remarks>
+    /// The discipline that keeps the clause repairable: it reports a figure bound to one of these
+    /// subjects, and the fix is a citation that already exists. A subject with no metric would
+    /// make the rule report a sentence nobody could repair, which is a rule that has to be
+    /// suppressed rather than obeyed.
+    /// </remarks>
+    [Fact]
+    public void J12_Every_Countable_Subject_Has_A_Figure_Behind_It()
+    {
+        var figures = RegisterFigureRules.Figures(Report);
+
+        Assert.NotEmpty(RegisterFigureRules.CountableSubjects);
+        Assert.All(
+            RegisterFigureRules.CountableSubjects,
+            subject => Assert.True(
+                figures.Count > 0,
+                $"no figure in the catalog can answer for '{subject}'"));
+
+        // The catalog answers for the subjects this register actually counts: files, units,
+        // artefacts, assemblies, edges, roots, ADRs and review documents.
+        foreach (var metric in new[]
+        {
+            "assurance:files", "assurance:units", "assurance:relevant", "assurance:exempt",
+            "assurance:artefacts", "graph:packable", "graph:javascript-family", "graph:edges",
+            "graph:composition-roots", "docs:adrs", "review:documents",
+        })
+        {
+            Assert.True(figures.ContainsKey(metric), $"the catalog defines no {metric}");
+        }
     }
 
     [Fact]
@@ -207,7 +262,8 @@ public sealed class RegisterFigureTests
                 .Concat(RegisterFigureRules.RestatedFigures(Rows))
                 .Concat(RegisterFigureRules.OutstandingClaims(
                     Rows, figures.TryGetValue("criteria:missing", out var missing) ? missing : 0))
-                .Concat(RegisterFigureRules.UncitedExistenceClaims(Rows))),
+                .Concat(RegisterFigureRules.UncitedExistenceClaims(Rows))
+                .Concat(RegisterFigureRules.UncitedSubjectCounts(Rows))),
         ]);
 
         if (RuleReport.Destination is { } destination)

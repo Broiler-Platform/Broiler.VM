@@ -70,6 +70,13 @@ numbers from them.
 2. **The adjacency limit stands, and section 3 is an instance of it.** A figure attached to a noun
    rather than to *exist* is invisible, and one such claim was found only by reading the sentence.
    There may be others; nothing here swept for them.
+
+   > **Correction, 2026-09-02.** There were others, and [Bundle JS-ANDROID-017](../js-android-017/README.md)
+   > sweeps for them: **the entire assurance figure family was stale**, from one event - the
+   > JavaScript profile coming under coverage grew the covered set from 45 files to 61, and
+   > eight rows went on stating every figure derived from it. A fifth clause now reads a figure
+   > standing before a countable subject. The sweep covered the REGISTER only, and two claims in
+   > rule H2's row are left standing and named there.
 3. **Two of the six figures are declared, not derived**, per section 2.
 4. **`{review:documents}` counts the corpus, which grows with every bundle.** H1's row therefore
    states a number that changes whenever evidence is added — correct by construction and not
