@@ -435,6 +435,66 @@ CONTROLS = [
             "| `Broiler.VM.Composition.JavaScript.Android` | demonstration | `com.example.absent` |"),
     ),
     (
+        "K2-the-android-row-declares-a-profile-assembly-nothing-references",
+        "The Android head's row gains a second profile and its assembly - com.example.ledger and "
+        "Com.Example.Ledger - which the head does not reference. TARGET: K2's clause that every "
+        "DECLARED profile assembly must be referenced directly, because a composition names its "
+        "profiles and that is what composing is. It fires K4 as well and cannot not: K4's allowed "
+        "set is built from the row's profile assemblies, so a row that declares one more is a row "
+        "whose closure no longer equals what it declares. K1 stays silent because the two counts "
+        "move together, which is the only reason this is not a three-rule injection.",
+        COMPOSITION_REGISTER,
+        lambda text: text.replace(
+            "| `Broiler.VM.Composition.JavaScript.Android` | demonstration | `broiler.javascript` "
+            "| `Broiler.VM.Profile.JavaScript` |",
+            "| `Broiler.VM.Composition.JavaScript.Android` | demonstration | `broiler.javascript`, "
+            "`com.example.ledger` | `Broiler.VM.Profile.JavaScript`, `Com.Example.Ledger` |"),
+    ),
+    (
+        "K2-the-android-row-declares-a-different-profile-than-it-references",
+        "The Android head's row swaps the profile assembly it declares for one the head does not "
+        "reference, keeping the column count intact. TARGET: K2's clause that every non-core "
+        "assembly a root REFERENCES must be declared as a profile or a sibling - the direction "
+        "that catches a closure growing silently - and it trips the declared-but-unreferenced "
+        "clause in the same breath, which is unavoidable when one name replaces another. K4 fires "
+        "too and cannot not: it builds its allowed set from this column. K1 stays silent because "
+        "the counts hold, which is what distinguishes this from an injection that merely breaks "
+        "the row.",
+        COMPOSITION_REGISTER,
+        lambda text: text.replace(
+            "| `Broiler.VM.Composition.JavaScript.Android` | demonstration | `broiler.javascript` "
+            "| `Broiler.VM.Profile.JavaScript` |",
+            "| `Broiler.VM.Composition.JavaScript.Android` | demonstration | `broiler.javascript` "
+            "| `Com.Example.Ledger` |"),
+    ),
+    (
+        "the-register-row-loses-a-cell",
+        "One cell of the Android head's row is emptied. THIS CONTROL EXISTS BECAUSE THE PARSER USED "
+        "TO ACCEPT IT: it drops empty cells before indexing, so a cleared cell shifted every column "
+        "after it and produced a row declaring its SIBLING as its profile assembly and an evidence "
+        "path one column over - with K1 green throughout, because the two counts moved together. "
+        "It was found by an injection meant to test something else. The parser now compares each "
+        "row's cell count with the header's and stops, so the same edit fails loudly and says why.",
+        COMPOSITION_REGISTER,
+        lambda text: text.replace(
+            "| `Broiler.VM.Composition.JavaScript.Android` | demonstration | `broiler.javascript` "
+            "| `Broiler.VM.Profile.JavaScript` |",
+            "| `Broiler.VM.Composition.JavaScript.Android` | demonstration | `broiler.javascript` "
+            "|  |"),
+    ),
+    (
+        "K2-the-android-catalog-table-names-a-different-composition",
+        "The catalog baseline's composition line names the execution-only root instead of the "
+        "Android head. TARGET: K2's clause that the catalog a bundle retained is the catalog of "
+        "the composition the row is about - the one that would catch a table copied from a "
+        "neighbouring root. It fires K3 too and cannot not: K3's whole subject is the baseline "
+        "against the retained table, so any edit to either is K3's business as well.",
+        ANDROID_CATALOG_BASELINE,
+        lambda text: text.replace(
+            "composition Broiler.VM.Composition.JavaScript.Android",
+            "composition Broiler.VM.Composition.JavaScript.ExecutionOnly"),
+    ),
+    (
         "K3-the-android-catalog-baseline-drifts-from-what-the-head-printed",
         "The checked-in catalog baseline for the Android head gains a profile line the head never "
         "printed. THE POINT IS THAT THE RULE REACHES THIS ROW: K3 already has a rejecting "

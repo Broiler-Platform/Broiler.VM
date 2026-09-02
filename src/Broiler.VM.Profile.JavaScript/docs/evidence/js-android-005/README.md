@@ -66,6 +66,14 @@ every rejecting direction in their own tests is asserted over lists built in mem
 2. **K2 has four clauses and this control fires one.** The catalog-versus-register profile
    identities. Its other three — an undeclared referenced assembly, a declared profile assembly
    nothing references, and a catalog naming a different composition — have no control of their own.
+
+   > **Correction, 2026-09-02.** All three are controlled by
+   > [Bundle JS-ANDROID-006](../js-android-006/README.md), none of them alone: K4 builds its
+   > allowed set from the row's assembly columns and K3's subject is the catalog files, so a
+   > clause living in either place cannot fire by itself. **The clause this bundle controls is the
+   > only one that can**, which is a fact about the rule set this exclusion did not know when it
+   > was written. Writing those three also found the register parser accepting a row nobody wrote,
+   > which that bundle leads with. **Nothing in the log below is edited.**
 3. **This is a SCOPED run, not the control matrix.** Four rows of twenty-one. The full matrix is
    what `eng/collect-js-evidence.py` collects, and no run of it is retained here.
 4. **Group K is not the whole register's business.** These four rules are about one row's
