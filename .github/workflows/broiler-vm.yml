@@ -364,6 +364,14 @@ jobs:
           # The failure surfaced four steps later as `Unknown AVD name [broiler]` from the
           # emulator, which is the last place a reader would look for it. An explicit device
           # profile means there is nothing to ask about in the first place.
+          # WHERE the AVD lands is stated rather than left to the environment. avdmanager writes
+          # to $ANDROID_AVD_HOME, then $ANDROID_SDK_HOME/avd, then $HOME/.android/avd, and the
+          # emulator searches the same three in the same order - so a runner that sets one of them
+          # differently from what the other assumes produces an AVD that exists and cannot be
+          # found. Setting it once removes the question from both sides.
+          export ANDROID_AVD_HOME="$HOME/.android/avd"
+          mkdir -p "$ANDROID_AVD_HOME"
+
           "$sdk/cmdline-tools/latest/bin/avdmanager" create avd \
             -n broiler -k "$image" --device pixel_6 --force < /dev/null
 
@@ -371,7 +379,14 @@ jobs:
           # creates it can decline to and still exit 0.
           if ! "$sdk/emulator/emulator" -list-avds | grep -qx broiler; then
             echo "avdmanager exited cleanly and created no AVD named broiler"
+            echo "--- emulator -list-avds"
             "$sdk/emulator/emulator" -list-avds || true
+            echo "--- avdmanager list avd"
+            "$sdk/cmdline-tools/latest/bin/avdmanager" list avd || true
+            echo "--- $ANDROID_AVD_HOME"
+            ls -la "$ANDROID_AVD_HOME" || true
+            echo "--- environment"
+            echo "ANDROID_AVD_HOME=$ANDROID_AVD_HOME ANDROID_SDK_HOME=${ANDROID_SDK_HOME:-unset} HOME=$HOME"
             exit 1
           fi
 
