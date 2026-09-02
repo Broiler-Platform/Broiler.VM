@@ -1,0 +1,15 @@
+bundle:                JS-9-004
+milestone:             JS-9
+collected (UTC):       2026-09-02T19:46:12+00:00
+component commit:      b9a10e3196590c061bf60fe949621e48c905f341
+branch:                claude/js9-retain-a-guided-session
+working tree:          DIRTY
+dirty entries:         1
+owner:                 profile architecture owner
+reviewer:              NONE - nothing here has been reviewed
+
+Every path below is relative to the component root. A figure in this bundle is this
+component's own; no result from any other component is evidence here.
+
+Dirty entries at collection time, listed rather than summarised:
+   M eng/collect-js-evidence.py
