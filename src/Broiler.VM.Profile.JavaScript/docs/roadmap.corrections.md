@@ -152,6 +152,7 @@ rather than a decision record.
 | [JSC-66](#jsc-66) | the ledger's account of the four remaining test262 failures, twice; [Bundle JS-3B-002](evidence/js-3b-002/README.md) section 3; [JSC-54](#jsc-54) | The harness had no way to exclude by feature at all, and the cost was not four failures but 117 passes it had not earned | the suite's own `features.txt`, and a census over every scored case |
 | [JSC-67](#jsc-67) | the ledger's unopened-dependency row for the language edition, open since JS-0; the JS-10 row; Bundle JS-3A's exclusion 5 | The row was written as though there were two states and section 24 defines three: the edition is pinned PROVISIONALLY, and two of the three actions bought three checked claims and one disagreement | ECMA-262 retrieved at five editions and hashed |
 | [JSC-68](#jsc-68) | the ledger's conformance-suite row and its account of the test262 runs; Bundles [JS-3B-001](evidence/js-3b-001/README.md) and [JS-3B-002](evidence/js-3b-002/README.md) | The suite pin was not merely transient, it was SELF-CERTIFYING: `--pin` writes its digest into the directory it just read, so the checkout was vouching for itself | the archive retrieved and hashed twice, independently |
+| [JSC-69](#jsc-69) | `Fuzzing`'s remark on section 7's four surfaces; the ledger's JS-3b and JS-9 rows | Three of the four surfaces existed and the remark still said two, so the source front end was fuzzed by nothing while being described as absent | four sessions of 25,000 iterations over the source surface |
 
 ### JSC-01
 
@@ -2763,3 +2764,73 @@ normal case, previously could not be.
 of the first; the harness's own digest over both; the run re-scored under the retained pin with
 every figure unmoved, and again from the archived copy extracted into a directory carrying no pin
 of its own; 2026-09-03.
+
+---
+
+### JSC-69
+
+**Where:** `Fuzzing`'s remark on which of roadmap [section 7](roadmap.md#7-the-bytecode-format-and-the-verifier)'s
+four surfaces exist; the [ledger](roadmap.status.md#2-current-milestone-status)'s JS-3b row, which
+named the gap, and its JS-9 row, which owns the sessions.
+
+**What the record said.** "The section asks for coverage-guided fuzzing over four surfaces: the
+verifier, the source tokenizer and parser, the regular-expression matcher, and the executor over
+verified-but-adversarial artifacts. **Two of the four exist at this milestone** — the verifier and
+the executor — and the other two are surfaces this profile has not written yet."
+
+**What was actually true.** Three of the four existed. The source tokenizer and parser landed at
+JS-3b — a tokenizer, a syntax tree, a recursive-descent parser, a validation stage and a lowering —
+and the sentence above went unrevisited, so the surface was **fuzzed by nothing while being
+described as absent**. The ledger's JS-3b row had already noticed the half of this that was its
+own: *the front end is fuzzed by nothing — roadmap section 7's source tokenizer and parser now
+EXIST, so JS-9's row can no longer say that surface is unfuzzed because it is absent.* What neither
+row said is that the sibling session's own docstring was still asserting the absence.
+
+**What replaced it.** A session over the source surface, in the slice-compiler root, which is where
+it has to be: the execution-only image carries no lowering, so a session over source could not run
+there at all. Same design as the sibling — a seeded mutator written out rather than a library's, a
+bounded pool primed from the retained corpus, answer-guided keeping, and a guidance loop the
+session proves before it reports any figure and the composition asserts as a named check.
+
+**The assertion is not "it did not crash", and that is the point of the whole piece.** It is that
+**a source this front end compiles produces an artifact this profile's own verifier accepts.** The
+two stages check disjoint things by design — a refused source has no bytes, and the verifier reads
+bytes whatever produced them — so the seam between them is exactly where a lowering can emit
+something structurally wrong with nothing noticing: the front end's checks end at *it compiled* and
+the verifier's begin at bytes somebody handed it.
+
+**That seam is not hypothetical, and this component spent 2026-09-03 repairing three defects that
+lived in it.** A loop whose body always breaks emitted a continuation nothing reached; a block was
+lowered on after a statement control could not pass; and a loop nothing could leave left a program
+tail no execution reached — refused as `UnreachableCode`, `UnreachableCode` and, once the tail was
+suppressed, `JumpTargetNotAnInstructionBoundary`. **Every one is a source that compiled and did not
+verify**, and every one was found by pointing a third-party suite at the host rather than by
+anything here. A session asserting this invariant would have found all three without a suite.
+
+**What the first two drafts got wrong, both found by running it rather than by reading it.** The
+seed set was `*.js` under the corpus directory, which is 55 of the corpus's 57 entries: the two it
+missed are retained as `generated` because they are a program of 65,536 declarations and one of
+65,536 distinct constants, and they are the only sources that reach `TooManyLocals` and
+`TooManyConstants`. Eight sessions over 200,000 mutants reached 21 of the 24 seam codes rather than
+23. **The first fix was a mutation that built such programs itself**, which was the wrong
+instrument twice over — the corpus already had generators for exactly this, and a 25,000-iteration
+session went from two seconds to over ten minutes. It was backed out. What replaced it separates
+two questions the first draft asked as one: **every entry is primed, and only entries under 64 KB
+are drawn from.**
+
+**What it reaches, and what it does not.** The corpus primes **23 of the 24 embedder-seam codes**;
+the twenty-fourth is `OperandStackTooDeep`, which no source can reach because the parse depth bound
+refuses at about 170 levels while the operand-stack ceiling needs more than a thousand — the
+registry already records it defensive with that reason. The **mutator** reaches 21 of them, the two
+limit codes being reached only by seeds too large to draw from. Four sessions of 25,000 iterations
+found **no finding**, and about 26,000 mutants per session compiled and verified.
+
+**And the guidance kept nothing, which is worth saying plainly rather than dressing up.** Across
+100,000 mutants the seed set never grew: every answer a mutant reached, the retained corpus already
+reached. That is the sibling's own stated expectation for a corpus that covers its surface, and it
+means the *guidance* in this session is doing nothing today. What the session does that no fixture
+does is check the seam invariant over tens of thousands of compiled programs.
+
+**Authority and date.** Four sessions of 25,000 iterations at seeds 1 to 4, and eight earlier ones
+that measured the seeding defect; the seam vocabulary of the published registry diffed against what
+the sessions reach; 2026-09-03.

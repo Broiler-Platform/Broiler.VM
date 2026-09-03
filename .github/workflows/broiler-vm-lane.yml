@@ -311,6 +311,10 @@ jobs:
       # rather than merely hosting a check that cannot.
       - name: Publish and run the JavaScript composition roots as Native AOT
         shell: bash
+        env:
+          # The source sessions below take the same count the artifact sessions take, so the two
+          # answer the same question about the same corpus at the same scale.
+          ITERATIONS: ${{ inputs.fuzz-iterations }}
         run: |
           set -euo pipefail
           corpus="src/tests/corpus/js-1"
@@ -332,7 +336,17 @@ jobs:
 
             case "$composition" in
               *ExecutionOnly) "$binary" --corpus "$corpus" ;;
-              *SliceCompiler) "$binary" --checks ;;
+              *SliceCompiler)
+                "$binary" --checks
+                # THE SOURCE SURFACE'S SESSIONS, here rather than beside the artifact ones because
+                # they need a lowering and the execution-only image carries none. Four seeds, the
+                # same count the artifact sessions use, so the two answer the same question about
+                # the same corpus. A session is a total function of its seed, so these decide the
+                # same on a runner as on a workstation.
+                for seed in 1 2 3 4; do
+                  "$binary" --fuzz src/tests/corpus/js-1/source --seed "$seed" --iterations "$ITERATIONS"
+                done
+                ;;
               # Negatives included, because a lane that scored only the positive half would
               # publish totals nobody could compare with a release run's. The harness runs its
               # own regression suite and its self-check before it scores anything, so this one

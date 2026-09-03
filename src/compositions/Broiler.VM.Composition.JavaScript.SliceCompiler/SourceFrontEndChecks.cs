@@ -30,7 +30,23 @@ internal static class SourceFrontEndChecks
         TwoGoalsInOneProcessDoNotReachEachOther(),
         DeepNestingIsRefusedRatherThanSurvived(),
         AnEarlyErrorNeverProducesBytes(),
+        TheSourceFuzzGuidanceLoopIsWired(),
     ];
+
+    /// <summary>
+    /// The source session's guidance loop keeps a new answer and refuses a repeat.
+    /// </summary>
+    /// <remarks>
+    /// <b>Here as well as at the start of every session, so a publish that never fuzzes still
+    /// carries it.</b> Whether a session's seed set grows is a fact about the corpus it started
+    /// from as much as about the mutator, so growth cannot be what fails; the mechanism can, and
+    /// this is where a publish asserts it.
+    /// </remarks>
+    private static (string, bool, string) TheSourceFuzzGuidanceLoopIsWired()
+    {
+        var (wired, detail) = SourceFuzzing.GuidanceLoopIsWired();
+        return ("the source fuzz guidance loop keeps a new answer and refuses a repeat", wired, detail);
+    }
 
     /// <summary>Every accepted source compiles to an artifact.</summary>
     /// <remarks>
