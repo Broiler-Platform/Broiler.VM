@@ -62,3 +62,18 @@ records and the harness's own checks catch.
 **Two floors, one manifest, and that is not a contradiction.** A floor is over a *suite revision*,
 never over a manifest or a milestone. These are two suites, they are pinned separately, and neither
 figure is comparable with the other's.
+
+**This floor moved on 2026-09-03 and it was a re-base rather than a change in what the engine
+does.** The suite gained a `features.txt` — the list an ingested suite carries to say which of its
+own feature flags name proposals rather than the language — and three fixtures for the exclusion
+that reads it, so its revision moved and the old row is retired in the file with its reason. Script
+rose by the one added fixture that is scored; the two that claim a proposal are excluded before
+selection and are in no mode's total, which is the whole of what they are there to show.
+
+**A run in the ingested dialect now requires that list, and its absence stops the run.** A harness
+that could not tell a proposal from the language was scoring tests about constructs no published
+edition contains — and scoring them as passes far more often than as failures, because an engine
+with no production for a construct refuses every spelling of it, including the ones a negative test
+declares an error. [JSD-0018](../decisions/0018-which-tests-are-about-this-language-and-who-decides.md)
+records the decision and [JSC-66](../roadmap.corrections.md#jsc-66) what it cost: 117 passes given
+back over a real checkout.

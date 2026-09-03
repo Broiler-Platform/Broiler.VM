@@ -149,6 +149,7 @@ rather than a decision record.
 | [JSC-63](#jsc-63) | [JSC-62](#jsc-62) and the opcode it added; ledger section 2 | The dead-zone opcode declared a push it never made, which the WRITE half could not extend; it is a guard that moves nothing, and the write is taken | the acceptance suite, no suite figure moving |
 | [JSC-64](#jsc-64) | [JSC-60](#jsc-60); the declaration lowering's and the executor's remarks; ledger section 2 | Dead code after a terminator was declined on a hazard that was not there: the executor writes `undefined` into every slot, in a loop, on purpose | the executor's own initialisation |
 | [JSC-65](#jsc-65) | `SliceSourceCompiler`'s remark; [JSC-64](#jsc-64); ledger section 2 | A loop nothing can leave was called the format's answer three times: the verifier requires every REACHABLE path to return, and that loop has no path that ends | the verifier's own rule |
+| [JSC-66](#jsc-66) | the ledger's account of the four remaining test262 failures, twice; [Bundle JS-3B-002](evidence/js-3b-002/README.md) section 3; [JSC-54](#jsc-54) | The harness had no way to exclude by feature at all, and the cost was not four failures but 117 passes it had not earned | the suite's own `features.txt`, and a census over every scored case |
 
 ### JSC-01
 
@@ -2523,3 +2524,91 @@ called `known-defects`. It holds none.
 **Authority and date.** The host's acceptance suite; the retained corpus regenerated and replayed;
 the host and the harness over test262 at ref `ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e` with neither
 moving; 2026-09-03.
+
+---
+
+### JSC-66
+
+**Where:** the [ledger](roadmap.status.md#2-current-milestone-status)'s account of the four
+remaining test262 failures, twice; [Bundle JS-3B-002](evidence/js-3b-002/README.md) section 3,
+which repeats it; [JSC-54](#jsc-54), whose rule this went around.
+
+**What the record said.** The four were `using` declarations, "and those four should not have been
+scored at all: the construct is a proposal, **the harness can filter by the suite's own feature
+metadata, and this run did not pass a filter.** That is a mistake in how the run was made."
+
+**Two things in that sentence were wrong, and the second is worth more than the first.**
+
+**The harness could not have filtered.** `--features` is an **inclusion** filter: a run states the
+features it wants and every test claiming none of them is removed. There is no set it could have
+been given that removes one feature — and a test claiming **no** feature matches no inclusion set
+at all, so any value at all would have deleted the 665 scored cases that claim nothing, which is
+more than half the total. What the harness had was a reader for the metadata and no way to act on
+it. "The run did not pass a filter" named an operator's slip where the mechanism did not exist.
+
+**And four failures were not what it cost.** The run scored **121** cases claiming that feature and
+**117 of them passed**. Every one is a `refused-by-source` on a `using` or `await using` syntax
+test: this front end has no production for the form and refuses **every** spelling of it, and those
+tests declare a `SyntaxError` for one particular malformed spelling. The outcomes agree and the
+reasons have nothing to do with each other — which is exactly the scoring bug
+[JSC-54](#jsc-54) was written against, arriving through the one door that rule cannot see. Its
+question is *was this refusal a language answer*, and `ExpectedToken` genuinely is one — 672 of the
+run's 1,201 passes rested on that code, and 561 still do, so reclassifying it was never available.
+What the rule cannot ask is *was this test about the language at all*.
+
+**So the record had it backwards.** It read as four failures to remove. What was actually there was
+**117 passes to give back** and four failures beside them.
+
+**What replaced it, and the authority is the suite's own**
+([JSD-0018](decisions/0018-which-tests-are-about-this-language-and-who-decides.md), which records
+the four alternatives this rejected). An ingested suite ships a
+`features.txt` splitting its flags into a proposed section and a standard one, and says in its own
+prose that the proposed flags are there "so that consumers may more easily omit them as necessary".
+The harness now reads it and scores no test claiming a proposed feature. **Reading it is required
+rather than offered**: a run whose suite has no readable list stops, in the same voice as a run
+pointed at a suite with no pin, because a run that cannot tell a proposal from the language has no
+business scoring either. A hand-written list in this repository would have been a list this
+component chose, and a list this component chose is one it can quietly grow whenever something
+fails.
+
+**The reader has one way to be wrong and it is silent, so it is pinned by a check and by a control.**
+The file writes `##` for ordinary comments inside a section as well as for its own headings — the
+pinned checkout does it twice — so a reader keying on the prefix ends the proposed section at the
+first such comment. That would have lost **twelve of its twenty-one proposals** and reported the
+same shape of success. Headings are matched by their whole text; a list missing one is refused
+rather than read as a suite with no proposals.
+
+**What it cost, which is the point of recording it.** Over the same checkout at the same ref:
+
+| | before | after |
+|---|---:|---:|
+| Executed | 1,205 | **1,084** |
+| Passed | 1,201 | **1,084** |
+| Failed | 4 | **0** |
+| Candidates excluded for claiming a proposal | 0 | **8,304** |
+
+**The number that matters is that the passes fell by 117 and nothing was repaired to make it
+happen.** A change that removed four failures and left the passes alone would have been the same
+change with its cost hidden.
+
+**Three things were found while checking rather than while writing.** The merge compared four of
+the eight pre-sharding selection figures, and the four it omitted — the scope, both feature stages,
+the negatives — are exactly the ones a differently configured shard moves; it compares all eight
+now. And **two of this change's own new checks passed under their own negative controls**: one
+asserted a malformed feature list produces a complaint without asserting it produces no features,
+and one could not tell the two stage orders apart because the case it used was removed by both.
+Both are repaired, and the six controls now each fail exactly the check that names them.
+
+**What is still open, and this repair narrows it rather than closing it.** Section 3 records the
+**language edition** as unpinned, and it still is: what this reads is one suite's opinion of its own
+flags at one revision, which is the nearest thing to an edition that anything here pins. A construct
+the suite has not flagged at all is still scored on whatever this front end happens to do with it.
+And the test-harness section is read and **not** excluded, because those flags name host
+capabilities rather than constructs — every such test needs a call this manifest does not admit and
+is counted unselectable a stage later. That is measured over the checkout rather than assumed: no
+scored case claims one.
+
+**Authority and date.** The suite's own `features.txt` at ref
+`ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e`, read against the run it changes; a census of every
+feature claimed by every scored case, before and after; six negative controls, each injected,
+caught and reverted; the retained corpus regenerated and replayed; 2026-09-03.

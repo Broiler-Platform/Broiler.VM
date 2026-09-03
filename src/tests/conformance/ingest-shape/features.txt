@@ -1,0 +1,46 @@
+## Proposed language features
+#
+# This file is the ingest-shape suite's own feature list, written in the shape the ingested
+# dialect's suite writes its own: two sections that decide whether a flag names a proposal or a
+# construct of a published edition, and a third for host capabilities the language has not got.
+# The harness reads it to answer a question it cannot answer for itself - is this test about the
+# language - and refuses to score anything under this heading.
+#
+# THE FLAG NAMES BELOW ARE REAL AND THE FILE IS NOT A COPY. No file of a third-party suite is in
+# this repository; what is reproduced here is a FORMAT, including the two shapes that made a
+# careless reader wrong, so that the reader is exercised against them on every run rather than
+# against the one file nobody here may commit.
+
+# Explicit Resource Management
+# https://github.com/tc39/proposal-explicit-resource-management
+explicit-resource-management
+
+# Source Phase Imports
+## THE TRAP, AND IT IS DELIBERATE. The real list writes `##` for comments inside a section as
+## well as for its own headings. A reader keying on the prefix ends the proposed section here and
+## silently stops excluding everything below - which, over the pinned checkout, was twelve of its
+## twenty-one proposals. The name under these two lines is what proves this reader does not.
+source-phase-imports
+
+# Decorators
+# https://github.com/tc39/proposal-decorators
+decorators
+
+## Standard language features
+#
+# Flags naming constructs a published edition of ECMA-262 contains. A test claiming one of these
+# is a test about the language, and is scored on the same terms as a test claiming nothing.
+
+const
+let  # a trailing comment on a feature line, which names nothing and must not become part of it
+hashbang
+
+## Test-Harness Features
+#
+# Host capabilities the suite reaches through its own object rather than constructs of the
+# language. These are READ AND NOT EXCLUDED: reaching one needs a call, which this manifest does
+# not admit, so such a test is counted as unselectable one stage later - where what it says is
+# that this profile cannot present the test, rather than that the construct is not in the
+# language.
+
+IsHTMLDDA

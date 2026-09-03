@@ -6,7 +6,14 @@
 # that is the point of the row being absent rather than zero: the dialect's `raw` flag means source
 # with no harness prelude, not artifact bytes, so a case reaching the Raw mode from this suite would
 # be the flag having been carried across two vocabularies that spell it the same way.
+#
+# THE RETIRED ROW BELOW IS NOT A REGRESSION AND NOT AN IMPROVEMENT. The suite gained a
+# `features.txt` and three fixtures for the feature exclusion, so its revision moved and the floor
+# was re-based rather than compared - which is what a floor does with an added test. Script rose by
+# the one added fixture that is scored; the two added fixtures that claim a proposal are excluded
+# before selection and are in no mode's total, which is the whole of what they are there to show.
 suite broiler.javascript.slice.ingest-shape
-revision 262902538401be83804f252624a6152c349b53e2d8da27ed4f10fcfb1a09c8f1
-mode Script 3 3
+revision 56c9c2dd92ac87be4bb31fec670c886e31b7e5483b4a4db71b65fd04275ecc61
+mode Script 4 4
 mode Module 1 1
+retired broiler.javascript.slice.ingest-shape@262902538401be83804f252624a6152c349b53e2d8da27ed4f10fcfb1a09c8f1 Script 3 3; Module 1 1 :: the suite revision moved
