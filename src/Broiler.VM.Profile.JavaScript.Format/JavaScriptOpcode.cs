@@ -129,7 +129,7 @@ public enum JavaScriptOpcode : byte
     Return = 0x70,
 
     /// <summary>
-    /// Push nothing and fault: the binding this would have read is not yet initialised.
+    /// Fault: the binding the NEXT instruction would touch is not yet initialised.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -141,12 +141,17 @@ public enum JavaScriptOpcode : byte
     /// there was no instruction that could fail at all.
     /// </para>
     /// <para>
-    /// <b>It declares a push of one although it never pushes, and that is deliberate.</b> The
-    /// verifier's model is an operand-stack HEIGHT, and this instruction stands exactly where a
-    /// `LoadLocal` would have stood - so declaring the height it replaces keeps every join, every
-    /// bound and every reachability answer the same as the program that has no dead zone in it. At
-    /// run time the frame is abandoned before the push happens, so the declared height describes a
-    /// state no execution observes.
+    /// <b>It is a GUARD placed immediately before the instruction it prevents, and it moves no
+    /// operand</b> <i>(corrected: JSC-63)</i>. The `LoadLocal` or `StoreLocal` it precedes is
+    /// emitted as it would have been and simply never runs, so the operand-stack height the
+    /// verifier computes is the height of the program with no dead zone in it - not because this
+    /// instruction declares a height it does not produce, but because it produces none.
+    /// </para>
+    /// <para>
+    /// <b>It declared a push of one until the write case arrived</b>, standing in place of the
+    /// `LoadLocal` rather than before it. That worked for a read and could not work for a write,
+    /// where the instruction it replaces POPS - so the same opcode would have had to be worth +1
+    /// at one site and -1 at another. A guard that moves nothing is worth the same everywhere.
     /// </para>
     /// <para>
     /// <b>It carries no operand, so it cannot name the binding.</b> A message reading "cannot
@@ -278,13 +283,14 @@ public static class JavaScriptOpcodes
     };
 
     /// <summary>How many values <paramref name="opcode"/> pushes.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=E277A4
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=2E9BD0
     // Broiler-Falsified-If: an opcode pushes a different number of values in the executor than this reports
     // Broiler-Human:        PENDING
     public static int PushCount(JavaScriptOpcode opcode) => opcode switch
     {
         JavaScriptOpcode.StoreLocal or JavaScriptOpcode.Pop or JavaScriptOpcode.Return or
-        JavaScriptOpcode.Jump or JavaScriptOpcode.JumpIfFalse or JavaScriptOpcode.JumpIfTrue => 0,
+        JavaScriptOpcode.Jump or JavaScriptOpcode.JumpIfFalse or JavaScriptOpcode.JumpIfTrue or
+        JavaScriptOpcode.ThrowUninitializedBinding => 0,
 
         JavaScriptOpcode.Duplicate => 2,
 

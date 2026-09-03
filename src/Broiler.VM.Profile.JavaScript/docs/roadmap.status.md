@@ -404,12 +404,21 @@ was touched. And the reachability analysis answers "reachable" wherever it is un
 the lowering did unconditionally before, so the only bytes that could move belonged to programs the
 verifier was already refusing.
 
-**What is repaired is narrower than what is named.** A **write** before initialisation —
-`x = 1; let x;` — is a `ReferenceError` in the language and is not one here. **Dead code after a
-`break` inside a block** is still emitted, because `var` is hoisted and a slot the executor never
-wrote is a state this profile does not guarantee. And a **loop with no exit at all** is still
-refused. All three are recorded with their reasons rather than folded into a change that would have
-had to guess at them.
+**The write half is taken too, and it moved no number** *(corrected:
+[JSC-63](roadmap.corrections.md#jsc-63))*. `x = 1; let x;` is a `ReferenceError` in the language and
+now is one here. **Every suite figure above is identical before and after**: the cases that would
+exercise a write in the dead zone are not in the selectable slice, because they need the assertion
+prelude this manifest admits no call to load. **It is a repair the language required and the suite
+did not ask for**, pinned in the host's acceptance suite because that is the only instrument here
+that can hold it. Taking it also forced the opcode's contract to change — it declared a push and a
+write replaces an instruction that pops, so it is a guard that moves nothing and stands before the
+instruction it prevents.
+
+**What is still not repaired.** **Dead code after a `break` inside a block** is still emitted,
+because `var` is hoisted and a slot the executor never wrote is a state this profile does not
+guarantee. And a **loop with no exit at all** is still refused, because suppressing what follows it
+would leave a function with no terminator. Both are recorded with their reasons rather than folded
+into a change that would have had to guess at them.
 
 ### What this component is not claiming
 
