@@ -1,11 +1,13 @@
-// A KNOWN DEFECT, PINNED SO THE FIX IS DETECTABLE. Ordinary JavaScript: the loop runs its
-// body once and leaves. The lowering emits the update and the back-edge anyway, and nothing
-// reaches them, so this profile own verifier refuses the artifact as 1411:UnreachableCode.
-// Thirteen files of test262 fail exactly this way - every one of them for(...) { break; }.
+// PINNED AS A DEFECT AND NOW REPAIRED, which is what pinning it was for. This row was
+// declared with exit 4 - the code that accuses this component - because the lowering
+// emitted the update and the back-edge even though a body that always breaks reaches
+// neither, and the verifier refused the artifact as 1411:UnreachableCode. Thirteen files
+// of test262 were exactly this shape. The suite went red on the repair and the row moved
+// to exit 0.
 //
-// WHEN THIS IS FIXED THIS FILE MUST START RUNNING and its row in expected.txt has to move
-// from exit 4 to exit 0. That is the point of pinning it: the suite goes red on the repair,
-// which is how a characterisation case tells you the defect is gone.
+// It stays here rather than moving to runs/ so that the shape keeps a case of its own: a
+// regression in the reachability analysis would put this back to 4, and a reader looking
+// for why would find this comment rather than a bare arithmetic fixture.
 for (var i = 0; i < 3; i = i + 1) {
   break;
 }

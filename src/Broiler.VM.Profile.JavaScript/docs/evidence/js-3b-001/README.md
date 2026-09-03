@@ -122,11 +122,24 @@ file, compiles it, verifies it, runs it and reports.
 `ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e` (9,487,173 bytes, sha256 `f58ce791…`) into a temporary
 directory outside this repository, read, and left there.
 
-**The host, over 53,469 files:** 103 completed, 53,337 refused at the source seam, 16 spent the
-allowance, and **13 artifact refusals - a defect here**, all `1411:UnreachableCode` and all
-`for (…) { break; }`. The compiler's own remark named a different shape as the one it cannot emit
-([JSC-58](../../roadmap.corrections.md#jsc-58)); three reproductions are pinned in the acceptance
-suite so the repair is detectable, and the repair is not in this bundle.
+**The host, over 53,469 files:** **116** completed, 53,337 refused at the source seam, 16 spent the
+allowance, and **no artifact refusals**. There were 13 - a defect here, all `1411:UnreachableCode`
+and all `for (…) { break; }` - and the compiler's own remark had named a different shape as the one
+it cannot emit ([JSC-58](../../roadmap.corrections.md#jsc-58)).
+
+**The repair is in this bundle** ([JSC-60](../../roadmap.corrections.md#jsc-60)). The lowering now
+emits a loop's continuation only where something reaches it, and **completions moved from 103 to
+116 - the thirteen, and nothing else**. Three reproductions stay pinned in the acceptance suite;
+two moved from exit 4 to exit 0 with the repair, and the third - a loop with no exit at all - is
+still refused, still the format's answer, and pinned separately **so one change cannot claim
+both**.
+
+**Two safety properties, checked rather than argued.** The analysis answers "reachable" where it is
+unsure, which is what the lowering did unconditionally before, so the only bytes that can move
+belong to programs the verifier was already refusing - and **the retained corpus regenerated
+byte-identical**. And **the harness's totals over this suite are identical before and after**: the
+thirteen are positive tests needing the assertion prelude, so it never selected them. A repair
+visible to every instrument would have been a repair to something else.
 
 **The census re-derives the ledger's test262 row**, which nothing reproduced until now: 52,038
 parsed and **141 containing nothing outside the manifest**, the 141 matching the first recording

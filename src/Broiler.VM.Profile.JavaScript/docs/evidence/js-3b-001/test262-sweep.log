@@ -22,10 +22,9 @@
 
 # files read: 53469
 # 53469 files
-# Completed: 103
+# Completed: 116
 # RefusedSource: 53337
 # Exhausted: 16
-# RefusedArtifact: 13
 
 # every refusal by this profile's own diagnostic code, most frequent first
 # count|code
@@ -49,20 +48,7 @@
 
 # EVERY ARTIFACT REFUSAL. Each is a defect in THIS COMPONENT: the lowering produced
 # bytes its own verifier refused. All thirteen are `for (...) { break; }`.
-# ARTIFACT: 13
-test/language/asi/S7.9_A6.1_T1.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
-test/language/asi/S7.9_A6.1_T10.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
-test/language/asi/S7.9_A6.1_T11.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
-test/language/asi/S7.9_A6.1_T12.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
-test/language/asi/S7.9_A6.1_T13.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
-test/language/asi/S7.9_A6.1_T2.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
-test/language/asi/S7.9_A6.1_T3.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
-test/language/asi/S7.9_A6.1_T4.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
-test/language/asi/S7.9_A6.1_T5.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
-test/language/asi/S7.9_A6.1_T6.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
-test/language/asi/S7.9_A6.1_T7.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
-test/language/asi/S7.9_A6.1_T8.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
-test/language/asi/S7.9_A6.1_T9.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
+# ARTIFACT: 0
 
 # EVERY EXHAUSTION. Verification is charged work, and these files are large enough
 # that verifying them spent the 2,000,000-instruction allowance this sweep passed.
@@ -88,10 +74,23 @@ test/language/reserved-words/unreserved-words.js  verifying the artifact spent t
 # EVERY COMPLETION. Suite files whose bodies happen to lie inside this manifest, run as
 # programs. The host prepends no harness, so these are not passing conformance tests -
 # they are files this host could execute.
-# ok: 103
+# ok: 116
 test/language/asi/S7.9.2_A1_T2.js  3
 test/language/asi/S7.9_A10_T7.js  2
 test/language/asi/S7.9_A10_T9.js  3
+test/language/asi/S7.9_A6.1_T1.js  undefined
+test/language/asi/S7.9_A6.1_T10.js  false
+test/language/asi/S7.9_A6.1_T11.js  false
+test/language/asi/S7.9_A6.1_T12.js  false
+test/language/asi/S7.9_A6.1_T13.js  false
+test/language/asi/S7.9_A6.1_T2.js  undefined
+test/language/asi/S7.9_A6.1_T3.js  undefined
+test/language/asi/S7.9_A6.1_T4.js  undefined
+test/language/asi/S7.9_A6.1_T5.js  undefined
+test/language/asi/S7.9_A6.1_T6.js  false
+test/language/asi/S7.9_A6.1_T7.js  false
+test/language/asi/S7.9_A6.1_T8.js  false
+test/language/asi/S7.9_A6.1_T9.js  false
 test/language/asi/S7.9_A7_T1.js  undefined
 test/language/asi/S7.9_A7_T2.js  undefined
 test/language/asi/S7.9_A7_T3.js  1
