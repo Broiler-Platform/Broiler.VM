@@ -60,14 +60,21 @@ def shorten(path):
 
 
 def binary(built):
-    """The host to judge: a published directory when given one, else the build output."""
+    """The host to judge: a published directory when given one, else the build output.
+
+    THE PATH IS MADE ABSOLUTE, and that is not tidiness. Every case runs with the suite directory
+    as its working directory so that the rows can name relative paths, and a relative
+    `--binary-directory` - which is what a CI lane naturally passes, having just published into
+    `artifacts/...` - stops resolving the moment that happens. The lane found this and the local
+    run could not: the default here is built from the checkout root and is absolute already.
+    """
     for name in (BINARY_NAME + ".exe", BINARY_NAME):
-        candidate = os.path.join(built, name)
+        candidate = os.path.abspath(os.path.join(built, name))
 
         if os.path.isfile(candidate):
             return candidate
 
-    raise SystemExit(f"no {BINARY_NAME} under {built}")
+    raise SystemExit(f"no {BINARY_NAME} under {os.path.abspath(built)}")
 
 
 def main():
