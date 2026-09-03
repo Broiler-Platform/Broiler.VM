@@ -29,6 +29,7 @@ does not contain says so in its own text.
 | [JSD-0015](0015-the-conformance-oracle-and-what-it-refuses-to-score.md) | Where the conformance harness lives and why its non-advertisement is a rule, how a suite is pinned, that every case runs in a runtime of its own, and the six named ways a run is misconfigured | JS-3a |
 | [JSD-0016](0016-ingesting-a-third-party-suite-and-the-refusals-that-answer-nothing.md) | The dialect a real suite is read in, the two strictness readings of one file, and the rule that a refusal answers a question about the language only when it was a language answer | JS-3a |
 | [JSD-0017](0017-the-end-user-host-and-what-an-exit-code-promises.md) | The end-user host: that it is a host and not the toolchain the core defers, the seven exit codes and which two of them accuse this component, how a file is read honestly, and why the first root a person would expect to be shipped is not | JS-3b |
+| [JSD-0018](0018-which-tests-are-about-this-language-and-who-decides.md) | That the suite's own feature list decides which constructs are proposals, that reading it is required rather than offered, and that the exclusion is its own counted stage asked before the run's own filter | JS-3a |
 
 ## What a record must carry
 

@@ -283,6 +283,41 @@ internal static class Program
             Console.WriteLine("FAIL " + pinFailure);
         }
 
+        // WHICH CONSTRUCTS ARE IN THE LANGUAGE IS THE SUITE'S ANSWER AND NOT THIS COMPONENT'S, and
+        // reading it is required rather than offered. An ingested suite declares its own feature
+        // flags in two sections, one of them proposals; a run that did not read them would score
+        // tests about constructs no published edition contains, which is a failure that is not a
+        // gap and a pass that is not a credit. Roadmap section 3 records the language edition as an
+        // unpinned dependency - this is the nearest thing to an edition that is actually pinned,
+        // because the suite's revision covers it.
+        var features = SuiteFeatures.None;
+
+        if (dialect == SuiteDialect.Ingested)
+        {
+            features = SuiteFeatures.Read(
+                Path.Combine(suite, SuiteFeatures.FileName), out var featureComplaints);
+
+            foreach (var complaint in featureComplaints)
+            {
+                Console.WriteLine("FAIL " + complaint);
+            }
+
+            if (featureComplaints.Count != 0)
+            {
+                Console.WriteLine(
+                    "broiler-js-conformance: the suite's feature list is not readable; nothing " +
+                    "was scored");
+
+                return ExitCodes.HarnessDefect;
+            }
+
+            Console.WriteLine(
+                $"broiler-js-conformance: {SuiteFeatures.FileName} declares " +
+                $"{features.Proposed.Count} proposed, {features.Standard.Count} standard and " +
+                $"{features.TestHarness.Count} test-harness features; a test claiming a proposed " +
+                "one is not scored");
+        }
+
         var shardCount = Number(Argument(args, "--shard-count"), 1);
         var shardIndex = Number(Argument(args, "--shard-index"), Sharding.AllShards);
 
@@ -299,10 +334,42 @@ internal static class Program
             tests,
             knownIncorrect,
             Patterns(Argument(args, "--scope")),
+            features.Proposed,
             Patterns(Argument(args, "--features")),
             args.Contains("--include-negative", StringComparer.Ordinal),
             shardIndex,
             shardCount);
+
+        // THE READER'S OWN CONTROL, and it guards the one mistake the reader can make silently. If
+        // a section heading were mis-recognised - the file writes `##` for comments inside a
+        // section as well as for its headings - the names below the break would land in no section
+        // and this run would go back to scoring proposals without saying anything. A feature that
+        // a selected test claims and the feature list does not declare is that mis-parse, or a
+        // suite whose tests and whose list disagree; either way it is not something to score
+        // through.
+        if (dialect == SuiteDialect.Ingested)
+        {
+            var declared = features.All;
+            var undeclared = selected
+                .SelectMany(static test => test.Features)
+                .Where(feature => !declared.Contains(feature))
+                .Distinct(StringComparer.Ordinal)
+                .OrderBy(static feature => feature, StringComparer.Ordinal)
+                .ToArray();
+
+            if (undeclared.Length != 0)
+            {
+                Console.WriteLine(
+                    $"FAIL {undeclared.Length} feature(s) a selected test claims are declared in " +
+                    $"no section of {SuiteFeatures.FileName}: {string.Join(", ", undeclared)}");
+
+                Console.WriteLine(
+                    "broiler-js-conformance: the suite and its feature list disagree; nothing " +
+                    "was scored");
+
+                return ExitCodes.HarnessDefect;
+            }
+        }
 
         // The pipeline is a partition and this is where that is asserted rather than assumed. A
         // stage that dropped a test without counting it would make every total quietly smaller.
@@ -310,7 +377,7 @@ internal static class Program
         {
             Console.WriteLine(
                 $"broiler-js-conformance: the selection stages account for " +
-                $"{counts.KnownIncorrect + counts.OutOfScope + counts.FeatureFiltered + counts.NegativeWithheld + counts.Unselectable + counts.Selected} " +
+                $"{counts.KnownIncorrect + counts.OutOfScope + counts.FeatureExcluded + counts.FeatureFiltered + counts.NegativeWithheld + counts.Unselectable + counts.Selected} " +
                 $"of {counts.Candidates} candidates");
 
             return ExitCodes.HarnessDefect;
@@ -513,7 +580,8 @@ internal static class Program
 
         Console.WriteLine(
             $"selection candidates={report.Selection.Candidates} knownIncorrect={report.Selection.KnownIncorrect} " +
-            $"outOfScope={report.Selection.OutOfScope} featureFiltered={report.Selection.FeatureFiltered} " +
+            $"outOfScope={report.Selection.OutOfScope} featureExcluded={report.Selection.FeatureExcluded} " +
+            $"featureFiltered={report.Selection.FeatureFiltered} " +
             $"negativeWithheld={report.Selection.NegativeWithheld} unselectable={report.Selection.Unselectable} " +
             $"selected={report.Selection.Selected} sharded={report.Selection.Sharded}");
 

@@ -1368,6 +1368,16 @@ to score anything: it is to prove that a failing test comes back as a failure.
   filtering, then feature-metadata filtering, then per-file selectability. The candidate count
   and the pre-sharding selected count are emitted separately from each shard's executed count,
   which is what lets the merge prove the shards covered the whole selection rather than a subset.
+- **A test about a construct the suite itself calls a proposal is not scored, and the run reads
+  the suite's own list to know which those are.** Whether a construct is in the language is not a
+  question this component can answer for itself — [section 3](roadmap.status.md#3-open-external-dependencies)
+  records the language edition as unpinned — so the answer is read rather than asserted, and a run
+  whose suite carries no readable list stops in the same voice as a run pointed at a suite with no
+  pin. The exclusion is asked **before** the run's own feature filter and counted separately from
+  it: one is a statement about the language and the other about this run's interest, and added
+  together they cancel. Scoring such a test is wrong in both directions, and the direction that
+  hides is the pass: an engine with no production for a construct refuses every spelling of it,
+  including the spellings a negative test declares an error.
 - **Per-host-mode totals.** Script, module, and raw each report their own selected, executed,
   passed, failed, skipped, and timed-out counts. A mode that selects files and executes none is a
   named configuration failure, not a small total.

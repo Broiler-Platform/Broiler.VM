@@ -139,6 +139,7 @@ internal static class HarnessChecks
             ],
             knownIncorrect: ["skip/d.js"],
             scopePatterns: [],
+            excludedFeatures: SuiteFeatures.None.Proposed,
             featurePatterns: [],
             includeNegative: false,
             Sharding.AllShards,
@@ -160,6 +161,7 @@ internal static class HarnessChecks
             [Test("wrong/a.js"), Test("kept/b.js")],
             knownIncorrect: ["wrong/a.js"],
             scopePatterns: ["kept"],
+            excludedFeatures: SuiteFeatures.None.Proposed,
             featurePatterns: [],
             includeNegative: false,
             Sharding.AllShards,
@@ -189,10 +191,12 @@ internal static class HarnessChecks
         ConformanceTest[] candidates = [Test("a.js"), Test("b.js", negative: true)];
 
         var (withheld, _) = Selection.Run(
-            candidates, [], [], [], includeNegative: false, Sharding.AllShards, 1);
+            candidates, [], [], SuiteFeatures.None.Proposed, [], includeNegative: false,
+            Sharding.AllShards, 1);
 
         var (included, _) = Selection.Run(
-            candidates, [], [], [], includeNegative: true, Sharding.AllShards, 1);
+            candidates, [], [], SuiteFeatures.None.Proposed, [], includeNegative: true,
+            Sharding.AllShards, 1);
 
         return (
             "negative-metadata-tests-are-opt-in",
@@ -462,7 +466,7 @@ internal static class HarnessChecks
 
         foreach (var finding in Report.Validate(
                      new SuiteRevision("s", string.Empty),
-                     new SelectionCounts(3, 0, 0, 0, 0, 3, 0, 0),
+                     new SelectionCounts(3, 0, 0, 0, 0, 0, 3, 0, 0),
                      []))
         {
             produced.Add(finding.Failure);
@@ -470,7 +474,7 @@ internal static class HarnessChecks
 
         foreach (var finding in Report.Validate(
                      new SuiteRevision("s", "abc"),
-                     new SelectionCounts(2, 0, 0, 0, 0, 0, 2, 2),
+                     new SelectionCounts(2, 0, 0, 0, 0, 0, 0, 2, 2),
                      [Case("a.js", ConformanceStatus.Skipped), Case("b.js", ConformanceStatus.Skipped)]))
         {
             produced.Add(finding.Failure);
@@ -603,7 +607,7 @@ internal static class HarnessChecks
         Sharding.AllShards,
         1,
         IncludeNegative: false,
-        new SelectionCounts(2, 0, 0, 0, 0, 0, 2, 2),
+        new SelectionCounts(2, 0, 0, 0, 0, 0, 0, 2, 2),
         [Case("test/a.js", ConformanceStatus.Passed), Case("test/b.js", ConformanceStatus.Failed)],
         []);
 
@@ -613,7 +617,7 @@ internal static class HarnessChecks
         index,
         2,
         IncludeNegative: false,
-        new SelectionCounts(2, 0, 0, 0, 0, 0, 2, paths.Count),
+        new SelectionCounts(2, 0, 0, 0, 0, 0, 0, 2, paths.Count),
         paths.Select(static path => Case(path, ConformanceStatus.Passed)).ToArray(),
         []);
 }

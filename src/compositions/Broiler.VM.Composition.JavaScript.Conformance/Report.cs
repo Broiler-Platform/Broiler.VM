@@ -81,8 +81,14 @@ internal sealed record Report(
     IReadOnlyList<CaseResult> Results,
     IReadOnlyList<ConfigurationFinding> Findings)
 {
-    /// <summary>The header every report carries, naming the format.</summary>
-    internal const string Header = "# broiler-js-conformance report 1";
+    /// <summary>The header every report carries, naming the format's version.</summary>
+    /// <remarks>
+    /// <b>Version 2 because the selection line grew a column</b>, and a reader that met a version 1
+    /// report would otherwise refuse it on the selection line and blame the line rather than the
+    /// format. Nothing in this repository holds a report - they are produced and merged inside one
+    /// run - so the bump costs a message rather than a migration.
+    /// </remarks>
+    internal const string Header = "# broiler-js-conformance report 2";
 
     /// <summary>Per-mode totals, in the enumeration's order so two reports line up.</summary>
     internal IReadOnlyList<ModeTotals> Modes =>
@@ -152,7 +158,7 @@ internal sealed record Report(
         var text = new StringBuilder();
         text.Append(Header).Append('\n');
         text.Append("# run|suite|revision|shardIndex|shardCount|includeNegative\n");
-        text.Append("# selection|candidates|knownIncorrect|outOfScope|featureFiltered|negativeWithheld|unselectable|selected|sharded\n");
+        text.Append("# selection|candidates|knownIncorrect|outOfScope|featureExcluded|featureFiltered|negativeWithheld|unselectable|selected|sharded\n");
         text.Append("# mode|name|selected|executed|passed|failed|skipped|timedOut\n");
         text.Append("# result|path|mode|status|completion|answer|detail\n");
         text.Append("# config|failure|detail\n");
@@ -173,6 +179,7 @@ internal sealed record Report(
                 Number(Selection.Candidates),
                 Number(Selection.KnownIncorrect),
                 Number(Selection.OutOfScope),
+                Number(Selection.FeatureExcluded),
                 Number(Selection.FeatureFiltered),
                 Number(Selection.NegativeWithheld),
                 Number(Selection.Unselectable),
@@ -225,7 +232,7 @@ internal sealed record Report(
         var shardIndex = Sharding.AllShards;
         var shardCount = 1;
         var includeNegative = false;
-        var selection = new SelectionCounts(0, 0, 0, 0, 0, 0, 0, 0);
+        var selection = new SelectionCounts(0, 0, 0, 0, 0, 0, 0, 0, 0);
         var results = new List<CaseResult>();
         var findings = new List<ConfigurationFinding>();
         var seenHeader = false;
@@ -251,10 +258,11 @@ internal sealed record Report(
                     includeNegative = string.Equals(parts[5], "yes", StringComparison.Ordinal);
                     break;
 
-                case "selection" when parts.Length == 9:
+                case "selection" when parts.Length == 10:
                     selection = new SelectionCounts(
                         Value(parts[1]), Value(parts[2]), Value(parts[3]), Value(parts[4]),
-                        Value(parts[5]), Value(parts[6]), Value(parts[7]), Value(parts[8]));
+                        Value(parts[5]), Value(parts[6]), Value(parts[7]), Value(parts[8]),
+                        Value(parts[9]));
                     break;
 
                 // The mode lines are derived from the results and are written for a reader, so they

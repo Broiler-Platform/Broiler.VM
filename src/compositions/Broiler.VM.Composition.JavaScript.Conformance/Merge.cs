@@ -32,7 +32,7 @@ internal static class Merge
                 Sharding.AllShards,
                 0,
                 IncludeNegative: false,
-                new SelectionCounts(0, 0, 0, 0, 0, 0, 0, 0),
+                new SelectionCounts(0, 0, 0, 0, 0, 0, 0, 0, 0),
                 [],
                 [
                     new ConfigurationFinding(
@@ -126,9 +126,20 @@ internal static class Merge
     /// The fields every shard of one run must state identically, with what they actually stated.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The selection figures are in here and that is the point of the list. Two shards that
     /// discovered different numbers of candidates are two runs, however similar their totals look,
     /// and a merge that added them would publish a figure describing a suite nobody ran.
+    /// </para>
+    /// <para>
+    /// <b>Every PRE-SHARDING figure, and only those.</b> All eight are decided before sharding, so
+    /// no shard can influence any of them and two shards of one run state them identically;
+    /// <c>sharded</c> is the ninth and is deliberately absent, because differing is what it is for.
+    /// The list held four of the eight, and the four it omitted - the scope, both feature stages
+    /// and the negatives - are exactly the ones a differently configured shard moves. Two shards
+    /// whose filters removed the same NUMBER of tests would agree on <c>selected</c> while having
+    /// scored different tests, and nothing here would have said so.
+    /// </para>
     /// </remarks>
     private static IEnumerable<(string Field, IReadOnlyCollection<string> Values)> Fields(
         IReadOnlyList<Report> shards)
@@ -140,6 +151,10 @@ internal static class Merge
         yield return ("candidates", Distinct(shards, static shard => shard.Selection.Candidates.ToString()));
         yield return ("selected", Distinct(shards, static shard => shard.Selection.Selected.ToString()));
         yield return ("knownIncorrect", Distinct(shards, static shard => shard.Selection.KnownIncorrect.ToString()));
+        yield return ("outOfScope", Distinct(shards, static shard => shard.Selection.OutOfScope.ToString()));
+        yield return ("featureExcluded", Distinct(shards, static shard => shard.Selection.FeatureExcluded.ToString()));
+        yield return ("featureFiltered", Distinct(shards, static shard => shard.Selection.FeatureFiltered.ToString()));
+        yield return ("negativeWithheld", Distinct(shards, static shard => shard.Selection.NegativeWithheld.ToString()));
         yield return ("unselectable", Distinct(shards, static shard => shard.Selection.Unselectable.ToString()));
     }
 

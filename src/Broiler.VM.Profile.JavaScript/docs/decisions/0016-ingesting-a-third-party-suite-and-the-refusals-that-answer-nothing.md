@@ -168,7 +168,7 @@ all**, so the reader does not look for one there either.
 executes, so the assertion library it would have needed is never reached, and the question it asks
 — is this source a syntax error — is one this front end genuinely answers. That is the
 parse-and-early-error slice
-[JS-3b's exit gate](../roadmap.delivery.md#js-3b--static-semantics-as-one-verification-stage-and-the-lowering)
+[JS-3b's exit gate](../roadmap.delivery.md#js-3b-static-semantics-as-one-verification-stage-and-the-lowering)
 names, and it is why that gate names that slice and not another.
 
 **What it does not do is close that gate.** The clause says the slice is scored *on JS-3a's harness

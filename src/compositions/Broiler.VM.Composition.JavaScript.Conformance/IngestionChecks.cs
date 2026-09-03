@@ -45,6 +45,12 @@ internal static class IngestionChecks
         EveryFileThisHarnessCannotRunIsStillCounted(),
         AHarnessFileIsDeclinedRatherThanRefused(),
         TheTwoNewExpectationSpellingsRoundTrip(),
+        ACommentWrittenWithTwoHashesDoesNotEndASection(),
+        AFeatureListThatCannotBeReadIsRefusedRatherThanEmptied(),
+        ATrailingCommentIsNotPartOfAFeatureName(),
+        ATestClaimingAProposalIsNotScoredAndOneClaimingTheLanguageIs(),
+        AnEmptyExclusionSetExcludesNothing(),
+        TheFeatureFilterCannotOptBackIntoAnExcludedTest(),
     ];
 
     private static (string, bool, string) TheLanguageClassMapIsTotalOverTheVocabulary()
@@ -550,6 +556,237 @@ internal static class IngestionChecks
                 ? string.Join(", ", expectations.Select(one => $"`{one}`"))
                 : "did not round-trip: " + string.Join(", ", broken.Select(one => one.ToString())));
     }
+
+    private static (string, bool, string) ACommentWrittenWithTwoHashesDoesNotEndASection()
+    {
+        // THE SHAPE THAT WOULD HAVE MADE THIS READER WRONG, and it is in the real list twice. A
+        // reader taking `##` for a heading ends the proposed section at the first such comment and
+        // stops excluding every name below it - which over the pinned checkout was twelve of its
+        // twenty-one proposals, all of them silently scored.
+        var features = SuiteFeatures.Parse(
+            Lines(
+                SuiteFeatures.ProposedHeading,
+                "# a proposal",
+                "first-proposal",
+                string.Empty,
+                "# another proposal",
+                "## https://example.invalid/the-url-the-real-list-writes-with-two-hashes",
+                "second-proposal",
+                "## and a note about the entry below this one",
+                "third-proposal",
+                string.Empty,
+                SuiteFeatures.StandardHeading,
+                "a-published-construct",
+                string.Empty,
+                SuiteFeatures.TestHarnessHeading,
+                "a-host-capability"),
+            "a-list-with-two-hash-comments",
+            out var complaints);
+
+        return (
+            "a-comment-written-with-two-hashes-does-not-end-a-section",
+            complaints.Count == 0 &&
+                features.Proposed.Count == 3 &&
+                features.Proposed.Contains("second-proposal") &&
+                features.Proposed.Contains("third-proposal") &&
+                features.Standard.Count == 1 &&
+                features.TestHarness.Count == 1,
+            $"{features.Proposed.Count} of 3 proposals survived two `##` comments; " +
+            $"{features.Standard.Count} standard, {features.TestHarness.Count} test-harness, " +
+            $"{complaints.Count} complaint(s)");
+    }
+
+    private static (string, bool, string) AFeatureListThatCannotBeReadIsRefusedRatherThanEmptied()
+    {
+        // A list this reader could not read answers "nothing is a proposal", which is the state
+        // that was being repaired - so each of these has to be a complaint the caller stops on.
+        // The reader ALSO hands back nothing rather than what it managed to read, and that half is
+        // asserted here too: a caller that ignored the complaints would otherwise filter with a
+        // half-read list, which is the same over-scoring arriving quietly.
+        var half = SuiteFeatures.Parse(
+            Lines(SuiteFeatures.ProposedHeading, "a-proposal"),
+            "no-standard-heading",
+            out var headingMissing);
+
+        SuiteFeatures.Parse(
+            Lines(
+                SuiteFeatures.ProposedHeading,
+                "a-proposal",
+                SuiteFeatures.StandardHeading,
+                "a-construct",
+                SuiteFeatures.TestHarnessHeading),
+            "an-empty-section",
+            out var sectionEmpty);
+
+        SuiteFeatures.Parse(
+            Lines(
+                SuiteFeatures.ProposedHeading,
+                "both",
+                SuiteFeatures.StandardHeading,
+                "both",
+                SuiteFeatures.TestHarnessHeading,
+                "a-host-capability"),
+            "a-name-in-two-sections",
+            out var declaredTwice);
+
+        SuiteFeatures.Parse(
+            Lines(
+                "an-orphan",
+                SuiteFeatures.ProposedHeading,
+                "a-proposal",
+                SuiteFeatures.StandardHeading,
+                "a-construct",
+                SuiteFeatures.TestHarnessHeading,
+                "a-host-capability"),
+            "a-name-under-no-heading",
+            out var orphaned);
+
+        var refused = new[] { headingMissing, sectionEmpty, declaredTwice, orphaned }
+            .Count(static complaints => complaints.Count != 0);
+
+        return (
+            "a-feature-list-that-cannot-be-read-is-refused-rather-than-emptied",
+            refused == 4 && half.Proposed.Count == 0 && half.Standard.Count == 0,
+            $"{refused} of 4 malformed lists were refused - a missing heading, an empty section, " +
+            $"one name under two headings, a name under none - and the refused one handed back " +
+            $"{half.Proposed.Count} proposals rather than the one it had already read");
+    }
+
+    private static (string, bool, string) ATrailingCommentIsNotPartOfAFeatureName()
+    {
+        var features = SuiteFeatures.Parse(
+            Lines(
+                SuiteFeatures.ProposedHeading,
+                "a-proposal  # https://example.invalid/a-pull-request",
+                SuiteFeatures.StandardHeading,
+                "a-construct",
+                SuiteFeatures.TestHarnessHeading,
+                "a-host-capability"),
+            "a-list-with-a-trailing-comment",
+            out var complaints);
+
+        return (
+            "a-trailing-comment-is-not-part-of-a-feature-name",
+            complaints.Count == 0 && features.Proposed.Contains("a-proposal"),
+            features.Proposed.Contains("a-proposal")
+                ? "`a-proposal  # …` declares `a-proposal`"
+                : "declared: [" + string.Join(", ", features.Proposed) + "]");
+    }
+
+    private static (string, bool, string) ATestClaimingAProposalIsNotScoredAndOneClaimingTheLanguageIs()
+    {
+        // Both directions, because an exclusion that removed everything would also remove the four
+        // failures and would look exactly as good from the totals.
+        var (counts, selected) = Selection.Run(
+            [
+                Claiming("about-a-proposal.js", "a-proposal"),
+                Claiming("about-the-language.js", "a-construct"),
+                Claiming("about-both.js", "a-construct", "a-proposal"),
+                Claiming("about-nothing.js"),
+            ],
+            [],
+            [],
+            Proposed("a-proposal"),
+            [],
+            includeNegative: false,
+            Sharding.AllShards,
+            1);
+
+        var kept = selected.Select(static test => test.Path).ToArray();
+
+        return (
+            "a-test-claiming-a-proposal-is-not-scored-and-one-claiming-the-language-is",
+            counts.Accounts &&
+                counts.FeatureExcluded == 2 &&
+                counts.FeatureFiltered == 0 &&
+                kept.Length == 2 &&
+                kept.Contains("about-the-language.js", StringComparer.Ordinal) &&
+                kept.Contains("about-nothing.js", StringComparer.Ordinal),
+            $"excluded {counts.FeatureExcluded} of 4 - a test claiming a proposal alongside a " +
+            $"published construct is still about the proposal - and kept [{string.Join(", ", kept)}]");
+    }
+
+    private static (string, bool, string) AnEmptyExclusionSetExcludesNothing()
+    {
+        // THE ASYMMETRY THIS FILE EXISTS TO PIN. One method up in `Selection`, an empty pattern set
+        // means "no filter"; read that way here, an empty exclusion removes every test and the run
+        // reports an empty selection rather than anything about an engine.
+        var (counts, _) = Selection.Run(
+            [Claiming("a.js", "a-proposal"), Claiming("b.js")],
+            [],
+            [],
+            SuiteFeatures.None.Proposed,
+            [],
+            includeNegative: false,
+            Sharding.AllShards,
+            1);
+
+        var direct = Selection.ExcludedBy(["a-proposal"], SuiteFeatures.None.Proposed);
+
+        return (
+            "an-empty-exclusion-set-excludes-nothing",
+            counts.FeatureExcluded == 0 && counts.Selected == 2 && direct.Length == 0,
+            $"with nothing declared a proposal, {counts.Selected} of 2 tests are selected and " +
+            $"{counts.FeatureExcluded} excluded");
+    }
+
+    private static (string, bool, string) TheFeatureFilterCannotOptBackIntoAnExcludedTest()
+    {
+        // The substantive half: a run asking for the excluded feature BY NAME still gets nothing.
+        var (asked, selected) = Selection.Run(
+            [Claiming("about-a-proposal.js", "a-proposal")],
+            [],
+            [],
+            Proposed("a-proposal"),
+            ["a-proposal"],
+            includeNegative: false,
+            Sharding.AllShards,
+            1);
+
+        // The attribution half, and it needs a test the filter would ALSO have removed, because
+        // that is the only shape the two stage orders answer differently. With the exclusion
+        // asked first the case is counted as excluded - a statement about the language, true of
+        // every run - and with it asked second as filtered, which is a statement about this run's
+        // scope and would read as a case some other run could have scored.
+        var (attributed, _) = Selection.Run(
+            [Claiming("about-a-proposal.js", "a-proposal")],
+            [],
+            [],
+            Proposed("a-proposal"),
+            ["a-construct"],
+            includeNegative: false,
+            Sharding.AllShards,
+            1);
+
+        return (
+            "the-feature-filter-cannot-opt-back-into-an-excluded-test",
+            asked.Accounts && asked.FeatureExcluded == 1 && selected.Count == 0 &&
+                attributed.Accounts && attributed.FeatureExcluded == 1 && attributed.FeatureFiltered == 0,
+            $"asking for `a-proposal` by name selected {selected.Count} tests, and a test the " +
+            $"scope filter would also have removed is counted at the exclusion " +
+            $"({attributed.FeatureExcluded}) rather than at the filter ({attributed.FeatureFiltered})");
+    }
+
+    /// <summary>One feature list's worth of lines, joined the way a file's are.</summary>
+    private static string Lines(params string[] lines) => string.Join('\n', lines);
+
+    /// <summary>A set of proposed feature names, in the shape the reader hands one over in.</summary>
+    private static IReadOnlySet<string> Proposed(params string[] names) =>
+        new HashSet<string>(names, StringComparer.Ordinal);
+
+    /// <summary>An ingested test claiming the named features and nothing else that matters.</summary>
+    private static ConformanceTest Claiming(string path, params string[] features) =>
+        new(
+            path,
+            "an ingested test",
+            HostMode.Script,
+            new ConformanceExpectation(ExpectationKind.CompletesWithoutFault, string.Empty),
+            "source",
+            null,
+            features,
+            string.Empty,
+            string.Empty,
+            Ingested: true);
 
     /// <summary>An ingested test declaring one thing, with nothing else that matters set.</summary>
     private static ConformanceTest Ingested(ConformanceExpectation expectation) =>

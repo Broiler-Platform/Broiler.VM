@@ -392,6 +392,23 @@ jobs:
           "$binary" --floor src/Broiler.VM.Profile.JavaScript/docs/conformance/floor-ingest-shape.txt \
             --report artifacts/ingest-shape.report
 
+          # AND THE FEATURE EXCLUSION IS ASSERTED HERE, BECAUSE THE FLOOR CANNOT SEE IT. A test
+          # excluded for claiming a construct the suite itself calls a proposal never becomes a
+          # case, so it is in no mode's executed or passed figure and an exclusion that silently
+          # became a no-op would leave every floor row exactly where it is - while the run went
+          # back to scoring tests about a language nothing here implements, and passing most of
+          # them. The suite's `features.txt` declares three proposals and four cases claim one.
+          #
+          # The WHOLE selection line is pinned rather than the one column, and the brittleness is
+          # deliberate: adding a fixture to this suite already re-bases its floor, which is a
+          # decision somebody makes, and every stage of the pipeline is a figure that decision
+          # should be made in front of. The line as read is printed when it does not match.
+          grep -q '^selection|17|0|0|4|0|0|8|5|5$' artifacts/ingest-shape.report || {
+            echo "the ingest-shape selection is not 4 cases excluded for claiming a proposal;" >&2
+            grep '^selection|' artifacts/ingest-shape.report >&2
+            exit 1
+          }
+
       # The fuzz sessions and the corpus-integrity mutation were collection-only for the same
       # reason the roots were: nobody had put them here. A session is a total function of its seed
       # and its seed corpus - no wall clock, no thread count - so it decides the same on a runner

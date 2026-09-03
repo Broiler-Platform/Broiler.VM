@@ -8,22 +8,37 @@ namespace Broiler.VM.Composition.JavaScript.Conformance;
 /// <param name="Candidates">Everything discovery found, before any filter.</param>
 /// <param name="KnownIncorrect">Excluded by name, because the test itself is wrong at this revision.</param>
 /// <param name="OutOfScope">Excluded by the scope patterns this run was given.</param>
+/// <param name="FeatureExcluded">
+/// Excluded because the test claims a feature the suite itself declares a proposal.
+/// </param>
 /// <param name="FeatureFiltered">Excluded by the feature patterns this run was given.</param>
 /// <param name="NegativeWithheld">Negative-metadata tests this run did not opt into.</param>
 /// <param name="Unselectable">Tests this profile has no way to present at all.</param>
 /// <param name="Selected">What survived every filter, before sharding.</param>
 /// <param name="Sharded">What this shard took of that.</param>
 /// <remarks>
+/// <para>
 /// <b>Emitted stage by stage rather than as one number.</b> Roadmap section 14 asks the candidate
 /// count and the pre-sharding selected count to be separate from a shard's executed count, because
 /// that is what lets a merge prove the shards covered the whole selection instead of a subset. A
 /// single "selected" figure cannot: a filter that quietly widened and a discovery that quietly
 /// narrowed produce the same number.
+/// </para>
+/// <para>
+/// <b>The two feature stages are two figures for that same reason and not for tidiness.</b>
+/// <paramref name="FeatureExcluded"/> is a statement about the language - the suite says the
+/// construct is a proposal, so no run may score the test - and <paramref name="FeatureFiltered"/>
+/// is a statement about this run's interest. Added together, an inclusion set that widened by a
+/// hundred and an exclusion that grew by a hundred leave the figure and the selected count both
+/// unmoved while a different hundred tests ran, which is exactly the cancellation the paragraph
+/// above is written against.
+/// </para>
 /// </remarks>
 internal sealed record SelectionCounts(
     int Candidates,
     int KnownIncorrect,
     int OutOfScope,
+    int FeatureExcluded,
     int FeatureFiltered,
     int NegativeWithheld,
     int Unselectable,
@@ -38,8 +53,8 @@ internal sealed record SelectionCounts(
     /// is written against.
     /// </remarks>
     internal bool Accounts =>
-        KnownIncorrect + OutOfScope + FeatureFiltered + NegativeWithheld + Unselectable + Selected
-        == Candidates;
+        KnownIncorrect + OutOfScope + FeatureExcluded + FeatureFiltered + NegativeWithheld +
+        Unselectable + Selected == Candidates;
 }
 
 /// <summary>
@@ -97,11 +112,20 @@ internal static class Sharding
 /// The selection pipeline, recorded stage by stage.
 /// </summary>
 /// <remarks>
+/// <para>
 /// The stages are in the order roadmap section 14 states them: discovery, known-incorrect
 /// exclusion, scope filtering, feature-metadata filtering, per-file selectability, and then
 /// sharding. The order is load-bearing for the counts rather than for the result - a test excluded
 /// by two stages is counted at the first one - so a reader of a report can see which decision
 /// removed it.
+/// </para>
+/// <para>
+/// <b>Within the feature stage, the exclusion is asked before the inclusion, and that order is a
+/// decision.</b> A run asking for a scope may not thereby score a test about a construct no
+/// edition contains: whether the test is answerable is prior to whether this run is interested in
+/// it. Put the other way round, <c>--features</c> would become a way to opt back into exactly the
+/// tests the suite says nobody should be scoring.
+/// </para>
 /// </remarks>
 internal static class Selection
 {
@@ -110,6 +134,7 @@ internal static class Selection
         IReadOnlyList<ConformanceTest> candidates,
         IReadOnlyCollection<string> knownIncorrect,
         IReadOnlyCollection<string> scopePatterns,
+        IReadOnlySet<string> excludedFeatures,
         IReadOnlyCollection<string> featurePatterns,
         bool includeNegative,
         int shardIndex,
@@ -117,6 +142,7 @@ internal static class Selection
     {
         var knownIncorrectCount = 0;
         var outOfScope = 0;
+        var featureExcluded = 0;
         var featureFiltered = 0;
         var negativeWithheld = 0;
         var unselectable = 0;
@@ -133,6 +159,12 @@ internal static class Selection
             if (!MatchesAny(test.Path, scopePatterns))
             {
                 outOfScope++;
+                continue;
+            }
+
+            if (ExcludedBy(test.Features, excludedFeatures).Length != 0)
+            {
+                featureExcluded++;
                 continue;
             }
 
@@ -167,12 +199,53 @@ internal static class Selection
                 candidates.Count,
                 knownIncorrectCount,
                 outOfScope,
+                featureExcluded,
                 featureFiltered,
                 negativeWithheld,
                 unselectable,
                 selected.Count,
                 sharded.Count),
             sharded);
+    }
+
+    /// <summary>
+    /// The first feature a test claims that the excluded set names, or empty where it claims none.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The empty set here excludes NOTHING, which is the opposite of what the empty set means
+    /// one method down, and the two must never share an implementation.</b>
+    /// <see cref="MatchesAny"/> reads an empty set as "no filter" because a run given no scope runs
+    /// the whole suite; an exclusion read the same way would remove every test, and the run would
+    /// report <see cref="ConfigurationFailure.EmptySelection"/> rather than anything about an
+    /// engine. Written as its own method, with its own name, so that the asymmetry is a thing a
+    /// reader sees rather than a case a reader has to notice.
+    /// </para>
+    /// <para>
+    /// <b>Names are matched whole and never as patterns.</b> These come from the suite's own
+    /// feature list rather than from a command line, so there is nothing to glob - and a prefix
+    /// match would put <c>class</c> and <c>class-fields-private</c> in one bucket, which is two
+    /// different constructs of two different editions.
+    /// </para>
+    /// </remarks>
+    internal static string ExcludedBy(
+        IReadOnlyList<string> claimed,
+        IReadOnlySet<string> excluded)
+    {
+        if (excluded.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        foreach (var feature in claimed)
+        {
+            if (excluded.Contains(feature))
+            {
+                return feature;
+            }
+        }
+
+        return string.Empty;
     }
 
     /// <summary>

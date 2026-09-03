@@ -1,5 +1,5 @@
 # broiler-js-conformance suite pin
 # revision is the digest over every path and content this suite holds, the pin excepted
 suite broiler.javascript.slice.ingest-shape
-revision 262902538401be83804f252624a6152c349b53e2d8da27ed4f10fcfb1a09c8f1
-files 20
+revision 56c9c2dd92ac87be4bb31fec670c886e31b7e5483b4a4db71b65fd04275ecc61
+files 24
