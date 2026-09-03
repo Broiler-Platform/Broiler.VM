@@ -132,7 +132,7 @@ public static class SliceSourcePrograms
     /// becomes bytes. They are judged by the composition that carries the front end, and the
     /// execution-only image - which has no front end - could not judge them and does not claim to.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=E6CE75
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=B2B221
     // Broiler-Falsified-If: any source here compiles, or is refused with a code other than the one recorded beside it
     // Broiler-Human:        PENDING
     public static SliceRefusedSource[] Refused =>
@@ -207,6 +207,26 @@ public static class SliceSourcePrograms
             "refuse-a-strict-reserved-name-as-a-binding",
             "\"use strict\"; var eval = 1; eval",
             SliceSourceDiagnosticCode.ReservedWordAsBinding),
+
+        // ---- two shapes an earlier draft of this front end got wrong -----------------------------
+        //
+        // A leading string literal is a directive only when the whole statement is that literal.
+        // The first draft took any leading string as one, so `"use strict" + 1` enabled strict
+        // mode for a program that never asked and then failed on the `+` with a syntax error - a
+        // wrong ANSWER wearing a wrong diagnostic. It is refused for the string, which is what a
+        // manifest with no string value owes it.
+        new(
+            "refuse-a-string-expression-that-looks-like-a-directive",
+            "\"use strict\" + 1",
+            SliceSourceDiagnosticCode.ConstructOutsideManifest),
+
+        // A `var` in a loop body hoists straight past a `let` in the loop head, so the two are one
+        // scope's worth of colliding names. The first draft collected the head's var names only,
+        // which made this legal here and an error in every other implementation.
+        new(
+            "refuse-a-var-in-a-loop-body-colliding-with-a-let-in-its-head",
+            "for (let i = 0; i < 1; i = i + 1) { var i; } 0",
+            SliceSourceDiagnosticCode.VarAndLexicalCollision),
 
         // ---- the parse options' own bound -------------------------------------------------------
         new(

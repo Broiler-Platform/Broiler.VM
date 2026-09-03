@@ -439,7 +439,7 @@ public sealed class SliceStaticSemantics
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=EA649F
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=BC22AF
     // Broiler-Falsified-If: a `break` or `continue` inside a loop body is reported as having no enclosing loop, or one outside every loop is not
     // Broiler-Human:        PENDING
     private void VisitStatement(SliceStatement statement)
@@ -510,9 +510,14 @@ public sealed class SliceStaticSemantics
                 {
                     // The head is its own scope: `for (let i = 0; …)` binds `i` for the loop and
                     // not for the statement after it.
+                    //
+                    // Its var-name set covers the BODY as well as the head, because a `var` in the
+                    // body hoists straight past a `let` in the head and the two are then one
+                    // scope's worth of colliding names. Collecting only the head would have made
+                    // `for (let i = 0; ;) { var i; }` legal here and an error everywhere else.
                     var head = loop.Initialiser is null
-                        ? EnterScope(hoisting: false, [])
-                        : EnterScope(hoisting: false, [loop.Initialiser]);
+                        ? EnterScope(hoisting: false, [loop.Body])
+                        : EnterScope(hoisting: false, [loop.Initialiser, loop.Body]);
 
                     if (loop.Initialiser is not null)
                     {

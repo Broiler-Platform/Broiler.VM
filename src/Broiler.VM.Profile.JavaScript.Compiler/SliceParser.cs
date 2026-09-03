@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   27
-// Annotated:        27/27
+// Relevant units:   28
+// Annotated:        28/28
 // Exempt:           7
-// Human-reviewed:   0/27
+// Human-reviewed:   0/28
 // IP risk:          None
 // Security risk:    High
-// Criteria:         7/7
+// Criteria:         8/8
 // Resource impact:  2/10 max
-// Unverified:       27
+// Unverified:       28
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -85,7 +85,7 @@ public sealed class SliceParser
     /// every caller write the same null check and would lose the partial tree a later stage could
     /// have reported more from.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=CA003F
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=2D78F6
     // Broiler-Falsified-If: a statement that is not an expression statement over a string literal is admitted into the directive prologue
     // Broiler-Human:        PENDING
     public SliceProgram ParseProgram()
@@ -96,7 +96,13 @@ public sealed class SliceParser
 
         // The directive prologue: expression statements over string literals, decided here so the
         // validator never has to look at source text to tell one from a string expression.
-        while (Current.Kind == SliceTokenKind.StringLiteral && diagnostics.Count == 0)
+        //
+        // A string literal is a directive only when the whole statement is that literal. `"use
+        // strict" + 1` is an ExpressionStatement and enables nothing, and a parser that took its
+        // first token as a directive would turn on strict mode for a program that never asked -
+        // which is a wrong answer rather than a wrong diagnostic.
+        while (Current.Kind == SliceTokenKind.StringLiteral && StatementEndsAfterCurrent() &&
+            diagnostics.Count == 0)
         {
             var literalSpan = Here();
             var token = Current;
@@ -664,6 +670,28 @@ public sealed class SliceParser
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=9F7F73
     // Broiler-Human:        PENDING
     private SliceToken Current => tokens[System.Math.Min(at, tokens.Length - 1)];
+
+    /// <summary>
+    /// Whether the statement would end immediately after the current token.
+    /// </summary>
+    /// <remarks>
+    /// <b>The one place this parser looks ahead, and the directive prologue is why.</b> A string
+    /// literal is a directive only when the whole statement is that literal, so telling
+    /// <c>"use strict";</c> from <c>"use strict" + 1</c> needs the token after the literal and
+    /// cannot be done from the literal alone. It reads the same three insertion sites
+    /// <see cref="ConsumeStatementTerminator"/> does, from the next token's own recorded flag,
+    /// which is why neither of them looks at the source text.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=BF6120
+    // Broiler-Falsified-If: a string literal that is not a whole statement is admitted into the directive prologue
+    // Broiler-Human:        PENDING
+    private bool StatementEndsAfterCurrent()
+    {
+        var next = tokens[System.Math.Min(at + 1, tokens.Length - 1)];
+
+        return next.Kind is SliceTokenKind.Semicolon or SliceTokenKind.CloseBrace or
+            SliceTokenKind.EndOfSource || next.PrecededByLineTerminator;
+    }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=263E48
     // Broiler-Human:        PENDING

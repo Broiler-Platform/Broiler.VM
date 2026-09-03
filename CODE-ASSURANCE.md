@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 69 |
 | Files carrying an annotation | 69 |
-| Code units | 2245 |
-| Relevant | 1046 |
+| Code units | 2246 |
+| Relevant | 1047 |
 | Exempt by predicate | 1199 |
-| Annotated | 1046 of 1046 (100%) |
-| Human reviewed | 0 of 1046 (0%) |
-| Unverified | 1046 |
+| Annotated | 1047 of 1047 (100%) |
+| Human reviewed | 0 of 1047 (0%) |
+| Unverified | 1047 |
 
 ## Review states
 
@@ -28,7 +28,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 1046 |
+| HUMAN_PENDING | 1047 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -38,7 +38,7 @@ figures below are the measurement of how far from that claim the component is.
 
 | Value | Units |
 |---|---:|
-| None | 321 |
+| None | 322 |
 | Low | 835 |
 | Medium | 0 |
 | High | 0 |
@@ -52,7 +52,7 @@ figures below are the measurement of how far from that claim the component is.
 | None | 5 |
 | Low | 552 |
 | Medium | 474 |
-| High | 125 |
+| High | 126 |
 | Critical | 0 |
 | *not annotated* | 0 |
 
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 0.8 / 10 |
-| Units scored | 1046 |
+| Units scored | 1047 |
 
 ## High-security review areas
 
@@ -114,6 +114,7 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceParser.Precedence(SliceTokenKind)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceParser.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceParser.ConsumeStatementTerminator()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceParser.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceParser.Enter()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceParser.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.SliceParser.StatementEndsAfterCurrent()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceParser.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceCompilation` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceSourceCompiler` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceSourceCompiler.Compile(string, SliceParseOptions)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs` - Security=High, human line PENDING
@@ -196,8 +197,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 166 |
-| Units required to carry one | 125 |
+| Units carrying a criterion | 167 |
+| Units required to carry one | 126 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -251,7 +252,7 @@ No unit in this component states a per-unit exemption.
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-2245 of them, exempt and relevant alike - with the fingerprint of its declaration.
+2246 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
