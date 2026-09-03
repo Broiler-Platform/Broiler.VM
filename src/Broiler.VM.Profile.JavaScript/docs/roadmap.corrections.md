@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap — corrections and rejections
 
-**Last updated:** 2026-09-01
+**Last updated:** 2026-09-03
 
 **This file is part of the [Broiler.VM.Profile.JavaScript roadmap](roadmap.md)**, which
 [names every file](roadmap.md#how-this-roadmap-is-split). It carries no numbered section of the
@@ -126,6 +126,12 @@ rather than a decision record.
 | [JSC-40](#jsc-40) | roadmap §5, §14; gates §21; delivery §19, §25 | The conformance harness is a never-advertised composition root, not a test project, and the ingestion scan is over advertised closures rather than published ones | rule A11; the composition register's advertised set |
 | [JSC-41](#jsc-41) | roadmap §7; ledger §2 | The artifact-bytes exhaustion is the core's answer and no host ceiling reaches the verifier's own arm for it; six of the seven dimensions are this profile's to answer | the core's verification path; the retained corpus manifest |
 | [JSC-42](#jsc-42) | roadmap §7; gates §21; delivery §19; ledger §2 | A session's guidance is keyed on the answer this profile publishes and not on an edge, and what a session judges about itself is its loop rather than its growth | [JSD-0013](decisions/0013-the-fuzz-sessions-coverage-signal.md) |
+| [JSC-43](#jsc-43) | roadmap §9; delivery §19; ledger §2 | The slice front end is written in this checkout rather than ingested from the seed, so JS-3b's tokenizer, parser, validation stage and lowering need neither of JS-2's blockers | [JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md) |
+| [JSC-44](#jsc-44) | roadmap §9; the published registry; ledger §2 | The registry's embedder-seam half is twenty-two rows at revision 2, its reason column is `-`, its stages are their own vocabulary and its reachability is a retained source corpus | [JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md) |
+| [JSC-45](#jsc-45) | delivery §19; ledger §2 | JS-4 deletes JS-1's hand-written PROGRAMS; the instruction buffer beside them is the source lowering's back end and is not deleted | [JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md) |
+| [JSC-46](#jsc-46) | roadmap §9; delivery §19 | A source is tokenized at most once during COMPILATION and the verifier tokenizes nothing; the clause as written was satisfiable only by a fused design | [JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md) |
+| [JSC-47](#jsc-47) | roadmap §7; delivery §19; ledger §2 | One of JS-9's two unfuzzed surfaces exists now, so it is a gap rather than an absence, and the two admissions may not share a sentence | [JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md); the checkout's own front end |
+| [JSC-48](#jsc-48) | ledger §2; delivery §19 | The soak's plateau reading was coupled to what the process allocated BEFORE the soak, so it measured heap the collector had not returned rather than a per-cycle leak | the check's own curve, read on four platforms |
 
 ### JSC-01
 
@@ -1496,3 +1502,266 @@ bundle.
 
 **Authority and date.** [JSD-0013](decisions/0013-the-fuzz-sessions-coverage-signal.md); rule A11's
 registered statement, read against where the sessions live; 2026-09-01.
+
+---
+
+### JSC-43
+
+**Where:** roadmap [section 9](roadmap.md#9-the-semantic-front-end-and-lowering), the static-semantics
+and *what the front end is not* subsections; delivery
+[section 19](roadmap.delivery.md#19-milestones), JS-3b's dependencies and its seed row; the
+[ledger](roadmap.status.md#2-current-milestone-status)'s JS-3b row.
+
+**What the plan said.** JS-3b's front end is **ingested**. Its seed row read *copied and re-homed —
+the post-parse validation stage and the free-name analysis*, its dependency row named *JS-2 for the
+copied analysis*, and section 9 was written throughout as instructions for adapting the seed's four
+early-error places into one: consolidate them, carry the facts the re-scans recover, delete the
+re-scans. JS-2 is blocked on the core contract's acceptance, so JS-3b was blocked behind it and the
+profile had no way to compile a line of JavaScript.
+
+**What was actually true.** The dependency is a dependency of the *general* front end and not of a
+front end at all. `broiler.javascript.slice` admits numbers, booleans, `undefined`, local bindings,
+the operators the format has opcodes for, and structured control flow — a surface whose tokenizer,
+parser and validation stage are about two thousand lines written from the grammar, needing nothing
+from the seed and blocked by nothing. Waiting for the ingest bought this profile no code and cost
+it every decision section 9 leaves open, because none of the five could be evaluated against a
+front end that did not exist.
+
+**What replaced it.** The slice front end is **written here**. It is not a subset of an ingest and
+not a placeholder for one: the tokenizer, the syntax tree, the parser, the one validation stage and
+the source lowering are this component's own code, and
+[JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md) records the five
+answers section 9 asks for, each taken against something that runs. Section 9's instructions still
+describe the ingest, which is still JS-2's and still blocked; what changed is that they are no
+longer the only route to a front end. **Twenty-five source programs compile, verify and run to
+recorded values in the retained corpus, and twenty-nine are refused by name.**
+
+**This is the JSC-15 argument a second time, and stated as such.** That correction split JS-3 by
+dependency rather than by size, because leaving the conformance harness fused put this component's
+only external correctness signal behind two blockers it needed neither of. The same reading applies
+here: the ingest and the slice front end were fused by the plan's sentence rather than by anything
+technical, and the slice half needs neither blocker.
+
+**What it does not change.** JS-2 is still blocked and its blocker is unmoved; the general front
+end — functions, objects, strings, `try`, modules, regular expressions — is still the ingest's and
+still waits; the seed row for the parts that are still copied is unchanged; and **JS-3b is not
+closed by this.** Its exit gate has clauses this front end does not reach, the harness half of
+JS-3a is still open, and the ledger is the authority for both.
+
+**Authority and date.** [JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md);
+the reading of [JSC-15](#jsc-15) applied to the same shape; 2026-09-03.
+
+---
+
+### JSC-44
+
+**Where:** roadmap [section 9](roadmap.md#9-the-semantic-front-end-and-lowering), the
+verification-boundary subsection's first bullet; the published registry's own header;
+[JSD-0009](decisions/0009-the-diagnostic-registry-and-the-position-encoding.md); the
+[ledger](roadmap.status.md#2-current-milestone-status)'s JS-3a row.
+
+**What the plan said.** *Every row is `core-result` today — no `embedder-seam` code exists, because
+the front end that would mint one is JS-3b's.* [JSC-28](#jsc-28) added that sentence so a reader
+would not read the empty half as an oversight. The registry's own header carried the same, and
+JSD-0009 recorded a `half` column with one of its two values declared and unused.
+
+**What was actually true then and is not true now.** It was exactly right at JS-3a. JS-3b wrote the
+front end, and a front end that refuses source refuses it with something.
+
+**What replaced it.** The registry is at **revision 2** and the seam half is twenty-two rows —
+five tokenizing, four parsing, ten static-semantic, three at the lowering's own ceilings. Four
+things about the second half are decided here rather than inherited from the first:
+
+- **Its reason column is `-` on every row, and that is not a gap.** A rejection of source reaches
+  no core result, so there is no envelope for a `VmReason` to travel in; a row naming one would
+  claim a transport the code does not use. Rule N6 holds it in that direction now.
+- **Its stages are a separate closed vocabulary** — `tokenizer`, `parser`, `semantics`,
+  `lowering` — rather than four more members of the verification stages. A row whose half and
+  whose stage disagree is a rule violation rather than a plausible-looking row.
+- **Its reachability is `source`**, a third kind beside `corpus` and `defensive`, and it is bound
+  to a **retained source corpus** at `src/tests/corpus/js-1/source/source.manifest` — one row per
+  program, read off disk by rule N7 and by nothing that produced it. That file is to this half what
+  the artifact corpus is to the other one.
+- **The half has no defensive row**, and refusing to give it one is the decision. All three of its
+  format-ceiling codes are genuinely reachable — a program really can declare more locals than the
+  frame admits — so recording them as unreachable would have been recording something untrue to
+  avoid generating three sources. The generators are three lines each and the manifest says which
+  entries they produce.
+
+**And the two vocabularies are in two assemblies that cannot see each other**, which is why they
+are published in one file: rule N1 keeps the profile assembly and the lowering assembly apart, so
+neither compiler could notice a number used in both, and the registry plus rule N5 is the only
+reader of the pair.
+
+**One code was retired without ever being emitted.** 2211, `DuplicateBoundName`, was declared while
+the vocabulary was being written and nothing ever reached it — a duplicate bound name is two rows
+that already exist. It is retired rather than reused, because a code is never given a second
+meaning.
+
+**What it does not change.** The core-result half is untouched, row for row; no retained corpus
+entry moved; the seam half advances no milestone, and JS-3a's oracle half is open exactly as it
+was.
+
+**Authority and date.** [JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md),
+decision 3; the registry at revision 2 and rules N5, N6 and N7 as registered; 2026-09-03.
+
+---
+
+### JSC-45
+
+**Where:** delivery [section 19](roadmap.delivery.md#19-milestones), JS-4's next action and its
+exit gate; the [ledger](roadmap.status.md#2-current-milestone-status)'s JS-4 row; the
+`SliceProgramBuilder` remark that says it is scheduled for deletion.
+
+**What the plan said.** *Delete JS-1's hand-written encoder and lowering, and assert the deletion* —
+one clause over one thing, with a named owner, on the ground that a second lowering which outlived
+its milestone is a second lowering.
+
+**What was actually true.** JS-1 built two things under one name. `SliceLowering` is a list of
+**hand-written programs**: a human choosing instructions to make a point about the language, which
+is exactly what a source front end replaces. `SliceProgramBuilder` is an **instruction buffer** —
+constant interning, a local frame, label definition and patching, and the section framing — which
+is what any lowering needs and which the source front end uses rather than duplicating.
+
+**What replaced it.** The clause is two clauses. **The programs are still scheduled for deletion**
+and the owner is unchanged: every one of them is expressible as source, and once JS-4's object
+model makes the remaining ones expressible the hand-written list is a second corpus with no reason
+to exist. **The builder is not deleted**, because it is now the source lowering's back end; the
+deletion assertion is over `SliceLowering` and not over the file it sits beside.
+
+**Why this is a correction and not a quiet re-reading.** A deletion clause that names the wrong
+subject fails in the worse direction: someone discharging it would either delete a builder the
+front end needs, or read the clause as discharged because the file it names is still there. The
+`SliceProgramBuilder` remark carried *scheduled for deletion* in its own words and now carries what
+it actually is.
+
+**What it does not change.** JS-4 is still `Not started` and still waits on JS-2; the hand-written
+programs are still in the corpus and still write half of it; and the deletion is still a gate
+clause with an owner rather than something this milestone did.
+
+**Authority and date.** [JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md),
+the closing section; the reference set the front end actually has; 2026-09-03.
+
+---
+
+### JSC-46
+
+**Where:** delivery [section 19](roadmap.delivery.md#19-milestones), JS-3b's exit gate; roadmap
+[section 9](roadmap.md#9-the-semantic-front-end-and-lowering), the static-semantics subsection's
+closing sentence.
+
+**What the plan said.** *Each artifact is tokenized at most once **during verification**, asserted
+by a case.*
+
+**What was actually true.** Nothing is tokenized during verification, and after
+[JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md) nothing can be.
+The clause presumes the design the boundary decision rejects — one in which the verifier holds the
+front end and therefore could tokenize twice. Verification takes bytes; a tokenizer takes
+characters; the two run in different assemblies over different inputs, and the execution-only
+composition publishes and runs with a verifier and no tokenizer at all.
+
+**What replaced it.** *Each source is tokenized at most once **during compilation**, and the
+verifier tokenizes nothing.* Both halves are asserted, and the second is the stronger one: the
+first is a property of the front end's call graph — the tokenizer has exactly one caller — and the
+second is a property of a published closure that does not contain a tokenizer to call.
+
+**Why the wording mattered.** As written the clause was satisfiable only by a fused design and
+vacuous under an unfused one, so it would have been reported as met by a component that never
+tokenized anything. That is the failure mode this file exists for: a gate whose subject stopped
+existing reads as passing.
+
+**What it does not change.** The clause's purpose is unchanged — the seed re-tokenizes raw source
+in two places and section 9 wants those scans gone — and both are gone, with the facts they
+recovered carried on the token instead. JSD-0014's decision 2 records which fact replaced which
+scan.
+
+**Authority and date.** [JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md),
+decisions 2 and 3; 2026-09-03.
+
+---
+
+### JSC-47
+
+**Where:** roadmap [section 7](roadmap.md#7-the-bytecode-format-and-the-verifier), the
+untrusted-input surfaces; delivery [section 19](roadmap.delivery.md#19-milestones), JS-9's exit
+gate and the dependency figure; the [ledger](roadmap.status.md#2-current-milestone-status)'s JS-9
+row.
+
+**What the plan said.** *Two of the four surfaces are not fuzzed because they do not exist* —
+the source tokenizer and parser, and the regular-expression matcher — with the delivery file's
+dependency figure carrying the same in a single clause, *do not exist until JS-3b and JS-6*.
+
+**What was actually true, from 2026-09-03.** JS-3b wrote the front end. The source tokenizer and
+parser exist, they are the largest untrusted-input surface this component has ever had — they
+take a caller's text rather than a caller's bytes — and **no fuzz session reaches them**. The
+sentence stayed literally readable and stopped being honest, because it explains an absence for
+something that is present.
+
+**What replaced it.** The two admissions are separated. The regular-expression matcher is
+**absent** and waits on JS-6. The source tokenizer and parser are **present and unfuzzed**, which
+is a gap this milestone opened and JS-9 owns. Both are still surfaces no session may be read as
+covering, and that half of the original sentence is unchanged.
+
+**Why the distinction is worth a numbered correction.** *Nobody has written the target* and *there
+is nothing to target* are answered by different work and carry different risk. A reader deciding
+what JS-9 still needs gets the wrong answer from the merged sentence: an absence resolves itself
+when the milestone that owns it lands, and a gap resolves only when somebody writes a mutator for
+a character stream. This component's whole method is that a claim can be re-derived by a reader,
+and this one could not be.
+
+**What it does not change.** No session moved, no counterexample appeared, and the guidance clause
+is open exactly as it was. The four retained sessions were seeded from a 66-entry manifest against
+a checkout that now holds 91, so under update rule 5 they were already evidence over a different
+population and this correction adds a second reason to re-run them rather than the first.
+
+**Authority and date.** The checkout's own front end, read against the sentence;
+[JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md); 2026-09-03.
+
+---
+
+### JSC-48
+
+**Where:** the [ledger](roadmap.status.md#2-current-milestone-status)'s JS-9 row, the soak's
+plateau clause; delivery [section 19](roadmap.delivery.md#19-milestones), JS-9's exit gate.
+
+**What the plan said.** The soak's plateau check compares the heap at the midpoint of the run
+against the heap at the end, against a band, and **both readings are after warm-up, which is what
+makes them comparable in every publish mode**. That sentence is the check's premise, it is printed
+in the check's own output, and [JSC-41](#jsc-41)'s neighbouring correction had already moved the
+baseline to the midpoint once to make it true.
+
+**What was actually true.** The check never verified its premise, and the premise was not the only
+thing that decided the reading. With two forced collections in the whole run — one at the
+midpoint and one at the end — the final number included heap the collector had not returned,
+and **how much that was scaled with how much the process had allocated before the soak started**.
+The soak is preceded in the same invocation by the corpus replay, so the check was coupled to the
+size of the retained corpus, which is a fact about a different milestone's evidence and about
+nothing this check claims to be measuring.
+
+**How it was found, and it was not by reading.** JS-3b grew the retained corpus from 66 entries to
+91. The plateau check then failed on macOS under Native AOT, on **both** architectures, and it
+failed **byte-identically across three independent runs** — 191,496 bytes at the midpoint to
+352,120 at the end, a factor of 1.84 against a band of 1.20 — while `win-x64`, `linux-x64` and
+the Android head stayed flat. Determinism to the byte is what ruled out noise and made it worth
+diagnosing rather than re-running.
+
+**What replaced it.** The check records **sixteen samples of the heap across the run** and prints
+them. The sampling was added to tell warm-up from a leak — two endpoints cannot, which is why
+the previous occurrence needed a diagnosis rather than a glance — and it turned out to remove
+the failure, which is the finding rather than a side effect. Keeping the heap trimmed through the
+run leaves the reading measuring live bytes, which is what a per-cycle leak moves and what the
+process's history does not.
+
+**The sample count is therefore load-bearing, and the code says so where someone would delete it.**
+More sampling makes this check **stricter** rather than kinder: a real leak grows live bytes, which
+every reading sees however often they are taken, while the signal that disappeared was never about
+leaking. **No band was widened and no threshold moved** — the band is the 1.20 [JSC-41](#jsc-41)
+tightened it to, and it is unchanged.
+
+**What it does not change.** The soak still demonstrates only that recycling a runtime for the
+cycle count it uses does not grow the heap without bound; it still measures nothing, its band is
+still loose, and JS-5 still owns measurement. **It closes no clause**: the plateau clause needs a
+retained bundle and none has been collected since, which the JS-9 row already said and still says.
+
+**Authority and date.** The check's own curve, read on four platforms across three CI runs;
+2026-09-03.

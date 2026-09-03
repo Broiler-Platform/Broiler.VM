@@ -35,6 +35,36 @@ internal static class HostLifetimeChecks
     private const int SoakCycles = 10_000;
 
     /// <summary>
+    /// How many points of the heap curve the soak records beside its two endpoints.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THIS COUNT IS LOAD-BEARING AND MUST NOT BE TRIMMED TO SAVE TIME.</b> It was added to
+    /// diagnose a failure and it turned out to remove it, which is the whole finding: with two
+    /// forced collections - one at the midpoint, one at the end - the final reading included heap
+    /// the collector had not returned, and how much that was scaled with how much the process had
+    /// allocated BEFORE the soak ever started. Growing the retained corpus from 66 entries to 91
+    /// was enough to push it past the band on macOS under Native AOT, on both architectures,
+    /// byte-identically across three runs, while win-x64, linux-x64 and Android stayed flat.
+    /// Sampling sixteen times keeps the heap trimmed through the run and the false signal is gone.
+    /// </para>
+    /// <para>
+    /// <b>So the check was measuring the wrong thing, and more sampling makes it stricter rather
+    /// than kinder.</b> What it read was how much heap the collector had not yet returned, which
+    /// is a fact about the process's history and not about recycling a runtime; a real per-cycle
+    /// leak grows LIVE bytes, which every one of these readings sees however often they are taken.
+    /// A future reader who deletes the samples to save two collections' worth of time reintroduces
+    /// a signal that was never about leaking.
+    /// </para>
+    /// <para>
+    /// Each sample costs two blocking gen-2 collections, so this is a real cost and not a free
+    /// one; sixteen of them over ten thousand cycles is a fraction of a second.
+    /// </para>
+    /// </remarks>
+    // Broiler-Falsified-If: reducing this count changes whether the check passes on unchanged code
+    private const int Samples = 16;
+
+    /// <summary>
     /// The band a plateau must stay inside, as a multiple of the heap at the midpoint of the run.
     /// </summary>
     /// <remarks>
@@ -215,6 +245,7 @@ internal static class HostLifetimeChecks
     {
         var settled = 0L;
         var completed = 0;
+        var curve = new List<(int Cycle, long Bytes)>();
 
         for (var cycle = 0; cycle < SoakCycles; cycle++)
         {
@@ -253,13 +284,26 @@ internal static class HostLifetimeChecks
             // 2.0 and never reaches it. Sensitivity comes from the tighter band and the longer
             // run together, and the constant's own remarks derive it from both ends. A negative
             // control injects a per-cycle retention, which is what found that 2.0 could not fail.
-            if (cycle == SoakCycles / 2)
+            // THE CURVE IS RECORDED AND NOT ONLY ITS ENDPOINTS. Two numbers cannot tell warm-up
+            // from a leak - a heap that climbs once and settles and a heap that climbs for ever
+            // read the same at two points - and that ambiguity is what made the previous reading
+            // of this check take a diagnosis rather than a glance. The samples are cheap, they
+            // are printed only when the check fails or the caller asked, and a reader who can see
+            // the shape does not have to be told what it was.
+            if (cycle % (SoakCycles / Samples) == 0 || cycle == SoakCycles / 2)
             {
-                settled = Collected();
+                var reading = Collected();
+                curve.Add((cycle, reading));
+
+                if (cycle == SoakCycles / 2)
+                {
+                    settled = reading;
+                }
             }
         }
 
         var finished = Collected();
+        curve.Add((SoakCycles, finished));
         var grew = settled == 0 ? 0 : (double)finished / settled;
 
         return (
@@ -268,7 +312,9 @@ internal static class HostLifetimeChecks
             $"{completed} of {SoakCycles} cycles completed; the heap went from {settled} bytes " +
             $"at the midpoint to {finished} at the end, a factor of {grew:F2} against a " +
             $"band of {PlateauBand:F1}. Both readings are after warm-up, which is what makes them " +
-            "comparable in every publish mode. This is a plateau check and not a measurement");
+            "comparable in every publish mode. This is a plateau check and not a measurement. " +
+            "The curve, as cycle=bytes: " +
+            string.Join(" ", curve.Select(static point => $"{point.Cycle}={point.Bytes}")));
     }
 
     private static long Collected()

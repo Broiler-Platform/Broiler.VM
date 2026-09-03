@@ -32,9 +32,19 @@ internal static class DiagnosticRegistry
     internal const string RegistryPath =
         "src/Broiler.VM.Profile.JavaScript/docs/diagnostics/registry.txt";
 
-    /// <summary>The file declaring the code vocabulary.</summary>
+    /// <summary>The file declaring the core-result code vocabulary.</summary>
     internal const string VocabularyPath =
         "src/Broiler.VM.Profile.JavaScript/JavaScriptDiagnostics.cs";
+
+    /// <summary>The file declaring the embedder-seam code vocabulary.</summary>
+    /// <remarks>
+    /// <b>A different assembly, and that is the reason the registry exists in one file.</b> The
+    /// profile assembly and the lowering assembly do not reference each other - rule N1 holds that
+    /// - so neither compiler can see the other's numbers, and a code used twice would be a defect
+    /// nothing in the build could notice. The registry is the third artefact that sees both.
+    /// </remarks>
+    internal const string SeamVocabularyPath =
+        "src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceDiagnostics.cs";
 
     /// <summary>The file the position encoding is decided in, and the only one that builds one.</summary>
     internal const string PositionPath =
@@ -47,8 +57,14 @@ internal static class DiagnosticRegistry
     /// <summary>The retained corpus manifest whose rows record a diagnostic code.</summary>
     internal const string CorpusPath = "src/tests/corpus/js-1/corpus.manifest";
 
-    /// <summary>The type whose members are the code vocabulary.</summary>
+    /// <summary>The type whose members are the core-result code vocabulary.</summary>
     internal const string CodeType = "JavaScriptDiagnosticCode";
+
+    /// <summary>The type whose members are the embedder-seam code vocabulary.</summary>
+    internal const string SeamCodeType = "SliceSourceDiagnosticCode";
+
+    /// <summary>The retained source-corpus manifest, which the seam half is bound to.</summary>
+    internal const string SourceCorpusPath = "src/tests/corpus/js-1/source/source.manifest";
 
     /// <summary>The type the mirrored constants live in.</summary>
     internal const string MirrorType = "JavaScriptDiagnosticCodes";
@@ -56,18 +72,27 @@ internal static class DiagnosticRegistry
     /// <summary>The core position record this profile publishes an encoding for.</summary>
     internal const string PositionType = "VmSourcePosition";
 
-    /// <summary>The stage vocabulary a registry row may name. Closed.</summary>
+    /// <summary>The stage vocabulary a core-result row may name. Closed.</summary>
     internal static readonly string[] Stages =
     [
         "header", "manifest", "framing", "limits", "constants", "code", "entries", "positions",
         "reserved", "reader",
     ];
 
+    /// <summary>The stage vocabulary an embedder-seam row may name. Closed.</summary>
+    /// <remarks>
+    /// A separate list rather than four more members of the one above, because the two halves
+    /// refuse different things and a row that named a verification stage while rejecting source -
+    /// or the other way round - would be a row whose half and whose stage disagree. Keeping the
+    /// lists apart is what makes that a rule violation rather than a plausible-looking row.
+    /// </remarks>
+    internal static readonly string[] SeamStages = ["tokenizer", "parser", "semantics", "lowering"];
+
     /// <summary>The two halves of the registry, per roadmap section 9's boundary question.</summary>
     internal static readonly string[] Halves = ["core-result", "embedder-seam"];
 
-    /// <summary>The two reachability kinds a row may claim.</summary>
-    internal static readonly string[] Reachabilities = ["corpus", "defensive"];
+    /// <summary>The three reachability kinds a row may claim.</summary>
+    internal static readonly string[] Reachabilities = ["corpus", "source", "defensive"];
 
     /// <summary>The published registry, parsed.</summary>
     internal static IReadOnlyList<DiagnosticRegistryRow> Rows { get; } = Read(Text);
@@ -144,11 +169,21 @@ internal static class DiagnosticRegistry
     }
 
     /// <summary>The declared vocabulary: every member of the code enum, with its number.</summary>
-    internal static IReadOnlyList<(string Name, int Value)> Vocabulary(SyntaxTree tree) => tree
+    internal static IReadOnlyList<(string Name, int Value)> Vocabulary(SyntaxTree tree) =>
+        Vocabulary(tree, CodeType);
+
+    /// <summary>The members of <paramref name="type"/>, an enum declared in <paramref name="tree"/>.</summary>
+    /// <remarks>
+    /// The type is a parameter since JS-3b, because there are two vocabularies now and they are
+    /// declared in two assemblies. Reading them with one function is what makes "the two halves
+    /// are the same kind of thing" a fact about the code rather than a claim in the registry's
+    /// header.
+    /// </remarks>
+    internal static IReadOnlyList<(string Name, int Value)> Vocabulary(SyntaxTree tree, string type) => tree
         .GetRoot()
         .DescendantNodes()
         .OfType<EnumDeclarationSyntax>()
-        .Where(static declaration => declaration.Identifier.ValueText == CodeType)
+        .Where(declaration => declaration.Identifier.ValueText == type)
         .SelectMany(static declaration => declaration.Members)
         .Select(static member => (
             Name: member.Identifier.ValueText,
@@ -297,6 +332,30 @@ internal static class DiagnosticRegistry
     /// <summary>The retained corpus manifest's text.</summary>
     internal static string CorpusText =>
         File.ReadAllText(Path.Combine(ComponentGraph.Root, CorpusPath));
+
+    /// <summary>
+    /// The refused entries of the retained source corpus, as code name to entry names.
+    /// </summary>
+    /// <remarks>
+    /// <b>Keyed by the code's NAME and not by its number</b>, which is the one place these two
+    /// manifests differ in shape. The artifact corpus records a number, because a core result
+    /// carries a number in a fixed field and the replay reads it out of that field; a source
+    /// refusal is reported to a caller who holds the enumeration, so the manifest records the name
+    /// the caller would see. Recording the number instead would have made the manifest agree with
+    /// the registry by carrying the same integer twice.
+    /// </remarks>
+    internal static ILookup<string, string> SourceCases(string text) => text
+        .Split('\n')
+        .Select(static line => line.TrimEnd('\r'))
+        .Where(static line => line.Length > 0 && line[0] != '#')
+        .Select(static line => line.Split('|'))
+        .Where(static parts => parts.Length >= 4 &&
+            string.Equals(parts[0], "refused", StringComparison.Ordinal))
+        .ToLookup(static parts => parts[3], static parts => parts[1], StringComparer.Ordinal);
+
+    /// <summary>The retained source-corpus manifest's text.</summary>
+    internal static string SourceCorpusText =>
+        File.ReadAllText(Path.Combine(ComponentGraph.Root, SourceCorpusPath));
 
     /// <summary>One place the profile answers a resource exhaustion, and the pair it names.</summary>
     internal sealed record ExhaustionAnswer(string File, int Line, string Dimension, string Scope);

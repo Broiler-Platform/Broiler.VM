@@ -645,21 +645,34 @@ internal static class ArchitectureRules
     // these rules pretends there is.
 
     /// <summary>
-    /// N5: the registry and the code vocabulary are the same set. Every member of
-    /// <c>JavaScriptDiagnosticCode</c> has exactly one registry row carrying its name and its
-    /// number; every registry row names a member; the registry states its own revision; and every
+    /// N5: the registry and the code vocabularies are the same set, half by half. Every member of
+    /// <c>JavaScriptDiagnosticCode</c> has exactly one <c>core-result</c> row carrying its name and
+    /// its number, every member of <c>SliceSourceDiagnosticCode</c> has exactly one
+    /// <c>embedder-seam</c> row, every row names a member of the vocabulary its half declares, no
+    /// number appears twice across both halves, the registry states its own revision, and every
     /// row's <c>since</c> is a revision that exists.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The revision half is not bookkeeping. A retained corpus entry records a diagnostic code and
     /// nothing else about it, so a code that changed meaning between two releases would silently
     /// invalidate every entry that recorded it - and the only thing that lets a reader date an
     /// entry is the registry stating which revision it is and each row stating the revision its
     /// meaning dates from.
+    /// </para>
+    /// <para>
+    /// <b>Two vocabularies rather than one, since revision 2.</b> They are declared in two
+    /// assemblies that do not reference each other, so neither compiler can see the other's
+    /// numbers and a number used in both would be a defect nothing in the build could notice. This
+    /// rule is the only reader of both, which is why the duplicate check sweeps the whole registry
+    /// while the membership check is per half: a row in the wrong half names a member of the wrong
+    /// vocabulary, and that has to fail rather than pass by finding the name somewhere.
+    /// </para>
     /// </remarks>
     internal static IEnumerable<string> N5(
         IReadOnlyList<DiagnosticRegistryRow> registry,
         IReadOnlyList<(string Name, int Value)> vocabulary,
+        IReadOnlyList<(string Name, int Value)> seamVocabulary,
         int revision)
     {
         if (revision < 1)
@@ -676,11 +689,15 @@ internal static class ArchitectureRules
 
         foreach (var row in registry)
         {
-            if (!vocabulary.Any(member => member.Name == row.Name && member.Value == row.Code))
+            var seam = string.Equals(row.Half, "embedder-seam", StringComparison.Ordinal);
+            var declared = seam ? seamVocabulary : vocabulary;
+            var stages = seam ? DiagnosticRegistry.SeamStages : DiagnosticRegistry.Stages;
+
+            if (!declared.Any(member => member.Name == row.Name && member.Value == row.Code))
             {
                 yield return
                     $"registry row {row.Code} names {row.Name}, which is not a member of that " +
-                    "number in the code vocabulary";
+                    $"number in the {row.Half} code vocabulary";
             }
 
             if (row.Since < 1 || row.Since > revision)
@@ -694,20 +711,33 @@ internal static class ArchitectureRules
             {
                 yield return $"registry row {row.Code} claims the half {row.Half}, which is not one";
             }
-
-            if (!DiagnosticRegistry.Stages.Contains(row.Stage, StringComparer.Ordinal))
+            else if (!stages.Contains(row.Stage, StringComparer.Ordinal))
             {
-                yield return $"registry row {row.Code} names the stage {row.Stage}, which is not one";
+                yield return
+                    $"registry row {row.Code} names the stage {row.Stage}, which is not one the " +
+                    $"{row.Half} half has";
             }
         }
 
         foreach (var member in vocabulary)
         {
-            if (!registry.Any(row => row.Code == member.Value && row.Name == member.Name))
+            if (!registry.Any(row => row.Code == member.Value && row.Name == member.Name &&
+                string.Equals(row.Half, "core-result", StringComparison.Ordinal)))
             {
                 yield return
                     $"the code vocabulary declares {member.Name} = {member.Value} and the " +
-                    "registry has no row for it";
+                    "registry has no core-result row for it";
+            }
+        }
+
+        foreach (var member in seamVocabulary)
+        {
+            if (!registry.Any(row => row.Code == member.Value && row.Name == member.Name &&
+                string.Equals(row.Half, "embedder-seam", StringComparison.Ordinal)))
+            {
+                yield return
+                    $"the seam code vocabulary declares {member.Name} = {member.Value} and the " +
+                    "registry has no embedder-seam row for it";
             }
         }
     }
@@ -739,6 +769,22 @@ internal static class ArchitectureRules
 
         foreach (var row in registry)
         {
+            // An embedder-seam row carries no reason and must not pretend to. Its rejection never
+            // reaches a core result, so there is no envelope for a reason to travel in; a row that
+            // named one would be claiming a transport the code does not use, and a reader tracing
+            // the code into a VmReason would find nothing there.
+            if (string.Equals(row.Half, "embedder-seam", StringComparison.Ordinal))
+            {
+                if (!string.Equals(row.Reason, "-", StringComparison.Ordinal))
+                {
+                    yield return
+                        $"registry row {row.Code} is an embedder-seam row naming the reason " +
+                        $"{row.Reason}, and a rejection of source reaches no core result";
+                }
+
+                continue;
+            }
+
             if (!reasons.Contains(row.Reason, StringComparer.Ordinal))
             {
                 yield return
@@ -815,7 +861,8 @@ internal static class ArchitectureRules
     /// </remarks>
     internal static IEnumerable<string> N7(
         IReadOnlyList<DiagnosticRegistryRow> registry,
-        ILookup<int, string> corpus)
+        ILookup<int, string> corpus,
+        ILookup<string, string> sourceCorpus)
     {
         foreach (var row in registry)
         {
@@ -824,6 +871,29 @@ internal static class ArchitectureRules
                 yield return
                     $"registry row {row.Code} claims the reachability {row.Reachability}, which " +
                     "is not one";
+
+                continue;
+            }
+
+            // A `source` row is reached by a refused SOURCE and never by an artifact, which is the
+            // whole of the boundary decision expressed as a binding: the case it names is an entry
+            // of the retained source corpus, and looking for it in the artifact corpus would be
+            // looking for bytes the refusal is defined by never having produced.
+            if (string.Equals(row.Reachability, "source", StringComparison.Ordinal))
+            {
+                if (!string.Equals(row.Half, "embedder-seam", StringComparison.Ordinal))
+                {
+                    yield return
+                        $"registry row {row.Code} is reached by a source and is not an " +
+                        "embedder-seam row, so it claims to travel in a core result it never reaches";
+                }
+
+                if (!sourceCorpus[row.Name].Contains(row.Case, StringComparer.Ordinal))
+                {
+                    yield return
+                        $"registry row {row.Code} names the case {row.Case}, and no retained " +
+                        $"source entry of that name is refused with {row.Name}";
+                }
 
                 continue;
             }
@@ -1041,6 +1111,56 @@ internal static class ArchitectureRules
         if (exhaustions.Length == 0)
         {
             yield return "the corpus pins no exhaustion at all, so this rule is quantifying over nothing";
+        }
+    }
+
+    /// <summary>
+    /// N12: the lowering assembly holds no state that outlives a call. No mutable static field, no
+    /// settable static property, no <c>[ThreadStatic]</c>, and no <c>AsyncLocal</c> or
+    /// <c>ThreadLocal</c> anywhere in it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>This is roadmap section 9's parse-options answer, held structurally.</b> The seed reads
+    /// its two most consequential grammar switches - the module-versus-script goal and the
+    /// top-level-await permission - out of ambient async-local state in a different assembly, and
+    /// section 9 rejects that for three separate reasons: it is a hidden dependency across a
+    /// boundary the fork removes, it makes two concurrent parses with different goals mutually
+    /// corrupting, and ambient per-thread state in a profile is the shape the core's lifecycle
+    /// rules exist to keep out. The replacement is an options value passed in.
+    /// </para>
+    /// <para>
+    /// <b>Section 9 states the gate as a runtime test, and that test is the weaker half.</b> Two
+    /// parses with different goals running concurrently, each goal-appropriate, failing when the
+    /// options become a shared static - the producer composition runs exactly that. But it can only
+    /// fail over a static those two parses reach, and a switch moved into a third construct nobody
+    /// wrote a concurrent case for would leave it green. This rule has no such gap: its subject is
+    /// every declaration in the assembly, so a hiding place has to not exist rather than not be
+    /// looked in.
+    /// </para>
+    /// <para>
+    /// <b>A readonly static is not its subject.</b> The tokenizer's punctuator table and the
+    /// validator's reserved-name list are static and neither can carry anything out of a parse,
+    /// because nothing can write them. Reporting those would make this a rule about a keyword.
+    /// </para>
+    /// </remarks>
+    internal static IEnumerable<string> N12(IReadOnlyList<AmbientStateSite> sites, int filesScanned)
+    {
+        foreach (var site in sites)
+        {
+            yield return
+                $"{site.File} declares {site.Member}, which is {site.Kind}; a parse's state may " +
+                "not outlive the call it belongs to";
+        }
+
+        // The vacuity clause, and it is not a formality here: this rule passes by finding nothing,
+        // so a run over an empty file list would be the strongest-looking clean result in the
+        // register and would mean that the assembly had been renamed.
+        if (filesScanned == 0)
+        {
+            yield return
+                "no file of the lowering assembly was scanned, so this rule is quantifying over " +
+                "nothing";
         }
     }
 

@@ -25,6 +25,19 @@ public sealed class DiagnosticRegistryRuleTests
         DiagnosticRegistry.Vocabulary(
             AssuranceSources.File(DiagnosticRegistry.VocabularyPath).Tree);
 
+    /// <summary>
+    /// The embedder-seam vocabulary, declared in the lowering assembly since JS-3b.
+    /// </summary>
+    /// <remarks>
+    /// A second fixture rather than a merged one, because the rule's membership check is per half
+    /// and a merged list would let a row in the wrong half pass by finding its name in the other
+    /// vocabulary.
+    /// </remarks>
+    private static readonly IReadOnlyList<(string Name, int Value)> SeamVocabulary =
+        DiagnosticRegistry.Vocabulary(
+            AssuranceSources.File(DiagnosticRegistry.SeamVocabularyPath).Tree,
+            DiagnosticRegistry.SeamCodeType);
+
     private static readonly IReadOnlyList<DiagnosticRegistry.EmissionSite> Sites =
         DiagnosticRegistry.EmissionSites(AssuranceSources.Files
             .Where(static file => file.Assembly == "Broiler.VM.Profile.JavaScript"));
@@ -32,22 +45,31 @@ public sealed class DiagnosticRegistryRuleTests
     [Fact]
     public void N5_The_Registry_And_The_Code_Vocabulary_Are_The_Same_Set()
     {
-        Assert.Empty(ArchitectureRules.N5(Registry, Vocabulary, DiagnosticRegistry.Revision));
+        Assert.Empty(ArchitectureRules.N5(Registry, Vocabulary, SeamVocabulary, DiagnosticRegistry.Revision));
 
-        // Non-vacuous: forty declared codes and forty published rows, so a clean result is a
-        // comparison over a real set rather than over an empty one.
+        // Non-vacuous: forty core-result codes and twenty-two embedder-seam ones, sixty-two rows,
+        // so a clean result is a comparison over two real sets rather than over an empty one. The
+        // seam half was declared and empty at revision 1 and is the half at revision 2.
         Assert.Equal(40, Vocabulary.Count);
-        Assert.Equal(Vocabulary.Count, Registry.Count);
-        Assert.Equal(1, DiagnosticRegistry.Revision);
+        Assert.Equal(22, SeamVocabulary.Count);
+        Assert.Equal(Vocabulary.Count + SeamVocabulary.Count, Registry.Count);
+        Assert.Equal(2, DiagnosticRegistry.Revision);
+
+        // The two vocabularies live in two assemblies that cannot see each other, so the one thing
+        // no compiler could catch is a number used in both. Nothing else in the build reads both
+        // of these lists, which is why this assertion is here and not left to the rule's own sweep.
+        Assert.Empty(Vocabulary.Select(static member => member.Value)
+            .Intersect(SeamVocabulary.Select(static member => member.Value)));
 
         var witness = Witness("N5-registry-omits-a-declared-code.txt.witness");
 
         var violations = ArchitectureRules
-            .N5(DiagnosticRegistry.Read(witness), Vocabulary, DiagnosticRegistry.ReadRevision(witness))
+            .N5(DiagnosticRegistry.Read(witness), Vocabulary, SeamVocabulary,
+                DiagnosticRegistry.ReadRevision(witness))
             .ToArray();
 
         Assert.Contains(violations, violation => violation.Contains(
-            "declares UnsupportedFormatVersion = 1002 and the registry has no row for it",
+            "declares UnsupportedFormatVersion = 1002 and the registry has no core-result row for it",
             StringComparison.Ordinal));
         Assert.Contains(violations, violation => violation.Contains(
             "names UnsupportedFormatVersionExtended, which is not a member of that number",
@@ -58,7 +80,7 @@ public sealed class DiagnosticRegistryRuleTests
         // And the real registry with its revision line removed reports the omission rather than
         // treating an unversioned registry as a versioned one that happens to say nothing.
         Assert.Contains(
-            ArchitectureRules.N5(Registry, Vocabulary, revision: -1),
+            ArchitectureRules.N5(Registry, Vocabulary, SeamVocabulary, revision: -1),
             violation => violation.Contains("states no revision of its own", StringComparison.Ordinal));
     }
 
@@ -109,21 +131,60 @@ public sealed class DiagnosticRegistryRuleTests
     public void N7_Every_Registry_Row_Is_Reachable_From_A_Named_Case()
     {
         var corpus = DiagnosticRegistry.CorpusCases(DiagnosticRegistry.CorpusText);
+        var sourceCorpus = DiagnosticRegistry.SourceCases(DiagnosticRegistry.SourceCorpusText);
 
-        Assert.Empty(ArchitectureRules.N7(Registry, corpus));
+        Assert.Empty(ArchitectureRules.N7(Registry, corpus, sourceCorpus));
 
-        // Non-vacuous, and the figure that matters: thirty-seven of the forty rows are reached by
-        // a retained corpus entry and three are not, which is the count rule N7 fixes rather than
-        // the registry.
+        // Non-vacuous, and the figures that matter: thirty-seven of the forty core-result rows are
+        // reached by a retained corpus entry and three are not, which is the count rule N7 fixes
+        // rather than the registry; and every one of the twenty-two embedder-seam rows JS-3b
+        // published is reached by a retained source entry, with none defensive. The seam half has
+        // no defensive row on purpose - all three of its format-ceiling codes ARE reachable by a
+        // program, and recording them as unreachable would have been recording something untrue to
+        // avoid generating three sources.
         Assert.Equal(3, ArchitectureRules.DefensiveCodes.Length);
         Assert.Equal(
             37,
             Registry.Count(static row => row.Reachability == "corpus"));
+        Assert.Equal(
+            22,
+            Registry.Count(static row => row.Reachability == "source"));
+        Assert.All(
+            Registry.Where(static row => row.Half == "embedder-seam"),
+            static row => Assert.Equal("source", row.Reachability));
+
+        // The seam half's own rejecting direction: a row reached by a source that claims to travel
+        // in a core result. Both halves of that pair are wrong together - a rejection of source
+        // reaches no envelope - so the rule names the contradiction rather than either half.
+        Assert.Contains(
+            ArchitectureRules.N7(
+                Registry
+                    .Select(static row =>
+                        row.Code == 2001 ? row with { Half = "core-result" } : row)
+                    .ToArray(),
+                corpus,
+                sourceCorpus),
+            violation => violation.Contains(
+                "is reached by a source and is not an embedder-seam row", StringComparison.Ordinal));
+
+        // ...and a seam row naming a source entry the retained manifest does not have.
+        Assert.Contains(
+            ArchitectureRules.N7(
+                Registry
+                    .Select(static row =>
+                        row.Code == 2001 ? row with { Case = "refuse-something-nobody-wrote" } : row)
+                    .ToArray(),
+                corpus,
+                sourceCorpus),
+            violation => violation.Contains(
+                "names the case refuse-something-nobody-wrote, and no retained source entry of " +
+                "that name is refused with UnexpectedCharacter",
+                StringComparison.Ordinal));
 
         var witness = Witness("N7-registry-names-a-case-the-corpus-does-not-have.txt.witness");
 
         var violations = ArchitectureRules
-            .N7(DiagnosticRegistry.Read(witness), corpus)
+            .N7(DiagnosticRegistry.Read(witness), corpus, sourceCorpus)
             .ToArray();
 
         Assert.Contains(violations, violation => violation.Contains(
@@ -144,7 +205,7 @@ public sealed class DiagnosticRegistryRuleTests
             .ToArray();
 
         Assert.Contains(
-            ArchitectureRules.N7(promoted, corpus),
+            ArchitectureRules.N7(promoted, corpus, sourceCorpus),
             violation => violation.Contains(
                 "is admitted as unreachable and claims to be reachable", StringComparison.Ordinal));
     }
@@ -328,10 +389,12 @@ public sealed class DiagnosticRegistryRuleTests
 
         RuleReport.Write("N",
         [
-            ("N5", () => ArchitectureRules.N5(Registry, Vocabulary, DiagnosticRegistry.Revision)),
+            ("N5", () => ArchitectureRules.N5(Registry, Vocabulary, SeamVocabulary, DiagnosticRegistry.Revision)),
             ("N6", () => ArchitectureRules.N6(Registry, Sites, Vocabulary)),
             ("N7", () => ArchitectureRules.N7(
-                Registry, DiagnosticRegistry.CorpusCases(DiagnosticRegistry.CorpusText))),
+                Registry,
+                DiagnosticRegistry.CorpusCases(DiagnosticRegistry.CorpusText),
+                DiagnosticRegistry.SourceCases(DiagnosticRegistry.SourceCorpusText))),
             ("N8", () => ArchitectureRules.N8(
                 Registry, DiagnosticRegistry.Mirror(Parse(DiagnosticRegistry.MirrorPath)))),
             ("N9", () => ArchitectureRules.N9(
@@ -350,6 +413,49 @@ public sealed class DiagnosticRegistryRuleTests
                 File.Exists(Path.Combine(destination, "N.txt")),
                 "a report for the registry rules was asked for and none was written");
         }
+    }
+
+    [Fact]
+    public void N12_The_Front_End_Holds_No_State_That_Outlives_A_Call()
+    {
+        var lowering = AssuranceSources.Files
+            .Where(static file => file.Assembly == FrontEndAmbientState.Assembly)
+            .ToArray();
+
+        Assert.Empty(ArchitectureRules.N12(FrontEndAmbientState.Sites(lowering), lowering.Length));
+
+        // Non-vacuous, and this rule needs the clause more than most: it passes by finding
+        // nothing, so a run over no files would be the cleanest-looking result in the register and
+        // would mean the assembly had been renamed out from under it. Eleven files - JS-1's three
+        // and JS-3b's eight - and the scan finds real static declarations in them, the punctuator
+        // table and the reserved-name list among them, which it correctly does not report.
+        Assert.Equal(11, lowering.Length);
+        Assert.Contains(
+            ArchitectureRules.N12([], filesScanned: 0),
+            violation => violation.Contains(
+                "no file of the lowering assembly was scanned", StringComparison.Ordinal));
+
+        // The rejecting direction: four ways a parse's state could outlive its call, in one file.
+        var witness = FrontEndAmbientState.Sites(
+            [WitnessFile("N12-a-parse-switch-that-outlives-the-call.cs.witness")]);
+
+        var violations = ArchitectureRules.N12(witness, filesScanned: 1).ToArray();
+
+        Assert.Contains(violations, violation => violation.Contains(
+            "declares Goal, which is a mutable static field", StringComparison.Ordinal));
+        Assert.Contains(violations, violation => violation.Contains(
+            "declares ScopedGoal, which is a [ThreadStatic] field", StringComparison.Ordinal));
+        Assert.Contains(violations, violation => violation.Contains(
+            "declares AmbientGoal, which is a field of ambient-context type", StringComparison.Ordinal));
+        Assert.Contains(violations, violation => violation.Contains(
+            "declares CurrentGoal, which is a settable static property", StringComparison.Ordinal));
+
+        // ...and the accepting direction inside the same witness, which is the half that stops
+        // this being a rule about the `static` keyword: the file's `static readonly` array and its
+        // `const` are not reported, because nothing can write either.
+        Assert.DoesNotContain(witness, static site => site.Member == "Punctuators");
+        Assert.DoesNotContain(witness, static site => site.Member == "DefaultDepth");
+        Assert.Equal(4, witness.Count);
     }
 
     private static string Witness(string fileName) => File.ReadAllText(WitnessPath(fileName));
