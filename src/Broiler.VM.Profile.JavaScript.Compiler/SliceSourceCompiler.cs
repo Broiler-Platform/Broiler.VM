@@ -311,7 +311,7 @@ public sealed class SliceSourceCompiler
     }
 
     /// <summary>Lowers one statement, beginning and ending at operand-stack height zero.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=1611CA
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=B5BD8A
     // Broiler-Falsified-If: any statement lowering leaves the operand stack at a different height than it entered with
     // Broiler-Human:        PENDING
     private void LowerStatement(SliceStatement statement, SliceParseOptions options)
@@ -328,9 +328,13 @@ public sealed class SliceSourceCompiler
 
                     if (declarator.Initialiser is null)
                     {
-                        // A declaration with no initialiser still writes its slot: a slot the
+                        // A declaration with no initialiser still writes its slot, and the reason
+                        // is no longer the one recorded here. It used to be that a slot the
                         // executor never wrote and a slot holding `undefined` must not be
-                        // distinguishable, and only the latter is something it guarantees.
+                        // distinguishable; the executor settles that by writing `undefined` into
+                        // every slot when the instance is built. What the write carries now is the
+                        // DEAD ZONE: `let x;` initialises the binding at this point, and this
+                        // store is what ends it - see `initialised`.
                         builder.LoadUndefined();
                         Push(1);
                     }
@@ -365,6 +369,27 @@ public sealed class SliceSourceCompiler
                 foreach (var inner in block.Body)
                 {
                     LowerStatement(inner, options);
+
+                    // A STATEMENT CONTROL CANNOT PASS ENDS THE BLOCK'S CODE, and everything after
+                    // it is dead. `for (;;) { break; var x = 1; }` emitted the declaration anyway
+                    // and the verifier refused the artifact as 1411:UnreachableCode - the same
+                    // refusal the loop continuations used to earn, reached a different way.
+                    //
+                    // SUPPRESSING A `var` DECLARATION IS SAFE, and it is worth saying why rather
+                    // than leaving it to be re-derived. `var` is hoisted: the binding exists from
+                    // the moment its scope is entered and holds `undefined` until an assignment
+                    // runs. Every local slot starts as `undefined` here - the instance's
+                    // constructor writes them, deliberately and with a comment saying so - so a
+                    // hoisted `var` whose initialiser is unreachable reads exactly what the
+                    // language says it should. The instruction removed is one no execution reaches.
+                    //
+                    // This is a BLOCK and not the program body. The program's own tail is a
+                    // `Return`, and suppressing that would leave a function with no terminator,
+                    // which is a different invalid artifact rather than a valid one.
+                    if (SliceControlFlow.Terminates(inner))
+                    {
+                        break;
+                    }
                 }
 
                 break;
