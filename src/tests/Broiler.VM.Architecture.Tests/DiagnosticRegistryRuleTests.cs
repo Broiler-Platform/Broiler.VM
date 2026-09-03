@@ -433,10 +433,17 @@ public sealed class DiagnosticRegistryRuleTests
 
         // Non-vacuous, and this rule needs the clause more than most: it passes by finding
         // nothing, so a run over no files would be the cleanest-looking result in the register and
-        // would mean the assembly had been renamed out from under it. Eleven files - JS-1's three
-        // and JS-3b's eight - and the scan finds real static declarations in them, the punctuator
-        // table and the reserved-name list among them, which it correctly does not report.
-        Assert.Equal(13, lowering.Length);
+        // would mean the assembly had been renamed out from under it. The scan finds real static
+        // declarations in these files - the punctuator table and the reserved-name list among
+        // them - which it correctly does not report.
+        //
+        // FOURTEEN FILES. The prose here said "eleven - JS-1's three and JS-3b's eight" while the
+        // figure beside it read 13, so the breakdown was already two revisions stale and is not
+        // replaced with a third one that will go the same way: the count is what this clause
+        // asserts, and which milestone contributed which file is what the graph manifest is for.
+        // The fourteenth is SliceControlFlow, added when the lowering stopped emitting a loop
+        // continuation nothing could reach.
+        Assert.Equal(14, lowering.Length);
         Assert.Contains(
             ArchitectureRules.N12([], filesScanned: 0),
             violation => violation.Contains(

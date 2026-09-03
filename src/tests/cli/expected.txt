@@ -53,15 +53,17 @@ missing/nothing-here.js|6|no file or directory at
 # was refused.
 runs/a-product.js refused/a-string-value.js|3|RefusedSource: 1
 
-# KNOWN DEFECTS, PINNED SO THE REPAIR IS DETECTABLE. These three are ordinary JavaScript that this
-# host cannot run: the lowering emits a loop's update and back-edge even when a body that always
-# breaks means nothing reaches them, and its own verifier then refuses the artifact as
-# 1411:UnreachableCode. Exit 4 is the code that accuses this component, and it is the right code.
-#
-# THIRTEEN FILES OF test262 FAIL EXACTLY THIS WAY and every one is `for (...) { break; }`, which
-# is NOT the shape the compiler's own remark named until JSC-58 corrected it. When the defect is
-# repaired these rows must move from exit 4 to exit 0 and this suite will go red until they do -
-# which is what a characterisation case is for.
-known-defects/a-loop-whose-body-always-breaks.js|4|1411:UnreachableCode
-known-defects/a-while-true-whose-body-always-breaks.js|4|1411:UnreachableCode
+# TWO OF THESE THREE WERE PINNED AS DEFECTS AND ARE NOW REPAIRED, WHICH IS WHAT PINNING THEM WAS
+# FOR. They were declared with exit 4 - the code that accuses this component - because the lowering
+# emitted a loop's update and back-edge even when a body that always breaks meant nothing reached
+# them, and the verifier refused the artifact as 1411:UnreachableCode. Thirteen files of test262
+# were exactly this. The rows moved from 4 to 0 with the repair; the suite went red in between.
+known-defects/a-loop-whose-body-always-breaks.js|0|
+known-defects/a-while-true-whose-body-always-breaks.js|0|
+
+# THE THIRD IS STILL REFUSED AND IS A DIFFERENT SHAPE. This loop has no exit at all, so everything
+# after it is unreachable INCLUDING THE PROGRAM'S TAIL - and suppressing a tail leaves a function
+# with no terminator, which is a different invalid artifact rather than a valid one. It is the
+# shape the compiler's own remark named all along, it remains a documented exclusion, and it is
+# pinned separately so that one change cannot quietly claim both.
 known-defects/a-loop-with-no-exit-at-all.js|4|1411:UnreachableCode
