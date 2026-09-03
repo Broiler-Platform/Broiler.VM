@@ -132,6 +132,8 @@ rather than a decision record.
 | [JSC-46](#jsc-46) | roadmap §9; delivery §19 | A source is tokenized at most once during COMPILATION and the verifier tokenizes nothing; the clause as written was satisfiable only by a fused design | [JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md) |
 | [JSC-47](#jsc-47) | roadmap §7; delivery §19; ledger §2 | One of JS-9's two unfuzzed surfaces exists now, so it is a gap rather than an absence, and the two admissions may not share a sentence | [JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md); the checkout's own front end |
 | [JSC-48](#jsc-48) | ledger §2; delivery §19 | The soak's plateau reading was coupled to what the process allocated BEFORE the soak, so it measured heap the collector had not returned rather than a per-cycle leak | the check's own curve, read on four platforms |
+| [JSC-49](#jsc-49) | roadmap §9; ledger §2 | The feature manifest is a validation-stage clause and not a grammar restriction; the parser reads JavaScript and refuses nothing | [JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md), decision 1, read against its own implementation |
+| [JSC-50](#jsc-50) | roadmap §9; ledger §2 | The parse depth bound has a measured maximum, and it dominates the format's operand-stack ceiling | the parser's own measured recursion limit |
 
 ### JSC-01
 
@@ -1764,4 +1766,91 @@ still loose, and JS-5 still owns measurement. **It closes no clause**: the plate
 retained bundle and none has been collected since, which the JS-9 row already said and still says.
 
 **Authority and date.** The check's own curve, read on four platforms across three CI runs;
+2026-09-03.
+
+---
+
+### JSC-49
+
+**Where:** roadmap [section 9](roadmap.md#9-the-semantic-front-end-and-lowering), the
+static-semantics subsection; the [ledger](roadmap.status.md#2-current-milestone-status)'s JS-3b
+row.
+
+**What the plan said, and what JS-3b's first implementation did.** The plan says the parser rules
+on nothing and one validation stage carries every early error, and
+[JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md)'s first decision
+records that as this component's answer. **The implementation did not do it.** The parser refused a
+<c>function</c>, an object literal, a string value and a loose equality itself, as unparseable
+reserved words and construct refusals raised from the pass that owns the grammar.
+
+**What was actually true.** That put the feature manifest's boundary inside the parser, which is
+the split the decision was written to avoid, and it had a consequence nobody noticed until
+something needed it: **this front end could not READ JavaScript.** It stopped at the first
+construct outside a manifest that admits no function, no object and no string, which is the first
+few tokens of essentially every real program. A front end that cannot read the language cannot
+count what the language contains, and counting is what the remaining milestones' scope should be
+decided from.
+
+**What replaced it.** The grammar is the language's. The parser produces a node for every
+construct it recognises `— functions, classes, objects, arrays, calls, member access, regular
+expressions, templates, destructuring, arrows, generators, modules, `try`, `switch`, labels `— and
+refuses only what is not a tree at all. `SliceManifest` holds what the manifest admits, the
+validation stage refuses everything else by name, and it **walks into** each refusal rather than
+stopping at it, so one source yields one diagnostic per occurrence. The precise node types the
+lowering switches on are unchanged, which is why every retained corpus entry replays to the same
+answer and the artifact bytes are identical.
+
+**And it is what made the two measurements possible.** A construct census over the Octane benchmark
+and over test262 is now a thing this component can run, and the roadmap's remaining scope has a
+ranked input rather than an assumption. The ledger's JS-3b row carries what those runs found, as
+observed repository state under section 1's third category `— they satisfy no gate and are not the
+conformance oracle [section 14](roadmap.md#14-the-conformance-oracle) specifies, which needs a
+pinned suite revision, a self-check, per-host-mode totals and a ratchet, and has none of them.
+
+**What it does not change.** The manifest is the same manifest and admits exactly what it admitted;
+nothing new is lowered; JS-3b is not closed; and no third-party source entered this repository `— the
+census takes a path and keeps no copy, because retrieving, hashing and archiving the suite is the
+human action [section 3](roadmap.status.md#3-open-external-dependencies) still records as open.
+
+**Authority and date.** [JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md),
+decision 1, read against its own implementation; 2026-09-03.
+
+---
+
+### JSC-50
+
+**Where:** roadmap [section 9](roadmap.md#9-the-semantic-front-end-and-lowering), the deep-nesting
+subsection; the [ledger](roadmap.status.md#2-current-milestone-status)'s JS-3b row; the published
+registry's row for 2303.
+
+**What the plan said.** Deep nesting is bounded by an explicit compile-time depth bound carried in
+the parse options, and a process termination on a nesting case blocks the milestone. JSC-43's
+implementation added the bound with a default of 64 and **no maximum**.
+
+**What was actually true.** A bound a caller can set arbitrarily high is not a bound. One level of
+source nesting costs several stack frames `— an assignment, a conditional, two binary levels, a
+unary, a postfix, a call chain, a primary `— so a caller asking for four thousand levels got a
+stack overflow, which is precisely the process termination the mechanism exists to prevent,
+reached through the mechanism. **This component's own generated corpus entry was that caller**, and
+it terminated the process on the first run after the grammar landed.
+
+**What replaced it.** A measured maximum. Right-nested addition parses at 512 levels of source and
+dies at 768, so the options refuse a bound above 512 counter units `— about 170 levels of source, a
+third of the measured failure point `— at construction rather than at the overflow.
+
+**And a finding fell out of it, which is why this is a correction and not a patch.** The format's
+operand stack admits 1,024 values, and the only shape in this manifest whose operand stack grows
+with its nesting is right-nested operators: a left-nested chain runs at a height of two however
+long it is, and parentheses emit no instruction at all. Reaching the stack ceiling therefore takes
+more than a thousand levels of nesting, and the depth bound refuses at about a hundred and seventy.
+**The parse bound dominates the stack ceiling**, so `OperandStackTooDeep` is reachable by no source
+this front end will accept. The registry records it as defensive with that reason, which is a true
+statement about this build rather than a generated source nobody can write.
+
+**What it does not change.** The bound is still the answer to section 9's nesting question and the
+worklist rewrite is still refused for the reasons JSD-0014 records. The nesting corpus entry still
+refuses rather than surviving, and the 100,000-level case still returns a diagnostic rather than
+ending the process.
+
+**Authority and date.** The parser's own measured recursion limit, taken on `win-x64` under JIT;
 2026-09-03.

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   23
-// Annotated:        23/23
+// Relevant units:   24
+// Annotated:        24/24
 // Exempt:           16
-// Human-reviewed:   0/23
+// Human-reviewed:   0/24
 // IP risk:          None
 // Security risk:    High
-// Criteria:         13/13
+// Criteria:         14/14
 // Resource impact:  2/10 max
-// Unverified:       23
+// Unverified:       24
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -439,7 +439,7 @@ public sealed class SliceStaticSemantics
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=BC22AF
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=ED5060
     // Broiler-Falsified-If: a `break` or `continue` inside a loop body is reported as having no enclosing loop, or one outside every loop is not
     // Broiler-Human:        PENDING
     private void VisitStatement(SliceStatement statement)
@@ -565,12 +565,73 @@ public sealed class SliceStaticSemantics
 
                 break;
 
+            case SliceConstructStatement construct:
+                VisitConstruct(construct.Kind, construct.Span, construct.Children);
+                break;
+
             default:
                 break;
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=AED67E
+    /// <summary>
+    /// Refuses a construct the manifest excludes, and walks into it anyway.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Both halves matter and the second is the one that is easy to leave out.</b> Refusing is
+    /// what the exit gate asks for: a construct outside the declared manifest is refused at
+    /// verification and not at first execution. Walking in is what makes the refusal a
+    /// MEASUREMENT: a stage that stopped at the outermost construct would report that a file
+    /// contains a function, which nobody needed a tool to learn, where walking in reports what is
+    /// inside the function, which is the question a roadmap deciding its next manifest is asking.
+    /// </para>
+    /// <para>
+    /// So one source produces one diagnostic per construct occurrence rather than one per file,
+    /// and the first is not privileged over the rest. That is the same rule this stage already
+    /// applies to early errors and for the same reason: a tree that parsed is a real program and
+    /// every fact about it is real.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=B18B5E
+    // Broiler-Falsified-If: a construct nested inside another is not reported, or an admitted construct is refused
+    // Broiler-Human:        PENDING
+    private void VisitConstruct(
+        SliceConstructKind kind,
+        SliceSourceSpan span,
+        System.Collections.Generic.IReadOnlyList<SliceNode> children)
+    {
+        if (!SliceManifest.Admits(kind))
+        {
+            Refuse(
+                SliceSourceDiagnosticCode.ConstructOutsideManifest,
+                SliceManifest.Describe(kind) + " is not admitted by the declared feature manifest",
+                span);
+        }
+
+        foreach (var child in children)
+        {
+            switch (child)
+            {
+                case SliceStatement statement:
+                    VisitStatement(statement);
+                    break;
+
+                case SliceExpression expression:
+                    VisitExpression(expression);
+                    break;
+
+                case SliceDeclarator declarator when declarator.Initialiser is not null:
+                    VisitExpression(declarator.Initialiser);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=6C11BD
     // Broiler-Falsified-If: a subexpression is not visited, so an early error inside it goes unreported
     // Broiler-Human:        PENDING
     private void VisitExpression(SliceExpression expression)
@@ -615,6 +676,10 @@ public sealed class SliceStaticSemantics
             case SliceAssignmentExpression assignment:
                 VisitAssignmentTarget(assignment);
                 VisitExpression(assignment.Value);
+                break;
+
+            case SliceConstructExpression construct:
+                VisitConstruct(construct.Kind, construct.Span, construct.Children);
                 break;
 
             default:
