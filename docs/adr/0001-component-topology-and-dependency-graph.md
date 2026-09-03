@@ -1489,3 +1489,45 @@ it. **No RID claim moves**, because a lane is not an evidence bundle and this
 revision changes nothing about what a collection is.
 
 **What is not edited.** Every revision above stands as written.
+
+### 2026-09-03 - the ingestion path, and a rule about which refusals mean anything
+
+**What changes.** No project is added and no edge moves. The conformance root
+gains the path that reads a third-party suite's own metadata dialect and
+translates it into cases this harness can score, and a second pinned fixture
+suite is added under `src/tests/conformance/`, written in that dialect.
+
+**Why it was needed, which is not the reason it was planned.** The harness's
+metadata reader carried a remark that its shape was the suite's own, "so that the
+day a pinned suite is retrieved, this reader is pointed at it rather than
+replaced". Five files written in the real dialect were put through the harness to
+check that. **All five were refused**, and a suite is read whole, so the run
+scored nothing at all - not a wrong total, no total. The reader was shaped like a
+simplification of the dialect: flat `key: value` lines, no nested mapping, no
+block scalars, and one required key that dialect does not have.
+
+**The part worth recording in a topology record.** One rule in that path is not
+about metadata at all. `broiler.javascript.slice` admits no function, no object,
+no string value and no property access, so it refuses valid JavaScript on almost
+every line - with one diagnostic code. A third-party suite's negative tests almost
+all declare that a refusal must happen. Compared on the observable outcome the two
+agree nearly every time, for reasons that have nothing to do with each other, and
+**a manifest admitting almost nothing would have reported a near-perfect
+conformance total.** Every source-refusal code therefore carries a declared
+language class, and only a genuine early error may answer such a test; a refusal
+this profile did not earn makes the case unscorable rather than passed. The rule
+runs ahead of the comparison, so no declaration can be written that gets past it.
+
+**What this does to the graph and the closures.** Nothing. The new code is
+`internal` to a root that is never advertised, rule N13's clauses are unchanged
+and still hold, no package gains a dependency, and no advertised composition's
+closure moves. The component lane runs both suites on every publish and compares
+each against its own floor.
+
+**What is now true, and what is not.** The harness can read a real suite's
+dialect; it has read none. No third-party suite is in this repository, none is
+pinned, and nothing here fetches one. Section 3's suite-revision blocker narrows
+from "a person and a reader" to "a person", and does not close. **No RID claim
+moves and nothing is accepted.**
+
+**What is not edited.** Every revision above stands as written.

@@ -1,0 +1,88 @@
+# Negative controls for the ingestion path
+#
+# Each entry injects one defect, runs the thing that would have to notice it, and
+# reverts. Output is what the command printed, filtered to its verdict lines and
+# otherwise unedited.
+#
+# The suite under test is src/tests/conformance/ingest-shape: files written in THIS
+# repository in the ingested dialect. No third-party suite is present, retrieved or read.
+
+[control-100-the-clean-reading]
+No injection. This is what the controls below move away from.
+exit 0
+broiler-js-conformance: 8 self-check fixtures reported the verdict they declared
+suite broiler.javascript.slice.ingest-shape@262902538401be83804f252624a6152c349b53e2d8da27ed4f10fcfb1a09c8f1; shard all of 1
+selection candidates=12 knownIncorrect=0 outOfScope=0 featureFiltered=0 negativeWithheld=0 unselectable=8 selected=4 sharded=4
+mode Script: selected=3 executed=3 passed=3 failed=0 skipped=0 timedOut=0
+mode Module: selected=1 executed=1 passed=1 failed=0 skipped=0 timedOut=0
+mode Raw: selected=0 executed=0 passed=0 failed=0 skipped=0 timedOut=0
+
+[control-101-a-refusal-the-manifest-made-scores-a-negative-test]
+LanguageErrors.MayScore stops asking WHICH refusal happened. Every classified code may answer a negative test, which is the scoring bug this whole path exists to refuse: an engine admitting almost none of the language agrees with a suite whose negative tests all declare a refusal, and the agreement is scored.
+exit 3
+FAIL only-an-early-error-may-score-and-every-class-is-populated: disagreeing: [NestingTooDeep, ConstructOutsideManifest, AssignmentToConstant, UnresolvableIdentifier, TooManyLocals, TooManyConstants, OperandStackTooDeep]; classes populated: True
+FAIL a-refusal-the-manifest-made-is-not-a-pass-on-a-negative-test: declared a SyntaxError, was refused as ConstructOutsideManifest, scored Passed
+FAIL the-same-refusal-scores-for-a-native-fixture-and-not-for-an-ingested-one: native fixture Passed, ingested test Passed
+FAIL an-unearned-refusal-is-unscorable-and-an-earned-one-passes: positive=Failed, divergence=Passed, limit=Passed, early error=Passed
+broiler-js-conformance: the harness's own checks failed; nothing was scored
+
+[control-102-the-suites-raw-flag-is-taken-for-artifact-bytes]
+The adapter carries the raw flag straight across. In the ingested dialect it means "no harness prelude and no strictness variant" and the file is still source; in this harness it means artifact bytes no front end lowers.
+exit 3
+FAIL the-suites-raw-flag-is-source-and-not-artifact-bytes: 1 case in Raw mode carrying source
+FAIL a-file-declaring-its-strictness-or-its-goal-becomes-one-case: wrong: raw
+broiler-js-conformance: the harness's own checks failed; nothing was scored
+
+[control-103-a-file-the-harness-declines-is-dropped-rather-than-counted]
+The translator returns nothing for a file it cannot run. THE SCORED RUN DOES NOT NOTICE - it reports a clean total over a smaller candidate count - so this is judged by the harness's own checks, which is what they are for.
+exit 3
+FAIL a-file-this-harness-cannot-run-is-counted-and-named-rather-than-dropped: 6 of 6 were dropped or wrongly selected
+broiler-js-conformance: 1 of 42 harness checks FAILED
+
+[control-104-the-strict-reading-is-not-made-strict]
+The strict variant is registered under its own name and run without the prologue that makes it strict, so both readings of a file are the same reading twice.
+exit 3
+FAIL a-file-declaring-no-strictness-becomes-two-cases-and-only-one-carries-the-prologue: 2 cases: a.js#strict, a.js#sloppy
+broiler-js-conformance: the harness's own checks failed; nothing was scored
+
+[control-105-the-language-class-map-falls-behind-the-vocabulary]
+One code loses its declared class, standing for a code added to the front end and not classified here. The map under-reports rather than inventing passes - the fixture becomes unscorable rather than a pass - and the totality check still fails, because a silent under-report is a defect too.
+exit 3
+FAIL every-source-refusal-has-a-declared-language-class: unclassified: [LegacyOctalInStrictCode]; not in the vocabulary: []
+FAIL only-an-early-error-may-score-and-every-class-is-populated: disagreeing: [LegacyOctalInStrictCode]; classes populated: True
+broiler-js-conformance: the harness's own checks failed; nothing was scored
+
+[control-106-a-parse-negative-naming-harness-files-is-declined]
+The arm that makes this slice scorable at all is removed: a negative parse test that names harness files is declined, though it must fail before it runs and never reaches one. Judged by the checks, because the retained suite would simply get smaller.
+exit 3
+FAIL a-parse-negative-naming-harness-files-is-selectable-and-a-positive-one-is-not: the includes rule did not split the two
+broiler-js-conformance: 1 of 42 harness checks FAILED
+
+[control-107-the-clean-reading-again]
+Every injection reverted. The tree reads as it did before the first one.
+exit 0
+broiler-js-conformance: 8 self-check fixtures reported the verdict they declared
+suite broiler.javascript.slice.ingest-shape@262902538401be83804f252624a6152c349b53e2d8da27ed4f10fcfb1a09c8f1; shard all of 1
+selection candidates=12 knownIncorrect=0 outOfScope=0 featureFiltered=0 negativeWithheld=0 unselectable=8 selected=4 sharded=4
+mode Script: selected=3 executed=3 passed=3 failed=0 skipped=0 timedOut=0
+mode Module: selected=1 executed=1 passed=1 failed=0 skipped=0 timedOut=0
+mode Raw: selected=0 executed=0 passed=0 failed=0 skipped=0 timedOut=0
+
+
+[control-108-the-rule-is-relaxed-and-the-checks-that-failed-are-removed]
+Two edits rather than one, because this is the realistic path: somebody relaxes the rule, four
+harness checks go red, and the checks are deleted to make the build green. The self-check is the
+second line of defence and it holds - three fixtures whose refusal the manifest made, not the
+language, report a verdict they must not.
+exit 3
+FAIL a-positive-whose-body-the-manifest-declines.js: expected Skipped/NeverSettled, got Failed/NeverSettled - declared `completes` and answered `refused-by-source ConstructOutsideManifest`: 2104:ConstructOutsideManifest at 8:9: a string value is not admitted by the declared feature manifest
+FAIL a-refusal-the-manifest-made-and-not-the-language.js#strict: expected Skipped/NeverSettled, got Passed/NeverSettled
+FAIL a-refusal-this-profile-makes-earlier-than-the-language.js#sloppy: expected Skipped/NeverSettled, got Passed/NeverSettled
+broiler-js-conformance: the self-check FAILED - 3 of 8 fixtures reported the wrong verdict and 0 complaint(s) stand
+broiler-js-conformance: the self-check failed; nothing was scored
+
+# Reverting control 108 exposed a defect in the CONTROL DRIVER rather than in the harness: it
+# restored its saved copies in forward order, so a file patched twice was rewritten with the state
+# after the first patch. It was caught by re-running the harness checks against a known count, and
+# the file was restored by hand. Recorded because a control run that quietly leaves an injection
+# behind is worse than one that never ran.

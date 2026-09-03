@@ -1,0 +1,9 @@
+# broiler-js-conformance known-incorrect list
+# path|reason
+#
+# A path leaves this file only after a minimal repository regression exists, the focused
+# reproduction passes, the affected shard passes, and this record is updated. It is a QUEUE and not
+# an allow-list, which is why a reason is required and an entry no run confirms does not survive.
+#
+# Empty, and deliberately: every file this suite holds was written in this repository against this
+# front end, so a case that fails here is a defect in one of the two and not a known gap.

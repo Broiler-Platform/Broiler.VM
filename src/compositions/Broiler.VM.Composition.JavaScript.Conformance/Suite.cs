@@ -226,7 +226,10 @@ internal static class Suite
     /// uses to prove the shards covered the selection - would move without anything saying why.
     /// </para>
     /// </remarks>
-    internal static IReadOnlyList<ConformanceTest> Read(string directory, out IReadOnlyList<string> unreadable)
+    internal static IReadOnlyList<ConformanceTest> Read(
+        string directory,
+        SuiteDialect dialect,
+        out IReadOnlyList<string> unreadable)
     {
         var tests = new List<ConformanceTest>();
         var failures = new List<string>();
@@ -245,6 +248,21 @@ internal static class Suite
 
             if (relative.EndsWith(".js", StringComparison.Ordinal))
             {
+                if (dialect == SuiteDialect.Ingested)
+                {
+                    if (Test262Adapter.TryTranslate(
+                            relative, File.ReadAllText(file), out var translated, out var unreadableFile))
+                    {
+                        tests.AddRange(translated);
+                    }
+                    else
+                    {
+                        failures.Add(unreadableFile);
+                    }
+
+                    continue;
+                }
+
                 if (TestMetadata.TryRead(relative, File.ReadAllText(file), null, out var test, out var why))
                 {
                     tests.Add(test);
@@ -257,7 +275,12 @@ internal static class Suite
                 continue;
             }
 
-            if (!relative.EndsWith(ArtifactExtension + SidecarExtension, StringComparison.Ordinal))
+            // AN INGESTED SUITE HOLDS NO ARTIFACT OF THIS FORMAT, so a raw sidecar under one would
+            // be a file somebody put there rather than a file the suite ships. Reading it would
+            // mean this harness could execute bytes out of a third-party checkout that its own pin
+            // covers but its own dialect never described.
+            if (dialect == SuiteDialect.Ingested ||
+                !relative.EndsWith(ArtifactExtension + SidecarExtension, StringComparison.Ordinal))
             {
                 continue;
             }

@@ -93,6 +93,11 @@ COMPOSITIONS = (
 # reason it can be asserted, because nothing but a command line needs to know where a suite lives.
 CONFORMANCE_SUITE = os.path.join("src", "tests", "conformance", "js-3a")
 
+# The second suite, written in the dialect a third-party suite uses. It is this repository's own
+# files: the ingestion path has to be exercised by a published image, and pointing that image at
+# material nobody has retrieved is not an option the roadmap leaves open.
+INGEST_SUITE = os.path.join("src", "tests", "conformance", "ingest-shape")
+
 # Native AOT on Windows needs vswhere.exe on PATH. The ILCompiler package's own findvcvarsall.bat
 # calls it unqualified, and when it is missing the batch file ERROR TEXT is substituted into the
 # property that becomes the linker path - so the publish fails with MSB3073 naming a command that
@@ -859,26 +864,40 @@ def compositions(arguments, out, corpus):
                        + "\n" + catalogs[mode])
 
             if slug == "executiononly":
-                run_arguments = [executable, "--corpus", corpus, "--verbose"]
+                runs = [("corpus", [executable, "--corpus", corpus, "--verbose"])]
             elif slug == "conformance":
                 # Every host mode, negatives included: a published image that scored only the
                 # positive half would retain a transcript whose totals nobody could compare with a
                 # release run's.
-                run_arguments = [
-                    executable, "--suite", os.path.join(ROOT, CONFORMANCE_SUITE),
-                    "--run", "--include-negative", "--verbose"]
+                #
+                # BOTH SUITES, because they exercise different code. The first scores this front
+                # end against declarations naming its own diagnostic codes; the second goes through
+                # the ingestion path - the metadata dialect, the two strictness readings, and the
+                # rule that refuses to score a refusal this profile did not earn - and a bundle
+                # carrying only the first would show a green harness over a path no published image
+                # had run.
+                runs = [
+                    ("js-3a", [
+                        executable, "--suite", os.path.join(ROOT, CONFORMANCE_SUITE),
+                        "--run", "--include-negative", "--verbose"]),
+                    ("ingest-shape", [
+                        executable, "--suite", os.path.join(ROOT, INGEST_SUITE),
+                        "--dialect", "ingested", "--run", "--include-negative", "--verbose"]),
+                ]
             else:
-                run_arguments = [executable, "--checks", "--verbose"]
+                runs = [("checks", [executable, "--checks", "--verbose"])]
 
-            result = subprocess.run(
-                run_arguments, capture_output=True, text=True,
-                encoding="utf-8", errors="replace")
+            for label, run_arguments in runs:
+                result = subprocess.run(
+                    run_arguments, capture_output=True, text=True,
+                    encoding="utf-8", errors="replace")
 
-            log.append("[" + slug + "/" + mode + "] run exit " + str(result.returncode) + "\n"
-                       + (result.stdout or "") + (result.stderr or ""))
+                log.append("[" + slug + "/" + mode + "/" + label + "] run exit "
+                           + str(result.returncode) + "\n"
+                           + (result.stdout or "") + (result.stderr or ""))
 
-            if result.returncode != 0:
-                ok = False
+                if result.returncode != 0:
+                    ok = False
 
             names = closure_of(directory)
             closures.append("[" + mode + "] " + str(len(names)) + " non-framework assemblies")

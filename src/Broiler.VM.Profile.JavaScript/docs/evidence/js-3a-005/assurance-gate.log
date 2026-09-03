@@ -1,0 +1,17 @@
+exit 0
+
+  Wiederherzustellende Projekte werden ermittelt...
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" wiederhergestellt (in 222 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" wiederhergestellt (in 222 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Fixtures\Broiler.VM.Fixtures.csproj" wiederhergestellt (in 222 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Binary\Broiler.VM.Binary.csproj" wiederhergestellt (in 222 ms.).
+  "D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\Broiler.VM.Architecture.Tests.csproj" wiederhergestellt (in 223 ms.).
+  Broiler.VM.Binary -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Binary\bin\Release\net10.0\Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Abstractions\bin\Release\net10.0\Broiler.VM.Abstractions.dll
+  Broiler.VM.Fixtures -> D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Fixtures\bin\Release\net10.0\Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> D:\Broiler.Browser\Broiler.VM\src\Broiler.VM.Runtime\bin\Release\net10.0\Broiler.VM.Runtime.dll
+  Broiler.VM.Architecture.Tests -> D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\bin\Release\net10.0\Broiler.VM.Architecture.Tests.dll
+Testlauf für "D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\bin\Release\net10.0\Broiler.VM.Architecture.Tests.dll" (.NETCoreApp,Version=v10.0)
+Insgesamt 1 Testdateien stimmten mit dem angegebenen Muster überein.
+
+Bestanden!   : Fehler:     0, erfolgreich:   179, übersprungen:     0, gesamt:   179, Dauer: 2 s - Broiler.VM.Architecture.Tests.dll (net10.0)

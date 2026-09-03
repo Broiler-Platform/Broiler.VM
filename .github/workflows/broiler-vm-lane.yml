@@ -278,6 +278,7 @@ jobs:
           corpus="src/tests/corpus/js-1"
 
           suite="src/tests/conformance/js-3a"
+          ingest="src/tests/conformance/ingest-shape"
 
           for composition in JavaScript.ExecutionOnly JavaScript.SliceCompiler JavaScript.Conformance; do
             out="artifacts/ci-aot-$composition"
@@ -298,7 +299,17 @@ jobs:
               # publish totals nobody could compare with a release run's. The harness runs its
               # own regression suite and its self-check before it scores anything, so this one
               # command is three checks and reports which of them failed by its exit code.
-              *Conformance) "$binary" --suite "$suite" --run --include-negative ;;
+              # BOTH SUITES, BECAUSE THEY EXERCISE DIFFERENT CODE. The first is written in this
+              # component's own dialect and scores this front end against declarations naming its
+              # diagnostic codes. The second is written in the dialect a third-party suite uses and
+              # goes through the ingestion path - the metadata reader, the strictness readings, and
+              # the rule that refuses to score a refusal this profile did not earn. A lane running
+              # only the first would publish a green conformance step over an ingestion path no
+              # published image had executed.
+              *Conformance)
+                "$binary" --suite "$suite" --run --include-negative
+                "$binary" --suite "$ingest" --dialect ingested --run --include-negative
+                ;;
             esac
           done
 
@@ -321,6 +332,7 @@ jobs:
         run: |
           set -euo pipefail
           suite="src/tests/conformance/js-3a"
+          ingest="src/tests/conformance/ingest-shape"
           binary="artifacts/ci-aot-JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance"
           [ -f "$binary.exe" ] && binary="$binary.exe"
 
@@ -354,6 +366,16 @@ jobs:
             exit 1
           fi
           mv artifacts/conformance/shard-1.held artifacts/conformance/shard-1.report
+
+          # THE INGESTED SUITE GETS A FLOOR OF ITS OWN, AND IT GUARDS SOMETHING THE EXIT CODE
+          # CANNOT. A case that stops being scorable is reported SKIPPED, and a skip is not a
+          # failure - so the adapter could start declining files, or the rule could start
+          # classifying earned refusals as unearned, and every run would still exit zero over a
+          # shrinking number of passes. The floor is what notices, because it names the figure.
+          "$binary" --suite "$ingest" --dialect ingested --run --include-negative \
+            --output artifacts/ingest-shape.report
+          "$binary" --floor src/Broiler.VM.Profile.JavaScript/docs/conformance/floor-ingest-shape.txt \
+            --report artifacts/ingest-shape.report
 
       # The fuzz sessions and the corpus-integrity mutation were collection-only for the same
       # reason the roots were: nobody had put them here. A session is a total function of its seed

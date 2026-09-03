@@ -1,0 +1,35 @@
+bundle:                JS-3A-005
+milestone:             JS-3a
+collected (UTC):       2026-09-03T12:47:49+00:00
+component commit:      269cd28d0c0f459495877d7a71d8a4f07a3bb462
+branch:                main
+working tree:          DIRTY
+dirty entries:         21
+owner:                 profile architecture owner (unassigned identity)
+reviewer:              NONE - nothing here has been reviewed
+
+Every path below is relative to the component root. A figure in this bundle is this
+component's own; no result from any other component is evidence here.
+
+Dirty entries at collection time, listed rather than summarised:
+   M .github/workflows/broiler-vm-lane.yml
+   M eng/collect-js-evidence.py
+   M src/Broiler.VM.Profile.JavaScript/docs/decisions/README.md
+   M src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md
+   M src/Broiler.VM.Profile.JavaScript/docs/roadmap.delivery.md
+   M src/Broiler.VM.Profile.JavaScript/docs/roadmap.md
+   M src/Broiler.VM.Profile.JavaScript/docs/roadmap.status.md
+   M src/compositions/Broiler.VM.Composition.JavaScript.Conformance/ConformanceTest.cs
+   M src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Execution.cs
+   M src/compositions/Broiler.VM.Composition.JavaScript.Conformance/HarnessChecks.cs
+   M src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Program.cs
+   M src/compositions/Broiler.VM.Composition.JavaScript.Conformance/SelfCheck.cs
+   M src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Suite.cs
+   M src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Program.cs
+  ?? src/Broiler.VM.Profile.JavaScript/docs/conformance/floor-ingest-shape.txt
+  ?? src/Broiler.VM.Profile.JavaScript/docs/decisions/0016-ingesting-a-third-party-suite-and-the-refusals-that-answer-nothing.md
+  ?? src/compositions/Broiler.VM.Composition.JavaScript.Conformance/IngestionChecks.cs
+  ?? src/compositions/Broiler.VM.Composition.JavaScript.Conformance/LanguageErrors.cs
+  ?? src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Adapter.cs
+  ?? src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Metadata.cs
+  ?? src/tests/conformance/ingest-shape/

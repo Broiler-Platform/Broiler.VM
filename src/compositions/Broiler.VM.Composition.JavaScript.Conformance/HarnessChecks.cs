@@ -50,6 +50,11 @@ internal static class HarnessChecks
         AFloorHoldsAndRegresses(),
         AFloorIsNeverComparedAcrossRevisions(),
         ARunWithAConfigurationFailureCannotSetAFloor(),
+
+        // The ingestion path's own checks, kept in a file of their own because they are about a
+        // different thing: these are properties of the harness's arithmetic and its report format,
+        // and those are properties of the rule that decides whether a refusal answered anything.
+        .. IngestionChecks.Run(),
     ];
 
     private static (string, bool, string) ShardingIsStableAcrossProcesses()

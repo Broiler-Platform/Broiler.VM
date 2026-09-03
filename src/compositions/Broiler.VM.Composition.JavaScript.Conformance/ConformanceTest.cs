@@ -21,6 +21,38 @@ internal enum ExpectationKind
 
     /// <summary>Execution faults, with the declared JavaScript error kind.</summary>
     Fault,
+
+    /// <summary>
+    /// The front end refuses the source <b>as the language would</b>, with the declared JavaScript
+    /// error type name.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>This is not <see cref="RefusedBySource"/> with a different spelling, and fusing them
+    /// would be the scoring bug this harness exists to refuse.</b> That kind names one of THIS
+    /// build's diagnostic codes and asks "did this front end refuse for the reason I wrote down" -
+    /// a question about the implementation. This one names a JavaScript error type and asks "is
+    /// this source a syntax error in the language" - a question about the language, which most of
+    /// this build's refusals do not answer, because
+    /// <c>broiler.javascript.slice</c> refuses valid JavaScript on almost every line.
+    /// </para>
+    /// <para>
+    /// Roadmap section 14 asks for exactly this unit: a negative test's uncaught error reported
+    /// "by its JavaScript type name so a parse-phase syntax error is matched on what it is".
+    /// <see cref="LanguageErrors"/> holds which refusals qualify.
+    /// </para>
+    /// </remarks>
+    RefusedAsEarlyError,
+
+    /// <summary>The program compiles, verifies, runs, and does not fault. Its value is not read.</summary>
+    /// <remarks>
+    /// <b>An ingested suite's positive tests can declare nothing stronger.</b> They assert through
+    /// a harness library - a call this manifest has no way to make - so what survives translation
+    /// is the part that needs no library: that nothing was thrown. It is deliberately weaker than
+    /// <see cref="Completion"/> and is never used by this component's own fixtures, which can
+    /// declare the value and therefore must.
+    /// </remarks>
+    CompletesWithoutFault,
 }
 
 /// <summary>What a test says must happen to it.</summary>
@@ -48,7 +80,9 @@ internal sealed record ConformanceExpectation(ExpectationKind Kind, string Value
     /// declares a refusal IS the negative case, and two spellings of one fact could disagree.
     /// </remarks>
     internal bool IsNegative =>
-        Kind is ExpectationKind.RefusedBySource or ExpectationKind.RefusedByVerifier;
+        Kind is ExpectationKind.RefusedBySource
+            or ExpectationKind.RefusedByVerifier
+            or ExpectationKind.RefusedAsEarlyError;
 
     /// <summary>The declaration, in the spelling a test file writes it in.</summary>
     public override string ToString() => Kind switch
@@ -56,6 +90,8 @@ internal sealed record ConformanceExpectation(ExpectationKind Kind, string Value
         ExpectationKind.Completion => "completion " + Value,
         ExpectationKind.RefusedBySource => "refused-by-source " + Value,
         ExpectationKind.RefusedByVerifier => "refused-by-verifier " + Value,
+        ExpectationKind.RefusedAsEarlyError => "refused-as-early-error " + Value,
+        ExpectationKind.CompletesWithoutFault => "completes",
         _ => "fault " + Value,
     };
 
@@ -63,6 +99,18 @@ internal sealed record ConformanceExpectation(ExpectationKind Kind, string Value
     internal static bool TryParse(string text, out ConformanceExpectation expectation, out string failure)
     {
         expectation = new ConformanceExpectation(ExpectationKind.Completion, string.Empty);
+
+        // `completes` is the one declaration that carries no value, because the thing it asserts is
+        // that nothing was thrown and there is nothing further to say. It is read before the
+        // `<kind> <value>` split rather than inside it, so that the split can keep requiring both
+        // halves for every kind that does have a value.
+        if (string.Equals(text.Trim(), "completes", StringComparison.Ordinal))
+        {
+            expectation = new ConformanceExpectation(ExpectationKind.CompletesWithoutFault, string.Empty);
+            failure = string.Empty;
+            return true;
+        }
+
         var space = text.IndexOf(' ', StringComparison.Ordinal);
 
         if (space <= 0 || space == text.Length - 1)
@@ -79,6 +127,7 @@ internal sealed record ConformanceExpectation(ExpectationKind Kind, string Value
             "completion" => ExpectationKind.Completion,
             "refused-by-source" => ExpectationKind.RefusedBySource,
             "refused-by-verifier" => ExpectationKind.RefusedByVerifier,
+            "refused-as-early-error" => ExpectationKind.RefusedAsEarlyError,
             "fault" => ExpectationKind.Fault,
             _ => (ExpectationKind?)null,
         };
@@ -86,7 +135,8 @@ internal sealed record ConformanceExpectation(ExpectationKind Kind, string Value
         if (parsed is null)
         {
             failure =
-                $"`{kind}` is not one of completion, refused-by-source, refused-by-verifier, fault";
+                $"`{kind}` is not one of completion, completes, refused-by-source, " +
+                "refused-by-verifier, refused-as-early-error, fault";
 
             return false;
         }
@@ -109,12 +159,28 @@ internal sealed record ConformanceExpectation(ExpectationKind Kind, string Value
 /// <param name="RequiredHost">
 /// A host this harness does not build, or empty where the default host runs the test.
 /// </param>
+/// <param name="Ingested">
+/// Whether this test asks a question about <b>the language</b> rather than about this front end.
+/// </param>
 /// <remarks>
+/// <para>
 /// <b><paramref name="Unselectable"/> and <paramref name="RequiredHost"/> are two different
 /// facts and are deliberately two fields.</b> An unselectable test never enters the selection and
 /// is not in any total; a test needing a host is selected, counted, and reported skipped with the
 /// host named. Fusing them would let a selection shrink for a reason that reads as an execution
 /// gap, or the reverse.
+/// </para>
+/// <para>
+/// <b><paramref name="Ingested"/> decides whether a refusal has to have been earned.</b> This
+/// component's own fixtures are written against this front end and declare its diagnostic codes by
+/// name, so a refusal is the answer they asked for and is scored as one. A test translated out of
+/// a third-party suite asked whether some source is valid <i>JavaScript</i>, and this profile
+/// refuses valid JavaScript constantly - so its refusal answers that question only when
+/// <see cref="LanguageErrors"/> says the refusal was a language answer, and the case is otherwise
+/// reported unscorable rather than passed. Without the flag the rule would have to be inferred
+/// from the expectation kind at each site, which is how one of the two suites eventually acquires
+/// the other one's rule.
+/// </para>
 /// </remarks>
 internal sealed record ConformanceTest(
     string Path,
@@ -125,7 +191,8 @@ internal sealed record ConformanceTest(
     byte[]? Bytes,
     IReadOnlyList<string> Features,
     string Unselectable,
-    string RequiredHost = "");
+    string RequiredHost = "",
+    bool Ingested = false);
 
 /// <summary>
 /// The metadata block a source test carries, and the reader for it.

@@ -1,0 +1,80 @@
+# Construct census over every .js file in the Octane checkout, 2026-09-03, win-x64.
+#
+# THE CENSUS TAKES A PATH AND KEEPS NO COPY. The checkout is a working tree that already
+# existed on this machine, outside this repository. Nothing was fetched and nothing was
+# written back; what follows is counts and construct names, and holds no suite content.
+# There is no pin and no digest, because retrieving, hashing and archiving is the human
+# action the ledger section 3 records as open.
+#
+# THESE 24 FILES ARE NOT 24 BENCHMARKS. Three are the demonstration page assets - jquery.js
+# and two bootstrap plugins under js/ - one is the harness base.js, one the runner run.js,
+# and two are data blobs, typescript-input.js and zlib-data.js. The other census beside
+# this one is over the 17 benchmark sources that remain.
+#
+# broiler.javascript.slice construct census over 24 files
+# 24 parsed, 0 did not, and 0 contain nothing outside the declared manifest
+# construct|files|occurrences
+StringValue|24|13768
+Call|23|178738
+Function|23|7460
+MemberAccess|21|70378
+ArrayLiteral|20|7836
+LooseEquality|20|7082
+New|20|3761
+Null|20|2634
+Return|20|5592
+ComputedMemberAccess|19|46959
+This|19|19366
+Update|18|2615
+Throw|17|122
+ObjectLiteral|16|29590
+CompoundAssignment|15|3612
+TypeOf|13|282
+BitwiseNot|9|85
+Switch|8|230
+Try|8|122
+Delete|6|178
+ForIn|6|66
+RegularExpression|6|393
+Sequence|6|156
+In|4|91
+Instanceof|4|133
+Label|2|2677
+Getter|1|38
+Setter|1|1
+# how many constructs a file needs, and how many files need that many
+# constructs-needed|files
+1|1
+3|1
+5|1
+8|1
+9|1
+13|1
+14|4
+15|3
+16|1
+17|2
+18|1
+19|1
+20|1
+22|1
+24|2
+25|1
+27|1
+# admitting the ranked constructs in order, and what each one buys
+# rank|construct|files-newly-admissible|files-admissible-in-total
+1|StringValue|1|1
+3|Function|1|2
+14|ObjectLiteral|2|4
+15|CompoundAssignment|2|6
+17|BitwiseNot|3|9
+18|Switch|1|10
+19|Try|1|11
+20|Delete|1|12
+21|ForIn|2|14
+22|RegularExpression|2|16
+23|Sequence|2|18
+25|Instanceof|3|21
+26|Label|2|23
+28|Setter|1|24
+# 24 of 24 parsed files are admissible once all 28 ranked constructs are admitted

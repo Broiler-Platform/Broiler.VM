@@ -89,7 +89,8 @@ internal static class Program
                 Console.WriteLine(
                     "broiler-js-conformance: no --suite <directory> was given. Modes: --closure, " +
                     "--harness-checks, --self-check, --run, --write-artifacts, --pin, " +
-                    "--merge <dir>, --floor <file> --report <file>.");
+                    "--merge <dir>, --floor <file> --report <file>. A run adds " +
+                    "--dialect native|ingested and --selfcheck <dir>.");
 
                 return ExitCodes.Usage;
             }
@@ -106,15 +107,26 @@ internal static class Program
                 return WritePin(suite);
             }
 
+            if (!Dialect(args, out var dialect))
+            {
+                Console.WriteLine(
+                    "broiler-js-conformance: --dialect takes `native` or `ingested`");
+
+                return ExitCodes.Usage;
+            }
+
             if (args.Contains("--self-check", StringComparer.Ordinal))
             {
                 using var engine = Compose(out var why);
-                return engine is null ? Refuse(why) : RunSelfCheck(suite, engine, verbose);
+
+                return engine is null
+                    ? Refuse(why)
+                    : RunSelfCheck(SelfCheckRoot(suite, args), dialect, engine, verbose);
             }
 
             if (args.Contains("--run", StringComparer.Ordinal))
             {
-                return RunSuite(suite, args, verbose);
+                return RunSuite(suite, dialect, args, verbose);
             }
 
             Console.WriteLine("broiler-js-conformance: no mode was given beside --suite");
@@ -143,10 +155,46 @@ internal static class Program
         return failed == 0 ? ExitCodes.Ok : ExitCodes.HarnessDefect;
     }
 
-    /// <summary>Runs the self-check: does a failing test come back as a failure?</summary>
-    private static int RunSelfCheck(string suite, Execution engine, bool verbose)
+    /// <summary>Which dialect the suite's files are written in.</summary>
+    /// <remarks>
+    /// <b>The default is this component's own</b>, so a run that forgets the switch scores the
+    /// fixtures it was always scoring rather than quietly translating them under rules they were
+    /// not written for.
+    /// </remarks>
+    private static bool Dialect(string[] args, out SuiteDialect dialect)
     {
-        var cases = SelfCheck.Run(Path.Combine(suite, SelfCheckDirectory), engine, out var complaints);
+        dialect = SuiteDialect.Native;
+        var declared = Argument(args, "--dialect");
+
+        return declared switch
+        {
+            null or "native" => true,
+            "ingested" => Ingested(out dialect),
+            _ => false,
+        };
+
+        static bool Ingested(out SuiteDialect dialect)
+        {
+            dialect = SuiteDialect.Ingested;
+            return true;
+        }
+    }
+
+    /// <summary>Where the self-check fixtures are, which is not always inside the suite.</summary>
+    /// <remarks>
+    /// <b>A third-party checkout does not contain this component's fixtures and must not be asked
+    /// to.</b> Section 14 requires the self-check to run before every shard; against an ingested
+    /// suite the fixtures therefore have to come from this repository while the tests come from
+    /// the checkout, which is what this switch is for. It defaults to the suite's own directory,
+    /// so the fixtures this repository does hold are found without it.
+    /// </remarks>
+    private static string SelfCheckRoot(string suite, string[] args) =>
+        Argument(args, "--selfcheck") ?? Path.Combine(suite, SelfCheckDirectory);
+
+    /// <summary>Runs the self-check: does a failing test come back as a failure?</summary>
+    private static int RunSelfCheck(string root, SuiteDialect dialect, Execution engine, bool verbose)
+    {
+        var cases = SelfCheck.Run(root, dialect, engine, out var complaints);
 
         foreach (var one in cases)
         {
@@ -185,7 +233,7 @@ internal static class Program
     }
 
     /// <summary>Scores one shard of a suite.</summary>
-    private static int RunSuite(string suite, string[] args, bool verbose)
+    private static int RunSuite(string suite, SuiteDialect dialect, string[] args, bool verbose)
     {
         // The instrument before the measurement, in that order, on every shard. A harness whose own
         // checks fail has nothing to say about an engine, and a harness that cannot report a
@@ -205,7 +253,7 @@ internal static class Program
             return Refuse(why);
         }
 
-        var selfCheck = RunSelfCheck(suite, engine, verbose);
+        var selfCheck = RunSelfCheck(SelfCheckRoot(suite, args), dialect, engine, verbose);
 
         if (selfCheck != ExitCodes.Ok)
         {
@@ -213,7 +261,7 @@ internal static class Program
             return selfCheck;
         }
 
-        var tests = Suite.Read(Path.Combine(suite, TestDirectory), out var unreadable);
+        var tests = Suite.Read(Path.Combine(suite, TestDirectory), dialect, out var unreadable);
         var knownIncorrect = Selection.ReadKnownIncorrect(
             Path.Combine(suite, KnownIncorrectFileName), out var listComplaints);
 

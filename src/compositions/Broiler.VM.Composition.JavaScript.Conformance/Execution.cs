@@ -261,11 +261,19 @@ internal sealed class Execution : IDisposable
 
     /// <summary>Scores one answer against one declaration.</summary>
     /// <remarks>
+    /// <para>
     /// The completion kind is read from the markers the run emitted rather than passed in, so the
     /// protocol classifier is on the product path and not only in the harness's own tests. A
     /// classifier nothing calls is a classifier that can be wrong for a year.
+    /// </para>
+    /// <para>
+    /// <b>It is internal so the harness's own checks can call it without composing a profile.</b>
+    /// This method is the scoring rule - it is where a refusal becomes a pass, a failure or an
+    /// unscorable case - and a rule that could only be exercised by running an engine could only be
+    /// tested by the thing it is meant to be independent of.
+    /// </para>
     /// </remarks>
-    private static Observation Compare(
+    internal static Observation Compare(
         ConformanceTest test,
         ConformanceExpectation answer,
         IReadOnlyList<string> markers,
@@ -274,7 +282,32 @@ internal sealed class Execution : IDisposable
         var (completion, why) = CompletionProtocol.Classify(markers);
         var full = detail.Length == 0 ? why : detail;
 
-        if (answer == test.Expectation)
+        // THE HONESTY RULE, AND IT RUNS BEFORE THE COMPARISON RATHER THAN INSIDE IT.
+        //
+        // An ingested test asked whether some source is valid JavaScript. This profile refuses
+        // valid JavaScript on almost every line, so its refusal answers that question only when the
+        // refusal was a language answer - and when it was not, the case is UNSCORABLE IN EITHER
+        // DIRECTION. Not a pass, because the engine did not earn one; not a failure, because
+        // nothing here is a defect and a failure manifest is a repair queue.
+        //
+        // Ordering it ahead of the comparison is what makes it a rule instead of a special case: a
+        // refusal this profile has not earned cannot become a verdict no matter what the test
+        // declared, so no declaration can be written that gets past it.
+        if (test.Ingested)
+        {
+            var unearned = Unearned(answer);
+
+            if (unearned.Length != 0)
+            {
+                return new Observation(
+                    ConformanceStatus.Skipped,
+                    completion,
+                    answer.ToString(),
+                    "not scored - " + unearned);
+            }
+        }
+
+        if (Agrees(test.Expectation, answer))
         {
             return new Observation(ConformanceStatus.Passed, completion, answer.ToString(), string.Empty);
         }
@@ -285,6 +318,70 @@ internal sealed class Execution : IDisposable
             answer.ToString(),
             $"declared `{test.Expectation}` and answered `{answer}`" +
                 (full.Length == 0 ? string.Empty : ": " + full));
+    }
+
+    /// <summary>
+    /// Why a refusal cannot answer a question about the language, or empty where it can.
+    /// </summary>
+    /// <remarks>
+    /// <b>Only a code this build recognises and classifies gets here.</b> A refusal naming
+    /// something that is not a member of the vocabulary - the no-diagnostic case, or a number from
+    /// a build that has moved on - falls through to the comparison and reports a FAILURE, which is
+    /// what it is. Skipping it would hide a front end that refused without saying why behind a
+    /// count of things that were merely out of scope.
+    /// </remarks>
+    private static string Unearned(ConformanceExpectation answer)
+    {
+        if (answer.Kind != ExpectationKind.RefusedBySource ||
+            !Enum.TryParse<SliceSourceDiagnosticCode>(answer.Value, out var code) ||
+            !Enum.IsDefined(code))
+        {
+            return string.Empty;
+        }
+
+        return LanguageErrors.MayScore(code) ? string.Empty : LanguageErrors.WhyItCannotScore(code);
+    }
+
+    /// <summary>Whether what happened is what the test declared.</summary>
+    /// <remarks>
+    /// <para>
+    /// The observation is always written in this build's own vocabulary - a refusal names the
+    /// diagnostic code that made it - because that is what actually happened. A declaration may be
+    /// written in a WIDER one, and the two extra arms below are where a wider declaration is
+    /// matched against a narrower observation.
+    /// </para>
+    /// <para>
+    /// <b>Both arms are one-way on purpose.</b> A test declaring this build's exact code still
+    /// requires that exact code; only a test that declared the weaker thing accepts the stronger
+    /// answer. Making the match symmetric would let a fixture that meant to pin a code be satisfied
+    /// by any refusal at all.
+    /// </para>
+    /// </remarks>
+    private static bool Agrees(ConformanceExpectation declared, ConformanceExpectation answer)
+    {
+        if (declared == answer)
+        {
+            return true;
+        }
+
+        // A language-level refusal, matched on the JavaScript error type. `Unearned` has already
+        // run, so reaching here means the code IS an early error - all of which this front end
+        // reports as a SyntaxError.
+        if (declared.Kind == ExpectationKind.RefusedAsEarlyError &&
+            answer.Kind == ExpectationKind.RefusedBySource)
+        {
+            return Enum.TryParse<SliceSourceDiagnosticCode>(answer.Value, out var code) &&
+                Enum.IsDefined(code) &&
+                LanguageErrors.MayScore(code) &&
+                string.Equals(declared.Value, LanguageErrors.SyntaxError, StringComparison.Ordinal);
+        }
+
+        // "It ran and nothing was thrown", which is all an ingested positive test can say once its
+        // assertion library is gone. The completion VALUE is deliberately not compared: the test
+        // never declared one, and comparing against a value nobody wrote down would be this harness
+        // inventing an expectation.
+        return declared.Kind == ExpectationKind.CompletesWithoutFault &&
+            answer.Kind == ExpectationKind.Completion;
     }
 
     /// <summary>The markers a refused or exhausted run emits: none, because it never settled.</summary>
