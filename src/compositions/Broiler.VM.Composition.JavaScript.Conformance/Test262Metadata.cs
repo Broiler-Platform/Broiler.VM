@@ -114,9 +114,17 @@ internal static class Test262Metadata
             return false;
         }
 
-        var lines = text[(open + Open.Length)..close]
-            .Replace("\r\n", "\n", StringComparison.Ordinal)
-            .Split('\n');
+        // EVERY LINE TERMINATOR THE LANGUAGE HAS, and a real suite uses more than one. A file
+        // written with CARRIAGE RETURNS ALONE - which one test262 file is, deliberately, because
+        // its subject is line-terminator normalisation - became a single line here, so no key was
+        // found and the reader reported that the file declared no description. The order matters:
+        // the pair first, then a lone carriage return, or a CRLF file gains a blank line between
+        // every pair.
+        var lines = Dedent(
+            text[(open + Open.Length)..close]
+                .Replace("\r\n", "\n", StringComparison.Ordinal)
+                .Replace('\r', '\n')
+                .Split('\n'));
 
         var description = string.Empty;
         var esid = string.Empty;
@@ -232,6 +240,46 @@ internal static class Test262Metadata
         frontmatter = new Test262Frontmatter(description, esid, flags, features, includes, negative);
         failure = string.Empty;
         return true;
+    }
+
+    /// <summary>
+    /// Removes the indentation the whole block shares, so that a block indented as a unit reads
+    /// the same as one at the margin.
+    /// </summary>
+    /// <remarks>
+    /// <b>Relative indentation is what the dialect means, and this reader used to take the
+    /// absolute kind.</b> A real suite file whose entire metadata block is indented by one space -
+    /// which is legal and which one test262 file does - had every one of its keys reported as
+    /// "indented under no key", because the check for a top-level key compared against column
+    /// zero. Dedenting once here is what lets every reader below keep comparing against zero.
+    /// Blank lines are ignored when measuring, because a blank line has no indentation to speak of
+    /// and counting it as zero would make every block flush.
+    /// </remarks>
+    private static string[] Dedent(string[] lines)
+    {
+        var shared = int.MaxValue;
+
+        foreach (var line in lines)
+        {
+            if (line.Trim().Length != 0)
+            {
+                shared = Math.Min(shared, Indent(line));
+            }
+        }
+
+        if (shared is 0 or int.MaxValue)
+        {
+            return lines;
+        }
+
+        for (var index = 0; index < lines.Length; index++)
+        {
+            lines[index] = lines[index].Length <= shared
+                ? string.Empty
+                : lines[index][shared..];
+        }
+
+        return lines;
     }
 
     /// <summary>How many spaces a line opens with.</summary>

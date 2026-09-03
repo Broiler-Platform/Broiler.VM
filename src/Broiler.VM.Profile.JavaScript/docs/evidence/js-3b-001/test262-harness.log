@@ -1,0 +1,50 @@
+# The conformance harness over test262, ingested dialect, 2026-09-03, win-x64.
+#
+#   source   https://codeload.github.com/tc39/test262/tar.gz/<ref>
+#   ref      ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+#   sha256   f58ce79141529c9fa33592e22ff3ff0d83b83830ac8e372ecd32e1623db1c040
+#
+# THE PIN IS OVER A TRANSIENT CHECKOUT AND IS NOT THE ARCHIVED PIN THE GATE WANTS. The
+# suite was retrieved to a temporary directory, hashed by --pin, read, and left there. No
+# suite file entered this repository. Retrieving, hashing AND ARCHIVING is the human action
+# section 3 records as open, and the third of those three did not happen - so NO FLOOR IS
+# SET over these totals and section 3 is not closed by them.
+#
+# Command: --run --dialect ingested --include-negative --selfcheck <this repository>
+#
+# THE NUMBER WORTH READING IS THE SKIPPED COLUMN. 7,365 cases were declined because the
+# refusal this profile made was ConstructOutsideManifest - the source is valid JavaScript
+# and this manifest declines the construct. Every one of them is a NEGATIVE test whose
+# declared expectation is that a refusal happens, so a harness comparing outcomes would
+# have scored all 7,365 as passes and reported 8,535 of 8,553 - 99.8 per cent. The rule
+# JSC-54 records is what turns that into 1,170 of 1,188 scored.
+#
+suite test262@46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93; shard all of 1
+selection candidates=57421 knownIncorrect=0 outOfScope=0 featureFiltered=0 negativeWithheld=0 unselectable=48849 selected=8572 sharded=8572
+mode Script: selected=8360 executed=1184 passed=1167 failed=17 skipped=7176 timedOut=0
+mode Module: selected=212 executed=22 passed=21 failed=1 skipped=190 timedOut=0
+mode Raw: selected=0 executed=0 passed=0 failed=0 skipped=0 timedOut=0
+#
+# every reason a case was declined rather than scored
+7365|ConstructOutsideManifest
+1|UnresolvableIdentifier
+#
+# EVERY FAILURE, in three groups. These are the actionable output of the run.
+language/comments/hashbang/line-terminator-carriage-return.js: refused-by-source MalformedNumericLiteral - declared `completes` and answered `refused-by-source MalformedNumericLiteral`: 2003:MalformedNumericLiteral at 1:48: a numeric literal touching an identifier
+language/comments/hashbang/line-terminator-line-separator.js: refused-by-source ExpectedToken - declared `completes` and answered `refused-by-source ExpectedToken`: 2102:ExpectedToken at 1:2: a statement ends with `;` or a line terminator, and `!` is neither
+language/comments/hashbang/line-terminator-paragraph-separator.js: refused-by-source ExpectedToken - declared `completes` and answered `refused-by-source ExpectedToken`: 2102:ExpectedToken at 1:2: a statement ends with `;` or a line terminator, and `!` is neither
+language/comments/hashbang/module.js: refused-by-source ExpectedToken - declared `completes` and answered `refused-by-source ExpectedToken`: 2102:ExpectedToken at 1:2: a statement ends with `;` or a line terminator, and `!` is neither
+language/comments/hashbang/not-empty.js: refused-by-source ExpectedToken - declared `completes` and answered `refused-by-source ExpectedToken`: 2102:ExpectedToken at 1:2: a statement ends with `;` or a line terminator, and `!` is neither
+language/comments/hashbang/use-strict.js: refused-by-source ExpectedToken - declared `completes` and answered `refused-by-source ExpectedToken`: 2102:ExpectedToken at 1:2: a statement ends with `;` or a line terminator, and `!` is neither
+language/statements/const/global-use-before-initialization-in-declaration-statement.js#strict: completion undefined - declared `fault ReferenceError` and answered `completion undefined`
+language/statements/const/global-use-before-initialization-in-declaration-statement.js#sloppy: completion undefined - declared `fault ReferenceError` and answered `completion undefined`
+language/statements/const/global-use-before-initialization-in-prior-statement.js#strict: completion undefined - declared `fault ReferenceError` and answered `completion undefined`
+language/statements/const/global-use-before-initialization-in-prior-statement.js#sloppy: completion undefined - declared `fault ReferenceError` and answered `completion undefined`
+language/statements/let/global-use-before-initialization-in-declaration-statement.js#strict: completion undefined - declared `fault ReferenceError` and answered `completion undefined`
+language/statements/let/global-use-before-initialization-in-declaration-statement.js#sloppy: completion undefined - declared `fault ReferenceError` and answered `completion undefined`
+language/statements/let/global-use-before-initialization-in-prior-statement.js#strict: completion undefined - declared `fault ReferenceError` and answered `completion undefined`
+language/statements/let/global-use-before-initialization-in-prior-statement.js#sloppy: completion undefined - declared `fault ReferenceError` and answered `completion undefined`
+language/statements/using/global-use-before-initialization-in-declaration-statement.js#strict: refused-by-source ExpectedToken - declared `fault ReferenceError` and answered `refused-by-source ExpectedToken`: 2102:ExpectedToken at 17:9: a statement ends with `;` or a line terminator, and `x` is neither
+language/statements/using/global-use-before-initialization-in-declaration-statement.js#sloppy: refused-by-source ExpectedToken - declared `fault ReferenceError` and answered `refused-by-source ExpectedToken`: 2102:ExpectedToken at 16:9: a statement ends with `;` or a line terminator, and `x` is neither
+language/statements/using/global-use-before-initialization-in-prior-statement.js#strict: refused-by-source ExpectedToken - declared `fault ReferenceError` and answered `refused-by-source ExpectedToken`: 2102:ExpectedToken at 17:12: a statement ends with `;` or a line terminator, and `x` is neither
+language/statements/using/global-use-before-initialization-in-prior-statement.js#sloppy: refused-by-source ExpectedToken - declared `fault ReferenceError` and answered `refused-by-source ExpectedToken`: 2102:ExpectedToken at 16:12: a statement ends with `;` or a line terminator, and `x` is neither
