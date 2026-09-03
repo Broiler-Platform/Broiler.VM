@@ -99,9 +99,13 @@ roadmap [section 14](../roadmap.md#14-the-conformance-oracle) forbids publishing
 percentage then or ever. What the floor guards is the thing an exit code cannot: a case that stops
 being scorable is reported `Skipped`, and a run full of skips exits zero.
 
-**The cost was measured rather than argued.** The run is about two minutes over a warm extraction
-and is dominated by hashing 56,560 files, not by scoring 1,084 of them — the same digest that makes
-the pin verifiable is what makes the step expensive.
+**The cost was measured rather than argued, and the first measurement was taken on the wrong
+platform.** On `win-x64` the run is about two minutes over a warm extraction and over ten cold,
+dominated by hashing 56,560 files rather than by scoring 1,084 of them — and that number was
+carried into this file as though it were the lane's. **On the Linux runner the lane actually uses,
+the whole step — extract, hash and score — costs about twelve seconds**, and the job it was added
+to went from roughly one minute to 1m12s. Small-file I/O is the whole of the difference. The
+Windows figure is kept here because it is the one a contributor on that platform will see.
 
 **This floor moved on 2026-09-03 and it was a re-base rather than a change in what the engine
 does.** The suite gained a `features.txt` — the list an ingested suite carries to say which of its

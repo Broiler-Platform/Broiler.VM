@@ -170,6 +170,12 @@ jobs:
       # the language-class rule start calling earned refusals unearned, and this lane would stay
       # green over a shrinking number of passes. The floor names the figure.
       #
+      # WHAT IT COSTS, MEASURED HERE RATHER THAN LOCALLY. About twelve seconds on this runner for
+      # the whole step - extract, hash and score - which took the job from roughly a minute to
+      # 1m12s. The same work is two minutes warm and over ten cold on win-x64, so the figure that
+      # decided this step belonged here is the one this lane produced and not the one a workstation
+      # did. It is dominated by hashing 56,560 files rather than by scoring 1,084 of them.
+      #
       # ONCE, NOT PER CELL, AND THAT IS A NARROWING WORTH STATING. The two in-repository suites run
       # on every publish cell because a published image is what they are about; this one is about
       # the ENGINE's answers over a fixed corpus, which no runtime identifier changes, and 232 MB
