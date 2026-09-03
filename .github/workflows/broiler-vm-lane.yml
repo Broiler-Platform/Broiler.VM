@@ -669,6 +669,25 @@ jobs:
           # The emulator is x86_64, so this is the RID that runs. The head reads its own RID off
           # the device and prints it into the closure report, so the log says which one it was
           # rather than which one the publish asked for.
+          #
+          # THIS STEP LOGS TWO WARNINGS ON EVERY RUN AND THEY ARE EXPECTED. `-t:Install` drives
+          # adb, and against a freshly booted emulator the SDK's uninstall-before-install finds no
+          # package to remove, so adb exits 1:
+          #
+          #   Xamarin.Android.Common.targets(3004,4): warning MSB6006: "adb" exited with code 1.
+          #   Xamarin.Android.Common.targets(3004,4): warning XAAADB0000: Failure [DELETE_FAILED_INTERNAL_ERROR]
+          #
+          # The build then succeeds with zero errors, and the head installs, launches and reports.
+          # They are recorded here because of how they SURFACE rather than because of what they
+          # say: GitHub turns the second into an annotation whose whole message is the word
+          # `Failure`, attributed to line 3004 of a file that is not in this repository - the
+          # Android SDK's targets - which the annotation list renders as `.github#3004`. A reader
+          # meeting `! Failure` on a green full lane has no route from there to any of this, and
+          # both full-lane runs to date have carried the pair.
+          #
+          # NOT SUPPRESSED, deliberately. It is a true statement that adb failed, and the day it
+          # means something else - an install that really did not happen - a silenced warning is
+          # the one thing that would have said so.
           dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Android \
             -c Release -f net10.0-android36.0 -p:RuntimeIdentifier=android-x64 -t:Install
 
