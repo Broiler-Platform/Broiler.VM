@@ -151,6 +151,7 @@ rather than a decision record.
 | [JSC-65](#jsc-65) | `SliceSourceCompiler`'s remark; [JSC-64](#jsc-64); ledger section 2 | A loop nothing can leave was called the format's answer three times: the verifier requires every REACHABLE path to return, and that loop has no path that ends | the verifier's own rule |
 | [JSC-66](#jsc-66) | the ledger's account of the four remaining test262 failures, twice; [Bundle JS-3B-002](evidence/js-3b-002/README.md) section 3; [JSC-54](#jsc-54) | The harness had no way to exclude by feature at all, and the cost was not four failures but 117 passes it had not earned | the suite's own `features.txt`, and a census over every scored case |
 | [JSC-67](#jsc-67) | the ledger's unopened-dependency row for the language edition, open since JS-0; the JS-10 row; Bundle JS-3A's exclusion 5 | The row was written as though there were two states and section 24 defines three: the edition is pinned PROVISIONALLY, and two of the three actions bought three checked claims and one disagreement | ECMA-262 retrieved at five editions and hashed |
+| [JSC-68](#jsc-68) | the ledger's conformance-suite row and its account of the test262 runs; Bundles [JS-3B-001](evidence/js-3b-001/README.md) and [JS-3B-002](evidence/js-3b-002/README.md) | The suite pin was not merely transient, it was SELF-CERTIFYING: `--pin` writes its digest into the directory it just read, so the checkout was vouching for itself | the archive retrieved and hashed twice, independently |
 
 ### JSC-01
 
@@ -2684,3 +2685,65 @@ flags do not map onto clauses mechanically, so JSD-0018's reader still uses the 
 three prose claims checked against them; the twenty-one proposal flags of the pinned checkout
 searched in the pinned edition; four negative controls over rule N14, each moving the pin in one of
 the places that must agree and each caught; 2026-09-03.
+
+---
+
+### JSC-68
+
+**Where:** the [ledger](roadmap.status.md#3-open-external-dependencies)'s conformance-suite row and
+its account of the test262 runs in
+[section 2](roadmap.status.md#2-current-milestone-status); [Bundle JS-3B-001](evidence/js-3b-001/README.md)
+and [Bundle JS-3B-002](evidence/js-3b-002/README.md), which say it in the same words.
+
+**What the record said, in every place it was said.** "The pin is still over a **transient
+checkout** — retrieved, hashed, read and left in a temporary directory — and section 3 asks for
+material retrieved, hashed **and archived**. No suite file is in this repository."
+
+**Every word of that is true, and it is not the part that mattered.** The harness's `--pin` mode
+computes a digest over a directory and writes it **into that directory**. Every test262 figure this
+component has published was obtained against a `suite.pin` the harness had generated inside the
+checkout it was about to score. **Verifying against it proves the directory has not changed since
+the harness last looked at it** — nothing about which upstream revision the directory is, and
+nothing that an editor of the checkout could not arrange, because the suite and the pin sit side by
+side and are editable in one gesture. The record described the pin as temporary. It was
+**self-certifying**, which is a different and larger defect, and the word "transient" reads as the
+smaller one.
+
+**What replaced it.** A pin retained in **this** repository, at
+[`src/tests/conformance/pins/test262.pin`](../../tests/conformance/pins/README.md), in a
+file the suite cannot reach: the upstream commit `ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e`, the
+content digest `46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93` over 56,560
+files, and the archive those bytes came from. `--expect` makes a run answerable to it, and a
+checkout whose name, digest or file count is not the one this repository decided stops the run
+rather than shrinking a total.
+[JSD-0020](decisions/0020-the-retained-conformance-suite-pin-and-the-one-it-replaces.md) records
+the decision.
+
+**The pin was taken twice, and the second time is the one that counts.** The first checkout is the
+one this component had been writing a `suite.pin` into for a day, so a digest computed there is a
+digest over a directory this component had modified. The archive was retrieved again into a fresh
+directory — **the two downloads were byte-identical** — extracted, and hashed independently. It
+produced the same figure, which is what makes the retained digest a second reading rather than a
+copy of the first.
+
+**No figure moved and none was expected to.** The suite is the same suite; what changed is who says
+so. The run under the retained pin reports the same 1,084 executed, 1,084 passed, 0 failed as the
+run before it.
+
+**What is still open, and it is now one action rather than three.** The suite is **retrieved and
+hashed and not archived**: 232 megabytes over 56,560 files, against the language specification's
+one file of 2.9 megabytes, which was archived the same day. That difference is a decision about the
+shape of this repository rather than about evidence, and it is recorded as one rather than left to
+be inferred from a row that says only "open". **No floor is set over any test262 figure** and none
+may be while the material is somebody else's to change.
+
+**And the attribution row is still not discharged**, which is deliberate. Section 14 lands it "in
+the change that first ingests a suite file" and this change ingests none — only the suite's licence
+text, retained beside the pin so the obligation is met in advance rather than discovered at a
+publish. What has expired is [JSC-30](#jsc-30)'s *reason* for deferring it: an attribution for
+material nobody had retrieved would be an attribution for material nobody had read, and the
+material has now been read.
+
+**Authority and date.** The archive retrieved twice and extracted twice, the second independently
+of the first; the harness's own digest over both; the run re-scored under the retained pin with
+every figure unmoved; 2026-09-03.

@@ -880,6 +880,16 @@
       "activationMilestone": null,
       "nonVacuousWhen": "The declaration exists from 2026-09-03 and declares every constant the rule reads, so the rule compares real values against real documents rather than passing over an absent subject. The archive clause decides a real state rather than a hypothetical one: the document is retrieved and hashed and not archived, so the provisional branch is the branch that runs.",
       "witness": "LanguageEditionPinRuleTests in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
+      "id": "N15",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "The retained conformance-suite pin names the same upstream revision and the same content digest in the pin file the harness enforces, in the decision record that argues for it, and in the ledger's open-dependency row; and its archived field agrees with the ledger's account of what is outstanding, in both directions. The suite is not in this tree, so the pin is the artifact and three documents naming three revisions would be three claims with nothing behind any of them.",
+      "evidence": "The retained pin parsed as the harness parses it, the decision record and the ledger read off disk",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The retained pin exists from 2026-09-03 and declares every key the rule reads, so the rule compares enforced values against real documents rather than passing over an absent subject. The archived clause decides a real state: the suite is retrieved and hashed and not archived, so the unarchived branch is the branch that runs.",
+      "witness": "RetainedSuitePinRuleTests in Broiler.VM.Architecture.Tests.dll"
     }
   ]
 }

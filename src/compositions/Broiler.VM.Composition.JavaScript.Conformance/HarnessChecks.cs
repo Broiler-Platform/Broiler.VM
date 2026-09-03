@@ -43,6 +43,9 @@ internal static class HarnessChecks
         AReportRoundTripsThroughItsOwnFormat(),
         AReportNamesTheEditionItWasScoredAgainst(),
         AReportFromAnotherEditionIsRefusedRatherThanRead(),
+        ARetainedPinReadsBackWhatItDeclares(),
+        ARetainedPinMissingAnythingIsRefusedRatherThanDefaulted(),
+        ASuiteThatIsNotThePinnedOneDisagreesOnEveryCountItCan(),
         ADetailCannotForgeARow(),
         ModeTotalsAccountForWhatWasSelected(),
         AMissingShardIsIncompleteCoverageAndNotASmallerTotal(),
@@ -340,6 +343,106 @@ internal static class HarnessChecks
             "every-expectation-kind-round-trips-and-a-fifth-is-refused",
             roundTripped && refused,
             $"{every.Length} kinds render and parse back; an unknown kind names the four that exist");
+    }
+
+    private static (string, bool, string) ARetainedPinReadsBackWhatItDeclares()
+    {
+        var pin = ReadRetained(SamplePin, out var complaints);
+
+        return (
+            "a-retained-pin-reads-back-what-it-declares",
+            complaints.Count == 0 &&
+                pin is not null &&
+                string.Equals(pin.Suite, "a-suite", StringComparison.Ordinal) &&
+                string.Equals(pin.Revision, "abc123", StringComparison.Ordinal) &&
+                string.Equals(pin.ContentDigest, "def456", StringComparison.Ordinal) &&
+                pin.Files == 7 &&
+                !pin.Archived,
+            pin is null
+                ? "the sample pin was refused: " + string.Join("; ", complaints)
+                : pin.Describe());
+    }
+
+    private static (string, bool, string) ARetainedPinMissingAnythingIsRefusedRatherThanDefaulted()
+    {
+        // Four ways a retained pin can fail to be one, and each is a way a run could end up
+        // reporting a verified suite on the strength of whatever was left in the file.
+        var refused = 0;
+
+        // A missing key, which is the one that matters: a pin with no content digest verifies
+        // nothing and would otherwise read as a pin.
+        _ = ReadRetained(
+            string.Join('\n', SamplePin.Split('\n').Where(static line =>
+                !line.StartsWith("content-sha256", StringComparison.Ordinal))),
+            out var missing);
+
+        refused += missing.Count != 0 ? 1 : 0;
+
+        _ = ReadRetained(SamplePin + "\nunknown-key something", out var unknown);
+        refused += unknown.Count != 0 ? 1 : 0;
+
+        _ = ReadRetained(
+            string.Join('\n', SamplePin.Split('\n').Skip(1)),
+            out var headerless);
+
+        refused += headerless.Count != 0 ? 1 : 0;
+
+        // `archived pending` is the shape that would overclaim under a reader testing for
+        // "anything but no", so the field is read as one of two words.
+        _ = ReadRetained(SamplePin.Replace("archived no", "archived pending", StringComparison.Ordinal), out var vague);
+        refused += vague.Count != 0 ? 1 : 0;
+
+        return (
+            "a-retained-pin-missing-anything-is-refused-rather-than-defaulted",
+            refused == 4,
+            $"{refused} of 4 malformed pins were refused: a missing key, an unknown key, no " +
+            "header, and an archived field that is neither yes nor no");
+    }
+
+    private static (string, bool, string) ASuiteThatIsNotThePinnedOneDisagreesOnEveryCountItCan()
+    {
+        var pin = ReadRetained(SamplePin, out _)!;
+
+        var agrees = pin.Disagrees(new SuiteRevision("a-suite", "def456"), 7);
+        var elsewhere = pin.Disagrees(new SuiteRevision("another-suite", "999"), 3);
+        var unpinned = pin.Disagrees(new SuiteRevision("a-suite", string.Empty), 7);
+
+        return (
+            "a-suite-that-is-not-the-pinned-one-is-refused-on-every-count-it-can-be",
+            agrees.Count == 0 && elsewhere.Count == 3 && unpinned.Count == 1,
+            $"the pinned suite raises {agrees.Count} complaints, a different one raises " +
+            $"{elsewhere.Count} - name, digest and file count - and one carrying no revision of " +
+            $"its own raises {unpinned.Count}");
+    }
+
+    /// <summary>A retained pin, written out here rather than read off disk.</summary>
+    private static string SamplePin =>
+        string.Join(
+            '\n',
+            RetainedSuitePin.Header,
+            "suite a-suite",
+            "upstream someone/a-suite",
+            "revision abc123",
+            "archive https://example.invalid/a-suite.tar.gz",
+            "archive-sha256 0123",
+            "content-sha256 def456",
+            "files 7",
+            "archived no");
+
+    /// <summary>Reads pin text through the real reader, which takes a path.</summary>
+    private static RetainedSuitePin? ReadRetained(string text, out IReadOnlyList<string> complaints)
+    {
+        var path = Path.Combine(Path.GetTempPath(), "broiler-js-conformance-retained.pin");
+
+        try
+        {
+            File.WriteAllText(path, text);
+            return RetainedSuitePin.Read(path, out complaints);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
     }
 
     private static (string, bool, string) AReportNamesTheEditionItWasScoredAgainst()
