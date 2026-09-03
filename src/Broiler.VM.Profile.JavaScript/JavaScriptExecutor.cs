@@ -138,9 +138,16 @@ public sealed class JavaScriptInstance : IVmInstanceState
         Program = program;
         Locals = new JavaScriptValue[program.LocalCount];
 
-        // Every local starts as `undefined`, which is what `var` does in the language. The slice
-        // has no lexical declaration and therefore no temporal dead zone; JS-3b's static semantics
-        // are where reading a `let` before its initialiser stops being the same question.
+        // Every local starts as `undefined`, which is what `var` does in the language: a hoisted
+        // binding exists from the moment its scope is entered and holds `undefined` until an
+        // assignment runs. That is what lets the lowering stop emitting a block's statements after
+        // one control cannot pass - a `var` whose initialiser is unreachable reads exactly what
+        // the language says it should, because these writes already happened.
+        //
+        // THIS COMMENT SAID THE SLICE HAS NO TEMPORAL DEAD ZONE, which stopped being true when the
+        // format grew an instruction that can fail. A lexical binding read or written before its
+        // initialiser is a ReferenceError now, and it is the lowering's guard that raises it - not
+        // the value in the slot, which is why every slot may still start as `undefined` here.
         for (var index = 0; index < Locals.Length; index++)
         {
             Locals[index] = JavaScriptValue.Undefined;

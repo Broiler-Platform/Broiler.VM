@@ -414,11 +414,22 @@ that can hold it. Taking it also forced the opcode's contract to change — it d
 write replaces an instruction that pops, so it is a guard that moves nothing and stands before the
 instruction it prevents.
 
-**What is still not repaired.** **Dead code after a `break` inside a block** is still emitted,
-because `var` is hoisted and a slot the executor never wrote is a state this profile does not
-guarantee. And a **loop with no exit at all** is still refused, because suppressing what follows it
-would leave a function with no terminator. Both are recorded with their reasons rather than folded
-into a change that would have had to guess at them.
+**Dead code after a terminator is repaired too, and the reason it was declined was wrong**
+*(corrected: [JSC-64](roadmap.corrections.md#jsc-64))*. It was declined because "a slot the executor
+never wrote is a state this profile does not guarantee" — and the executor writes `undefined` into
+**every** local when the instance is built, in a loop, with a comment saying that is what `var`
+does in the language. **Two remarks in two assemblies, and the more pessimistic one was the one
+consulted.** A block now stops being lowered after a statement control cannot pass; the program
+body does not, because its tail is the `Return`.
+
+**Neither of the last two repairs moved a number**, and both are pinned in the host's acceptance
+suite because that is the only instrument here that can hold them: no file of test262's selectable
+slice writes to a binding in its dead zone or carries dead code after a terminator, since those
+cases live behind an assertion prelude this manifest admits no call to load.
+
+**One shape is still refused, and it is the one the compiler's remark named before any of this
+began**: a loop with no exit at all, where everything after it is unreachable including the
+program's own tail, and suppressing a tail would leave a function with no terminator.
 
 ### What this component is not claiming
 

@@ -348,7 +348,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a stage runs over a tree the previous stage refused
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceSourceCompiler.Lower(SliceProgram, SliceBindingTable, SliceParseOptions)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs` - Security=High, Spec=none cited, `80A056`, PENDING
   - Falsified if: the operand stack is not empty at any statement boundary
-- `Broiler.VM.Profile.JavaScript.Compiler.SliceSourceCompiler.LowerStatement(SliceStatement, SliceParseOptions)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs` - Security=High, Spec=none cited, `1611CA`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.SliceSourceCompiler.LowerStatement(SliceStatement, SliceParseOptions)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs` - Security=High, Spec=none cited, `B5BD8A`, PENDING
   - Falsified if: any statement lowering leaves the operand stack at a different height than it entered with
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceSourceCompiler.LowerIf(SliceIfStatement, SliceParseOptions)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs` - Security=High, Spec=none cited, `7A389E`, PENDING
   - Falsified if: the two arms of a branch reach the join at different operand-stack heights

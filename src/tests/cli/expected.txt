@@ -61,12 +61,21 @@ runs/a-product.js refused/a-string-value.js|3|RefusedSource: 1
 known-defects/a-loop-whose-body-always-breaks.js|0|
 known-defects/a-while-true-whose-body-always-breaks.js|0|
 
-# THE THIRD IS STILL REFUSED AND IS A DIFFERENT SHAPE. This loop has no exit at all, so everything
-# after it is unreachable INCLUDING THE PROGRAM'S TAIL - and suppressing a tail leaves a function
-# with no terminator, which is a different invalid artifact rather than a valid one. It is the
-# shape the compiler's own remark named all along, it remains a documented exclusion, and it is
-# pinned separately so that one change cannot quietly claim both.
+# THE THIRD IS STILL REFUSED AND IS THE LAST OF THE THREE. This loop has no exit at all, so
+# everything after it is unreachable INCLUDING THE PROGRAM'S TAIL - and suppressing a tail leaves a
+# function with no terminator, which is a different invalid artifact rather than a valid one. It is
+# the shape the compiler's own remark named all along and it remains a documented exclusion. Its two
+# neighbours were repaired one change apart, which is why it was pinned separately.
 known-defects/a-loop-with-no-exit-at-all.js|4|1411:UnreachableCode
+
+# DEAD CODE AFTER A STATEMENT CONTROL CANNOT PASS, repaired. The first row is the one that had to be
+# reasoned about rather than tried: suppressing a `var` declaration is safe BECAUSE `var` is
+# hoisted, so the binding holds `undefined` whether or not its initialiser runs - and the
+# initialiser does not run here either way. The two rows under it are what a suppression that fired
+# one statement too early would fail.
+dead-code/a-var-after-a-break.js|0|undefined
+dead-code/a-statement-before-the-break-still-runs.js|0|9
+dead-code/a-break-inside-an-if-does-not-end-the-block.js|0|2
 
 # THE TEMPORAL DEAD ZONE, both halves and both directions. Exit 1 is a program that threw: these
 # are RUNTIME ReferenceErrors, which is what the language says and what this profile could not
