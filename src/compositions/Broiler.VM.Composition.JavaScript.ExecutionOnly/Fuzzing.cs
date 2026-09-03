@@ -347,9 +347,13 @@ internal sealed record FuzzObservation(
 /// <para>
 /// The section asks for coverage-guided fuzzing over four surfaces: the verifier, the source
 /// tokenizer and parser, the regular-expression matcher, and the executor over
-/// verified-but-adversarial artifacts. **Two of the four exist at this milestone** - the verifier
-/// and the executor - and the other two are surfaces this profile has not written yet. What is
-/// here covers the two that exist and says so; JS-9 owns the rest and the session budgets.
+/// verified-but-adversarial artifacts. **This file covers the verifier and the executor.** The
+/// source tokenizer and parser are covered by a session of their own in the slice-compiler root,
+/// which is where they have to be: this image carries no lowering, so a session over source could
+/// not run here at all. The regular-expression matcher does not exist. **This paragraph said
+/// "two of the four exist at this milestone" until 2026-09-03, and by then three did**
+/// *(corrected: JSC-69)* - the source front end landed at JS-3b and was fuzzed by nothing for as
+/// long as this sentence went unrevisited.
 /// </para>
 /// <para>
 /// <b>It is answer-guided mutation, and the adjective is load-bearing.</b> A mutant's coverage

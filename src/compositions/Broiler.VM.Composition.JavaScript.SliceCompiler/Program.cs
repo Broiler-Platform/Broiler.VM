@@ -1,6 +1,7 @@
 using Broiler.VM;
 using Broiler.VM.Profile.JavaScript;
 using Broiler.VM.Profile.JavaScript.Compiler;
+using System.Globalization;
 
 namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 
@@ -48,9 +49,22 @@ internal static class Program
                 return Census(args[1..]);
             }
 
+            // THE SOURCE SURFACE'S OWN SESSION, and it lives here rather than beside the
+            // artifact one because it needs a compiler. The execution-only root carries no
+            // lowering by construction, so a session over source could not run there at all -
+            // which is the same reason every claim in SourceFrontEndChecks is in this root.
+            if (args.Length >= 2 && string.Equals(args[0], "--fuzz", StringComparison.Ordinal))
+            {
+                return SourceFuzzing.Run(
+                    args[1],
+                    Unsigned(Argument(args, "--seed"), 1),
+                    (int)Unsigned(Argument(args, "--iterations"), 2000));
+            }
+
             Console.WriteLine(
                 "usage: --write <directory> | --checks [--verbose] | --closure | " +
-                "--census <directory> [<directory> ...]");
+                "--census <directory> [<directory> ...] | " +
+                "--fuzz <source directory> [--seed <n>] [--iterations <n>]");
 
             return 2;
         }
@@ -407,6 +421,24 @@ internal static class Program
     /// Prints what this composition is: the profile it names and the fact that it carries a
     /// lowering.
     /// </summary>
+    private static string? Argument(string[] args, string name)
+    {
+        for (var index = 0; index < args.Length - 1; index++)
+        {
+            if (string.Equals(args[index], name, StringComparison.Ordinal))
+            {
+                return args[index + 1];
+            }
+        }
+
+        return null;
+    }
+
+    private static ulong Unsigned(string? text, ulong fallback) =>
+        text is not null && ulong.TryParse(text, NumberStyles.None, CultureInfo.InvariantCulture, out var value)
+            ? value
+            : fallback;
+
     private static int ReportClosure()
     {
         Console.WriteLine($"# broiler-vm-composition core-contract-version={VmCoreContract.Version}");
