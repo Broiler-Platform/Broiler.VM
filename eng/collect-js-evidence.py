@@ -71,18 +71,27 @@ ANDROID_CLOSURE = os.path.join(
 EXECUTION_ONLY_HOSTS = os.path.join(
     "src", "compositions", "Broiler.VM.Composition.JavaScript.ExecutionOnly", "Hosts.cs")
 
-# The two composition roots the register lists for this profile, with the slug rules K3 and K4 use
-# to find their retained artefacts: the last dot-separated segment, lowercased.
+# The three composition roots the register lists for this profile, with the slug rules K3 and K4
+# use to find their retained artefacts: the last dot-separated segment, lowercased.
 EXECUTION_ONLY = os.path.join(
     "src", "compositions", "Broiler.VM.Composition.JavaScript.ExecutionOnly",
     "Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj")
 SLICE_COMPILER = os.path.join(
     "src", "compositions", "Broiler.VM.Composition.JavaScript.SliceCompiler",
     "Broiler.VM.Composition.JavaScript.SliceCompiler.csproj")
+CONFORMANCE = os.path.join(
+    "src", "compositions", "Broiler.VM.Composition.JavaScript.Conformance",
+    "Broiler.VM.Composition.JavaScript.Conformance.csproj")
 COMPOSITIONS = (
     ("executiononly", "Broiler.VM.Composition.JavaScript.ExecutionOnly", EXECUTION_ONLY),
     ("slicecompiler", "Broiler.VM.Composition.JavaScript.SliceCompiler", SLICE_COMPILER),
+    ("conformance", "Broiler.VM.Composition.JavaScript.Conformance", CONFORMANCE),
 )
+
+# The conformance harness's own suite, which is a DIRECTORY THIS SCRIPT PASSES AS AN ARGUMENT and
+# never a file any project references. Rule N13 asserts that separation; this constant is the
+# reason it can be asserted, because nothing but a command line needs to know where a suite lives.
+CONFORMANCE_SUITE = os.path.join("src", "tests", "conformance", "js-3a")
 
 # Native AOT on Windows needs vswhere.exe on PATH. The ILCompiler package's own findvcvarsall.bat
 # calls it unqualified, and when it is missing the batch file ERROR TEXT is substituted into the
@@ -849,9 +858,17 @@ def compositions(arguments, out, corpus):
             log.append("[" + slug + "/" + mode + "] --closure exit " + str(catalog.returncode)
                        + "\n" + catalogs[mode])
 
-            run_arguments = (
-                [executable, "--corpus", corpus, "--verbose"] if slug == "executiononly"
-                else [executable, "--checks", "--verbose"])
+            if slug == "executiononly":
+                run_arguments = [executable, "--corpus", corpus, "--verbose"]
+            elif slug == "conformance":
+                # Every host mode, negatives included: a published image that scored only the
+                # positive half would retain a transcript whose totals nobody could compare with a
+                # release run's.
+                run_arguments = [
+                    executable, "--suite", os.path.join(ROOT, CONFORMANCE_SUITE),
+                    "--run", "--include-negative", "--verbose"]
+            else:
+                run_arguments = [executable, "--checks", "--verbose"]
 
             result = subprocess.run(
                 run_arguments, capture_output=True, text=True,

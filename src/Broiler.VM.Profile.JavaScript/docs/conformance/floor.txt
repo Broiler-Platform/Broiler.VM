@@ -1,0 +1,8 @@
+# broiler-js-conformance floor 1
+# suite <name>; revision <revision>; mode <name> <executed> <passed>
+# a retired line is a floor a revision change re-based, kept with its reason
+suite broiler.javascript.slice.js-3a
+revision 268f3a8d702a2fbdecd61d637284d2ce9ea51c8033b9a3eac934ff59a31eae12
+mode Script 38 38
+mode Module 3 3
+mode Raw 3 3

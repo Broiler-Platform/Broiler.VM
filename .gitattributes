@@ -50,4 +50,12 @@ src/tests/corpus/**/*.bin binary
 # binary and no hash has moved - which is the same accident this file's own comment says is
 # not a bound. Declared at JS-3a, which added nine more of them.
 src/tests/corpus/**/*.bjsb binary
+
+# The conformance suite's raw fixtures are artifact bytes pinned by the suite digest, and the
+# rule above reaches none of them: it names src/tests/corpus/, and these live beside the tests
+# that describe them. The digest is what makes a pin verifiable, so one byte of end-of-line
+# conversion would move the revision on one platform and make every run there report
+# MissingSuiteRevision - a true sentence about a suite nobody edited. Declared at JS-3a, for
+# the same reason the line above was: git's heuristic calls them binary today by accident.
+src/tests/conformance/**/*.bjsb binary
 *.png                     binary

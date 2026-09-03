@@ -49,6 +49,25 @@ public sealed class CompositionRegisterTests
     /// <remarks>Internal so rule J12's figure catalog can cite it rather than a row typing it.</remarks>
     internal static int RegisteredCount => Registered.Count();
 
+    /// <summary>Every register row, for a rule whose subject is the register itself.</summary>
+    /// <remarks>
+    /// Exposed rather than re-read. Rule N13 asks a question about advertised rows, and a second
+    /// reader of this table would be a second chance to disagree with it about what a row says -
+    /// which is the drift the group-K rules exist to prevent.
+    /// </remarks>
+    internal static IReadOnlyList<CompositionRules.Row> RegisterRows => Rows;
+
+    /// <summary>Every retained closure mode, with the composition it belongs to.</summary>
+    /// <remarks>
+    /// The same reader K4 uses, for the same reason: a rule asking what a published image contains
+    /// must read what a published binary actually reported rather than what a test process could
+    /// build.
+    /// </remarks>
+    internal static IReadOnlyList<(string Composition, CompositionRules.ClosureMode Mode)> Closures() =>
+        Registered
+            .SelectMany(row => ClosureModesFor(row).Select(mode => (row.Composition, mode)))
+            .ToArray();
+
     [Fact]
     public void K1_The_Register_And_The_Checkout_Name_The_Same_Compositions()
     {

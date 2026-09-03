@@ -1,0 +1,6 @@
+# broiler-js-conformance known-incorrect list
+# path|why this test is itself wrong at the pinned revision
+#
+# EMPTY, and that is the honest state. An entry here says "the test is wrong and the engine
+# is right", which is the most self-serving claim a conformance run can make, so every entry
+# needs a reason and a run refuses one without it. Nothing in this suite has earned one.

@@ -222,7 +222,9 @@ jobs:
           set -euo pipefail
           corpus="src/tests/corpus/js-1"
 
-          for composition in JavaScript.ExecutionOnly JavaScript.SliceCompiler; do
+          suite="src/tests/conformance/js-3a"
+
+          for composition in JavaScript.ExecutionOnly JavaScript.SliceCompiler JavaScript.Conformance; do
             out="artifacts/ci-aot-$composition"
             dotnet publish "src/compositions/Broiler.VM.Composition.$composition" \
               -c Release -r ${{ matrix.rid }} -p:PublishAot=true \
@@ -237,8 +239,66 @@ jobs:
             case "$composition" in
               *ExecutionOnly) "$binary" --corpus "$corpus" ;;
               *SliceCompiler) "$binary" --checks ;;
+              # Negatives included, because a lane that scored only the positive half would
+              # publish totals nobody could compare with a release run's. The harness runs its
+              # own regression suite and its self-check before it scores anything, so this one
+              # command is three checks and reports which of them failed by its exit code.
+              *Conformance) "$binary" --suite "$suite" --run --include-negative ;;
             esac
           done
+
+      # THE SHARDED RUN, WHICH IS A DIFFERENT QUESTION FROM THE STEP ABOVE.
+      #
+      # One unsharded run proves the totals. It cannot prove that the shards of a sharded run
+      # cover the whole selection, and that is the property every published conformance figure
+      # rests on: a run missing a shard adds to a smaller total that reads exactly like a smaller
+      # suite. So the lane runs three shards and merges them, and the merge refuses unless the
+      # cases it was handed account for the pre-sharding selected count that no shard can
+      # influence.
+      #
+      # Three rather than one because a shard count of one makes the sharding function the
+      # identity, and rather than many because the property is about coverage rather than about
+      # scale. Sharding is a hash of the normalized path, so which tests land where is the same on
+      # this runner as on a workstation - that is asserted by the harness's own regression suite
+      # against stated values rather than against itself.
+      - name: Score the conformance suite in shards and prove the shards covered it
+        shell: bash
+        run: |
+          set -euo pipefail
+          suite="src/tests/conformance/js-3a"
+          binary="artifacts/ci-aot-JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance"
+          [ -f "$binary.exe" ] && binary="$binary.exe"
+
+          rm -rf artifacts/conformance && mkdir -p artifacts/conformance
+
+          for shard in 0 1 2; do
+            "$binary" --suite "$suite" --run --include-negative \
+              --shard-index "$shard" --shard-count 3 \
+              --output "artifacts/conformance/shard-$shard.report"
+          done
+
+          # The merged report is written OUTSIDE the directory being merged, and the harness
+          # refuses the other arrangement: a merged report left among the shards is read as a
+          # shard by the next merge.
+          "$binary" --merge artifacts/conformance --output artifacts/conformance-merged.report
+
+          # THE RATCHET. The floor is a reviewed record in the profile's own docs, it names the
+          # suite revision it was set under, and it is never compared across revisions - a suite
+          # that added tests would otherwise read as a regression. A run that falls below it fails
+          # here; a run on a revision the floor was not set under says so and changes nothing,
+          # because re-basing is a decision somebody makes rather than something a lane does.
+          "$binary" --floor src/Broiler.VM.Profile.JavaScript/docs/conformance/floor.txt \
+            --report artifacts/conformance-merged.report
+
+          # And the control, run here rather than described: a merge missing one shard must report
+          # incomplete coverage rather than a smaller total. This lane would otherwise be taking
+          # the merge's own word for the one thing it exists to check.
+          mv artifacts/conformance/shard-1.report artifacts/conformance/shard-1.held
+          if "$binary" --merge artifacts/conformance; then
+            echo "a merge missing shard 1 reported success; the coverage proof is not working" >&2
+            exit 1
+          fi
+          mv artifacts/conformance/shard-1.held artifacts/conformance/shard-1.report
 
       # The fuzz sessions and the corpus-integrity mutation were collection-only for the same
       # reason the roots were: nobody had put them here. A session is a total function of its seed and its seed corpus - no wall clock, no

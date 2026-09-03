@@ -1,0 +1,5 @@
+/*---
+description: the payload ends before the sections it declares do
+expected: refused-by-verifier Truncated
+flags: [raw]
+---*/

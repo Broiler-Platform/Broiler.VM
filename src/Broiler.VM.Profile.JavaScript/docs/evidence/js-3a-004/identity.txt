@@ -1,0 +1,37 @@
+bundle:                JS-3A-004
+milestone:             JS-3a
+collected (UTC):       2026-09-03T10:23:28+00:00
+component commit:      b0337e1d264d9cc525be1d50b2836ab882cf26ee
+branch:                main
+working tree:          DIRTY
+dirty entries:         23
+owner:                 profile architecture owner (unassigned identity)
+reviewer:              NONE - nothing here has been reviewed
+
+Every path below is relative to the component root. A figure in this bundle is this
+component's own; no result from any other component is evidence here.
+
+Dirty entries at collection time, listed rather than summarised:
+   M .github/workflows/broiler-vm.yml
+   M Broiler.VM.slnx
+   M docs/adr/0001-component-topology-and-dependency-graph.md
+   M docs/compositions.md
+   M eng/collect-js-evidence.py
+   M src/Broiler.VM.Profile.JavaScript/docs/decisions/README.md
+   M src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md
+   M src/Broiler.VM.Profile.JavaScript/docs/roadmap.md
+   M src/Broiler.VM.Profile.JavaScript/docs/roadmap.status.md
+   M src/tests/Broiler.VM.Architecture.Tests/ArchitectureRules.cs
+   M src/tests/Broiler.VM.Architecture.Tests/CompositionRegisterTests.cs
+   M src/tests/Broiler.VM.Architecture.Tests/RuleRegisterTests.cs
+   M src/tests/Broiler.VM.Architecture.Tests/graph.manifest.json
+   M src/tests/Broiler.VM.Architecture.Tests/rules.register.json
+  ?? src/Broiler.VM.Profile.JavaScript/docs/conformance/
+  ?? src/Broiler.VM.Profile.JavaScript/docs/decisions/0015-the-conformance-oracle-and-what-it-refuses-to-score.md
+  ?? src/Broiler.VM.Profile.JavaScript/docs/evidence/js-3a-004/
+  ?? src/compositions/Broiler.VM.Composition.JavaScript.Conformance/
+  ?? src/tests/Broiler.VM.Architecture.Tests/IngestionPathRuleTests.cs
+  ?? src/tests/Broiler.VM.Architecture.Tests/catalogs/conformance.catalog.txt
+  ?? src/tests/Broiler.VM.Architecture.Tests/witnesses/N13-a-project-that-carries-suite-files.csproj.witness
+  ?? src/tests/Broiler.VM.Architecture.Tests/witnesses/N13-execution-only-references-the-harness.csproj.witness
+  ?? src/tests/conformance/

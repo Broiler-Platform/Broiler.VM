@@ -1380,10 +1380,17 @@ to score anything: it is to prove that a failing test comes back as a failure.
   settles twice is a failure, not a pass with a caveat.
 - **Negative-metadata tests are opt-in and required for a release run**, with the uncaught error
   reported by its JavaScript type name so a parse-phase syntax error is matched on what it is.
+- **Every case runs in a runtime of its own** *(corrected: JSC-52)*. A budget allowance is spent
+  over a runtime's life rather than reset per invocation, so a shard that composes the engine once
+  reports every case after the first non-terminating one as a timeout — a total indistinguishable
+  from an engine that has stopped working. A case's verdict has to be a property of that case, and
+  the allowance is charged in instructions rather than in seconds so that the same test decides the
+  same way on a busy machine.
 - **Configuration failures are a closed, named set and each is a failure**: inconsistent shard
-  configuration, missing suite revision, incomplete variant coverage, empty selection, no
-  executed tests. Removing one shard's report must produce incomplete coverage, not a smaller
-  total.
+  configuration, missing suite revision, incomplete host-mode coverage, empty selection, no
+  executed tests, and incomplete shard coverage. Removing one shard's report must produce
+  incomplete coverage, not a smaller total — which is what the last of the six is for
+  *(corrected: JSC-51)*.
 - **The failure manifest is a queue, not an allow-list.** A path leaves it only after a minimal
   repository regression exists, the focused reproduction passes, the affected shard passes, and
   the record is updated. A hand-written entry that a run does not confirm does not survive.
@@ -1418,6 +1425,12 @@ to score anything: it is to prove that a failing test comes back as a failure.
   notice **in the same change that first ingests a suite file**, which is JS-3a's, and no earlier
   milestone can close it: an attribution written for material nobody has retrieved is an
   attribution for material nobody has read *(corrected: JSC-30)*.
+
+[JSD-0015](decisions/0015-the-conformance-oracle-and-what-it-refuses-to-score.md) records the
+answers this method needed before it could be built: where the harness lives and why its
+non-advertisement is a rule rather than a habit, how a suite is pinned and what an unpinned one
+costs a run, that every case runs in a runtime of its own, that a test declares its own verdict
+because this manifest cannot express an assertion library, and what the harness refuses to score.
 
 Two things this section deliberately refuses. **No total, manifest entry, known-gap entry, or
 triage finding from any other component is carried across** — the method is copied, the results

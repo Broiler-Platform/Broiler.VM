@@ -1,0 +1,12 @@
+# broiler-js-conformance self-check 1
+# path|status|completion
+# the verdict the HARNESS must reach for this fixture, not the verdict the fixture declares
+a-control-that-passes.js|Passed|Completed
+a-control-in-module-mode.js|Passed|Completed
+a-declared-refusal-that-is-right.js|Passed|NeverSettled
+a-declared-value-that-is-wrong.js|Failed|Completed
+a-declared-value-for-a-source-that-is-refused.js|Failed|NeverSettled
+a-declared-refusal-that-does-not-happen.js|Failed|Completed
+a-declared-refusal-with-the-wrong-code.js|Failed|NeverSettled
+a-program-that-does-not-terminate.js|TimedOut|NeverSettled
+a-program-that-runs-after-one-that-did-not-terminate.js|Passed|Completed

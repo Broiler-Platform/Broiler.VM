@@ -1404,3 +1404,46 @@ for a sweep.
 **What is not edited.** Every revision above stands as written, including the one
 this completes.
 
+
+### 2026-09-03 - the conformance harness, a root that is never advertised
+
+**What changes.** `Broiler.VM.Composition.JavaScript.Conformance` is added under
+`src/compositions/`. It is the conformance oracle roadmap section 14 specifies:
+it reads a suite of tests, lowers each one, verifies the artifact, runs it, and
+compares what happened against what the test declared.
+
+**Why it is a composition root and not a test project.** Scoring a test means
+driving this profile's own lowering, verifier and executor. Rule A11 forbids a
+test project to reference a profile assembly and rule A12 forbids a composition
+root to reference the fixture assembly, which between them leave the harness
+nowhere else. That is the same argument the retained corpus's producer and the
+execution-only root's replay already stand on, and the JavaScript profile's
+roadmap section 5 states it in advance rather than leaving it to be discovered
+here.
+
+**What it composes.** One profile, `broiler.javascript`, through its own static
+accessor, with the lowering in its reference set because a conformance test is
+source. Its reference set is therefore the slice-compiler root's, and it composes
+no second profile and registers no capability.
+
+**What is now true.** The graph goes from 20 projects and 59 edges to 21 and 64.
+**The packable set is unchanged at exactly three**, and the root carries the
+literal `<IsPackable>false</IsPackable>`.
+
+**One rule is minted with it, and it is not a formality.** This root is the
+ingestion path for a conformance suite, which is separately licensed third-party
+material. Rule **N13** asserts that the harness appears in no package and in no
+advertised composition's closure, that no other project references it, and that
+no project file names a suite directory - the last being how suite files would
+reach a build output without any reference changing. It is deliberately not
+phrased as "no published closure", because this root publishes one of its own
+for its own evidence. Its negative controls add the reference from the
+execution-only root and add a content item carrying the suite, which are the two
+directions that would actually ship.
+
+**What it does not settle.** No RID claim moves, no composition becomes
+advertised, and no conformance suite is pinned: the suite this root reads today
+is the component's own fixture tree, and retrieving, hashing and archiving a
+third-party one is the human action the profile's ledger still records as open.
+
+**What is not edited.** Every revision above stands as written.

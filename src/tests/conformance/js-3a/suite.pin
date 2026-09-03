@@ -1,0 +1,5 @@
+# broiler-js-conformance suite pin
+# revision is the digest over every path and content this suite holds, the pin excepted
+suite broiler.javascript.slice.js-3a
+revision 268f3a8d702a2fbdecd61d637284d2ce9ea51c8033b9a3eac934ff59a31eae12
+files 58

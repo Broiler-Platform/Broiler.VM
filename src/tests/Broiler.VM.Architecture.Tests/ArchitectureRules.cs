@@ -1164,6 +1164,123 @@ internal static class ArchitectureRules
         }
     }
 
+    /// <summary>
+    /// N13: the conformance harness's ingestion path is never advertised, and that is asserted
+    /// rather than assumed.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>What the scan asserts is deliberately not "no published closure".</b> The harness is a
+    /// composition root - roadmap section 5 explains why it can be nothing else - and a root
+    /// publishes a closure of its own for its own evidence, so a rule phrased as "appears in no
+    /// published closure" would be falsified by the harness's own publish. The property that is
+    /// actually wanted is that it appears in <b>no package and in no advertised composition's
+    /// closure</b>, and that no other project reaches it at all. Correction JSC-40 records the
+    /// distinction.
+    /// </para>
+    /// <para>
+    /// <b>Six independent clauses, because each is a different way the path could ship.</b> A
+    /// project reference is the one that would actually happen - the execution-only root wanting
+    /// "just the fixtures" is the plausible mistake, and it is the direction the negative control
+    /// takes. A package identity ships it to a consumer directly, and a missing non-packable
+    /// declaration is the same thing one edit away. An advertised register row makes
+    /// it something a consumer may depend on. A closure report naming it says a published image
+    /// already contains it. And a project file naming the suite directory carries suite FILES into
+    /// an assembly's output without any reference changing, which is the one that leaves the
+    /// dependency graph looking clean.
+    /// </para>
+    /// <para>
+    /// <b>The suite clause is what the attribution obligation hangs on.</b> A third-party suite is
+    /// separately licensed material, and the moment a suite file is copied into a build output it
+    /// is being redistributed. Today no suite in this checkout is third-party, so the clause
+    /// guards a path rather than a body of code - which is the right time to write it, because
+    /// the change that first ingests one is the change that must not also have to invent this
+    /// rule.
+    /// </para>
+    /// </remarks>
+    internal static IEnumerable<string> N13(
+        string harness,
+        IReadOnlyList<ComponentGraph.ProjectFile> projects,
+        IReadOnlyList<CompositionRules.Row> rows,
+        IReadOnlyList<(string Composition, CompositionRules.ClosureMode Mode)> closures,
+        IReadOnlyList<string> suiteDirectories)
+    {
+        var harnessProjects = projects
+            .Where(project => string.Equals(project.AssemblyName, harness, StringComparison.Ordinal))
+            .ToArray();
+
+        // The vacuity clause first. This rule passes by finding nothing, so a run in which the
+        // harness has been renamed out from under it would be the cleanest-looking row in the
+        // register while asserting nothing at all.
+        if (harnessProjects.Length != 1)
+        {
+            yield return
+                $"{harnessProjects.Length} projects in the checkout build {harness}, not exactly " +
+                "one: this rule is quantifying over nothing";
+
+            yield break;
+        }
+
+        var harnessProject = harnessProjects[0];
+
+        foreach (var project in projects.Where(candidate =>
+                     !string.Equals(candidate.AssemblyName, harness, StringComparison.Ordinal) &&
+                     candidate.ReferencedAssemblyNames.Contains(harness, StringComparer.Ordinal)))
+        {
+            yield return
+                $"{project.AssemblyName} references {harness}: the conformance harness's " +
+                "ingestion path may be reached from nothing";
+        }
+
+        if (harnessProject.PackageId is not null)
+        {
+            yield return $"{harness} declares the package identity {harnessProject.PackageId}";
+        }
+
+        if (!harnessProject.RawText.Contains("<IsPackable>false</IsPackable>", StringComparison.Ordinal))
+        {
+            yield return $"{harness} does not carry the literal element IsPackable false";
+        }
+
+        foreach (var row in rows.Where(row =>
+                     string.Equals(row.Kind, "advertised", StringComparison.Ordinal)))
+        {
+            if (string.Equals(row.Composition, harness, StringComparison.Ordinal))
+            {
+                yield return $"{harness} is registered as an advertised composition";
+            }
+
+            if (row.ProfileAssemblies.Concat(row.Siblings).Contains(harness, StringComparer.Ordinal))
+            {
+                yield return
+                    $"the advertised composition {row.Composition} declares {harness} in its closure";
+            }
+        }
+
+        foreach (var (composition, mode) in closures.Where(closure =>
+                     !string.Equals(closure.Composition, harness, StringComparison.Ordinal) &&
+                     closure.Mode.Assemblies.Contains(harness, StringComparer.Ordinal)))
+        {
+            yield return $"{composition} [{mode.Name}] ships {harness}";
+        }
+
+        foreach (var project in projects)
+        {
+            // Separator-insensitively, because a project file writes Windows separators and the
+            // fragment this rule is given is a path. A clause that compared the two spellings
+            // literally would be defeated by the spelling MSBuild actually uses.
+            var text = project.RawText.Replace('\\', '/');
+
+            foreach (var directory in suiteDirectories.Where(directory =>
+                         text.Contains(directory, StringComparison.Ordinal)))
+            {
+                yield return
+                    $"{project.AssemblyName} names the suite directory {directory} in its project " +
+                    "file: a suite file carried into a build output is a suite file redistributed";
+            }
+        }
+    }
+
     // ---- Group B: compiled metadata ---------------------------------------------------------
 
     /// <summary>B1: an assembly references nothing outside the framework.</summary>
