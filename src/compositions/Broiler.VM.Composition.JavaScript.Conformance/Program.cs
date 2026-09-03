@@ -572,8 +572,16 @@ internal static class Program
     }
 
     /// <summary>Prints one report's totals, one line per host mode.</summary>
+    /// <remarks>
+    /// <b>The edition is printed beside the suite, because both are pinned inputs and a total is
+    /// about neither one alone.</b> A reader of a transcript can see which document the manifests
+    /// were defined against without opening the report, and sees in the same line that the pin is
+    /// provisional while nobody has archived it.
+    /// </remarks>
     private static void Summarize(Report report)
     {
+        Console.WriteLine("edition " + JavaScriptLanguageEdition.Describe());
+
         Console.WriteLine(
             $"suite {report.Suite}; shard {(report.ShardIndex == Sharding.AllShards ? "all" : report.ShardIndex.ToString(CultureInfo.InvariantCulture))} of " +
             $"{report.ShardCount.ToString(CultureInfo.InvariantCulture)}");

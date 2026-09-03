@@ -29,6 +29,16 @@ executed something. A single shard's run may not, and neither may a run that cov
 claimed to cover: the whole value of a floor is that the number behind it was measured over the
 selection it names.
 
+**A floor is over a suite revision, and since 2026-09-03 the report it is compared against also
+names the other pinned input.** Every report carries an `edition` line — the
+language-specification edition the profile's manifests are defined against, by commit and digest,
+with `not-archived` on it while the pin is provisional — and a report scored against a different
+edition is refused rather than merged. A floor still names only the suite revision, because that is
+what it ratchets; what the edition line adds is that a reader of any retained report can see which
+document the numbers were measured against.
+[JSD-0019](../decisions/0019-the-pinned-language-edition-and-what-two-of-three-actions-buy.md)
+records the pin.
+
 ## The current floor
 
 Set on 2026-09-03 from the merged three-shard run retained in

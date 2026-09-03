@@ -150,6 +150,7 @@ rather than a decision record.
 | [JSC-64](#jsc-64) | [JSC-60](#jsc-60); the declaration lowering's and the executor's remarks; ledger section 2 | Dead code after a terminator was declined on a hazard that was not there: the executor writes `undefined` into every slot, in a loop, on purpose | the executor's own initialisation |
 | [JSC-65](#jsc-65) | `SliceSourceCompiler`'s remark; [JSC-64](#jsc-64); ledger section 2 | A loop nothing can leave was called the format's answer three times: the verifier requires every REACHABLE path to return, and that loop has no path that ends | the verifier's own rule |
 | [JSC-66](#jsc-66) | the ledger's account of the four remaining test262 failures, twice; [Bundle JS-3B-002](evidence/js-3b-002/README.md) section 3; [JSC-54](#jsc-54) | The harness had no way to exclude by feature at all, and the cost was not four failures but 117 passes it had not earned | the suite's own `features.txt`, and a census over every scored case |
+| [JSC-67](#jsc-67) | the ledger's unopened-dependency row for the language edition, open since JS-0; the JS-10 row; Bundle JS-3A's exclusion 5 | The row was written as though there were two states and section 24 defines three: the edition is pinned PROVISIONALLY, and two of the three actions bought three checked claims and one disagreement | ECMA-262 retrieved at five editions and hashed |
 
 ### JSC-01
 
@@ -2612,3 +2613,74 @@ scored case claims one.
 `ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e`, read against the run it changes; a census of every
 feature claimed by every scored case, before and after; six negative controls, each injected,
 caught and reverted; the retained corpus regenerated and replayed; 2026-09-03.
+
+---
+
+### JSC-67
+
+**Where:** the [ledger](roadmap.status.md#3-open-external-dependencies)'s unopened-dependency row
+for the language-specification edition, open since JS-0; the JS-10 row and the JS-3a bundle's
+exclusion 5, which repeat it.
+
+**What the record said.** "The language-specification edition is not pinned, and JS-0 did not pin
+it… JS-0 was asked to record the intended edition and **no decision record does, because recording
+an edition nobody has retrieved would be a pin in name only.**"
+
+**The reasoning was right, and it is why the row stood for eleven milestones.** An edition name
+written down by somebody who had not gone and got the document is a pin that cannot be checked, and
+refusing to write one was the correct call every time it was made.
+
+**What was wrong is that the row was written as though there were two states.** Roadmap
+[section 24](roadmap.gates.md#24-specification-and-platform-references) defines three, and names
+the middle one in its own words: a document **retrieved, hashed and archived** is a pin taken, and
+"until someone performs it the pin is **provisional** and carries a named exclusion in the ledger".
+Provisional is not unpinned. The row read as a binary, so the only move it offered was one nobody
+could make — and the adjacent row had already demonstrated the middle state on the same day, when
+the conformance suite was retrieved into a temporary directory, hashed, read and recorded as a pin
+over a transient checkout with the archive named as outstanding.
+
+**What replaced it.** The pin actually taken, recorded in
+[JSD-0019](decisions/0019-the-pinned-language-edition-and-what-two-of-three-actions-buy.md):
+**ECMA-262, 17th edition (ES2026)**, at `tc39/ecma262` commit
+`0248456c758431e4bb8e5d26333ff1865123c9cd`, with `spec.html` of 2,978,793 bytes hashing to
+`ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0`, re-derivable by anyone in one
+line. A commit rather than the `es2026` tag, because a tag can be moved; the published edition
+rather than `es2026-errata`, because errata accumulate and pinning them means pinning a moving
+target under a name that sounds fixed. **The row is still open**, and it now has a holder and an
+unblock condition it did not have: a named human archives the document.
+
+**What two of the three actions bought, which is the part worth reading.** Three claims this
+component had made about the language in prose were checked against a fixed document for the first
+time. `#!` is a comment "since ES2023" — **confirmed**, absent from ES2022 and present from ES2023
+onward. `using` declarations are in no published edition, which is the premise
+[JSC-66](#jsc-66) removed 121 cases on — **confirmed**, no `UsingDeclaration`, `DisposableStack` or
+`SuppressedError` appears in the pinned edition. A binding used before its initialiser is a runtime
+`ReferenceError` — **confirmed**.
+
+**And the second authority disagreed with the first once, which is what a second authority is
+for.** Of the twenty-one flags the pinned checkout of test262 lists as proposals, twenty carry no
+marker in the pinned edition and one does: **`regexp-duplicate-named-groups` is in ES2025 and
+ES2026** while the suite still calls it a proposal, so JSC-66's exclusion removes 19 files that
+**are** about this language. It moves no figure — none of the 19 was scored even by the run that
+had no exclusion at all, because a regular expression is not in this manifest — and the point is
+that the risk [JSD-0018](decisions/0018-which-tests-are-about-this-language-and-who-decides.md)
+recorded without a size now has one.
+
+**The pin is declared in code so that a run states it and one edit cannot move it quietly.**
+`JavaScriptLanguageEdition` carries the revision, the digest and — as a field rather than a
+paragraph — **whether the document has been archived**; the conformance report carries an `edition`
+line beside the suite revision it already carried, and refuses a report scored against a different
+one; the end-user host prints it under `--version`, with an acceptance row over the words *NOT
+archived* as well as over the edition's name. **Rule N14** holds the code, the decision record and
+this ledger to naming the same revision and digest, and holds the archived field to the ledger's
+account of the pin in both directions.
+
+**What it does not do.** It accepts no manifest — the ledger's rule that none may be accepted
+against an unpinned edition is not answered by a provisional one — it archives nothing, and no
+third-party document is in this repository. And it does not make the feature filter edition-aware:
+flags do not map onto clauses mechanically, so JSD-0018's reader still uses the suite's own split.
+
+**Authority and date.** ECMA-262 retrieved at five editions from `tc39/ecma262` and hashed; the
+three prose claims checked against them; the twenty-one proposal flags of the pinned checkout
+searched in the pinned edition; four negative controls over rule N14, each moving the pin in one of
+the places that must agree and each caught; 2026-09-03.

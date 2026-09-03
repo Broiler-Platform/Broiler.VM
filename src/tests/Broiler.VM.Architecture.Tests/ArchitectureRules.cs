@@ -1281,6 +1281,89 @@ internal static class ArchitectureRules
         }
     }
 
+    /// <summary>
+    /// N14: the pinned language edition says the same thing in the code, its decision record and
+    /// the ledger, and the code's own account of whether it is archived binds the ledger's.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A pin recorded in one place is a pin one edit can move.</b> The profile declares the
+    /// edition, the revision and the digest as constants; a decision record states them in prose
+    /// and argues for them; the ledger's open-dependency row is where a reader learns the pin's
+    /// state. Three independently written places is the same discipline rules N5 through N9 apply
+    /// to the diagnostic registry, and for the same reason: agreement is only evidence when
+    /// disagreement was possible.
+    /// </para>
+    /// <para>
+    /// <b>The clause that matters most is the last one, because it guards the overclaim.</b>
+    /// Retrieving, hashing and archiving a third-party document is a human action and only two of
+    /// the three have been performed, so roadmap section 24 makes the pin PROVISIONAL and requires
+    /// the ledger to carry a named exclusion. The code says which state it is in with a boolean.
+    /// If that boolean is flipped without the ledger's exclusion being resolved - or resolved
+    /// without the boolean being flipped - the component would be claiming a fully taken pin in
+    /// one document and a provisional one in another, and the direction that hides is the one
+    /// where the code claims more.
+    /// </para>
+    /// <para>
+    /// <b>Over source text rather than over the loaded constants</b>, because rule A11 keeps the
+    /// profile assembly out of this test project's reference set. The same parser the registry
+    /// rules use reads the declarations, so this rule sees what a reader of the file sees.
+    /// </para>
+    /// </remarks>
+    internal static IEnumerable<string> N14(
+        IReadOnlyDictionary<string, string> declared,
+        string decisionRecord,
+        string ledger)
+    {
+        string[] required = ["Year", "Revision", "DocumentDigest", "Archived"];
+        var missing = required.Where(name => !declared.ContainsKey(name)).ToArray();
+
+        // The vacuity clause first, for the reason N13's carries one: a rule that passes by
+        // finding nothing would be the cleanest row in the register the day its subject was
+        // renamed out from under it.
+        if (missing.Length != 0)
+        {
+            yield return
+                $"the pinned-edition declaration names {declared.Count} constants and not " +
+                $"[{string.Join(", ", missing)}]: this rule is quantifying over nothing";
+
+            yield break;
+        }
+
+        foreach (var name in new[] { "Year", "Revision", "DocumentDigest" })
+        {
+            if (!decisionRecord.Contains(declared[name], StringComparison.Ordinal))
+            {
+                yield return
+                    $"the decision record does not name the declared {name} `{declared[name]}`";
+            }
+        }
+
+        if (!ledger.Contains(declared["Revision"], StringComparison.Ordinal))
+        {
+            yield return
+                $"the ledger does not name the declared revision `{declared["Revision"]}`, so a " +
+                "reader of the open-dependency row cannot tell which pin it is describing";
+        }
+
+        var archived = string.Equals(declared["Archived"], "true", StringComparison.Ordinal);
+        var ledgerSaysProvisional = ledger.Contains("provisional", StringComparison.OrdinalIgnoreCase);
+
+        if (!archived && !ledgerSaysProvisional)
+        {
+            yield return
+                "the declaration says the document is not archived and the ledger calls the pin " +
+                "nothing of the sort: an unarchived pin carries a named exclusion";
+        }
+
+        if (archived && ledgerSaysProvisional)
+        {
+            yield return
+                "the declaration says the document is archived and the ledger still calls the pin " +
+                "provisional: one of the two is describing a state that has passed";
+        }
+    }
+
     // ---- Group B: compiled metadata ---------------------------------------------------------
 
     /// <summary>B1: an assembly references nothing outside the framework.</summary>
