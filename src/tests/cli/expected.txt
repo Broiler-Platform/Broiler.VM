@@ -67,3 +67,22 @@ known-defects/a-while-true-whose-body-always-breaks.js|0|
 # shape the compiler's own remark named all along, it remains a documented exclusion, and it is
 # pinned separately so that one change cannot quietly claim both.
 known-defects/a-loop-with-no-exit-at-all.js|4|1411:UnreachableCode
+
+# THE TEMPORAL DEAD ZONE, both halves and both directions. Exit 1 is a program that threw: these
+# are RUNTIME ReferenceErrors, which is what the language says and what this profile could not
+# express at all until the format grew an instruction that can fail.
+dead-zone/a-read-before-the-initialiser.js|1|ReferenceError
+dead-zone/a-write-before-the-initialiser.js|1|ReferenceError
+dead-zone/a-read-inside-its-own-initialiser.js|1|ReferenceError
+
+# And the two that must NOT throw. A `var` is initialised when its scope is entered, so reading one
+# early is `undefined`; and a lexical binding after its initialiser is unremarkable. A dead-zone
+# check that fired too eagerly would break hoisting, and these are what would catch it.
+dead-zone/a-var-is-not-in-the-dead-zone.js|0|undefined
+dead-zone/a-lexical-binding-after-its-initialiser.js|0|5
+
+# A HASHBANG IS A COMMENT, and only at offset zero. The second row is the one that matters: a `#!`
+# anywhere else is still a character that begins no token, so a fix that skipped them everywhere
+# would pass the first row and fail this one.
+hashbang/at-the-very-start.js|0|3
+hashbang/on-the-second-line.js|3|2102:ExpectedToken

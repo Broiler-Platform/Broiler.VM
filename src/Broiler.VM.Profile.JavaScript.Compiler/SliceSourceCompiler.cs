@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   23
-// Annotated:        23/23
+// Relevant units:   24
+// Annotated:        24/24
 // Exempt:           9
-// Human-reviewed:   0/23
+// Human-reviewed:   0/24
 // IP risk:          None
 // Security risk:    High
-// Criteria:         16/16
+// Criteria:         17/17
 // Resource impact:  2/10 max
-// Unverified:       23
+// Unverified:       24
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -710,7 +710,7 @@ public sealed class SliceSourceCompiler
     /// than re-read from the slot afterwards. Re-reading would be one instruction longer and would
     /// also be wrong the day a binding has an observable write barrier.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=CA1550
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=302785
     // Broiler-Falsified-If: an assignment expression's value is not the value assigned
     // Broiler-Human:        PENDING
     private void LowerAssignment(SliceAssignmentExpression assignment)
@@ -730,6 +730,17 @@ public sealed class SliceSourceCompiler
             builder.Emit(JavaScriptOpcode.Pop);
             Pop(1);
             return;
+        }
+
+        // THE WRITE HALF OF THE DEAD ZONE. Assigning to a lexical binding before its initialiser
+        // has run is a `ReferenceError` too, and the language throws it where `PutValue` happens -
+        // AFTER the right-hand side has been evaluated. The guard therefore goes here and not at
+        // the top of this method: `x = (y = 1)` with `x` in the dead zone still assigns `y`, which
+        // is what an implementation that threw early would get wrong.
+        if (InDeadZone(reference))
+        {
+            Position(reference.Span);
+            builder.Emit(JavaScriptOpcode.ThrowUninitializedBinding);
         }
 
         builder.StoreLocal(SlotOf(reference, reference.Name, reference.Span));
@@ -792,28 +803,40 @@ public sealed class SliceSourceCompiler
     /// declares the push a `LoadLocal` would have made and never reaches it, so every join and
     /// every bound in the surrounding program is the one it would have had.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=90EA9C
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=07B781
     // Broiler-Falsified-If: a reference whose binding is already initialised lowers to the fault, or one in the dead zone lowers to a read
     // Broiler-Human:        PENDING
     private void LowerIdentifierReference(SliceIdentifierReference reference)
     {
-        if (resolutions.TryGetValue(reference, out var binding) &&
-            binding.Kind != SliceDeclarationKind.Var &&
-            !initialised.Contains(binding.Slot))
+        // A POSITION ROW HERE AND ON NO OTHER READ. The guard is the only instruction a reference
+        // can lower to that a program can observe failing, so it is the only one whose line a
+        // reader will ever need; rows for the reads that succeed would be rows nothing consults,
+        // and would move the bytes of every program that reads a variable.
+        if (InDeadZone(reference))
         {
-            // A POSITION ROW HERE AND ON NO OTHER READ. This instruction is the only one a
-            // reference can lower to that a program can observe failing, so it is the only one
-            // whose line a reader will ever need; rows for the reads that succeed would be rows
-            // nothing consults, and would move the bytes of every program that reads a variable.
             Position(reference.Span);
             builder.Emit(JavaScriptOpcode.ThrowUninitializedBinding);
-            Push(1);
-            return;
         }
 
         builder.LoadLocal(SlotOf(reference, reference.Name, reference.Span));
         Push(1);
     }
+
+    /// <summary>
+    /// Whether a reference names a lexical binding whose initialiser has not been lowered yet.
+    /// </summary>
+    /// <remarks>
+    /// <b>Asked at a read and at a write, because the language throws at both.</b>
+    /// <c>x; let x;</c> and <c>x = 1; let x;</c> are each a <c>ReferenceError</c>, and they are one
+    /// question about the binding rather than two about the operation.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=5A4FA1
+    // Broiler-Falsified-If: a `var` is reported in the dead zone, or a lexical binding is not reported before its initialiser is lowered
+    // Broiler-Human:        PENDING
+    private bool InDeadZone(SliceIdentifierReference reference) =>
+        resolutions.TryGetValue(reference, out var binding) &&
+        binding.Kind != SliceDeclarationKind.Var &&
+        !initialised.Contains(binding.Slot);
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=EA3668
     // Broiler-Human:        PENDING
