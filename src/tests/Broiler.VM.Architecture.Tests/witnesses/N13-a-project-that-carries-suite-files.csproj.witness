@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    THE SECOND NEGATIVE CONTROL FOR RULE N13, AND IT LEAVES THE DEPENDENCY GRAPH LOOKING CLEAN.
+
+    No project reference is added here and no assembly changes. What changes is that suite FILES
+    are copied into a build output, which is redistribution of separately licensed third-party
+    material by a mechanism every reference-set rule in this component is blind to. A rule that
+    checked only edges would be green on this project file.
+
+    A clause with no witness of its own is a clause that can be deleted in the same patch as four
+    others with nothing red, which is why this is a second file rather than a second reference in
+    the first one.
+  -->
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Composition.JavaScript.ExecutionOnly</RootNamespace>
+    <AssemblyName>Broiler.VM.Composition.JavaScript.ExecutionOnly</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\tests\conformance\js-3a\**\*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

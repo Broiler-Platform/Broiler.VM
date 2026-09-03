@@ -25,6 +25,8 @@ does not contain says so in its own text.
 | [JSD-0011](0011-the-value-frame-and-call-abi.md) | The eight-row value, frame and call ABI, and the re-scoping of JS-6 from a copy to a rewrite that follows from it | JS-4, entry gate |
 | [JSD-0012](0012-the-profile-api-baseline-and-where-its-clause-lives.md) | The family's own frozen public surface, described without loading anything, and the re-homing of the gate clause that asked for it | JS-3a |
 | [JSD-0013](0013-the-fuzz-sessions-coverage-signal.md) | What a fuzz session observes as its coverage signal, why instrumenting for edge coverage is refused, and what a session judges about itself instead of its growth | JS-9 |
+| [JSD-0014](0014-the-source-front-end-and-the-verification-boundary.md) | Where the verification boundary falls, that static semantics is one stage, where strict mode is ruled on, that parse options are a value, and what a nesting case gets | JS-3b |
+| [JSD-0015](0015-the-conformance-oracle-and-what-it-refuses-to-score.md) | Where the conformance harness lives and why its non-advertisement is a rule, how a suite is pinned, that every case runs in a runtime of its own, and the six named ways a run is misconfigured | JS-3a |
 
 ## What a record must carry
 

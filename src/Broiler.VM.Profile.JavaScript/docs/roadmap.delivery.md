@@ -246,9 +246,14 @@ answered by whichever of the two ran late.
   which half of the registry each code belongs to** — codes a verified artifact's rejection
   carries in a core result, and codes a pre-artifact source rejection carries on the embedder's
   own seam — per [section 9](roadmap.md#9-the-semantic-front-end-and-lowering)'s boundary
-  question, which this milestone answers. Then pin a suite revision and build the harness, the
-  self-check, the sharding, the merge, the scope manifests, and the audit command, and score the
-  slice manifest. **In the change that first ingests a suite file, land the ingested suite's
+  question, which this milestone answers. Then build the harness, the self-check, the sharding,
+  the merge, the scope manifests, and the audit command, and score the slice manifest.
+  **The harness is built against the smallest scoring target that exists rather than after a
+  revision is pinned**, per [section 14](roadmap.md#14-the-conformance-oracle) — the harness, the
+  self-check, the sharding, the merge, the per-host-mode totals, the ratchet and the
+  never-advertised composition root are in the checkout from 2026-09-03, scoring a fixture suite of
+  this component's own; the scope manifests and the audit command are not, and neither is a pinned
+  third-party revision, without which every run reports `MissingSuiteRevision`. **In the change that first ingests a suite file, land the ingested suite's
   attribution row in the host component's notice**, mark modified suite files as changed, and
   re-confirm the core's standing third-party claim against what the ingestion adds to the tree, or
   amend it, with the release owner co-signing — the second of this component's two licence

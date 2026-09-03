@@ -587,7 +587,7 @@ section 8's extraction gate forbids, so VM-0 does not.
 | `assurance.manifest.json` | exists since VM-1: `assurance.manifest.json` | **Generated.** One entry per code unit in the three product assemblies, exempt and relevant alike, and one per covered file, each with a fingerprint. A change-detection record and not a review: an entry says what a declaration hashed to, never that anyone read it. Rule J7 holds it to the tree. |
 | `.gitattributes` | not created (VM-0 decision on paper; no file at VM-0) | The component contains no shell script, so there is no line-ending rule to fix yet. |
 | `global.json` | not created (VM-0 decision on paper; no file at VM-0) | No SDK pin; see Exclusion EX-03. |
-| `.github/workflows/` | exists since VM-1: `.github/workflows/` | Three lanes, and none publishes. `review.yml` regenerates every assurance artefact on a pull request, commits what moved, and then asserts that what is on disk is what the generator would write. `release.yml` runs that same gate and then the release gate - Rule J11 - before it packs, and stops at `dotnet pack`: pushing to a feed needs a credential this repository does not hold. The component ran no CI of its own at VM-0, which Exclusion EX-06 records; these lanes discharge that early and only in part, because they fire on a pull request and on a tag and nothing else. `broiler-vm.yml` was added at VM-6 to run the graph, catalog, AOT and drift checks. **It has now run on hosted runners and passes**, on `ubuntu-latest` and `windows-latest`, publishing and running every composition root as Native AOT on `linux-x64` and `win-x64`; it did the same on `macos-latest` and `osx-arm64` until the second 2026-09-01 revision withdrew that entry as outside ADR 0012's declared matrix, and it gained jobs for `linux-arm64`, `win-arm64`, `osx-arm64` and `osx-x64` as the third, fourth and fifth revisions of that date widened the matrix to every cell of a three-toolchain by two-architecture grid - which readmits the `osx-arm64` the second revision had withdrawn, by an argument rather than by a job. No revision settles **any RID claim**, because a lane is not an evidence bundle. |
+| `.github/workflows/` | exists since VM-1: `.github/workflows/` | Four files and three lanes, and none publishes. **The component lane was split on 2026-09-03 and is two files plus a definition**: `broiler-vm-lane.yml` holds every job and is entered by nothing directly; `broiler-vm.yml` calls it on every push and pull request over two of the six declared RIDs with short fuzz sessions; `broiler-vm-full.yml` calls it over all six with the full sessions and the emulator, on a `v*` tag, a weekly schedule and a button. One definition and two callers, because two copies of it would have drifted apart, and a caller chooses a matrix and an iteration count and can disable no check. `review.yml` regenerates every assurance artefact on a pull request, commits what moved, and then asserts that what is on disk is what the generator would write. `release.yml` runs that same gate and then the release gate - Rule J11 - before it packs, and stops at `dotnet pack`: pushing to a feed needs a credential this repository does not hold. The component ran no CI of its own at VM-0, which Exclusion EX-06 records; these lanes discharge that early and only in part, because they fire on a pull request and on a tag and nothing else. `broiler-vm.yml` was added at VM-6 to run the graph, catalog, AOT and drift checks. **It has now run on hosted runners and passes**, on `ubuntu-latest` and `windows-latest`, publishing and running every composition root as Native AOT on `linux-x64` and `win-x64`; it did the same on `macos-latest` and `osx-arm64` until the second 2026-09-01 revision withdrew that entry as outside ADR 0012's declared matrix, and it gained jobs for `linux-arm64`, `win-arm64`, `osx-arm64` and `osx-x64` as the third, fourth and fifth revisions of that date widened the matrix to every cell of a three-toolchain by two-architecture grid - which readmits the `osx-arm64` the second revision had withdrawn, by an argument rather than by a job. No revision settles **any RID claim**, because a lane is not an evidence bundle. |
 | `docs/compositions.md` | exists at VM-3: docs/compositions.md | The composition and RID register. It carries the schema, the advertised set - empty at core contract version 1 - the two demonstration compositions, and what each was published and run for. Rule A11's allow-list is a path rather than a constant now, and group K holds the register to the checkout. Exclusion EX-08 is closed; revision 1 records it. |
 | `docs/platform-references.md` | not created (VM-0 decision on paper; no file at VM-0) | The section 17 pinned-revision table. ADR 0012 records why it is absent and what closes it. |
 | `docs/support.md` | deferred to VM-6 | The public support table. ADR 0012 records that none is published at VM-0. |
@@ -1404,3 +1404,88 @@ for a sweep.
 **What is not edited.** Every revision above stands as written, including the one
 this completes.
 
+
+### 2026-09-03 - the conformance harness, a root that is never advertised
+
+**What changes.** `Broiler.VM.Composition.JavaScript.Conformance` is added under
+`src/compositions/`. It is the conformance oracle roadmap section 14 specifies:
+it reads a suite of tests, lowers each one, verifies the artifact, runs it, and
+compares what happened against what the test declared.
+
+**Why it is a composition root and not a test project.** Scoring a test means
+driving this profile's own lowering, verifier and executor. Rule A11 forbids a
+test project to reference a profile assembly and rule A12 forbids a composition
+root to reference the fixture assembly, which between them leave the harness
+nowhere else. That is the same argument the retained corpus's producer and the
+execution-only root's replay already stand on, and the JavaScript profile's
+roadmap section 5 states it in advance rather than leaving it to be discovered
+here.
+
+**What it composes.** One profile, `broiler.javascript`, through its own static
+accessor, with the lowering in its reference set because a conformance test is
+source. Its reference set is therefore the slice-compiler root's, and it composes
+no second profile and registers no capability.
+
+**What is now true.** The graph goes from 20 projects and 59 edges to 21 and 64.
+**The packable set is unchanged at exactly three**, and the root carries the
+literal `<IsPackable>false</IsPackable>`.
+
+**One rule is minted with it, and it is not a formality.** This root is the
+ingestion path for a conformance suite, which is separately licensed third-party
+material. Rule **N13** asserts that the harness appears in no package and in no
+advertised composition's closure, that no other project references it, and that
+no project file names a suite directory - the last being how suite files would
+reach a build output without any reference changing. It is deliberately not
+phrased as "no published closure", because this root publishes one of its own
+for its own evidence. Its negative controls add the reference from the
+execution-only root and add a content item carrying the suite, which are the two
+directions that would actually ship.
+
+**What it does not settle.** No RID claim moves, no composition becomes
+advertised, and no conformance suite is pinned: the suite this root reads today
+is the component's own fixture tree, and retrieving, hashing and archiving a
+third-party one is the human action the profile's ledger still records as open.
+
+**What is not edited.** Every revision above stands as written.
+
+### 2026-09-03 - the component lane is split, and it gains a concurrency group
+
+**What the record said.** The row above described three lanes, one of which -
+`broiler-vm.yml` - ran the whole declared RID matrix, the fuzz sessions and the
+Android emulator on every push and every pull request.
+
+**What was actually true.** It carried no concurrency group, so three pushes in a
+row left three complete matrices running at once, and the matrix itself took
+**26m56s**. The breakdown says where that went: the six publish jobs took 759,
+882, 917, 1041, 1051 and 1405 seconds, and the fuzz-and-mutate step was **88 to
+91 per cent of every one of them**. Everything else in a publish job - six Native
+AOT publishes of four composition roots, running each, and the package consumer -
+is 78 to 208 seconds. A fuzz session is a total function of its seed and its seed
+corpus, so the matrix was answering one deterministic question six times.
+
+**The step's own comment said those sessions "cost well under a second on the
+published image".** That was never measured and is why the cost was invisible for
+as long as it was. It is corrected in place.
+
+**What replaced it.** One lane definition with two callers.
+`broiler-vm-lane.yml` holds `checks`, `publish`, `mobile` and `android` and is
+entered only through `workflow_call`; it takes a publish matrix, a fuzz iteration
+count and whether the emulator runs, **and nothing else** - so a caller cannot
+disable a check, which would have made two gates wearing one name.
+`broiler-vm.yml` runs on every push and pull request over `linux-x64` and
+`linux-arm64` with 2,000-iteration sessions and a build of the Android head, under
+a concurrency group that cancels the run a previous push started.
+`broiler-vm-full.yml` runs all six cells with 25,000-iteration sessions and the
+emulator, on a `v*` tag - the trigger `release.yml` already publishes on - on a
+weekly schedule, and on a button, and it deliberately does **not** cancel in
+progress.
+
+**What is now true, and what is not.** The push path is two cells rather than six,
+so it is **blind to a Windows-only and a macOS-only regression until the full lane
+runs** - and this component has had one, the soak's heap plateau failing on macOS
+under Native AOT on both architectures while every other RID stayed flat. The
+quick lane is a fast signal; the full lane is the gate, and a release goes through
+it. **No RID claim moves**, because a lane is not an evidence bundle and this
+revision changes nothing about what a collection is.
+
+**What is not edited.** Every revision above stands as written.

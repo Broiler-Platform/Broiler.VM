@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    THE NEGATIVE CONTROL FOR RULE N13, AND IT IS THE DIRECTION THAT WOULD ACTUALLY SHIP.
+
+    The execution-only root is the plausible place for this mistake: somebody wants the harness's
+    fixtures, or its report format, or "just the self-check", and adds one line. From that moment
+    the conformance harness's ingestion path is in the closure of the composition whose whole claim
+    is that it contains a format, a verifier, an interpreter and no compiler - and a third-party
+    suite, when one is pinned, would be reachable from an image a consumer runs.
+
+    Roadmap section 5 names this exact direction for the control rather than a contrived one,
+    because a control over an edge nobody would ever add proves only that the rule runs.
+  -->
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Composition.JavaScript.ExecutionOnly</RootNamespace>
+    <AssemblyName>Broiler.VM.Composition.JavaScript.ExecutionOnly</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Composition.JavaScript.Conformance\Broiler.VM.Composition.JavaScript.Conformance.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,5 @@
+/*---
+description: artifact bytes with no lowering consulted, running to their completion value
+expected: completion 3
+flags: [raw]
+---*/

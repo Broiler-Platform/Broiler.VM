@@ -1,0 +1,5 @@
+/*---
+description: the first byte of the magic is not the format's, so the read stage refuses the header
+expected: refused-by-verifier WrongMagic
+flags: [raw]
+---*/

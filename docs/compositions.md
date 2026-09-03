@@ -107,6 +107,7 @@ the exact closure this register exists to describe.
 | `Broiler.VM.Composition.JavaScript.ExecutionOnly` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format` | none registered | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-1` |
 | `Broiler.VM.Composition.JavaScript.SliceCompiler` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler` | none registered | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-1` |
 | `Broiler.VM.Composition.JavaScript.Android` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format` | none registered | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-001` |
+| `Broiler.VM.Composition.JavaScript.Conformance` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler` | none registered | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-3a-004` |
 
 **The Android head composes exactly what the execution-only root composes**, and
 that is the point of it rather than an accident: it names the profile and not the
@@ -139,6 +140,30 @@ calculator's limits - the effective ceiling for an operation is the intersection
 of the host's with **that profile's own** hard maxima, so the calculator is still
 held to one section and no host call - and the profile-authoring consequence is
 recorded in section 5.
+
+**The conformance harness is the one row in this table whose non-advertisement is
+a rule rather than a consequence.** Every other root here is a demonstration
+because section 1's advertised set is empty; this one would have to stay out of
+that set even if the set filled. It is the ingestion path for a conformance
+suite — separately licensed third-party material that a human has still not
+retrieved, hashed or archived — and roadmap section 14 asks the property to be
+asserted rather than assumed. Rule N13 is that assertion, and it is deliberately
+**not** phrased as "appears in no published closure": this root publishes a
+closure of its own, for its own evidence, so that phrasing would be falsified by
+the very bundle the row's Evidence column names. What N13 asserts is that the
+harness appears in **no package and in no advertised composition's closure**,
+that no other project references it, and that no project file names a suite
+directory — the last being how suite *files* would reach a build output with the
+dependency graph still looking clean. Its negative control adds the reference
+from the execution-only root, which is the direction that would actually ship.
+
+**It carries a lowering, and that is forced rather than chosen.** Scoring a
+conformance test means lowering its source, verifying the artifact and running
+it, so this root's reference set is the slice-compiler root's. It composes no
+second profile and registers no capability: what it adds beyond the image is a
+suite reader, a selection pipeline, a self-check, a merge and a ratchet, all of
+which are in the closure it publishes for the same reason the corpus replay is in
+the execution-only root's.
 
 **Why the two JavaScript roots are two projects and not two modes of one.** They
 differ by exactly one reference - the lowering - and that difference is the whole

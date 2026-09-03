@@ -1,0 +1,101 @@
+# JS-3A-004 negative controls for the conformance harness
+#
+# Each entry injects one defect, runs the thing that would have to notice it, and
+# reverts. Output is the tail of what the command printed, unedited.
+#
+# Controls 001 to 005 are judged by the harness itself; 006 and 007 by the architecture
+# suite, because rule N13 subject is the checkout rather than a run.
+
+[control-000-the-clean-reading]
+No injection. This is what the controls below move away from.
+exit 0
+broiler-js-conformance: 9 self-check fixtures reported the verdict they declared
+suite broiler.javascript.slice.js-3a@268f3a8d702a2fbdecd61d637284d2ce9ea51c8033b9a3eac934ff59a31eae12; shard all of 1
+selection candidates=44 knownIncorrect=0 outOfScope=0 featureFiltered=0 negativeWithheld=0 unselectable=0 selected=44 sharded=44
+mode Script: selected=38 executed=38 passed=38 failed=0 skipped=0 timedOut=0
+mode Module: selected=3 executed=3 passed=3 failed=0 skipped=0 timedOut=0
+mode Raw: selected=3 executed=3 passed=3 failed=0 skipped=0 timedOut=0
+
+[control-001-any-refusal-matches-any-declared-refusal]
+Execution.Compare treats two refusals as equal without comparing the diagnostic code. A harness that only asks WHETHER a program was refused scores this as clean.
+exit 3
+FAIL a-declared-refusal-with-the-wrong-code.js: expected Failed/NeverSettled, got Passed/NeverSettled
+broiler-js-conformance: the self-check FAILED - 1 of 9 fixtures reported the wrong verdict and 0 complaint(s) stand
+broiler-js-conformance: the self-check failed; nothing was scored
+
+[control-002-every-case-is-scored-as-a-pass]
+Execution.Compare returns Passed unconditionally: the failure mode a pass rate cannot see, because it produces the best number the harness has ever published.
+exit 3
+FAIL a-declared-refusal-that-does-not-happen.js: expected Failed/Completed, got Passed/Completed
+FAIL a-declared-refusal-with-the-wrong-code.js: expected Failed/NeverSettled, got Passed/NeverSettled
+FAIL a-declared-value-for-a-source-that-is-refused.js: expected Failed/NeverSettled, got Passed/NeverSettled
+FAIL a-declared-value-that-is-wrong.js: expected Failed/Completed, got Passed/Completed
+broiler-js-conformance: the self-check FAILED - 4 of 9 fixtures reported the wrong verdict and 0 complaint(s) stand
+broiler-js-conformance: the self-check failed; nothing was scored
+
+[control-003-one-runtime-is-shared-by-every-case]
+The engine is composed once and reused. This is the defect JSC-52 records: a budget allowance is spent over a runtime life, so the first program that does not terminate makes every later case report a timeout.
+exit 3
+FAIL a-program-that-runs-after-one-that-did-not-terminate.js: expected Passed/Completed, got TimedOut/NeverSettled - `a-program-that-runs-after-one-that-did-not-terminate.js` spent the 2000000-unit allowance without settling
+broiler-js-conformance: the self-check FAILED - 1 of 9 fixtures reported the wrong verdict and 0 complaint(s) stand
+broiler-js-conformance: the self-check failed; nothing was scored
+
+[control-004-a-fixture-is-edited-without-re-pinning]
+One newline appended to one test. The suite digest moves, the pin does not, and the run reports the named configuration failure rather than scoring against a revision nobody pinned.
+exit 1
+broiler-js-conformance: 9 self-check fixtures reported the verdict they declared
+FAIL suite.pin in src\tests\conformance\js-3a pins 268f3a8d702a2fbdecd61d637284d2ce9ea51c8033b9a3eac934ff59a31eae12 and the files read amount to 2adb0bb02c359f4fb7585f108f863df7fab6ba6b074b0279bcc3c466bd343000: the suite moved under its pin
+suite broiler.javascript.slice.js-3a@unpinned; shard all of 1
+selection candidates=44 knownIncorrect=0 outOfScope=0 featureFiltered=0 negativeWithheld=10 unselectable=0 selected=34 sharded=34
+mode Script: selected=31 executed=31 passed=31 failed=0 skipped=0 timedOut=0
+mode Module: selected=2 executed=2 passed=2 failed=0 skipped=0 timedOut=0
+mode Raw: selected=1 executed=1 passed=1 failed=0 skipped=0 timedOut=0
+CONFIGURATION MissingSuiteRevision: suite `broiler.javascript.slice.js-3a` was read at no pinned revision; a branch name is not a pin and neither is nothing
+
+[control-005a-the-whole-sharded-run-merges]
+Three shards of three, merged. The baseline the control below moves away from.
+exit 0
+broiler-js-conformance: merged 3 shard report(s)
+suite broiler.javascript.slice.js-3a@268f3a8d702a2fbdecd61d637284d2ce9ea51c8033b9a3eac934ff59a31eae12; shard all of 3
+selection candidates=44 knownIncorrect=0 outOfScope=0 featureFiltered=0 negativeWithheld=0 unselectable=0 selected=44 sharded=44
+mode Script: selected=38 executed=38 passed=38 failed=0 skipped=0 timedOut=0
+mode Module: selected=3 executed=3 passed=3 failed=0 skipped=0 timedOut=0
+mode Raw: selected=3 executed=3 passed=3 failed=0 skipped=0 timedOut=0
+
+[control-005b-one-shard-report-is-removed]
+Shard 1 of 3 is withheld. A merge that added what it was handed would publish a smaller total that reads exactly like a smaller suite.
+exit 1
+broiler-js-conformance: merged 2 shard report(s)
+suite broiler.javascript.slice.js-3a@268f3a8d702a2fbdecd61d637284d2ce9ea51c8033b9a3eac934ff59a31eae12; shard all of 3
+selection candidates=44 knownIncorrect=0 outOfScope=0 featureFiltered=0 negativeWithheld=0 unselectable=0 selected=44 sharded=33
+mode Script: selected=28 executed=28 passed=28 failed=0 skipped=0 timedOut=0
+mode Module: selected=3 executed=3 passed=3 failed=0 skipped=0 timedOut=0
+mode Raw: selected=2 executed=2 passed=2 failed=0 skipped=0 timedOut=0
+CONFIGURATION IncompleteShardCoverage: shard 1 of 3 reported nothing
+CONFIGURATION IncompleteShardCoverage: the pipeline selected 44 tests and the shards between them scored 33
+
+[control-006-the-execution-only-root-references-the-harness]
+One ProjectReference added to the root whose whole claim is that it compiles nothing. This is the direction that would actually ship.
+exit 1
+Fehler Broiler.VM.Architecture.Tests.IngestionPathRuleTests.N13_The_Harness_And_Its_Suite_Reach_No_Package_And_No_Advertised_Closure [3 ms]
+Fehler Broiler.VM.Architecture.Tests.TopologyBudgetTests.A15_The_Topology_Records_Last_Budget_Describes_The_Graph [1 ms]
+Fehler Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A7_Declared_Edges_Match_The_Graph_Manifest_Exactly [15 ms]
+Fehler Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A12_A_Composition_Root_References_Only_Core_Packages_And_Profiles [1 ms]
+Fehler!      : Fehler:     5, erfolgreich:   174, übersprungen:     0, gesamt:   179, Dauer: 2 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+[xUnit.net 00:00:00.35]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K2_Each_Row_Agrees_With_The_Reference_Set_And_The_Catalog [FAIL]
+[xUnit.net 00:00:00.36]     Broiler.VM.Architecture.Tests.IngestionPathRuleTests.N13_The_Harness_And_Its_Suite_Reach_No_Package_And_No_Advertised_Closure [FAIL]
+[xUnit.net 00:00:00.38]     Broiler.VM.Architecture.Tests.TopologyBudgetTests.A15_The_Topology_Records_Last_Budget_Describes_The_Graph [FAIL]
+[xUnit.net 00:00:00.41]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A7_Declared_Edges_Match_The_Graph_Manifest_Exactly [FAIL]
+[xUnit.net 00:00:00.41]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A12_A_Composition_Root_References_Only_Core_Packages_And_Profiles [FAIL]
+
+[control-007-a-project-carries-the-suite-into-its-output]
+No reference and no assembly change: a Content glob copies the suite into a build output, which is redistribution by a mechanism every reference-set rule is blind to.
+exit 1
+Fehler Broiler.VM.Architecture.Tests.IngestionPathRuleTests.N13_The_Harness_And_Its_Suite_Reach_No_Package_And_No_Advertised_Closure [4 ms]
+Fehler!      : Fehler:     1, erfolgreich:   178, übersprungen:     0, gesamt:   179, Dauer: 2 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+[xUnit.net 00:00:00.29]     Broiler.VM.Architecture.Tests.IngestionPathRuleTests.N13_The_Harness_And_Its_Suite_Reach_No_Package_And_No_Advertised_Closure [FAIL]
+
+[the tree after every control]
+git status over the three injected files: ?? src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Execution.cs
+?? src/tests/conformance/js-3a/test/script/addition-of-two-numbers.js
+

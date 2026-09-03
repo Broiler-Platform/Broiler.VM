@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Composition.JavaScript.Conformance</RootNamespace>
+    <AssemblyName>Broiler.VM.Composition.JavaScript.Conformance</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Not advertised, and here that is a stronger claim than it is on either sibling. This root
+         is the conformance harness's ingestion path: it is where a pinned third-party suite would
+         be read, and roadmap section 14 asserts rather than assumes that the path appears in no
+         package and in no advertised composition's closure. Rule N13 is that assertion. -->
+    <IsPackable>false</IsPackable>
+
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <!--
+    THE ORACLE, AND WHY IT IS A COMPOSITION ROOT RATHER THAN A TEST PROJECT.
+
+    The harness lowers a test's source, verifies the artifact and runs it, so it drives this
+    profile's own lowering, verifier and executor. Rule A11 forbids a test project to reference a
+    profile assembly and rule A12 forbids a composition root to reference the fixture assembly,
+    which between them leave the harness nowhere but here. Roadmap section 5 says so in those
+    words rather than leaving it to be discovered at JS-3a.
+
+    Its reference set is the slice-compiler root's, and that is forced by the same argument: a
+    conformance test is source, and scoring source means lowering it. What follows from that is
+    the whole of rule N13 - this closure carries a compiler AND an ingestion path, so no
+    advertised composition may ever contain it, and no other root may reference it.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Profile.JavaScript.Compiler\Broiler.VM.Profile.JavaScript.Compiler.csproj" />
+  </ItemGroup>
+
+</Project>

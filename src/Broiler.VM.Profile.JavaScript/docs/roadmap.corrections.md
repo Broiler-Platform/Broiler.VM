@@ -134,6 +134,8 @@ rather than a decision record.
 | [JSC-48](#jsc-48) | ledger §2; delivery §19 | The soak's plateau reading was coupled to what the process allocated BEFORE the soak, so it measured heap the collector had not returned rather than a per-cycle leak | the check's own curve, read on four platforms |
 | [JSC-49](#jsc-49) | roadmap §9; ledger §2 | The feature manifest is a validation-stage clause and not a grammar restriction; the parser reads JavaScript and refuses nothing | [JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md), decision 1, read against its own implementation |
 | [JSC-50](#jsc-50) | roadmap §9; ledger §2 | The parse depth bound has a measured maximum, and it dominates the format's operand-stack ceiling | the parser's own measured recursion limit |
+| [JSC-51](#jsc-51) | roadmap §14; ledger §2 | The closed set of configuration failures is the plan's five plus one the plan states without naming | [JSD-0015](decisions/0015-the-conformance-oracle-and-what-it-refuses-to-score.md), decision 6 |
+| [JSC-52](#jsc-52) | roadmap §14; ledger §2 | A conformance case runs in a runtime of its own; the plan specifies aggregation and says nothing about isolation | the harness's own first scored run |
 
 ### JSC-01
 
@@ -1853,4 +1855,69 @@ refuses rather than surviving, and the 100,000-level case still returns a diagno
 ending the process.
 
 **Authority and date.** The parser's own measured recursion limit, taken on `win-x64` under JIT;
+2026-09-03.
+### JSC-51
+
+**Where:** roadmap [section 14](roadmap.md#14-the-conformance-oracle), the configuration-failure
+clause; the [ledger](roadmap.status.md#2-current-milestone-status)'s JS-3a row.
+
+**What the plan said.** "Configuration failures are a closed, named set and each is a failure:
+inconsistent shard configuration, missing suite revision, incomplete variant coverage, empty
+selection, no executed tests." Five names, and the word *closed*.
+
+**What was actually true.** The very next sentence states a sixth requirement and gives it no
+name: "Removing one shard's report must produce incomplete coverage, not a smaller total." A run
+that is missing a shard is misconfigured in exactly the way the other five are, and a set that
+could not name it would leave the plan's own next sentence unimplementable inside its own
+vocabulary. A closed set with a behaviour outside it is not closed.
+
+**What replaced it.** The set is six: the plan's five, with `IncompleteShardCoverage` added for the
+behaviour above, and "incomplete variant coverage" spelled `IncompleteHostModeCoverage` because the
+axis this profile varies over is the host mode rather than a minifier. Two things are deliberately
+*not* members. A self-check mismatch is not, because the self-check runs before a shard is
+configured at all and a mismatch has no run to be a property of - it stops the process on an exit
+code of its own, and folding it in would let a reader believe a run had been configured and had
+then gone wrong. And a selection pipeline that fails to account for every candidate is not, because
+that is a defect in the harness rather than in the run: it is asserted at run time and reported as
+a harness defect, and the harness's own regression suite has a check for it.
+
+**What it does not change.** Each of the six is still a failure of the run and never a smaller
+total, and the merge still refuses to add reports it has not first proved are one run's.
+
+**Authority and date.**
+[JSD-0015](decisions/0015-the-conformance-oracle-and-what-it-refuses-to-score.md), decision 6;
+2026-09-03.
+
+### JSC-52
+
+**Where:** roadmap [section 14](roadmap.md#14-the-conformance-oracle); the
+[ledger](roadmap.status.md#2-current-milestone-status)'s JS-3a row.
+
+**What the plan said.** Section 14 specifies, in detail, how a run's results are selected, sharded,
+counted, merged, ratcheted and refused. **It says nothing about isolating one case from another.**
+Read as a whole it implies the property - a per-host-mode total is only meaningful if a case's
+verdict is that case's - but nothing in it makes the implication a requirement, and the obvious
+implementation composes the engine once per shard.
+
+**What was actually true.** A fuel allowance is spent over a runtime's whole life rather than reset
+per invocation. One composed runtime for a whole shard therefore means the first program that does
+not terminate spends the allowance and **every case after it is reported as a timeout**. The first
+scored run of this suite reported thirty-four timeouts and nothing else - a total indistinguishable
+from an engine that had stopped working, which is precisely the reading section 14 exists to make
+impossible. The self-check did not catch it, because the one non-terminating fixture happened to
+sort last.
+
+**What replaced it.** Every case runs in a runtime of its own, and section 14 says so. The
+self-check gained a fixture whose only job is to run *after* the non-terminating one and pass; a
+shared allowance makes it report a timeout, which is the shape of the defect rather than a proxy
+for it. The allowance stays fuel rather than the wall clock, because fuel is charged per
+instruction and bounds a runaway program in instructions rather than in seconds - a wall-clock
+allowance would make one test pass on an idle machine and fail on a busy one, and a floor sensitive
+to that is a floor nobody can act on.
+
+**What it does not change.** No total, no host mode and no configuration failure moves. The defect
+was in what the harness shared between cases, not in what it counted.
+
+**Authority and date.** The harness's own first scored run, on `win-x64` under JIT, and
+[JSD-0015](decisions/0015-the-conformance-oracle-and-what-it-refuses-to-score.md), decision 3;
 2026-09-03.

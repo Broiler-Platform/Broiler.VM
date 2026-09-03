@@ -1,0 +1,69 @@
+# THE FULL LANE. A release tag, a weekly schedule, and a button.
+#
+# This is the gate. It runs the same lane definition broiler-vm.yml runs, with the two things that
+# lane trades away for speed put back: all six declared runtime identifiers rather than two, four
+# fuzz sessions of 25,000 iterations rather than 2,000, and the Android emulator rather than a
+# build of the head. It costs about twenty-seven minutes and it is not on the push path.
+#
+# WHEN IT RUNS, and why each trigger is here:
+#
+# - **A `v*` tag**, which is the same trigger release.yml publishes on. "Before a release" is the
+#   requirement; a tag is the moment that is decidable, and this lane and the publish lane read
+#   the same one, so a release cannot be cut past a matrix nobody ran. It does NOT gate the
+#   publish job - the two run in parallel on the tag - and making it a prerequisite is a separate
+#   decision about who may cut a release, which this file does not take.
+#
+# - **A weekly schedule.** The hosted images move underneath this component whether or not anybody
+#   pushes, and the Windows arm64 image has already produced one flake in `actions/setup-dotnet`
+#   before a line of this component was built. A matrix that only ran at release time would
+#   discover that on the day of a release. Monday morning UTC, so a failure has a week to be read.
+#   A scheduled run reads the default branch, which is what makes it a statement about `main`.
+#
+# - **A button.** `workflow_dispatch`, for the case the quick lane went red on something that
+#   smells platform-shaped, or a reviewer wants the six-cell answer before merging.
+#
+# WHAT IS DELIBERATELY NOT A TRIGGER: a pull request. That is the whole point of the split, and a
+# reviewer who wants this on a branch presses the button.
+#
+# CONCURRENCY IS DELIBERATELY NOT CANCELLING. The quick lane cancels its own earlier runs because
+# a superseded commit's result is worth nothing. Here a run is about a tag or about a week, and
+# cancelling one because another started would lose an answer nothing else produces.
+
+name: broiler-vm (full)
+
+on:
+  push:
+    tags: ['v*']
+  schedule:
+    - cron: '0 5 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: broiler-vm-full-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  full:
+    name: full
+    uses: ./.github/workflows/broiler-vm-lane.yml
+    with:
+      # All six cells ADR 0012 declares: three Native AOT toolchains by two architectures, with
+      # the rule that produces them recorded in the lane definition beside the matrix. A RID that
+      # stopped publishing fails here, which is why the full lane names all six explicitly rather
+      # than deriving them from anything.
+      matrix: >-
+        {"include":[
+          {"os":"ubuntu-latest","rid":"linux-x64"},
+          {"os":"windows-latest","rid":"win-x64"},
+          {"os":"ubuntu-24.04-arm","rid":"linux-arm64"},
+          {"os":"windows-11-arm","rid":"win-arm64"},
+          {"os":"macos-latest","rid":"osx-arm64"},
+          {"os":"macos-15-intel","rid":"osx-x64"}
+        ]}
+      # The count the retained evidence bundles use, so this lane and a collection answer the same
+      # question and a disagreement between them is a defect rather than a different experiment.
+      fuzz-iterations: 25000
+      android: true

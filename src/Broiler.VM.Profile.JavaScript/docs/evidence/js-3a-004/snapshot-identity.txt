@@ -1,0 +1,19 @@
+JSD-0005 records a CANDIDATE snapshot identity. This step re-derives it and compares.
+A match is not a taken snapshot: JS-2 takes one and records what it actually took.
+
+aggregate checkout:    D:\Broiler.Browser
+
+Broiler.JS
+  recorded: 0341e5c98553b43569217aa7a30c8a01a1eada0c
+  checkout: 0341e5c98553b43569217aa7a30c8a01a1eada0c   [match]
+Broiler.JS/Broiler.DateTime
+  recorded: d0c036783bdeeedaeb657a69bea6e2d5f5d438e9
+  checkout: d0c036783bdeeedaeb657a69bea6e2d5f5d438e9   [match]
+Broiler.JS/Broiler.Regex
+  recorded: 4df3fb8e005d9688921c235ccc44e2e89746180e
+  checkout: 4df3fb8e005d9688921c235ccc44e2e89746180e   [match]
+Broiler.JS/Broiler.Unicode
+  recorded: 151799bb010bd8c882e07bace636ed12197c3410
+  checkout: 151799bb010bd8c882e07bace636ed12197c3410   [match]
+
+mismatches: 0

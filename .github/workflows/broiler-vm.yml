@@ -1,42 +1,42 @@
-# The component's own CI, deferred to VM-6 by ADR 0001 and recorded as exclusion EX-06 until now.
+# THE QUICK LANE. Every push, every pull request, and a button.
 #
-# What this workflow is FOR: the checks that a laptop cannot honestly run. The suites, the graph
-# rules, the catalog and API drift baselines and the assurance generator all run in `dotnet test`
-# and a contributor runs them before pushing; what a contributor cannot do is prove the component
-# builds on a machine that is not theirs, restores from a feed rather than from their own project
-# graph, or publishes a Native AOT image on a runtime identifier they do not own.
+# WHAT CHANGED ON 2026-09-03 AND WHY. This workflow used to be the whole matrix - six runtime
+# identifiers, four fuzz sessions of 25,000 iterations on each of them, and the Android emulator -
+# and it ran on every push with no concurrency group. Three pushes in a row therefore left three
+# complete matrices running at once, and the last of them took 26m56s. Neither half of that was
+# buying anything: the earlier runs were scoring commits nobody would look at again, and the
+# matrix was answering one deterministic question six times.
 #
-# WHAT IT DOES NOT DO. It does not collect an evidence bundle. Bundles are collected deliberately,
-# by a person, into `docs/evidence/`, and a workflow that regenerated them on every push would
-# make the retained figures a function of whichever runner happened to answer - which for the
-# baselines in `docs/baselines.md` would be actively false. The gate asks for drift checks in CI
-# and for evidence in bundles, and those are different things.
+# TWO CHANGES, and the first is the one that matters most for the complaint that produced it.
 #
-# HONESTY NOTE, and it belongs at the top rather than in a footnote. When this file was written it
-# had NEVER RUN, and it said so here. It has run since - on ubuntu-latest and windows-latest,
-# publishing and running every composition root as Native AOT on linux-x64 and win-x64 - so the RID
-# matrix below is not aspirational for either of those. It ran on macos-latest and osx-arm64 too,
-# until 2026-09-01: that RID is one ADR 0012 marks RESERVED, no head in the consuming repository
-# targets macOS, and a lane publishing a RID the declared matrix does not hold is drift towards a
-# claim the ADR forbids rather than extra assurance. The SAME DAY the matrix gained linux-arm64 by
-# a decision of its own, and that entry has now run too: ubuntu-24.04-arm published and ran every
-# composition root as Native AOT on arm64 at the first attempt, with no tooling this file installs.
-# win-arm64 followed, then both macOS RIDs, and every one of the six published and ran on the first
-# attempt it was given a runner for. ADR 0012 carries every movement, the limit on the arm64 rows -
-# an instruction set shared with android-arm64 and nothing else - and the rule the matrix follows.
+# 1. THE CONCURRENCY GROUP BELOW. A new push on a branch cancels the run the previous push
+#    started. Nothing about what is checked changes; what changes is that three pushes cost one
+#    matrix instead of three. The review lane has had this since it was written and this one
+#    simply did not.
 #
-# ONE FLAKE IS RECORDED HERE rather than left for whoever meets it. Of three win-arm64 attempts on
-# 2026-09-01, one failed - in actions/setup-dotnet, installing the SDK, with an access violation
-# and `Internal CLR error`, before a line of this component was built. It passed on either side of
-# that. A green matrix is a statement about six publishes that happened, not a promise that the
-# hosted images are reliable, and the arm64 Windows image is the one that has misbehaved so far.
+# 2. THE SPLIT. This lane takes two of the six cells - one per architecture, both Linux, which are
+#    the two cheapest on the workload that remains after the long fuzz sessions come out - and
+#    runs the fuzz sessions at 2,000 iterations rather than 25,000. broiler-vm-full.yml runs all
+#    six at 25,000 with the emulator, on a release tag, on a weekly schedule and on a button.
 #
-# What has NOT changed is the sentence that matters: `docs/support.md` still claims no platform on
-# the strength of this lane, and it should not. A workflow that has not run is a plan; a workflow
-# that HAS run is still not a bundle. The block above says why - this lane collects no evidence,
-# names no machine, and retains no configuration - so a RID moves from unclaimed to claimed on a
-# deliberate collection into docs/evidence/ and on nothing else. ADR 0001's 2026-09-01 revision
-# records both halves.
+# The measurement that decided it, from run 33738744632: the six publish jobs took 759, 882, 917,
+# 1041, 1051 and 1405 seconds, and the fuzz-and-mutate step was 88 to 91 per cent of every one of
+# them. Everything else in a publish job - six Native AOT publishes of four composition roots,
+# running each, and the package consumer - is 78 to 208 seconds. The wall clock was one step.
+#
+# WHAT THIS LANE THEREFORE DOES NOT PROVE. It is blind to a Windows-only and a macOS-only
+# regression until the full lane runs, and this component has already had one: the soak's heap
+# plateau failed on macOS under Native AOT, on both architectures, byte-identically across three
+# runs, while every other RID stayed flat. It also reaches less far into the mutation space per
+# session. **A green quick lane is a fast signal and not the gate**, and a release goes through
+# broiler-vm-full.yml.
+#
+# Everything this lane DOES run is unabridged: the whole suite, the graph and drift rules, the
+# pack and feed-consumer checks, every composition root published as Native AOT and run, the
+# conformance suite scored in shards against its floor, the corpus-integrity mutation, and the
+# mobile head compiled. No check is disabled anywhere - the lane definition takes a matrix and an
+# iteration count and nothing else, so there is no way for one caller to quietly skip a check the
+# other runs.
 
 name: broiler-vm
 
@@ -49,401 +49,30 @@ on:
 permissions:
   contents: read
 
-env:
-  DOTNET_NOLOGO: true
-  DOTNET_CLI_TELEMETRY_OPTOUT: true
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+# A later push on the same branch cancels the earlier run. Deliberately keyed on the branch rather
+# than on the workflow alone, so two branches never cancel each other.
+concurrency:
+  group: broiler-vm-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  # Everything that is a property of the source rather than of the machine. It runs once, because
-  # running it per platform would multiply the cost without multiplying the evidence: a rule about
-  # the project graph has the same answer everywhere.
-  checks:
-    name: build, suites, graph and drift
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: false
-
-      # No global.json exists, so no SDK is pinned and the runner's own is used. That is
-      # exclusion EX-03 and it is deliberate at preview: pinning an SDK the component has never
-      # been recertified against would be a claim, and the evidence bundles record which SDK each
-      # collection actually resolved.
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-
-      - name: Build with warnings as errors
-        run: dotnet build Broiler.VM.slnx -c Release -warnaserror
-
-      # One command, and it carries more than its name suggests. The architecture suite is where
-      # the graph rules, the API baseline (M1), the catalog-drift baselines (K3), the composition
-      # register (K1, K2), the Code Assurance generator (J1-J7), the review-record bindings (H1-H5)
-      # and the baseline register (L1) all live, so "drift checks wired into CI" is this line.
-      - name: Test
-        run: dotnet test Broiler.VM.slnx -c Release --no-build
-
-      # Asserted here as well as in the suite, because rule C1 reads a RETAINED pack log and this
-      # reads the pack that just happened. The two can disagree, and the day they do is the day the
-      # bundle went stale.
-      - name: Pack, and check the package count
-        run: |
-          set -euo pipefail
-          rm -rf artifacts/ci-pack && mkdir -p artifacts/ci-pack
-          dotnet pack Broiler.VM.slnx -c Release -o artifacts/ci-pack
-          nupkg=$(ls artifacts/ci-pack/*.nupkg | wc -l)
-          snupkg=$(ls artifacts/ci-pack/*.snupkg | wc -l)
-          echo "nupkg=$nupkg snupkg=$snupkg"
-          test "$nupkg" -eq 3
-          test "$snupkg" -eq 3
-
-      # The one check that cannot be done from inside the solution: a consumer with no project
-      # reference, restoring from a feed whose only source is the packages just built.
-      - name: Restore and run the pristine feed consumer
-        run: |
-          set -euo pipefail
-          rm -rf artifacts/feed && mkdir -p artifacts/feed
-          dotnet pack Broiler.VM.slnx -c Release -o artifacts/feed -p:VersionSuffix=preview.1
-          cd samples/Broiler.VM.Sample.FeedConsumer
-          dotnet run -c Release -p:BroilerVmVersion=0.1.0-preview.1
-
-      # Rollback, exercised. Two package sets on one feed; the consumer runs against the newer and
-      # is then rolled back to the older, and prints which one it actually loaded.
-      - name: Roll back and run again
-        run: |
-          set -euo pipefail
-          dotnet pack Broiler.VM.slnx -c Release -o artifacts/feed -p:VersionSuffix=preview.2
-          cd samples/Broiler.VM.Sample.FeedConsumer
-          dotnet run -c Release -p:BroilerVmVersion=0.1.0-preview.2
-          dotnet run -c Release -p:BroilerVmVersion=0.1.0-preview.1
-
-  # Publish and run every advertised composition on every claimed RID, with trim and AOT warnings
-  # as errors. Roadmap section 15 gate 5 asks for exactly this, and gate 2 asks that the closure
-  # match its claim - which is why each composition is RUN and not merely published: a linker
-  # annotation without execution is insufficient.
-  publish:
-    name: publish and run (${{ matrix.rid }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          # EXACTLY ADR 0012's declared RID matrix, which is three since 2026-09-01. The first
-          # two are the RIDs a head in the consuming repository publishes, so they are the ones
-          # on which a claim could ever be collected; a lane entry for a RID the ADR marks
-          # reserved is a publish nothing consumes and a row the support table may never carry,
-          # which is why osx-arm64 was withdrawn the same day.
-          #
-          # linux-arm64 is declared for the ARCHITECTURE and not for a consumer, and the
-          # distinction is the whole of what this entry proves. Nothing publishes it: the
-          # consuming repository has no arm64 head, and the head that does ship arm64 ships it
-          # as android-arm64 on Mono, which this component cannot target. So this job is the only
-          # place arm64 code generation and arm64 Native AOT are compiled at all - and a green
-          # result here is NOT Android coverage. It shares an instruction set with android-arm64
-          # and nothing else: not the runtime, not the trimming configuration that head turns
-          # off, not the packaging, not the head. ADR 0012's third 2026-09-01 revision carries
-          # the same limit, because a reader meeting this matrix should not have to find it.
-          #
-          # The matrix is a GRID and every cell is filled: three Native AOT toolchains by two
-          # architectures. MSVC into PE-COFF, clang into ELF, clang into Mach-O; x64 and arm64.
-          # ADR 0012's fifth 2026-09-01 revision states the rule and this shape - a RID is
-          # declared when its evidence is collectible on a lane AND it fills a cell no declared
-          # RID fills. Six cells, six rows, nothing redundant and nothing left. A seventh RID
-          # cannot come from this rule, because there is no seventh cell: it would have to come
-          # from a CONSUMER, which is where android-* and ios-* sit and why they stay excluded -
-          # not for want of a cell but for want of a harness that can run one.
-          - { os: ubuntu-latest, rid: linux-x64 }
-          - { os: windows-latest, rid: win-x64 }
-          - { os: ubuntu-24.04-arm, rid: linux-arm64 }
-          - { os: windows-11-arm, rid: win-arm64 }
-          - { os: macos-latest, rid: osx-arm64 }
-          # macos-13 is RETIRED and the difference matters to whoever edits this next: a label
-          # that no longer resolves does not fail, it queues, so the job waits for a runner that
-          # is never coming and the run never completes. That is how this entry was written -
-          # macos-13 first, queued indefinitely, then the successor Intel image, which picked it
-          # up in seconds and passed.
-          - { os: macos-15-intel, rid: osx-x64 }
-    steps:
-      - uses: actions/checkout@v4
-
-      # No global.json exists, so no SDK is pinned and the runner's own is used. That is
-      # exclusion EX-03 and it is deliberate at preview: pinning an SDK the component has never
-      # been recertified against would be a claim, and the evidence bundles record which SDK each
-      # collection actually resolved.
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-
-      - name: Publish and run the core composition roots as Native AOT
-        shell: bash
-        run: |
-          set -euo pipefail
-          for composition in Calculator Workbench; do
-            out="artifacts/ci-aot-$composition"
-            dotnet publish "src/compositions/Broiler.VM.Composition.$composition" \
-              -c Release -r ${{ matrix.rid }} -p:PublishAot=true -o "$out"
-            binary="$out/Broiler.VM.Composition.$composition"
-            [ -f "$binary.exe" ] && binary="$binary.exe"
-            "$binary"
-          done
-
-      # The JavaScript roots were absent from this lane until now, and their absence is how a
-      # failing Native AOT run reached two retained evidence bundles without anything noticing:
-      # they ran only under eng/collect-js-evidence.py, on one person's machine, when someone
-      # chose to collect. A publish-and-run gate that covers two of the four composition roots
-      # in the checkout is a gate over the half nobody was worried about.
-      #
-      # The soak's heap plateau runs here too, and it did not always. It was excluded on the
-      # ground that a heap-plateau band on an ephemeral shared runner can be attributed to
-      # nothing - which was correct about the check as it then stood, since that compared an
-      # ABSOLUTE reading at cycle 99 against one at the end. The corrected check compares two
-      # readings in one process on one machine, which is a ratio, and the objection does not
-      # reach a ratio.
-      #
-      # That was not assumed. An experiment recorded 27 samples - three attempts, three runs,
-      # three operating systems - and every one passed: 0.97 on linux-x64, 0.97 on win-x64, 0.90
-      # on osx-arm64, with no variation at the hundredth. The third of those RIDs left the matrix
-      # on 2026-09-01 and the reading is left here as it was taken, because an experiment is a
-      # record of what ran. The absolute heaps differed hugely
-      # across those platforms, about 153KB, 158KB and 388KB, and the ratio did not move. What a
-      # shared runner makes unattributable is the byte count, and this check no longer reads one.
-      #
-      # Those runs retained nothing - this lane collects no bundle - so the numbers above are the
-      # rationale for putting the step here and are evidence for nothing. No bundle cites them and
-      # the profile's ledger states none of them, which is its own update rule 10 rather than
-      # modesty: a figure with no retained record behind it is not a figure that document may carry.
-      #
-      # The band is 1.20 and a per-cycle leak of 8 bytes reads 1.57, so this lane fails on a leak
-      # rather than merely hosting a check that cannot.
-      - name: Publish and run the JavaScript composition roots as Native AOT
-        shell: bash
-        run: |
-          set -euo pipefail
-          corpus="src/tests/corpus/js-1"
-
-          for composition in JavaScript.ExecutionOnly JavaScript.SliceCompiler; do
-            out="artifacts/ci-aot-$composition"
-            dotnet publish "src/compositions/Broiler.VM.Composition.$composition" \
-              -c Release -r ${{ matrix.rid }} -p:PublishAot=true \
-              -p:TreatWarningsAsErrors=true -o "$out"
-            binary="$out/Broiler.VM.Composition.$composition"
-            [ -f "$binary.exe" ] && binary="$binary.exe"
-
-            # --closure first: a run that passes out of an image whose closure is wrong is a pass
-            # nobody should accept, and the report is read off the published output.
-            "$binary" --closure
-
-            case "$composition" in
-              *ExecutionOnly) "$binary" --corpus "$corpus" ;;
-              *SliceCompiler) "$binary" --checks ;;
-            esac
-          done
-
-      # The fuzz sessions and the corpus-integrity mutation were collection-only for the same
-      # reason the roots were: nobody had put them here. A session is a total function of its seed and its seed corpus - no wall clock, no
-      # thread count - so it decides the same on a runner as on a workstation, and four sessions of
-      # 25,000 iterations each cost well under a second on the published image. A check that is
-      # deterministic, fast and currently run by one person on one machine is the definition of one
-      # that belongs in a lane.
-      #
-      # The seeds match eng/collect-js-evidence.py's FUZZ_SESSIONS deliberately. Determinism means
-      # any seed would be a valid regression signal, but the SAME seeds mean this lane and a
-      # retained bundle answer the same question, so a disagreement between them is a defect rather
-      # than a different experiment.
-      #
-      # A session exits non-zero on a finding, and also when it answers identically every time or
-      # never reaches the executor - so a session that stopped exercising anything fails here
-      # rather than reporting clean iterations it did not earn. A finding turning this lane red is
-      # the lane working: roadmap section 7 closes a counterexample with a named regression and
-      # never with an allow-list entry.
-      - name: Fuzz the JavaScript verifier and executor, and mutate the retained corpus
-        shell: bash
-        run: |
-          set -euo pipefail
-          corpus="src/tests/corpus/js-1"
-          binary="artifacts/ci-aot-JavaScript.ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly"
-          [ -f "$binary.exe" ] && binary="$binary.exe"
-
-          for seed in 1 2 3 4; do
-            "$binary" --corpus "$corpus" --fuzz --seed "$seed" --iterations 25000
-          done
-
-          # The mutation harness is shared with the evidence script rather than restated here:
-          # it is one discipline with two callers, and the caller supplies the replay command.
-          # This one replays through the PUBLISHED image, which the collection script cannot do.
-          py=python3
-          command -v "$py" >/dev/null 2>&1 || py=python
-          "$py" eng/corpus-integrity.py --corpus "$corpus" -- "$binary" --corpus "$corpus"
-
-          # The harness restores each entry and stops if a restore does not reproduce the original.
-          # This asserts the same thing from outside it, because "the tool says it cleaned up" is
-          # exactly the claim a reader should not have to take on trust - and a corpus left mutated
-          # would make every later job in this run a test of the wrong bytes.
-          git diff --exit-code -- "$corpus"
-
-      - name: Publish and run the package consumer as Native AOT
-        shell: bash
-        run: |
-          set -euo pipefail
-          rm -rf artifacts/feed && mkdir -p artifacts/feed
-          dotnet pack Broiler.VM.slnx -c Release -o artifacts/feed -p:VersionSuffix=preview.1
-          cd samples/Broiler.VM.Sample.FeedConsumer
-          dotnet publish -c Release -r ${{ matrix.rid }} -p:PublishAot=true \
-            -p:BroilerVmVersion=0.1.0-preview.1 -o ../../artifacts/ci-sample-aot
-          binary="../../artifacts/ci-sample-aot/Broiler.VM.Sample.FeedConsumer"
-          [ -f "$binary.exe" ] && binary="$binary.exe"
-          "$binary"
-
-  # THE ANDROID HEAD, ON AN EMULATOR.
-  #
-  # Split out for the reason the consuming repository splits its own: the workload costs several
-  # minutes the other jobs should not pay for, and Broiler.VM.slnx deliberately does not carry the
-  # head - a contributor must be able to build this component with the .NET SDK and nothing else.
-  # Broiler.VM.Mobile.slnx carries it, ComponentGraph.SolutionFiles names both, and every group A
-  # rule governs the head through that union.
-  #
-  # WHAT IT PROVES AND WHAT IT DOES NOT. The emulator is x86_64, so what runs is android-x64.
-  # android-arm64 is published by this job and executed by nothing, which is why ADR 0012 declares
-  # the first and not the second. A green result here is not evidence about Native AOT either:
-  # Android runs Mono, and the head sets PublishTrimmed and RunAOTCompilation to false.
-  android:
-    name: android head (emulator)
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-
-      # net10.0-android needs the workload for the Mono runtime packs; without it the restore
-      # fails outright rather than degrading, which is the behaviour to want.
-      - name: Install the Android workload
-        run: dotnet workload install android
-
-      - name: Build the mobile solution
-        run: dotnet build Broiler.VM.Mobile.slnx -c Release
-
-      # KVM is what makes an x86_64 emulator usable rather than glacial. The runner has the device
-      # and not the permission, which is the one line of setup this job needs.
-      - name: Enable KVM
-        run: |
-          set -euo pipefail
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
-            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-
-      # Hand-rolled rather than a third-party action, and deliberately: this repository pins two
-      # actions, both first-party, and an emulator action would be a supply-chain dependency for
-      # what is fifteen lines of sdkmanager and adb.
-      - name: Boot an emulator and run the head
-        shell: bash
-        run: |
-          set -euo pipefail
-          sdk="$ANDROID_SDK_ROOT"
-          image="system-images;android-36;google_apis;x86_64"
-
-          # Licences are accepted from a FILE and not from `yes |`. Under `set -o pipefail` the
-          # pipe form fails the step: sdkmanager stops reading, `yes` takes SIGPIPE, and the
-          # pipeline's status becomes its failure - `yes: standard output: Broken pipe`, which
-          # reads like a licence problem and is a shell one.
-          seq 50 | sed 's/.*/y/' > /tmp/android-licences
-          "$sdk/cmdline-tools/latest/bin/sdkmanager" --licenses < /tmp/android-licences > /dev/null
-
-          # NOT redirected to /dev/null, and the first draft was. An sdkmanager that fails to
-          # fetch an image says so on stdout and then `avdmanager` fails for a reason that reads
-          # like an AVD problem; hiding the first message costs the next reader the whole trail.
-          "$sdk/cmdline-tools/latest/bin/sdkmanager" "$image" "platform-tools"
-          # STDIN FROM /dev/null, not from `echo no`. avdmanager asks whether to build a custom
-          # hardware profile; piping one line answers that question and leaves the tool reading a
-          # closed pipe, and it then exits WITHOUT creating the AVD and without a non-zero status.
-          # The failure surfaced four steps later as `Unknown AVD name [broiler]` from the
-          # emulator, which is the last place a reader would look for it. An explicit device
-          # profile means there is nothing to ask about in the first place.
-          # WHERE the AVD lands is stated rather than left to the environment. avdmanager writes
-          # to $ANDROID_AVD_HOME, then $ANDROID_SDK_HOME/avd, then $HOME/.android/avd, and the
-          # emulator searches the same three in the same order - so a runner that sets one of them
-          # differently from what the other assumes produces an AVD that exists and cannot be
-          # found. Setting it once removes the question from both sides.
-          export ANDROID_AVD_HOME="$HOME/.android/avd"
-          mkdir -p "$ANDROID_AVD_HOME"
-
-          "$sdk/cmdline-tools/latest/bin/avdmanager" create avd \
-            -n broiler -k "$image" --device pixel_6 --force < /dev/null
-
-          # And the AVD is CHECKED rather than assumed, for the reason above: the tool that
-          # creates it can decline to and still exit 0.
-          if ! "$sdk/emulator/emulator" -list-avds | grep -qx broiler; then
-            echo "avdmanager exited cleanly and created no AVD named broiler"
-            echo "--- emulator -list-avds"
-            "$sdk/emulator/emulator" -list-avds || true
-            echo "--- avdmanager list avd"
-            "$sdk/cmdline-tools/latest/bin/avdmanager" list avd || true
-            echo "--- $ANDROID_AVD_HOME"
-            ls -la "$ANDROID_AVD_HOME" || true
-            echo "--- environment"
-            echo "ANDROID_AVD_HOME=$ANDROID_AVD_HOME ANDROID_SDK_HOME=${ANDROID_SDK_HOME:-unset} HOME=$HOME"
-            exit 1
-          fi
-
-          # The emulator's own output goes to a file rather than to the void, because when it
-          # fails to start it explains itself there and nowhere else.
-          "$sdk/emulator/emulator" -avd broiler -no-window -no-audio -no-boot-anim \
-            -no-snapshot -gpu swiftshader_indirect -camera-back none -camera-front none \
-            > /tmp/emulator.log 2>&1 &
-
-          # BOUNDED, and the bound is the point. The first draft waited for sys.boot_completed in
-          # an unbounded loop: when the emulator did not come up the step spun until the job's
-          # own timeout and reported nothing, which is the least useful way for CI to fail. This
-          # gives up after five minutes and prints what the emulator said.
-          booted=no
-          for _ in $(seq 1 60); do
-            state="$("$sdk/platform-tools/adb" get-state 2>/dev/null || true)"
-            if [ "$state" = "device" ]; then
-              if [ "$("$sdk/platform-tools/adb" shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = "1" ]; then
-                booted=yes
-                break
-              fi
-            fi
-            sleep 5
-          done
-
-          if [ "$booted" != "yes" ]; then
-            echo "the emulator did not report sys.boot_completed within five minutes"
-            "$sdk/platform-tools/adb" devices || true
-            tail -60 /tmp/emulator.log || true
-            exit 1
-          fi
-
-          # The emulator is x86_64, so this is the RID that runs. The head reads its own RID off
-          # the device and prints it into the closure report, so the log says which one it was
-          # rather than which one the publish asked for.
-          dotnet build src/compositions/Broiler.VM.Composition.JavaScript.Android \
-            -c Release -f net10.0-android36.0 -p:RuntimeIdentifier=android-x64 -t:Install
-
-          "$sdk/platform-tools/adb" logcat -c
-          "$sdk/platform-tools/adb" shell monkey \
-            -p com.broiler.vm.composition.javascript.android \
-            -c android.intent.category.LAUNCHER 1
-          sleep 40
-          "$sdk/platform-tools/adb" logcat -d -s broiler-js-android:* | tee android.log
-
-          # THE DIRECTION OF THIS CHECK IS THE POINT. It greps for the sentinel rather than for a
-          # failure, so a crash, a failure to start and a failed check are all failures - an
-          # application does not hand an exit code to a runner, and a job that looked for the word
-          # FAILED would pass on a run that never happened.
-          grep -q "broiler-js-android: 6 checks passed" android.log
-
-      - name: Publish for android-arm64
-        shell: bash
-        run: |
-          set -euo pipefail
-          # Published and NOT run: no arm64 emulator boots on an x64 host at a usable speed, and
-          # ADR 0012 does not declare a RID whose evidence stops at a build. This step exists so
-          # that the arm64 build breaking is a red job rather than a discovery made later.
-          dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.Android \
-            -c Release -f net10.0-android36.0 -p:RuntimeIdentifier=android-arm64
+  quick:
+    name: quick
+    uses: ./.github/workflows/broiler-vm-lane.yml
+    with:
+      # One cell per architecture. Both Linux, so the only variable between them is the
+      # architecture and a red job names it; and measured cheapest on this workload - 78 seconds
+      # for linux-arm64 against 108 for osx-arm64, once the long fuzz sessions are out.
+      matrix: >-
+        {"include":[
+          {"os":"ubuntu-latest","rid":"linux-x64"},
+          {"os":"ubuntu-24.04-arm","rid":"linux-arm64"}
+        ]}
+      # Four sessions, short. A session is a total function of its seed and its seed corpus, so a
+      # short one is a prefix of a long one and finds a subset of what the full lane finds - never
+      # something different. It still fails if it never reaches the executor, so a lane that had
+      # shortened its way into exercising nothing would be red rather than quick.
+      fuzz-iterations: 2000
+      # The emulator is the full lane's. The head is still COMPILED here, because a head that
+      # stops building is a defect a pull request introduced.
+      android: false
