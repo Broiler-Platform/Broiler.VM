@@ -928,6 +928,7 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JavaScriptOpcode.StrictEquals : const Broiler.VM.Profile.JavaScript.Format.JavaScriptOpcode = 52
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JavaScriptOpcode.StrictNotEquals : const Broiler.VM.Profile.JavaScript.Format.JavaScriptOpcode = 53
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JavaScriptOpcode.Subtract : const Broiler.VM.Profile.JavaScript.Format.JavaScriptOpcode = 33
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JavaScriptOpcode.ThrowUninitializedBinding : const Broiler.VM.Profile.JavaScript.Format.JavaScriptOpcode = 113
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JavaScriptOpcode.ToNumber : const Broiler.VM.Profile.JavaScript.Format.JavaScriptOpcode = 38
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JavaScriptOpcode.value__ : System.Byte
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JavaScriptOpcodes.All : static readonly Broiler.VM.Profile.JavaScript.Format.JavaScriptOpcode[]

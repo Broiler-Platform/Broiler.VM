@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   10
 // Annotated:        10/10
-// Exempt:           29
+// Exempt:           30
 // Human-reviewed:   0/10
 // IP risk:          None
 // Security risk:    High
@@ -37,7 +37,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// implementation over doubles stops agreeing with the language.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=86CC1C
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=39CADD
 // Broiler-Human:        PENDING
 public enum JavaScriptOpcode : byte
 {
@@ -127,6 +127,35 @@ public enum JavaScriptOpcode : byte
 
     /// <summary>Pop one and finish the entry with it as the completion value.</summary>
     Return = 0x70,
+
+    /// <summary>
+    /// Push nothing and fault: the binding this would have read is not yet initialised.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The temporal dead zone, and it needs an opcode because nothing else in this format can
+    /// raise a language error.</b> `let x = x + 1;` and `x; let x;` must throw a runtime
+    /// `ReferenceError`; before this opcode the profile answered `undefined`, because reading a
+    /// slot that had not been written yet was indistinguishable from reading one holding
+    /// `undefined`. Division by zero is `Infinity` here and every other instruction is total, so
+    /// there was no instruction that could fail at all.
+    /// </para>
+    /// <para>
+    /// <b>It declares a push of one although it never pushes, and that is deliberate.</b> The
+    /// verifier's model is an operand-stack HEIGHT, and this instruction stands exactly where a
+    /// `LoadLocal` would have stood - so declaring the height it replaces keeps every join, every
+    /// bound and every reachability answer the same as the program that has no dead zone in it. At
+    /// run time the frame is abandoned before the push happens, so the declared height describes a
+    /// state no execution observes.
+    /// </para>
+    /// <para>
+    /// <b>It carries no operand, so it cannot name the binding.</b> A message reading "cannot
+    /// access `x` before initialisation" would need an interned name, and the constant pool's
+    /// interned-name tag is reserved from version 1 and admitted by no manifest yet. The error KIND
+    /// is what a conformance test matches on, and the position table is what names the line.
+    /// </para>
+    /// </remarks>
+    ThrowUninitializedBinding = 0x71,
 }
 
 /// <summary>
@@ -167,7 +196,7 @@ public static class JavaScriptOpcodes
     /// numbers are grouped by family with gaps between the families and a range test would admit
     /// every gap.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=15F237
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=B722F8
     // Broiler-Falsified-If: a byte this returns true for has no arm in the verifier's stack-effect switch or in the executor's dispatch
     // Broiler-Human:        PENDING
     public static bool IsDefined(byte value) => value switch
@@ -186,7 +215,8 @@ public static class JavaScriptOpcodes
         (byte)JavaScriptOpcode.ShiftRightUnsigned or (byte)JavaScriptOpcode.Jump or
         (byte)JavaScriptOpcode.JumpIfFalse or (byte)JavaScriptOpcode.JumpIfTrue or
         (byte)JavaScriptOpcode.Pop or (byte)JavaScriptOpcode.Duplicate or
-        (byte)JavaScriptOpcode.Return => true,
+        (byte)JavaScriptOpcode.Return or
+        (byte)JavaScriptOpcode.ThrowUninitializedBinding => true,
         _ => false,
     };
 
@@ -228,12 +258,13 @@ public static class JavaScriptOpcodes
         opcode is not (JavaScriptOpcode.Jump or JavaScriptOpcode.Return);
 
     /// <summary>How many values <paramref name="opcode"/> pops.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=39A79B
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=DA56F1
     // Broiler-Falsified-If: an opcode pops a different number of values in the executor than this reports
     // Broiler-Human:        PENDING
     public static int PopCount(JavaScriptOpcode opcode) => opcode switch
     {
-        JavaScriptOpcode.LoadConstant or JavaScriptOpcode.LoadLocal => 0,
+        JavaScriptOpcode.LoadConstant or JavaScriptOpcode.LoadLocal or
+        JavaScriptOpcode.ThrowUninitializedBinding => 0,
 
         JavaScriptOpcode.StoreLocal or JavaScriptOpcode.Negate or JavaScriptOpcode.ToNumber or
         JavaScriptOpcode.Not or JavaScriptOpcode.JumpIfFalse or JavaScriptOpcode.JumpIfTrue or

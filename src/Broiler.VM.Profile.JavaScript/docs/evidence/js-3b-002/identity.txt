@@ -1,0 +1,22 @@
+bundle:                JS-3B-002
+milestone:             JS-3b
+collected (UTC):       2026-09-03T15:39:17+00:00
+component commit:      52a95263260da0424fe1275c7373509499dfd1c3
+branch:                main
+working tree:          DIRTY
+dirty entries:         8
+owner:                 profile architecture owner (unassigned identity)
+reviewer:              NONE - nothing here has been reviewed
+
+Every path below is relative to the component root. A figure in this bundle is this
+component's own; no result from any other component is evidence here.
+
+Dirty entries at collection time, listed rather than summarised:
+   M CODE-ASSURANCE.md
+   M HUMAN_REVIEW.md
+   M assurance.manifest.json
+   M src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs
+   M src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs
+   M src/Broiler.VM.Profile.JavaScript.Format/JavaScriptOpcode.cs
+   M src/Broiler.VM.Profile.JavaScript/JavaScriptExecutor.cs
+   M src/Broiler.VM.Profile.JavaScript/docs/api/public-api.txt

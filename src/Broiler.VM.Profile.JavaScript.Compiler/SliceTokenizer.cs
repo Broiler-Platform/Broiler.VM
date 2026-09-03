@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   30
-// Annotated:        30/30
+// Relevant units:   31
+// Annotated:        31/31
 // Exempt:           100
-// Human-reviewed:   0/30
+// Human-reviewed:   0/31
 // IP risk:          None
 // Security risk:    High
-// Criteria:         16/13
+// Criteria:         17/13
 // Resource impact:  2/10 max
-// Unverified:       30
+// Unverified:       31
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -415,12 +415,14 @@ public sealed class SliceTokenizer
     public System.Collections.Generic.IReadOnlyList<SliceSourceDiagnostic> Diagnostics => diagnostics;
 
     /// <summary>Reads every token, ending with one <see cref="SliceTokenKind.EndOfSource"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=571D8D
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=7C304A
     // Broiler-Falsified-If: a token is produced after a refusal, or the stream does not end with exactly one EndOfSource
     // Broiler-Human:        PENDING
     public SliceToken[] Tokenize()
     {
         var tokens = new System.Collections.Generic.List<SliceToken>();
+
+        SkipHashbangComment();
 
         while (true)
         {
@@ -464,6 +466,48 @@ public sealed class SliceTokenizer
             line, index - lineStart + 1, false, false));
 
         return tokens.ToArray();
+    }
+
+    /// <summary>
+    /// Skips a hashbang comment, which the grammar admits at the very start of a source text and
+    /// nowhere else.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b><c>HashbangComment :: #! SingleLineCommentChars_opt</c></b>, and it is a comment rather
+    /// than a directive: the language admits it so that a script can carry the interpreter line an
+    /// operating system reads, without the engine having to know what that line means.
+    /// </para>
+    /// <para>
+    /// <b>It is skipped here rather than in <see cref="SkipTrivia"/>, and the difference is the
+    /// whole rule.</b> Trivia repeats; this does not. The grammar puts a hashbang at offset zero of
+    /// the source text and nowhere else, so it is consumed once before the token loop starts - and
+    /// a <c>#!</c> anywhere else stays what it was, which is a character that begins no token.
+    /// </para>
+    /// <para>
+    /// <b>The line terminator that ends it is deliberately left for <see cref="SkipTrivia"/>.</b>
+    /// A statement's end is decided partly by whether a line terminator came before the next
+    /// token, so consuming it here would lose the newline the first real statement is entitled to
+    /// see. Six files of a real conformance suite are about this comment; none of them would have
+    /// been fixed by a version that ate the terminator.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=EB8749
+    // Broiler-Falsified-If: a `#!` anywhere but offset zero is treated as a comment, or the line terminator ending one is consumed
+    // Broiler-Human:        PENDING
+    private void SkipHashbangComment()
+    {
+        if (index != 0 || source.Length < 2 || source[0] != '#' || source[1] != '!')
+        {
+            return;
+        }
+
+        index = 2;
+
+        while (index < source.Length && !IsLineTerminator(source[index]))
+        {
+            index++;
+        }
     }
 
     /// <summary>Skips whitespace and comments; answers whether a line terminator was among them.</summary>

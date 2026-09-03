@@ -144,6 +144,8 @@ rather than a decision record.
 | [JSC-58](#jsc-58) | `SliceSourceCompiler`'s own remark; roadmap section 9; ledger section 2 | The unreachable-code exclusion named the rare shape; thirteen test262 files fail on the common one, a loop whose body always breaks | the host over test262 |
 | [JSC-59](#jsc-59) | [JSD-0016](decisions/0016-ingesting-a-third-party-suite-and-the-refusals-that-answer-nothing.md) decision 1; ledger section 2 | The dialect reader could not read a CR-only file or an indented block, and no check this component wrote could have found either | the harness over test262 |
 | [JSC-60](#jsc-60) | `SliceSourceCompiler`'s remark as JSC-58 left it; ledger section 2 | The loop-continuation defect JSC-58 called fixable is fixed; the host's completions over test262 moved 103 to 116 and the harness's totals did not move at all | the host over test262 before and after |
+| [JSC-61](#jsc-61) | the tokenizer's trivia handling; ledger section 2 | `#!` opening a source text is a comment in the language since ES2023 and this tokenizer did not know it | six test262 files |
+| [JSC-62](#jsc-62) | roadmap sections 7 and 9; ledger section 2 | The temporal dead zone was unexpressible: format version 1 had no instruction that could fail at all, so reading an uninitialised slot answered `undefined` | eight test262 cases |
 
 ### JSC-01
 
@@ -2280,3 +2282,87 @@ separate piece of work with a separate hazard and it is recorded rather than fol
 **Authority and date.** The host over test262 at ref
 `ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e` before and after the repair, with the corpus
 regeneration, retained in [Bundle JS-3B-001](evidence/js-3b-001/README.md); 2026-09-03.
+
+---
+
+### JSC-61
+
+**Where:** the tokenizer's trivia handling; the
+[ledger](roadmap.status.md#2-current-milestone-status)'s JS-3b row.
+
+**What was true.** `#!` opening a source text is a **comment** — `HashbangComment :: #!
+SingleLineCommentChars_opt`, in the language since ES2023 — and this tokenizer did not know it. Six
+files of test262 failed on it, each refused at the `!` with `2102:ExpectedToken`, because a
+JavaScript file carrying the interpreter line an operating system reads is a JavaScript file.
+
+**What replaced it.** The hashbang is skipped once, before the token loop, and **only at offset
+zero**. The grammar admits it at the start of a source text and nowhere else, so a `#!` anywhere
+later stays what it was: a character that begins no token. That is asserted in both directions —
+a hashbang at the start runs, one on the second line is still refused, and a second `#!` after a
+first is refused too.
+
+**The line terminator ending it is deliberately left behind** for the trivia skipper. A statement's
+end is decided partly by whether a line terminator came before the next token, so consuming it here
+would have lost the newline the first real statement is entitled to see.
+
+**What it does not change.** No manifest grows: a hashbang is a comment, so what follows it is
+admitted or refused exactly as before. **One of the six is now DECLINED rather than passed**, which
+is the honest outcome: the file parses past the hashbang and then needs a construct this manifest
+does not admit, so the refusal is not a language answer and
+[JSC-54](#jsc-54)'s rule reports it unscorable.
+
+**Authority and date.** The host and the harness over test262 at ref
+`ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e`, retained in
+[Bundle JS-3B-002](evidence/js-3b-002/README.md); 2026-09-03.
+
+---
+
+### JSC-62
+
+**Where:** roadmap [section 7](roadmap.md#7-the-bytecode-format-and-the-verifier)'s format
+subsection; [section 9](roadmap.md#9-the-semantic-front-end-and-lowering); the
+[ledger](roadmap.status.md#2-current-milestone-status)'s JS-3b row.
+
+**What was true.** `let` and `const` have a temporal dead zone: reading one before its initialiser
+has run is a **runtime `ReferenceError`**. This profile answered `undefined`. Eight cases of test262
+— four files in both strictness readings — failed on it, and the reason they failed is worth
+stating exactly: **reading a slot that had not been written yet was indistinguishable from reading
+one holding `undefined`**, which is precisely the distinction the dead zone exists to draw.
+
+**And nothing in the format could express the difference.** Division by zero is `Infinity` here and
+every other instruction is total, so **format version 1 had no instruction that could fail at
+all**. There was no way to lower the dead zone, not merely a lowering that had not been written.
+
+**What replaced it.** One opcode, `ThrowUninitializedBinding` (`0x71`), which the executor answers
+with a `ReferenceError`. Roadmap section 7 sanctions the growth in those words — "format version 1
+is defined with the first manifest and **grows with the interpreter**", with compatibility promised
+only when a persisted-artifact version is accepted, which no milestone grants.
+
+**Two things about the opcode are decisions rather than details.** It **declares a push of one and
+never pushes**: it stands exactly where a `LoadLocal` would have stood, so declaring that height
+keeps every join, every bound and every reachability answer identical to the program with no dead
+zone in it, and the frame is abandoned before the push happens. And it **carries no operand**, so
+the message names no binding — naming one needs an interned name, and the constant pool's
+interned-name tag is reserved from version 1 and admitted by no manifest yet.
+
+**The detection is in the lowering and is exact for this manifest.** The lowering walks the tree in
+the order the program runs, so a set of slots whose initialiser has already been lowered answers
+the question directly. **That equivalence holds because of what this manifest leaves out** — no
+function, no closure, no `eval`, no label, so no way to re-enter the middle of a block or defer a
+read past its lexical position. In a manifest with any of those it would be a runtime question and
+a set would be wrong; here the two orders are the same order, and the record says so rather than
+leaving a later reader to discover that the analysis stopped being sound.
+
+**What it does not change.** `var` is untouched and still reads `undefined` before its declaration,
+which is the difference the dead zone draws. **The retained corpus regenerated byte-identical**: no
+retained program reads a lexical binding early. And a position row is emitted for the fault and for
+no other read — the first draft emitted one on every identifier read, which moved the bytes of
+every program that reads a variable and was caught by the corpus comparison.
+
+**What is still not done.** A **write** before initialisation — `x = 1; let x;` — is a
+`ReferenceError` in the language and is not one here. It was not among the failing cases and the
+assignment path is a separate site; it is recorded rather than folded in.
+
+**Authority and date.** The host and the harness over test262 at ref
+`ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e`, with the corpus regeneration, retained in
+[Bundle JS-3B-002](evidence/js-3b-002/README.md); 2026-09-03.

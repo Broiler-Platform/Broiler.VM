@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 1105 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 1107 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 72 |
-| Code units | 2405 |
-| Relevant | 1105 |
-| Exempt | 1300 |
-| Assessed | 1105 of 1105 (100%) |
-| Human reviewed | 0 of 1105 (0%) |
-| Unverified | 1105 |
+| Code units | 2409 |
+| Relevant | 1107 |
+| Exempt | 1302 |
+| Assessed | 1107 of 1107 (100%) |
+| Human reviewed | 0 of 1107 (0%) |
+| Unverified | 1107 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 1105 |
+| HUMAN_PENDING | 1107 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 1300 |
+| EXEMPT | 1302 |
 
 ## 5. Aliases In The Tree
 
@@ -149,16 +149,16 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceParseOptions.cs` | 14 | 9 | 5 | 9 | None | High | 3/2 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceParser.cs` | 65 | 59 | 6 | 59 | None | High | 20/20 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceProgramBuilder.cs` | 35 | 24 | 11 | 24 | None | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs` | 30 | 22 | 8 | 22 | None | High | 15/15 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs` | 32 | 23 | 9 | 23 | None | High | 16/16 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceDiagnostics.cs` | 27 | 3 | 24 | 3 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourcePrograms.cs` | 10 | 9 | 1 | 9 | None | High | 5/3 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceStaticSemantics.cs` | 40 | 24 | 16 | 24 | None | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSyntax.cs` | 29 | 26 | 3 | 26 | None | Medium | 1/0 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` | 130 | 30 | 100 | 30 | None | High | 16/13 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` | 131 | 31 | 100 | 31 | None | High | 17/13 |
 | `src/Broiler.VM.Profile.JavaScript.Format/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptArtifactWriter.cs` | 20 | 17 | 3 | 17 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptFormat.cs` | 26 | 14 | 12 | 14 | None | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptOpcode.cs` | 39 | 10 | 29 | 10 | None | High | 5/5 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptOpcode.cs` | 40 | 10 | 30 | 10 | None | High | 5/5 |
 | `src/Broiler.VM.Profile.JavaScript/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptDiagnostics.cs` | 49 | 8 | 41 | 8 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptExecutor.cs` | 35 | 18 | 17 | 18 | Low | High | 6/6 |
@@ -348,7 +348,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a stage runs over a tree the previous stage refused
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceSourceCompiler.Lower(SliceProgram, SliceBindingTable, SliceParseOptions)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs` - Security=High, Spec=none cited, `80A056`, PENDING
   - Falsified if: the operand stack is not empty at any statement boundary
-- `Broiler.VM.Profile.JavaScript.Compiler.SliceSourceCompiler.LowerStatement(SliceStatement, SliceParseOptions)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs` - Security=High, Spec=none cited, `A3B928`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.SliceSourceCompiler.LowerStatement(SliceStatement, SliceParseOptions)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs` - Security=High, Spec=none cited, `1611CA`, PENDING
   - Falsified if: any statement lowering leaves the operand stack at a different height than it entered with
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceSourceCompiler.LowerIf(SliceIfStatement, SliceParseOptions)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs` - Security=High, Spec=none cited, `7A389E`, PENDING
   - Falsified if: the two arms of a branch reach the join at different operand-stack heights
@@ -358,7 +358,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: the body runs zero times, or a `continue` reaches the loop top rather than the test
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceSourceCompiler.LowerFor(SliceForStatement, SliceParseOptions)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs` - Security=High, Spec=none cited, `D359CE`, PENDING
   - Falsified if: a `continue` skips the update expression, which turns a counting loop into an endless one
-- `Broiler.VM.Profile.JavaScript.Compiler.SliceSourceCompiler.LowerExpression(SliceExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs` - Security=High, Spec=none cited, `04A129`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.SliceSourceCompiler.LowerExpression(SliceExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs` - Security=High, Spec=none cited, `2E1CD6`, PENDING
   - Falsified if: any expression lowering leaves other than exactly one value on the stack
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceSourceCompiler.LowerLogical(SliceLogicalExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs` - Security=High, Spec=none cited, `CBC769`, PENDING
   - Falsified if: the value of either operator is coerced to Boolean, or the right operand is evaluated when the left short-circuits
@@ -368,6 +368,8 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: an assignment expression's value is not the value assigned
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceSourceCompiler.OpcodeFor(SliceTokenKind, SliceSourceSpan)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs` - Security=High, Spec=none cited, `40B5FC`, PENDING
   - Falsified if: a loose equality is lowered onto a strict one
+- `Broiler.VM.Profile.JavaScript.Compiler.SliceSourceCompiler.LowerIdentifierReference(SliceIdentifierReference)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs` - Security=High, Spec=none cited, `90EA9C`, PENDING
+  - Falsified if: a reference whose binding is already initialised lowers to the fault, or one in the dead zone lowers to a read
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceSourceCompiler.Position(SliceSourceSpan)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourceCompiler.cs` - Security=High, Spec=none cited, `804A28`, PENDING
   - Falsified if: this writes a row at an offset not greater than the previous row's, or a row with a zero coordinate
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceSourcePrograms.Accepted` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourcePrograms.cs` - Security=High, Spec=none cited, `11701F`, PENDING
@@ -406,7 +408,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a name with no binding is accepted, or a name shadowed in an inner scope resolves to the outer one
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `5006C2`, PENDING
   - Falsified if: a second call site for this type appears, or a consumer re-reads the source text
-- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.Tokenize()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `571D8D`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.Tokenize()` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `7C304A`, PENDING
   - Falsified if: a token is produced after a refusal, or the stream does not end with exactly one EndOfSource
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.ReadToken(int, int, bool)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` - Security=High, Spec=none cited, `9013CA`, PENDING
   - Falsified if: a character that starts an identifier is read as a punctuator, or a numeric literal is read as an identifier
@@ -432,11 +434,11 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: this table is not in descending order of text length
 - `Broiler.VM.Profile.JavaScript.Format.JavaScriptOpcodes` in `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptOpcode.cs` - Security=High, Spec=none cited, `7F5FC6`, PENDING
   - Falsified if: an opcode's declared width differs from what the encoder writes or the executor reads, or a declared stack effect differs from what the executor performs
-- `Broiler.VM.Profile.JavaScript.Format.JavaScriptOpcodes.IsDefined(byte)` in `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptOpcode.cs` - Security=High, Spec=none cited, `15F237`, PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JavaScriptOpcodes.IsDefined(byte)` in `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptOpcode.cs` - Security=High, Spec=none cited, `B722F8`, PENDING
   - Falsified if: a byte this returns true for has no arm in the verifier's stack-effect switch or in the executor's dispatch
 - `Broiler.VM.Profile.JavaScript.Format.JavaScriptOpcodes.OperandWidth(JavaScriptOpcode)` in `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptOpcode.cs` - Security=High, Spec=none cited, `5F48AB`, PENDING
   - Falsified if: the width returned here differs from the bytes the encoder emits for the same opcode
-- `Broiler.VM.Profile.JavaScript.Format.JavaScriptOpcodes.PopCount(JavaScriptOpcode)` in `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptOpcode.cs` - Security=High, Spec=none cited, `39A79B`, PENDING
+- `Broiler.VM.Profile.JavaScript.Format.JavaScriptOpcodes.PopCount(JavaScriptOpcode)` in `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptOpcode.cs` - Security=High, Spec=none cited, `DA56F1`, PENDING
   - Falsified if: an opcode pops a different number of values in the executor than this reports
 - `Broiler.VM.Profile.JavaScript.Format.JavaScriptOpcodes.PushCount(JavaScriptOpcode)` in `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptOpcode.cs` - Security=High, Spec=none cited, `E277A4`, PENDING
   - Falsified if: an opcode pushes a different number of values in the executor than this reports
@@ -452,7 +454,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a handle this profile did not verify produces an instance
 - `Broiler.VM.Profile.JavaScript.JavaScriptExecutor.Invoke(IVmInstanceState, in VmInvocationRequest, System.Threading.CancellationToken)` in `src/Broiler.VM.Profile.JavaScript/JavaScriptExecutor.cs` - Security=High, Spec=none cited, `1DAA4C`, PENDING
   - Falsified if: an unknown entry point is reported as anything but a language fault, or a foreign instance state runs
-- `Broiler.VM.Profile.JavaScript.JavaScriptExecutor.Run(JavaScriptInstance, int)` in `src/Broiler.VM.Profile.JavaScript/JavaScriptExecutor.cs` - Security=High, Spec=none cited, `209B70`, PENDING
+- `Broiler.VM.Profile.JavaScript.JavaScriptExecutor.Run(JavaScriptInstance, int)` in `src/Broiler.VM.Profile.JavaScript/JavaScriptExecutor.cs` - Security=High, Spec=none cited, `874623`, PENDING
   - Falsified if: the operand stack is sized from anything but the maximum the verifier computed, or an index used here was not proved in range before execution
 - `Broiler.VM.Profile.JavaScript.JavaScriptProfile` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, Spec=none cited, `EA198F`, PENDING
   - Falsified if: a second static accessor or an aggregate profile-listing type appears in this graph, or the descriptor accepts a manifest this build does not implement
@@ -530,7 +532,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 1105 of the 1105 assessed units declare
+That is not a figure of speech. 1107 of the 1107 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that
