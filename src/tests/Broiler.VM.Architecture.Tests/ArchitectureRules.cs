@@ -1403,6 +1403,82 @@ internal static class ArchitectureRules
         }
     }
 
+    /// <summary>
+    /// N15: a retained suite pin names the same revision and digest in the pin file, its decision
+    /// record and the ledger, and its archived field agrees with the ledger's account of it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The same discipline as N14 and for a sharper reason.</b> The language edition's document
+    /// is in this tree, so its digest is checked against bytes; a conformance suite of 56,560 files
+    /// is not, so the pin IS the artifact and there is nothing behind it to fall back on. If the
+    /// pin file, the record that argues for it and the ledger row a reader consults can drift
+    /// apart, the pin is three claims rather than one.
+    /// </para>
+    /// <para>
+    /// <b>The pin file is parsed rather than searched.</b> A rule grepping a file for a hash finds
+    /// it wherever it appears - in a comment, in an example, in a paragraph about some other
+    /// revision - and this rule's whole subject is which value the harness will actually enforce.
+    /// </para>
+    /// </remarks>
+    internal static IEnumerable<string> N15(
+        IReadOnlyDictionary<string, string> pin,
+        string decisionRecord,
+        string ledger)
+    {
+        string[] required = ["suite", "upstream", "revision", "content-sha256", "archived"];
+        var missing = required.Where(key => !pin.ContainsKey(key)).ToArray();
+
+        if (missing.Length != 0)
+        {
+            yield return
+                $"the retained pin declares {pin.Count} keys and not [{string.Join(", ", missing)}]: " +
+                "this rule is quantifying over nothing";
+
+            yield break;
+        }
+
+        foreach (var key in new[] { "revision", "content-sha256" })
+        {
+            if (!decisionRecord.Contains(pin[key], StringComparison.Ordinal))
+            {
+                yield return $"the decision record does not name the pinned {key} `{pin[key]}`";
+            }
+
+            if (!ledger.Contains(pin[key], StringComparison.Ordinal))
+            {
+                yield return $"the ledger does not name the pinned {key} `{pin[key]}`";
+            }
+        }
+
+        var archived = string.Equals(pin["archived"], "yes", StringComparison.Ordinal);
+
+        var naming = ledger
+            .Replace("\r\n", "\n", StringComparison.Ordinal)
+            .Split('\n')
+            .Where(line => line.Contains(pin["revision"], StringComparison.Ordinal))
+            .ToArray();
+
+        var saysUnarchived = naming.Any(static line =>
+            line.Contains("not archived", StringComparison.OrdinalIgnoreCase) ||
+            line.Contains("NOT ARCHIVED", StringComparison.Ordinal));
+
+        if (!archived && !saysUnarchived)
+        {
+            yield return
+                "the retained pin says the suite is not archived and no ledger line naming its " +
+                "revision says so: a pin whose material nobody holds says which of the three " +
+                "actions is outstanding";
+        }
+
+        if (archived && saysUnarchived)
+        {
+            yield return
+                "the retained pin says the suite is archived and a ledger line naming its " +
+                "revision still says it is not";
+        }
+    }
+
     /// <summary>One ledger line, short enough to read in a failure message.</summary>
     private static string Trim(string line) =>
         line.Length <= 120 ? line.Trim() : line[..120].Trim() + "…";

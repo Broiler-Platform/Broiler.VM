@@ -295,11 +295,12 @@ public sealed class RuleRegisterTests
         // Vacuous row is B3, which nothing in the graph can violate, and the one Deferred row
         // still awaits its own milestone. JS-3a adds N14 when the language-specification edition
         // is pinned: the pin is stated in three independently written places and the rule is what
-        // makes their agreement mean something.
-        Assert.Equal(79, byStatus["Active"]);
+        // makes their agreement mean something, and N15 when the conformance suite is pinned:
+        // that suite is not in this tree, so its pin IS the artifact and nothing sits behind it.
+        Assert.Equal(80, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(81, Loaded.Rules.Count);
+        Assert.Equal(82, Loaded.Rules.Count);
     }
 
     private static Register Load()

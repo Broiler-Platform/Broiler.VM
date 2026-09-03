@@ -90,7 +90,7 @@ internal static class Program
                     "broiler-js-conformance: no --suite <directory> was given. Modes: --closure, " +
                     "--harness-checks, --self-check, --run, --write-artifacts, --pin, " +
                     "--merge <dir>, --floor <file> --report <file>. A run adds " +
-                    "--dialect native|ingested and --selfcheck <dir>.");
+                    "--dialect native|ingested, --selfcheck <dir> and --expect <retained pin>.");
 
                 return ExitCodes.Usage;
             }
@@ -276,11 +276,57 @@ internal static class Program
             return ExitCodes.HarnessDefect;
         }
 
-        var revision = Suite.Resolve(suite, DefaultSuiteName, Suite.Files(suite), out var pinFailure);
+        var files = Suite.Files(suite);
+        var revision = Suite.Resolve(suite, DefaultSuiteName, files, out var pinFailure);
 
         if (pinFailure.Length != 0)
         {
             Console.WriteLine("FAIL " + pinFailure);
+        }
+
+        // A PIN THIS REPOSITORY HOLDS, FOR A SUITE IT DOES NOT. The mode above verifies a suite
+        // against a pin file inside that same suite, which is right for one this repository holds
+        // and circular for one it does not: whoever can edit a third-party checkout can edit the
+        // pin somebody generated inside it, in the same gesture. `--expect` names a pin retained
+        // here instead, so the digest the run computed has to match a figure the suite cannot
+        // reach. It is optional because a suite that carries its own pin is already answerable;
+        // when it is given, a disagreement stops the run rather than shrinking a total.
+        var expect = Argument(args, "--expect");
+
+        if (expect is not null)
+        {
+            var retained = RetainedSuitePin.Read(expect, out var pinComplaints);
+
+            foreach (var complaint in pinComplaints)
+            {
+                Console.WriteLine("FAIL " + complaint);
+            }
+
+            if (retained is null)
+            {
+                Console.WriteLine(
+                    "broiler-js-conformance: the retained pin is not readable; nothing was scored");
+
+                return ExitCodes.HarnessDefect;
+            }
+
+            var disagreements = retained.Disagrees(revision, files.Count);
+
+            foreach (var complaint in disagreements)
+            {
+                Console.WriteLine("FAIL " + complaint);
+            }
+
+            if (disagreements.Count != 0)
+            {
+                Console.WriteLine(
+                    "broiler-js-conformance: the suite is not the one this pin names; nothing was " +
+                    "scored");
+
+                return ExitCodes.HarnessDefect;
+            }
+
+            Console.WriteLine("retained pin " + retained.Describe());
         }
 
         // WHICH CONSTRUCTS ARE IN THE LANGUAGE IS THE SUITE'S ANSWER AND NOT THIS COMPONENT'S, and
