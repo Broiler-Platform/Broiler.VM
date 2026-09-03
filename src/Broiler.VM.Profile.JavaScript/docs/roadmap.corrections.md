@@ -148,6 +148,7 @@ rather than a decision record.
 | [JSC-62](#jsc-62) | roadmap sections 7 and 9; ledger section 2 | The temporal dead zone was unexpressible: format version 1 had no instruction that could fail at all, so reading an uninitialised slot answered `undefined` | eight test262 cases |
 | [JSC-63](#jsc-63) | [JSC-62](#jsc-62) and the opcode it added; ledger section 2 | The dead-zone opcode declared a push it never made, which the WRITE half could not extend; it is a guard that moves nothing, and the write is taken | the acceptance suite, no suite figure moving |
 | [JSC-64](#jsc-64) | [JSC-60](#jsc-60); the declaration lowering's and the executor's remarks; ledger section 2 | Dead code after a terminator was declined on a hazard that was not there: the executor writes `undefined` into every slot, in a loop, on purpose | the executor's own initialisation |
+| [JSC-65](#jsc-65) | `SliceSourceCompiler`'s remark; [JSC-64](#jsc-64); ledger section 2 | A loop nothing can leave was called the format's answer three times: the verifier requires every REACHABLE path to return, and that loop has no path that ends | the verifier's own rule |
 
 ### JSC-01
 
@@ -2470,3 +2471,55 @@ compiler's own remark named before any of this began.
 **Authority and date.** The executor's own initialisation of every local, read against the
 lowering's remark about it; the host's acceptance suite; the host and the harness re-run over
 test262 at ref `ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e` with neither moving; 2026-09-03.
+
+---
+
+### JSC-65
+
+**Where:** `SliceSourceCompiler`'s remark on the shapes it cannot emit, as
+[JSC-58](#jsc-58) and [JSC-60](#jsc-60) left it; [JSC-64](#jsc-64), which called this the last of
+the three; the [ledger](roadmap.status.md#2-current-milestone-status)'s JS-3b row.
+
+**What the record said, three times.** A loop nothing can leave — `for (;;) { var x = 1; }` — makes
+everything after it unreachable **including the program's own tail**, "and suppressing a tail leaves
+a function with no terminator: a different invalid artifact rather than a valid one." That was
+recorded as the format's answer rather than the lowering's, and was carried forward unexamined
+through two repairs of its neighbours.
+
+**What was actually true.** The verifier's rule is that **every *reachable path* ends in a return**.
+A loop nothing leaves has **no path that ends at all**: the code finishes on a backward jump, not by
+falling off the end, so nothing reaches a point where a return is owed. The sentence is true of
+every other way of arriving at the end of the code and is not true of this one — and the difference
+was never checked, three times over.
+
+**What replaced it.** The program's tail is emitted only where something reaches it, the same
+discipline the loop continuations and then the blocks already had. `for (;;) { var x = 1; }` now
+**runs, forever, until it spends its instruction allowance** — which is what an infinite loop is,
+and what a host should do with one.
+
+**It needed a second repair to work, and that one is the interesting half.** `while (true)` emitted
+its test and a `JumpIfFalse` past the loop. That branch is taken by no execution, and once the tail
+was suppressed its target sat **past the end of the code**, so the verifier refused the jump target
+instead — a different diagnostic for the same mistake. **A test that can never be false is not a
+branch**, and the three loop lowerings no longer emit one for it. `IsAlwaysTrue` admits only
+literals, so nothing observable is skipped.
+
+**One retained artifact changed bytes, and it is the first this session.**
+`source-break-leaves-the-loop` is `var i = 0; while (true) { i = i + 1; if (i === 3) { break; } } i`,
+and its lowering lost the test and the branch. **Its recorded answer is unchanged at `3`** and the
+replay confirms it; what moved is the hash and the length. That is the corpus doing its job rather
+than an accident: an artifact whose bytes move without its answer moving is exactly the event the
+manifest exists to make visible.
+
+**What it does not change.** **No figure in any suite moved** — no file of test262's selectable
+slice contains a loop nothing can leave — so this is the third repair running in a row that the
+suite could not ask for and the host's acceptance suite had to hold instead. And the answers of
+every other loop are untouched: a loop with a `break`, a counted loop, `while (false)` and a
+`do`/`while` all lower and run as before.
+
+**All three unreachable-code shapes are now repaired**, and the directory that pinned them was
+called `known-defects`. It holds none.
+
+**Authority and date.** The host's acceptance suite; the retained corpus regenerated and replayed;
+the host and the harness over test262 at ref `ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e` with neither
+moving; 2026-09-03.

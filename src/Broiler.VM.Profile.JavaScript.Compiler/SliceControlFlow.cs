@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   5
-// Annotated:        5/5
+// Relevant units:   8
+// Annotated:        8/8
 // Exempt:           0
-// Human-reviewed:   0/5
+// Human-reviewed:   0/8
 // IP risk:          None
 // Security risk:    Medium
-// Criteria:         2/0
+// Criteria:         4/0
 // Resource impact:  1/10 max
-// Unverified:       5
+// Unverified:       8
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -69,7 +69,7 @@ internal static class SliceControlFlow
     /// false and the branch not taken - whatever the consequent does.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=757CFC
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=D4423C
     // Broiler-Falsified-If: a statement control can reach past is reported as terminating, which would suppress reachable code
     // Broiler-Human:        PENDING
     internal static bool Terminates(SliceStatement statement) => statement switch
@@ -89,16 +89,93 @@ internal static class SliceControlFlow
             Terminates(branch.Consequent) &&
             Terminates(branch.Alternate),
 
-        // Conservative for the reason the remark above gives.
-        SliceWhileStatement => false,
-        SliceDoWhileStatement => false,
-        SliceForStatement => false,
+        // A LOOP THAT CANNOT BE LEFT DOES NOT FALL THROUGH, which is the last of the three
+        // unreachable-code shapes. It leaves via its test being false or via a `break` that
+        // targets it, so a loop whose test can never be false and which nothing breaks out of
+        // runs forever - and everything after it, up to and including the program's own tail, is
+        // unreachable.
+        SliceWhileStatement loop =>
+            IsAlwaysTrue(loop.Test) && !BreaksThisLoop(loop.Body),
+        SliceDoWhileStatement loop =>
+            IsAlwaysTrue(loop.Test) && !BreaksThisLoop(loop.Body),
+
+        // A `for` with no test has nothing that can be false, so it is the `while (true)` case
+        // written differently.
+        SliceForStatement loop =>
+            (loop.Test is null || IsAlwaysTrue(loop.Test)) && !BreaksThisLoop(loop.Body),
 
         // A declaration, an expression statement, an empty statement, and anything a later
         // manifest admits: assume control continues. The lowering emitted the continuation
         // unconditionally before this type existed, so this arm is the behaviour that was.
         _ => false,
     };
+
+    /// <summary>
+    /// Whether a test can never be false, which is what makes a loop one nothing leaves.
+    /// </summary>
+    /// <remarks>
+    /// <b>Only a literal, and deliberately.</b> `while (true)` and `for (;;)` are how the idiom is
+    /// written; anything needing evaluation is answered <c>false</c>, which keeps the loop
+    /// falling through and leaves the program exactly as it is today. Being wrong in that
+    /// direction costs an artifact the verifier already refuses; being wrong in the other would
+    /// suppress a program's tail because a condition LOOKED constant, and a function with no
+    /// terminator is a worse artifact than one with an unreachable instruction.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=83FA86
+    // Broiler-Falsified-If: an expression that can evaluate to a falsy value is reported as always true
+    // Broiler-Human:        PENDING
+    internal static bool IsAlwaysTrue(SliceExpression test) => test switch
+    {
+        SliceBooleanLiteral literal => literal.Value,
+
+        // A numeric literal is truthy unless it is zero or NaN, and `while (1)` is common enough
+        // in generated code to be worth the arm.
+        SliceNumericLiteral literal => literal.Value != 0 && !double.IsNaN(literal.Value),
+        _ => false,
+    };
+
+    /// <summary>
+    /// Whether a <c>break</c> inside <paramref name="body"/> targets the loop that
+    /// <paramref name="body"/> is the body of.
+    /// </summary>
+    /// <remarks>
+    /// The walk stops at a nested loop for the same reason
+    /// <see cref="ContinuesThisLoop"/>'s does: a <c>break</c> inside an inner loop leaves the
+    /// inner loop and says nothing about whether the outer one can be left. This manifest admits
+    /// no <c>switch</c>, so a loop is the only thing a <c>break</c> can target.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=421801
+    // Broiler-Falsified-If: a `break` targeting an inner loop is counted for an outer one, or one targeting this loop is missed
+    // Broiler-Human:        PENDING
+    internal static bool BreaksThisLoop(SliceStatement body) => body switch
+    {
+        SliceBreakStatement => true,
+        SliceBlockStatement block => AnyBreaksThisLoop(block.Body),
+        SliceIfStatement branch =>
+            BreaksThisLoop(branch.Consequent) ||
+            (branch.Alternate is not null && BreaksThisLoop(branch.Alternate)),
+        SliceWhileStatement => false,
+        SliceDoWhileStatement => false,
+        SliceForStatement => false,
+        _ => false,
+    };
+
+    /// <summary>Whether any statement in a block breaks the loop the block is the body of.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=A8DF05
+    // Broiler-Human:        PENDING
+    private static bool AnyBreaksThisLoop(
+        System.Collections.Generic.IReadOnlyList<SliceStatement> body)
+    {
+        foreach (var statement in body)
+        {
+            if (BreaksThisLoop(statement))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /// <summary>Whether any statement in a block cannot be fallen out of.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=F0A7CA

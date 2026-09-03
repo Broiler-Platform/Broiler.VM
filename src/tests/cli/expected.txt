@@ -53,20 +53,19 @@ missing/nothing-here.js|6|no file or directory at
 # was refused.
 runs/a-product.js refused/a-string-value.js|3|RefusedSource: 1
 
-# TWO OF THESE THREE WERE PINNED AS DEFECTS AND ARE NOW REPAIRED, WHICH IS WHAT PINNING THEM WAS
-# FOR. They were declared with exit 4 - the code that accuses this component - because the lowering
-# emitted a loop's update and back-edge even when a body that always breaks meant nothing reached
-# them, and the verifier refused the artifact as 1411:UnreachableCode. Thirteen files of test262
-# were exactly this. The rows moved from 4 to 0 with the repair; the suite went red in between.
-known-defects/a-loop-whose-body-always-breaks.js|0|
-known-defects/a-while-true-whose-body-always-breaks.js|0|
+# THE THREE UNREACHABLE-CODE SHAPES, ALL REPAIRED. Each was pinned here with the exit code it
+# answered with while it was a defect, so the suite went red on every repair and the row had to be
+# moved deliberately. They stay pinned: a regression in the reachability analysis puts any of them
+# back to exit 4, and a reader looking for why finds the file rather than a bare fixture.
+#
+# The directory was called known-defects until the last of them was repaired. It holds none now.
+unreachable/a-loop-whose-body-always-breaks.js|0|
+unreachable/a-while-true-whose-body-always-breaks.js|0|
 
-# THE THIRD IS STILL REFUSED AND IS THE LAST OF THE THREE. This loop has no exit at all, so
-# everything after it is unreachable INCLUDING THE PROGRAM'S TAIL - and suppressing a tail leaves a
-# function with no terminator, which is a different invalid artifact rather than a valid one. It is
-# the shape the compiler's own remark named all along and it remains a documented exclusion. Its two
-# neighbours were repaired one change apart, which is why it was pinned separately.
-known-defects/a-loop-with-no-exit-at-all.js|4|1411:UnreachableCode
+# THE THIRD ONE ENDS BY SPENDING ITS ALLOWANCE, because that is what an infinite loop does. It was
+# refused as unreachable code until the program's tail stopped being emitted where nothing reaches
+# it - and a small allowance is passed so the suite does not wait for the profile's default.
+--fuel 200000 unreachable/a-loop-with-no-exit-at-all.js|5|did not settle within its allowance
 
 # DEAD CODE AFTER A STATEMENT CONTROL CANNOT PASS, repaired. The first row is the one that had to be
 # reasoned about rather than tried: suppressing a `var` declaration is safe BECAUSE `var` is

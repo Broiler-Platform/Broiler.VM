@@ -75,32 +75,35 @@ public sealed record SliceCompilation(
 /// identity-derived value in a finished compiler, so it is preserved rather than engineered for.
 /// </para>
 /// <para>
-/// <b>One shape it cannot emit, and one it could not until 2026-09-03</b>
-/// <i>(corrected: JSC-58)</i>. This paragraph named a single shape - a loop whose exit is
-/// reachable from nothing, <c>while (true) { }</c> with no <c>break</c> - and called it the
-/// format's answer rather than this lowering's. A sweep of a real conformance suite through the
-/// end-user host found thirteen files refused as unreachable code and <b>none of them was that
-/// shape</b>: every one was <c>for (…) { break; }</c>, whose exit is perfectly reachable. What was
-/// unreachable there was the loop's OWN CONTINUATION - the update expression and the back-edge -
-/// because a body that always breaks never falls into them.
+/// <b>Three shapes it could not emit, and all three are repaired</b> <i>(corrected: JSC-58,
+/// JSC-60, JSC-64, JSC-65)</i>. This paragraph named one - a loop whose exit is reachable from
+/// nothing - and called it the format's answer rather than this lowering's. A conformance suite
+/// found thirteen files failing on a different one; two more turned up behind them; and the shape
+/// originally named turned out not to be the format's answer either.
 /// <list type="bullet">
 /// <item><description>
-/// <b>A loop whose body always exits is now lowered correctly.</b> <see cref="SliceControlFlow"/>
-/// answers whether control can reach past a statement, and the three loop lowerings emit their
-/// continuation only where something reaches it. <c>while (true) { break; }</c> and
-/// <c>for (var i = 0; i &lt; 3; i++) { break; }</c> run. The analysis is conservative in the safe
-/// direction - unsure means reachable, which is what this lowering did unconditionally before - so
-/// <b>the retained corpus regenerates byte-identical</b>: the only bytes that moved belong to
-/// programs the verifier was already refusing.
+/// <b>A loop whose body always exits</b> left its update and its back-edge unreachable.
+/// <see cref="SliceControlFlow"/> answers whether control can reach past a statement, and a loop's
+/// continuation is emitted only where something reaches it.
 /// </description></item>
 /// <item><description>
-/// <b>A loop with no exit at all is still refused</b>, and it is the shape this paragraph named
-/// all along. Everything after it is unreachable including the program's own tail, and suppressing
-/// a tail leaves a function with no terminator - a different invalid artifact rather than a valid
-/// one. That one remains the format's answer and a conformance exclusion the decision record
-/// carries.
+/// <b>A block after a statement control cannot pass</b> was lowered whole. It stops there now.
+/// Suppressing a <c>var</c> declaration is safe because the instance's constructor writes
+/// <c>undefined</c> into every slot, which is what hoisting means.
+/// </description></item>
+/// <item><description>
+/// <b>A loop nothing can leave</b> made the program's own tail unreachable, and suppressing a tail
+/// was said to leave a function with no terminator. The verifier requires every REACHABLE PATH to
+/// end in a return, and such a loop has no path that ends: the code finishes on a backward jump
+/// rather than by falling off the end. The tail is suppressed and the program runs until it spends
+/// its allowance. <b>A test that can never be false is also not a branch</b>, without which the
+/// suppressed tail leaves a <c>JumpIfFalse</c> pointing past the end of the code.
 /// </description></item>
 /// </list>
+/// <b>Every one of them is conservative in the same direction:</b> where the analysis is unsure it
+/// says "reachable", which is what this lowering did unconditionally before. One retained artifact
+/// changed bytes across all of it - <c>source-break-leaves-the-loop</c>, which lost a test and a
+/// branch and answers what it always did.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=9A3F54
@@ -229,7 +232,7 @@ public sealed class SliceSourceCompiler
     /// every statement begins and ends at height zero, so the verifier's join check has nothing to
     /// reconcile and a lowering bug shows up as a stack error at the statement that caused it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=80A056
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=C7F469
     // Broiler-Falsified-If: the operand stack is not empty at any statement boundary
     // Broiler-Human:        PENDING
     private SliceCompilation Lower(
@@ -268,15 +271,38 @@ public sealed class SliceSourceCompiler
         builder.StoreLocal(completionSlot);
         Pop(1);
 
+        var reachable = true;
+
         foreach (var statement in program.Body)
         {
             LowerStatement(statement, options);
+
+            // THE PROGRAM'S TAIL IS SUPPRESSED WHERE NOTHING REACHES IT, and this is the last of
+            // the three unreachable-code shapes. A loop nothing can leave - `for (;;) { }`,
+            // `while (true) { }` with no `break` - runs forever, so the completion read and the
+            // return after it are instructions no execution arrives at, and emitting them earned
+            // the artifact a 1411:UnreachableCode refusal.
+            //
+            // IT IS SAFE TO LEAVE A PROGRAM WITH NO RETURN, AND ONLY IN THIS CASE. The verifier's
+            // rule is that every REACHABLE PATH ends in a return; a loop nothing leaves has no
+            // path that ends at all, and the code finishes on a backward jump rather than by
+            // falling off the end. This was recorded twice as the shape that could not be fixed
+            // because suppressing a tail would leave a function with no terminator - which is true
+            // of every other way of reaching the end and not of this one.
+            if (SliceControlFlow.Terminates(statement))
+            {
+                reachable = false;
+                break;
+            }
         }
 
-        builder.LoadLocal(completionSlot);
-        Push(1);
-        builder.Emit(JavaScriptOpcode.Return);
-        Pop(1);
+        if (reachable)
+        {
+            builder.LoadLocal(completionSlot);
+            Push(1);
+            builder.Emit(JavaScriptOpcode.Return);
+            Pop(1);
+        }
 
         if (diagnostics.Count > 0)
         {
@@ -479,7 +505,7 @@ public sealed class SliceSourceCompiler
         builder.MarkLabel(done);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=9F8870
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=82D7DF
     // Broiler-Falsified-If: the body is reachable with the test false, or a `break` does not leave the loop
     // Broiler-Human:        PENDING
     private void LowerWhile(SliceWhileStatement loop, SliceParseOptions options)
@@ -488,10 +514,19 @@ public sealed class SliceSourceCompiler
         var exit = builder.DefineLabel();
 
         builder.MarkLabel(top);
-        Position(loop.Span);
-        LowerExpression(loop.Test);
-        builder.Branch(JavaScriptOpcode.JumpIfFalse, exit);
-        Pop(1);
+
+        // A TEST THAT CAN NEVER BE FALSE IS NOT A BRANCH. `while (true)` leaves only through a
+        // `break`, so emitting the test and a `JumpIfFalse` past the loop produces a branch no
+        // execution takes to a label nothing else reaches - and once the program's tail is
+        // suppressed, that label sits past the end of the code and the verifier refuses the jump
+        // target. `IsAlwaysTrue` admits only literals, so nothing observable is skipped with it.
+        if (!SliceControlFlow.IsAlwaysTrue(loop.Test))
+        {
+            Position(loop.Span);
+            LowerExpression(loop.Test);
+            builder.Branch(JavaScriptOpcode.JumpIfFalse, exit);
+            Pop(1);
+        }
 
         loops.Add((exit, top));
         LowerStatement(loop.Body, options);
@@ -510,7 +545,7 @@ public sealed class SliceSourceCompiler
         builder.MarkLabel(exit);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=EA9942
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=60245D
     // Broiler-Falsified-If: the body runs zero times, or a `continue` reaches the loop top rather than the test
     // Broiler-Human:        PENDING
     private void LowerDoWhile(SliceDoWhileStatement loop, SliceParseOptions options)
@@ -535,16 +570,26 @@ public sealed class SliceSourceCompiler
         // path out of the body is a `break` targeting this loop, so `exit` below is still reached.
         if (!SliceControlFlow.Terminates(loop.Body) || SliceControlFlow.ContinuesThisLoop(loop.Body))
         {
-            Position(loop.Test.Span);
-            LowerExpression(loop.Test);
-            builder.Branch(JavaScriptOpcode.JumpIfTrue, top);
-            Pop(1);
+            // The same rule at the bottom of the loop rather than the top: a test that can never
+            // be false is an unconditional jump back, not a conditional one with a fall-through
+            // nothing reaches.
+            if (SliceControlFlow.IsAlwaysTrue(loop.Test))
+            {
+                builder.Branch(JavaScriptOpcode.Jump, top);
+            }
+            else
+            {
+                Position(loop.Test.Span);
+                LowerExpression(loop.Test);
+                builder.Branch(JavaScriptOpcode.JumpIfTrue, top);
+                Pop(1);
+            }
         }
 
         builder.MarkLabel(exit);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=D359CE
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=3F4366
     // Broiler-Falsified-If: a `continue` skips the update expression, which turns a counting loop into an endless one
     // Broiler-Human:        PENDING
     private void LowerFor(SliceForStatement loop, SliceParseOptions options)
@@ -560,7 +605,9 @@ public sealed class SliceSourceCompiler
 
         builder.MarkLabel(top);
 
-        if (loop.Test is not null)
+        // `for (; true; )` is `for (;;)` written differently, and the same argument applies: no
+        // test that can never be false becomes a branch.
+        if (loop.Test is not null && !SliceControlFlow.IsAlwaysTrue(loop.Test))
         {
             Position(loop.Test.Span);
             LowerExpression(loop.Test);
