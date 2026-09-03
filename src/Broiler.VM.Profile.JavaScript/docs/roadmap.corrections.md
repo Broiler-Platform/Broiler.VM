@@ -131,6 +131,7 @@ rather than a decision record.
 | [JSC-45](#jsc-45) | delivery §19; ledger §2 | JS-4 deletes JS-1's hand-written PROGRAMS; the instruction buffer beside them is the source lowering's back end and is not deleted | [JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md) |
 | [JSC-46](#jsc-46) | roadmap §9; delivery §19 | A source is tokenized at most once during COMPILATION and the verifier tokenizes nothing; the clause as written was satisfiable only by a fused design | [JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md) |
 | [JSC-47](#jsc-47) | roadmap §7; delivery §19; ledger §2 | One of JS-9's two unfuzzed surfaces exists now, so it is a gap rather than an absence, and the two admissions may not share a sentence | [JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md); the checkout's own front end |
+| [JSC-48](#jsc-48) | ledger §2; delivery §19 | The soak's plateau reading was coupled to what the process allocated BEFORE the soak, so it measured heap the collector had not returned rather than a per-cycle leak | the check's own curve, read on four platforms |
 
 ### JSC-01
 
@@ -1715,3 +1716,52 @@ population and this correction adds a second reason to re-run them rather than t
 
 **Authority and date.** The checkout's own front end, read against the sentence;
 [JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md); 2026-09-03.
+
+---
+
+### JSC-48
+
+**Where:** the [ledger](roadmap.status.md#2-current-milestone-status)'s JS-9 row, the soak's
+plateau clause; delivery [section 19](roadmap.delivery.md#19-milestones), JS-9's exit gate.
+
+**What the plan said.** The soak's plateau check compares the heap at the midpoint of the run
+against the heap at the end, against a band, and **both readings are after warm-up, which is what
+makes them comparable in every publish mode**. That sentence is the check's premise, it is printed
+in the check's own output, and [JSC-41](#jsc-41)'s neighbouring correction had already moved the
+baseline to the midpoint once to make it true.
+
+**What was actually true.** The check never verified its premise, and the premise was not the only
+thing that decided the reading. With two forced collections in the whole run — one at the
+midpoint and one at the end — the final number included heap the collector had not returned,
+and **how much that was scaled with how much the process had allocated before the soak started**.
+The soak is preceded in the same invocation by the corpus replay, so the check was coupled to the
+size of the retained corpus, which is a fact about a different milestone's evidence and about
+nothing this check claims to be measuring.
+
+**How it was found, and it was not by reading.** JS-3b grew the retained corpus from 66 entries to
+91. The plateau check then failed on macOS under Native AOT, on **both** architectures, and it
+failed **byte-identically across three independent runs** — 191,496 bytes at the midpoint to
+352,120 at the end, a factor of 1.84 against a band of 1.20 — while `win-x64`, `linux-x64` and
+the Android head stayed flat. Determinism to the byte is what ruled out noise and made it worth
+diagnosing rather than re-running.
+
+**What replaced it.** The check records **sixteen samples of the heap across the run** and prints
+them. The sampling was added to tell warm-up from a leak — two endpoints cannot, which is why
+the previous occurrence needed a diagnosis rather than a glance — and it turned out to remove
+the failure, which is the finding rather than a side effect. Keeping the heap trimmed through the
+run leaves the reading measuring live bytes, which is what a per-cycle leak moves and what the
+process's history does not.
+
+**The sample count is therefore load-bearing, and the code says so where someone would delete it.**
+More sampling makes this check **stricter** rather than kinder: a real leak grows live bytes, which
+every reading sees however often they are taken, while the signal that disappeared was never about
+leaking. **No band was widened and no threshold moved** — the band is the 1.20 [JSC-41](#jsc-41)
+tightened it to, and it is unchanged.
+
+**What it does not change.** The soak still demonstrates only that recycling a runtime for the
+cycle count it uses does not grow the heap without bound; it still measures nothing, its band is
+still loose, and JS-5 still owns measurement. **It closes no clause**: the plateau clause needs a
+retained bundle and none has been collected since, which the JS-9 row already said and still says.
+
+**Authority and date.** The check's own curve, read on four platforms across three CI runs;
+2026-09-03.

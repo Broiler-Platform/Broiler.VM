@@ -38,10 +38,30 @@ internal static class HostLifetimeChecks
     /// How many points of the heap curve the soak records beside its two endpoints.
     /// </summary>
     /// <remarks>
-    /// Enough to tell a shape from a slope and few enough that the forced collections do not
-    /// dominate the run. Each sample costs two blocking gen-2 collections, so this is a real cost
-    /// and not a free one; sixteen of them over ten thousand cycles is a fraction of a second.
+    /// <para>
+    /// <b>THIS COUNT IS LOAD-BEARING AND MUST NOT BE TRIMMED TO SAVE TIME.</b> It was added to
+    /// diagnose a failure and it turned out to remove it, which is the whole finding: with two
+    /// forced collections - one at the midpoint, one at the end - the final reading included heap
+    /// the collector had not returned, and how much that was scaled with how much the process had
+    /// allocated BEFORE the soak ever started. Growing the retained corpus from 66 entries to 91
+    /// was enough to push it past the band on macOS under Native AOT, on both architectures,
+    /// byte-identically across three runs, while win-x64, linux-x64 and Android stayed flat.
+    /// Sampling sixteen times keeps the heap trimmed through the run and the false signal is gone.
+    /// </para>
+    /// <para>
+    /// <b>So the check was measuring the wrong thing, and more sampling makes it stricter rather
+    /// than kinder.</b> What it read was how much heap the collector had not yet returned, which
+    /// is a fact about the process's history and not about recycling a runtime; a real per-cycle
+    /// leak grows LIVE bytes, which every one of these readings sees however often they are taken.
+    /// A future reader who deletes the samples to save two collections' worth of time reintroduces
+    /// a signal that was never about leaking.
+    /// </para>
+    /// <para>
+    /// Each sample costs two blocking gen-2 collections, so this is a real cost and not a free
+    /// one; sixteen of them over ten thousand cycles is a fraction of a second.
+    /// </para>
     /// </remarks>
+    // Broiler-Falsified-If: reducing this count changes whether the check passes on unchanged code
     private const int Samples = 16;
 
     /// <summary>
