@@ -88,6 +88,14 @@ runner for; one `win-arm64` attempt of three failed inside the SDK installer on 
 before any of this component was built, which is recorded in the workflow rather than smoothed over
 here.
 
+**Since 2026-09-03 that sentence is about the FULL lane and not about every run.** The lane was
+split: `broiler-vm.yml` runs on every push and pull request over two of the six cells —
+`linux-x64` and `linux-arm64`, one per architecture — and `broiler-vm-full.yml` runs all six with
+the emulator on a release tag, a weekly schedule and a button. So "every declared RID published and
+ran" is a statement about a release tag and a Monday, not about the last push. It changes nothing
+in the table above, because that table is fed by retained collections and by no lane at all; it is
+recorded here so that a reader does not take a green pull request as the six-cell answer.
+
 **That moves no row above, and the reason is the one distinction this table rests on.** A support
 claim is made on a *retained collection*: a bundle in `docs/evidence/`, collected deliberately by a
 person, naming its machine, its SDK, its effective configuration and its raw outputs. The lane
