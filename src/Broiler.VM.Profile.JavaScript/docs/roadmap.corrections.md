@@ -2730,20 +2730,30 @@ copy of the first.
 so. The run under the retained pin reports the same 1,084 executed, 1,084 passed, 0 failed as the
 run before it.
 
-**What is still open, and it is now one action rather than three.** The suite is **retrieved and
-hashed and not archived**: 232 megabytes over 56,560 files, against the language specification's
-one file of 2.9 megabytes, which was archived the same day. That difference is a decision about the
-shape of this repository rather than about evidence, and it is recorded as one rather than left to
-be inferred from a row that says only "open". **No floor is set over any test262 figure** and none
-may be while the material is somebody else's to change.
+**What was still open when this was written was one action rather than three, and it was taken the
+same day.** The suite is now **archived** — as the `.tar.gz` it was retrieved as, one file of
+9,487,173 bytes rather than 232 megabytes of extracted tree, which carries the same evidence at
+four per cent of the size — and with it **section 14's attribution row is discharged**, in the
+change that first ingests suite material, exactly where [JSC-30](#jsc-30) said it would land.
 
-**And the attribution row is still not discharged**, which is deliberate. Section 14 lands it "in
-the change that first ingests a suite file" and this change ingests none — only the suite's licence
-text, retained beside the pin so the obligation is met in advance rather than discovered at a
-publish. What has expired is [JSC-30](#jsc-30)'s *reason* for deferring it: an attribution for
-material nobody had retrieved would be an attribution for material nobody had read, and the
-material has now been read.
+**And one sentence of this entry expired within the hour, which is worth leaving visible rather
+than editing away.** It read: *no floor is set over any test262 figure and none may be while the
+material is somebody else's to change.* The material is no longer somebody else's to change. A
+floor is now **possible and still not set**, and what stands in its way is a lane cost nobody has
+agreed to — a different objection from the one this entry recorded, and a smaller one.
+
+**And the replacement had the same defect in miniature, which the archive is what found.** The
+first draft of the retained-pin check compared against the `SuiteRevision` the harness had
+resolved — **which comes from the `suite.pin` inside the checkout**, the artifact this whole entry
+is about. It passed only because the working checkout happened to carry one somebody had generated
+in it. Pointed at a pristine extraction of the archived suite, it refused the suite for being
+called `unnamed-suite`: a retained pin that requires the material to have already certified itself
+certifies the self-certification. It now compares the digest **this run computed from the files it
+read**, the name is the retained pin's to supply rather than the checkout's to assert, and a
+checkout verified this way is reported as pinned — which a pristine third-party extraction, the
+normal case, previously could not be.
 
 **Authority and date.** The archive retrieved twice and extracted twice, the second independently
 of the first; the harness's own digest over both; the run re-scored under the retained pin with
-every figure unmoved; 2026-09-03.
+every figure unmoved, and again from the archived copy extracted into a directory carrying no pin
+of its own; 2026-09-03.

@@ -120,7 +120,7 @@ was confirmed.
 | Component | What it ingests | Confirmed |
 |---|---|---|
 | `Broiler.VM.Profile.JavaScript` | **The ECMAScript Language Specification, ECMA-262, 17th edition (ES2026)**, one file, retained at [`src/Broiler.VM.Profile.JavaScript/docs/specification/`](src/Broiler.VM.Profile.JavaScript/docs/specification/README.md) | 2026-09-03 |
-| `Broiler.VM.Composition.JavaScript.Conformance` | **Nothing of test262 except its licence.** The suite is pinned and read, not ingested: what is retained is a pin at [`src/tests/conformance/pins/`](src/tests/conformance/pins/README.md) and the BSD 3-Clause text beside it | 2026-09-03 |
+| `Broiler.VM.Composition.JavaScript.Conformance` | **test262**, the ECMAScript conformance suite, at `tc39/test262` commit `ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e` — archived as the retrieved archive at [`src/tests/conformance/pins/`](src/tests/conformance/pins/README.md), with its licence beside it | 2026-09-03 |
 
 **What that entry is and what it is not.** It is a **normative reference document**, archived
 because roadmap section 24 asks for the pinned edition to be retrieved, hashed **and archived**,
@@ -151,21 +151,28 @@ which is a different statement from omitting it.
 Broiler.VM includes material copied from the ECMAScript Language Specification, ECMA-262,
 17th edition (ES2026). Copyright © Ecma International.
 
-**The second row is a row about material that is NOT here, and it is in the table for the reason
-this file gives for its own existence.** `Broiler.VM.Composition.JavaScript.Conformance` scores
-this profile against **test262** at `tc39/test262` commit
-`ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e` — 232 MB over 56,560 files, © 2012 Ecma International
-under the BSD 3-Clause licence — and **no part of that suite is in this repository except the
-licence text itself**, retained at
-[`src/tests/conformance/pins/test262-LICENSE.txt`](src/tests/conformance/pins/test262-LICENSE.txt).
-The harness is handed a suite as a directory on a command line and packs nothing; rule **N13**
-asserts that neither it nor any suite directory reaches a package or an advertised closure, and
-that no project file names one.
+**The second row is the one roadmap section 14 has been waiting for since JS-0, and it lands here
+because this is the change that first ingests suite material.**
+`Broiler.VM.Composition.JavaScript.Conformance` scores this profile against **test262**, © 2012
+Ecma International under the **BSD 3-Clause** licence, whose full text is retained at
+[`src/tests/conformance/pins/test262-LICENSE.txt`](src/tests/conformance/pins/test262-LICENSE.txt)
+as condition 1 of that licence requires. **The suite is unmodified**: it is retained as the archive
+it was retrieved as, one file whose SHA-256 the pin beside it names and rule N15 checks, so there
+is no modified file to mark.
 
-**The attribution row roadmap section 14 owes is therefore still open, and that is deliberate.**
-That row lands "in the change that first ingests a suite file", and this repository holds none. The
-licence is retained in advance so the obligation is met on the day one does land rather than
-discovered at a publish, which is what release gate 12 exists to prevent.
+**The opening sentence of this file is unaffected, and here is the mechanism rather than the
+assertion.** The claim is scoped to the three packable assemblies. The suite is a `.tar.gz` under
+`src/tests/`, no project includes it, the harness is handed a suite as a directory on a command
+line and packs nothing, and rule **N13** asserts that neither the harness nor any suite directory
+reaches a package or an advertised composition's closure and that no project file names one — so a
+suite file that reached a shipped image would fail that rule rather than survive as a missing row
+here. **Confirmed by the release owner on 2026-09-03**, and, as everywhere else in this file, **the
+co-signature is not independent**: the owner and the co-signer are one person.
+
+**Why the archive and not the 56,560 files.** Extracted, the suite is 232 MB; this repository packs
+to a few megabytes, and the archive is 9.5 MB carrying exactly the same evidence — that the pinned
+digest can be checked in a checkout with no network. The choice is recorded rather than left to be
+inferred from a tree that does not hold what a reader might expect.
 
 **One obligation moved inside this repository on 2026-08-31 and is recorded here rather than
 left to be discovered.** The JavaScript profile's snapshot copy of an Apache-2.0 engine now lands

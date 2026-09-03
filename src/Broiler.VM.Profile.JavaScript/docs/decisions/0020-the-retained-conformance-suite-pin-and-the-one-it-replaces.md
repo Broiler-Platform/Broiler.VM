@@ -1,8 +1,11 @@
 # JSD-0020 - The retained conformance-suite pin, and the one it replaces
 
-**Status:** Accepted. The suite is **retrieved, hashed and NOT archived**, so the pin is retained
-here and the material is not; the ledger row stays open on the archiving action alone. Nothing here
-accepts a manifest, advances a milestone, or sets a floor over any figure.
+**Status:** Accepted. **Updated the same day: the suite is archived and the row is closed.** It
+was recorded here as retrieved and hashed and not archived, with the archiving action outstanding;
+the archive was retained hours later, as the `.tar.gz` it was retrieved as rather than as 56,560
+extracted files, and section 14's attribution obligation was discharged with it. Section 3 below is
+left as it was written, in the state it described. **Nothing here accepts a manifest, advances a
+milestone, or sets a floor over any figure**, then or now.
 
 **Date:** 2026-09-03
 

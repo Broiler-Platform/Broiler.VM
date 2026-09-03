@@ -36,7 +36,8 @@ internal sealed record RetainedSuitePin(
     string ArchiveDigest,
     string ContentDigest,
     int Files,
-    bool Archived)
+    bool Archived,
+    string ArchivedAt)
 {
     /// <summary>The header a retained pin carries, naming the format.</summary>
     internal const string Header = "# broiler-js-conformance retained suite pin 1";
@@ -50,8 +51,19 @@ internal sealed record RetainedSuitePin(
     internal static IReadOnlyList<string> Keys { get; } =
     [
         "suite", "upstream", "revision", "archive", "archive-sha256", "content-sha256", "files",
-        "archived",
+        "archived", "archived-at",
     ];
+
+    /// <summary>
+    /// The one key that is required exactly when <c>archived</c> says yes, and refused otherwise.
+    /// </summary>
+    /// <remarks>
+    /// <b>Conditional rather than always-required, because both mistakes are real.</b> A pin
+    /// claiming the material is archived and not saying where has moved the search rather than
+    /// ended it; a pin naming a path while claiming nothing is archived is describing a state one
+    /// of its two fields does not believe in. The reader refuses both rather than picking a winner.
+    /// </remarks>
+    internal const string ArchivedAtKey = "archived-at";
 
     /// <summary>Reads a retained pin, or says why the file is not one.</summary>
     internal static RetainedSuitePin? Read(string path, out IReadOnlyList<string> complaints)
@@ -111,9 +123,25 @@ internal sealed record RetainedSuitePin(
             found.Add($"{path} does not carry `{Header}`");
         }
 
-        foreach (var key in Keys.Where(key => !values.ContainsKey(key)))
+        foreach (var key in Keys.Where(key =>
+                     !string.Equals(key, ArchivedAtKey, StringComparison.Ordinal) &&
+                     !values.ContainsKey(key)))
         {
             found.Add($"{path} declares no `{key}`");
+        }
+
+        var claimsArchived = values.TryGetValue("archived", out var archived) &&
+            string.Equals(archived, "yes", StringComparison.Ordinal);
+
+        if (claimsArchived && !values.ContainsKey(ArchivedAtKey))
+        {
+            found.Add($"{path} says the suite is archived and declares no `{ArchivedAtKey}`");
+        }
+
+        if (!claimsArchived && values.ContainsKey(ArchivedAtKey))
+        {
+            found.Add(
+                $"{path} declares `{ArchivedAtKey}` and says the suite is not archived");
         }
 
         if (found.Count != 0)
@@ -147,35 +175,40 @@ internal sealed record RetainedSuitePin(
             values["archive-sha256"],
             values["content-sha256"],
             files,
-            string.Equals(values["archived"], "yes", StringComparison.Ordinal));
+            claimsArchived,
+            claimsArchived ? values[ArchivedAtKey] : string.Empty);
     }
 
     /// <summary>Why a suite this run read does not answer to this pin, or empty where it does.</summary>
-    internal IReadOnlyList<string> Disagrees(SuiteRevision read, int files)
+    /// <remarks>
+    /// <para>
+    /// <b>Over what the run COMPUTED, not over what the checkout said about itself.</b> The first
+    /// draft compared the retained pin against the <see cref="SuiteRevision"/> the harness had
+    /// resolved - which comes from a <c>suite.pin</c> INSIDE the checkout, the artifact this whole
+    /// mechanism exists to replace. It passed only because the working checkout happened to carry
+    /// one somebody had generated in it, and a pristine extraction of the archived suite was
+    /// refused for being called `unnamed-suite`. A retained pin that requires the suite to have
+    /// already certified itself is a retained pin that certifies the self-certification.
+    /// </para>
+    /// <para>
+    /// <b>So the name is not compared at all.</b> It is this component's label for the material,
+    /// which the retained pin supplies; the content digest and the file count are properties of
+    /// the bytes, and they are what a suite can disagree with. The count is not redundant with the
+    /// digest: a digest says two things differ, a count says how, and a checkout that gained or
+    /// lost files is a different accident from one whose bytes moved.
+    /// </para>
+    /// </remarks>
+    internal IReadOnlyList<string> Disagrees(string computedDigest, int files)
     {
         var complaints = new List<string>();
 
-        if (!string.Equals(read.Name, Suite, StringComparison.Ordinal))
-        {
-            complaints.Add($"the retained pin is for `{Suite}` and the suite read is `{read.Name}`");
-        }
-
-        if (!read.IsPinned)
+        if (!string.Equals(computedDigest, ContentDigest, StringComparison.Ordinal))
         {
             complaints.Add(
-                $"the suite read carries no revision of its own, so there is nothing to compare " +
-                $"with the retained `{ContentDigest}`");
-        }
-        else if (!string.Equals(read.Revision, ContentDigest, StringComparison.Ordinal))
-        {
-            complaints.Add(
-                $"the suite read amounts to `{read.Revision}` and the retained pin names " +
+                $"the suite read amounts to `{computedDigest}` and the retained pin names " +
                 $"`{ContentDigest}`: this is not {Upstream} at {Revision}");
         }
 
-        // The file count is checked beside the digest and is not redundant with it. A digest says
-        // two things differ; a count says how, and a suite that gained or lost files is a
-        // different accident from one whose bytes moved.
         if (files != Files)
         {
             complaints.Add($"the suite read holds {files} files and the retained pin names {Files}");
@@ -184,9 +217,18 @@ internal sealed record RetainedSuitePin(
         return complaints;
     }
 
+    /// <summary>The revision a run under this pin reports, which is this pin's own.</summary>
+    /// <remarks>
+    /// <b>A checkout verified against a retained pin is pinned, and its report says so.</b>
+    /// Otherwise a pristine third-party extraction - which carries no pin of its own, correctly -
+    /// would be scored under <see cref="ConfigurationFailure.MissingSuiteRevision"/> while being
+    /// the most rigorously identified suite this harness can be given.
+    /// </remarks>
+    internal SuiteRevision AsRevision() => new(Suite, ContentDigest);
+
     /// <summary>The pin on one line, in the shape a run prints it.</summary>
     internal string Describe() =>
         $"{Suite} {Upstream}@{Revision} content sha256 {ContentDigest} over " +
         $"{Files.ToString(CultureInfo.InvariantCulture)} files" +
-        (Archived ? " - archived" : " - retrieved and hashed, NOT archived");
+        (Archived ? " - archived at " + ArchivedAt : " - retrieved and hashed, NOT archived");
 }

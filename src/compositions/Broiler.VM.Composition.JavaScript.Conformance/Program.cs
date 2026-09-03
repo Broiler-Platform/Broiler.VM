@@ -310,7 +310,11 @@ internal static class Program
                 return ExitCodes.HarnessDefect;
             }
 
-            var disagreements = retained.Disagrees(revision, files.Count);
+            // Over the digest this run computed from the files it read, so a pristine checkout
+            // carrying no pin of its own is verifiable - which is the normal case for third-party
+            // material and was the case this check refused until the archived suite was extracted
+            // and pointed at it.
+            var disagreements = retained.Disagrees(Suite.Digest(files), files.Count);
 
             foreach (var complaint in disagreements)
             {
@@ -327,6 +331,12 @@ internal static class Program
             }
 
             Console.WriteLine("retained pin " + retained.Describe());
+
+            // The retained pin becomes the revision this run reports. A checkout verified against
+            // a pin this repository holds is pinned, whatever it says about itself, and a report
+            // that called it unpinned would name the one suite here whose identity is best
+            // established.
+            revision = retained.AsRevision();
         }
 
         // WHICH CONSTRUCTS ARE IN THE LANGUAGE IS THE SUITE'S ANSWER AND NOT THIS COMPONENT'S, and
