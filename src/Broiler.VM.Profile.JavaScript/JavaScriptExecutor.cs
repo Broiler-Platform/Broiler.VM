@@ -351,7 +351,7 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
     /// proved in range before this method could be reached, which is why no bound is re-checked
     /// here and why re-checking one would be the tell that the boundary is not trusted.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=209B70
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=874623
     // Broiler-Falsified-If: the operand stack is sized from anything but the maximum the verifier computed, or an index used here was not proved in range before execution
     // Broiler-Human:        PENDING
     private VmExecutionStep Run(JavaScriptInstance instance, int offset)
@@ -392,6 +392,22 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
                 case JavaScriptOpcode.StoreLocal:
                     locals[ReadIndex(code, operandAt)] = stack[--top];
                     continue;
+
+                // THE TEMPORAL DEAD ZONE. The lowering puts this exactly where a `LoadLocal` would
+                // have stood for a lexical binding whose initialiser has not run, so the frame is
+                // abandoned before the push the verifier's height model accounted for ever
+                // happens. Reading such a slot used to answer `undefined`, which is what the
+                // language reserves for a binding that HAS been initialised and holds nothing.
+                //
+                // The message names no binding because it cannot: naming one needs an interned
+                // name and the constant pool's interned-name tag is admitted by no manifest yet.
+                // The position table is what carries the line.
+                case JavaScriptOpcode.ThrowUninitializedBinding:
+                    return VmExecutionStep.Faulted(
+                        new JavaScriptFault(
+                            ProfileId,
+                            JavaScriptErrorKind.ReferenceError,
+                            "a binding was read before its initialiser ran"));
 
                 case JavaScriptOpcode.Add:
                     stack[top - 2] = JavaScriptValue.Number(

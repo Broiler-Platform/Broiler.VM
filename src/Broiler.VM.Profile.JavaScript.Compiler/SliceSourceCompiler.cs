@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   22
-// Annotated:        22/22
-// Exempt:           8
-// Human-reviewed:   0/22
+// Relevant units:   23
+// Annotated:        23/23
+// Exempt:           9
+// Human-reviewed:   0/23
 // IP risk:          None
 // Security risk:    High
-// Criteria:         15/15
+// Criteria:         16/16
 // Resource impact:  2/10 max
-// Unverified:       22
+// Unverified:       23
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -127,6 +127,35 @@ public sealed class SliceSourceCompiler
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=0CBEC3
     // Broiler-Human:        PENDING
     private readonly System.Collections.Generic.List<(SliceLabel Break, SliceLabel Continue)> loops = [];
+
+    /// <summary>
+    /// The lexical slots whose initialiser has already been lowered, which is what the temporal
+    /// dead zone is about.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A set of slots rather than an analysis, because this lowering walks the tree in the
+    /// order the program runs.</b> Statements are lowered in source order and an expression's
+    /// operands before the expression, so a reference reached while its binding is not yet in this
+    /// set is a reference the running program would reach before the initialiser - which is
+    /// exactly the language's dead zone.
+    /// </para>
+    /// <para>
+    /// <b>That equivalence holds because of what this manifest leaves out.</b> There is no
+    /// function, no closure, no <c>eval</c> and no label, so there is no way to re-enter the middle
+    /// of a block or to defer a read past its lexical position. In a manifest with any of those it
+    /// would be a runtime question and this set would be wrong; here the two orders are the same
+    /// order.
+    /// </para>
+    /// <para>
+    /// <b>Only <c>let</c> and <c>const</c> are in it.</b> A <c>var</c> is initialised to
+    /// <c>undefined</c> when its scope is entered, so reading one early is <c>undefined</c> and
+    /// not an error - which is the difference the dead zone exists to draw.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=33EDE7
+    // Broiler-Human:        PENDING
+    private readonly System.Collections.Generic.HashSet<int> initialised = [];
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=7C98D9
     // Broiler-Human:        PENDING
     private System.Collections.Generic.IReadOnlyDictionary<SliceNode, SliceBinding> resolutions =
@@ -282,7 +311,7 @@ public sealed class SliceSourceCompiler
     }
 
     /// <summary>Lowers one statement, beginning and ending at operand-stack height zero.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=A3B928
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=1611CA
     // Broiler-Falsified-If: any statement lowering leaves the operand stack at a different height than it entered with
     // Broiler-Human:        PENDING
     private void LowerStatement(SliceStatement statement, SliceParseOptions options)
@@ -310,8 +339,17 @@ public sealed class SliceSourceCompiler
                         LowerExpression(declarator.Initialiser);
                     }
 
-                    builder.StoreLocal(SlotOf(declarator, declarator.Name, declarator.Span));
+                    var slot = SlotOf(declarator, declarator.Name, declarator.Span);
+                    builder.StoreLocal(slot);
                     Pop(1);
+
+                    // From here the binding is initialised, so a reference after this point reads
+                    // it. A `var` is never in the set and never needed to be: it holds `undefined`
+                    // from the moment its scope is entered.
+                    if (declaration.Kind != SliceDeclarationKind.Var)
+                    {
+                        initialised.Add(slot);
+                    }
                 }
 
                 break;
@@ -538,7 +576,7 @@ public sealed class SliceSourceCompiler
     }
 
     /// <summary>Lowers an expression, leaving exactly one value on the stack.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=04A129
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=2E1CD6
     // Broiler-Falsified-If: any expression lowering leaves other than exactly one value on the stack
     // Broiler-Human:        PENDING
     private void LowerExpression(SliceExpression expression)
@@ -556,8 +594,7 @@ public sealed class SliceSourceCompiler
                 break;
 
             case SliceIdentifierReference reference:
-                builder.LoadLocal(SlotOf(reference, reference.Name, reference.Span));
-                Push(1);
+                LowerIdentifierReference(reference);
                 break;
 
             case SliceUnaryExpression unary:
@@ -743,6 +780,39 @@ public sealed class SliceSourceCompiler
 
                 return JavaScriptOpcode.StrictEquals;
         }
+    }
+
+    /// <summary>
+    /// Lowers a name: a read of its slot, or the fault the language answers a read in the dead
+    /// zone with.
+    /// </summary>
+    /// <remarks>
+    /// <b>The two emit the same operand-stack height</b>, which is what lets the choice be made
+    /// here rather than being a property the verifier has to reason about. The fault instruction
+    /// declares the push a `LoadLocal` would have made and never reaches it, so every join and
+    /// every bound in the surrounding program is the one it would have had.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=90EA9C
+    // Broiler-Falsified-If: a reference whose binding is already initialised lowers to the fault, or one in the dead zone lowers to a read
+    // Broiler-Human:        PENDING
+    private void LowerIdentifierReference(SliceIdentifierReference reference)
+    {
+        if (resolutions.TryGetValue(reference, out var binding) &&
+            binding.Kind != SliceDeclarationKind.Var &&
+            !initialised.Contains(binding.Slot))
+        {
+            // A POSITION ROW HERE AND ON NO OTHER READ. This instruction is the only one a
+            // reference can lower to that a program can observe failing, so it is the only one
+            // whose line a reader will ever need; rows for the reads that succeed would be rows
+            // nothing consults, and would move the bytes of every program that reads a variable.
+            Position(reference.Span);
+            builder.Emit(JavaScriptOpcode.ThrowUninitializedBinding);
+            Push(1);
+            return;
+        }
+
+        builder.LoadLocal(SlotOf(reference, reference.Name, reference.Span));
+        Push(1);
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=EA3668

@@ -1,0 +1,28 @@
+# The conformance harness over test262 after the three repairs, 2026-09-03, win-x64.
+#
+#   ref      ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+#   sha256   f58ce79141529c9fa33592e22ff3ff0d83b83830ac8e372ecd32e1623db1c040
+#
+# THE PIN IS OVER A TRANSIENT CHECKOUT and is not the archived pin the gate wants. No suite
+# file is in this repository and no floor is set over these totals.
+#
+# Failures went from 18 to 4. The four that remain are `using` declarations - a proposal -
+# scored because this run passed no feature filter. The suite carries the metadata to
+# exclude them; what decides whether such a test applies is the language edition, which
+# section 3 records as unpinned.
+#
+suite test262@46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93; shard all of 1
+selection candidates=57421 knownIncorrect=0 outOfScope=0 featureFiltered=0 negativeWithheld=0 unselectable=48849 selected=8572 sharded=8572
+mode Script: selected=8360 executed=1183 passed=1179 failed=4 skipped=7177 timedOut=0
+mode Module: selected=212 executed=22 passed=22 failed=0 skipped=190 timedOut=0
+mode Raw: selected=0 executed=0 passed=0 failed=0 skipped=0 timedOut=0
+#
+# every reason a case was declined rather than scored
+7366|ConstructOutsideManifest
+1|UnresolvableIdentifier
+#
+# EVERY REMAINING FAILURE
+language/statements/using/global-use-before-initialization-in-declaration-statement.js#strict: refused-by-source ExpectedToken - declared `fault ReferenceError` and answered `refused-by-source ExpectedToken`: 2102:ExpectedToken at 17:9: a statement ends with `;` or a line terminator, and `x` is neither
+language/statements/using/global-use-before-initialization-in-declaration-statement.js#sloppy: refused-by-source ExpectedToken - declared `fault ReferenceError` and answered `refused-by-source ExpectedToken`: 2102:ExpectedToken at 16:9: a statement ends with `;` or a line terminator, and `x` is neither
+language/statements/using/global-use-before-initialization-in-prior-statement.js#strict: refused-by-source ExpectedToken - declared `fault ReferenceError` and answered `refused-by-source ExpectedToken`: 2102:ExpectedToken at 17:12: a statement ends with `;` or a line terminator, and `x` is neither
+language/statements/using/global-use-before-initialization-in-prior-statement.js#sloppy: refused-by-source ExpectedToken - declared `fault ReferenceError` and answered `refused-by-source ExpectedToken`: 2102:ExpectedToken at 16:12: a statement ends with `;` or a line terminator, and `x` is neither
