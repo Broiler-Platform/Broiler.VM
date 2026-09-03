@@ -1,3 +1,4 @@
+using Broiler.VM.Profile.JavaScript;
 using System.Globalization;
 
 namespace Broiler.VM.Composition.JavaScript.Conformance;
@@ -40,6 +41,8 @@ internal static class HarnessChecks
         MetadataRefusesRawOnSource(),
         AnExpectationIsParsedBackToItself(),
         AReportRoundTripsThroughItsOwnFormat(),
+        AReportNamesTheEditionItWasScoredAgainst(),
+        AReportFromAnotherEditionIsRefusedRatherThanRead(),
         ADetailCannotForgeARow(),
         ModeTotalsAccountForWhatWasSelected(),
         AMissingShardIsIncompleteCoverageAndNotASmallerTotal(),
@@ -337,6 +340,62 @@ internal static class HarnessChecks
             "every-expectation-kind-round-trips-and-a-fifth-is-refused",
             roundTripped && refused,
             $"{every.Length} kinds render and parse back; an unknown kind names the four that exist");
+    }
+
+    private static (string, bool, string) AReportNamesTheEditionItWasScoredAgainst()
+    {
+        // A total is about two pinned inputs and a report already named one of them. The delivery
+        // map lists "a manifest scored against an unpinned edition" among the failures this
+        // milestone must not produce, and a figure that does not say which document it was
+        // measured against is that failure arriving quietly.
+        var line = Sample().Render()
+            .Split('\n')
+            .FirstOrDefault(candidate => candidate.StartsWith("edition|", StringComparison.Ordinal))
+            ?? string.Empty;
+
+        var cells = line.Split('|');
+
+        return (
+            "a-report-names-the-edition-it-was-scored-against",
+            cells.Length == 8 &&
+                string.Equals(cells[4], JavaScriptLanguageEdition.Revision, StringComparison.Ordinal) &&
+                string.Equals(cells[6], JavaScriptLanguageEdition.DocumentDigest, StringComparison.Ordinal) &&
+                string.Equals(cells[7], "not-archived", StringComparison.Ordinal),
+            line.Length == 0 ? "no edition line was rendered" : line);
+    }
+
+    private static (string, bool, string) AReportFromAnotherEditionIsRefusedRatherThanRead()
+    {
+        // Two shards built against two editions are two runs whatever their totals look like, so
+        // the reader refuses rather than letting a merge average them. Written as a check because
+        // the alternative is a clause nobody has watched fire.
+        var path = Path.Combine(Path.GetTempPath(), "broiler-js-conformance-other-edition.txt");
+        var elsewhere = Sample().Render().Replace(
+            JavaScriptLanguageEdition.Revision,
+            new string('0', JavaScriptLanguageEdition.Revision.Length),
+            StringComparison.Ordinal);
+
+        try
+        {
+            File.WriteAllText(path, elsewhere);
+            Report.Read(path);
+
+            return (
+                "a-report-scored-against-another-edition-is-refused",
+                false,
+                "a report naming a revision this build is not pinned to was read without complaint");
+        }
+        catch (InvalidOperationException failure)
+        {
+            return (
+                "a-report-scored-against-another-edition-is-refused",
+                failure.Message.Contains("and this build is pinned to", StringComparison.Ordinal),
+                failure.Message);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
     }
 
     private static (string, bool, string) AReportRoundTripsThroughItsOwnFormat()

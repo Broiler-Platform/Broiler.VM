@@ -1,3 +1,4 @@
+using Broiler.VM.Profile.JavaScript;
 using System.Globalization;
 using System.Text;
 
@@ -83,12 +84,12 @@ internal sealed record Report(
 {
     /// <summary>The header every report carries, naming the format's version.</summary>
     /// <remarks>
-    /// <b>Version 2 because the selection line grew a column</b>, and a reader that met a version 1
-    /// report would otherwise refuse it on the selection line and blame the line rather than the
-    /// format. Nothing in this repository holds a report - they are produced and merged inside one
-    /// run - so the bump costs a message rather than a migration.
+    /// <b>Version 2 added a column to the selection line; version 3 adds the `edition` line.</b> A
+    /// reader that met an older report would otherwise refuse it on a line it could not parse and
+    /// blame the line rather than the format. Nothing in this repository holds a report - they are
+    /// produced and merged inside one run - so a bump costs a message rather than a migration.
     /// </remarks>
-    internal const string Header = "# broiler-js-conformance report 2";
+    internal const string Header = "# broiler-js-conformance report 3";
 
     /// <summary>Per-mode totals, in the enumeration's order so two reports line up.</summary>
     internal IReadOnlyList<ModeTotals> Modes =>
@@ -158,10 +159,30 @@ internal sealed record Report(
         var text = new StringBuilder();
         text.Append(Header).Append('\n');
         text.Append("# run|suite|revision|shardIndex|shardCount|includeNegative\n");
+        text.Append("# edition|standard|year|source|revision|document|digest|archived\n");
         text.Append("# selection|candidates|knownIncorrect|outOfScope|featureExcluded|featureFiltered|negativeWithheld|unselectable|selected|sharded\n");
         text.Append("# mode|name|selected|executed|passed|failed|skipped|timedOut\n");
         text.Append("# result|path|mode|status|completion|answer|detail\n");
         text.Append("# config|failure|detail\n");
+
+        // THE OTHER PINNED INPUT, WRITTEN BESIDE THE SUITE'S. A report already names the suite
+        // revision it scored; the edition its manifests are defined against is the second half of
+        // the same question, and roadmap section 14's delivery map lists "a manifest scored against
+        // an unpinned edition" among the failures this milestone must not produce. Written from the
+        // profile's own declaration rather than restated here, so the two cannot disagree, and
+        // carrying `archived` because a pin that is provisional has to say so where the numbers
+        // are rather than only in a ledger a reader might not open.
+        text.Append(string.Join(
+                '|',
+                "edition",
+                JavaScriptLanguageEdition.Standard,
+                JavaScriptLanguageEdition.Year,
+                JavaScriptLanguageEdition.Source,
+                JavaScriptLanguageEdition.Revision,
+                JavaScriptLanguageEdition.Document,
+                JavaScriptLanguageEdition.DocumentDigest,
+                JavaScriptLanguageEdition.Archived ? "archived" : "not-archived"))
+            .Append('\n');
 
         text.Append(string.Join(
                 '|',
@@ -263,6 +284,24 @@ internal sealed record Report(
                         Value(parts[1]), Value(parts[2]), Value(parts[3]), Value(parts[4]),
                         Value(parts[5]), Value(parts[6]), Value(parts[7]), Value(parts[8]),
                         Value(parts[9]));
+                    break;
+
+                // The edition line is not read back into the report either - it is a property of
+                // the build rather than of the run - but it IS checked, and a disagreement is
+                // refused rather than averaged. Two shards built against two editions are two runs
+                // whatever their totals look like, and the merge's whole job is to refuse that
+                // shape before it adds anything.
+                case "edition" when parts.Length == 8:
+                    if (!string.Equals(parts[2], JavaScriptLanguageEdition.Year, StringComparison.Ordinal) ||
+                        !string.Equals(parts[4], JavaScriptLanguageEdition.Revision, StringComparison.Ordinal) ||
+                        !string.Equals(parts[6], JavaScriptLanguageEdition.DocumentDigest, StringComparison.Ordinal))
+                    {
+                        throw new InvalidOperationException(
+                            $"{path} was scored against {parts[1]} {parts[2]} at {parts[4]} and this " +
+                            $"build is pinned to {JavaScriptLanguageEdition.Standard} " +
+                            $"{JavaScriptLanguageEdition.Year} at {JavaScriptLanguageEdition.Revision}");
+                    }
+
                     break;
 
                 // The mode lines are derived from the results and are written for a reader, so they

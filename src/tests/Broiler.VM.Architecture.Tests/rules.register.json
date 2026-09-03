@@ -870,6 +870,16 @@
       "activationMilestone": null,
       "nonVacuousWhen": "The harness root exists and the register retains at least one closure report; the rule reports its own vacuity when the harness is named by no project in the checkout.",
       "witness": "witnesses/N13-execution-only-references-the-harness.csproj.witness, witnesses/N13-a-project-that-carries-suite-files.csproj.witness"
+    },
+    {
+      "id": "N14",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "The pinned language-specification edition names the same revision and the same document digest in the profile's own declaration, in the decision record that argues for it, and in the ledger's open-dependency row; and the declaration's account of whether the document has been archived agrees with the ledger's, in both directions. Roadmap section 24 requires an unarchived pin to carry a named exclusion, and a pin recorded in one place is a pin one edit can move.",
+      "evidence": "The declaration read as source with Roslyn, the decision record and the ledger read off disk",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The declaration exists from 2026-09-03 and declares every constant the rule reads, so the rule compares real values against real documents rather than passing over an absent subject. The archive clause decides a real state rather than a hypothetical one: the document is retrieved and hashed and not archived, so the provisional branch is the branch that runs.",
+      "witness": "LanguageEditionPinRuleTests in Broiler.VM.Architecture.Tests.dll"
     }
   ]
 }

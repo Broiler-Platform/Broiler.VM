@@ -293,11 +293,13 @@ public sealed class RuleRegisterTests
         // exhaustion carries no diagnostic code, so its dimension and scope are bound to a corpus
         // entry instead. None of the three milestones changes the other two counts: the one
         // Vacuous row is B3, which nothing in the graph can violate, and the one Deferred row
-        // still awaits its own milestone.
-        Assert.Equal(78, byStatus["Active"]);
+        // still awaits its own milestone. JS-3a adds N14 when the language-specification edition
+        // is pinned: the pin is stated in three independently written places and the rule is what
+        // makes their agreement mean something.
+        Assert.Equal(79, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(80, Loaded.Rules.Count);
+        Assert.Equal(81, Loaded.Rules.Count);
     }
 
     private static Register Load()

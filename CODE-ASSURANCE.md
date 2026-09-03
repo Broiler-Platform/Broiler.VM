@@ -13,14 +13,14 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 72 |
-| Files carrying an annotation | 72 |
-| Code units | 2413 |
-| Relevant | 1111 |
+| Files scanned | 73 |
+| Files carrying an annotation | 73 |
+| Code units | 2425 |
+| Relevant | 1123 |
 | Exempt by predicate | 1302 |
-| Annotated | 1111 of 1111 (100%) |
-| Human reviewed | 0 of 1111 (0%) |
-| Unverified | 1111 |
+| Annotated | 1123 of 1123 (100%) |
+| Human reviewed | 0 of 1123 (0%) |
+| Unverified | 1123 |
 
 ## Review states
 
@@ -28,7 +28,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 1111 |
+| HUMAN_PENDING | 1123 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -39,7 +39,7 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 387 |
-| Low | 835 |
+| Low | 847 |
 | Medium | 0 |
 | High | 0 |
 | Unknown | 0 |
@@ -51,7 +51,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | None | 5 |
 | Low | 558 |
-| Medium | 504 |
+| Medium | 516 |
 | High | 155 |
 | Critical | 0 |
 | *not annotated* | 0 |
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 0.8 / 10 |
-| Units scored | 1111 |
+| Units scored | 1123 |
 
 ## High-security review areas
 
@@ -281,7 +281,7 @@ No unit in this component states a per-unit exemption.
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-2413 of them, exempt and relevant alike - with the fingerprint of its declaration.
+2425 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
@@ -289,7 +289,7 @@ this component has moved off `PENDING`. What the manifest adds is that a unit th
 predicate treats as trivial is no longer invisible: a semantic change to one moves a value
 in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
 
-Beside the units it lists **every covered file** - 72 of them - with a
+Beside the units it lists **every covered file** - 73 of them - with a
 fingerprint over the complete token stream of its compilation unit. A unit entry exists only
 for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an
 `[assembly: ...]` attribute is a member of nothing and can be in no unit at all.

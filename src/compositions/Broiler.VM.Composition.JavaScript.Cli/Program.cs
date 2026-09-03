@@ -60,6 +60,14 @@ internal static class Program
             Console.WriteLine(
                 $"broiler-js {JavaScriptProfile.Id} manifest {JavaScriptProfile.SliceManifest} format 1");
 
+            // WHAT THE MANIFEST IS DEFINED AGAINST, on the line a person asks for when they ask
+            // what this is. A manifest name is not a conformance claim and neither is an edition
+            // name - but "which JavaScript" is the first question a host's version output should
+            // be able to answer, and until this line existed the honest answer was that nobody had
+            // written it down. It names the missing archive too, because a version string that
+            // implied a fully taken pin would be the overclaim this whole record is against.
+            Console.WriteLine("edition " + JavaScriptLanguageEdition.Describe());
+
             return ExitCodes.Ok;
         }
 

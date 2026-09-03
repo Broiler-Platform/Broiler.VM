@@ -70,6 +70,17 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptFault.Kind : Broiler.VM.Profile.JavaScript.JavaScriptErrorKind { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptFault.Message : System.String { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptInstance.InvocationCount : System.Int32 { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptLanguageEdition.Archived : const System.Boolean = false
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptLanguageEdition.Describe() : static System.String
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptLanguageEdition.Document : const System.String = "spec.html"
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptLanguageEdition.DocumentBytes : const System.Int32 = 2978793
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptLanguageEdition.DocumentDigest : const System.String = "ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0"
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptLanguageEdition.Edition : const System.Int32 = 17
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptLanguageEdition.Revision : const System.String = "0248456c758431e4bb8e5d26333ff1865123c9cd"
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptLanguageEdition.Source : const System.String = "tc39/ecma262"
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptLanguageEdition.Standard : const System.String = "ECMA-262"
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptLanguageEdition.Tag : const System.String = "es2026"
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptLanguageEdition.Year : const System.String = "ES2026"
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.CompletionKindId : const System.Int32 = 1001
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.Descriptor : static Broiler.VM.VmProfileDescriptor { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.FaultKindId : const System.Int32 = 1002
@@ -947,6 +958,7 @@ type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptError
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptExecutor : sealed class Broiler.VM.IVmProfileExecutor
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptFault : sealed class Broiler.VM.IVmProfilePayload
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptInstance : sealed class Broiler.VM.IVmInstanceState
+type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptLanguageEdition : static class
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile : static class
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProgram : sealed class Broiler.VM.IVmVerifiedState
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptReadAdapter : sealed class Broiler.VM.IVmBoundedAllocationMeter

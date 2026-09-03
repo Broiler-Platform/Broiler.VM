@@ -94,3 +94,11 @@ dead-zone/a-lexical-binding-after-its-initialiser.js|0|5
 # would pass the first row and fail this one.
 hashbang/at-the-very-start.js|0|3
 hashbang/on-the-second-line.js|3|2102:ExpectedToken
+
+# WHAT THIS IS AND WHAT IT IMPLEMENTS, which is the one surface a person reads before they read
+# anything else and which no row judged until 2026-09-03. Two rows rather than one, because the
+# second is the one that would rot: a version string naming the pinned edition must also say the
+# document is not archived, and a pin that quietly started claiming more than it has would pass a
+# check that only looked for the edition's name.
+--version|0|manifest broiler.javascript.slice
+--version|0|NOT archived
