@@ -1,7 +1,7 @@
 # broiler.javascript.slice diagnostic-code registry
 #
-# registry-revision: 1
-# published-at-milestone: JS-3a
+# registry-revision: 2
+# published-at-milestone: JS-3a (revision 1), JS-3b (revision 2)
 # owning-decision: JSD-0009
 # format-version: 1
 # feature-manifest: broiler.javascript.slice
@@ -9,19 +9,33 @@
 # code|name|half|reason|stage|reachability|case|since
 #
 # half           core-result  the code travels in a core verification result, in the profile
-#                             diagnostic-code field, beside a core reason and a position.
+#                             diagnostic-code field, beside a core reason and a position. It is
+#                             declared by JavaScriptDiagnosticCode, in the profile assembly.
 #                embedder-seam  the code is carried by a rejection of SOURCE, which never becomes
-#                             an artifact and never crosses a core result envelope. There are none
-#                             at this revision: the front end that would mint them is JS-3b's.
+#                             an artifact and never crosses a core result envelope. It is declared
+#                             by SliceSourceDiagnosticCode, in the lowering assembly. THE TWO
+#                             HALVES ARE TWO VOCABULARIES IN TWO ASSEMBLIES THAT DO NOT REFERENCE
+#                             EACH OTHER, which is why they are published in one file: nothing in
+#                             the compiler could otherwise notice a number used twice.
+#                             Revision 1 recorded that this half was empty and that the front end
+#                             which would mint it was JS-3b's. JS-3b wrote that front end, and
+#                             revision 2 is the half.
 # reason         the ONE core VmReason every emission of this code carries. A code emitted with
-#                two reasons is a registry violation, not a code with two meanings.
-# stage          the pass that refuses. header, manifest, framing, limits, constants, code,
-#                entries, positions, reserved, reader.
+#                two reasons is a registry violation, not a code with two meanings. It is `-` on
+#                every embedder-seam row, and that is not a gap: a rejection of source reaches no
+#                core result, so there is no reason for it to carry and inventing one would be
+#                claiming a transport the code does not use.
+# stage          the pass that refuses. For the core-result half: header, manifest, framing,
+#                limits, constants, code, entries, positions, reserved, reader. For the
+#                embedder-seam half: tokenizer, parser, semantics, lowering.
 # reachability   corpus     a named entry of the retained corpus produces this code.
+#                source     a named entry of the retained SOURCE corpus is refused with this code.
+#                           The source corpus is src/tests/corpus/js-1/source/source.manifest, and
+#                           it is to this half what the artifact corpus is to the other one.
 #                defensive  no artifact reaches it at this build. The case column says why, and
 #                           the count of these rows is fixed by rule N7 rather than by this file.
-# case           the retained corpus entry that produces the code, or, for a defensive row, the
-#                reason no artifact reaches it.
+# case           the retained corpus entry that produces the code, the retained source entry that
+#                is refused with it, or, for a defensive row, the reason no artifact reaches it.
 # since          the registry revision in which this code acquired the meaning it has now. A code
 #                is never reused for a different meaning: a rejection whose meaning changes takes a
 #                new number and the old one is retired, which is what lets a corpus entry recording
@@ -66,3 +80,25 @@
 1901|Truncated|core-result|Truncated|reader|corpus|a-truncated-payload|1
 1902|MalformedEncoding|core-result|MalformedEncoding|reader|corpus|an-overlong-variable-length-integer|1
 1903|ReaderStopped|core-result|InconsistentStructure|reader|defensive|every bounded-read status this build was compiled against has its own arm, so this one answers a status the reader does not currently have|1
+2001|UnexpectedCharacter|embedder-seam|-|tokenizer|source|refuse-an-unexpected-character|2
+2002|UnterminatedComment|embedder-seam|-|tokenizer|source|refuse-an-unterminated-comment|2
+2003|MalformedNumericLiteral|embedder-seam|-|tokenizer|source|refuse-an-exponent-with-no-digits|2
+2004|UnterminatedStringLiteral|embedder-seam|-|tokenizer|source|refuse-an-unterminated-string|2
+2005|UnknownEscapeSequence|embedder-seam|-|tokenizer|source|refuse-an-unknown-escape-sequence|2
+2101|UnexpectedToken|embedder-seam|-|parser|source|refuse-a-missing-operand|2
+2102|ExpectedToken|embedder-seam|-|parser|source|refuse-a-missing-close-paren|2
+2103|NestingTooDeep|embedder-seam|-|parser|source|refuse-nesting-past-the-bound|2
+2104|ConstructOutsideManifest|embedder-seam|-|parser|source|refuse-a-function|2
+2201|DuplicateLexicalDeclaration|embedder-seam|-|semantics|source|refuse-a-duplicate-lexical-declaration|2
+2202|VarAndLexicalCollision|embedder-seam|-|semantics|source|refuse-a-var-and-lexical-collision|2
+2203|ConstWithoutInitialiser|embedder-seam|-|semantics|source|refuse-a-constant-without-an-initialiser|2
+2204|AssignmentToConstant|embedder-seam|-|semantics|source|refuse-an-assignment-to-a-constant|2
+2205|InvalidAssignmentTarget|embedder-seam|-|semantics|source|refuse-an-invalid-assignment-target|2
+2206|UnresolvableIdentifier|embedder-seam|-|semantics|source|refuse-an-unresolvable-name|2
+2207|IllegalBreak|embedder-seam|-|semantics|source|refuse-a-break-outside-a-loop|2
+2208|IllegalContinue|embedder-seam|-|semantics|source|refuse-a-continue-outside-a-loop|2
+2209|ReservedWordAsBinding|embedder-seam|-|semantics|source|refuse-a-strict-reserved-name-as-a-binding|2
+2210|LegacyOctalInStrictCode|embedder-seam|-|semantics|source|refuse-a-legacy-octal-in-strict-code|2
+2301|TooManyLocals|embedder-seam|-|lowering|source|refuse-more-locals-than-the-frame-admits|2
+2302|TooManyConstants|embedder-seam|-|lowering|source|refuse-more-constants-than-the-pool-admits|2
+2303|OperandStackTooDeep|embedder-seam|-|lowering|source|refuse-an-operand-stack-deeper-than-the-format-admits|2

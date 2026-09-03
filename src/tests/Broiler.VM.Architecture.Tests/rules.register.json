@@ -849,6 +849,16 @@
       "activationMilestone": null,
       "nonVacuousWhen": "The profile answers on seven dimensions from more sites than seven at JS-9 - the bounded reader's four ceilings, the bounded allocator's bytes, the link stage's work charge and the poll's wall clock - and seven corpus entries pin them one for one, so both directions compare a real set. The rule reports its own vacuity rather than passing over one: a profile that answers no exhaustion, or a manifest that pins none, is a violation. TWO STATED LIMITS. It is syntax and not semantics, because rule A11 keeps the profile assembly out of this project's reference set, so a site that computed its dimension instead of naming it would not be found - which is why the count is asserted rather than left to the sweep. And the scope is held to the core's vocabulary rather than to the site: where an answer is charged through the meter the meter reports the level that actually refused, so the observed scope is honestly not the one the verifier named.",
       "witness": "witnesses/diagnostics/N11-an-exhaustion-answer-nothing-pins.cs.witness"
+    },
+    {
+      "id": "N12",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "The Broiler.VM.Profile.JavaScript.Compiler assembly declares no mutable static field, no settable static property, no [ThreadStatic] field, and no AsyncLocal or ThreadLocal of any kind. Roadmap section 9's parse-options answer held structurally rather than only by the concurrent-goal test: a grammar switch may live on the call stack and nowhere else.",
+      "evidence": "Every field and property declaration in the lowering assembly, parsed with Roslyn",
+      "activationMilestone": null,
+      "nonVacuousWhen": "{graph:javascript-family} the lowering assembly is in the graph at JS-3b and the scan finds real static declarations in it - the tokenizer's punctuator table, the validator's reserved-name list - which it correctly does not report, so a clean result is a decision about real declarations rather than a sweep over none. The rule reports its own vacuity: a run that scanned no file of the assembly is a violation rather than a clean result, because this rule passes by finding nothing and an empty subject would be its cleanest-looking pass.",
+      "witness": "witnesses/diagnostics/N12-a-parse-switch-that-outlives-the-call.cs.witness"
     }
   ]
 }

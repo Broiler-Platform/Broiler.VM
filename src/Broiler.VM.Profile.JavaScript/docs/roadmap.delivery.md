@@ -165,9 +165,12 @@ machine has **recorded** a RID, and a support table that has not been issued has
   neither the verified state nor the execution result changes. The slice corpus replays identically
   twice with no residue, contains at least one successful control entry, and the verifier throws on
   none of it.
-- **Seed:** Nothing. This milestone's hand-written encoder and lowering are **scheduled for
-  deletion at JS-4** with a named owner and a gate clause, because a second handle-producing path
-  and a second lowering are non-goals.
+- **Seed:** Nothing. This milestone's hand-written encoder and its hand-written **programs** are
+  **scheduled for deletion at JS-4** with a named owner and a gate clause, because a second
+  handle-producing path and a second corpus of programs are non-goals. **The instruction buffer
+  beside them is not scheduled for deletion** — constant interning, the local frame, label
+  patching and the section framing are what any lowering needs, and JS-3b's source lowering uses
+  them rather than writing a second copy *(corrected: JSC-45)*.
 
 ### JS-2 — Take the snapshot; make the copied front end this component's own code
 
@@ -311,27 +314,40 @@ answered by whichever of the two ran late.
 - **Ledger:** JS-3b's row in
   [section 2 of the evidence ledger](roadmap.status.md#2-current-milestone-status) — its state,
   its retained evidence, and — once the row is `In progress` — every open clause of the gate below.
-- **Next action:** Consolidate every early error the first manifest requires into one validation
-  stage; carry on the tree the facts the two source re-scans recover, and delete the re-scans;
-  take and record the strict-mode ownership decision; write the lowering that feeds the one
-  verification entry point. Record [section 9](roadmap.md#9-the-semantic-front-end-and-lowering)'s
-  boundary answer as a numbered decision: whether the verifier re-derives every early error from
-  artifact bytes, or whether the lowering emits a deliberately invalid artifact the verifier
-  rejects.
-- **Dependencies:** JS-2 for the copied analysis; JS-1 for the format and the verifier shape;
-  JS-3a for the registry the diagnostics land in.
+- **Next action:** **The slice half is built** — the five answers
+  [section 9](roadmap.md#9-the-semantic-front-end-and-lowering) asks for are taken in
+  [JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md), over a
+  tokenizer, a parser, one validation stage and a source lowering written in this checkout
+  *(corrected: JSC-43)*. What is left is the half that needs something this component does not
+  have: **the parse-and-early-error slice scored on JS-3a's harness against the ratchet**, which
+  waits on the suite-revision dependency, and **a publish-and-run of the narrow-runtime-compiler
+  composition on every claimed RID**, which is a collection nobody has made. The general front
+  end — functions, objects, strings, `try`, modules — is still JS-2's ingest.
+- **Dependencies:** JS-1 for the format and the verifier shape; JS-3a for the registry the
+  diagnostics land in, and for the harness the scoring clause needs. **JS-2 is a dependency of the
+  general front end and was never one of a front end at all** *(corrected: JSC-43)*: the slice
+  surface was written from the grammar, and waiting for the ingest bought no code while costing
+  every decision section 9 left open.
 - **Objective exit gate:** Every early error the manifest requires is produced by a named case
   carrying a registry code; an illegal format-version and manifest pair is refused by this profile's
   own verifier with a diagnostic code; a construct outside the declared manifest is refused at
   verification and not at first execution, by its own case; **an artifact that is both malformed in
   framing and invalid in static semantics reports exactly one of the two, by a named case that fails
-  when the phases are fused**; each artifact is tokenized at most once during verification, asserted
-  by a case; the parse-and-early-error slice is scored on JS-3a's harness against the ratchet; and
+  when the phases are fused**; each source is tokenized at most once during compilation and the
+  verifier tokenizes nothing, each asserted by a case *(corrected: JSC-46)*; **two parses with
+  different goals run concurrently in one process, each goal-appropriate, in a case that fails when
+  the options are replaced by a shared static, with a scan asserting the assembly holds no state
+  that could outlive a call**; **a nesting case is refused rather than surviving, and a process
+  termination on one blocks this milestone**; **the same source compiles twice to identical
+  bytes**; the parse-and-early-error slice is scored on JS-3a's harness against the ratchet; and
   the narrow-runtime-compiler composition publishes and runs on every claimed RID with warnings as
   errors, its closure containing the tokenizer and the lowering and no test assembly, and cited
   as evidence for no other composition kind.
-- **Seed:** Copied and re-homed — the post-parse validation stage and the free-name analysis.
-  Written fresh — the reason mapping, the replacement for both re-scans, and the lowering.
+- **Seed:** **Nothing is copied for the slice surface** *(corrected: JSC-43)*. The tokenizer, the
+  syntax tree, the parser, the one validation stage, the seam diagnostic vocabulary and the source
+  lowering are this component's own code, and no total, manifest entry or triage finding crosses
+  the fork. The copied-and-re-homed row — the post-parse validation stage and the free-name
+  analysis — still describes the general front end, which is JS-2's and is blocked with it.
 
 ### JS-4 — The value representation and the object model
 
@@ -345,7 +361,9 @@ answered by whichever of the two ran late.
   key-table initialiser with a generated table under a named owner and make key identity
   realm-scoped. Amputate the dynamic-metaobject interface from the value base type. Route what the
   front end and the executor need through a realm object the composition creates. **Delete JS-1's
-  hand-written encoder and lowering**, and assert the deletion.
+  hand-written encoder and its hand-written programs**, and assert the deletion; the instruction
+  buffer beside them stays, because it is JS-3b's source lowering's back end
+  *(corrected: JSC-45)*.
 - **Dependencies:** JS-1 and JS-2. The [section 8](roadmap.md#8-the-value-frame-and-call-model)
   ABI decision is a **gate on entry** and is taken; a taken entry gate is not a started milestone,
   and this one still waits on JS-2.
@@ -576,7 +594,9 @@ value's representation — and the milestone keeps its place in the order; what 
 first product code onward, and the soak and the shared-aggregate-budget exercises need nothing a
 later milestone delivers, so the work is schedulable immediately. What holds the milestone open is
 the gate rather than the work: two of the four untrusted-input surfaces it must fuzz — the source
-parser and the regular-expression matcher — do not exist until JS-3b and JS-6, and a session over
+parser and the regular-expression matcher — were both absent until JS-3b, which wrote the first
+of them; the matcher waits on JS-6. **A surface that exists and is unfuzzed is a gap rather than an
+absence** *(corrected: JSC-47)*, and a session over
 surfaces that do not exist may not be read as covering them *(corrected: JSC-23)*.
 
 - **Owner:** profile security owner with the fuzz-corpus owner.

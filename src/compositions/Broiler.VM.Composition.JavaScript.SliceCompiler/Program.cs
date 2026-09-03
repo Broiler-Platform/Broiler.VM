@@ -1,5 +1,6 @@
 using Broiler.VM;
 using Broiler.VM.Profile.JavaScript;
+using Broiler.VM.Profile.JavaScript.Compiler;
 
 namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 
@@ -110,19 +111,107 @@ internal static class Program
 
         File.WriteAllText(Path.Combine(directory, "corpus.manifest"), manifest.ToString());
 
+        WriteSourceCorpus(directory);
+
         var controls = entries.Count(entry => entry.Outcome == "Normal");
+        var compiled = SliceSourcePrograms.Accepted.Length;
 
         Console.WriteLine(
             $"broiler-js-slice-compiler: wrote {entries.Length} entries " +
-            $"({controls} of them well-formed controls) to {directory}");
+            $"({controls} of them well-formed controls, {compiled} of those compiled from " +
+            $"retained source) to {directory}");
 
         return 0;
     }
 
-    /// <summary>Runs the claims that need a second profile in the catalog.</summary>
+    /// <summary>
+    /// Writes the source corpus: the text of every program the front end was asked about, and one
+    /// manifest recording what each is expected to answer.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>This is the retained artefact the seam half of the diagnostic registry is bound to.</b>
+    /// The artifact corpus binds every <c>core-result</c> code to a named entry, and the binding is
+    /// what stops the registry from being a file that agrees with itself; a seam code has no
+    /// artifact and would have had no such binding. This manifest is the equivalent: one row per
+    /// source, naming the code it must be refused with, read off disk by the rule and by nothing
+    /// that produced it.
+    /// </para>
+    /// <para>
+    /// <b>Three refused sources are recorded and not retained</b>, and the manifest says which.
+    /// They are the format's own ceilings - more locals than the frame admits, more constants than
+    /// the pool admits, a deeper operand stack than the format admits - and reaching one takes tens
+    /// of thousands of declarations. A file of that size is a file nobody reads, and a generator of
+    /// three lines is something anybody can check, so the generator is the retained thing and the
+    /// manifest names it.
+    /// </para>
+    /// </remarks>
+    private static void WriteSourceCorpus(string directory)
+    {
+        const string Eol = "\n";
+        const int RetainedSourceLimit = 4_096;
+
+        var root = Path.Combine(directory, "source");
+        var accepted = Path.Combine(root, "accepted");
+        var refused = Path.Combine(root, "refused");
+
+        Directory.CreateDirectory(accepted);
+        Directory.CreateDirectory(refused);
+
+        var manifest = new System.Text.StringBuilder();
+        manifest.Append("# broiler.javascript.slice retained source corpus").Append(Eol);
+        manifest.Append("# kind|name|sha256|answer|retained").Append(Eol);
+        manifest
+            .Append("# answer is the completion value an accepted source runs to, or the ")
+            .Append("embedder-seam diagnostic a refused source is refused with")
+            .Append(Eol);
+        manifest
+            .Append("# retained is `file` where the source text is beside this manifest, and ")
+            .Append("`generated` where it is produced by a named member of SliceSourcePrograms")
+            .Append(Eol);
+
+        foreach (var program in SliceSourcePrograms.Accepted)
+        {
+            var text = Normalise(program.Source);
+            File.WriteAllText(Path.Combine(accepted, program.Name + ".js"), text);
+
+            manifest.Append("accepted|").Append(program.Name).Append('|')
+                .Append(Sha256(System.Text.Encoding.UTF8.GetBytes(text))).Append('|')
+                .Append(program.Completion).Append("|file").Append(Eol);
+        }
+
+        foreach (var program in SliceSourcePrograms.Refused)
+        {
+            var text = Normalise(program.Source);
+            var retain = text.Length <= RetainedSourceLimit;
+
+            if (retain)
+            {
+                File.WriteAllText(Path.Combine(refused, program.Name + ".js"), text);
+            }
+
+            manifest.Append("refused|").Append(program.Name).Append('|')
+                .Append(Sha256(System.Text.Encoding.UTF8.GetBytes(text))).Append('|')
+                .Append(program.Code).Append('|')
+                .Append(retain ? "file" : "generated").Append(Eol);
+        }
+
+        File.WriteAllText(Path.Combine(root, "source.manifest"), manifest.ToString());
+    }
+
+    /// <summary>LF endings and one trailing newline, on every platform.</summary>
+    /// <remarks>
+    /// The same reason the corpus manifest states: these files are hashed into an evidence bundle
+    /// and their repository form is pinned to LF, so a producer emitting the platform's newline
+    /// would write a file that differs from the one a fresh checkout holds.
+    /// </remarks>
+    private static string Normalise(string source) =>
+        source.Replace("\r\n", "\n", StringComparison.Ordinal).TrimEnd('\n') + "\n";
+
+    /// <summary>Runs the claims that need a neighbour profile, and the claims about the front end.</summary>
     private static int RunChecks(bool verbose)
     {
-        var checks = CrossProfileChecks.Run();
+        var checks = CrossProfileChecks.Run().Concat(SourceFrontEndChecks.Run()).ToArray();
         var failed = 0;
 
         foreach (var (name, passed, detail) in checks)
@@ -140,8 +229,8 @@ internal static class Program
 
         Console.WriteLine(
             failed == 0
-                ? $"broiler-js-slice-compiler: {checks.Length} cross-profile checks passed"
-                : $"broiler-js-slice-compiler: {failed} of {checks.Length} cross-profile checks FAILED");
+                ? $"broiler-js-slice-compiler: {checks.Length} checks passed"
+                : $"broiler-js-slice-compiler: {failed} of {checks.Length} checks FAILED");
 
         return failed == 0 ? 0 : 1;
     }

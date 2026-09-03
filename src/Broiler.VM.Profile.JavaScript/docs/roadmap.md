@@ -7,10 +7,13 @@ document transcribes none of it.** Which milestones have moved, what each retain
 demonstrates, and what every open gate clause is, are read there and nowhere else: a plan that
 restates them is a second copy of the status, and the second copy is the one that goes stale
 *(corrected: JSC-20)*. What this document states about the present is only what no milestone can
-change without changing the ledger in the same breath — **this profile has no tokenizer, no static
-semantics, no object model, no standard library, no suspension, no guest-initiated load, no
-snapshot and no conformance harness; nothing in it has been read by a human; and nothing in it is
-accepted.** No milestone is complete because its design appears in this document.
+change without changing the ledger in the same breath — **this profile has a source front
+end for one small feature manifest and nothing beyond it: no object model, no standard library, no
+suspension, no guest-initiated load, no snapshot and no conformance harness; nothing in it has been
+read by a human; and nothing in it is accepted.** The tokenizer, the parser, the one
+static-semantic stage and the source lowering landed at JS-3b, for `broiler.javascript.slice`
+alone, and the ledger is the authority for what they demonstrate *(corrected: JSC-43)*. No
+milestone is complete because its design appears in this document.
 
 `Broiler.VM.Profile.JavaScript` is a **language profile**: one bytecode format, one verifier, one
 value and frame model, one executor, one set of host imports, and one conformance suite, compiled
@@ -1016,42 +1019,65 @@ diagnostic per rejection.
 
 So: **consolidate every early error the manifest requires into one validation stage over the
 tree**, carry on the tree the facts the re-scans recover, and delete the re-scans. Each artifact
-is tokenized at most once during verification, asserted by a case. Where strict mode lives — in
-the parser or in the validator — is a named architectural decision with an owner, taken at JS-3b
-and recorded, because the seed's answer is a split this component may ratify or correct but may
-not inherit by accident.
+is tokenized at most once during compilation, asserted by a case, and the verifier
+tokenizes nothing at all *(corrected: JSC-46)*.
+
+**Where strict mode lives is decided**, at JS-3b and in
+[JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md): the
+tokenizer **recognises** and the validator **rules**. The tokenizer records that a numeric
+literal had a legacy-octal shape and that a string literal had this exact raw text, and asks
+about neither, because whether either is allowed depends on a directive prologue it has not
+reached and on a goal symbol it is not told. That split is what deletes both re-scans rather
+than reimplementing them, and it is why the ruling could not live in the parser: a parser
+that ruled would need the goal and a finished prologue before tokenizing the rest, which is
+the ambient parse state this section removes two subsections below.
 
 ### Where the verification boundary falls
 
 The sentence above says "one verification stage", and the core's verification entry point takes a
 descriptor, a payload span, a context and a token — **bytes, not a tree**. The lowering that
-produces the tree is a sibling assembly a composition may omit entirely, and this component fuzzes
-it as a surface distinct from the verifier once JS-3b writes it. So the two stages do not straddle
-one call, and three consequences follow — **one of them settled, and two that no gate can be
-written over until they are**:
+produces the tree is a sibling assembly a composition may omit entirely, and this component is to
+fuzz it as a surface distinct from the verifier. **It exists since JS-3b and no session reaches it
+yet**, which is a gap the ledger's JS-9 row carries rather than a sentence this plan may leave
+ambiguous. So the two stages do not straddle
+one call, and three consequences follow. **One was settled at JS-3a and the other two at
+JS-3b**, in [JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md); the
+paragraphs below carried each as open until the front end existed to settle it against:
 
 - **Settled: a diagnostic code belongs to one of two transports, and the registry says which.**
   Source with an early error never becomes an artifact, so its diagnostic never occupies the core's
   profile diagnostic code, never carries a byte offset within an artifact, and never crosses a core
   result envelope at all. The published registry therefore carries a `half` column: `core-result`,
-  or the embedder's own seam. **JS-3a records which half each code belongs to.** Every row is
-  `core-result` today — no `embedder-seam` code exists, because the front end that would mint one
-  is JS-3b's — and that is a fact about this milestone rather than a simplification, stated so a
-  reader does not read the empty half as an oversight *(corrected: JSC-28)*.
-- **Open: either the verifier re-derives every early error from artifact bytes, or it does not** —
-  and if it does, the front-end contract that returns "a validated tree the lowering consumes" is
-  doing work the verifier then repeats, which is a design this component may choose but not by
-  accident.
-- **Open: an artifact that is both malformed in framing and invalid in static semantics gets
-  exactly one answer**, and which one is a property of phase order rather than of implementation
-  convenience. A profile that fuses the phases scores it differently from one that does not, and
-  the difference is invisible to a suite that never presents a doubly-bad input.
+  or the embedder's own seam. **JS-3a records which half each code belongs to.** The seam
+  half was declared and empty at revision 1, because the front end that would mint it was
+  JS-3b's *(corrected: JSC-28)*; **JS-3b wrote that front end and revision 2 is the half** —
+  twenty-two rows, each carrying `-` where a core-result row carries a `VmReason`, each
+  naming one of the four front-end stages, and each reached by a named entry of a retained
+  **source** corpus rather than of the artifact one *(corrected: JSC-44)*.
+- **Settled: the verifier re-derives no early error, because there are no bytes to derive
+  one from.** Source carrying an early error never becomes an artifact — it is refused at
+  the seam, with a code from the registry's `embedder-seam` half — so the two stages check
+  disjoint things: the front end checks what a program can be wrong about, and the verifier
+  checks what bytes can be wrong about, over every artifact whatever produced it. The
+  alternative would have been two implementations of one ruling, and the second is the one
+  nobody reads.
+  [JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md) records it.
+- **Settled: it gets the framing answer, and not as a tie-break.** Static semantics is a
+  property of a **tree**, and a doubly-bad artifact has none: its bytes were never source.
+  The phases cannot fuse — two assemblies that do not reference each other, two input types,
+  and an execution-only composition that publishes and runs with a verifier and no front end
+  at all — so the answer is a property of what each stage's subject is rather than of which
+  runs first.
 
-JS-3b records the boundary and the doubly-bad artifact's answer, with a named case that **fails
-when the phases are fused**. Until it does, no gate may require an early error to map onto a *core
-invalid-artifact* reason — that qualifier is what an embedder-seam code will never carry. What a
-gate can require of every code is the mapping onto **one core reason**, which is what
-the registry binds and what every row carries, seam half included.
+JS-3b records the boundary and the doubly-bad artifact's answer in
+[JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md), with a
+named case that **fails when the phases are fused**: an early error never produces bytes, and
+a fused design — lowering the bad program and letting the verifier catch it — makes that case
+fail. No gate may require an early error to map onto a *core invalid-artifact* reason — that
+qualifier is what an embedder-seam code will never carry. What a gate can require of every
+code is the mapping onto **one core reason**, which is what the registry binds and what every
+core-result row carries; a seam row carries `-`, because a rejection of source reaches no
+core result for a reason to travel in *(corrected: JSC-44)*.
 
 The static-semantic vocabulary the copied analysis already speaks is kept verbatim, because
 renaming it would be renaming the specification: `VarDeclaredNames`, `LexicallyDeclaredNames`,
@@ -1086,9 +1112,16 @@ and which **fails when the options are replaced by a shared static**.
 The parser, the validator, and the lowering each recurse over program structure, and `CallDepth`
 does not reach any of them — it bounds guest frames, not compile-time recursion. The seed
 mitigates this with stack segmentation and by running whole compilations on an oversized thread.
-This component decides, at JS-2, between an explicit compile-time depth bound and a worklist
-rewrite, records the decision, and pins it with a nesting corpus that must be refused rather than
-survived. **A process termination on a nesting case blocks the milestone.**
+This component decided, at JS-3b rather than at JS-2 — the decision needed a front end and
+not an ingest — in favour of an **explicit compile-time depth bound** carried in the parse
+options, defaulting to 64, refusing with `NestingTooDeep`. The worklist rewrite was refused
+for three reasons: the three recursions are over three shapes, so a rewrite is three
+rewrites; a worklist that *survives* arbitrarily deep input answers a case this clause wants
+**refused**; and a bound is a number a reader can see, where a worklist's real limit is
+whatever the machine had. The cost is a conformance exclusion — a program nested deeper is
+refused here and accepted everywhere else — and
+[JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md) records it
+as one. **A process termination on a nesting case blocks the milestone.**
 
 ### Deterministic lowering, and one lowering
 
@@ -1106,6 +1139,15 @@ The compiler plug-in interface in the seed returns the seed's expression-tree ty
 bytecode back end physically cannot implement it. It is not copied. This profile's front-end
 contract returns a validated tree or a back-end-neutral intermediate form, and the lowering
 consumes that.
+
+**And for `broiler.javascript.slice` the front end is not ingested at all — it is written
+here** *(corrected: JSC-43)*. Everything above describes adapting the seed's four
+early-error places into one, which is JS-2's ingest and is blocked with it; the slice
+surface is small enough that its tokenizer, parser, one validation stage and source
+lowering were written from the grammar instead, needing neither of JS-2's blockers. That is
+the [JSC-15](roadmap.corrections.md#jsc-15) split applied a second time, and it is what let
+the five decisions above be taken against something that runs rather than against a plan.
+**The general front end is still the ingest's and still waits.**
 
 The module host projects are excluded by name: they are host integration doing filesystem and
 package resolution against the seed's object model, and they contain no parser or semantic work.

@@ -76,6 +76,20 @@ internal static class CorpusBuilder
         Ok("an-untaken-conditional", SliceLowering.Conditional(false, 1, 2), "2"),
         Ok("two-entry-points", SliceLowering.TwoEntryPoints(), "1"),
 
+        // ---- control entries lowered FROM SOURCE ---------------------------------------------
+        //
+        // Every entry above is bytecode a human wrote directly, so each is a claim about the
+        // verifier and the executor and about nothing else. These are compiled from JavaScript
+        // text by the front end, so each is additionally a claim about the tokenizer, the parser,
+        // the one validation stage and the lowering - and they are in the SAME corpus, judged by
+        // the SAME replay, because the answer to `10 - 3 - 2` does not become a different kind of
+        // fact for having been written in JavaScript.
+        //
+        // The source is retained beside the bytes. A reader who cannot see the program cannot
+        // check the claim, and a corpus of opaque blobs is a corpus that is trusted rather than
+        // read.
+        .. CompiledFromSource(),
+
         // ---- the header ----------------------------------------------------------------------
         Invalid(
             "wrong-magic",
@@ -336,6 +350,49 @@ internal static class CorpusBuilder
 
     private static CorpusEntry Ok(string name, byte[] bytes, string completion) =>
         new(name, "default", "Normal", "NormalCompleted", 0, completion, Unpinned, Unnamed, Unnamed, bytes);
+
+    /// <summary>
+    /// One entry per accepted source, its bytes produced by the front end.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The producer refuses to write a corpus it could not compile.</b> A source that fails to
+    /// compile here is not skipped and not recorded as a refusal: it throws, because the entry
+    /// list is a claim that these programs are inside the manifest and a corpus quietly missing
+    /// three of them would still replay green.
+    /// </para>
+    /// <para>
+    /// The expected completion is the string written beside the source in
+    /// <c>SliceSourcePrograms</c>, which is a human's answer about JavaScript. Nothing here asks
+    /// the executor what it thinks: the replay does that, in another image, and the comparison is
+    /// only worth something while the two answers have separate authors.
+    /// </para>
+    /// </remarks>
+    private static CorpusEntry[] CompiledFromSource()
+    {
+        var accepted = SliceSourcePrograms.Accepted;
+        var entries = new CorpusEntry[accepted.Length];
+
+        for (var at = 0; at < accepted.Length; at++)
+        {
+            var program = accepted[at];
+            var compiled = SliceSourceCompiler.Compile(program.Source);
+
+            if (!compiled.Succeeded || compiled.Artifact is null)
+            {
+                var why = compiled.Diagnostics.Count > 0
+                    ? compiled.Diagnostics[0].ToString()
+                    : "no artifact and no diagnostic";
+
+                throw new InvalidOperationException(
+                    $"the corpus entry `{program.Name}` did not compile: {why}");
+            }
+
+            entries[at] = Ok(program.Name, compiled.Artifact, program.Completion);
+        }
+
+        return entries;
+    }
 
     private static CorpusEntry Invalid(
         string name, byte[] bytes, string reason, int code, string position = Unpinned) =>

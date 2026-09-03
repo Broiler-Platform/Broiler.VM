@@ -1,0 +1,37 @@
+// A front-end file that keeps a parse's state somewhere the parse does not own.
+//
+// Four shapes, because a rule that caught one would be satisfied by the other three and each of
+// them is a way the seed's ambient goal switch could come back wearing different clothes:
+//
+//   Goal          a plain mutable static. Two concurrent parses with different goals corrupt each
+//                 other, which is the failure roadmap section 9 names.
+//   CurrentGoal   the same thing behind an accessor. A rule that only looked at fields would read
+//                 this as a method and say nothing.
+//   ScopedGoal    [ThreadStatic]. It survives the concurrency test - each thread gets its own -
+//                 and is still a hidden dependency a caller cannot see, cannot set and cannot
+//                 reason about, which is two of section 9's three objections.
+//   AmbientGoal   AsyncLocal, which is the seed's own construct and the one the fork removes.
+//
+// The two static readonly members below are the accepting direction in the same file: neither can
+// carry anything out of a parse, because nothing can write them, and a rule that reported them
+// would be a rule about the `static` keyword rather than about state.
+
+namespace Broiler.VM.Profile.JavaScript.Compiler;
+
+internal static class SomeFrontEndFile
+{
+    private static readonly string[] Punctuators = ["+", "-", "*"];
+
+    private const int DefaultDepth = 64;
+
+    private static SliceGoal Goal;
+
+    [ThreadStatic]
+    private static SliceGoal ScopedGoal;
+
+    private static readonly System.Threading.AsyncLocal<SliceGoal> AmbientGoal = new();
+
+    internal static SliceGoal CurrentGoal { get; set; }
+
+    internal static bool IsModule() => Goal == SliceGoal.Module || ScopedGoal == SliceGoal.Module;
+}

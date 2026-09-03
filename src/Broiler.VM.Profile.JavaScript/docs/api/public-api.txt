@@ -120,6 +120,281 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptVerifier.ProfileId : Broiler.VM.VmProfileId { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptVerifier.VerifierSemanticVersion : System.Int32 { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptVerifier.Verify(in Broiler.VM.VmArtifactDescriptor descriptor, System.ReadOnlySpan<System.Byte> payload, Broiler.VM.IVmVerificationContext context, System.Threading.CancellationToken cancellationToken) : Broiler.VM.VmVerifierOutcome
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAcceptedSource..ctor(System.String Name, System.String Source, System.String Completion) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAcceptedSource.<Clone>$() : Broiler.VM.Profile.JavaScript.Compiler.SliceAcceptedSource
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAcceptedSource.Completion : System.String { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAcceptedSource.Deconstruct(out System.String Name, out System.String Source, out System.String Completion) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAcceptedSource.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceAcceptedSource other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAcceptedSource.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAcceptedSource.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAcceptedSource.Name : System.String { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAcceptedSource.Source : System.String { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAcceptedSource.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAcceptedSource.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceAcceptedSource left, Broiler.VM.Profile.JavaScript.Compiler.SliceAcceptedSource right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAcceptedSource.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceAcceptedSource left, Broiler.VM.Profile.JavaScript.Compiler.SliceAcceptedSource right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAssignmentExpression..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Target, Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Value) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAssignmentExpression.<Clone>$() : virtual Broiler.VM.Profile.JavaScript.Compiler.SliceAssignmentExpression
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAssignmentExpression.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, out Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Target, out Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Value) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAssignmentExpression.EqualityContract : virtual System.Type { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAssignmentExpression.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceAssignmentExpression other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAssignmentExpression.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceExpression other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAssignmentExpression.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAssignmentExpression.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAssignmentExpression.PrintMembers(System.Text.StringBuilder builder) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAssignmentExpression.Target : Broiler.VM.Profile.JavaScript.Compiler.SliceExpression { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAssignmentExpression.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAssignmentExpression.Value : Broiler.VM.Profile.JavaScript.Compiler.SliceExpression { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAssignmentExpression.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceAssignmentExpression left, Broiler.VM.Profile.JavaScript.Compiler.SliceAssignmentExpression right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAssignmentExpression.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceAssignmentExpression left, Broiler.VM.Profile.JavaScript.Compiler.SliceAssignmentExpression right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinaryExpression..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind Operator, Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Left, Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Right) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinaryExpression.<Clone>$() : virtual Broiler.VM.Profile.JavaScript.Compiler.SliceBinaryExpression
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinaryExpression.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, out Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind Operator, out Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Left, out Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Right) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinaryExpression.EqualityContract : virtual System.Type { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinaryExpression.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceBinaryExpression other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinaryExpression.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceExpression other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinaryExpression.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinaryExpression.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinaryExpression.Left : Broiler.VM.Profile.JavaScript.Compiler.SliceExpression { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinaryExpression.Operator : Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinaryExpression.PrintMembers(System.Text.StringBuilder builder) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinaryExpression.Right : Broiler.VM.Profile.JavaScript.Compiler.SliceExpression { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinaryExpression.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinaryExpression.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceBinaryExpression left, Broiler.VM.Profile.JavaScript.Compiler.SliceBinaryExpression right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinaryExpression.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceBinaryExpression left, Broiler.VM.Profile.JavaScript.Compiler.SliceBinaryExpression right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinding..ctor(System.String Name, Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarationKind Kind, System.Int32 Slot) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinding.<Clone>$() : Broiler.VM.Profile.JavaScript.Compiler.SliceBinding
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinding.Deconstruct(out System.String Name, out Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarationKind Kind, out System.Int32 Slot) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinding.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceBinding other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinding.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinding.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinding.Kind : Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarationKind { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinding.Name : System.String { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinding.Slot : System.Int32 { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinding.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinding.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceBinding left, Broiler.VM.Profile.JavaScript.Compiler.SliceBinding right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinding.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceBinding left, Broiler.VM.Profile.JavaScript.Compiler.SliceBinding right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBindingTable..ctor(System.Collections.Generic.IReadOnlyDictionary<Broiler.VM.Profile.JavaScript.Compiler.SliceNode, Broiler.VM.Profile.JavaScript.Compiler.SliceBinding> Resolutions, System.Int32 SlotCount, System.Boolean IsStrict) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBindingTable.<Clone>$() : Broiler.VM.Profile.JavaScript.Compiler.SliceBindingTable
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBindingTable.Deconstruct(out System.Collections.Generic.IReadOnlyDictionary<Broiler.VM.Profile.JavaScript.Compiler.SliceNode, Broiler.VM.Profile.JavaScript.Compiler.SliceBinding> Resolutions, out System.Int32 SlotCount, out System.Boolean IsStrict) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBindingTable.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceBindingTable other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBindingTable.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBindingTable.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBindingTable.IsStrict : System.Boolean { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBindingTable.Resolutions : System.Collections.Generic.IReadOnlyDictionary<Broiler.VM.Profile.JavaScript.Compiler.SliceNode, Broiler.VM.Profile.JavaScript.Compiler.SliceBinding> { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBindingTable.SlotCount : System.Int32 { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBindingTable.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBindingTable.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceBindingTable left, Broiler.VM.Profile.JavaScript.Compiler.SliceBindingTable right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBindingTable.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceBindingTable left, Broiler.VM.Profile.JavaScript.Compiler.SliceBindingTable right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBlockStatement..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, System.Collections.Generic.IReadOnlyList<Broiler.VM.Profile.JavaScript.Compiler.SliceStatement> Body) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBlockStatement.<Clone>$() : virtual Broiler.VM.Profile.JavaScript.Compiler.SliceBlockStatement
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBlockStatement.Body : System.Collections.Generic.IReadOnlyList<Broiler.VM.Profile.JavaScript.Compiler.SliceStatement> { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBlockStatement.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, out System.Collections.Generic.IReadOnlyList<Broiler.VM.Profile.JavaScript.Compiler.SliceStatement> Body) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBlockStatement.EqualityContract : virtual System.Type { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBlockStatement.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceBlockStatement other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBlockStatement.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceStatement other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBlockStatement.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBlockStatement.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBlockStatement.PrintMembers(System.Text.StringBuilder builder) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBlockStatement.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBlockStatement.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceBlockStatement left, Broiler.VM.Profile.JavaScript.Compiler.SliceBlockStatement right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBlockStatement.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceBlockStatement left, Broiler.VM.Profile.JavaScript.Compiler.SliceBlockStatement right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBooleanLiteral..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, System.Boolean Value) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBooleanLiteral.<Clone>$() : virtual Broiler.VM.Profile.JavaScript.Compiler.SliceBooleanLiteral
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBooleanLiteral.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, out System.Boolean Value) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBooleanLiteral.EqualityContract : virtual System.Type { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBooleanLiteral.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceBooleanLiteral other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBooleanLiteral.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceExpression other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBooleanLiteral.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBooleanLiteral.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBooleanLiteral.PrintMembers(System.Text.StringBuilder builder) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBooleanLiteral.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBooleanLiteral.Value : System.Boolean { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBooleanLiteral.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceBooleanLiteral left, Broiler.VM.Profile.JavaScript.Compiler.SliceBooleanLiteral right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBooleanLiteral.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceBooleanLiteral left, Broiler.VM.Profile.JavaScript.Compiler.SliceBooleanLiteral right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBreakStatement..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBreakStatement.<Clone>$() : virtual Broiler.VM.Profile.JavaScript.Compiler.SliceBreakStatement
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBreakStatement.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBreakStatement.EqualityContract : virtual System.Type { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBreakStatement.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceBreakStatement other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBreakStatement.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceStatement other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBreakStatement.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBreakStatement.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBreakStatement.PrintMembers(System.Text.StringBuilder builder) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBreakStatement.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBreakStatement.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceBreakStatement left, Broiler.VM.Profile.JavaScript.Compiler.SliceBreakStatement right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBreakStatement.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceBreakStatement left, Broiler.VM.Profile.JavaScript.Compiler.SliceBreakStatement right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceCompilation..ctor(System.Byte[] Artifact, System.Collections.Generic.IReadOnlyList<Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic> Diagnostics, System.Boolean IsStrict) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceCompilation.<Clone>$() : Broiler.VM.Profile.JavaScript.Compiler.SliceCompilation
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceCompilation.Artifact : System.Byte[] { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceCompilation.Deconstruct(out System.Byte[] Artifact, out System.Collections.Generic.IReadOnlyList<Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic> Diagnostics, out System.Boolean IsStrict) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceCompilation.Diagnostics : System.Collections.Generic.IReadOnlyList<Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic> { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceCompilation.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceCompilation other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceCompilation.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceCompilation.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceCompilation.IsStrict : System.Boolean { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceCompilation.Succeeded : System.Boolean { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceCompilation.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceCompilation.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceCompilation left, Broiler.VM.Profile.JavaScript.Compiler.SliceCompilation right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceCompilation.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceCompilation left, Broiler.VM.Profile.JavaScript.Compiler.SliceCompilation right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceConditionalExpression..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Test, Broiler.VM.Profile.JavaScript.Compiler.SliceExpression WhenTrue, Broiler.VM.Profile.JavaScript.Compiler.SliceExpression WhenFalse) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceConditionalExpression.<Clone>$() : virtual Broiler.VM.Profile.JavaScript.Compiler.SliceConditionalExpression
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceConditionalExpression.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, out Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Test, out Broiler.VM.Profile.JavaScript.Compiler.SliceExpression WhenTrue, out Broiler.VM.Profile.JavaScript.Compiler.SliceExpression WhenFalse) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceConditionalExpression.EqualityContract : virtual System.Type { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceConditionalExpression.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceConditionalExpression other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceConditionalExpression.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceExpression other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceConditionalExpression.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceConditionalExpression.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceConditionalExpression.PrintMembers(System.Text.StringBuilder builder) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceConditionalExpression.Test : Broiler.VM.Profile.JavaScript.Compiler.SliceExpression { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceConditionalExpression.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceConditionalExpression.WhenFalse : Broiler.VM.Profile.JavaScript.Compiler.SliceExpression { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceConditionalExpression.WhenTrue : Broiler.VM.Profile.JavaScript.Compiler.SliceExpression { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceConditionalExpression.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceConditionalExpression left, Broiler.VM.Profile.JavaScript.Compiler.SliceConditionalExpression right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceConditionalExpression.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceConditionalExpression left, Broiler.VM.Profile.JavaScript.Compiler.SliceConditionalExpression right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceContinueStatement..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceContinueStatement.<Clone>$() : virtual Broiler.VM.Profile.JavaScript.Compiler.SliceContinueStatement
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceContinueStatement.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceContinueStatement.EqualityContract : virtual System.Type { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceContinueStatement.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceContinueStatement other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceContinueStatement.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceStatement other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceContinueStatement.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceContinueStatement.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceContinueStatement.PrintMembers(System.Text.StringBuilder builder) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceContinueStatement.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceContinueStatement.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceContinueStatement left, Broiler.VM.Profile.JavaScript.Compiler.SliceContinueStatement right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceContinueStatement.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceContinueStatement left, Broiler.VM.Profile.JavaScript.Compiler.SliceContinueStatement right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarationKind.Const : const Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarationKind = 2
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarationKind.Let : const Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarationKind = 1
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarationKind.Var : const Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarationKind = 0
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarationKind.value__ : System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, System.String Name, Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Initialiser) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator.<Clone>$() : virtual Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, out System.String Name, out Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Initialiser) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator.EqualityContract : virtual System.Type { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceNode other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator.Initialiser : Broiler.VM.Profile.JavaScript.Compiler.SliceExpression { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator.Name : System.String { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator.PrintMembers(System.Text.StringBuilder builder) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator left, Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator left, Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDoWhileStatement..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, Broiler.VM.Profile.JavaScript.Compiler.SliceStatement Body, Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Test) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDoWhileStatement.<Clone>$() : virtual Broiler.VM.Profile.JavaScript.Compiler.SliceDoWhileStatement
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDoWhileStatement.Body : Broiler.VM.Profile.JavaScript.Compiler.SliceStatement { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDoWhileStatement.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, out Broiler.VM.Profile.JavaScript.Compiler.SliceStatement Body, out Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Test) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDoWhileStatement.EqualityContract : virtual System.Type { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDoWhileStatement.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceDoWhileStatement other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDoWhileStatement.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceStatement other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDoWhileStatement.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDoWhileStatement.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDoWhileStatement.PrintMembers(System.Text.StringBuilder builder) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDoWhileStatement.Test : Broiler.VM.Profile.JavaScript.Compiler.SliceExpression { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDoWhileStatement.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDoWhileStatement.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceDoWhileStatement left, Broiler.VM.Profile.JavaScript.Compiler.SliceDoWhileStatement right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDoWhileStatement.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceDoWhileStatement left, Broiler.VM.Profile.JavaScript.Compiler.SliceDoWhileStatement right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceEmptyStatement..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceEmptyStatement.<Clone>$() : virtual Broiler.VM.Profile.JavaScript.Compiler.SliceEmptyStatement
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceEmptyStatement.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceEmptyStatement.EqualityContract : virtual System.Type { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceEmptyStatement.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceEmptyStatement other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceEmptyStatement.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceStatement other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceEmptyStatement.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceEmptyStatement.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceEmptyStatement.PrintMembers(System.Text.StringBuilder builder) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceEmptyStatement.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceEmptyStatement.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceEmptyStatement left, Broiler.VM.Profile.JavaScript.Compiler.SliceEmptyStatement right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceEmptyStatement.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceEmptyStatement left, Broiler.VM.Profile.JavaScript.Compiler.SliceEmptyStatement right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpression..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceExpression original) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpression..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpression.<Clone>$() : abstract Broiler.VM.Profile.JavaScript.Compiler.SliceExpression
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpression.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpression.EqualityContract : virtual System.Type { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpression.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceExpression other) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpression.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceNode other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpression.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpression.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpression.PrintMembers(System.Text.StringBuilder builder) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpression.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpression.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceExpression left, Broiler.VM.Profile.JavaScript.Compiler.SliceExpression right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpression.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceExpression left, Broiler.VM.Profile.JavaScript.Compiler.SliceExpression right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpressionStatement..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Expression) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpressionStatement.<Clone>$() : virtual Broiler.VM.Profile.JavaScript.Compiler.SliceExpressionStatement
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpressionStatement.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, out Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Expression) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpressionStatement.EqualityContract : virtual System.Type { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpressionStatement.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceExpressionStatement other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpressionStatement.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceStatement other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpressionStatement.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpressionStatement.Expression : Broiler.VM.Profile.JavaScript.Compiler.SliceExpression { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpressionStatement.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpressionStatement.PrintMembers(System.Text.StringBuilder builder) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpressionStatement.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpressionStatement.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceExpressionStatement left, Broiler.VM.Profile.JavaScript.Compiler.SliceExpressionStatement right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpressionStatement.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceExpressionStatement left, Broiler.VM.Profile.JavaScript.Compiler.SliceExpressionStatement right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceForStatement..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, Broiler.VM.Profile.JavaScript.Compiler.SliceStatement Initialiser, Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Test, Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Update, Broiler.VM.Profile.JavaScript.Compiler.SliceStatement Body) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceForStatement.<Clone>$() : virtual Broiler.VM.Profile.JavaScript.Compiler.SliceForStatement
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceForStatement.Body : Broiler.VM.Profile.JavaScript.Compiler.SliceStatement { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceForStatement.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, out Broiler.VM.Profile.JavaScript.Compiler.SliceStatement Initialiser, out Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Test, out Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Update, out Broiler.VM.Profile.JavaScript.Compiler.SliceStatement Body) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceForStatement.EqualityContract : virtual System.Type { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceForStatement.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceForStatement other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceForStatement.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceStatement other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceForStatement.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceForStatement.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceForStatement.Initialiser : Broiler.VM.Profile.JavaScript.Compiler.SliceStatement { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceForStatement.PrintMembers(System.Text.StringBuilder builder) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceForStatement.Test : Broiler.VM.Profile.JavaScript.Compiler.SliceExpression { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceForStatement.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceForStatement.Update : Broiler.VM.Profile.JavaScript.Compiler.SliceExpression { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceForStatement.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceForStatement left, Broiler.VM.Profile.JavaScript.Compiler.SliceForStatement right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceForStatement.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceForStatement left, Broiler.VM.Profile.JavaScript.Compiler.SliceForStatement right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceGoal.Module : const Broiler.VM.Profile.JavaScript.Compiler.SliceGoal = 1
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceGoal.Script : const Broiler.VM.Profile.JavaScript.Compiler.SliceGoal = 0
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceGoal.value__ : System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIdentifierReference..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, System.String Name) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIdentifierReference.<Clone>$() : virtual Broiler.VM.Profile.JavaScript.Compiler.SliceIdentifierReference
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIdentifierReference.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, out System.String Name) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIdentifierReference.EqualityContract : virtual System.Type { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIdentifierReference.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceExpression other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIdentifierReference.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceIdentifierReference other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIdentifierReference.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIdentifierReference.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIdentifierReference.Name : System.String { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIdentifierReference.PrintMembers(System.Text.StringBuilder builder) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIdentifierReference.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIdentifierReference.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceIdentifierReference left, Broiler.VM.Profile.JavaScript.Compiler.SliceIdentifierReference right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIdentifierReference.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceIdentifierReference left, Broiler.VM.Profile.JavaScript.Compiler.SliceIdentifierReference right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIfStatement..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Test, Broiler.VM.Profile.JavaScript.Compiler.SliceStatement Consequent, Broiler.VM.Profile.JavaScript.Compiler.SliceStatement Alternate) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIfStatement.<Clone>$() : virtual Broiler.VM.Profile.JavaScript.Compiler.SliceIfStatement
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIfStatement.Alternate : Broiler.VM.Profile.JavaScript.Compiler.SliceStatement { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIfStatement.Consequent : Broiler.VM.Profile.JavaScript.Compiler.SliceStatement { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIfStatement.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, out Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Test, out Broiler.VM.Profile.JavaScript.Compiler.SliceStatement Consequent, out Broiler.VM.Profile.JavaScript.Compiler.SliceStatement Alternate) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIfStatement.EqualityContract : virtual System.Type { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIfStatement.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceIfStatement other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIfStatement.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceStatement other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIfStatement.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIfStatement.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIfStatement.PrintMembers(System.Text.StringBuilder builder) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIfStatement.Test : Broiler.VM.Profile.JavaScript.Compiler.SliceExpression { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIfStatement.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIfStatement.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceIfStatement left, Broiler.VM.Profile.JavaScript.Compiler.SliceIfStatement right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIfStatement.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceIfStatement left, Broiler.VM.Profile.JavaScript.Compiler.SliceIfStatement right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceLogicalExpression..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind Operator, Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Left, Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Right) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceLogicalExpression.<Clone>$() : virtual Broiler.VM.Profile.JavaScript.Compiler.SliceLogicalExpression
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceLogicalExpression.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, out Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind Operator, out Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Left, out Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Right) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceLogicalExpression.EqualityContract : virtual System.Type { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceLogicalExpression.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceExpression other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceLogicalExpression.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceLogicalExpression other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceLogicalExpression.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceLogicalExpression.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceLogicalExpression.Left : Broiler.VM.Profile.JavaScript.Compiler.SliceExpression { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceLogicalExpression.Operator : Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceLogicalExpression.PrintMembers(System.Text.StringBuilder builder) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceLogicalExpression.Right : Broiler.VM.Profile.JavaScript.Compiler.SliceExpression { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceLogicalExpression.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceLogicalExpression.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceLogicalExpression left, Broiler.VM.Profile.JavaScript.Compiler.SliceLogicalExpression right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceLogicalExpression.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceLogicalExpression left, Broiler.VM.Profile.JavaScript.Compiler.SliceLogicalExpression right) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceLowering.Addition() : static System.Byte[]
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceLowering.BooleanAddsAsOne() : static System.Byte[]
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceLowering.ComparisonProducesABoolean() : static System.Byte[]
@@ -139,6 +414,65 @@
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceLowering.TwoEntryPoints() : static System.Byte[]
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceLowering.UnassignedLocalIsUndefined() : static System.Byte[]
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceLowering.UnsignedShiftIsUnsigned() : static System.Byte[]
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNode..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceNode original) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNode..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNode.<Clone>$() : abstract Broiler.VM.Profile.JavaScript.Compiler.SliceNode
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNode.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNode.EqualityContract : virtual System.Type { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNode.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceNode other) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNode.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNode.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNode.PrintMembers(System.Text.StringBuilder builder) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNode.Span : Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNode.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNode.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceNode left, Broiler.VM.Profile.JavaScript.Compiler.SliceNode right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNode.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceNode left, Broiler.VM.Profile.JavaScript.Compiler.SliceNode right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNumericLiteral..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, System.Double Value, System.Boolean IsLegacyOctal) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNumericLiteral.<Clone>$() : virtual Broiler.VM.Profile.JavaScript.Compiler.SliceNumericLiteral
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNumericLiteral.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, out System.Double Value, out System.Boolean IsLegacyOctal) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNumericLiteral.EqualityContract : virtual System.Type { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNumericLiteral.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceExpression other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNumericLiteral.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceNumericLiteral other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNumericLiteral.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNumericLiteral.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNumericLiteral.IsLegacyOctal : System.Boolean { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNumericLiteral.PrintMembers(System.Text.StringBuilder builder) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNumericLiteral.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNumericLiteral.Value : System.Double { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNumericLiteral.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceNumericLiteral left, Broiler.VM.Profile.JavaScript.Compiler.SliceNumericLiteral right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNumericLiteral.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceNumericLiteral left, Broiler.VM.Profile.JavaScript.Compiler.SliceNumericLiteral right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceGoal goal) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceGoal goal, System.Boolean allowTopLevelAwait, System.Int32 maximumNestingDepth) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions.AllowTopLevelAwait : System.Boolean { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions.DefaultMaximumNestingDepth : const System.Int32 = 64
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions.Goal : Broiler.VM.Profile.JavaScript.Compiler.SliceGoal { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions.GoalIsStrict : System.Boolean { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions.MaximumNestingDepth : System.Int32 { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions.Module : static Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions.Script : static Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions left, Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions left, Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParser..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceToken[] tokens, Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions options) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParser.Diagnostics : System.Collections.Generic.IReadOnlyList<Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic> { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParser.ParseProgram() : Broiler.VM.Profile.JavaScript.Compiler.SliceProgram
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceProgram..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, System.Collections.Generic.IReadOnlyList<Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral> Directives, System.Collections.Generic.IReadOnlyList<Broiler.VM.Profile.JavaScript.Compiler.SliceStatement> Body) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceProgram.<Clone>$() : virtual Broiler.VM.Profile.JavaScript.Compiler.SliceProgram
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceProgram.Body : System.Collections.Generic.IReadOnlyList<Broiler.VM.Profile.JavaScript.Compiler.SliceStatement> { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceProgram.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, out System.Collections.Generic.IReadOnlyList<Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral> Directives, out System.Collections.Generic.IReadOnlyList<Broiler.VM.Profile.JavaScript.Compiler.SliceStatement> Body) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceProgram.Directives : System.Collections.Generic.IReadOnlyList<Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral> { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceProgram.EqualityContract : virtual System.Type { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceProgram.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceNode other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceProgram.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceProgram other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceProgram.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceProgram.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceProgram.PrintMembers(System.Text.StringBuilder builder) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceProgram.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceProgram.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceProgram left, Broiler.VM.Profile.JavaScript.Compiler.SliceProgram right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceProgram.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceProgram left, Broiler.VM.Profile.JavaScript.Compiler.SliceProgram right) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceProgramBuilder..ctor() : void
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceProgramBuilder.Boolean(System.Boolean value) : System.UInt16
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceProgramBuilder.Branch(Broiler.VM.Profile.JavaScript.Format.JavaScriptOpcode opcode, Broiler.VM.Profile.JavaScript.Compiler.SliceLabel label) : Broiler.VM.Profile.JavaScript.Compiler.SliceProgramBuilder
@@ -162,6 +496,216 @@
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceProgramBuilder.StoreLocal(System.Int32 slot) : Broiler.VM.Profile.JavaScript.Compiler.SliceProgramBuilder
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceProgramBuilder.ToArtifact(System.String manifestId, System.UInt32 declaredOperandStack) : System.Byte[]
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceProgramBuilder.Undefined() : System.UInt16
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceRefusedSource..ctor(System.String Name, System.String Source, Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode Code) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceRefusedSource.<Clone>$() : Broiler.VM.Profile.JavaScript.Compiler.SliceRefusedSource
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceRefusedSource.Code : Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceRefusedSource.Deconstruct(out System.String Name, out System.String Source, out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode Code) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceRefusedSource.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceRefusedSource other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceRefusedSource.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceRefusedSource.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceRefusedSource.Name : System.String { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceRefusedSource.Options : Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceRefusedSource.Source : System.String { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceRefusedSource.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceRefusedSource.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceRefusedSource left, Broiler.VM.Profile.JavaScript.Compiler.SliceRefusedSource right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceRefusedSource.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceRefusedSource left, Broiler.VM.Profile.JavaScript.Compiler.SliceRefusedSource right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceCompiler..ctor() : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceCompiler.Compile(System.String source) : static Broiler.VM.Profile.JavaScript.Compiler.SliceCompilation
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceCompiler.Compile(System.String source, Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions options) : static Broiler.VM.Profile.JavaScript.Compiler.SliceCompilation
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceCompiler.MainEntry : const System.String = "main"
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode Code, System.String Message, System.Int32 Line, System.Int32 Column) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic.<Clone>$() : Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic.Code : Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic.Column : System.Int32 { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode Code, out System.String Message, out System.Int32 Line, out System.Int32 Column) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic.Line : System.Int32 { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic.Message : System.String { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic left, Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic left, Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode.AssignmentToConstant : const Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode = 2204
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode.ConstWithoutInitialiser : const Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode = 2203
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode.ConstructOutsideManifest : const Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode = 2104
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode.DuplicateLexicalDeclaration : const Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode = 2201
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode.ExpectedToken : const Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode = 2102
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode.IllegalBreak : const Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode = 2207
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode.IllegalContinue : const Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode = 2208
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode.InvalidAssignmentTarget : const Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode = 2205
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode.LegacyOctalInStrictCode : const Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode = 2210
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode.MalformedNumericLiteral : const Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode = 2003
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode.NestingTooDeep : const Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode = 2103
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode.OperandStackTooDeep : const Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode = 2303
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode.ReservedWordAsBinding : const Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode = 2209
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode.TooManyConstants : const Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode = 2302
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode.TooManyLocals : const Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode = 2301
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode.UnexpectedCharacter : const Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode = 2001
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode.UnexpectedToken : const Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode = 2101
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode.UnknownEscapeSequence : const Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode = 2005
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode.UnresolvableIdentifier : const Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode = 2206
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode.UnterminatedComment : const Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode = 2002
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode.UnterminatedStringLiteral : const Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode = 2004
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode.VarAndLexicalCollision : const Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode = 2202
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode.value__ : System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourcePrograms.Accepted : static Broiler.VM.Profile.JavaScript.Compiler.SliceAcceptedSource[] { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourcePrograms.Declarations(System.Int32 count) : static System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourcePrograms.DistinctConstants(System.Int32 count) : static System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourcePrograms.Nested(System.Int32 depth) : static System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourcePrograms.Refused : static Broiler.VM.Profile.JavaScript.Compiler.SliceRefusedSource[] { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourcePrograms.RightNestedAddition(System.Int32 depth) : static System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan..ctor(System.Int32 Line, System.Int32 Column) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan.Column : System.Int32 { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan.Deconstruct(out System.Int32 Line, out System.Int32 Column) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan.Line : System.Int32 { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan left, Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan left, Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStatement..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStatement..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceStatement original) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStatement.<Clone>$() : abstract Broiler.VM.Profile.JavaScript.Compiler.SliceStatement
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStatement.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStatement.EqualityContract : virtual System.Type { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStatement.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceNode other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStatement.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceStatement other) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStatement.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStatement.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStatement.PrintMembers(System.Text.StringBuilder builder) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStatement.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStatement.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceStatement left, Broiler.VM.Profile.JavaScript.Compiler.SliceStatement right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStatement.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceStatement left, Broiler.VM.Profile.JavaScript.Compiler.SliceStatement right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStaticSemantics..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions options) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStaticSemantics.Diagnostics : System.Collections.Generic.IReadOnlyList<Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic> { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStaticSemantics.Validate(Broiler.VM.Profile.JavaScript.Compiler.SliceProgram program) : Broiler.VM.Profile.JavaScript.Compiler.SliceBindingTable
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, System.String Value, System.String RawText) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral.<Clone>$() : virtual Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, out System.String Value, out System.String RawText) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral.EqualityContract : virtual System.Type { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceExpression other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral.PrintMembers(System.Text.StringBuilder builder) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral.RawText : System.String { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral.Value : System.String { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral left, Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral left, Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind Kind, System.String RawText, System.Double NumericValue, System.String StringValue, System.Int32 Line, System.Int32 Column, System.Boolean PrecededByLineTerminator, System.Boolean IsLegacyOctal) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.Column : System.Int32 { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind Kind, out System.String RawText, out System.Double NumericValue, out System.String StringValue, out System.Int32 Line, out System.Int32 Column, out System.Boolean PrecededByLineTerminator, out System.Boolean IsLegacyOctal) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceToken other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.IsLegacyOctal : System.Boolean { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.Kind : Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.Line : System.Int32 { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.NumericValue : System.Double { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.PrecededByLineTerminator : System.Boolean { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.RawText : System.String { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.StringValue : System.String { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceToken left, Broiler.VM.Profile.JavaScript.Compiler.SliceToken right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceToken left, Broiler.VM.Profile.JavaScript.Compiler.SliceToken right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.Ampersand : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 40
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.AmpersandAmpersand : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 44
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.Bang : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 31
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.BangEquals : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 39
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.BangEqualsEquals : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 37
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.Bar : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 41
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.BarBar : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 45
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.Break : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 13
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.Caret : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 42
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.CloseBrace : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 18
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.CloseParen : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 20
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.Colon : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 24
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.Comma : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 22
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.Const : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 7
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.Continue : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 14
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.Do : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 11
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.Else : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 9
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.EndOfSource : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 0
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.Equals : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 25
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.EqualsEquals : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 38
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.EqualsEqualsEquals : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 36
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.False : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 16
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.For : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 12
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.GreaterThan : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 34
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.GreaterThanEquals : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 35
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.GreaterThanGreaterThan : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 47
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.GreaterThanGreaterThanGreaterThan : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 48
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.Identifier : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 1
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.If : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 8
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.LessThan : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.LessThanEquals : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 33
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.LessThanLessThan : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 46
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.Let : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 6
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.Minus : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 27
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.NumericLiteral : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 2
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.OpenBrace : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 17
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.OpenParen : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 19
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.Percent : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 30
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.Plus : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 26
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.Question : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 23
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.ReservedWord : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 4
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.Semicolon : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 21
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.Slash : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 29
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.Star : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 28
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.StringLiteral : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 3
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.Tilde : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 43
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.True : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 15
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.Var : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 5
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.While : const Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind = 10
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind.value__ : System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer..ctor(System.String source) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.Diagnostics : System.Collections.Generic.IReadOnlyList<Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic> { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer.Tokenize() : Broiler.VM.Profile.JavaScript.Compiler.SliceToken[]
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind Operator, Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Operand) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression.<Clone>$() : virtual Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, out Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind Operator, out Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Operand) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression.EqualityContract : virtual System.Type { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceExpression other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression.Operand : Broiler.VM.Profile.JavaScript.Compiler.SliceExpression { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression.Operator : Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression.PrintMembers(System.Text.StringBuilder builder) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression left, Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression left, Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceVariableStatement..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarationKind Kind, System.Collections.Generic.IReadOnlyList<Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator> Declarators) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceVariableStatement.<Clone>$() : virtual Broiler.VM.Profile.JavaScript.Compiler.SliceVariableStatement
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceVariableStatement.Declarators : System.Collections.Generic.IReadOnlyList<Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator> { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceVariableStatement.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, out Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarationKind Kind, out System.Collections.Generic.IReadOnlyList<Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator> Declarators) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceVariableStatement.EqualityContract : virtual System.Type { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceVariableStatement.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceStatement other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceVariableStatement.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceVariableStatement other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceVariableStatement.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceVariableStatement.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceVariableStatement.Kind : Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarationKind { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceVariableStatement.PrintMembers(System.Text.StringBuilder builder) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceVariableStatement.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceVariableStatement.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceVariableStatement left, Broiler.VM.Profile.JavaScript.Compiler.SliceVariableStatement right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceVariableStatement.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceVariableStatement left, Broiler.VM.Profile.JavaScript.Compiler.SliceVariableStatement right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement..ctor(Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Test, Broiler.VM.Profile.JavaScript.Compiler.SliceStatement Body) : void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement.<Clone>$() : virtual Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement.Body : Broiler.VM.Profile.JavaScript.Compiler.SliceStatement { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement.Deconstruct(out Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan Span, out Broiler.VM.Profile.JavaScript.Compiler.SliceExpression Test, out Broiler.VM.Profile.JavaScript.Compiler.SliceStatement Body) : System.Void
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement.EqualityContract : virtual System.Type { get; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceStatement other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement.Equals(Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement other) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement.Equals(System.Object obj) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement.GetHashCode() : virtual System.Int32
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement.PrintMembers(System.Text.StringBuilder builder) : virtual System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement.Test : Broiler.VM.Profile.JavaScript.Compiler.SliceExpression { get; set; }
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement.ToString() : virtual System.String
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement.op_Equality(Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement left, Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement right) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement.op_Inequality(Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement left, Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement right) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JavaScriptArtifactWriter.BooleanConstant(System.Byte payload) : static System.Byte[]
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JavaScriptArtifactWriter.Constants(System.Byte[][] entries, System.Nullable<System.UInt32> declaredCount) : static System.Byte[]
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JavaScriptArtifactWriter.Count(System.UInt32 count) : static System.Byte[]
@@ -257,9 +801,51 @@ type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptReadA
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptValue : struct System.IEquatable<Broiler.VM.Profile.JavaScript.JavaScriptValue>
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptValueKind : enum
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptVerifier : sealed class Broiler.VM.IVmProfileVerifier
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAcceptedSource : sealed class System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceAcceptedSource>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceAssignmentExpression : sealed class Broiler.VM.Profile.JavaScript.Compiler.SliceExpression, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceAssignmentExpression>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinaryExpression : sealed class Broiler.VM.Profile.JavaScript.Compiler.SliceExpression, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceBinaryExpression>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBinding : sealed class System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceBinding>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBindingTable : sealed class System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceBindingTable>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBlockStatement : sealed class Broiler.VM.Profile.JavaScript.Compiler.SliceStatement, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceBlockStatement>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBooleanLiteral : sealed class Broiler.VM.Profile.JavaScript.Compiler.SliceExpression, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceBooleanLiteral>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceBreakStatement : sealed class Broiler.VM.Profile.JavaScript.Compiler.SliceStatement, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceBreakStatement>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceCompilation : sealed class System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceCompilation>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceConditionalExpression : sealed class Broiler.VM.Profile.JavaScript.Compiler.SliceExpression, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceConditionalExpression>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceContinueStatement : sealed class Broiler.VM.Profile.JavaScript.Compiler.SliceStatement, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceContinueStatement>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarationKind : enum
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator : sealed class Broiler.VM.Profile.JavaScript.Compiler.SliceNode, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceDeclarator>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceDoWhileStatement : sealed class Broiler.VM.Profile.JavaScript.Compiler.SliceStatement, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceDoWhileStatement>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceEmptyStatement : sealed class Broiler.VM.Profile.JavaScript.Compiler.SliceStatement, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceEmptyStatement>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpression : abstract class Broiler.VM.Profile.JavaScript.Compiler.SliceNode, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceExpression>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceExpressionStatement : sealed class Broiler.VM.Profile.JavaScript.Compiler.SliceStatement, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceExpressionStatement>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceForStatement : sealed class Broiler.VM.Profile.JavaScript.Compiler.SliceStatement, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceForStatement>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceGoal : enum
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIdentifierReference : sealed class Broiler.VM.Profile.JavaScript.Compiler.SliceExpression, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceIdentifierReference>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceIfStatement : sealed class Broiler.VM.Profile.JavaScript.Compiler.SliceStatement, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceIfStatement>
 type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceLabel : sealed class
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceLogicalExpression : sealed class Broiler.VM.Profile.JavaScript.Compiler.SliceExpression, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceLogicalExpression>
 type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceLowering : static class
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNode : abstract class System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceNode>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceNumericLiteral : sealed class Broiler.VM.Profile.JavaScript.Compiler.SliceExpression, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceNumericLiteral>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions : struct System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParser : sealed class
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceProgram : sealed class Broiler.VM.Profile.JavaScript.Compiler.SliceNode, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceProgram>
 type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceProgramBuilder : sealed class
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceRefusedSource : sealed class System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceRefusedSource>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceCompiler : sealed class
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic : sealed class System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnostic>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceDiagnosticCode : enum
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourcePrograms : static class
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan : struct System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceSourceSpan>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStatement : abstract class Broiler.VM.Profile.JavaScript.Compiler.SliceNode, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceStatement>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStaticSemantics : sealed class
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral : sealed class Broiler.VM.Profile.JavaScript.Compiler.SliceExpression, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceStringLiteral>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceToken : struct System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceToken>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenKind : enum
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceTokenizer : sealed class
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression : sealed class Broiler.VM.Profile.JavaScript.Compiler.SliceExpression, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceUnaryExpression>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceVariableStatement : sealed class Broiler.VM.Profile.JavaScript.Compiler.SliceStatement, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceVariableStatement>
+type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement : sealed class Broiler.VM.Profile.JavaScript.Compiler.SliceStatement, System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.SliceWhileStatement>
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JavaScriptArtifactWriter : static class
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JavaScriptArtifactWriter.Section : struct
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JavaScriptFormat : static class
