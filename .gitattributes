@@ -66,4 +66,14 @@ src/tests/conformance/**/*.bjsb binary
 # this host does with those exact bytes. Git's NUL-byte heuristic sees neither, so the declaration
 # has to be explicit. Declared at JS-3b with the host itself.
 src/tests/cli/encoding/*.js binary
+
+# THE ARCHIVED LANGUAGE SPECIFICATION IS THE ONE FILE HERE WHOSE HASH IS PUBLISHED IN A PUBLIC
+# API. `JavaScriptLanguageEdition.DocumentDigest` is a public constant, it appears in the
+# profile's API baseline, and every conformance report carries it - so a byte of end-of-line
+# conversion would not merely break a check, it would make a published constant describe a file
+# nobody has. The document is HTML and carries no NUL, so git's heuristic would take it for text
+# and convert it on a checkout configured to; there is nothing accidental holding this one.
+# Declared at JS-3a in the change that archived it.
+src/Broiler.VM.Profile.JavaScript/docs/specification/*.html binary
+
 *.png                     binary

@@ -114,8 +114,41 @@ release-facing statement and not a housekeeping edit. Both profile roadmaps carr
 milestone item. This section exists so that the confirmation has something specific to confirm
 against, rather than a reader inferring the scope from a sentence that does not state it.
 
-**Ingesting components, as of 2026-08-31: none.** This list is empty and is expected to gain
-entries; an entry names the component, what it ingests, and the date the scoping was confirmed.
+**Ingesting components.** An entry names the component, what it ingests, and the date the scoping
+was confirmed.
+
+| Component | What it ingests | Confirmed |
+|---|---|---|
+| `Broiler.VM.Profile.JavaScript` | **The ECMAScript Language Specification, ECMA-262, 17th edition (ES2026)**, one file, retained at [`src/Broiler.VM.Profile.JavaScript/docs/specification/`](src/Broiler.VM.Profile.JavaScript/docs/specification/README.md) | 2026-09-03 |
+
+**What that entry is and what it is not.** It is a **normative reference document**, archived
+because roadmap section 24 asks for the pinned edition to be retrieved, hashed **and archived**,
+and because a digest is only checkable by a reader who has the bytes. It is **not code**, nothing
+is derived from it, no line of it is copied into any assembly, and it compiles into nothing.
+
+**The opening sentence of this file is unaffected, and here is the mechanism rather than the
+assertion.** The claim is scoped to the three packable assemblies. The archived document is under
+`src/Broiler.VM.Profile.JavaScript/docs/`, which is documentation: no project includes it, no
+assembly embeds it, and rule **K4** asserts that a published composition's closure contains exactly
+the composition, the three core assemblies and the profile assemblies its register row declares —
+so a document that reached a shipped image would fail that rule rather than survive as a missing
+row here. **Confirmed by the release owner on 2026-09-03**, and, as everywhere else in this file,
+**the co-signature is not independent**: the owner and the co-signer are one person.
+
+**Licence, stated because an attribution obligation discovered at a publish is a stop.** The
+`tc39/ecma262` repository licenses its natural-language text under the **Alternative copyright
+notice of the Ecma text copyright policy**, which grants permission "to copy, modify, prepare
+derivative works of, and distribute this work… for any purpose and without fee or royalty" on three
+conditions. All three are met in the change that archived the document: the **full notice text** is
+retained beside it at
+[`ECMA-alternative-copyright-notice.txt`](src/Broiler.VM.Profile.JavaScript/docs/specification/ECMA-alternative-copyright-notice.txt)
+rather than linked — a licence condition met by somebody else's uptime is not met; the document's
+**own pre-existing notices are intact**, because it is byte-for-byte unmodified, which its SHA-256
+attests; and the **notice of changes** required by condition (iii) records that there are none,
+which is a different statement from omitting it.
+
+Broiler.VM includes material copied from the ECMAScript Language Specification, ECMA-262,
+17th edition (ES2026). Copyright © Ecma International.
 
 **One obligation moved inside this repository on 2026-08-31 and is recorded here rather than
 left to be discovered.** The JavaScript profile's snapshot copy of an Apache-2.0 engine now lands
