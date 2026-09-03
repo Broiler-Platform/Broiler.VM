@@ -25,19 +25,23 @@ public sealed class RetainedSuitePinRuleTests
     [Fact]
     public void N15_The_Retained_Pin_Says_The_Same_Thing_In_Three_Places()
     {
-        Assert.Empty(ArchitectureRules.N15(Pin(), Document(DecisionPath), Document(LedgerPath)));
+        Assert.Empty(ArchitectureRules.N15(
+            Pin(), Document(DecisionPath), Document(LedgerPath), ArchiveDigest()));
 
-        // Non-vacuous: the rule compares parsed values against text, so a pin file that stopped
-        // declaring them would make every clause free.
-        Assert.Equal(8, Pin().Count);
+        // Non-vacuous: the rule compares parsed values against text and against bytes, so a pin
+        // file that stopped declaring them - or an archive that had gone - would make its clauses
+        // free rather than false.
+        Assert.Equal(9, Pin().Count);
         Assert.Equal("test262", Pin()["suite"]);
-        Assert.Equal("no", Pin()["archived"]);
+        Assert.Equal("yes", Pin()["archived"]);
+        Assert.NotNull(ArchiveDigest());
 
         Assert.Contains(
             ArchitectureRules.N15(
                 new Dictionary<string, string>(StringComparer.Ordinal) { ["suite"] = "test262" },
                 Document(DecisionPath),
-                Document(LedgerPath)),
+                Document(LedgerPath),
+                ArchiveDigest()),
             violation => violation.Contains("quantifying over nothing", StringComparison.Ordinal));
     }
 
@@ -52,7 +56,7 @@ public sealed class RetainedSuitePinRuleTests
             };
 
             var violations = ArchitectureRules.N15(
-                moved, Document(DecisionPath), Document(LedgerPath)).ToArray();
+                moved, Document(DecisionPath), Document(LedgerPath), ArchiveDigest()).ToArray();
 
             Assert.Contains(violations, violation => violation.Contains(
                 $"the decision record does not name the pinned {key}", StringComparison.Ordinal));
@@ -67,24 +71,67 @@ public sealed class RetainedSuitePinRuleTests
     {
         // The suite is retrieved and hashed and not archived, so the ledger has to say which of
         // the three actions is outstanding. Both directions, because the field can move.
-        var claimsArchived = new Dictionary<string, string>(Pin(), StringComparer.Ordinal)
+        var claimsUnarchived = new Dictionary<string, string>(Pin(), StringComparer.Ordinal)
         {
-            ["archived"] = "yes",
+            ["archived"] = "no",
         };
 
-        Assert.Contains(
-            ArchitectureRules.N15(claimsArchived, Document(DecisionPath), Document(LedgerPath)),
-            violation => violation.Contains(
-                "still says it is not", StringComparison.Ordinal));
-
+        // The suite IS archived, so the direction that can still be wrong in the ledger is a line
+        // naming this revision that says it is not.
         Assert.Contains(
             ArchitectureRules.N15(
                 Pin(),
                 Document(DecisionPath),
-                "a ledger naming " + Pin()["revision"] + " and " + Pin()["content-sha256"] +
-                " and saying nothing about what is outstanding"),
+                Document(LedgerPath) + "\nthis pin at " + Pin()["revision"] + " is not archived",
+                ArchiveDigest()),
             violation => violation.Contains(
-                "says which of the three actions is outstanding", StringComparison.Ordinal));
+                "still says it is not", StringComparison.Ordinal));
+
+        // And the other direction, which is the state this pin was in for an hour: a pin saying
+        // nothing is archived while an archive sits beside it.
+        var violations = ArchitectureRules.N15(
+            claimsUnarchived, Document(DecisionPath), Document(LedgerPath), ArchiveDigest()).ToArray();
+
+        Assert.Contains(violations, violation => violation.Contains(
+            "an archive is retained beside the pin", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void N15_Rejects_An_Archive_That_Is_Not_The_One_The_Pin_Names()
+    {
+        // 56,560 files reduced to one archive, and the digest is the only thing between that
+        // archive and every figure published from it.
+        Assert.Contains(
+            ArchitectureRules.N15(
+                Pin(), Document(DecisionPath), Document(LedgerPath), archiveDigest: null),
+            violation => violation.Contains("and no file is there", StringComparison.Ordinal));
+
+        Assert.Contains(
+            ArchitectureRules.N15(
+                Pin(), Document(DecisionPath), Document(LedgerPath), new string('a', 64)),
+            violation => violation.Contains(
+                "the archived suite hashes to", StringComparison.Ordinal));
+    }
+
+    /// <summary>The SHA-256 of the archived suite, or null where nothing is retained.</summary>
+    /// <remarks>
+    /// Hashed here from the bytes rather than taken from anywhere: a check reading the digest from
+    /// a manifest beside the file would be comparing two copies of one claim.
+    /// </remarks>
+    private static string? ArchiveDigest()
+    {
+        if (!Pin().TryGetValue("archived-at", out var relative))
+        {
+            return null;
+        }
+
+        var path = Path.Combine(
+            ComponentGraph.Root, relative.Replace('/', Path.DirectorySeparatorChar));
+
+        return File.Exists(path)
+            ? Convert.ToHexString(
+                System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(path)))
+            : null;
     }
 
     /// <summary>

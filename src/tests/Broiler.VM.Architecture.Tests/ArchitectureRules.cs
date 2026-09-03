@@ -1424,9 +1424,11 @@ internal static class ArchitectureRules
     internal static IEnumerable<string> N15(
         IReadOnlyDictionary<string, string> pin,
         string decisionRecord,
-        string ledger)
+        string ledger,
+        string? archiveDigest)
     {
-        string[] required = ["suite", "upstream", "revision", "content-sha256", "archived"];
+        string[] required =
+            ["suite", "upstream", "revision", "archive-sha256", "content-sha256", "archived"];
         var missing = required.Where(key => !pin.ContainsKey(key)).ToArray();
 
         if (missing.Length != 0)
@@ -1476,6 +1478,29 @@ internal static class ArchitectureRules
             yield return
                 "the retained pin says the suite is archived and a ledger line naming its " +
                 "revision still says it is not";
+        }
+
+        // THE CLAUSE ARCHIVING MADE POSSIBLE, and for this material it matters more than it did
+        // for the specification. The suite is 56,560 files reduced to one archive, and the only
+        // thing standing between that archive and the figures published from it is the digest -
+        // so the digest is compared against the bytes rather than against another copy of itself.
+        if (archived && archiveDigest is null)
+        {
+            yield return
+                $"the retained pin says the suite is archived at `{pin.GetValueOrDefault("archived-at", "(nowhere named)")}` " +
+                "and no file is there";
+        }
+        else if (archived &&
+            !string.Equals(archiveDigest, pin["archive-sha256"], StringComparison.OrdinalIgnoreCase))
+        {
+            yield return
+                $"the archived suite hashes to `{archiveDigest}` and the retained pin names " +
+                $"`{pin["archive-sha256"]}`";
+        }
+        else if (!archived && archiveDigest is not null)
+        {
+            yield return
+                "an archive is retained beside the pin and the pin says the suite is not archived";
         }
     }
 

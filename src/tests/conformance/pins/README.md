@@ -39,9 +39,12 @@ still reports `MissingSuiteRevision`.
 | `files` | The count, checked beside the digest: a digest says two things differ, a count says how |
 | `archived` | Whether anybody holds the material. **`no` today** |
 
-**No suite content is here and none may be.** test262 at the pinned revision is 232 MB over 56,560
-files; what is retained is the pin, the licence, and the record of how the pin was taken. Archiving
-the material is a further human action, and `archived` is the field that would say so.
+**The suite is here, as the archive it was retrieved as.** One file of 9,487,173 bytes whose
+SHA-256 is the pin's `archive-sha256`, which extracts to the 56,560 files `content-sha256` is over.
+The extracted form is 232 MB and was not chosen: this repository packs to a few megabytes, and one
+file at four per cent of the size carries the same evidence — that the digest can be checked in a
+checkout with no network. Rule **N15** hashes it against the pin on every run of the architecture
+suite.
 
 ## How this pin was taken
 
@@ -57,13 +60,14 @@ curl -sSL -o t262.tar.gz https://codeload.github.com/tc39/test262/tar.gz/ccaac10
 ## Licence
 
 test262 is © 2012 Ecma International under the **BSD 3-Clause** terms retained here as
-[`test262-LICENSE.txt`](test262-LICENSE.txt). **This repository redistributes no part of the suite
-except that licence file**, so its conditions are met trivially and in advance: the day a suite
-file does land here, the notice it would need is already in the tree rather than being discovered
-at a publish.
+[`test262-LICENSE.txt`](test262-LICENSE.txt), which is condition 1 of that licence met by the
+copy rather than by a link. **The suite is unmodified** — it is the archive as retrieved, and its
+SHA-256 is what says so — so there is no modified file to mark.
 
-The attribution row roadmap section 14 defers to "the change that first ingests a suite file" is
-**not** discharged by this change, because this change ingests none. What has expired is the reason
-that row could not be *written*: [JSC-30](../../../Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-30)
-deferred it because an attribution for material nobody had retrieved would be an attribution for
-material nobody had read, and the material has now been retrieved, hashed and read.
+**The attribution row roadmap section 14 defers to "the change that first ingests a suite file" is
+discharged**, in the change that archived the suite, which is that change.
+[`THIRD_PARTY_NOTICES.md`](../../../../THIRD_PARTY_NOTICES.md) carries the row with the scoping
+confirmation and the release owner's non-independent co-signature.
+[JSC-30](../../../Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-30) deferred it
+because an attribution for material nobody had retrieved would be an attribution for material
+nobody had read; the material is now retrieved, hashed, read and held.

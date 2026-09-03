@@ -17,9 +17,12 @@
 # fresh directory and hashed independently of the first, which is what makes `content-sha256` a
 # reading rather than a copy of an earlier reading.
 #
-# WHAT IS NOT HERE. The suite itself: 232 megabytes over 56,560 files, separately licensed under
-# the BSD 3-Clause terms retained beside this file. Archiving it is a further human action and
-# `archived` below is what says whether it has happened.
+# WHAT IS HERE, SINCE 2026-09-03. The suite, as the archive it was retrieved as: one file of
+# 9,487,173 bytes hashing to `archive-sha256` below, which extracts to the 56,560 files
+# `content-sha256` is over. The extracted form is 232 megabytes and was not chosen: this repository
+# packs to a few megabytes and one file at four per cent of the size carries the same evidence,
+# which is that a reader can check the digest without asking a network. It is separately licensed
+# under the BSD 3-Clause terms retained beside this file.
 
 suite test262
 upstream tc39/test262
@@ -28,4 +31,5 @@ archive https://codeload.github.com/tc39/test262/tar.gz/ccaac100ff49d81e9ff47a75
 archive-sha256 f58ce79141529c9fa33592e22ff3ff0d83b83830ac8e372ecd32e1623db1c040
 content-sha256 46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93
 files 56560
-archived no
+archived yes
+archived-at src/tests/conformance/pins/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e.tar.gz

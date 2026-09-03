@@ -76,4 +76,10 @@ src/tests/cli/encoding/*.js binary
 # Declared at JS-3a in the change that archived it.
 src/Broiler.VM.Profile.JavaScript/docs/specification/*.html binary
 
+# THE ARCHIVED CONFORMANCE SUITE, for the same reason and one more. Its SHA-256 is the
+# `archive-sha256` of the retained pin and rule N15 hashes the file against it, so a byte of
+# conversion breaks a check rather than passing quietly - and gzip carries no NUL guarantee either
+# way, so nothing accidental is holding it. Declared at JS-3a in the change that archived it.
+src/tests/conformance/pins/*.tar.gz binary
+
 *.png                     binary

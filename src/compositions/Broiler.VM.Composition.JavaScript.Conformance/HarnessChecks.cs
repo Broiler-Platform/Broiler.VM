@@ -357,7 +357,8 @@ internal static class HarnessChecks
                 string.Equals(pin.Revision, "abc123", StringComparison.Ordinal) &&
                 string.Equals(pin.ContentDigest, "def456", StringComparison.Ordinal) &&
                 pin.Files == 7 &&
-                !pin.Archived,
+                pin.Archived &&
+                string.Equals(pin.ArchivedAt, "somewhere/a-suite.tar.gz", StringComparison.Ordinal),
             pin is null
                 ? "the sample pin was refused: " + string.Join("; ", complaints)
                 : pin.Describe());
@@ -389,30 +390,53 @@ internal static class HarnessChecks
 
         // `archived pending` is the shape that would overclaim under a reader testing for
         // "anything but no", so the field is read as one of two words.
-        _ = ReadRetained(SamplePin.Replace("archived no", "archived pending", StringComparison.Ordinal), out var vague);
+        _ = ReadRetained(SamplePin.Replace("archived yes", "archived pending", StringComparison.Ordinal), out var vague);
         refused += vague.Count != 0 ? 1 : 0;
+
+        // AND THE CONDITIONAL KEY, IN BOTH DIRECTIONS. A pin saying the material is archived and
+        // not saying where has moved the search rather than ended it; one naming a path while
+        // saying nothing is archived is describing a state one of its own fields does not believe
+        // in. Neither is picked as the winner.
+        _ = ReadRetained(
+            string.Join('\n', SamplePin.Split('\n').Where(static line =>
+                !line.StartsWith("archived-at", StringComparison.Ordinal))),
+            out var nowhere);
+
+        refused += nowhere.Count != 0 ? 1 : 0;
+
+        _ = ReadRetained(
+            SamplePin.Replace("archived yes", "archived no", StringComparison.Ordinal),
+            out var contradictory);
+
+        refused += contradictory.Count != 0 ? 1 : 0;
 
         return (
             "a-retained-pin-missing-anything-is-refused-rather-than-defaulted",
-            refused == 4,
-            $"{refused} of 4 malformed pins were refused: a missing key, an unknown key, no " +
-            "header, and an archived field that is neither yes nor no");
+            refused == 6,
+            $"{refused} of 6 malformed pins were refused: a missing key, an unknown key, no " +
+            "header, an archived field that is neither yes nor no, an archive with no path, and a " +
+            "path with no archive");
     }
 
     private static (string, bool, string) ASuiteThatIsNotThePinnedOneDisagreesOnEveryCountItCan()
     {
         var pin = ReadRetained(SamplePin, out _)!;
 
-        var agrees = pin.Disagrees(new SuiteRevision("a-suite", "def456"), 7);
-        var elsewhere = pin.Disagrees(new SuiteRevision("another-suite", "999"), 3);
-        var unpinned = pin.Disagrees(new SuiteRevision("a-suite", string.Empty), 7);
+        // OVER COMPUTED BYTES AND NOT OVER WHAT A CHECKOUT SAYS ABOUT ITSELF. A suite carrying no
+        // pin of its own is the normal case for third-party material and must verify, so the
+        // name is the retained pin's to supply and only the digest and the count are compared.
+        var agrees = pin.Disagrees("def456", 7);
+        var elsewhere = pin.Disagrees("999", 3);
+        var sameCount = pin.Disagrees("999", 7);
 
         return (
             "a-suite-that-is-not-the-pinned-one-is-refused-on-every-count-it-can-be",
-            agrees.Count == 0 && elsewhere.Count == 3 && unpinned.Count == 1,
-            $"the pinned suite raises {agrees.Count} complaints, a different one raises " +
-            $"{elsewhere.Count} - name, digest and file count - and one carrying no revision of " +
-            $"its own raises {unpinned.Count}");
+            agrees.Count == 0 && elsewhere.Count == 2 && sameCount.Count == 1 &&
+                string.Equals(pin.AsRevision().Revision, pin.ContentDigest, StringComparison.Ordinal) &&
+                pin.AsRevision().IsPinned,
+            $"the pinned content raises {agrees.Count} complaints, different content raises " +
+            $"{elsewhere.Count} - digest and file count - and different bytes at the same count " +
+            $"raise {sameCount.Count}; a run under the pin reports it as the revision");
     }
 
     /// <summary>A retained pin, written out here rather than read off disk.</summary>
@@ -427,7 +451,8 @@ internal static class HarnessChecks
             "archive-sha256 0123",
             "content-sha256 def456",
             "files 7",
-            "archived no");
+            "archived yes",
+            "archived-at somewhere/a-suite.tar.gz");
 
     /// <summary>Reads pin text through the real reader, which takes a path.</summary>
     private static RetainedSuitePin? ReadRetained(string text, out IReadOnlyList<string> complaints)
