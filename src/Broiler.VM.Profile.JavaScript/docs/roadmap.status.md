@@ -427,9 +427,27 @@ suite because that is the only instrument here that can hold them: no file of te
 slice writes to a binding in its dead zone or carries dead code after a terminator, since those
 cases live behind an assertion prelude this manifest admits no call to load.
 
-**One shape is still refused, and it is the one the compiler's remark named before any of this
-began**: a loop with no exit at all, where everything after it is unreachable including the
-program's own tail, and suppressing a tail would leave a function with no terminator.
+**And the shape that was called the format's answer three times is repaired too** *(corrected:
+[JSC-65](roadmap.corrections.md#jsc-65))*. A loop nothing can leave makes everything after it
+unreachable including the program's tail, and suppressing a tail was said to leave a function with
+no terminator. **The verifier's rule is that every REACHABLE PATH ends in a return, and such a loop
+has no path that ends at all** — the code finishes on a backward jump rather than by falling off the
+end. The sentence was true of every other way of reaching the end and not of this one, and the
+difference went unchecked through two repairs of its neighbours. `for (;;) { var x = 1; }` now runs
+until it spends its allowance, which is what an infinite loop is.
+
+**It needed a second repair to work, and that one is the interesting half.** `while (true)` emitted
+a `JumpIfFalse` past the loop that no execution takes; once the tail was suppressed its target sat
+past the end of the code and the verifier refused the jump target instead — a different diagnostic
+for the same mistake. **A test that can never be false is not a branch.**
+
+**One retained artifact changed bytes, the first in this whole sequence.**
+`source-break-leaves-the-loop` lost a test and a branch; **its recorded answer is unchanged at `3`**
+and the replay confirms it. An artifact whose bytes move without its answer moving is exactly the
+event the corpus manifest exists to make visible.
+
+**All three unreachable-code shapes are repaired.** The directory that pinned them was called
+`known-defects`; it holds none.
 
 ### What this component is not claiming
 
