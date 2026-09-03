@@ -1,0 +1,194 @@
+# The end-user host over test262, 2026-09-03, win-x64.
+#
+# THE HOST TAKES A PATH AND KEEPS NO COPY, and no suite file is in this repository. The suite was
+# retrieved to a temporary directory outside the checkout, read, and left there; this log holds
+# counts, this profile's own diagnostic codes, and suite-relative PATHS - no suite content.
+#
+#   source   https://codeload.github.com/tc39/test262/tar.gz/<ref>
+#   ref      ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+#   tarball  9,487,173 bytes
+#   sha256   f58ce79141529c9fa33592e22ff3ff0d83b83830ac8e372ecd32e1623db1c040
+#
+# THIS IS NOT A CONFORMANCE SCORE AND NOT A PIN. The host compares nothing against a declared
+# expectation - it has no self-check, no per-host-mode totals and no ratchet, which is the
+# section 14 harness and a different composition. And retrieving, hashing and archiving a suite as
+# EVIDENCE is the human action the ledger's section 3 records as open: a tarball fetched into a
+# temporary directory for one sweep is not that action, so nothing here closes it.
+#
+# Command: Broiler.VM.Composition.JavaScript.Cli --fuel 2000000 <the suite's test directory>
+#
+# The full transcript is 53,469 rows and is not retained. What follows is the distribution, then
+# EVERY row of the three outcomes that are not the ordinary one, then the completions.
+
+# files read: 53469
+# 53469 files
+# Completed: 103
+# RefusedSource: 53337
+# Exhausted: 16
+# RefusedArtifact: 13
+
+# every refusal by this profile's own diagnostic code, most frequent first
+# count|code
+51125|2104:ConstructOutsideManifest
+598|2001:UnexpectedCharacter
+560|2205:InvalidAssignmentTarget
+549|2102:ExpectedToken
+212|2101:UnexpectedToken
+207|2206:UnresolvableIdentifier
+21|2003:MalformedNumericLiteral
+19|2006:UnterminatedRegularExpression
+18|2004:UnterminatedStringLiteral
+12|2005:UnknownEscapeSequence
+3|2209:ReservedWordAsBinding
+3|2207:IllegalBreak
+3|2203:ConstWithoutInitialiser
+2|2002:UnterminatedComment
+2|2201:DuplicateLexicalDeclaration
+2|2103:NestingTooDeep
+1|2202:VarAndLexicalCollision
+
+# EVERY ARTIFACT REFUSAL. Each is a defect in THIS COMPONENT: the lowering produced
+# bytes its own verifier refused. All thirteen are `for (...) { break; }`.
+# ARTIFACT: 13
+test/language/asi/S7.9_A6.1_T1.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
+test/language/asi/S7.9_A6.1_T10.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
+test/language/asi/S7.9_A6.1_T11.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
+test/language/asi/S7.9_A6.1_T12.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
+test/language/asi/S7.9_A6.1_T13.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
+test/language/asi/S7.9_A6.1_T2.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
+test/language/asi/S7.9_A6.1_T3.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
+test/language/asi/S7.9_A6.1_T4.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
+test/language/asi/S7.9_A6.1_T5.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
+test/language/asi/S7.9_A6.1_T6.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
+test/language/asi/S7.9_A6.1_T7.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
+test/language/asi/S7.9_A6.1_T8.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
+test/language/asi/S7.9_A6.1_T9.js  the verifier refused an artifact this host produced: UnreachableCode (InvalidArtifact/InconsistentStructure)
+
+# EVERY EXHAUSTION. Verification is charged work, and these files are large enough
+# that verifying them spent the 2,000,000-instruction allowance this sweep passed.
+# Not a defect and not a property of the language.
+# unbound: 16
+test/language/identifiers/start-unicode-10.0.0-escaped.js  verifying the artifact spent the allowance: AllowanceExhausted
+test/language/identifiers/start-unicode-11.0.0-escaped.js  verifying the artifact spent the allowance: AllowanceExhausted
+test/language/identifiers/start-unicode-12.0.0-escaped.js  verifying the artifact spent the allowance: AllowanceExhausted
+test/language/identifiers/start-unicode-13.0.0-escaped.js  verifying the artifact spent the allowance: AllowanceExhausted
+test/language/identifiers/start-unicode-14.0.0-escaped.js  verifying the artifact spent the allowance: AllowanceExhausted
+test/language/identifiers/start-unicode-15.0.0-escaped.js  verifying the artifact spent the allowance: AllowanceExhausted
+test/language/identifiers/start-unicode-15.1.0-escaped.js  verifying the artifact spent the allowance: AllowanceExhausted
+test/language/identifiers/start-unicode-16.0.0-escaped.js  verifying the artifact spent the allowance: AllowanceExhausted
+test/language/identifiers/start-unicode-17.0.0-escaped.js  verifying the artifact spent the allowance: AllowanceExhausted
+test/language/identifiers/start-unicode-5.2.0-escaped.js  verifying the artifact spent the allowance: AllowanceExhausted
+test/language/identifiers/start-unicode-6.0.0-escaped.js  verifying the artifact spent the allowance: AllowanceExhausted
+test/language/identifiers/start-unicode-6.1.0-escaped.js  verifying the artifact spent the allowance: AllowanceExhausted
+test/language/identifiers/start-unicode-7.0.0-escaped.js  verifying the artifact spent the allowance: AllowanceExhausted
+test/language/identifiers/start-unicode-8.0.0-escaped.js  verifying the artifact spent the allowance: AllowanceExhausted
+test/language/identifiers/start-unicode-9.0.0-escaped.js  verifying the artifact spent the allowance: AllowanceExhausted
+test/language/reserved-words/unreserved-words.js  verifying the artifact spent the allowance: AllowanceExhausted
+
+# EVERY COMPLETION. Suite files whose bodies happen to lie inside this manifest, run as
+# programs. The host prepends no harness, so these are not passing conformance tests -
+# they are files this host could execute.
+# ok: 103
+test/language/asi/S7.9.2_A1_T2.js  3
+test/language/asi/S7.9_A10_T7.js  2
+test/language/asi/S7.9_A10_T9.js  3
+test/language/asi/S7.9_A7_T1.js  undefined
+test/language/asi/S7.9_A7_T2.js  undefined
+test/language/asi/S7.9_A7_T3.js  1
+test/language/asi/S7.9_A7_T4.js  undefined
+test/language/asi/S7.9_A7_T5.js  undefined
+test/language/asi/S7.9_A7_T6.js  undefined
+test/language/asi/S7.9_A7_T8.js  undefined
+test/language/asi/S7.9_A7_T9.js  undefined
+test/language/asi/S7.9_A8_T1.js  undefined
+test/language/asi/S7.9_A8_T2.js  undefined
+test/language/asi/S7.9_A8_T3.js  undefined
+test/language/asi/S7.9_A8_T4.js  1
+test/language/asi/S7.9_A8_T5.js  1
+test/language/asi/S7.9_A9_T1.js  undefined
+test/language/asi/S7.9_A9_T2.js  true
+test/language/asi/S7.9_A9_T5.js  undefined
+test/language/asi/S7.9_A9_T9.js  undefined
+test/language/block-scope/syntax/redeclaration/inner-block-var-name-redeclaration-attempt-with-var.js  undefined
+test/language/block-scope/syntax/redeclaration/var-name-redeclaration-attempt-with-var.js  undefined
+test/language/comments/S7.4_A1_T2.js  undefined
+test/language/comments/S7.4_A4_T2.js  undefined
+test/language/comments/S7.4_A4_T3.js  undefined
+test/language/comments/S7.4_A4_T5.js  undefined
+test/language/comments/S7.4_A4_T6.js  undefined
+test/language/comments/S7.4_A4_T7.js  undefined
+test/language/comments/multi-line-asi-carriage-return.js  undefined
+test/language/comments/multi-line-asi-line-feed.js  undefined
+test/language/comments/multi-line-asi-line-separator.js  undefined
+test/language/comments/multi-line-asi-paragraph-separator.js  undefined
+test/language/expressions/dynamic-import/catch/empty_FIXTURE.js  undefined
+test/language/expressions/dynamic-import/empty_FIXTURE.js  undefined
+test/language/expressions/dynamic-import/namespace/empty_FIXTURE.js  undefined
+test/language/expressions/dynamic-import/syntax/valid/empty_FIXTURE.js  undefined
+test/language/future-reserved-words/abstract.js  undefined
+test/language/future-reserved-words/boolean.js  undefined
+test/language/future-reserved-words/byte.js  undefined
+test/language/future-reserved-words/char.js  undefined
+test/language/future-reserved-words/double.js  undefined
+test/language/future-reserved-words/final.js  undefined
+test/language/future-reserved-words/float.js  undefined
+test/language/future-reserved-words/goto.js  undefined
+test/language/future-reserved-words/implements.js  undefined
+test/language/future-reserved-words/int.js  undefined
+test/language/future-reserved-words/interface.js  undefined
+test/language/future-reserved-words/long.js  undefined
+test/language/future-reserved-words/native.js  undefined
+test/language/future-reserved-words/package.js  undefined
+test/language/future-reserved-words/private.js  undefined
+test/language/future-reserved-words/protected.js  undefined
+test/language/future-reserved-words/public.js  undefined
+test/language/future-reserved-words/short.js  undefined
+test/language/future-reserved-words/synchronized.js  undefined
+test/language/future-reserved-words/throws.js  undefined
+test/language/future-reserved-words/transient.js  undefined
+test/language/future-reserved-words/volatile.js  undefined
+test/language/global-code/decl-lex-restricted-global.js  undefined
+test/language/identifiers/other_id_continue-escaped.js  undefined
+test/language/identifiers/other_id_start-escaped.js  undefined
+test/language/identifiers/part-unicode-10.0.0-escaped.js  undefined
+test/language/identifiers/part-unicode-11.0.0-escaped.js  undefined
+test/language/identifiers/part-unicode-12.0.0-escaped.js  undefined
+test/language/identifiers/part-unicode-13.0.0-escaped.js  undefined
+test/language/identifiers/part-unicode-14.0.0-escaped.js  undefined
+test/language/identifiers/part-unicode-15.0.0-escaped.js  undefined
+test/language/identifiers/part-unicode-15.1.0-escaped.js  undefined
+test/language/identifiers/part-unicode-16.0.0-escaped.js  undefined
+test/language/identifiers/part-unicode-17.0.0-escaped.js  undefined
+test/language/identifiers/part-unicode-5.2.0-escaped.js  undefined
+test/language/identifiers/part-unicode-6.0.0-escaped.js  undefined
+test/language/identifiers/part-unicode-6.1.0-escaped.js  undefined
+test/language/identifiers/part-unicode-7.0.0-escaped.js  undefined
+test/language/identifiers/part-unicode-8.0.0-escaped.js  undefined
+test/language/identifiers/part-unicode-9.0.0-escaped.js  undefined
+test/language/module-code/ambiguous-export-bindings/namespace-empty-module_FIXTURE.js  undefined
+test/language/module-code/instn-iee-err-not-found-empty_FIXTURE.js  undefined
+test/language/module-code/instn-local-bndng-for-dup.js  undefined
+test/language/module-code/instn-local-bndng-var-dup.js  undefined
+test/language/module-code/instn-named-err-not-found-empty_FIXTURE.js  undefined
+test/language/module-code/instn-resolve-order-src-valid_FIXTURE.js  undefined
+test/language/module-code/instn-star-err-not-found-empty_FIXTURE.js  undefined
+test/language/module-code/top-level-await/dynamic-import-of-waiting-module-2_FIXTURE.js  undefined
+test/language/reserved-words/await-script.js  undefined
+test/language/statementList/block-block.js  undefined
+test/language/statementList/block-let-declaration.js  42
+test/language/statements/const/global-use-before-initialization-in-declaration-statement.js  undefined
+test/language/statements/const/global-use-before-initialization-in-prior-statement.js  undefined
+test/language/statements/empty/S12.3_A1.js  undefined
+test/language/statements/if/empty-statement.js  undefined
+test/language/statements/let/global-use-before-initialization-in-declaration-statement.js  undefined
+test/language/statements/let/global-use-before-initialization-in-prior-statement.js  undefined
+test/language/statements/variable/arguments-non-strict.js  undefined
+test/language/statements/variable/eval-non-strict.js  undefined
+test/language/types/number/S8.5_A10_T1.js  undefined
+test/language/types/number/S8.5_A4_T1.js  undefined
+test/language/types/undefined/S8.1_A3_T1.js  undefined
+test/language/types/undefined/S8.1_A3_T2.js  undefined
+test/staging/sm/expressions/optional-chain-first-expression-module_FIXTURE.js  undefined
+test/staging/sm/misc/redeclare-var-non-writable-property.js  undefined
+test/staging/sm/module/bug1488117-empty_FIXTURE.js  undefined
+test/staging/sm/strict/8.7.2-01.js  1

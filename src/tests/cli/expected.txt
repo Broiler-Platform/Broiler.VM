@@ -52,3 +52,16 @@ missing/nothing-here.js|6|no file or directory at
 # clean run into failure - it simply dominates it, because the caller has to know something
 # was refused.
 runs/a-product.js refused/a-string-value.js|3|RefusedSource: 1
+
+# KNOWN DEFECTS, PINNED SO THE REPAIR IS DETECTABLE. These three are ordinary JavaScript that this
+# host cannot run: the lowering emits a loop's update and back-edge even when a body that always
+# breaks means nothing reaches them, and its own verifier then refuses the artifact as
+# 1411:UnreachableCode. Exit 4 is the code that accuses this component, and it is the right code.
+#
+# THIRTEEN FILES OF test262 FAIL EXACTLY THIS WAY and every one is `for (...) { break; }`, which
+# is NOT the shape the compiler's own remark named until JSC-58 corrected it. When the defect is
+# repaired these rows must move from exit 4 to exit 0 and this suite will go red until they do -
+# which is what a characterisation case is for.
+known-defects/a-loop-whose-body-always-breaks.js|4|1411:UnreachableCode
+known-defects/a-while-true-whose-body-always-breaks.js|4|1411:UnreachableCode
+known-defects/a-loop-with-no-exit-at-all.js|4|1411:UnreachableCode

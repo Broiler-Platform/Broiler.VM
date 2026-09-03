@@ -255,14 +255,15 @@ manifest, which is what a reader of this table wants to know about. **Whether 64
 default for a host is not decided by this row**; it now has a measurement behind it and still needs
 an owner.
 
-**The test262 row could not be re-derived on 2026-09-03 and was not.** The Octane checkout the
-first census read is still on the machine that read it; the test262 checkout is not. Its figures
-stand as first recorded and **nothing in this ledger reproduces them**, which is a weaker position
-than the Octane row's and is stated rather than left to be discovered. Neither body of code is in
-this repository and neither may be: a census takes a path, and retrieving, hashing and archiving is
-the human action section 3 records as open. **A figure nobody can currently re-derive is a scope
-input with a shorter shelf life than one anybody can**, and that is the whole of what this
-paragraph claims.
+**The test262 row was re-derived on 2026-09-03 at a named ref, and this paragraph said it could
+not be.** It could not, when it was written: the checkout the first census read was gone. One was
+then retrieved to a temporary directory at ref `ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e` and the
+census re-run — **53,469 files, 52,038 parsed, and 141 containing nothing outside the manifest**.
+The 141 matches the figure first recorded exactly; the file counts differ by 302 because the ref
+differs, and the first census's ref was never written down. **Neither body of code is in this
+repository and neither may be**: a census takes a path, the checkout was left where it was, and
+retrieving, hashing and archiving as evidence is the human action section 3 still records as open —
+a tarball fetched for one sweep performs the first two of those three and not the third.
 
 **What test262 needs, by files of fifty-three thousand:** a call (51,570), a property access
 (45,578), a string value (42,615), an object literal (26,278), a function (23,374), `new` (22,766),
@@ -283,6 +284,72 @@ that stops at the first fault measures nothing. Parsing went from 84.3 per cent 
 tests whose whole purpose is to be syntactically invalid, so some of that number is this instrument
 working; the rest is grammar this parser does not have. **Nothing here separates the two**, and a
 reader must not read 97.3 per cent as a conformance figure or the remainder as a defect count.
+
+### What running real material through the product path found, and what it did not settle
+
+**Three instruments were pointed at the same retrieved test262 checkout on 2026-09-03** — the
+end-user host, the construct census and the conformance harness — and they answer three different
+questions. Retained in [Bundle JS-3B-001](evidence/js-3b-001/README.md). **The checkout was
+retrieved to a temporary directory, read, and left there; no suite file is in this repository, no
+floor is set over any figure below, and section 3's dependency is not closed by them** — it asks
+for material retrieved, hashed **and archived**, and the third of those did not happen.
+
+**The end-user host, over 53,469 files.** This is what a person pointing the shipped tool at the
+suite sees:
+
+| Outcome | Files | What it means |
+|---|---:|---|
+| Completed | 103 | bodies that happen to lie inside this manifest, run as programs |
+| Refused at the source seam | 53,337 | of which **51,125** are `ConstructOutsideManifest` |
+| Spent the allowance | 16 | verification is charged work and these files are large |
+| **Artifact refused by this profile's own verifier** | **13** | **a defect here**, all `1411:UnreachableCode` *(corrected: [JSC-58](roadmap.corrections.md#jsc-58))* |
+
+**The thirteen are the finding.** Every one is `for (…) { break; }`, and the compiler's own remark
+named a different shape — a loop with no exit — as the one it cannot emit. A body that always
+breaks leaves the update and the back-edge unreachable, which is ordinary JavaScript and looks
+fixable in the lowering rather than being the format's answer. Three reproductions are pinned in
+the host's acceptance suite so the repair is detectable. **The repair is not done.**
+
+**The conformance harness, in the ingested dialect.** This is the first external correctness signal
+this component has had, and the column to read is the one nobody would look at:
+
+| | Selected | Executed | Passed | Failed | **Declined as unscorable** |
+|---|---:|---:|---:|---:|---:|
+| Script | 8,360 | 1,184 | 1,167 | 17 | **7,176** |
+| Module | 212 | 22 | 21 | 1 | **190** |
+
+57,421 candidates, 48,849 unselectable — almost all needing the assertion prelude this manifest
+admits no call to load — and 8,572 selected, which is the parse-and-early-error slice.
+
+**7,365 of the 7,366 declined cases were declined because the refusal was
+`ConstructOutsideManifest`**, and every one is a negative test whose declared expectation is that a
+refusal happens. **A harness comparing outcomes would have scored all 7,365 as passes and reported
+8,535 of 8,553 — 99.8 per cent.** That is the number [JSC-54](roadmap.corrections.md#jsc-54)'s rule
+exists to refuse, and this is the first time it has been measured rather than argued. What the rule
+leaves is **1,170 of 1,188 scored**.
+
+**The eighteen failures are three groups, and only two of them are gaps in this component.** Six
+are hashbang comments — `#!` opening a script, which is in the language and which this tokenizer
+does not know. Eight are the temporal dead zone: `let`/`const` used before initialisation must
+throw a runtime `ReferenceError` and this profile answers `undefined`, so the dead zone is not
+implemented. **Four are `using` declarations, and those four should not have been scored at all**:
+the construct is a proposal, the harness can filter by the suite's own feature metadata, and this
+run did not pass a filter. That is a mistake in how the run was made — and it is also the first
+concrete cost of section 3's *unpinned language edition*, because which constructs are in the
+edition is exactly what decides whether such a test applies.
+
+**Two files of the 53,469 were refused by the dialect reader and both refusals were its own
+defects** *(corrected: [JSC-59](roadmap.corrections.md#jsc-59))*: a file written with carriage
+returns alone, and a file whose whole metadata block is indented. Neither was reachable from any
+check this component wrote, because every fixture and every check used LF and a block at the
+margin. **A reader's fidelity is measured against material nobody here authored, or against its
+author's habits.**
+
+**What none of this is.** Not an accepted milestone, not a floor, not a supported claim, and not a
+conformance total anybody may quote: the pin is over a transient checkout, the language edition is
+unpinned, one run passed no feature filter, and the harness scored 1,188 cases of a suite of
+53,469. What it is, is the first time this component has been told something about itself by
+material it did not write.
 
 ### What this component is not claiming
 

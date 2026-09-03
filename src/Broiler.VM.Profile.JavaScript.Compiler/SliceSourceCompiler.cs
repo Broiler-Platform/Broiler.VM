@@ -75,10 +75,31 @@ public sealed record SliceCompilation(
 /// identity-derived value in a finished compiler, so it is preserved rather than engineered for.
 /// </para>
 /// <para>
-/// <b>One shape it cannot emit, stated because it is a real program.</b> A loop whose exit is
-/// reachable from nothing - <c>while (true) { }</c> with no <c>break</c> - lowers to a tail the
-/// verifier refuses as unreachable code. That is the format's answer rather than this lowering's,
-/// and it is a conformance exclusion the decision record carries.
+/// <b>Shapes it cannot emit, stated because they are real programs. This paragraph named one
+/// shape until 2026-09-03 and the common one was not it</b> <i>(corrected: JSC-58)</i>. What it
+/// said was that a loop whose exit is reachable from nothing - <c>while (true) { }</c> with no
+/// <c>break</c> - lowers to a tail the verifier refuses as unreachable code. True, and a sweep of
+/// a real conformance suite through the end-user host found thirteen files that fail this way and
+/// **none of them is that shape**: every one is <c>for (...) { break; }</c>, whose exit is
+/// perfectly reachable. What is unreachable there is the loop's OWN CONTINUATION - the update
+/// expression and the back-edge - because a body that always breaks never falls into them. So:
+/// <list type="bullet">
+/// <item><description>
+/// <b>A loop whose body always exits</b> leaves its update and its back-edge unreachable.
+/// <c>while (true) { break; }</c> and <c>for (var i = 0; i &lt; 3; i++) { break; }</c> are both
+/// this, and both are ordinary JavaScript. <b>This looks fixable here</b> rather than being the
+/// format's answer: the lowering would have to stop emitting once the current position is
+/// unreachable, and restore reachability at a label something branches to.
+/// </description></item>
+/// <item><description>
+/// <b>A loop with no exit at all</b> - the shape this paragraph originally named - leaves
+/// everything after it unreachable, including the program's own tail. That one may genuinely be
+/// the format's answer rather than this lowering's, because a suppressed tail is a function with
+/// no terminator.
+/// </description></item>
+/// </list>
+/// Both remain conformance exclusions the decision record carries, and the first is now a defect
+/// with a reproduction rather than a limitation with an example.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=9A3F54

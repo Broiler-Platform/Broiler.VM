@@ -1,0 +1,156 @@
+# The construct census over test262 at ref ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e, 2026-09-03.
+#
+# This RE-DERIVES the ledger test262 row, which nothing reproduced until now: the checkout the
+# first census read is gone. The 141 files containing nothing outside the manifest match the
+# figure first recorded exactly; the file counts differ by 302 because the ref differs.
+#
+# The census takes a path and keeps no copy. It is not the conformance oracle and not a score.
+#
+# broiler.javascript.slice construct census over 53469 files
+# 52038 parsed, 1431 did not, and 141 contain nothing outside the declared manifest
+# construct|files|occurrences
+Call|51283|446478
+MemberAccess|45277|452979
+StringValue|42407|485288
+ObjectLiteral|26067|262861
+Function|23229|56907
+New|22527|63937
+ArrayLiteral|17719|173925
+Return|12288|26369
+ArrowFunction|10395|20556
+Destructuring|10390|11546
+Class|8868|67355
+Generator|8356|10095
+Throw|7959|27013
+ComputedMemberAccess|7056|22848
+Null|5532|9270
+CompoundAssignment|5359|8691
+This|5250|12121
+ShorthandProperty|5077|25182
+ForOf|4463|6170
+DefaultParameter|3649|4016
+Getter|3545|5382
+Spread|3382|4052
+Update|3209|5025
+TypeOf|3199|5014
+Template|2840|6523
+Yield|2297|3612
+BigInt|2213|17304
+ComputedProperty|2078|4020
+RegularExpression|1989|6801
+Try|1873|4688
+AsyncFunction|1575|1775
+Instanceof|1445|1902
+Import|1372|1713
+Delete|1076|1436
+Await|914|2864
+Sequence|870|1077
+ForIn|564|663
+Setter|524|945
+Super|432|674
+Export|414|735
+In|401|839
+LooseEquality|398|1153
+With|370|446
+Void|277|377
+Label|226|416
+Switch|220|230
+RestParameter|191|276
+Exponentiation|136|1030
+OptionalChain|65|192
+TaggedTemplate|59|125
+NullishCoalescing|44|339
+BitwiseNot|28|176
+PrivateName|21|22
+Debugger|1|1
+# the sources that did not parse, by the first refusal each got
+UnexpectedCharacter|598
+ExpectedToken|549
+UnexpectedToken|212
+MalformedNumericLiteral|21
+UnterminatedRegularExpression|19
+UnterminatedStringLiteral|18
+UnknownEscapeSequence|12
+UnterminatedComment|2
+# how many constructs a file needs, and how many files need that many
+# constructs-needed|files
+0|141
+1|668
+2|1635
+3|3326
+4|6344
+5|7329
+6|6116
+7|6570
+8|5221
+9|4493
+10|3511
+11|2298
+12|1463
+13|1097
+14|709
+15|369
+16|249
+17|223
+18|172
+19|59
+20|34
+21|10
+23|1
+# admitting the ranked constructs in order, and what each one buys
+# rank|construct|files-newly-admissible|files-admissible-in-total
+1|Call|405|546
+2|MemberAccess|281|827
+3|StringValue|1745|2572
+4|ObjectLiteral|2426|4998
+5|Function|1188|6186
+6|New|2115|8301
+7|ArrayLiteral|1031|9332
+8|Return|1466|10798
+9|ArrowFunction|1501|12299
+10|Destructuring|216|12515
+11|Class|744|13259
+12|Generator|921|14180
+13|Throw|1752|15932
+14|ComputedMemberAccess|1876|17808
+15|Null|1899|19707
+16|CompoundAssignment|1080|20787
+17|This|1372|22159
+18|ShorthandProperty|1235|23394
+19|ForOf|1041|24435
+20|DefaultParameter|1736|26171
+21|Getter|1387|27558
+22|Spread|2182|29740
+23|Update|1527|31267
+24|TypeOf|2111|33378
+25|Template|1921|35299
+26|Yield|1073|36372
+27|BigInt|1974|38346
+28|ComputedProperty|1556|39902
+29|RegularExpression|1893|41795
+30|Try|740|42535
+31|AsyncFunction|889|43424
+32|Instanceof|1309|44733
+33|Import|782|45515
+34|Delete|845|46360
+35|Await|791|47151
+36|Sequence|762|47913
+37|ForIn|518|48431
+38|Setter|470|48901
+39|Super|401|49302
+40|Export|401|49703
+41|In|352|50055
+42|LooseEquality|375|50430
+43|With|368|50798
+44|Void|264|51062
+45|Label|226|51288
+46|Switch|215|51503
+47|RestParameter|191|51694
+48|Exponentiation|133|51827
+49|OptionalChain|58|51885
+50|TaggedTemplate|59|51944
+51|NullishCoalescing|44|51988
+52|BitwiseNot|28|52016
+53|PrivateName|21|52037
+54|Debugger|1|52038
+# 52038 of 52038 parsed files are admissible once all 54 ranked constructs are admitted

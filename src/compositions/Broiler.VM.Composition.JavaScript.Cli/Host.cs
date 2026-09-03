@@ -144,12 +144,31 @@ internal static class Host
 
         if (!verified.TryGetArtifact(out var verifiedArtifact))
         {
+            // EXHAUSTION AT VERIFICATION IS NOT AN ARTIFACT REFUSAL, and reading it as one was a
+            // defect in this reporting that a sweep of a real suite found: sixteen files of
+            // test262 are large enough that verifying them spends the allowance, and every one of
+            // them was reported under the code that accuses this component. Verification is work,
+            // it is charged, and running out of allowance while doing it is the same answer a
+            // running program gets.
+            if (verified.Outcome == VmOutcome.ResourceExhaustion)
+            {
+                return new RunResult(
+                    RunStatus.Exhausted,
+                    string.Empty,
+                    $"verifying the artifact spent the allowance: {verified.Reason}",
+                    []);
+            }
+
             // AN ARTIFACT THIS HOST'S OWN LOWERING PRODUCED AND ITS OWN VERIFIER REFUSED IS A
             // DEFECT HERE, not a property of the input, and it reports under a code that says so.
+            // The profile's diagnostic code is named rather than left to the core's reason, because
+            // the reason says the artifact was inconsistent and the code says which rule found it.
             return new RunResult(
                 RunStatus.RefusedArtifact,
                 string.Empty,
-                $"the verifier refused an artifact this host produced: {verified.Outcome}/{verified.Reason}",
+                "the verifier refused an artifact this host produced: " +
+                    $"{DiagnosticName(verified.Diagnostics.ProfileDiagnosticCode)} " +
+                    $"({verified.Outcome}/{verified.Reason})",
                 []);
         }
 
@@ -162,10 +181,21 @@ internal static class Host
 
         if (!instantiated.TryGetInstance(out var instance))
         {
+            if (instantiated.Outcome == VmOutcome.ResourceExhaustion)
+            {
+                return new RunResult(
+                    RunStatus.Exhausted,
+                    string.Empty,
+                    $"instantiating the artifact spent the allowance: {instantiated.Reason}",
+                    []);
+            }
+
             return new RunResult(
                 RunStatus.RefusedArtifact,
                 string.Empty,
-                $"the artifact verified and would not instantiate: {instantiated.Outcome}/{instantiated.Reason}",
+                "the artifact verified and would not instantiate: " +
+                    $"{DiagnosticName(instantiated.Diagnostics.ProfileDiagnosticCode)} " +
+                    $"({instantiated.Outcome}/{instantiated.Reason})",
                 []);
         }
 
@@ -237,4 +267,24 @@ internal static class Host
 
     /// <summary>Renders a number the one way this host renders numbers.</summary>
     internal static string Number(long value) => value.ToString(CultureInfo.InvariantCulture);
+
+    /// <summary>The member name of a profile diagnostic code, or the number where it has none.</summary>
+    /// <remarks>
+    /// The name and not the number, because a number sends a reader to the registry to find out
+    /// what was refused and a name tells them. A code outside the vocabulary renders as its number
+    /// rather than throwing: a host that fell over on an unrecognised code would turn a diagnostic
+    /// it could not read into a crash.
+    /// </remarks>
+    private static string DiagnosticName(int code)
+    {
+        var value = (JavaScriptDiagnosticCode)code;
+
+        // NUMBER AND NAME, in the spelling the source-refusal path already uses. The number is
+        // what the published registry is keyed on, so a reader can look the row up; the name is
+        // what makes the line readable without doing that. Printing one of the two would have
+        // made the two halves of this host's own reporting disagree about their own vocabulary.
+        return Enum.IsDefined(value)
+            ? Number(code) + ":" + value.ToString()
+            : Number(code);
+    }
 }

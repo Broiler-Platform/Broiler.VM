@@ -141,6 +141,8 @@ rather than a decision record.
 | [JSC-55](#jsc-55) | ledger §2, the construct census | Seven of the twenty-four files measured as "the Octane benchmark" are not benchmark sources, and over the seventeen that are, the thirteen highest-ranked constructs admit none | a census re-run over the same checkout |
 | [JSC-56](#jsc-56) | `docs/compositions.md` section 3; roadmap section 15; ledger section 2 | The `narrow-runtime-compiler` label is claimed by an end-user host handed source from outside its own image, which is narrower than the source surface the register said it waited on | [JSD-0017](decisions/0017-the-end-user-host-and-what-an-exit-code-promises.md) |
 | [JSC-57](#jsc-57) | ledger section 2, the construct census; roadmap section 9 | The census reads at the largest nesting bound and the shipped default is 64, so two Octane files are refused for depth before the manifest is consulted and the two documents disagree | the host run over the same checkout at both bounds |
+| [JSC-58](#jsc-58) | `SliceSourceCompiler`'s own remark; roadmap section 9; ledger section 2 | The unreachable-code exclusion named the rare shape; thirteen test262 files fail on the common one, a loop whose body always breaks | the host over test262 |
+| [JSC-59](#jsc-59) | [JSD-0016](decisions/0016-ingesting-a-third-party-suite-and-the-refusals-that-answer-nothing.md) decision 1; ledger section 2 | The dialect reader could not read a CR-only file or an indented block, and no check this component wrote could have found either | the harness over test262 |
 
 ### JSC-01
 
@@ -2135,3 +2137,96 @@ The Octane checkout stays where it is: the host takes a path and keeps no copy.
 
 **Authority and date.** `Broiler.VM.Composition.JavaScript.Cli` run over the same Octane checkout
 at both bounds, retained in [Bundle JS-3B-001](evidence/js-3b-001/README.md); 2026-09-03.
+
+---
+
+### JSC-58
+
+**Where:** `SliceSourceCompiler`'s own remark on the one shape it cannot emit; roadmap
+[section 9](roadmap.md#9-the-semantic-front-end-and-lowering); the
+[ledger](roadmap.status.md#2-current-milestone-status)'s JS-3b row.
+
+**What the record said.** "One shape it cannot emit, stated because it is a real program. A loop
+whose exit is reachable from nothing — `while (true) { }` with no `break` — lowers to a tail the
+verifier refuses as unreachable code. That is the format's answer rather than this lowering's, and
+it is a conformance exclusion the decision record carries."
+
+**What was actually true.** The sentence is true and it names the wrong shape. Sweeping test262
+through the end-user host found **thirteen files refused with `1411:UnreachableCode`, and not one
+of them is that shape**: every one is `for (…) { break; }`, whose exit is perfectly reachable —
+through the `break`, and in some of them through the test as well. What is unreachable in those is
+**the loop's own continuation**: a body that always breaks never falls into the update expression
+or the back-edge, and the lowering emits both regardless.
+
+That makes two shapes rather than one, and the common one was the unnamed one:
+
+| Shape | Unreachable | Ordinary JavaScript? |
+|---|---|---|
+| A loop whose body always exits — `while (true) { break; }`, `for (var i = 0; i < 3; i++) { break; }` | the update and the back-edge | **yes**, and 13 test262 files are this |
+| A loop with no exit at all — `for (;;) { var x = 1; }` | everything after it, **including the program's tail** | yes, and it was the only one named |
+
+**And the second half of the sentence is only right about the second shape.** "The format's answer
+rather than this lowering's" holds where suppressing the unreachable region would leave a function
+with no terminator. It does not hold for the first shape: there the lowering could stop emitting
+once the position is unreachable and resume at a label something branches to, and the program would
+verify. **The first is a defect with a reproduction, not a limitation with an example.**
+
+**What replaced it.** The remark now names both shapes and says which looks fixable here. Three
+minimal reproductions are pinned in the host's acceptance suite under `known-defects/`, declared
+with the exit code they currently answer with, **so the suite goes red when the defect is
+repaired** — which is how a characterisation case reports a fix. The repair itself is not in this
+change.
+
+**What it does not change.** Both remain conformance exclusions. No total already published moves:
+these programs never verified, so no artifact whose bytes are retained is affected, and a lowering
+that stopped emitting unreachable code would change the bytes of exactly the programs that do not
+verify today.
+
+**Authority and date.** The end-user host over test262 at ref
+`ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e`, retained in
+[Bundle JS-3B-001](evidence/js-3b-001/README.md); 2026-09-03.
+
+---
+
+### JSC-59
+
+**Where:** [JSD-0016](decisions/0016-ingesting-a-third-party-suite-and-the-refusals-that-answer-nothing.md)
+decision 1 and the dialect reader it records; the
+[ledger](roadmap.status.md#2-current-milestone-status)'s JS-3a row.
+
+**What the record said.** The ingested dialect is read "as written", by a reader that handles the
+shapes the dialect actually uses and refuses what it does not recognise rather than skipping it.
+Seventeen harness checks covered nested mappings, folded and literal block scalars, both list
+spellings, unknown flags, unknown phases and eight malformed blocks.
+
+**What was actually true.** Pointed at 53,469 real suite files the reader refused **two**, and both
+refusals were its own defects rather than the files':
+
+- **A file written with carriage returns alone.** The reader normalised `\r\n` and split on `\n`,
+  so a CR-only file was one line, no key was found, and it reported that the file *declared no
+  description*. The file whose subject is line-terminator normalisation is written in CR
+  deliberately, which is the joke at the reader's expense: the one file in the suite most likely to
+  use an unusual terminator does.
+- **A file whose whole metadata block is indented.** The check for a top-level key compared
+  indentation against column zero, so a block indented as a unit — legal, and one file does it —
+  had every key reported as *indented under no key*.
+
+**Neither was reachable from a check this component wrote**, and that is the part worth recording.
+Both hand-written fixtures and both harness checks used LF and a block at the margin, because that
+is what somebody writing a fixture writes. **A dialect reader's fidelity is measured against
+material nobody here authored, or it is measured against its author's habits.**
+
+**What replaced it.** Every line terminator the language has is normalised, pair before lone
+carriage return so a CRLF file does not gain a blank line between every pair; and the block is
+dedented by the indentation its own lines share before anything is parsed, so relative indentation
+is what the reader means. With both, the reader reads all 53,469.
+
+**What it does not change.** The suite is still read whole and a block the reader cannot parse
+still refuses the run rather than declining one file. **That is deliberate and it is why these two
+were found**: a reader that had quietly declined them would have reported a clean run over a suite
+it had misread twice, and nobody would have looked. The cost is that one malformed upstream file
+blocks a run, and that is the trade this keeps.
+
+**Authority and date.** The harness over test262 at ref
+`ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e`, retained in
+[Bundle JS-3B-001](evidence/js-3b-001/README.md); 2026-09-03.

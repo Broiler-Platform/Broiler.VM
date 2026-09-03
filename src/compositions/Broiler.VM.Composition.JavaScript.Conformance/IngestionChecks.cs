@@ -36,6 +36,8 @@ internal static class IngestionChecks
         TheDialectReaderTakesBothListSpellings(),
         TheDialectReaderRefusesWhatWouldChangeHowAFileRuns(),
         TheDialectReaderSkipsAKeyItDoesNotKnow(),
+        TheDialectReaderTakesEveryLineTerminatorTheLanguageHas(),
+        TheDialectReaderTakesABlockIndentedAsAUnit(),
         TheRawFlagDoesNotMeanArtifactBytes(),
         AFileWithNoStrictnessDeclaredIsReadBothWays(),
         ADeclaredStrictnessIsReadOneWay(),
@@ -299,6 +301,74 @@ internal static class IngestionChecks
             "a-key-this-harness-has-no-use-for-is-skipped-and-a-flag-is-not",
             read && front.Description.StartsWith("a file carrying", StringComparison.Ordinal),
             read ? $"read past 4 unknown keys to `{front.Description}`" : why);
+    }
+
+    private static (string, bool, string) TheDialectReaderTakesEveryLineTerminatorTheLanguageHas()
+    {
+        // THESE TWO CHECKS EXIST BECAUSE A REAL SUITE FOUND WHAT SEVENTEEN OF THEM DID NOT. Every
+        // fixture and every check written here used LF and a block at the margin, because that is
+        // what somebody writing a fixture writes - so the reader's two fidelity defects were
+        // unreachable from anything this component had. A real checkout refused two files of
+        // 53,469 and both refusals were the reader's. See JSC-59.
+        //
+        // The CR-only file is not a curiosity: the one file in that suite whose subject is
+        // line-terminator normalisation is written in carriage returns, deliberately.
+        const string Body = "description: d\nnegative:\n  phase: parse\n  type: SyntaxError\n";
+
+        var spellings = new (string Name, string Text)[]
+        {
+            ("LF", "/*---\n" + Body + "---*/\n"),
+            ("CRLF", ("/*---\n" + Body + "---*/\n").Replace("\n", "\r\n", StringComparison.Ordinal)),
+            ("CR", ("/*---\n" + Body + "---*/\n").Replace("\n", "\r", StringComparison.Ordinal)),
+        };
+
+        var wrong = spellings
+            .Where(one =>
+                !Test262Metadata.TryRead("a.js", one.Text, out var front, out _) ||
+                front.Description != "d" ||
+                front.Negative is not { Phase: "parse", Type: "SyntaxError" })
+            .Select(one => one.Name)
+            .ToArray();
+
+        return (
+            "the-dialect-reader-reads-lf-crlf-and-a-lone-carriage-return-alike",
+            wrong.Length == 0,
+            wrong.Length == 0
+                ? "three line-terminator spellings read to one frontmatter"
+                : "misread: " + string.Join(", ", wrong));
+    }
+
+    private static (string, bool, string) TheDialectReaderTakesABlockIndentedAsAUnit()
+    {
+        // Relative indentation is what the dialect means. A block indented as a unit - which is
+        // legal, and which a real suite file does - had every key reported as indented under no
+        // key while the reader compared against column zero.
+        const string Flush = """
+            /*---
+            description: >
+              folded over
+              two lines
+            flags: [onlyStrict]
+            ---*/
+            """;
+
+        var indented = string.Join(
+            '\n', Flush.Split('\n').Select(line => line.Length == 0 ? line : "   " + line));
+
+        var first = Test262Metadata.TryRead("a.js", Flush, out var flush, out var why);
+        var second = Test262Metadata.TryRead("b.js", indented, out var shifted, out var complaint);
+
+        var agree = first && second &&
+            flush.Description == shifted.Description &&
+            flush.Description == "folded over two lines" &&
+            shifted.Flags.SequenceEqual(flush.Flags, StringComparer.Ordinal);
+
+        return (
+            "a-block-indented-as-a-unit-reads-the-same-as-one-at-the-margin",
+            agree,
+            agree
+                ? $"both read `{flush.Description}` and {flush.Flags.Count} flag(s)"
+                : (first ? complaint : why));
     }
 
     private static (string, bool, string) TheRawFlagDoesNotMeanArtifactBytes()

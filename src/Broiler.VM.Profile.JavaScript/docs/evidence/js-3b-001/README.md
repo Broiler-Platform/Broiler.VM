@@ -17,6 +17,10 @@ Every other JavaScript root reads its input from inside its own image — a prog
 embedded corpus, a fixture tree this repository also wrote — and a root lowering its own input
 cannot demonstrate what the label means. [JSC-56](../../roadmap.corrections.md#jsc-56) records it.
 
+**And test262 went through it, which the first draft of this bundle recorded as impossible.** The
+suite was retrieved at a named ref with the owner's authorisation, read by three instruments, and
+left outside this repository. Section 4 is that; the number worth reading there is not a pass rate.
+
 **What this bundle is not.** It is not a conformance score, and this host compares nothing against
 a declared expectation: it has no pinned suite, no self-check and no ratchet, which is the
 [section 14](../../roadmap.md#14-the-conformance-oracle) harness and a different composition. **It
@@ -112,16 +116,63 @@ file, compiles it, verifies it, runs it and reports.
 
 ---
 
-## 4. Exclusions — what this bundle does not show
+## 4. test262, through three instruments
+
+`test262-sweep.log`, `test262-census.log` and `test262-harness.log`. The suite was retrieved at ref
+`ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e` (9,487,173 bytes, sha256 `f58ce791…`) into a temporary
+directory outside this repository, read, and left there.
+
+**The host, over 53,469 files:** 103 completed, 53,337 refused at the source seam, 16 spent the
+allowance, and **13 artifact refusals - a defect here**, all `1411:UnreachableCode` and all
+`for (…) { break; }`. The compiler's own remark named a different shape as the one it cannot emit
+([JSC-58](../../roadmap.corrections.md#jsc-58)); three reproductions are pinned in the acceptance
+suite so the repair is detectable, and the repair is not in this bundle.
+
+**The census re-derives the ledger's test262 row**, which nothing reproduced until now: 52,038
+parsed and **141 containing nothing outside the manifest**, the 141 matching the first recording
+exactly.
+
+**The harness, in the ingested dialect - the first external correctness signal this component has
+had:** 57,421 candidates, 48,849 unselectable, 8,572 selected, **1,188 executed, 1,170 passed, 18
+failed**.
+
+**And 7,366 declined as unscorable, 7,365 of them for `ConstructOutsideManifest`.** Every one is a
+negative test declaring that a refusal must happen. **A harness comparing outcomes would have
+scored all 7,365 as passes and reported 8,535 of 8,553 - 99.8 per cent.** That is the bug
+[JSC-54](../../roadmap.corrections.md#jsc-54)'s rule refuses, measured for the first time instead
+of argued.
+
+**The eighteen failures are three groups:** six hashbang comments (`#!` opens a script in the
+language and this tokenizer does not know it), eight temporal-dead-zone cases (`let`/`const` used
+before initialisation must throw a runtime `ReferenceError` and this profile answers `undefined`),
+and four `using` declarations that should have been feature-filtered out of the run.
+
+**Two files of 53,469 were refused by the dialect reader and both refusals were its own defects**
+([JSC-59](../../roadmap.corrections.md#jsc-59)): a file written with carriage returns alone, and a
+file whose whole metadata block is indented. **Neither was reachable from any check written here**,
+because every fixture and every one of the seventeen ingestion checks used LF and a block at the
+margin - which is what somebody writing a fixture writes. Two checks were added for the two
+spellings, taking the harness's own regression suite to **44**.
+
+---
+
+## 5. Exclusions — what this bundle does not show
 
 - **One machine, one RID.** Everything here was collected on `win-x64`. **JS-3b's gate asks for
   every claimed RID and this is one**, so the clause is narrowed and not closed. The component lane
   publishes and runs the host, and runs its acceptance suite, on every cell of the matrix from this
   change onward — and no run of it existed when this was collected.
-- **No third-party suite was run through the host, because none is available.** The Octane checkout
-  is local and was read. **test262 is not**: the only cache on this machine is a directory skeleton
-  holding three files, so no sweep of it exists and none is reported here. Retrieving it is the
-  human action [section 3](../../roadmap.status.md#3-open-external-dependencies) records as open.
+- **test262 WAS run, and the pin is not the archived one the gate wants.** The suite was retrieved
+  to a temporary directory at ref `ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e`, hashed by `--pin`,
+  read by three instruments, and left there. Retrieving, hashing **and archiving** is the human
+  action [section 3](../../roadmap.status.md#3-open-external-dependencies) records as open; the
+  third of those three did not happen, so **no floor is set over any test262 figure and section 3
+  is not closed**.
+- **One of the three runs was made wrong, and it is recorded rather than re-run away.** The harness
+  run passed **no feature filter**, so four cases testing `using` declarations - a proposal - were
+  scored and failed. The suite carries the feature metadata to exclude them and the harness can
+  read it. That is also the first concrete cost of section 3's *unpinned language edition*: which
+  constructs are in the edition is what decides whether such a test applies at all.
 - **The host runs no program that returns a value from a function, touches an object, or handles a
   string**, because the manifest admits none of that. Every case in the acceptance suite that
   completes is arithmetic, a comparison or structured control flow. The exit codes for a thrown
