@@ -253,7 +253,12 @@ answered by whichever of the two ran late.
   self-check, the sharding, the merge, the per-host-mode totals, the ratchet and the
   never-advertised composition root are in the checkout from 2026-09-03, scoring a fixture suite of
   this component's own; the scope manifests and the audit command are not, and neither is a pinned
-  third-party revision, without which every run reports `MissingSuiteRevision`. **In the change that first ingests a suite file, land the ingested suite's
+  third-party revision, without which every run reports `MissingSuiteRevision`. **The ingestion
+  path is in the checkout from 2026-09-03 too** — the dialect a real suite writes, the two
+  strictness readings of one file, and the rule that only an earned refusal answers a question
+  about the language *(corrected: JSC-53, JSC-54)*. It was built because the claim that the reader
+  could be pointed at a real suite rather than replaced turned out to be false when it was tested.
+  **What is left of this clause is the retrieval, and nothing else.** **In the change that first ingests a suite file, land the ingested suite's
   attribution row in the host component's notice**, mark modified suite files as changed, and
   re-confirm the core's standing third-party claim against what the ingestion adds to the tree, or
   amend it, with the release owner co-signing — the second of this component's two licence
@@ -326,7 +331,11 @@ answered by whichever of the two ran late.
   *(corrected: JSC-43)*. What is left is the half that needs something this component does not
   have: **the parse-and-early-error slice scored on JS-3a's harness against the ratchet**, which
   waits on the suite-revision dependency, and **a publish-and-run of the narrow-runtime-compiler
-  composition on every claimed RID**, which is a collection nobody has made. The general front
+  composition on every claimed RID**, which is a collection nobody has made. **The first of those
+  two is now waiting on one thing rather than three** *(corrected: JSC-53)*: the harness exists,
+  and so does the path that reads a real suite's dialect and translates it — including the arm this
+  clause depends on, which is that a parse-phase negative never executes and so never needs the
+  assertion library this manifest cannot load. The suite itself is what is missing. The general front
   end — functions, objects, strings, `try`, modules — is still JS-2's ingest.
 - **Dependencies:** JS-1 for the format and the verifier shape; JS-3a for the registry the
   diagnostics land in, and for the harness the scoring clause needs. **JS-2 is a dependency of the

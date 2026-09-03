@@ -1380,6 +1380,26 @@ to score anything: it is to prove that a failing test comes back as a failure.
   settles twice is a failure, not a pass with a caveat.
 - **Negative-metadata tests are opt-in and required for a release run**, with the uncaught error
   reported by its JavaScript type name so a parse-phase syntax error is matched on what it is.
+- **A refusal answers a question about the language only when it was a language answer**
+  *(corrected: JSC-54)*. This profile refuses valid JavaScript on almost every line, and it refuses
+  it with one code; an ingested suite's negative tests almost all declare that a refusal must
+  happen. Compared on the observable outcome the two agree nearly every time, for reasons that have
+  nothing to do with each other, and a manifest admitting almost nothing would report a near-perfect
+  total. Every source-refusal code therefore carries a declared class — a genuine early error, a
+  construct outside the manifest, a recorded divergence, or an implementation ceiling the
+  specification permits — and **only the first may score**. A case whose refusal was not earned is
+  reported unscorable: not a pass, because the engine did not earn one, and not a failure, because
+  the failure manifest is a repair queue. The rule runs ahead of the comparison, so no declaration
+  can be written that gets past it, and the negative control removes it and observes an unearned
+  refusal score.
+- **An ingested suite is read in its own dialect, and the dialect is declared rather than
+  sniffed** *(corrected: JSC-53)*. A suite's metadata is not this component's: it nests its negative
+  expectation, folds its descriptions, declares no positive expectation at all, and spells one flag
+  the way this harness spells a different one. A run states which dialect it is reading; a file
+  declaring neither strictness is read twice, under names that say which reading each is; and
+  because a third-party checkout holds none of this component's fixtures, the self-check directory
+  is selectable independently of the suite. **Nothing in this is a suite:** the path handles a
+  format, fetches nothing, and holds no suite file.
 - **Every case runs in a runtime of its own** *(corrected: JSC-52)*. A budget allowance is spent
   over a runtime's life rather than reset per invocation, so a shard that composes the engine once
   reports every case after the first non-terminating one as a timeout — a total indistinguishable
@@ -1426,6 +1446,8 @@ to score anything: it is to prove that a failing test comes back as a failure.
   milestone can close it: an attribution written for material nobody has retrieved is an
   attribution for material nobody has read *(corrected: JSC-30)*.
 
+[JSD-0016](decisions/0016-ingesting-a-third-party-suite-and-the-refusals-that-answer-nothing.md)
+records the four answers the ingestion path needed, and
 [JSD-0015](decisions/0015-the-conformance-oracle-and-what-it-refuses-to-score.md) records the
 answers this method needed before it could be built: where the harness lives and why its
 non-advertisement is a rule rather than a habit, how a suite is pinned and what an unpinned one

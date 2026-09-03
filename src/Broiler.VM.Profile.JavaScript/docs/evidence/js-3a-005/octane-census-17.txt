@@ -1,0 +1,77 @@
+# Construct census over the 17 Octane BENCHMARK SOURCES, 2026-09-03, win-x64.
+#
+# The corpus is every top-level .js file of the checkout except these seven:
+#   base.js             the harness that defines the benchmark type
+#   run.js              the runner
+#   typescript-input.js a data blob a benchmark reads
+#   zlib-data.js        a data blob a benchmark reads
+#   js/jquery.js        a demonstration page asset
+#   js/bootstrap-collapse.js     a demonstration page asset
+#   js/bootstrap-transition.js   a demonstration page asset
+#
+# WHICH FILES ARE BENCHMARK SOURCES IS A JUDGEMENT, not something the checkout declares.
+# It was made by reading them, and the 24-file census is retained beside this one so the
+# judgement can be checked rather than taken.
+#
+# The curve at the foot is what a scope decision wants and the ranking alone does not give:
+# the first 13 ranked constructs admit NO benchmark source at all.
+#
+# broiler.javascript.slice construct census over 17 files
+# 17 parsed, 0 did not, and 0 contain nothing outside the declared manifest
+# construct|files|occurrences
+ArrayLiteral|17|7688
+Call|17|176938
+Function|17|6884
+LooseEquality|17|7005
+New|17|3734
+Null|17|2492
+StringValue|17|12676
+MemberAccess|16|66603
+Return|16|5023
+This|16|18743
+Update|16|2485
+ComputedMemberAccess|15|46163
+Throw|15|118
+CompoundAssignment|13|3572
+ObjectLiteral|11|28768
+TypeOf|10|190
+BitwiseNot|8|84
+Switch|7|229
+Try|6|96
+Delete|5|165
+Sequence|5|144
+ForIn|4|24
+RegularExpression|4|280
+In|3|66
+Instanceof|3|127
+Label|2|2677
+Getter|1|38
+Setter|1|1
+# how many constructs a file needs, and how many files need that many
+# constructs-needed|files
+9|1
+13|1
+14|3
+15|3
+16|1
+17|1
+18|1
+19|1
+20|1
+22|1
+24|2
+27|1
+# admitting the ranked constructs in order, and what each one buys
+# rank|construct|files-newly-admissible|files-admissible-in-total
+14|CompoundAssignment|1|1
+15|ObjectLiteral|2|3
+17|BitwiseNot|3|6
+18|Switch|1|7
+20|Delete|1|8
+21|Sequence|2|10
+22|ForIn|1|11
+23|RegularExpression|1|12
+25|Instanceof|2|14
+26|Label|2|16
+28|Setter|1|17
+# 17 of 17 parsed files are admissible once all 28 ranked constructs are admitted

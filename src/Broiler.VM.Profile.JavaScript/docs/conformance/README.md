@@ -37,3 +37,28 @@ own — `broiler.javascript.slice.js-3a` — because roadmap section 14 builds t
 smallest scoring target that exists rather than after the language it will eventually score. **No
 third-party conformance suite is pinned**, so no floor over one exists and none is implied by this
 file.
+
+## The second floor, and what it guards that the first one does not
+
+[`floor-ingest-shape.txt`](floor-ingest-shape.txt) is the floor over
+`broiler.javascript.slice.ingest-shape`, the suite written in the dialect a third-party suite uses.
+Set on 2026-09-03 from an unsharded run on `win-x64`, retained in
+[Bundle JS-3A-005](../evidence/js-3a-005/README.md).
+
+**It exists because a skip is not a failure.** A case the harness declines to score is reported
+`Skipped`, and a run full of skips exits zero. So the adapter could start declining files it used
+to run, or the language-class rule could start calling earned refusals unearned, and every lane
+would stay green over a shrinking number of passes. A floor names the figure, so the shrink is
+what fails.
+
+**It carries no `Raw` row, and the absence is the point rather than an omission.** The ingested
+dialect's `raw` flag means *source with no harness prelude and no strictness variant*; this
+harness's raw mode means *artifact bytes that no front end lowers*. A case reaching the raw mode
+from that suite would be the flag having been carried across two vocabularies that spell it the
+same way, which is a defect
+[JSD-0016](../decisions/0016-ingesting-a-third-party-suite-and-the-refusals-that-answer-nothing.md)
+records and the harness's own checks catch.
+
+**Two floors, one manifest, and that is not a contradiction.** A floor is over a *suite revision*,
+never over a manifest or a milestone. These are two suites, they are pinned separately, and neither
+figure is comparable with the other's.

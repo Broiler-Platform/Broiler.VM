@@ -136,6 +136,9 @@ rather than a decision record.
 | [JSC-50](#jsc-50) | roadmap §9; ledger §2 | The parse depth bound has a measured maximum, and it dominates the format's operand-stack ceiling | the parser's own measured recursion limit |
 | [JSC-51](#jsc-51) | roadmap §14; ledger §2 | The closed set of configuration failures is the plan's five plus one the plan states without naming | [JSD-0015](decisions/0015-the-conformance-oracle-and-what-it-refuses-to-score.md), decision 6 |
 | [JSC-52](#jsc-52) | roadmap §14; ledger §2 | A conformance case runs in a runtime of its own; the plan specifies aggregation and says nothing about isolation | the harness's own first scored run |
+| [JSC-53](#jsc-53) | [JSD-0015](decisions/0015-the-conformance-oracle-and-what-it-refuses-to-score.md); ledger §2, §3 | The harness's metadata reader could not read the dialect it claimed to be shaped like, and a suite is read whole, so a real checkout would have scored nothing | five suite-shaped files put through the harness |
+| [JSC-54](#jsc-54) | roadmap §14; ledger §2 | A refusal answers a suite's negative expectation only when it was a language answer; this manifest's ordinary refusal is not one | [JSD-0016](decisions/0016-ingesting-a-third-party-suite-and-the-refusals-that-answer-nothing.md), decision 3 |
+| [JSC-55](#jsc-55) | ledger §2, the construct census | Seven of the twenty-four files measured as "the Octane benchmark" are not benchmark sources, and over the seventeen that are, the thirteen highest-ranked constructs admit none | a census re-run over the same checkout |
 
 ### JSC-01
 
@@ -1920,4 +1923,128 @@ was in what the harness shared between cases, not in what it counted.
 
 **Authority and date.** The harness's own first scored run, on `win-x64` under JIT, and
 [JSD-0015](decisions/0015-the-conformance-oracle-and-what-it-refuses-to-score.md), decision 3;
+2026-09-03.
+
+---
+
+### JSC-53
+
+**Where:** [JSD-0015](decisions/0015-the-conformance-oracle-and-what-it-refuses-to-score.md)'s
+remark on the metadata reader; the [ledger](roadmap.status.md#2-current-milestone-status)'s JS-3a
+row; [section 3](roadmap.status.md#3-open-external-dependencies)'s suite-revision row.
+
+**What the record said.** The harness's metadata reader carries a remark that the shape it reads is
+"deliberately the one the conformance suite uses ... so that the day a pinned suite is retrieved,
+this reader is pointed at it rather than replaced". Section 3's row was narrowed on the strength of
+it: what remained blocked was scoring third-party material, on the pin.
+
+**What was actually true, and it was measured rather than argued.** Five files were written in the
+real dialect - a nested `negative` mapping, a folded `description`, an `info` block scalar, and no
+`expected` key, because no such key exists in that dialect - and put through the harness on
+2026-09-03. **All five were refused**, each with `declares no readable expectation`. A suite is
+read whole and an unreadable file makes the whole read a harness defect, so the run scored nothing
+at all: not a wrong total, no total. Pointed at a real checkout the harness would have produced one
+complaint per file and a `HarnessDefect` exit.
+
+The reader was shaped like a **simplification** of the dialect rather than the dialect: flat
+`key: value` lines only, no nested mapping, no block scalars, and one required key the dialect does
+not have. Three further gaps had no answer anywhere - which of this build's diagnostic codes stand
+for which JavaScript error, that a file declaring no strictness is defined to be read twice, and
+that both vocabularies use a flag spelled `raw` for different things.
+
+**What replaced it.** A reader for the dialect as written, a translation into this harness's
+vocabulary, and the rule [JSC-54](#jsc-54) records. Both dialects are kept and a run is told which
+it is reading; the native one stays because an ingested suite cannot express a positive expectation
+without an assertion library this manifest has no function to load. The self-check is read in the
+suite's dialect, and `--selfcheck <dir>` lets a run against a checkout point at fixtures this
+repository holds.
+
+**What it does not change.** No suite is retrieved, pinned or held; nothing is fetched; the
+`MissingSuiteRevision` refusal is untouched. Section 3's row narrows again and does not close: what
+was blocked on a person and a reader is now blocked on a person alone. The `js-3a` suite's totals
+are identical in every host mode, which is the check that the native path was not disturbed.
+
+**Authority and date.** Five suite-shaped files run against the harness as built, and
+[JSD-0016](decisions/0016-ingesting-a-third-party-suite-and-the-refusals-that-answer-nothing.md);
+2026-09-03.
+
+---
+
+### JSC-54
+
+**Where:** roadmap [section 14](roadmap.md#14-the-conformance-oracle), the negative-metadata clause;
+the [ledger](roadmap.status.md#2-current-milestone-status)'s JS-3a and JS-3b rows.
+
+**What the plan said.** Negative tests are opt-in "with the uncaught error reported by its
+JavaScript type name so a parse-phase syntax error is matched on what it is". That sentence is
+right and it is not enough, because it says how to compare an answer with a declaration and says
+nothing about **when this profile's answer is an answer to that question at all.**
+
+**What was actually true.** `broiler.javascript.slice` admits no function, no object, no string
+value and no property access, so it refuses valid JavaScript on almost every line - and it refuses
+it with one code, `ConstructOutsideManifest`. A suite's negative tests almost all declare that a
+refusal must happen. Compare the two on the observable outcome and they agree nearly every time,
+for reasons that have nothing to do with each other: **a manifest that admits almost nothing would
+have reported a near-perfect conformance total**, silently, at scale, in the direction that
+flatters. Section 14 opens by saying an engine that grades itself is not evidence and names this
+exact failure - an engine that refused a test "for the wrong reason" - and then specifies no
+mechanism that would catch it.
+
+**What replaced it.** Every source-refusal code carries a declared language class, and only one of
+the four may answer a suite's expectation: a genuine early error. The manifest's own refusal, this
+profile's two recorded divergences, and its four implementation ceilings may not. A case whose
+refusal cannot score is reported **unscorable** - not a pass, because the engine did not earn one;
+not a failure, because nothing there is a defect and the failure manifest is a repair queue. The
+rule runs ahead of the comparison, so no declaration can be written that gets past it, and it holds
+in the positive direction too.
+
+**What it does not change.** This component's own fixtures are unaffected: one declaring
+`refused-by-source ConstructOutsideManifest` asked whether *this front end* refuses a construct
+outside its manifest, which the refusal answers exactly, and it is still scored as a pass. The
+`js-3a` suite's totals do not move.
+
+**Authority and date.**
+[JSD-0016](decisions/0016-ingesting-a-third-party-suite-and-the-refusals-that-answer-nothing.md),
+decision 3, with eight negative controls retained in
+[Bundle JS-3A-005](evidence/js-3a-005/README.md); 2026-09-03.
+
+---
+
+### JSC-55
+
+**Where:** the [ledger](roadmap.status.md#2-current-milestone-status)'s construct-census subsection,
+the row reading `The Octane benchmark | 24 | 24 | 0` and the ranked list under it.
+
+**What the ledger said.** Twenty-four files were measured, all twenty-four parsed, none contained
+only constructs the manifest admits, and a ranked list followed: a string value in 24 files, a call
+in 23, a function in 23, and so on.
+
+**What was actually true, on a re-run over the same checkout.** Every figure is reproducible and
+none is wrong. **What is wrong is calling the twenty-four files "the Octane benchmark",** which
+invites the reader to take them for twenty-four benchmarks. They are not. Three are the
+demonstration page's own assets - jQuery and two Bootstrap plugins, shipped so the checkout's
+`index.html` renders - and have nothing to do with the workload. One is the harness that defines
+the benchmark type, one is the runner, and two are data blobs a benchmark reads rather than code it
+runs. **Seventeen are benchmark sources.**
+
+**And the ranked list, read as a scope input, points the wrong way.** A ranking by how many files
+need a construct invites "buy the top of the list first"; the number a scope decision actually
+wants is what buying the top *k* would admit. Measured over the twenty-four-file corpus, one
+construct - a string value - admits a whole file, which reads as a cheap first win. **It is not a
+benchmark: it is `typescript-input.js`, a data blob.** Measured over the seventeen benchmark
+sources, the answer is the opposite one: **the thirteen highest-ranked constructs admit nothing at
+all.** Nothing is admissible until the fourteenth, one file arrives there, and all seventeen need
+all twenty-eight. The nearest benchmark source needs nine constructs.
+
+**What replaced it.** The census reports the curve beside the ranking - what admitting the ranked
+constructs in order buys, and how many constructs each file needs - so the ranking cannot be read
+as a purchase order without the number that contradicts it. The ledger's subsection carries the
+corrected composition of the corpus and both readings.
+
+**What it does not change.** No number already published moves; the parse rate, the file counts and
+the occurrence counts are the same. Nothing is accepted, no manifest grows, and the checkout stays
+where it is: the census takes a path and keeps no copy, and no third-party file entered this
+repository for this correction any more than for the first one.
+
+**Authority and date.** A census re-run over the same Octane checkout, per file and in aggregate;
 2026-09-03.

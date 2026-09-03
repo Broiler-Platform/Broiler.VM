@@ -1,0 +1,11 @@
+# broiler-js-conformance self-check 1
+# path|status|completion
+# the verdict the HARNESS must reach for this fixture, not the verdict the fixture declares
+a-control-that-refuses-as-the-language-does.js#strict|Passed|NeverSettled
+a-control-that-runs-and-does-not-throw.js|Passed|Completed
+a-declared-refusal-that-does-not-happen.js#strict|Failed|Completed
+a-file-whose-two-strictness-readings-disagree.js#strict|Passed|NeverSettled
+a-file-whose-two-strictness-readings-disagree.js#sloppy|Failed|Completed
+a-positive-whose-body-the-manifest-declines.js|Skipped|NeverSettled
+a-refusal-the-manifest-made-and-not-the-language.js#strict|Skipped|NeverSettled
+a-refusal-this-profile-makes-earlier-than-the-language.js#sloppy|Skipped|NeverSettled

@@ -48,12 +48,13 @@ internal static class SelfCheck
     /// <summary>Runs every fixture and compares the harness's verdict with the declared one.</summary>
     internal static IReadOnlyList<SelfCheckCase> Run(
         string root,
+        SuiteDialect dialect,
         Execution execution,
         out IReadOnlyList<string> failures)
     {
         var complaints = new List<string>();
         var declared = ReadManifest(Path.Combine(root, ManifestFileName), complaints);
-        var tests = Suite.Read(root, out var unreadable);
+        var tests = Suite.Read(root, dialect, out var unreadable);
         var cases = new List<SelfCheckCase>();
 
         complaints.AddRange(unreadable);

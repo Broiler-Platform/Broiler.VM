@@ -1,0 +1,12 @@
+# broiler-js-conformance floor 1
+# suite <name>; revision <revision>; mode <name> <executed> <passed>
+# a retired line is a floor a revision change re-based, kept with its reason
+#
+# The ingested-dialect suite. It carries no Raw row because it executes nothing in that mode, and
+# that is the point of the row being absent rather than zero: the dialect's `raw` flag means source
+# with no harness prelude, not artifact bytes, so a case reaching the Raw mode from this suite would
+# be the flag having been carried across two vocabularies that spell it the same way.
+suite broiler.javascript.slice.ingest-shape
+revision 262902538401be83804f252624a6152c349b53e2d8da27ed4f10fcfb1a09c8f1
+mode Script 3 3
+mode Module 1 1

@@ -288,7 +288,89 @@ internal static class Program
             }
         }
 
+        Curve(paths, census);
         return 0;
+    }
+
+    /// <summary>
+    /// How far the manifest has to grow before any of these files becomes admissible.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The ranked list above says what is needed; it does not say what buying any of it would
+    /// get.</b> A construct at the top of that list appears in nearly every file, and admitting it
+    /// alone typically admits none of them, because those same files each need eleven other things
+    /// as well. The number a scope decision actually wants is the one below: admit the first k
+    /// constructs of the ranking, and how many whole files can this profile then compile?
+    /// </para>
+    /// <para>
+    /// <b>It is a curve along ONE ranking and not a smallest set.</b> The order is the census's own
+    /// - by how many files need a construct - which is a reasonable order to buy things in and is
+    /// not the cheapest set that admits some file. Reading it as "the minimum needed" would
+    /// overstate what the ranking proves; the distribution printed beside it is what bounds the
+    /// nearest file.
+    /// </para>
+    /// <para>
+    /// <b>It re-reads each source rather than growing the census record.</b> Per-file need sets are
+    /// a list as long as the corpus - fifty thousand of them for a real suite - and the census
+    /// returns aggregates precisely so that it does not carry one. Paying a second parse here keeps
+    /// that property where it belongs.
+    /// </para>
+    /// </remarks>
+    private static void Curve(IReadOnlyList<string> paths, SliceCensus census)
+    {
+        var needs = new List<HashSet<SliceConstructKind>>();
+
+        foreach (var path in paths)
+        {
+            var one = SliceConstructCensus.Take([File.ReadAllText(path)]);
+
+            // A source that did not parse has no need set - not an empty one. Counting it as
+            // needing nothing would put every unparsed file in the admissible column.
+            if (one.FilesParsed == 1)
+            {
+                needs.Add([.. one.Files.Keys]);
+            }
+        }
+
+        Console.WriteLine("# how many constructs a file needs, and how many files need that many");
+        Console.WriteLine("# constructs-needed|files");
+
+        foreach (var group in needs.GroupBy(need => need.Count).OrderBy(group => group.Key))
+        {
+            Console.WriteLine($"{group.Key}|{group.Count()}");
+        }
+
+        var ranked = census.Files
+            .OrderByDescending(entry => entry.Value)
+            .ThenBy(entry => entry.Key.ToString(), StringComparer.Ordinal)
+            .Select(entry => entry.Key)
+            .ToArray();
+
+        Console.WriteLine("# admitting the ranked constructs in order, and what each one buys");
+        Console.WriteLine("# rank|construct|files-newly-admissible|files-admissible-in-total");
+
+        var admitted = new HashSet<SliceConstructKind>();
+        var previous = needs.Count(need => need.Count == 0);
+
+        for (var rank = 0; rank < ranked.Length; rank++)
+        {
+            admitted.Add(ranked[rank]);
+            var now = needs.Count(need => need.IsSubsetOf(admitted));
+
+            // Only the ranks that move the number. A row per construct would be a column of
+            // repeated zeroes with the four rows that matter buried in it.
+            if (now != previous)
+            {
+                Console.WriteLine($"{rank + 1}|{ranked[rank]}|{now - previous}|{now}");
+            }
+
+            previous = now;
+        }
+
+        Console.WriteLine(
+            $"# {previous} of {needs.Count} parsed files are admissible once all " +
+            $"{ranked.Length} ranked constructs are admitted");
     }
 
     /// <summary>Runs the claims that need a neighbour profile, and the claims about the front end.</summary>
