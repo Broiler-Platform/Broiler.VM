@@ -69,9 +69,43 @@ same way, which is a defect
 [JSD-0016](../decisions/0016-ingesting-a-third-party-suite-and-the-refusals-that-answer-nothing.md)
 records and the harness's own checks catch.
 
-**Two floors, one manifest, and that is not a contradiction.** A floor is over a *suite revision*,
-never over a manifest or a milestone. These are two suites, they are pinned separately, and neither
-figure is comparable with the other's.
+**Three floors, one manifest, and that is not a contradiction.** A floor is over a *suite
+revision*, never over a manifest or a milestone. These are three suites, they are pinned
+separately, and no figure of one is comparable with another's.
+
+## The third floor, and the day it became possible
+
+[`floor-test262.txt`](floor-test262.txt) is the floor over **test262** at `tc39/test262` commit
+`ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e` — 1,063 Script cases and 21 Module cases, set on
+2026-09-03 from an unsharded run on `win-x64`.
+
+**It is the first floor over material this component did not write, and it could not have been set
+the day before.** A floor is a promise that a later run of the same revision will not fall below
+these figures. Over a suite fetched from a network at run time that promise is about a directory
+nobody here controls — which is why the ledger recorded, correctly, that no floor over a test262
+figure was possible while the material was somebody else's to change. The suite is now archived in
+this repository at a digest rule N15 checks, so the revision the floor names cannot move without a
+commit that moves it.
+
+**The lane checks it once per invocation, on one Linux runner, and that narrowing is stated rather
+than hidden.** The two in-repository suites run on every publish cell because a published image is
+what they are about; this one is about the engine's answers over a fixed corpus, which no runtime
+identifier changes. **No RID other than `linux-x64` has scored this suite**, and `win-x64` is where
+the figures were first taken.
+
+**What the figures are not.** Not a conformance claim and not a percentage. 1,084 cases of a suite
+of 56,560 files were scored, the rest declined as unscorable or excluded before selection, and
+roadmap [section 14](../roadmap.md#14-the-conformance-oracle) forbids publishing an aggregate
+percentage then or ever. What the floor guards is the thing an exit code cannot: a case that stops
+being scorable is reported `Skipped`, and a run full of skips exits zero.
+
+**The cost was measured rather than argued, and the first measurement was taken on the wrong
+platform.** On `win-x64` the run is about two minutes over a warm extraction and over ten cold,
+dominated by hashing 56,560 files rather than by scoring 1,084 of them — and that number was
+carried into this file as though it were the lane's. **On the Linux runner the lane actually uses,
+the whole step — extract, hash and score — costs about twelve seconds**, and the job it was added
+to went from roughly one minute to 1m12s. Small-file I/O is the whole of the difference. The
+Windows figure is kept here because it is the one a contributor on that platform will see.
 
 **This floor moved on 2026-09-03 and it was a re-base rather than a change in what the engine
 does.** The suite gained a `features.txt` — the list an ingested suite carries to say which of its

@@ -2738,9 +2738,15 @@ change that first ingests suite material, exactly where [JSC-30](#jsc-30) said i
 
 **And one sentence of this entry expired within the hour, which is worth leaving visible rather
 than editing away.** It read: *no floor is set over any test262 figure and none may be while the
-material is somebody else's to change.* The material is no longer somebody else's to change. A
-floor is now **possible and still not set**, and what stands in its way is a lane cost nobody has
-agreed to — a different objection from the one this entry recorded, and a smaller one.
+material is somebody else's to change.* The material stopped being somebody else's to change when
+it was archived, and **the floor is set**: 1,063 Script cases and 21 Module cases at revision
+`46d54f57…1cfe93`, enforced once per lane on one Linux runner rather than on every publish cell.
+The second objection this entry named — a lane cost nobody had agreed to — was measured rather
+than argued, **and the first measurement was taken on the wrong platform**: about two minutes warm
+on `win-x64` and over ten cold, dominated by hashing 56,560 files rather than by scoring 1,084 of
+them. **On the Linux runner the lane uses it is about twelve seconds**, which is the figure that
+decides whether the step belongs there, and it was the lane rather than the workstation that
+produced it.
 
 **And the replacement had the same defect in miniature, which the archive is what found.** The
 first draft of the retained-pin check compared against the `SuiteRevision` the harness had
