@@ -1,0 +1,31 @@
+# The same sweep at --max-depth 512, the largest bound the parser supports, which is what
+# the construct census reads at. Two files change their answer: earley-boyer.js and
+# mandreel.js are refused for DEPTH at the default and by the MANIFEST here.
+#
+refused  D:/Broiler/tests/octane/checkout/base.js  2104:ConstructOutsideManifest at 30:34: an object literal is not admitted by the declared feature manifest
+refused  D:/Broiler/tests/octane/checkout/box2d.js  2104:ConstructOutsideManifest at 21:11: an object literal is not admitted by the declared feature manifest
+refused  D:/Broiler/tests/octane/checkout/code-load.js  2104:ConstructOutsideManifest at 68:16: the construct New is not admitted by the declared feature manifest
+refused  D:/Broiler/tests/octane/checkout/crypto.js  2104:ConstructOutsideManifest at 34:14: the construct New is not admitted by the declared feature manifest
+refused  D:/Broiler/tests/octane/checkout/deltablue.js  2104:ConstructOutsideManifest at 26:17: the construct New is not admitted by the declared feature manifest
+refused  D:/Broiler/tests/octane/checkout/earley-boyer.js  2104:ConstructOutsideManifest at 4:19: the construct New is not admitted by the declared feature manifest
+refused  D:/Broiler/tests/octane/checkout/gbemu-part1.js  2104:ConstructOutsideManifest at 15:24: the construct New is not admitted by the declared feature manifest
+refused  D:/Broiler/tests/octane/checkout/gbemu-part2.js  2104:ConstructOutsideManifest at 35:1: a function is not admitted by the declared feature manifest
+refused  D:/Broiler/tests/octane/checkout/js/bootstrap-collapse.js  2104:ConstructOutsideManifest at 157:2: a call is not admitted by the declared feature manifest
+refused  D:/Broiler/tests/octane/checkout/js/bootstrap-transition.js  2104:ConstructOutsideManifest at 61:2: a call is not admitted by the declared feature manifest
+refused  D:/Broiler/tests/octane/checkout/js/jquery.js  2104:ConstructOutsideManifest at 9252:3: a call is not admitted by the declared feature manifest
+refused  D:/Broiler/tests/octane/checkout/mandreel.js  2104:ConstructOutsideManifest at 29:25: the construct New is not admitted by the declared feature manifest
+refused  D:/Broiler/tests/octane/checkout/navier-stokes.js  2104:ConstructOutsideManifest at 29:20: the construct New is not admitted by the declared feature manifest
+refused  D:/Broiler/tests/octane/checkout/pdfjs.js  2104:ConstructOutsideManifest at 26:16: a string value is not admitted by the declared feature manifest
+refused  D:/Broiler/tests/octane/checkout/raytrace.js  2104:ConstructOutsideManifest at 11:16: the construct New is not admitted by the declared feature manifest
+refused  D:/Broiler/tests/octane/checkout/regexp.js  2104:ConstructOutsideManifest at 40:19: the construct New is not admitted by the declared feature manifest
+refused  D:/Broiler/tests/octane/checkout/richards.js  2104:ConstructOutsideManifest at 38:16: the construct New is not admitted by the declared feature manifest
+refused  D:/Broiler/tests/octane/checkout/run.js  2104:ConstructOutsideManifest at 29:16: a string value is not admitted by the declared feature manifest
+refused  D:/Broiler/tests/octane/checkout/splay.js  2104:ConstructOutsideManifest at 36:13: the construct New is not admitted by the declared feature manifest
+refused  D:/Broiler/tests/octane/checkout/typescript-compiler.js  2104:ConstructOutsideManifest at 265:3: a call is not admitted by the declared feature manifest
+refused  D:/Broiler/tests/octane/checkout/typescript-input.js  2104:ConstructOutsideManifest at 1:22: a string value is not admitted by the declared feature manifest
+refused  D:/Broiler/tests/octane/checkout/typescript.js  2104:ConstructOutsideManifest at 28:18: the construct New is not admitted by the declared feature manifest
+refused  D:/Broiler/tests/octane/checkout/zlib-data.js  2104:ConstructOutsideManifest at 65:1: a function is not admitted by the declared feature manifest
+refused  D:/Broiler/tests/octane/checkout/zlib.js  2104:ConstructOutsideManifest at 28:1: the construct New is not admitted by the declared feature manifest
+# 24 files
+# RefusedSource: 24
+# exit 3

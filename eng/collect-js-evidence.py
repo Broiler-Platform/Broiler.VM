@@ -82,11 +82,22 @@ SLICE_COMPILER = os.path.join(
 CONFORMANCE = os.path.join(
     "src", "compositions", "Broiler.VM.Composition.JavaScript.Conformance",
     "Broiler.VM.Composition.JavaScript.Conformance.csproj")
+CLI = os.path.join(
+    "src", "compositions", "Broiler.VM.Composition.JavaScript.Cli",
+    "Broiler.VM.Composition.JavaScript.Cli.csproj")
 COMPOSITIONS = (
     ("executiononly", "Broiler.VM.Composition.JavaScript.ExecutionOnly", EXECUTION_ONLY),
     ("slicecompiler", "Broiler.VM.Composition.JavaScript.SliceCompiler", SLICE_COMPILER),
     ("conformance", "Broiler.VM.Composition.JavaScript.Conformance", CONFORMANCE),
+    ("cli", "Broiler.VM.Composition.JavaScript.Cli", CLI),
 )
+
+# The end-user host's own inputs. Only the directory whose files are MEANT to run: the acceptance
+# suite deliberately holds files that must be refused, must exhaust an allowance and must be
+# unreadable, and a collector treating a non-zero exit as a failure would report the suite working
+# as the bundle failing. Those cases are judged by eng/run-cli-acceptance.py, which knows which
+# exit code each one owes.
+CLI_RUNS = os.path.join("src", "tests", "cli", "runs")
 
 # The conformance harness's own suite, which is a DIRECTORY THIS SCRIPT PASSES AS AN ARGUMENT and
 # never a file any project references. Rule N13 asserts that separation; this constant is the
@@ -884,6 +895,11 @@ def compositions(arguments, out, corpus):
                         executable, "--suite", os.path.join(ROOT, INGEST_SUITE),
                         "--dialect", "ingested", "--run", "--include-negative", "--verbose"]),
                 ]
+            elif slug == "cli":
+                # THE END-USER HOST, RUN THE WAY A PERSON RUNS IT: a path on a command line. The
+                # sweep prints one row per file and a distribution, and every file under this
+                # directory is one the manifest admits, so the exit code is zero and means it.
+                runs = [("runs", [executable, os.path.join(ROOT, CLI_RUNS)])]
             else:
                 runs = [("checks", [executable, "--checks", "--verbose"])]
 

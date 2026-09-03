@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Composition.JavaScript.Cli</RootNamespace>
+    <AssemblyName>Broiler.VM.Composition.JavaScript.Cli</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- NOT PACKABLE, AND THAT IS THE ONE PROPERTY OF THIS ROOT A READER IS MOST LIKELY TO GET
+         WRONG. This is the end-user host: point it at a .js file and it compiles, verifies and
+         runs it. It is therefore the first root in this checkout that a person would expect to be
+         shipped - and it is not, because `docs/compositions.md` section 1 advertises nothing and
+         because a tool advertised as a JavaScript host has to be able to run JavaScript. This one
+         admits no function, no object and no string value, so it runs almost none. Advertising it
+         would be the untruthful support claim the core roadmap makes a stop condition. -->
+    <IsPackable>false</IsPackable>
+
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <!--
+    THE `narrow-runtime-compiler` COMPOSITION, AND THE FIRST ROOT THAT EARNS THAT LABEL.
+
+    Section 15 of the profile roadmap defines the label as a composition carrying "tokenizer,
+    static semantics, and lowering for a named restricted surface", and `docs/compositions.md`
+    recorded until now that no root here held it: the slice-compiler root is "only shaped like
+    one", because what it lowers is a programmatic builder rather than SOURCE, and "there is no
+    source surface until JS-3b writes the tokenizer and the static semantics".
+
+    JS-3b wrote them. What was missing after that was a composition that takes source from OUTSIDE
+    the image - a file a person names on a command line - and turns it into a running program
+    inside the published application. That is this root, and it is the subject of JS-3b's
+    publish-and-run gate.
+
+    WHAT IT DELIBERATELY DOES NOT CARRY. No census, no corpus producer, no cross-profile checks,
+    no conformance harness, no fuzz mutator, no soak. Every sibling root here carries some of
+    that, forced by rules A11 and A12 leaving such code nowhere else - and each of them says so.
+    This root is the one whose closure has no such excuse to make: it reads a file, compiles it,
+    verifies it, runs it, and reports. A reader comparing its closure against the label's row in
+    section 15 should find nothing to explain away.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Profile.JavaScript.Compiler\Broiler.VM.Profile.JavaScript.Compiler.csproj" />
+  </ItemGroup>
+
+</Project>

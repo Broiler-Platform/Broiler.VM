@@ -1531,3 +1531,51 @@ from "a person and a reader" to "a person", and does not close. **No RID claim
 moves and nothing is accepted.**
 
 **What is not edited.** Every revision above stands as written.
+
+### 2026-09-03 - the end-user host, and the first root here to claim a deployment label
+
+**What changes.** `Broiler.VM.Composition.JavaScript.Cli` is added under
+`src/compositions/`. Point it at a `.js` file and it compiles the source,
+verifies the artifact, runs it and prints the completion value; point it at a
+directory and it sweeps every `.js` file under it and prints the distribution.
+It is the first composition in this checkout that is handed **source from
+outside the image**.
+
+**Why that is a new thing rather than a fifth spelling of an old one.** Every
+JavaScript root before it gets its input from inside its own image: the
+slice-compiler root lowers a programmatic builder, the execution-only root reads
+an embedded corpus, the conformance root reads a fixture tree this repository
+also wrote. `docs/compositions.md` recorded the consequence in those words -
+that no root held the `narrow-runtime-compiler` label, because the label belongs
+to a composition lowering a named restricted SOURCE surface and the
+slice-compiler root is "only shaped like one". JS-3b wrote the tokenizer and the
+static semantics, so the surface exists; what was still missing was a
+composition a person hands a path to. **This is that root and it claims the
+label**, which its catalog table now prints where its siblings print
+`narrow-runtime-compiler-shaped`.
+
+**What is now true.** The graph goes from 21 projects and 64 edges to 22 and 69.
+**The packable set is unchanged at exactly three**, and the root carries the
+literal `<IsPackable>false</IsPackable>`.
+
+**No rule is minted with it, and that is worth stating.** Its reference set is
+the conformance root's and the slice-compiler root's - the profile plus the
+lowering - so it introduces no edge shape rules A1 to A15 do not already
+constrain, and no new property needs asserting. What it introduces is a
+composition whose closure a reader can compare against section 15's row for the
+label **without a paragraph of exceptions**: it is the only JavaScript root here
+carrying no corpus replay, no corpus writer, no fuzz mutator, no soak, no
+cross-profile checks and no conformance harness. Every sibling carries some of
+that, forced by rules A11 and A12 leaving such code nowhere else, and each says
+so; this one has nothing to explain away.
+
+**It is a demonstration, and that column needs reading rather than skimming.**
+It is the first root here a person would expect to be shipped - it is a
+command-line JavaScript tool - and it is not shipped. A tool advertised as a
+JavaScript host has to be able to run JavaScript, and
+`broiler.javascript.slice` admits no function, no object, no string value and no
+property access. Pointed at the Octane benchmark it refuses all twenty-four
+files. Advertising it would be the untruthful support claim roadmap section 16
+makes a stop condition, and section 1 of the register stays as it is.
+
+**What is not edited.** Every revision above stands as written.

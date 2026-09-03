@@ -13,6 +13,7 @@
     <Project Path="src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj" />
     <Project Path="src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj" />
     <Project Path="src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance.csproj" />
+    <Project Path="src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="src/tests/Broiler.VM.Architecture.Tests/Broiler.VM.Architecture.Tests.csproj" />

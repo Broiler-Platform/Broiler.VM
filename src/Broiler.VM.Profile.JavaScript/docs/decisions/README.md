@@ -28,6 +28,7 @@ does not contain says so in its own text.
 | [JSD-0014](0014-the-source-front-end-and-the-verification-boundary.md) | Where the verification boundary falls, that static semantics is one stage, where strict mode is ruled on, that parse options are a value, and what a nesting case gets | JS-3b |
 | [JSD-0015](0015-the-conformance-oracle-and-what-it-refuses-to-score.md) | Where the conformance harness lives and why its non-advertisement is a rule, how a suite is pinned, that every case runs in a runtime of its own, and the six named ways a run is misconfigured | JS-3a |
 | [JSD-0016](0016-ingesting-a-third-party-suite-and-the-refusals-that-answer-nothing.md) | The dialect a real suite is read in, the two strictness readings of one file, and the rule that a refusal answers a question about the language only when it was a language answer | JS-3a |
+| [JSD-0017](0017-the-end-user-host-and-what-an-exit-code-promises.md) | The end-user host: that it is a host and not the toolchain the core defers, the seven exit codes and which two of them accuse this component, how a file is read honestly, and why the first root a person would expect to be shipped is not | JS-3b |
 
 ## What a record must carry
 

@@ -280,7 +280,7 @@ jobs:
           suite="src/tests/conformance/js-3a"
           ingest="src/tests/conformance/ingest-shape"
 
-          for composition in JavaScript.ExecutionOnly JavaScript.SliceCompiler JavaScript.Conformance; do
+          for composition in JavaScript.ExecutionOnly JavaScript.SliceCompiler JavaScript.Conformance JavaScript.Cli; do
             out="artifacts/ci-aot-$composition"
             dotnet publish "src/compositions/Broiler.VM.Composition.$composition" \
               -c Release -r ${{ matrix.rid }} -p:PublishAot=true \
@@ -309,6 +309,21 @@ jobs:
               *Conformance)
                 "$binary" --suite "$suite" --run --include-negative
                 "$binary" --suite "$ingest" --dialect ingested --run --include-negative
+                ;;
+              # THE END-USER HOST, RUN THE WAY A PERSON RUNS IT: a path on a command line, out of
+              # the Native AOT image. Then the acceptance suite, which is the one check here whose
+              # subject is a BINARY rather than a type - its argument parsing, its exit codes,
+              # which of its two streams carries which message, and what it does with a file that
+              # is not UTF-8. None of that is reachable from a test project, because rule A11
+              # forbids a test project to reference a profile assembly.
+              *Cli)
+                "$binary" src/tests/cli/runs
+                # The same probe the fuzz step below uses, and for the same reason it has
+                # one: `python` is not on PATH on every runner image while `python3` is.
+                # This was written from that step rather than from a failure here.
+                py=python3
+                command -v "$py" >/dev/null 2>&1 || py=python
+                "$py" eng/run-cli-acceptance.py --binary-directory "$out"
                 ;;
             esac
           done

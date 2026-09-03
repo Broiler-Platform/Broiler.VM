@@ -58,4 +58,12 @@ src/tests/corpus/**/*.bjsb binary
 # MissingSuiteRevision - a true sentence about a suite nobody edited. Declared at JS-3a, for
 # the same reason the line above was: git's heuristic calls them binary today by accident.
 src/tests/conformance/**/*.bjsb binary
+
+# THE END-USER HOST'S ENCODING FIXTURES ARE BYTES AND NOTHING ELSE, and unlike everything above
+# they are .js files, so `text=auto` would take them for source and hand them to end-of-line
+# conversion. One of them opens with a UTF-8 byte-order mark and the other carries a lone
+# continuation byte that no encoding can make valid - and the whole of what each asserts is what
+# this host does with those exact bytes. Git's NUL-byte heuristic sees neither, so the declaration
+# has to be explicit. Declared at JS-3b with the host itself.
+src/tests/cli/encoding/*.js binary
 *.png                     binary

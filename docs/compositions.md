@@ -108,6 +108,7 @@ the exact closure this register exists to describe.
 | `Broiler.VM.Composition.JavaScript.SliceCompiler` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler` | none registered | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-1` |
 | `Broiler.VM.Composition.JavaScript.Android` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format` | none registered | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-001` |
 | `Broiler.VM.Composition.JavaScript.Conformance` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler` | none registered | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-3a-004` |
+| `Broiler.VM.Composition.JavaScript.Cli` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler` | none registered | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-3b-001` |
 
 **The Android head composes exactly what the execution-only root composes**, and
 that is the point of it rather than an accident: it names the profile and not the
@@ -175,12 +176,65 @@ programs and writes that corpus. A flag on one binary would have made the
 difference a run-time choice inside one closure, and a closure report cannot see
 a flag.
 
-**Neither is `narrow-runtime-compiler`, and the slice-compiler root is only
-shaped like one.** That label belongs to a composition carrying a lowering for a
-named restricted SOURCE surface, and there is no source surface until JS-3b
-writes the tokenizer and the static semantics. What this root lowers is a
-programmatic builder, so it is recorded here as a demonstration and claims no
-label. JS-3b claims the label with a publish-and-run gate of its own.
+**Neither of the two ORIGINAL JavaScript roots is `narrow-runtime-compiler`, and
+the slice-compiler root is only shaped like one.** That label belongs to a
+composition carrying a lowering for a named restricted SOURCE surface, and there
+was no source surface until JS-3b wrote the tokenizer and the static semantics.
+What that root lowers is a programmatic builder, so it is recorded here as a
+demonstration and claims no label. **JS-3b claims the label with a publish-and-run
+gate of its own, and the row that holds it is the CLI root added on 2026-09-03**;
+the paragraphs at the end of this section are that row's.
+**The `narrow-runtime-compiler` label is claimed, and this row is the one that
+claims it.** The paragraph below said until 2026-09-03 that no root here held the
+label and that JS-3b would claim it with a publish-and-run gate of its own. That
+is what this row is. The label belongs to a composition carrying the tokenizer,
+the static semantics and the lowering for a named restricted **source** surface,
+and what was missing after JS-3b wrote those three was a composition handed
+source from *outside* the image — a file a person names on a command line. The
+slice-compiler root lowers a programmatic builder and the conformance root lowers
+a fixture tree this repository also wrote; both print
+`narrow-runtime-compiler-shaped` in their catalog table, and this root is the
+first to print the label itself.
+
+**It is the end-user host, and it is a demonstration anyway.** Point it at a
+`.js` file and it compiles, verifies and runs it, printing the completion value;
+point it at a directory and it sweeps every `.js` file under it and prints the
+distribution. That is the shape a person expects of a JavaScript tool, which is
+exactly why its Kind column needs reading rather than skimming: **a tool
+advertised as a JavaScript host has to be able to run JavaScript**, and
+`broiler.javascript.slice` admits no function, no object, no string value and no
+property access. Pointed at the Octane benchmark it refuses all twenty-four
+files. Advertising it would be the untruthful support claim the core roadmap
+makes a stop condition, and section 1's advertised set stays empty.
+
+**Its closure is the one with nothing to explain away, and that is the point of
+it.** The paragraph further down records what the other JavaScript roots carry
+beyond the image each demonstrates — a corpus replay, ordering assertions, a fuzz
+mutator, a soak, a corpus writer, a conformance harness — all forced there by
+rules A11 and A12 leaving such code nowhere else, and all of it in the closure
+each publishes. **This root carries none of it.** It reads a file, compiles it,
+verifies it, runs it, and reports; a reader comparing its closure against section
+15's row for the label finds the assemblies the label names and no others. That
+property is why the label could not simply have been asserted of a sibling.
+
+**What it registers is nothing, and that is its content policy.** No capability
+and no artifact provider, so every guest-initiated load is refused
+deterministically — the only policy a manifest with no `eval`, no `Function`
+constructor and no dynamic `import()` could have. It states no ceiling either: the
+instruction allowance is the profile's own declared default unless a caller passes
+`--fuel`, because a host with an opinion about how long a program may run is a
+host imposing a policy the profile did not declare.
+
+**Its acceptance suite is input files and not injected code.** `src/tests/cli/`
+holds the programs and `eng/run-cli-acceptance.py` drives the built binary over
+eighteen command lines, judging exit codes and output. No source of this
+component is patched to make a case fail and no internal type is reached for:
+what is under test is the binary a person would run, including its argument
+parsing, which of its two streams carries which message, and what it does with a
+file that is not UTF-8. The driver takes `--expected` so it can be pointed at a
+table of deliberately wrong rows and shown to report the mismatch, because a
+driver whose every row passes may not be comparing anything.
+
 
 **What the two JavaScript roots contain beyond the image each demonstrates,
 because a label describes a reference set and not a file inventory.** The

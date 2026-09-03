@@ -1,0 +1,9 @@
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.JavaScript.Cli
+label narrow-runtime-compiler
+carries-lowering yes
+profiles 1
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 0
+manifest broiler.javascript.slice
+format-versions 1 1
+lowering Broiler.VM.Profile.JavaScript.Compiler
