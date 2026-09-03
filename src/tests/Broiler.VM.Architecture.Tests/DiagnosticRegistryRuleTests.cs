@@ -47,11 +47,11 @@ public sealed class DiagnosticRegistryRuleTests
     {
         Assert.Empty(ArchitectureRules.N5(Registry, Vocabulary, SeamVocabulary, DiagnosticRegistry.Revision));
 
-        // Non-vacuous: forty core-result codes and twenty-two embedder-seam ones, sixty-two rows,
+        // Non-vacuous: forty core-result codes and twenty-four embedder-seam ones, sixty-four rows,
         // so a clean result is a comparison over two real sets rather than over an empty one. The
         // seam half was declared and empty at revision 1 and is the half at revision 2.
         Assert.Equal(40, Vocabulary.Count);
-        Assert.Equal(22, SeamVocabulary.Count);
+        Assert.Equal(24, SeamVocabulary.Count);
         Assert.Equal(Vocabulary.Count + SeamVocabulary.Count, Registry.Count);
         Assert.Equal(2, DiagnosticRegistry.Revision);
 
@@ -142,16 +142,23 @@ public sealed class DiagnosticRegistryRuleTests
         // no defensive row on purpose - all three of its format-ceiling codes ARE reachable by a
         // program, and recording them as unreachable would have been recording something untrue to
         // avoid generating three sources.
-        Assert.Equal(3, ArchitectureRules.DefensiveCodes.Length);
+        Assert.Equal(4, ArchitectureRules.DefensiveCodes.Length);
         Assert.Equal(
             37,
             Registry.Count(static row => row.Reachability == "corpus"));
         Assert.Equal(
-            22,
+            23,
             Registry.Count(static row => row.Reachability == "source"));
-        Assert.All(
-            Registry.Where(static row => row.Half == "embedder-seam"),
-            static row => Assert.Equal("source", row.Reachability));
+        // One seam row is defensive, and which one is the finding: the operand-stack ceiling
+        // cannot be reached through this front end, because the parse depth bound refuses at about
+        // 170 levels of source and the ceiling needs more than a thousand. The parse bound
+        // dominates the stack ceiling, so the code is declared, reachable in principle by another
+        // producer, and reached by no source this front end will accept.
+        Assert.Equal(
+            [2303],
+            Registry.Where(static row =>
+                    row.Half == "embedder-seam" && row.Reachability == "defensive")
+                .Select(static row => row.Code));
 
         // The seam half's own rejecting direction: a row reached by a source that claims to travel
         // in a core result. Both halves of that pair are wrong together - a rejection of source
@@ -429,7 +436,7 @@ public sealed class DiagnosticRegistryRuleTests
         // would mean the assembly had been renamed out from under it. Eleven files - JS-1's three
         // and JS-3b's eight - and the scan finds real static declarations in them, the punctuator
         // table and the reserved-name list among them, which it correctly does not report.
-        Assert.Equal(11, lowering.Length);
+        Assert.Equal(13, lowering.Length);
         Assert.Contains(
             ArchitectureRules.N12([], filesScanned: 0),
             violation => violation.Contains(

@@ -84,7 +84,9 @@
 2002|UnterminatedComment|embedder-seam|-|tokenizer|source|refuse-an-unterminated-comment|2
 2003|MalformedNumericLiteral|embedder-seam|-|tokenizer|source|refuse-an-exponent-with-no-digits|2
 2004|UnterminatedStringLiteral|embedder-seam|-|tokenizer|source|refuse-an-unterminated-string|2
-2005|UnknownEscapeSequence|embedder-seam|-|tokenizer|source|refuse-an-unknown-escape-sequence|2
+2005|UnknownEscapeSequence|embedder-seam|-|tokenizer|source|refuse-an-incomplete-hexadecimal-escape|2
+2006|UnterminatedRegularExpression|embedder-seam|-|tokenizer|source|refuse-an-unterminated-regular-expression|2
+2007|UnterminatedTemplateLiteral|embedder-seam|-|tokenizer|source|refuse-an-unterminated-template-literal|2
 2101|UnexpectedToken|embedder-seam|-|parser|source|refuse-a-missing-operand|2
 2102|ExpectedToken|embedder-seam|-|parser|source|refuse-a-missing-close-paren|2
 2103|NestingTooDeep|embedder-seam|-|parser|source|refuse-nesting-past-the-bound|2
@@ -101,4 +103,4 @@
 2210|LegacyOctalInStrictCode|embedder-seam|-|semantics|source|refuse-a-legacy-octal-in-strict-code|2
 2301|TooManyLocals|embedder-seam|-|lowering|source|refuse-more-locals-than-the-frame-admits|2
 2302|TooManyConstants|embedder-seam|-|lowering|source|refuse-more-constants-than-the-pool-admits|2
-2303|OperandStackTooDeep|embedder-seam|-|lowering|source|refuse-an-operand-stack-deeper-than-the-format-admits|2
+2303|OperandStackTooDeep|embedder-seam|-|lowering|defensive|no source reaches it: the operand stack grows only with right-nested operators, the format's ceiling is 1024 operands, and the parse depth bound refuses at a measured maximum of about 170 levels of source - the parse bound dominates the stack ceiling|2

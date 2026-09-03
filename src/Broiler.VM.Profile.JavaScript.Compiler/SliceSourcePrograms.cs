@@ -132,7 +132,7 @@ public static class SliceSourcePrograms
     /// becomes bytes. They are judged by the composition that carries the front end, and the
     /// execution-only image - which has no front end - could not judge them and does not claim to.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=B2B221
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=6AE934
     // Broiler-Falsified-If: any source here compiles, or is refused with a code other than the one recorded beside it
     // Broiler-Human:        PENDING
     public static SliceRefusedSource[] Refused =>
@@ -149,9 +149,20 @@ public static class SliceSourcePrograms
             "refuse-an-unterminated-string",
             "\"use strict\n",
             SliceSourceDiagnosticCode.UnterminatedStringLiteral),
+        // An INCOMPLETE escape, not an unrecognised one. `\q` is `q` in the language, and the
+        // first census caught this front end refusing eight of Octane's twenty-four files over
+        // exactly that; what is genuinely malformed is a hexadecimal escape with too few digits.
         new(
-            "refuse-an-unknown-escape-sequence",
-            "\"use \\q strict\"; 1",
+            "refuse-an-unterminated-regular-expression",
+            "var re = /ab\nre",
+            SliceSourceDiagnosticCode.UnterminatedRegularExpression),
+        new(
+            "refuse-an-unterminated-template-literal",
+            "var t = `ab",
+            SliceSourceDiagnosticCode.UnterminatedTemplateLiteral),
+        new(
+            "refuse-an-incomplete-hexadecimal-escape",
+            "\"a\\x1\"; 1",
             SliceSourceDiagnosticCode.UnknownEscapeSequence),
 
         // ---- parsing -----------------------------------------------------------------------------
@@ -249,17 +260,16 @@ public static class SliceSourcePrograms
             "refuse-more-constants-than-the-pool-admits",
             DistinctConstants(65_536),
             SliceSourceDiagnosticCode.TooManyConstants),
-        new(
-            "refuse-an-operand-stack-deeper-than-the-format-admits",
-            RightNestedAddition(1_100),
-            SliceSourceDiagnosticCode.OperandStackTooDeep)
-        {
-            // The one source here that needs its own options. Right-nested addition is the only
-            // shape whose operand stack grows with its nesting, so reaching the stack ceiling
-            // means passing the nesting bound first - and a run that hit NestingTooDeep would be
-            // recording the wrong refusal against the right program.
-            Options = new SliceParseOptions(SliceGoal.Script, allowTopLevelAwait: false, 4_000),
-        },
+
+        // WHAT IS NOT HERE, and why it is a finding rather than a gap. The third lowering code,
+        // `OperandStackTooDeep`, has no entry, because no source can reach it. Right-nested
+        // addition is the only shape in this manifest whose operand stack grows with its nesting -
+        // a left-nested chain runs at a height of two however long it is, and parentheses add no
+        // instruction at all - so reaching the format's ceiling of 1,024 operands takes more than
+        // a thousand levels of nesting, and the parse depth bound refuses at a measured maximum of
+        // 512 counter units, about 170 levels. THE PARSE BOUND DOMINATES THE STACK CEILING. The
+        // code stays declared and the registry records it as defensive with that reason, which is
+        // a true statement about this build rather than a source nobody can write.
     ];
 
     /// <summary>

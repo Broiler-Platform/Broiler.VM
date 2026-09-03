@@ -844,7 +844,7 @@ internal static class ArchitectureRules
     /// registry alone decided which rows may claim it, the excuse would be available by editing
     /// the file the rule reads. Adding a fourth is an edit to this test, which is a review.
     /// </remarks>
-    internal static readonly int[] DefensiveCodes = [1003, 1006, 1903];
+    internal static readonly int[] DefensiveCodes = [1003, 1006, 1903, 2303];
 
     /// <summary>
     /// N7: every registry row is reachable from a named case. A <c>corpus</c> row names an entry

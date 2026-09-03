@@ -43,7 +43,14 @@ internal static class Program
                 return RunChecks(args.Contains("--verbose", StringComparer.Ordinal));
             }
 
-            Console.WriteLine("usage: --write <directory> | --checks [--verbose] | --closure");
+            if (args.Length >= 2 && string.Equals(args[0], "--census", StringComparison.Ordinal))
+            {
+                return Census(args[1..]);
+            }
+
+            Console.WriteLine(
+                "usage: --write <directory> | --checks [--verbose] | --closure | " +
+                "--census <directory> [<directory> ...]");
 
             return 2;
         }
@@ -207,6 +214,82 @@ internal static class Program
     /// </remarks>
     private static string Normalise(string source) =>
         source.Replace("\r\n", "\n", StringComparison.Ordinal).TrimEnd('\n') + "\n";
+
+    /// <summary>
+    /// Counts what the JavaScript under the given directories is made of.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>This measures the distance between this profile and real code, and it advances
+    /// nothing.</b> It is not the conformance oracle: roadmap section 14's harness needs a pinned
+    /// suite revision, content-independent sharding, a self-check that proves a failing test comes
+    /// back as a failure, per-host-mode totals and a ratchet, and this has none of them and claims
+    /// none of them. What it produces is a ranked census of constructs, which is an input to a
+    /// scope decision rather than a score.
+    /// </para>
+    /// <para>
+    /// <b>It reads whatever directory it is pointed at and ingests nothing.</b> No third-party
+    /// source enters this repository through it. The suite and the benchmark whose measurement
+    /// motivated it are separately licensed material whose retrieval, hashing and archiving is a
+    /// human action that has not happened, so this takes a path and keeps no copy.
+    /// </para>
+    /// </remarks>
+    private static int Census(string[] directories)
+    {
+        var paths = new List<string>();
+
+        foreach (var directory in directories)
+        {
+            if (!Directory.Exists(directory))
+            {
+                Console.WriteLine($"broiler-js-slice-compiler: no directory at {directory}");
+
+                return 2;
+            }
+
+            paths.AddRange(Directory.EnumerateFiles(directory, "*.js", SearchOption.AllDirectories));
+        }
+
+        paths.Sort(StringComparer.Ordinal);
+
+        var census = SliceConstructCensus.Take(paths.Select(File.ReadAllText));
+
+        Console.WriteLine(
+            $"# broiler.javascript.slice construct census over {census.FilesRead} files");
+        Console.WriteLine(
+            $"# {census.FilesParsed} parsed, " +
+            $"{census.FilesRead - census.FilesParsed - census.FilesThatFaulted} did not, " +
+            $"and {census.FilesCompiled} contain nothing outside the declared manifest");
+
+        // A fault is a defect in the front end rather than a property of a source, so it is
+        // reported on its own line and never folded into the parse failures.
+        if (census.FilesThatFaulted > 0)
+        {
+            Console.WriteLine(
+                $"# {census.FilesThatFaulted} threw out of the front end, which is a defect in it");
+        }
+        Console.WriteLine("# construct|files|occurrences");
+
+        foreach (var entry in census.Files.OrderByDescending(entry => entry.Value)
+            .ThenBy(entry => entry.Key.ToString(), StringComparer.Ordinal))
+        {
+            var occurrences = census.Occurrences.TryGetValue(entry.Key, out var total) ? total : 0;
+
+            Console.WriteLine($"{entry.Key}|{entry.Value}|{occurrences}");
+        }
+
+        if (census.ParseFailures.Count > 0)
+        {
+            Console.WriteLine("# the sources that did not parse, by the first refusal each got");
+
+            foreach (var failure in census.ParseFailures.OrderByDescending(entry => entry.Value))
+            {
+                Console.WriteLine($"{failure.Key}|{failure.Value}");
+            }
+        }
+
+        return 0;
+    }
 
     /// <summary>Runs the claims that need a neighbour profile, and the claims about the front end.</summary>
     private static int RunChecks(bool verbose)

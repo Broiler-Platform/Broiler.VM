@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   3
 // Annotated:        3/3
-// Exempt:           22
+// Exempt:           24
 // Human-reviewed:   0/3
 // IP risk:          None
 // Security risk:    Medium
@@ -44,7 +44,7 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// dated it.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=DDDDF8
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=4E385D
 // Broiler-Human:        PENDING
 public enum SliceSourceDiagnosticCode
 {
@@ -64,6 +64,12 @@ public enum SliceSourceDiagnosticCode
 
     /// <summary>An escape sequence a string literal does not define.</summary>
     UnknownEscapeSequence = 2005,
+
+    /// <summary>A regular-expression literal that reaches the end of the line without closing.</summary>
+    UnterminatedRegularExpression = 2006,
+
+    /// <summary>A template literal that reaches the end of the source without closing.</summary>
+    UnterminatedTemplateLiteral = 2007,
 
     // ---- 2100: parsing ---------------------------------------------------------------------
 

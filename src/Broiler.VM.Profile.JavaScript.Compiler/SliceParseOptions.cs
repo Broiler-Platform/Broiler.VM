@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   8
-// Annotated:        8/8
+// Relevant units:   9
+// Annotated:        9/9
 // Exempt:           5
-// Human-reviewed:   0/8
+// Human-reviewed:   0/9
 // IP risk:          None
-// Security risk:    Medium
-// Criteria:         2/1
+// Security risk:    High
+// Criteria:         3/2
 // Resource impact:  0/10 max
-// Unverified:       8
+// Unverified:       9
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -70,6 +70,30 @@ public readonly record struct SliceParseOptions
     // Broiler-Human:        PENDING
     public const int DefaultMaximumNestingDepth = 64;
 
+    /// <summary>
+    /// The largest bound this parser can honour, which is a measurement rather than a preference.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A bound above what the stack survives is not a bound.</b> One level of source nesting
+    /// costs several stack frames - an assignment, a conditional, two binary levels, a unary, a
+    /// postfix, a call chain and a primary - so a counter that admits N levels admits roughly
+    /// three times N frames' worth of grammar, and a caller who asked for a bound of four thousand
+    /// got a stack overflow with extra steps. That is exactly the process termination roadmap
+    /// section 9 makes a blocking failure, arrived at through the mechanism meant to prevent it.
+    /// </para>
+    /// <para>
+    /// <b>Measured rather than guessed.</b> Right-nested addition at 512 levels of source parses;
+    /// at 768 the process dies. This ceiling is 512 counter units, which is about 170 levels of
+    /// source - a third of the measured failure point, and far more than real JavaScript nests.
+    /// A caller asking for more is refused at construction rather than at the overflow.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=2C4111
+    // Broiler-Falsified-If: a source parsed at this bound terminates the process
+    // Broiler-Human:        PENDING
+    public const int MaximumSupportedNestingDepth = 512;
+
     /// <summary>Creates the options for <paramref name="goal"/> with every other switch defaulted.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=C3E535
     // Broiler-Human:        PENDING
@@ -79,7 +103,7 @@ public readonly record struct SliceParseOptions
     }
 
     /// <summary>Creates the options with every switch stated.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=925097
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=6C961A
     // Broiler-Human:        PENDING
     public SliceParseOptions(SliceGoal goal, bool allowTopLevelAwait, int maximumNestingDepth)
     {
@@ -89,6 +113,15 @@ public readonly record struct SliceParseOptions
                 nameof(maximumNestingDepth),
                 maximumNestingDepth,
                 "a parse with no depth allowance can accept no program at all");
+        }
+
+        if (maximumNestingDepth > MaximumSupportedNestingDepth)
+        {
+            throw new System.ArgumentOutOfRangeException(
+                nameof(maximumNestingDepth),
+                maximumNestingDepth,
+                "a bound above what the stack survives is not a bound; see " +
+                nameof(MaximumSupportedNestingDepth));
         }
 
         Goal = goal;
