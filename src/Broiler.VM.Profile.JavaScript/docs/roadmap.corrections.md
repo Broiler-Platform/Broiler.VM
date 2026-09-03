@@ -139,6 +139,8 @@ rather than a decision record.
 | [JSC-53](#jsc-53) | [JSD-0015](decisions/0015-the-conformance-oracle-and-what-it-refuses-to-score.md); ledger §2, §3 | The harness's metadata reader could not read the dialect it claimed to be shaped like, and a suite is read whole, so a real checkout would have scored nothing | five suite-shaped files put through the harness |
 | [JSC-54](#jsc-54) | roadmap §14; ledger §2 | A refusal answers a suite's negative expectation only when it was a language answer; this manifest's ordinary refusal is not one | [JSD-0016](decisions/0016-ingesting-a-third-party-suite-and-the-refusals-that-answer-nothing.md), decision 3 |
 | [JSC-55](#jsc-55) | ledger §2, the construct census | Seven of the twenty-four files measured as "the Octane benchmark" are not benchmark sources, and over the seventeen that are, the thirteen highest-ranked constructs admit none | a census re-run over the same checkout |
+| [JSC-56](#jsc-56) | `docs/compositions.md` section 3; roadmap section 15; ledger section 2 | The `narrow-runtime-compiler` label is claimed by an end-user host handed source from outside its own image, which is narrower than the source surface the register said it waited on | [JSD-0017](decisions/0017-the-end-user-host-and-what-an-exit-code-promises.md) |
+| [JSC-57](#jsc-57) | ledger section 2, the construct census; roadmap section 9 | The census reads at the largest nesting bound and the shipped default is 64, so two Octane files are refused for depth before the manifest is consulted and the two documents disagree | the host run over the same checkout at both bounds |
 
 ### JSC-01
 
@@ -2048,3 +2050,88 @@ repository for this correction any more than for the first one.
 
 **Authority and date.** A census re-run over the same Octane checkout, per file and in aggregate;
 2026-09-03.
+
+---
+
+### JSC-56
+
+**Where:** [`docs/compositions.md`](../../../docs/compositions.md) section 3, the paragraph
+beginning "Neither is `narrow-runtime-compiler`"; roadmap
+[section 15](roadmap.md#15-deployment-compositions-native-aot-and-the-browser-embedding); the
+[ledger](roadmap.status.md#2-current-milestone-status)'s JS-3b row.
+
+**What the record said.** The register recorded that no composition root here held the
+`narrow-runtime-compiler` label, that the slice-compiler root "is only shaped like one", and that
+"there is no source surface until JS-3b writes the tokenizer and the static semantics". The ledger
+recorded the consequence as an open gate clause: a publish-and-run of that composition on every
+claimed RID, "which is a collection nobody has made".
+
+**What was actually true after JSC-43.** JS-3b wrote the tokenizer, the parser, the one validation
+stage and the source lowering, so **the source surface the label waits on has existed since
+2026-09-03** and nothing in the register said so. What was still genuinely missing was narrower
+than "a source surface": it was a composition **handed source from outside its own image**. Every
+JavaScript root here reads its input from inside one - the slice-compiler root lowers a
+programmatic builder, the execution-only root reads an embedded corpus, the conformance root reads
+a fixture tree this repository also wrote - and a root lowering its own input cannot demonstrate
+what the label means.
+
+**What replaced it.** `Broiler.VM.Composition.JavaScript.Cli`, the end-user host: a path on a
+command line, compiled, verified, run, with the completion value printed. Its catalog table prints
+`narrow-runtime-compiler` where its siblings print `narrow-runtime-compiler-shaped`, and **its
+closure is the first here a reader can compare against section 15's row without a paragraph of
+exceptions** - it carries no corpus replay, no corpus writer, no fuzz mutator, no soak, no
+cross-profile checks and no conformance harness, all of which its siblings carry because rules A11
+and A12 leave such code nowhere else.
+
+**What it does not change.** The advertised set is still empty and this root is a demonstration
+like every other. That is not deferral: **a tool advertised as a JavaScript host has to be able to
+run JavaScript**, and this manifest admits no function, no object, no string value and no property
+access - pointed at the Octane benchmark the host refuses all twenty-four files. The gate clause is
+narrowed rather than closed: the composition exists and is published and run on one RID, and
+"every claimed RID" is still a collection nobody has made.
+
+**Authority and date.** [JSD-0017](decisions/0017-the-end-user-host-and-what-an-exit-code-promises.md),
+with [Bundle JS-3B-001](evidence/js-3b-001/README.md); 2026-09-03.
+
+---
+
+### JSC-57
+
+**Where:** the [ledger](roadmap.status.md#2-current-milestone-status)'s construct-census
+subsection; roadmap [section 9](roadmap.md#9-the-semantic-front-end-and-lowering)'s deep-nesting
+subsection; [JSC-50](#jsc-50), which set the bound's maximum and left its default at 64.
+
+**What the ledger said.** The census measured 24 Octane files and reported **24 parsed**, 0
+containing nothing outside the manifest, and a ranked list of the constructs the manifest excludes.
+Every one of those figures re-derives.
+
+**What running the end-user host over the same files found.** **Two of the twenty-four are refused
+before the manifest is consulted at all**, with `2103:NestingTooDeep` - `earley-boyer.js` and
+`mandreel.js` nest deeper than the 64 levels the parse options admit by default. Raise the bound to
+the largest the parser supports and both files get past the parser and are then refused by the
+manifest instead, so all 24 report `ConstructOutsideManifest`.
+
+**Both numbers are right and they answer different questions.** The census reads at
+`MaximumSupportedNestingDepth` deliberately, and its own remark says why: "a census wants to read
+the file rather than to enforce the slice's own conservative default". So the census measures **the
+language**, and the host at its default measures **the product**. What was missing is that nothing
+said the two disagree, and the disagreement runs in the direction that flatters: `24 parsed` is not
+a statement about what a person pointing the shipped default at those files sees.
+
+**And the diagnostic a user gets is the less useful one.** `NestingTooDeep` is a ceiling the
+specification permits an implementation to have - it is classified as an implementation limit by
+[JSD-0016](decisions/0016-ingesting-a-third-party-suite-and-the-refusals-that-answer-nothing.md)'s
+map, and no refusal carrying it may answer a conformance question. So at the default those two
+files report a refusal that says nothing about the manifest, when the manifest is what a reader
+wants to know about.
+
+**What replaced it.** The host takes `--max-depth`, so the two readings are measurable rather than
+being a discrepancy between two documents, and the ledger's census subsection carries both. **The
+default is not changed by this entry**: whether 64 is the right default for a host is a decision
+with a measurement behind it now and an owner still to name it.
+
+**What it does not change.** No census figure moves, no manifest grows, and nothing is accepted.
+The Octane checkout stays where it is: the host takes a path and keeps no copy.
+
+**Authority and date.** `Broiler.VM.Composition.JavaScript.Cli` run over the same Octane checkout
+at both bounds, retained in [Bundle JS-3B-001](evidence/js-3b-001/README.md); 2026-09-03.

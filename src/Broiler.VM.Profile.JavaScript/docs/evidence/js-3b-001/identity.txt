@@ -1,0 +1,24 @@
+bundle:                JS-3B-001
+milestone:             JS-3b
+collected (UTC):       2026-09-03T13:56:01+00:00
+component commit:      6e42f719eb704ba0377fdc4b844f18d64a3da87f
+branch:                main
+working tree:          DIRTY
+dirty entries:         10
+owner:                 profile architecture owner (unassigned identity)
+reviewer:              NONE - nothing here has been reviewed
+
+Every path below is relative to the component root. A figure in this bundle is this
+component's own; no result from any other component is evidence here.
+
+Dirty entries at collection time, listed rather than summarised:
+   M Broiler.VM.slnx
+   M docs/adr/0001-component-topology-and-dependency-graph.md
+   M docs/compositions.md
+   M eng/collect-js-evidence.py
+   M src/tests/Broiler.VM.Architecture.Tests/graph.manifest.json
+  ?? eng/run-cli-acceptance.py
+  ?? src/Broiler.VM.Profile.JavaScript/docs/evidence/js-3b-001/
+  ?? src/compositions/Broiler.VM.Composition.JavaScript.Cli/
+  ?? src/tests/Broiler.VM.Architecture.Tests/catalogs/cli.catalog.txt
+  ?? src/tests/cli/

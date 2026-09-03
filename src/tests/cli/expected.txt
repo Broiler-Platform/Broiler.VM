@@ -1,0 +1,54 @@
+# The CLI acceptance suite: one row per command line, judged on the real binary.
+#
+# args|exit|substring
+#
+# NOTHING HERE INJECTS ANYTHING. Every row is a file this host is pointed at and an exit code it
+# must answer with; no source of this component is patched, no internal is reached for, and the
+# thing under test is the published binary rather than a type inside it. A control is an INPUT.
+#
+# The substring is matched against standard output and standard error together, because which of
+# the two carries a message is part of what this host promises and is asserted separately by the
+# rows that expect a value on stdout with nothing on stderr.
+
+# It runs what the manifest admits, and prints the completion value and nothing else.
+runs/a-product.js|0|42
+runs/a-boolean.js|0|true
+runs/a-loop-that-ends.js|0|45
+--module runs/a-module-goal-program.js|0|3
+
+# --check compiles and verifies without running, so it prints no value.
+--check runs/a-product.js|0|
+
+# It refuses source, by name, with the position.
+refused/a-const-with-no-initialiser.js|3|2203:ConstWithoutInitialiser
+refused/a-string-value.js|3|2104:ConstructOutsideManifest
+refused/a-break-outside-a-loop.js|3|2207:IllegalBreak
+refused/an-unterminated-string.js|3|2004:UnterminatedStringLiteral
+refused/a-free-name.js|3|2206:UnresolvableIdentifier
+
+# THE NESTING BOUND IS A CEILING THIS BUILD DECLARES, not a statement about the language, and the
+# same file answers differently either side of it. Two files of the Octane benchmark are refused at
+# the default for exactly this reason.
+limits/nesting-past-the-default.js|3|2103:NestingTooDeep
+--max-depth 512 limits/nesting-past-the-default.js|0|1
+
+# A program with no exit ends by spending its allowance, and says so rather than being killed.
+--fuel 200000 limits/a-loop-that-does-not-end.js|5|did not settle within its allowance
+
+# A byte-order mark is format-control whitespace a source text may open with, so an ordinary file
+# saved by an ordinary editor runs.
+encoding/with-a-byte-order-mark.js|0|7
+
+# BYTES THAT ARE NOT UTF-8 ARE REFUSED RATHER THAN DECODED WITH REPLACEMENT CHARACTERS. A
+# replacement character changes the program, and a host that ran a different program than the file
+# contains is worse than one that declines.
+encoding/not-utf8.js|6|not valid UTF-8
+
+# The command line itself is checked: a path that is not there, and an option this host has not.
+missing/nothing-here.js|6|no file or directory at
+--nonsense runs/a-product.js|2|is not an option this host has
+
+# Several files at once report the WORST answer, and a legitimate refusal does not outrank a
+# clean run into failure - it simply dominates it, because the caller has to know something
+# was refused.
+runs/a-product.js refused/a-string-value.js|3|RefusedSource: 1

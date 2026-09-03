@@ -1,0 +1,21 @@
+# judging D:\Broiler.Browser\Broiler.VM\src\compositions\Broiler.VM.Composition.JavaScript.Cli\bin\Release\net10.0\Broiler.VM.Composition.JavaScript.Cli.exe
+# over 18 command lines from src\tests\cli\expected.txt
+ok   runs/a-product.js
+ok   runs/a-boolean.js
+ok   runs/a-loop-that-ends.js
+ok   --module runs/a-module-goal-program.js
+ok   --check runs/a-product.js
+ok   refused/a-const-with-no-initialiser.js
+ok   refused/a-string-value.js
+ok   refused/a-break-outside-a-loop.js
+ok   refused/an-unterminated-string.js
+ok   refused/a-free-name.js
+ok   limits/nesting-past-the-default.js
+ok   --max-depth 512 limits/nesting-past-the-default.js
+ok   --fuel 200000 limits/a-loop-that-does-not-end.js
+ok   encoding/with-a-byte-order-mark.js
+ok   encoding/not-utf8.js
+ok   missing/nothing-here.js
+ok   --nonsense runs/a-product.js
+ok   runs/a-product.js refused/a-string-value.js
+# 18 of 18 command lines answered as declared

@@ -17,7 +17,8 @@
     "VM-5 adds the one test-only project ADR 0001 revision 3 authorises - an uninstrumented benchmark host that publishes what the core costs a profile - taking the graph from 13 projects and 37 edges to 14 and 41, and test-only projects from 8 to 9. It adds ZERO packable assemblies, so the packable set is still exactly the three product packages. It references no benchmarking package: a framework's own warmup, pilot and outlier policies would be part of every figure the component publishes and none of them would be visible in this repository.",
     "JS-0 adds the three project shells the JavaScript profile's own ADR-equivalent decision JSD-0001 authorises - the format assembly, the profile assembly and the lowering - taking the graph from 14 projects and 41 edges to 17 and 46, and product projects from 3 to 6. It adds ZERO packable assemblies: all three declare IsPackable false and no PackageId, so the packable set is still exactly the three core packages and rule A6 still counts three. The profile assembly references Abstractions, Binary and its own format sibling, which ADR 0011 P1's 2026-08-31 revision admits; the lowering references Abstractions and the format and never the profile, which is what makes an execution-only composition compiler-free. ADR 0001 revision 5 authorises the growth.",
     "JS-1 adds the two composition roots ADR 0001 revision 6 authorises - an execution-only root and a slice-compiler root - taking the graph from 17 projects and 46 edges to 19 and 55. It adds ZERO packable assemblies. The two are separate projects rather than two modes of one because their REFERENCE SETS differ by the lowering, which is the whole of the execution-only claim: that root names the profile and not the compiler, so it cannot turn source into an artifact however it is invoked, and every artifact it runs is precompiled and read as bytes.",
-    "JS-3a adds the conformance harness, which ADR 0001's revision of 2026-09-03 authorises: a composition root that is NEVER ADVERTISED, taking the graph from 20 projects and 59 edges to 21 and 64. It adds ZERO packable assemblies. Its reference set is the slice-compiler root's, because scoring a conformance test means lowering it - and rule N13 is what holds the consequence: the harness, and any suite it reads, appear in no package and in no advertised composition's closure, and no other project references it in either direction."
+    "JS-3a adds the conformance harness, which ADR 0001's revision of 2026-09-03 authorises: a composition root that is NEVER ADVERTISED, taking the graph from 20 projects and 59 edges to 21 and 64. It adds ZERO packable assemblies. Its reference set is the slice-compiler root's, because scoring a conformance test means lowering it - and rule N13 is what holds the consequence: the harness, and any suite it reads, appear in no package and in no advertised composition's closure, and no other project references it in either direction.",
+    "JS-3b adds ONE composition root and it is the first here to claim a deployment label: the end-user host, which ADR 0001 revision of 2026-09-03 authorises. It takes the graph from 21 projects and 64 edges to 22 and 69, and adds ZERO packable assemblies. Its reference set is the conformance root's and the slice-compiler root's - the profile plus the lowering - so it introduces no new edge SHAPE; what it introduces is a composition that is handed SOURCE FROM OUTSIDE THE IMAGE, which is the one thing `narrow-runtime-compiler` means that a root lowering a programmatic builder cannot demonstrate. It is the only JavaScript root carrying no test tooling at all, which is what makes its closure readable against the label rather than needing the paragraph of exceptions every sibling needs."
   ],
   "milestone": "JS-1",
   "coreContractVersion": 1,
@@ -162,6 +163,21 @@
       "path": "src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance.csproj",
       "assemblyName": "Broiler.VM.Composition.JavaScript.Conformance",
       "rootNamespace": "Broiler.VM.Composition.JavaScript.Conformance",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Runtime",
+        "Broiler.VM.Profile.JavaScript",
+        "Broiler.VM.Profile.JavaScript.Compiler"
+      ]
+    },
+    {
+      "path": "src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj",
+      "assemblyName": "Broiler.VM.Composition.JavaScript.Cli",
+      "rootNamespace": "Broiler.VM.Composition.JavaScript.Cli",
       "packageId": null,
       "isPackable": false,
       "isTestProject": false,
