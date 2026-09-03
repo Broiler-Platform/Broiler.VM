@@ -160,6 +160,38 @@ jobs:
           dotnet run -c Release -p:BroilerVmVersion=0.1.0-preview.2
           dotnet run -c Release -p:BroilerVmVersion=0.1.0-preview.1
 
+      # THE THIRD-PARTY SUITE, SCORED AGAINST ITS FLOOR, AND THE ONLY LANE STEP HERE WHOSE INPUT
+      # IS SOMEBODY ELSE'S MATERIAL. It became possible on 2026-09-03: the suite is archived in
+      # this repository at a digest rule N15 checks, so a floor over it is a promise about bytes
+      # this repository holds rather than about a directory a network hands back.
+      #
+      # WHY IT GUARDS SOMETHING NO EXIT CODE CAN. A case that stops being scorable is reported
+      # SKIPPED and a run full of skips exits zero, so the adapter could start declining files, or
+      # the language-class rule start calling earned refusals unearned, and this lane would stay
+      # green over a shrinking number of passes. The floor names the figure.
+      #
+      # ONCE, NOT PER CELL, AND THAT IS A NARROWING WORTH STATING. The two in-repository suites run
+      # on every publish cell because a published image is what they are about; this one is about
+      # the ENGINE's answers over a fixed corpus, which no runtime identifier changes, and 232 MB
+      # of extraction on five cells would buy a repetition rather than a reading. So it runs here,
+      # on one Linux runner, and the exclusion is that no other RID has scored this suite.
+      - name: Score the archived third-party suite against its floor
+        run: |
+          set -euo pipefail
+          pins="src/tests/conformance/pins"
+          binary="src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Conformance"
+          [ -f "$binary.exe" ] && binary="$binary.exe"
+
+          # The archive is what is committed; the extraction is scratch and is never committed.
+          # `--expect` is what makes the extraction answerable to the pin rather than to itself.
+          rm -rf artifacts/t262 && mkdir -p artifacts/t262
+          tar xzf "$pins"/test262-*.tar.gz -C artifacts/t262
+          suite=$(find artifacts/t262 -maxdepth 1 -mindepth 1 -type d)
+
+          "$binary" --suite "$suite" --expect "$pins/test262.pin" --dialect ingested --selfcheck src/tests/conformance/ingest-shape/selfcheck --run --include-negative --output artifacts/test262.report
+
+          "$binary" --floor src/Broiler.VM.Profile.JavaScript/docs/conformance/floor-test262.txt --report artifacts/test262.report
+
   # Publish and run every advertised composition on every claimed RID, with trim and AOT warnings
   # as errors. Roadmap section 15 gate 5 asks for exactly this, and gate 2 asks that the closure
   # match its claim - which is why each composition is RUN and not merely published: a linker

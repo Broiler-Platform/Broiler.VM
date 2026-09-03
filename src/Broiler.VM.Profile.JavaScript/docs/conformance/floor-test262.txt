@@ -1,0 +1,25 @@
+# broiler-js-conformance floor 1
+# suite <name>; revision <revision>; mode <name> <executed> <passed>
+# a retired line is a floor a revision change re-based, kept with its reason
+#
+# THE FIRST FLOOR OVER THIRD-PARTY MATERIAL, and it could not be set until 2026-09-03 because
+# until that day the material was somebody else's to change. A floor is a promise that a later run
+# of the same revision will not fall below these figures; over a suite fetched from a network at
+# run time that promise is about a directory nobody here controls. The suite is now archived in
+# this repository at a digest rule N15 checks, so the revision below names something that cannot
+# move without a commit that moves it.
+#
+# IT CARRIES NO RAW ROW because the suite executes nothing in that mode, and the absence is the
+# point rather than an omission - the ingested dialect's `raw` flag means source with no harness
+# prelude, not artifact bytes.
+#
+# WHAT THESE FIGURES ARE NOT. Not a conformance claim and not a percentage: 1,084 cases of a suite
+# of 56,560 files were scored, the rest declined as unscorable or excluded, and roadmap section 14
+# forbids publishing an aggregate percentage then or ever. What the floor guards is the one thing
+# an exit code cannot - a case that stops being scorable is reported SKIPPED, and a run full of
+# skips exits zero, so the adapter could start declining files and every lane would stay green
+# over a shrinking number of passes. The floor names the figure, so the shrink is what fails.
+suite test262
+revision 46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93
+mode Script 1063 1063
+mode Module 21 21

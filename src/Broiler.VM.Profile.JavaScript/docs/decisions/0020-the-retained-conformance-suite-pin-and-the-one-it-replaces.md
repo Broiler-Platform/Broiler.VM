@@ -3,9 +3,10 @@
 **Status:** Accepted. **Updated the same day: the suite is archived and the row is closed.** It
 was recorded here as retrieved and hashed and not archived, with the archiving action outstanding;
 the archive was retained hours later, as the `.tar.gz` it was retrieved as rather than as 56,560
-extracted files, and section 14's attribution obligation was discharged with it. Section 3 below is
-left as it was written, in the state it described. **Nothing here accepts a manifest, advances a
-milestone, or sets a floor over any figure**, then or now.
+extracted files, and section 14's attribution obligation was discharged with it. **And the floor
+this record refused was set once the archive made it possible** — see
+[`docs/conformance/`](../conformance/README.md). Section 3 below is left as it was written, in the
+state it described. **Nothing here accepts a manifest or advances a milestone**, then or now.
 
 **Date:** 2026-09-03
 
@@ -90,10 +91,12 @@ pin so that the obligation is met in advance rather than discovered at a publish
 
 ## What this refuses to do
 
-- **It sets no floor over any test262 figure.** A floor is a ratchet over a suite revision, and
-  ratcheting a figure obtained against material this repository does not hold would be a promise
-  about a directory somebody else controls. Every figure published from that suite stays a
-  measurement and not a commitment.
+- **It sets no floor over any test262 figure**, and the reason is worth reading because it
+  expired the same day: a floor is a ratchet over a suite revision, and ratcheting a figure
+  obtained against material this repository does not hold would be a promise about a directory
+  somebody else controls. **Archiving the suite removed that objection**, and a floor was set on
+  2026-09-03 over 1,063 Script and 21 Module cases, enforced once per lane rather than per publish
+  cell. What this record refused is what it could refuse at the time it was written.
 - **It does not discharge the attribution row.** Roadmap section 14 lands that row "in the change
   that first ingests a suite file", and this change ingests none. What has expired is the *reason*
   [JSC-30](../roadmap.corrections.md#jsc-30) gave for deferring it — an attribution for material
