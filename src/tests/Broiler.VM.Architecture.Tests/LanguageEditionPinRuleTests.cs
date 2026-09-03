@@ -40,20 +40,26 @@ public sealed class LanguageEditionPinRuleTests
     [Fact]
     public void N14_The_Pin_Says_The_Same_Thing_In_The_Code_The_Record_And_The_Ledger()
     {
-        Assert.Empty(ArchitectureRules.N14(Declared(), Document(DecisionPath), Document(LedgerPath)));
+        Assert.Empty(ArchitectureRules.N14(
+            Declared(), Document(DecisionPath), Document(LedgerPath), ArchivedDigest()));
 
         // Non-vacuous in the way this rule can most easily be empty for the wrong reason: it
         // compares constants against text, so a declaration that stopped declaring them would make
         // every clause free. The count is asserted rather than the names alone, because a rule
-        // reading four of ten constants is a rule the other six can be edited around.
-        Assert.Equal(10, Declared().Count);
+        // reading five of eleven constants is a rule the other six can be edited around. The
+        // digest clause is non-vacuous in a second way that is worth asserting separately: it
+        // compares against a file, so a run in which that file had vanished would otherwise report
+        // one violation where it should report the absence.
+        Assert.Equal(11, Declared().Count);
         Assert.Equal("ES2026", Declared()["Year"]);
+        Assert.NotNull(ArchivedDigest());
 
         Assert.Contains(
             ArchitectureRules.N14(
                 new Dictionary<string, string>(StringComparer.Ordinal) { ["Year"] = "ES2026" },
                 Document(DecisionPath),
-                Document(LedgerPath)),
+                Document(LedgerPath),
+                ArchivedDigest()),
             violation => violation.Contains("quantifying over nothing", StringComparison.Ordinal));
     }
 
@@ -66,7 +72,7 @@ public sealed class LanguageEditionPinRuleTests
         };
 
         var violations = ArchitectureRules.N14(
-            moved, Document(DecisionPath), Document(LedgerPath)).ToArray();
+            moved, Document(DecisionPath), Document(LedgerPath), ArchivedDigest()).ToArray();
 
         Assert.Contains(violations, violation => violation.Contains(
             "the decision record does not name the declared Revision", StringComparison.Ordinal));
@@ -83,37 +89,96 @@ public sealed class LanguageEditionPinRuleTests
             ["DocumentDigest"] = new string('f', 64),
         };
 
-        Assert.Contains(
-            ArchitectureRules.N14(rehashed, Document(DecisionPath), Document(LedgerPath)),
-            violation => violation.Contains(
-                "the decision record does not name the declared DocumentDigest",
-                StringComparison.Ordinal));
+        var violations = ArchitectureRules.N14(
+            rehashed, Document(DecisionPath), Document(LedgerPath), ArchivedDigest()).ToArray();
+
+        Assert.Contains(violations, violation => violation.Contains(
+            "the decision record does not name the declared DocumentDigest",
+            StringComparison.Ordinal));
+
+        // And the archived bytes disagree with it too, which is the clause that could not exist
+        // while the document lived only at a URL.
+        Assert.Contains(violations, violation => violation.Contains(
+            "the archived document hashes to", StringComparison.Ordinal));
     }
 
     [Fact]
     public void N14_Rejects_An_Archive_Claim_Only_One_Document_Makes()
     {
-        // THE CLAUSE THAT GUARDS THE OVERCLAIM, in both directions. Flipping the boolean without
-        // resolving the ledger's exclusion claims a fully taken pin the ledger does not support;
-        // resolving the exclusion without flipping the boolean leaves every run printing "NOT
-        // archived" over a document somebody archived.
-        var claimsArchived = new Dictionary<string, string>(Declared(), StringComparer.Ordinal)
+        // BOTH DIRECTIONS, because the pin has been in both states and could go back. While the
+        // document was retrieved and hashed and not archived, a ledger that had stopped calling
+        // the pin provisional would have been claiming a fully taken one; now that it IS archived,
+        // a ledger line still calling it provisional is describing a state that has passed.
+        var unarchived = new Dictionary<string, string>(Declared(), StringComparer.Ordinal)
         {
-            ["Archived"] = "true",
+            ["Archived"] = "false",
         };
 
         Assert.Contains(
-            ArchitectureRules.N14(claimsArchived, Document(DecisionPath), Document(LedgerPath)),
+            ArchitectureRules.N14(
+                unarchived, Document(DecisionPath), Document(LedgerPath), ArchivedDigest()),
             violation => violation.Contains(
-                "still calls the pin provisional", StringComparison.Ordinal));
+                "an unarchived pin carries a named exclusion", StringComparison.Ordinal));
 
         Assert.Contains(
             ArchitectureRules.N14(
                 Declared(),
                 Document(DecisionPath),
-                "a ledger that says nothing about how this pin was taken"),
+                Document(LedgerPath) + "\nthis pin at " + Declared()["Revision"] + " is provisional",
+                ArchivedDigest()),
             violation => violation.Contains(
-                "an unarchived pin carries a named exclusion", StringComparison.Ordinal));
+                "still calls the pin provisional", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void N14_Rejects_An_Archive_That_Is_Not_There()
+    {
+        // The clause reads a file, so its failure mode is a file that has gone. A declaration
+        // saying a document is archived somewhere nothing is retained is the pin at its least
+        // useful: every run keeps printing a digest nobody in this checkout can check.
+        Assert.Contains(
+            ArchitectureRules.N14(
+                Declared(), Document(DecisionPath), Document(LedgerPath), archivedDigest: null),
+            violation => violation.Contains("and no file is there", StringComparison.Ordinal));
+
+        var unarchived = new Dictionary<string, string>(Declared(), StringComparer.Ordinal)
+        {
+            ["Archived"] = "false",
+        };
+
+        Assert.Contains(
+            ArchitectureRules.N14(
+                unarchived,
+                Document(DecisionPath),
+                Document(LedgerPath) + "\nthis pin at " + Declared()["Revision"] + " is provisional",
+                ArchivedDigest()),
+            violation => violation.Contains(
+                "and the declaration says nothing is archived", StringComparison.Ordinal));
+    }
+
+    /// <summary>
+    /// The SHA-256 of the archived document, or null where nothing is retained at the declared
+    /// path.
+    /// </summary>
+    /// <remarks>
+    /// Read as bytes and hashed here rather than trusted from anywhere: the point of the archive
+    /// is that the published constant describes a file this repository holds, and a check that
+    /// took the digest from a manifest beside the file would be comparing two copies of the same
+    /// claim.
+    /// </remarks>
+    private static string? ArchivedDigest()
+    {
+        var path = Path.Combine(
+            ComponentGraph.Root,
+            Declared()["ArchivedAt"].Replace('/', Path.DirectorySeparatorChar));
+
+        if (!File.Exists(path))
+        {
+            return null;
+        }
+
+        return Convert.ToHexString(
+            System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(path)));
     }
 
     /// <summary>Every constant the declaration declares, by name, as written.</summary>

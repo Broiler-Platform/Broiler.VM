@@ -1295,14 +1295,13 @@ internal static class ArchitectureRules
     /// disagreement was possible.
     /// </para>
     /// <para>
-    /// <b>The clause that matters most is the last one, because it guards the overclaim.</b>
-    /// Retrieving, hashing and archiving a third-party document is a human action and only two of
-    /// the three have been performed, so roadmap section 24 makes the pin PROVISIONAL and requires
-    /// the ledger to carry a named exclusion. The code says which state it is in with a boolean.
-    /// If that boolean is flipped without the ledger's exclusion being resolved - or resolved
-    /// without the boolean being flipped - the component would be claiming a fully taken pin in
-    /// one document and a provisional one in another, and the direction that hides is the one
-    /// where the code claims more.
+    /// <b>Two clauses guard the overclaim, and the second only became possible when the document
+    /// was archived.</b> Section 24 asks for a document retrieved, hashed AND archived; while only
+    /// two of the three had happened the pin was provisional and the ledger had to carry a named
+    /// exclusion, so the boolean and the ledger's wording are held to each other in both
+    /// directions. And now that the file is in the tree, the published digest is checked against
+    /// the bytes it describes - which is the whole difference between a pin a reader can verify
+    /// and one they can only read.
     /// </para>
     /// <para>
     /// <b>Over source text rather than over the loaded constants</b>, because rule A11 keeps the
@@ -1313,9 +1312,10 @@ internal static class ArchitectureRules
     internal static IEnumerable<string> N14(
         IReadOnlyDictionary<string, string> declared,
         string decisionRecord,
-        string ledger)
+        string ledger,
+        string? archivedDigest)
     {
-        string[] required = ["Year", "Revision", "DocumentDigest", "Archived"];
+        string[] required = ["Year", "Revision", "DocumentDigest", "Archived", "ArchivedAt"];
         var missing = required.Where(name => !declared.ContainsKey(name)).ToArray();
 
         // The vacuity clause first, for the reason N13's carries one: a rule that passes by
@@ -1347,22 +1347,65 @@ internal static class ArchitectureRules
         }
 
         var archived = string.Equals(declared["Archived"], "true", StringComparison.Ordinal);
-        var ledgerSaysProvisional = ledger.Contains("provisional", StringComparison.OrdinalIgnoreCase);
 
-        if (!archived && !ledgerSaysProvisional)
+        // OVER THE LINES THAT NAME THIS PIN, NOT OVER THE WHOLE LEDGER. The first draft of this
+        // clause read the file for the bare word `provisional`, which the ledger also uses about
+        // the value representation and about a milestone that is not this one - so it would have
+        // fired on a pin nobody had touched the moment this one was archived. What the rule means
+        // is that wherever the ledger names THIS revision it must not describe a state that has
+        // passed, and that is what it now reads.
+        var naming = ledger
+            .Replace("\r\n", "\n", StringComparison.Ordinal)
+            .Split('\n')
+            .Where(line => line.Contains(declared["Revision"], StringComparison.Ordinal))
+            .ToArray();
+
+        foreach (var line in naming.Where(static line =>
+                     line.Contains("provisional", StringComparison.OrdinalIgnoreCase)))
         {
-            yield return
-                "the declaration says the document is not archived and the ledger calls the pin " +
-                "nothing of the sort: an unarchived pin carries a named exclusion";
+            if (archived)
+            {
+                yield return
+                    "the declaration says the document is archived and a ledger line naming this " +
+                    $"revision still calls the pin provisional: `{Trim(line)}`";
+            }
         }
 
-        if (archived && ledgerSaysProvisional)
+        if (!archived && !naming.Any(static line =>
+                line.Contains("provisional", StringComparison.OrdinalIgnoreCase)))
         {
             yield return
-                "the declaration says the document is archived and the ledger still calls the pin " +
-                "provisional: one of the two is describing a state that has passed";
+                "the declaration says the document is not archived and no ledger line naming this " +
+                "revision calls the pin provisional: an unarchived pin carries a named exclusion";
+        }
+
+        // THE CLAUSE ARCHIVING MADE POSSIBLE, and the one that turns the field from a claim into a
+        // fact. While the document lived only at a URL the digest could be checked by anybody with
+        // a network and by nothing in this repository. Now the file is here, so the constant is
+        // checked against the bytes it describes on every run of this suite.
+        if (archived && archivedDigest is null)
+        {
+            yield return
+                $"the declaration says the document is archived at `{declared["ArchivedAt"]}` and " +
+                "no file is there";
+        }
+        else if (archived && !string.Equals(archivedDigest, declared["DocumentDigest"], StringComparison.OrdinalIgnoreCase))
+        {
+            yield return
+                $"the archived document hashes to `{archivedDigest}` and the declaration says " +
+                $"`{declared["DocumentDigest"]}`";
+        }
+        else if (!archived && archivedDigest is not null)
+        {
+            yield return
+                $"a document is retained at `{declared["ArchivedAt"]}` and the declaration says " +
+                "nothing is archived";
         }
     }
+
+    /// <summary>One ledger line, short enough to read in a failure message.</summary>
+    private static string Trim(string line) =>
+        line.Length <= 120 ? line.Trim() : line[..120].Trim() + "…";
 
     // ---- Group B: compiled metadata ---------------------------------------------------------
 

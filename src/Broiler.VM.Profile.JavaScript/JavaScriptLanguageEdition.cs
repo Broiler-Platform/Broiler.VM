@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   12
-// Annotated:        12/12
+// Relevant units:   13
+// Annotated:        13/13
 // Exempt:           0
-// Human-reviewed:   0/12
+// Human-reviewed:   0/13
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       12
+// Unverified:       13
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -37,12 +37,12 @@ namespace Broiler.VM.Profile.JavaScript;
 /// be moved and a commit cannot.
 /// </para>
 /// <para>
-/// <b><see cref="Archived"/> is false and says so on every run that prints this.</b> Retrieving,
-/// hashing and archiving a third-party document is a human action, and two of those three have
-/// been done. The pin is therefore PROVISIONAL in the sense roadmap section 24 defines: it carries
-/// a named exclusion in the ledger, with a holder and an unblock condition, until someone archives
-/// the document. A field is used rather than a paragraph so that a run states the provisionality
-/// rather than a reader having to go and look it up.
+/// <b><see cref="Archived"/> was false for as long as it was true that nobody had archived the
+/// document, and a run said so on every line it printed.</b> All three of section 24's actions -
+/// retrieve, hash, archive - are done as of 2026-09-03, and the document is in this repository at
+/// <see cref="ArchivedAt"/> with the digest below as the check. A field is used rather than a
+/// paragraph because the state had to be able to change, and this is the change: a run that keeps
+/// printing a provisionality that has passed is as wrong as one that never printed it.
 /// </para>
 /// <para>
 /// <b>What a pinned edition does not do.</b> It does not tell the conformance harness which
@@ -104,22 +104,38 @@ public static class JavaScriptLanguageEdition
         "ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0";
 
     /// <summary>
-    /// Whether a human has archived the document, which is the third of the three actions roadmap
-    /// section 24 asks for and the one nobody has performed.
+    /// Whether the document has been archived, which is the third of the three actions roadmap
+    /// section 24 asks for. True since 2026-09-03.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=AE2ABC
+    /// <remarks>
+    /// <b>Archiving is what makes the digest checkable without a network.</b> A pin whose document
+    /// lives only at a URL depends on somebody else's uptime and somebody else's history; the
+    /// archived copy is verifiable in a checkout that has neither.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=607149
     // Broiler-Human:        PENDING
-    public const bool Archived = false;
+    public const bool Archived = true;
+
+    /// <summary>Where the archived document is retained, relative to the repository root.</summary>
+    /// <remarks>
+    /// <b>Named here rather than left to a reader to find</b>, because a run that says a document
+    /// is archived and does not say where has moved the search rather than ended it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=BB3644
+    // Broiler-Human:        PENDING
+    public const string ArchivedAt =
+        "src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html";
 
     /// <summary>The pin on one line, in the shape a run prints it.</summary>
     /// <remarks>
-    /// It names the provisionality rather than leaving it to a reader who might not look. A run
-    /// that printed the edition and not the missing archive would be a run implying more than it
-    /// has.
+    /// <b>It names the archive's state, and did so in both states.</b> While nothing was archived
+    /// it said so, because a run printing an edition and not the missing archive implies more than
+    /// it has; now it names the retained path, because a run saying a document is archived and not
+    /// saying where has moved the search rather than ended it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2DE130
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4D1AF4
     // Broiler-Human:        PENDING
     public static string Describe() =>
         $"{Standard} {Year} ({Source}@{Revision}, {Document} sha256 {DocumentDigest})" +
-        (Archived ? string.Empty : " - retrieved and hashed, NOT archived");
+        (Archived ? " - archived at " + ArchivedAt : " - retrieved and hashed, NOT archived");
 }

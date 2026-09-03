@@ -70,7 +70,8 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptFault.Kind : Broiler.VM.Profile.JavaScript.JavaScriptErrorKind { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptFault.Message : System.String { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptInstance.InvocationCount : System.Int32 { get; }
-  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptLanguageEdition.Archived : const System.Boolean = false
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptLanguageEdition.Archived : const System.Boolean = true
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptLanguageEdition.ArchivedAt : const System.String = "src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html"
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptLanguageEdition.Describe() : static System.String
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptLanguageEdition.Document : const System.String = "spec.html"
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptLanguageEdition.DocumentBytes : const System.Int32 = 2978793

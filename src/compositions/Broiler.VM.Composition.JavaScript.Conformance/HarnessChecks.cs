@@ -360,7 +360,7 @@ internal static class HarnessChecks
             cells.Length == 8 &&
                 string.Equals(cells[4], JavaScriptLanguageEdition.Revision, StringComparison.Ordinal) &&
                 string.Equals(cells[6], JavaScriptLanguageEdition.DocumentDigest, StringComparison.Ordinal) &&
-                string.Equals(cells[7], "not-archived", StringComparison.Ordinal),
+                string.Equals(cells[7], "archived", StringComparison.Ordinal),
             line.Length == 0 ? "no edition line was rendered" : line);
     }
 

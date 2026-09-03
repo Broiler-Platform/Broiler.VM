@@ -1,9 +1,13 @@
 # JSD-0019 - The pinned language edition, and what two of the three actions buy
 
-**Status:** Accepted as a **provisional** pin, in the sense roadmap
-[section 24](../roadmap.gates.md#24-specification-and-platform-references) defines: the document is
-**retrieved and hashed and not archived**, so the pin carries a named exclusion in the ledger with
-a holder and an unblock condition. Nothing here accepts a manifest or advances a milestone.
+**Status:** Accepted. **Updated the same day: the pin is no longer provisional.** It was recorded
+as provisional in the sense roadmap
+[section 24](../roadmap.gates.md#24-specification-and-platform-references) defines — retrieved and
+hashed and not archived — and the document was archived hours later, so all three of section 24's
+actions are done and the ledger's row is closed. The body below is left as it was written, in the
+state it described; where it says two of the three actions are done, the third is now done too, and
+[`docs/specification/`](../specification/README.md) records it. **Nothing here accepts a manifest
+or advances a milestone**, then or now.
 
 **Date:** 2026-09-03
 
