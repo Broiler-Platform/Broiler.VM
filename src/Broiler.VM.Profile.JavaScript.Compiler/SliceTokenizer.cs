@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   31
-// Annotated:        31/31
+// Relevant units:   36
+// Annotated:        36/36
 // Exempt:           100
-// Human-reviewed:   0/31
+// Human-reviewed:   0/36
 // IP risk:          None
 // Security risk:    High
-// Criteria:         17/13
+// Criteria:         22/18
 // Resource impact:  2/10 max
-// Unverified:       31
+// Unverified:       36
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -1259,12 +1259,284 @@ public sealed class SliceTokenizer
     /// the matcher is an unopened dependency with a named holder, and a tokenizer that parsed the
     /// pattern would be the beginning of one.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=8FD36F
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=C7126B
     // Broiler-Falsified-If: a `/` inside a character class ends the literal
     // Broiler-Human:        PENDING
     private SliceToken ReadRegularExpressionLiteral(int startLine, int startColumn, bool sawNewline)
     {
         var start = index;
+
+        // THE SCAN IS SHARED WITH THE ONE A TEMPLATE SUBSTITUTION NEEDS, because it is the same
+        // question - where does this literal end - asked once to produce a token and once to skip
+        // past one. Two copies of it would be two chances to disagree about a character class.
+        if (ScanRegularExpressionBody())
+        {
+            return new SliceToken(
+                SliceTokenKind.RegularExpressionLiteral, source[start..index], 0, string.Empty,
+                startLine, startColumn, sawNewline, false);
+        }
+
+        Refuse(
+            SliceSourceDiagnosticCode.UnterminatedRegularExpression,
+            "a regular-expression literal reaches the end of the line without closing",
+            startLine,
+            startColumn);
+
+        return new SliceToken(
+            SliceTokenKind.RegularExpressionLiteral, source[start..index], 0, string.Empty,
+            startLine, startColumn, false, false);
+    }
+
+    /// <summary>Reads a template literal whole, substitutions included.</summary>
+    /// <remarks>
+    /// <para>
+    /// Nothing inside is tokenized: this manifest admits no template, so the parser needs the
+    /// construct and not its parts, and building the parts would be building a tree nothing can
+    /// lower. What the scan owes is therefore exactly one thing - the position the literal ENDS at
+    /// - and it owes it absolutely, because a scan that ends early hands the parser a stream that
+    /// resumes in the middle of a string, and every diagnostic after it names the wrong thing.
+    /// </para>
+    /// <para>
+    /// <b>Counting <c>${</c> against <c>}</c> is not enough, and that is what this used to do.</b> A
+    /// substitution holds real JavaScript, so the brace that closes it cannot be told from a brace
+    /// inside a nested template, a string, a comment or an object literal by counting alone. Each
+    /// of those four ended the literal early, and because a template is refused wholesale the
+    /// refusal then landed on a span that was not the template - which the conformance runner
+    /// grades as an ordinary syntax error rather than as a construct outside the manifest, and
+    /// which scores a negative parse test as a PASS for the wrong reason.
+    /// </para>
+    /// <para>
+    /// <b>So a substitution is scanned as the lexical structure it is</b>, recursing through nested
+    /// templates and skipping strings and comments whole. Telling <c>/</c> as a regular expression
+    /// from <c>/</c> as division needs the parse this scan deliberately does not do, so the last
+    /// significant character decides it - the heuristic every scanner that does not parse uses.
+    /// What it can get wrong is where a template ends, never what an admitted program means.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=9ABBF8
+    // Broiler-Falsified-If: a template, string, comment or object literal inside a substitution ends the outer literal
+    // Broiler-Human:        PENDING
+    private SliceToken ReadTemplateLiteral(int startLine, int startColumn, bool sawNewline)
+    {
+        var start = index;
+        index++;
+
+        if (!ScanTemplateBody())
+        {
+            Refuse(
+                SliceSourceDiagnosticCode.UnterminatedTemplateLiteral,
+                "a template literal reaches the end of the source without closing",
+                startLine,
+                startColumn);
+
+            return new SliceToken(
+                SliceTokenKind.TemplateLiteral, source[start..index], 0, string.Empty,
+                startLine, startColumn, false, false);
+        }
+
+        return new SliceToken(
+            SliceTokenKind.TemplateLiteral, source[start..index], 0, string.Empty,
+            startLine, startColumn, sawNewline, false);
+    }
+
+    /// <summary>
+    /// Scans from just past a backtick to just past the backtick that closes it, answering whether
+    /// one was found.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=BB535C
+    // Broiler-Falsified-If: a substitution consumes the backtick that closes the template it belongs to
+    // Broiler-Human:        PENDING
+    private bool ScanTemplateBody()
+    {
+        while (index < source.Length)
+        {
+            var c = source[index];
+
+            if (c == '\\')
+            {
+                index += 2;
+                continue;
+            }
+
+            if (IsLineTerminator(c))
+            {
+                AdvanceLine(c);
+                continue;
+            }
+
+            if (c == '`')
+            {
+                index++;
+                return true;
+            }
+
+            if (c == '$' && index + 1 < source.Length && source[index + 1] == '{')
+            {
+                index += 2;
+                ScanSubstitution();
+                continue;
+            }
+
+            index++;
+        }
+
+        return false;
+    }
+
+    /// <summary>Scans a substitution up to and including the brace that closes it.</summary>
+    /// <remarks>
+    /// Braces are counted, but only the ones this scan can SEE are braces: a brace inside a string,
+    /// a comment or a nested template is skipped with the construct holding it rather than counted.
+    /// Reaching the end of the source without the closing brace is not reported here - the caller
+    /// reports the template as unterminated, which is the construct a reader is looking at.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=00BA21
+    // Broiler-Falsified-If: a brace inside a string, comment, nested template or object literal closes the substitution
+    // Broiler-Human:        PENDING
+    private void ScanSubstitution()
+    {
+        var braces = 0;
+        var previous = '\0';
+
+        while (index < source.Length)
+        {
+            var c = source[index];
+
+            if (IsLineTerminator(c))
+            {
+                AdvanceLine(c);
+                continue;
+            }
+
+            if (c == '/' && index + 1 < source.Length && source[index + 1] == '/')
+            {
+                while (index < source.Length && !IsLineTerminator(source[index]))
+                {
+                    index++;
+                }
+
+                continue;
+            }
+
+            if (c == '/' && index + 1 < source.Length && source[index + 1] == '*')
+            {
+                index += 2;
+
+                while (index < source.Length &&
+                    !(source[index] == '*' && index + 1 < source.Length && source[index + 1] == '/'))
+                {
+                    if (IsLineTerminator(source[index]))
+                    {
+                        AdvanceLine(source[index]);
+                        continue;
+                    }
+
+                    index++;
+                }
+
+                index = System.Math.Min(index + 2, source.Length);
+                continue;
+            }
+
+            if (c == '/' && StartsRegularExpression(previous))
+            {
+                // An unterminated literal in here is not reported: the template holding it is
+                // reported as unterminated instead, which is the construct a reader is looking at.
+                _ = ScanRegularExpressionBody();
+                previous = '/';
+                continue;
+            }
+
+            if (c is '"' or '\'')
+            {
+                ScanStringBody(c);
+                previous = c;
+                continue;
+            }
+
+            if (c == '`')
+            {
+                index++;
+                ScanTemplateBody();
+                previous = '`';
+                continue;
+            }
+
+            if (c == '{')
+            {
+                braces++;
+                index++;
+                previous = '{';
+                continue;
+            }
+
+            if (c == '}')
+            {
+                index++;
+
+                if (braces == 0)
+                {
+                    return;
+                }
+
+                braces--;
+                previous = '}';
+                continue;
+            }
+
+            if (!IsWhiteSpace(c))
+            {
+                previous = c;
+            }
+
+            index++;
+        }
+    }
+
+    /// <summary>Skips a string literal from its opening quote to just past its closing one.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=98CF66
+    // Broiler-Falsified-If: an escaped quote ends the string, or an unterminated one swallows the rest of the source
+    // Broiler-Human:        PENDING
+    private void ScanStringBody(char quote)
+    {
+        index++;
+
+        while (index < source.Length)
+        {
+            var c = source[index];
+
+            if (c == '\\')
+            {
+                index += 2;
+                continue;
+            }
+
+            if (c == quote)
+            {
+                index++;
+                return;
+            }
+
+            if (IsLineTerminator(c))
+            {
+                // An unterminated string is reported through the ordinary path when the parser
+                // reaches it. This scan only has to stop pretending the rest of the line is in it.
+                return;
+            }
+
+            index++;
+        }
+    }
+
+    /// <summary>
+    /// Scans a regular-expression literal from its opening slash past its flags, answering whether
+    /// it closed on the same line.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=EB5032
+    // Broiler-Falsified-If: a slash inside a character class ends the literal
+    // Broiler-Human:        PENDING
+    private bool ScanRegularExpressionBody()
+    {
         index++;
         var inClass = false;
 
@@ -1274,7 +1546,7 @@ public sealed class SliceTokenizer
 
             if (IsLineTerminator(c))
             {
-                break;
+                return false;
             }
 
             if (c == '\\')
@@ -1300,92 +1572,32 @@ public sealed class SliceTokenizer
                     index++;
                 }
 
-                return new SliceToken(
-                    SliceTokenKind.RegularExpressionLiteral, source[start..index], 0, string.Empty,
-                    startLine, startColumn, sawNewline, false);
+                return true;
             }
 
             index++;
         }
 
-        Refuse(
-            SliceSourceDiagnosticCode.UnterminatedRegularExpression,
-            "a regular-expression literal reaches the end of the line without closing",
-            startLine,
-            startColumn);
-
-        return new SliceToken(
-            SliceTokenKind.RegularExpressionLiteral, source[start..index], 0, string.Empty,
-            startLine, startColumn, false, false);
+        return false;
     }
 
-    /// <summary>Reads a template literal whole, substitutions included.</summary>
+    /// <summary>
+    /// Answers whether a <c>/</c> following this character begins a regular expression rather than
+    /// a division.
+    /// </summary>
     /// <remarks>
-    /// Nesting is tracked because a substitution may contain another template. Nothing inside is
-    /// tokenized: this manifest admits no template, so the parser needs the construct and not its
-    /// parts, and building the parts would be building a tree nothing can lower.
+    /// A HEURISTIC, and named as one. <c>a</c> before <c>/</c> is division and <c>(</c> before it is
+    /// a regular expression, but a keyword that ends in a letter - <c>return /x/</c> - reads as
+    /// division here. It is consulted only inside a template substitution, whose contents are
+    /// discarded, so what it can get wrong is where a refused construct ends and never what an
+    /// admitted program means.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E0029D
-    // Broiler-Falsified-If: a template nested inside a substitution ends the outer literal
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=17FBC0
+    // Broiler-Falsified-If: a division after an identifier or a literal is taken for a regular expression
     // Broiler-Human:        PENDING
-    private SliceToken ReadTemplateLiteral(int startLine, int startColumn, bool sawNewline)
-    {
-        var start = index;
-        var depth = 0;
-        index++;
-
-        while (index < source.Length)
-        {
-            var c = source[index];
-
-            if (c == '\\')
-            {
-                index += 2;
-                continue;
-            }
-
-            if (IsLineTerminator(c))
-            {
-                AdvanceLine(c);
-                continue;
-            }
-
-            if (c == '$' && index + 1 < source.Length && source[index + 1] == '{')
-            {
-                depth++;
-                index += 2;
-                continue;
-            }
-
-            if (c == '}' && depth > 0)
-            {
-                depth--;
-                index++;
-                continue;
-            }
-
-            if (c == '`' && depth == 0)
-            {
-                index++;
-
-                return new SliceToken(
-                    SliceTokenKind.TemplateLiteral, source[start..index], 0, string.Empty,
-                    startLine, startColumn, sawNewline, false);
-            }
-
-            index++;
-        }
-
-        Refuse(
-            SliceSourceDiagnosticCode.UnterminatedTemplateLiteral,
-            "a template literal reaches the end of the source without closing",
-            startLine,
-            startColumn);
-
-        return new SliceToken(
-            SliceTokenKind.TemplateLiteral, source[start..index], 0, string.Empty,
-            startLine, startColumn, false, false);
-    }
+    private static bool StartsRegularExpression(char previous) =>
+        previous is '\0' or '(' or ',' or '=' or ':' or '[' or '!' or '&' or '|' or '?' or
+            '{' or '}' or ';' or '+' or '-' or '*' or '%' or '<' or '>' or '~' or '^';
 
     /// <summary>Reads one punctuator, longest match first.</summary>
     /// <remarks>

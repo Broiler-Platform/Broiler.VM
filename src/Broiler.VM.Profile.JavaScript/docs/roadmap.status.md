@@ -654,6 +654,17 @@ approximation rather than leaving a reader to find it; **the Octane RegExp bench
 its own checksum**, which is the shape of what an approximation costs — it does not refuse, and it
 does not agree. **`Date` fixes the local time zone to UTC.** **`arguments` is unmapped.**
 
+**The refusal by name is the manifest boundary's whole enforcement, and it was leaking.** An audit
+of every excluded construct family against every syntactic position it admits found the refusals
+written where a construct usually appears, so the same construct one level deeper came back as an
+ordinary syntax error - which the harness scores as a failure, and, on a negative test expecting a
+`SyntaxError` at parse, as a **pass for the wrong reason**. The leaks are closed, in the front end
+and in the tokenizer, and closing the last of them exposed a defect neither audit nor refusal could
+have reached: strictness a caller imposes never reached the parse, so every strict-only early error
+was invisible in the variant that exists to test it
+([JSC-80](roadmap.corrections.md#jsc-80)). What is NOT claimed is exhaustiveness - an audit over
+families somebody enumerated is not a proof, and a family nobody named is a leak nobody looked for.
+
 **A fourth divergence is about scoping rather than about a library surface, and it is the one most
 likely to be read as a defect in something else.** **Script-level `let` and `const` become
 properties of the global object** rather than bindings of a separate global lexical environment,

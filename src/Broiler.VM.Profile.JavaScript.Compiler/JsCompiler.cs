@@ -130,7 +130,7 @@ public sealed class JsCompiler
         return compiler.Run(scripts);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4E75C6
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E1BE6C
     // Broiler-Human:        PENDING
     private JsCompilation Run(System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts)
     {
@@ -145,7 +145,7 @@ public sealed class JsCompiler
                 return new JsCompilation(false, null, diagnostics);
             }
 
-            var parser = new JsParser(tokens, script.Options);
+            var parser = new JsParser(tokens, script.Options, script.ForceStrict);
             var program = parser.Parse();
 
             if (parser.Diagnostics.Count != 0)

@@ -202,6 +202,48 @@ a method, and `let[0]` is indexing an array named `let`.
 
 ---
 
+## 4a. The last two leaks, and the one they were hiding
+
+**Both leaks section 4's audit left open are closed, and neither closed the way the audit
+expected.**
+
+**The template scanner was counting, and a substitution is not countable.** It matched `${` against
+`}` as a raw depth, so a brace inside a nested template, a string, a comment or an object literal
+ended the literal early — and because a template is refused wholesale, the refusal then landed on a
+span that was not the template. It now scans the substitution as the lexical structure it is,
+recursing through nested templates and skipping strings and comments whole, with the
+regular-expression case decided by the last significant character. That heuristic is named as one
+in the file: it is consulted only inside a construct whose contents are discarded, so what it can
+get wrong is where a refused construct ends and never what an admitted program means. **The scan is
+now shared with the tokenizer's own regular-expression reader**, which was a second copy of the same
+question and a second chance to disagree about a character class.
+
+**And `await` and `yield` were not a refusal problem at all.** The audit had them down as
+constructs to refuse by name. They are not constructs: they are **contextual keywords**, and
+`var await = 1;` is an ordinary program in a script that every engine runs. Refusing it said this
+manifest declines something when what it declines is an identifier it admits perfectly well. They
+are now admitted where the language admits them — `await` outside a module, `yield` outside strict
+code — and where the language reserves them the answer is the reserved-word syntax error every
+engine gives, which is a test this profile can PASS rather than one it has to decline.
+
+**Making that change is what exposed the defect underneath it, and that one was worse than either
+leak.** A conformance test flagged as `onlyStrict` regressed, and the reason was that
+**`ForceStrict` reached the lowering and never the parse**. Strict mode changes the *grammar* —
+`yield` becomes a reserved word, a legacy octal literal becomes a syntax error — and both are
+**early** errors, which a lowering never sees because the parse already succeeded. So every
+strict-only early error was invisible in exactly the variant that exists to test it, and the
+regression was only visible because the unconditional refusal had been masking it. Strictness now
+reaches the parse, and nothing turns it off: a prologue can add it, the module goal can add it, and
+a caller that imposed it keeps it.
+
+**What each of the three moved is in `test262-subtrees.log`**, over four subtrees added to the
+collected set for this repair — `template-literal`, `future-reserved-words`, `keywords` and
+`literals` — chosen because they are the ones these changes touch. The twelve subtrees collected
+before this repair are unchanged by it, which is the other half of the claim and is why they are
+still in the file.
+
+---
+
 ## 5. Results — every log, and what it is read for
 
 The suite, the build and the gates:
@@ -335,13 +377,10 @@ substitutes for it.
   as a native one. That is a stated approximation in the file that makes it: an engine executing
   verified bytecode threw the text away long before a guest could ask.
 - **The "refused by name" promise is repaired but is not proven exhaustive.** Section 4 says what
-  was audited and closed. Two known leaks are left, both deliberately: a template literal whose
-  substitution contains a nested template, a string holding `${`, or a comment holding a brace is
-  mis-scanned by the TOKENIZER, so the parser never reaches the by-name refusal templates
-  otherwise get; and `await` and `yield` are keyword tokens unconditionally, so `var await = 1` —
-  valid in a sloppy script — is refused as a bad binding name rather than admitted or named. The
-  first is a tokenizer repair and the second is a decision about a contextual keyword, and neither
-  is made here.
+  was audited and closed, and section 4a says what closing the last two of them cost. What remains
+  unproven is the negative: the audit checked every construct family the manifest excludes against
+  every syntactic position it admits, and an audit is not a proof. A family nobody thought to name
+  is a leak nobody has looked for.
 - **`Date` fixes the local time zone to UTC**, so every local-time case measures UTC and passes or
   fails for a reason that is not the one it names.
 - **`arguments` is unmapped**, so writing to a parameter does not change `arguments[i]` and the
