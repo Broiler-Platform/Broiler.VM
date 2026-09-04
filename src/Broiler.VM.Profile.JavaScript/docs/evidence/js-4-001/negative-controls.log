@@ -8,10 +8,10 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:00.41]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A8_No_Profile_Project_References_The_Runtime [FAIL]
-      [xUnit.net 00:00:00.41]     Broiler.VM.Architecture.Tests.TopologyBudgetTests.A15_The_Topology_Records_Last_Budget_Describes_The_Graph [FAIL]
-      [xUnit.net 00:00:00.42]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A7_Declared_Edges_Match_The_Graph_Manifest_Exactly [FAIL]
-      [xUnit.net 00:00:00.42]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.N1_The_JavaScript_Profile_References_Abstractions_Binary_And_Its_Own_Format [FAIL]
+      [xUnit.net 00:00:00.38]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A8_No_Profile_Project_References_The_Runtime [FAIL]
+      [xUnit.net 00:00:00.38]     Broiler.VM.Architecture.Tests.TopologyBudgetTests.A15_The_Topology_Records_Last_Budget_Describes_The_Graph [FAIL]
+      [xUnit.net 00:00:00.39]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A7_Declared_Edges_Match_The_Graph_Manifest_Exactly [FAIL]
+      [xUnit.net 00:00:00.40]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.N1_The_JavaScript_Profile_References_Abstractions_Binary_And_Its_Own_Format [FAIL]
       [A8] 1 message(s)
           src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj -> Broiler.VM.Runtime
       [N1] 1 message(s)
@@ -1860,9 +1860,9 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
+      [xUnit.net 00:00:00.37]     Broiler.VM.Architecture.Tests.TopologyBudgetTests.A15_The_Topology_Records_Last_Budget_Describes_The_Graph [FAIL]
       [xUnit.net 00:00:00.38]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A7_Declared_Edges_Match_The_Graph_Manifest_Exactly [FAIL]
-      [xUnit.net 00:00:00.39]     Broiler.VM.Architecture.Tests.TopologyBudgetTests.A15_The_Topology_Records_Last_Budget_Describes_The_Graph [FAIL]
-      [xUnit.net 00:00:00.39]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.N1_The_JavaScript_Profile_References_Abstractions_Binary_And_Its_Own_Format [FAIL]
+      [xUnit.net 00:00:00.38]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.N1_The_JavaScript_Profile_References_Abstractions_Binary_And_Its_Own_Format [FAIL]
       [N1] 2 message(s)
           src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj references [Broiler.VM.Abstractions, Broiler.VM.Binary, Broiler.VM.Profile.JavaScript.Compiler, Broiler.VM.Profile.JavaScript.Format] rather than [Broiler.VM.Abstractions, Broiler.VM.Binary, Broiler.VM.Profile.JavaScript.Format]
           src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj references Broiler.VM.Profile.JavaScript.Compiler, so an execution-only composition would carry a lowering
@@ -3710,9 +3710,9 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:00.39]     Broiler.VM.Architecture.Tests.TopologyBudgetTests.A15_The_Topology_Records_Last_Budget_Describes_The_Graph [FAIL]
-      [xUnit.net 00:00:00.43]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.N3_The_JavaScript_Format_Assembly_Is_A_Sink [FAIL]
-      [xUnit.net 00:00:00.44]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A7_Declared_Edges_Match_The_Graph_Manifest_Exactly [FAIL]
+      [xUnit.net 00:00:00.66]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.N3_The_JavaScript_Format_Assembly_Is_A_Sink [FAIL]
+      [xUnit.net 00:00:00.66]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A7_Declared_Edges_Match_The_Graph_Manifest_Exactly [FAIL]
+      [xUnit.net 00:00:00.67]     Broiler.VM.Architecture.Tests.TopologyBudgetTests.A15_The_Topology_Records_Last_Budget_Describes_The_Graph [FAIL]
       [N3] 1 message(s)
           src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj -> Broiler.VM.Abstractions
       [A15] 1 message(s)
@@ -5559,9 +5559,9 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:00.40]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A6_The_Package_Identity_Budget_Holds [FAIL]
-      [xUnit.net 00:00:00.42]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.The_Graph_Manifest_Describes_The_Checkout [FAIL]
-      [xUnit.net 00:00:00.42]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.N4_No_JavaScript_Profile_Project_Is_Packable [FAIL]
+      [xUnit.net 00:00:00.39]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A6_The_Package_Identity_Budget_Holds [FAIL]
+      [xUnit.net 00:00:00.46]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.The_Graph_Manifest_Describes_The_Checkout [FAIL]
+      [xUnit.net 00:00:00.46]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.N4_No_JavaScript_Profile_Project_Is_Packable [FAIL]
       [A6] 1 message(s)
           src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj declares undeclared PackageId Broiler.VM.Profile.JavaScript.Compiler
       [N4] 1 message(s)
@@ -7406,7 +7406,7 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:00.45]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.N4_No_JavaScript_Profile_Project_Is_Packable [FAIL]
+      [xUnit.net 00:00:00.51]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.N4_No_JavaScript_Profile_Project_Is_Packable [FAIL]
       [N4] 1 message(s)
           src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj does not carry the literal <IsPackable>false</IsPackable>
       [J11] 1823 message(s)
@@ -9249,10 +9249,10 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:00.54]     Broiler.VM.Architecture.Tests.TopologyBudgetTests.A15_The_Topology_Records_Last_Budget_Describes_The_Graph [FAIL]
-      [xUnit.net 00:00:00.54]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A11_No_Project_Outside_A_Composition_Root_References_A_Profile [FAIL]
-      [xUnit.net 00:00:00.56]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A7_Declared_Edges_Match_The_Graph_Manifest_Exactly [FAIL]
-      [xUnit.net 00:00:00.57]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.N2_No_Profile_Family_Reaches_Another_In_Either_Direction [FAIL]
+      [xUnit.net 00:00:00.39]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A11_No_Project_Outside_A_Composition_Root_References_A_Profile [FAIL]
+      [xUnit.net 00:00:00.39]     Broiler.VM.Architecture.Tests.TopologyBudgetTests.A15_The_Topology_Records_Last_Budget_Describes_The_Graph [FAIL]
+      [xUnit.net 00:00:00.40]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.A7_Declared_Edges_Match_The_Graph_Manifest_Exactly [FAIL]
+      [xUnit.net 00:00:00.40]     Broiler.VM.Architecture.Tests.ProjectFileRuleTests.N2_No_Profile_Family_Reaches_Another_In_Either_Direction [FAIL]
       [A11] 1 message(s)
           src/tests/Broiler.VM.Fixtures/Broiler.VM.Fixtures.csproj -> Broiler.VM.Profile.JavaScript
       [N2] 1 message(s)
@@ -11101,10 +11101,10 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:01.30]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N7_Every_Registry_Row_Is_Reachable_From_A_Named_Case [FAIL]
-      [xUnit.net 00:00:01.30]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N6_Every_Code_Maps_Onto_Exactly_One_Core_Reason [FAIL]
-      [xUnit.net 00:00:01.32]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N8_The_Restated_Codes_Agree_With_The_Registry [FAIL]
-      [xUnit.net 00:00:01.75]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N5_The_Registry_And_The_Code_Vocabulary_Are_The_Same_Set [FAIL]
+      [xUnit.net 00:00:01.32]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N7_Every_Registry_Row_Is_Reachable_From_A_Named_Case [FAIL]
+      [xUnit.net 00:00:01.32]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N6_Every_Code_Maps_Onto_Exactly_One_Core_Reason [FAIL]
+      [xUnit.net 00:00:01.33]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N8_The_Restated_Codes_Agree_With_The_Registry [FAIL]
+      [xUnit.net 00:00:01.78]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N5_The_Registry_And_The_Code_Vocabulary_Are_The_Same_Set [FAIL]
       [J11] 1823 message(s)
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(43): Broiler.VM.VmArtifactDescriptor is HUMAN_PENDING and its human line reads 'PENDING'
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(84): Broiler.VM.VmArtifactDescriptor.IsWellFormed is HUMAN_PENDING and its human line reads 'PENDING'
@@ -12951,7 +12951,7 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:01.44]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N6_Every_Code_Maps_Onto_Exactly_One_Core_Reason [FAIL]
+      [xUnit.net 00:00:01.36]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N6_Every_Code_Maps_Onto_Exactly_One_Core_Reason [FAIL]
       [J11] 1823 message(s)
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(43): Broiler.VM.VmArtifactDescriptor is HUMAN_PENDING and its human line reads 'PENDING'
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(84): Broiler.VM.VmArtifactDescriptor.IsWellFormed is HUMAN_PENDING and its human line reads 'PENDING'
@@ -14796,7 +14796,7 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:01.39]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N7_Every_Registry_Row_Is_Reachable_From_A_Named_Case [FAIL]
+      [xUnit.net 00:00:01.46]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N7_Every_Registry_Row_Is_Reachable_From_A_Named_Case [FAIL]
       [J11] 1823 message(s)
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(43): Broiler.VM.VmArtifactDescriptor is HUMAN_PENDING and its human line reads 'PENDING'
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(84): Broiler.VM.VmArtifactDescriptor.IsWellFormed is HUMAN_PENDING and its human line reads 'PENDING'
@@ -16639,7 +16639,7 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:01.54]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N8_The_Restated_Codes_Agree_With_The_Registry [FAIL]
+      [xUnit.net 00:00:01.39]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N8_The_Restated_Codes_Agree_With_The_Registry [FAIL]
       [J11] 1823 message(s)
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(43): Broiler.VM.VmArtifactDescriptor is HUMAN_PENDING and its human line reads 'PENDING'
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(84): Broiler.VM.VmArtifactDescriptor.IsWellFormed is HUMAN_PENDING and its human line reads 'PENDING'
@@ -18482,11 +18482,11 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:01.65]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N9_A_Position_Is_Built_In_One_Place [FAIL]
-      [xUnit.net 00:00:01.88]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J7_The_Manifest_Covers_Every_Unit_In_The_Product_Tree [FAIL]
-      [xUnit.net 00:00:03.09]     Broiler.VM.Architecture.Tests.AssuranceGeneratorTests.The_Generated_Artefacts_Are_Written_In_Write_Mode_And_Asserted_Otherwise [FAIL]
-      [xUnit.net 00:00:03.15]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J5_Every_Generated_Artefact_Is_What_The_Generator_Would_Write [FAIL]
-      [xUnit.net 00:00:04.25]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J3_Every_Recorded_Fingerprint_Is_The_One_The_Code_Produces [FAIL]
+      [xUnit.net 00:00:01.70]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N9_A_Position_Is_Built_In_One_Place [FAIL]
+      [xUnit.net 00:00:01.98]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J7_The_Manifest_Covers_Every_Unit_In_The_Product_Tree [FAIL]
+      [xUnit.net 00:00:02.97]     Broiler.VM.Architecture.Tests.AssuranceGeneratorTests.The_Generated_Artefacts_Are_Written_In_Write_Mode_And_Asserted_Otherwise [FAIL]
+      [xUnit.net 00:00:03.05]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J5_Every_Generated_Artefact_Is_What_The_Generator_Would_Write [FAIL]
+      [xUnit.net 00:00:03.95]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J3_Every_Recorded_Fingerprint_Is_The_One_The_Code_Produces [FAIL]
       [J3] 1 message(s)
           src/Broiler.VM.Profile.JavaScript/JavaScriptVerifier.cs(1294): Broiler.VM.Profile.JavaScript.JavaScriptVerifier.At(ulong) records Fingerprint=300F5E and the current code computes 834CF8
       [J5] 2 message(s)
@@ -20339,7 +20339,7 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:01.89]     Broiler.VM.Architecture.Tests.ReviewRecordRuleTests.H1_The_Mark_Vocabulary_Is_Closed [FAIL]
+      [xUnit.net 00:00:02.06]     Broiler.VM.Architecture.Tests.ReviewRecordRuleTests.H1_The_Mark_Vocabulary_Is_Closed [FAIL]
       [H1] 1 message(s)
           src/Broiler.VM.Profile.JavaScript/docs/roadmap.status.md:196 uses table cell mark token [MET], which the section 2 legend does not publish
       [J11] 1823 message(s)
@@ -22182,7 +22182,7 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:01.82]     Broiler.VM.Architecture.Tests.ReviewRecordRuleTests.H1_The_Mark_Vocabulary_Is_Closed [FAIL]
+      [xUnit.net 00:00:02.33]     Broiler.VM.Architecture.Tests.ReviewRecordRuleTests.H1_The_Mark_Vocabulary_Is_Closed [FAIL]
       [J11] 1823 message(s)
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(43): Broiler.VM.VmArtifactDescriptor is HUMAN_PENDING and its human line reads 'PENDING'
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(84): Broiler.VM.VmArtifactDescriptor.IsWellFormed is HUMAN_PENDING and its human line reads 'PENDING'
@@ -24023,12 +24023,12 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:01.75]     Broiler.VM.Architecture.Tests.ReviewRecordRuleTests.H4_The_Record_States_No_Decision_The_Annotations_Do_Not_Hold [FAIL]
-      [xUnit.net 00:00:01.85]     Broiler.VM.Architecture.Tests.ReviewRecordRuleTests.H3_No_Review_Document_Points_At_A_Line_And_The_Record_Covers_The_Tree [FAIL]
-      [xUnit.net 00:00:01.91]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J7_The_Manifest_Covers_Every_Unit_In_The_Product_Tree [FAIL]
-      [xUnit.net 00:00:03.02]     Broiler.VM.Architecture.Tests.AssuranceGeneratorTests.The_Generated_Artefacts_Are_Written_In_Write_Mode_And_Asserted_Otherwise [FAIL]
-      [xUnit.net 00:00:03.08]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J5_Every_Generated_Artefact_Is_What_The_Generator_Would_Write [FAIL]
-      [xUnit.net 00:00:03.88]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J1_Every_Relevant_Unit_Carries_An_Annotation [FAIL]
+      [xUnit.net 00:00:02.87]     Broiler.VM.Architecture.Tests.ReviewRecordRuleTests.H4_The_Record_States_No_Decision_The_Annotations_Do_Not_Hold [FAIL]
+      [xUnit.net 00:00:03.11]     Broiler.VM.Architecture.Tests.ReviewRecordRuleTests.H3_No_Review_Document_Points_At_A_Line_And_The_Record_Covers_The_Tree [FAIL]
+      [xUnit.net 00:00:03.24]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J7_The_Manifest_Covers_Every_Unit_In_The_Product_Tree [FAIL]
+      [xUnit.net 00:00:04.99]     Broiler.VM.Architecture.Tests.AssuranceGeneratorTests.The_Generated_Artefacts_Are_Written_In_Write_Mode_And_Asserted_Otherwise [FAIL]
+      [xUnit.net 00:00:05.11]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J5_Every_Generated_Artefact_Is_What_The_Generator_Would_Write [FAIL]
+      [xUnit.net 00:00:07.33]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J1_Every_Relevant_Unit_Carries_An_Annotation [FAIL]
       [H4] 1 message(s)
           HUMAN_REVIEW.md states 1823 relevant units; the tree declares 1824
       [J1] 1 message(s)
@@ -25886,7 +25886,7 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:01.73]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N11_Every_Dimension_The_Profile_Can_Exhaust_Is_Pinned_By_A_Corpus_Entry [FAIL]
+      [xUnit.net 00:00:01.94]     Broiler.VM.Architecture.Tests.DiagnosticRegistryRuleTests.N11_Every_Dimension_The_Profile_Can_Exhaust_Is_Pinned_By_A_Corpus_Entry [FAIL]
       [J11] 1823 message(s)
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(43): Broiler.VM.VmArtifactDescriptor is HUMAN_PENDING and its human line reads 'PENDING'
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(84): Broiler.VM.VmArtifactDescriptor.IsWellFormed is HUMAN_PENDING and its human line reads 'PENDING'
@@ -27730,7 +27730,7 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:00.44]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K1_The_Register_And_The_Checkout_Name_The_Same_Compositions [FAIL]
+      [xUnit.net 00:00:00.46]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K1_The_Register_And_The_Checkout_Name_The_Same_Compositions [FAIL]
       [J11] 1823 message(s)
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(43): Broiler.VM.VmArtifactDescriptor is HUMAN_PENDING and its human line reads 'PENDING'
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(84): Broiler.VM.VmArtifactDescriptor.IsWellFormed is HUMAN_PENDING and its human line reads 'PENDING'
@@ -29573,7 +29573,7 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:00.37]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K1_The_Register_And_The_Checkout_Name_The_Same_Compositions [FAIL]
+      [xUnit.net 00:00:00.47]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K1_The_Register_And_The_Checkout_Name_The_Same_Compositions [FAIL]
       [J11] 1823 message(s)
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(43): Broiler.VM.VmArtifactDescriptor is HUMAN_PENDING and its human line reads 'PENDING'
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(84): Broiler.VM.VmArtifactDescriptor.IsWellFormed is HUMAN_PENDING and its human line reads 'PENDING'
@@ -31416,7 +31416,7 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:00.44]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K2_Each_Row_Agrees_With_The_Reference_Set_And_The_Catalog [FAIL]
+      [xUnit.net 00:00:00.47]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K2_Each_Row_Agrees_With_The_Reference_Set_And_The_Catalog [FAIL]
       [J11] 1823 message(s)
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(43): Broiler.VM.VmArtifactDescriptor is HUMAN_PENDING and its human line reads 'PENDING'
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(84): Broiler.VM.VmArtifactDescriptor.IsWellFormed is HUMAN_PENDING and its human line reads 'PENDING'
@@ -33259,8 +33259,8 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:00.42]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K4_Each_Published_Closure_Contains_Exactly_What_It_Declares [FAIL]
-      [xUnit.net 00:00:00.42]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K2_Each_Row_Agrees_With_The_Reference_Set_And_The_Catalog [FAIL]
+      [xUnit.net 00:00:00.44]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K4_Each_Published_Closure_Contains_Exactly_What_It_Declares [FAIL]
+      [xUnit.net 00:00:00.45]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K2_Each_Row_Agrees_With_The_Reference_Set_And_The_Catalog [FAIL]
       [J11] 1823 message(s)
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(43): Broiler.VM.VmArtifactDescriptor is HUMAN_PENDING and its human line reads 'PENDING'
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(84): Broiler.VM.VmArtifactDescriptor.IsWellFormed is HUMAN_PENDING and its human line reads 'PENDING'
@@ -35107,8 +35107,8 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:00.47]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K4_Each_Published_Closure_Contains_Exactly_What_It_Declares [FAIL]
-      [xUnit.net 00:00:00.47]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K2_Each_Row_Agrees_With_The_Reference_Set_And_The_Catalog [FAIL]
+      [xUnit.net 00:00:00.43]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K4_Each_Published_Closure_Contains_Exactly_What_It_Declares [FAIL]
+      [xUnit.net 00:00:00.44]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K2_Each_Row_Agrees_With_The_Reference_Set_And_The_Catalog [FAIL]
       [J11] 1823 message(s)
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(43): Broiler.VM.VmArtifactDescriptor is HUMAN_PENDING and its human line reads 'PENDING'
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(84): Broiler.VM.VmArtifactDescriptor.IsWellFormed is HUMAN_PENDING and its human line reads 'PENDING'
@@ -36956,17 +36956,17 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:00.40]     Broiler.VM.Architecture.Tests.IngestionPathRuleTests.N13_Rejects_A_Project_That_Carries_Suite_Files [FAIL]
-      [xUnit.net 00:00:00.41]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K3_Each_Catalog_Baseline_Matches_What_The_Published_Composition_Printed [FAIL]
-      [xUnit.net 00:00:00.41]     Broiler.VM.Architecture.Tests.IngestionPathRuleTests.N13_The_Harness_And_Its_Suite_Reach_No_Package_And_No_Advertised_Closure [FAIL]
-      [xUnit.net 00:00:00.41]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K4_Each_Published_Closure_Contains_Exactly_What_It_Declares [FAIL]
-      [xUnit.net 00:00:00.41]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K2_Each_Row_Agrees_With_The_Reference_Set_And_The_Catalog [FAIL]
-      [xUnit.net 00:00:00.41]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K1_The_Register_And_The_Checkout_Name_The_Same_Compositions [FAIL]
-      [xUnit.net 00:00:00.42]     Broiler.VM.Architecture.Tests.IngestionPathRuleTests.N13_Rejects_A_Reference_From_The_Execution_Only_Root [FAIL]
-      [xUnit.net 00:00:01.20]     Broiler.VM.Architecture.Tests.RegisterFigureTests.RuleMessages_For_J12_Are_Written_When_Asked_For [FAIL]
-      [xUnit.net 00:00:01.24]     Broiler.VM.Architecture.Tests.RegisterFigureTests.J12_Every_Countable_Subject_Has_A_Figure_Behind_It [FAIL]
-      [xUnit.net 00:00:01.26]     Broiler.VM.Architecture.Tests.RegisterFigureTests.J12_The_Register_Cites_The_Assurance_Figures_Rather_Than_Restating_Them [FAIL]
-      [xUnit.net 00:00:01.27]     Broiler.VM.Architecture.Tests.RegisterFigureTests.J12_Rejects_A_Citation_The_Report_Cannot_Resolve [FAIL]
+      [xUnit.net 00:00:00.50]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K3_Each_Catalog_Baseline_Matches_What_The_Published_Composition_Printed [FAIL]
+      [xUnit.net 00:00:00.51]     Broiler.VM.Architecture.Tests.IngestionPathRuleTests.N13_Rejects_A_Project_That_Carries_Suite_Files [FAIL]
+      [xUnit.net 00:00:00.51]     Broiler.VM.Architecture.Tests.IngestionPathRuleTests.N13_The_Harness_And_Its_Suite_Reach_No_Package_And_No_Advertised_Closure [FAIL]
+      [xUnit.net 00:00:00.51]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K4_Each_Published_Closure_Contains_Exactly_What_It_Declares [FAIL]
+      [xUnit.net 00:00:00.51]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K2_Each_Row_Agrees_With_The_Reference_Set_And_The_Catalog [FAIL]
+      [xUnit.net 00:00:00.51]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K1_The_Register_And_The_Checkout_Name_The_Same_Compositions [FAIL]
+      [xUnit.net 00:00:00.51]     Broiler.VM.Architecture.Tests.IngestionPathRuleTests.N13_Rejects_A_Reference_From_The_Execution_Only_Root [FAIL]
+      [xUnit.net 00:00:01.60]     Broiler.VM.Architecture.Tests.RegisterFigureTests.RuleMessages_For_J12_Are_Written_When_Asked_For [FAIL]
+      [xUnit.net 00:00:01.63]     Broiler.VM.Architecture.Tests.RegisterFigureTests.J12_Every_Countable_Subject_Has_A_Figure_Behind_It [FAIL]
+      [xUnit.net 00:00:01.63]     Broiler.VM.Architecture.Tests.RegisterFigureTests.J12_The_Register_Cites_The_Assurance_Figures_Rather_Than_Restating_Them [FAIL]
+      [xUnit.net 00:00:01.64]     Broiler.VM.Architecture.Tests.RegisterFigureTests.J12_Rejects_A_Citation_The_Report_Cannot_Resolve [FAIL]
       [J11] 1823 message(s)
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(43): Broiler.VM.VmArtifactDescriptor is HUMAN_PENDING and its human line reads 'PENDING'
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(84): Broiler.VM.VmArtifactDescriptor.IsWellFormed is HUMAN_PENDING and its human line reads 'PENDING'
@@ -38802,8 +38802,8 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:00.47]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K3_Each_Catalog_Baseline_Matches_What_The_Published_Composition_Printed [FAIL]
-      [xUnit.net 00:00:00.48]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K2_Each_Row_Agrees_With_The_Reference_Set_And_The_Catalog [FAIL]
+      [xUnit.net 00:00:00.52]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K3_Each_Catalog_Baseline_Matches_What_The_Published_Composition_Printed [FAIL]
+      [xUnit.net 00:00:00.53]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K2_Each_Row_Agrees_With_The_Reference_Set_And_The_Catalog [FAIL]
       [J11] 1823 message(s)
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(43): Broiler.VM.VmArtifactDescriptor is HUMAN_PENDING and its human line reads 'PENDING'
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(84): Broiler.VM.VmArtifactDescriptor.IsWellFormed is HUMAN_PENDING and its human line reads 'PENDING'
@@ -40648,8 +40648,8 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:00.66]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K3_Each_Catalog_Baseline_Matches_What_The_Published_Composition_Printed [FAIL]
-      [xUnit.net 00:00:00.66]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K2_Each_Row_Agrees_With_The_Reference_Set_And_The_Catalog [FAIL]
+      [xUnit.net 00:00:00.45]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K3_Each_Catalog_Baseline_Matches_What_The_Published_Composition_Printed [FAIL]
+      [xUnit.net 00:00:00.46]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K2_Each_Row_Agrees_With_The_Reference_Set_And_The_Catalog [FAIL]
       [J11] 1823 message(s)
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(43): Broiler.VM.VmArtifactDescriptor is HUMAN_PENDING and its human line reads 'PENDING'
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(84): Broiler.VM.VmArtifactDescriptor.IsWellFormed is HUMAN_PENDING and its human line reads 'PENDING'
@@ -42494,8 +42494,8 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:01.04]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K3_Each_Catalog_Baseline_Matches_What_The_Published_Composition_Printed [FAIL]
-      [xUnit.net 00:00:01.04]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K2_Each_Row_Agrees_With_The_Reference_Set_And_The_Catalog [FAIL]
+      [xUnit.net 00:00:00.47]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K3_Each_Catalog_Baseline_Matches_What_The_Published_Composition_Printed [FAIL]
+      [xUnit.net 00:00:00.48]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K2_Each_Row_Agrees_With_The_Reference_Set_And_The_Catalog [FAIL]
       [J11] 1823 message(s)
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(43): Broiler.VM.VmArtifactDescriptor is HUMAN_PENDING and its human line reads 'PENDING'
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(84): Broiler.VM.VmArtifactDescriptor.IsWellFormed is HUMAN_PENDING and its human line reads 'PENDING'
@@ -44342,8 +44342,8 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:00.47]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K3_Each_Catalog_Baseline_Matches_What_The_Published_Composition_Printed [FAIL]
-      [xUnit.net 00:00:00.48]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K2_Each_Row_Agrees_With_The_Reference_Set_And_The_Catalog [FAIL]
+      [xUnit.net 00:00:00.40]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K3_Each_Catalog_Baseline_Matches_What_The_Published_Composition_Printed [FAIL]
+      [xUnit.net 00:00:00.41]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K2_Each_Row_Agrees_With_The_Reference_Set_And_The_Catalog [FAIL]
       [J11] 1823 message(s)
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(43): Broiler.VM.VmArtifactDescriptor is HUMAN_PENDING and its human line reads 'PENDING'
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(84): Broiler.VM.VmArtifactDescriptor.IsWellFormed is HUMAN_PENDING and its human line reads 'PENDING'
@@ -46189,8 +46189,8 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:00.40]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K3_Each_Catalog_Baseline_Matches_What_The_Published_Composition_Printed [FAIL]
-      [xUnit.net 00:00:00.41]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K2_Each_Row_Agrees_With_The_Reference_Set_And_The_Catalog [FAIL]
+      [xUnit.net 00:00:00.50]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K3_Each_Catalog_Baseline_Matches_What_The_Published_Composition_Printed [FAIL]
+      [xUnit.net 00:00:00.51]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K2_Each_Row_Agrees_With_The_Reference_Set_And_The_Catalog [FAIL]
       [J11] 1823 message(s)
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(43): Broiler.VM.VmArtifactDescriptor is HUMAN_PENDING and its human line reads 'PENDING'
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(84): Broiler.VM.VmArtifactDescriptor.IsWellFormed is HUMAN_PENDING and its human line reads 'PENDING'
@@ -48036,7 +48036,7 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:00.50]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K4_Each_Published_Closure_Contains_Exactly_What_It_Declares [FAIL]
+      [xUnit.net 00:00:00.52]     Broiler.VM.Architecture.Tests.CompositionRegisterTests.K4_Each_Published_Closure_Contains_Exactly_What_It_Declares [FAIL]
       [J11] 1823 message(s)
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(43): Broiler.VM.VmArtifactDescriptor is HUMAN_PENDING and its human line reads 'PENDING'
           src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(84): Broiler.VM.VmArtifactDescriptor.IsWellFormed is HUMAN_PENDING and its human line reads 'PENDING'
@@ -49880,9 +49880,9 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:01.90]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J7_The_Manifest_Covers_Every_Unit_In_The_Product_Tree [FAIL]
-      [xUnit.net 00:00:02.79]     Broiler.VM.Architecture.Tests.AssuranceGeneratorTests.The_Generated_Artefacts_Are_Written_In_Write_Mode_And_Asserted_Otherwise [FAIL]
-      [xUnit.net 00:00:02.84]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J5_Every_Generated_Artefact_Is_What_The_Generator_Would_Write [FAIL]
+      [xUnit.net 00:00:02.55]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J7_The_Manifest_Covers_Every_Unit_In_The_Product_Tree [FAIL]
+      [xUnit.net 00:00:04.33]     Broiler.VM.Architecture.Tests.AssuranceGeneratorTests.The_Generated_Artefacts_Are_Written_In_Write_Mode_And_Asserted_Otherwise [FAIL]
+      [xUnit.net 00:00:04.41]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J5_Every_Generated_Artefact_Is_What_The_Generator_Would_Write [FAIL]
       [J5] 4 message(s)
           src/Broiler.VM.Profile.JavaScript/AssemblyMarker.cs(8) is not what the generator would write.   on disk:   // Exempt:           0   generated: // Exempt:           1   Run: BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release
           CODE-ASSURANCE.md(18) is not what the generator would write.   on disk:   | Code units | 3476 |   generated: | Code units | 3477 |   Run: BROILER_ASSURANCE_WRITE=1 dotnet test Broiler.VM.slnx -c Release
@@ -51735,25 +51735,25 @@ A control that does not restore its file byte for byte stops the run.
     injected:  exit 1
     reverted:  exit 0
     failing tests while injected:
-      [xUnit.net 00:00:01.64]     Broiler.VM.Architecture.Tests.ReviewRecordRuleTests.H4_The_Record_States_No_Decision_The_Annotations_Do_Not_Hold [FAIL]
-      [xUnit.net 00:00:01.95]     Broiler.VM.Architecture.Tests.AssuranceGeneratorTests.The_Generated_Artefacts_Are_Written_In_Write_Mode_And_Asserted_Otherwise [FAIL]
-      [xUnit.net 00:00:01.95]     Broiler.VM.Architecture.Tests.RegisterFigureTests.RuleMessages_For_J12_Are_Written_When_Asked_For [FAIL]
-      [xUnit.net 00:00:01.96]     Broiler.VM.Architecture.Tests.AssuranceAnnotationTests.The_Generator_Fills_A_Human_Approval_That_A_Human_Already_Made [FAIL]
-      [xUnit.net 00:00:01.96]     Broiler.VM.Architecture.Tests.AssuranceScannerTests.The_Units_That_Touch_Untrusted_Input_Are_Relevant_And_Annotated [FAIL]
-      [xUnit.net 00:00:01.96]     Broiler.VM.Architecture.Tests.AssuranceAnnotationTests.The_Generator_Refreshes_A_Review_The_Code_Has_Outrun_Into_Stale_With_Its_History [FAIL]
-      [xUnit.net 00:00:01.96]     Broiler.VM.Architecture.Tests.AssuranceAnnotationTests.The_Generator_Refuses_To_Write_A_Reviewer_The_Source_Does_Not_Carry [FAIL]
-      [xUnit.net 00:00:01.99]     Broiler.VM.Architecture.Tests.RegisterFigureTests.J12_Every_Countable_Subject_Has_A_Figure_Behind_It [FAIL]
-      [xUnit.net 00:00:01.99]     Broiler.VM.Architecture.Tests.RegisterFigureTests.J12_The_Register_Cites_The_Assurance_Figures_Rather_Than_Restating_Them [FAIL]
-      [xUnit.net 00:00:01.99]     Broiler.VM.Architecture.Tests.RegisterFigureTests.J12_Rejects_A_Citation_The_Report_Cannot_Resolve [FAIL]
-      [xUnit.net 00:00:02.34]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J4_No_Approval_Exists_That_A_Human_Did_Not_Make [FAIL]
-      [xUnit.net 00:00:02.34]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J5_Every_Generated_Artefact_Is_What_The_Generator_Would_Write [FAIL]
-      [xUnit.net 00:00:02.53]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J8_Every_Generated_Artefact_Matches_Its_Declared_Shape [FAIL]
-      [xUnit.net 00:00:02.53]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J2_Every_Annotation_Parses_And_Every_Field_Is_In_Its_Vocabulary [FAIL]
-      [xUnit.net 00:00:02.53]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J3_Every_Recorded_Fingerprint_Is_The_One_The_Code_Produces [FAIL]
-      [xUnit.net 00:00:02.53]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J1_Every_Relevant_Unit_Carries_An_Annotation [FAIL]
-      [xUnit.net 00:00:02.54]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J9_No_Generated_Artefact_Claims_A_Review_The_Annotations_Do_Not_Support [FAIL]
-      [xUnit.net 00:00:02.80]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J11_A_Tree_May_Be_Published_Only_When_The_Record_Says_So [FAIL]
-      [xUnit.net 00:00:02.92]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J10_Every_High_Risk_Unit_Says_What_Would_Falsify_It [FAIL]
+      [xUnit.net 00:00:02.24]     Broiler.VM.Architecture.Tests.ReviewRecordRuleTests.H4_The_Record_States_No_Decision_The_Annotations_Do_Not_Hold [FAIL]
+      [xUnit.net 00:00:02.68]     Broiler.VM.Architecture.Tests.AssuranceAnnotationTests.The_Generator_Fills_A_Human_Approval_That_A_Human_Already_Made [FAIL]
+      [xUnit.net 00:00:02.69]     Broiler.VM.Architecture.Tests.RegisterFigureTests.RuleMessages_For_J12_Are_Written_When_Asked_For [FAIL]
+      [xUnit.net 00:00:02.69]     Broiler.VM.Architecture.Tests.AssuranceGeneratorTests.The_Generated_Artefacts_Are_Written_In_Write_Mode_And_Asserted_Otherwise [FAIL]
+      [xUnit.net 00:00:02.69]     Broiler.VM.Architecture.Tests.AssuranceScannerTests.The_Units_That_Touch_Untrusted_Input_Are_Relevant_And_Annotated [FAIL]
+      [xUnit.net 00:00:02.69]     Broiler.VM.Architecture.Tests.AssuranceAnnotationTests.The_Generator_Refreshes_A_Review_The_Code_Has_Outrun_Into_Stale_With_Its_History [FAIL]
+      [xUnit.net 00:00:02.69]     Broiler.VM.Architecture.Tests.AssuranceAnnotationTests.The_Generator_Refuses_To_Write_A_Reviewer_The_Source_Does_Not_Carry [FAIL]
+      [xUnit.net 00:00:02.72]     Broiler.VM.Architecture.Tests.RegisterFigureTests.J12_Every_Countable_Subject_Has_A_Figure_Behind_It [FAIL]
+      [xUnit.net 00:00:02.72]     Broiler.VM.Architecture.Tests.RegisterFigureTests.J12_The_Register_Cites_The_Assurance_Figures_Rather_Than_Restating_Them [FAIL]
+      [xUnit.net 00:00:02.72]     Broiler.VM.Architecture.Tests.RegisterFigureTests.J12_Rejects_A_Citation_The_Report_Cannot_Resolve [FAIL]
+      [xUnit.net 00:00:03.00]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J4_No_Approval_Exists_That_A_Human_Did_Not_Make [FAIL]
+      [xUnit.net 00:00:03.00]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J5_Every_Generated_Artefact_Is_What_The_Generator_Would_Write [FAIL]
+      [xUnit.net 00:00:03.31]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J8_Every_Generated_Artefact_Matches_Its_Declared_Shape [FAIL]
+      [xUnit.net 00:00:03.32]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J2_Every_Annotation_Parses_And_Every_Field_Is_In_Its_Vocabulary [FAIL]
+      [xUnit.net 00:00:03.32]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J3_Every_Recorded_Fingerprint_Is_The_One_The_Code_Produces [FAIL]
+      [xUnit.net 00:00:03.32]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J1_Every_Relevant_Unit_Carries_An_Annotation [FAIL]
+      [xUnit.net 00:00:03.33]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J9_No_Generated_Artefact_Claims_A_Review_The_Annotations_Do_Not_Support [FAIL]
+      [xUnit.net 00:00:03.70]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J11_A_Tree_May_Be_Published_Only_When_The_Record_Says_So [FAIL]
+      [xUnit.net 00:00:03.85]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J10_Every_High_Risk_Unit_Says_What_Would_Falsify_It [FAIL]
       [H4] 1 message(s)
           HUMAN_REVIEW.md section 5 does not name the alias APPROVED, which a human line in the product tree carries
       [J1] THREW TypeInitializationException: The type initializer for 'Broiler.VM.Architecture.Tests.AssuranceGenerator' threw an exception.

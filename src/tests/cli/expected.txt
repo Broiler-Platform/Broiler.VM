@@ -21,10 +21,24 @@ runs/a-loop-that-ends.js|0|45
 
 # It refuses source, by name, with the position.
 refused/a-const-with-no-initialiser.js|3|2203:ConstWithoutInitialiser
-refused/a-string-value.js|3|2104:ConstructOutsideManifest
 refused/a-break-outside-a-loop.js|3|2207:IllegalBreak
 refused/an-unterminated-string.js|3|2004:UnterminatedStringLiteral
-refused/a-free-name.js|3|2206:UnresolvableIdentifier
+
+# TWO OF THESE REFUSALS BELONG TO A MANIFEST RATHER THAN TO THE LANGUAGE, and from 2026-09-04 this
+# host lowers `broiler.javascript.wide` by default. They are pinned under `--slice`, where they are
+# still exactly true, rather than deleted - a refusal that stops being reachable because the default
+# moved is not a refusal that stopped being owed, and the slice still owes both. The rows beneath
+# each say what the same file does now, so the pair is the difference the default made rather than
+# a claim quietly withdrawn.
+--slice refused/a-string-value.js|3|2104:ConstructOutsideManifest
+refused/a-string-value.js|0|undefined
+
+# A FREE NAME MOVED FROM A COMPILE-TIME REFUSAL TO A RUNTIME ERROR, and that is a property of the
+# manifest and not a regression. The slice declares no global object, so a name resolving to no
+# binding cannot be anything and is refused before it runs; the wide manifest has one, so the name
+# is a property lookup that fails when it is reached - which is what the language says.
+--slice refused/a-free-name.js|3|2206:UnresolvableIdentifier
+refused/a-free-name.js|1|uncaught ReferenceError
 
 # THE NESTING BOUND IS A CEILING THIS BUILD DECLARES, not a statement about the language, and the
 # same file answers differently either side of it. Two files of the Octane benchmark are refused at
@@ -51,7 +65,7 @@ missing/nothing-here.js|6|no file or directory at
 # Several files at once report the WORST answer, and a legitimate refusal does not outrank a
 # clean run into failure - it simply dominates it, because the caller has to know something
 # was refused.
-runs/a-product.js refused/a-string-value.js|3|RefusedSource: 1
+--slice runs/a-product.js refused/a-string-value.js|3|RefusedSource: 1
 
 # THE THREE UNREACHABLE-CODE SHAPES, ALL REPAIRED. Each was pinned here with the exit code it
 # answered with while it was a defect, so the suite went red on every repair and the row had to be
@@ -79,9 +93,19 @@ dead-code/a-break-inside-an-if-does-not-end-the-block.js|0|2
 # THE TEMPORAL DEAD ZONE, both halves and both directions. Exit 1 is a program that threw: these
 # are RUNTIME ReferenceErrors, which is what the language says and what this profile could not
 # express at all until the format grew an instruction that can fail.
-dead-zone/a-read-before-the-initialiser.js|1|ReferenceError
-dead-zone/a-write-before-the-initialiser.js|1|ReferenceError
-dead-zone/a-read-inside-its-own-initialiser.js|1|ReferenceError
+--slice dead-zone/a-read-before-the-initialiser.js|1|ReferenceError
+--slice dead-zone/a-write-before-the-initialiser.js|1|ReferenceError
+--slice dead-zone/a-read-inside-its-own-initialiser.js|1|ReferenceError
+
+# AND THE WIDE MANIFEST DOES NOT HAVE THE DEAD ZONE, which is a DEVIATION FROM THE LANGUAGE and is
+# pinned here so it is a checked fact rather than a sentence in a document. Script-level `let` and
+# `const` become properties of the global object rather than bindings of a separate global lexical
+# environment, and a property that has not been assigned yet reads `undefined` instead of throwing.
+# These three rows go red the day that is repaired, which is the point of pinning them: the repair
+# has to move them deliberately, exactly as JSC-62's repair moved the three rows above.
+dead-zone/a-read-before-the-initialiser.js|0|undefined
+dead-zone/a-write-before-the-initialiser.js|0|1
+dead-zone/a-read-inside-its-own-initialiser.js|0|undefined
 
 # And the two that must NOT throw. A `var` is initialised when its scope is entered, so reading one
 # early is `undefined`; and a lexical binding after its initialiser is unremarkable. A dead-zone
@@ -101,5 +125,5 @@ hashbang/on-the-second-line.js|3|2102:ExpectedToken
 # document was archived the same day. Asserting the retained PATH rather than the word `archived`
 # is deliberate - `archived` is a substring of `NOT archived`, so a row looking for it would have
 # passed in both states and judged nothing.
---version|0|manifest broiler.javascript.slice
+--version|0|manifest broiler.javascript.wide
 --version|0|docs/specification/ecma-262-es2026-spec.html

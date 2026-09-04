@@ -194,7 +194,15 @@ internal static class WideHost
 
             if (JavaScriptProfile.TryGetWideCompletion(in result, out var completion))
             {
-                value = completion.TypeOf == "undefined" ? string.Empty : completion.Value;
+                // THE PROGRAM'S VALUE IS THE LAST SCRIPT'S, AND `undefined` IS A VALUE. This read
+                // `TypeOf == "undefined" ? string.Empty : completion.Value` until 2026-09-04, which
+                // was wrong twice over. The same file printed `undefined` under `--slice` and
+                // nothing here, so what the host printed depended on which manifest lowered it -
+                // and a program a person would call identical answered differently. And carrying a
+                // value forward meant an earlier script's 42 outlived a later script's `undefined`,
+                // so the printed value was not any script's completion but the last interesting
+                // one, which is not a rule anybody could state.
+                value = completion.Value;
                 continue;
             }
 
