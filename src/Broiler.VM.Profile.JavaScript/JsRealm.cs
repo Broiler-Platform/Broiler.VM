@@ -150,7 +150,7 @@ internal sealed partial class JsRealm
     private JsValue arrayIterator = JsValue.Undefined;
 
     /// <summary>Builds a realm on <paramref name="owner"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=ABFA90
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B4A86A
     // Broiler-Human:        PENDING
     internal JsRealm(JsEngine owner)
     {
@@ -171,6 +171,7 @@ internal sealed partial class JsRealm
         RegExpPrototype = new JsObject(ObjectPrototype, "RegExp");
 
         SetupObject();
+        SetupReflect();
         SetupFunction();
         SetupArray();
         SetupString();

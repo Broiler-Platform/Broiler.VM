@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   75
-// Annotated:        75/75
+// Relevant units:   81
+// Annotated:        81/81
 // Exempt:           13
-// Human-reviewed:   0/75
+// Human-reviewed:   0/81
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         7/7
 // Resource impact:  7/10 max
-// Unverified:       75
+// Unverified:       81
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -881,6 +881,226 @@ internal sealed class JsEngine
         }
 
         target.SetOwnProperty(key, JsProperty.Data(value, JsPropertyAttributes.Default));
+    }
+
+    /// <summary>Defines an own data property under a key that is not known until it is evaluated.</summary>
+    /// <remarks>
+    /// <b>A computed member of an object literal DEFINES and does not assign</b>, and the two differ
+    /// wherever the chain has an opinion: <c>{ [k]: v }</c> with <c>k</c> of <c>"__proto__"</c> makes
+    /// an own property called <c>__proto__</c>, where an assignment would have found the accessor on
+    /// <c>Object.prototype</c> and moved the object's prototype instead. The same difference shows
+    /// against any setter, and against a read-only property inherited from a frozen prototype.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=339011
+    // Broiler-Human:        PENDING
+    private void DefineByKey(JsObject host, JsValue key, JsValue value)
+    {
+        if (key.IsSymbol)
+        {
+            host.SetOwnSymbol(key.AsSymbol(), JsProperty.Data(value, JsPropertyAttributes.Default));
+            return;
+        }
+
+        host.SetOwnProperty(ToPropertyKey(key), JsProperty.Data(value, JsPropertyAttributes.Default));
+    }
+
+    // ---- the reflective forms of the two above -------------------------------------------------
+
+    /// <summary>Reads a property off one object's chain with any accessor bound to another value.</summary>
+    /// <remarks>
+    /// <b>The chain that is walked and the <c>this</c> a getter sees are the same thing in every
+    /// ordinary read</b>, because the base of the reference is both, and separating them is the
+    /// entire reason <c>Reflect.get</c> takes a third argument. A program can run a getter it found
+    /// on one object against an object that does not have it, which is how a class hierarchy reads
+    /// an inherited accessor without inheriting.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=D12778
+    // Broiler-Human:        PENDING
+    internal JsValue GetWithReceiver(JsObject target, string key, JsValue receiver)
+    {
+        if (target is JsTypedArray view && JsObject.IsArrayIndex(key, out _))
+        {
+            return view.TryGetOwnProperty(key, out var element) ? element.Value : JsValue.Undefined;
+        }
+
+        return Lookup(target, key, receiver);
+    }
+
+    /// <summary>The same read for a Symbol-keyed property.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=1E9870
+    // Broiler-Human:        PENDING
+    internal JsValue GetSymbolWithReceiver(JsObject target, JsSymbol key, JsValue receiver)
+    {
+        var current = target;
+
+        while (current is not null)
+        {
+            if (current.TryGetOwnSymbol(key, out var property))
+            {
+                if (!property.IsAccessor)
+                {
+                    return property.Value;
+                }
+
+                return property.Getter is null
+                    ? JsValue.Undefined
+                    : Call(JsValue.Object(property.Getter), receiver, System.Array.Empty<JsValue>());
+            }
+
+            current = current.Prototype;
+        }
+
+        return JsValue.Undefined;
+    }
+
+    /// <summary>Writes through one object's chain, lands the write on another, and answers whether
+    /// it took.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The answer is the point, and it is not the same question as "what does the property read
+    /// back as".</b> A setter that discards what it was handed still took the write — the language
+    /// says <c>[[Set]]</c> is true whenever a setter ran — and a read-back would call it a refusal.
+    /// So this walks the chain itself rather than storing and looking.
+    /// </para>
+    /// <para>
+    /// <b>The walk is over the target and the store is on the receiver</b>, which is what makes a
+    /// data property found on a prototype shadow rather than overwrite. The two coincide for every
+    /// call that does not name a receiver, which is nearly all of them.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=3523E4
+    // Broiler-Human:        PENDING
+    internal bool SetWithReceiver(JsObject target, string key, JsValue value, JsValue receiver)
+    {
+        if (target is JsTypedArray view && JsObject.IsArrayIndex(key, out var at))
+        {
+            _ = view.TryWriteAt((int)at, ToNumber(value));
+            return true;
+        }
+
+        var current = target;
+
+        while (current is not null)
+        {
+            if (current.TryGetOwnProperty(key, out var property))
+            {
+                if (property.IsAccessor)
+                {
+                    if (property.Setter is null)
+                    {
+                        return false;
+                    }
+
+                    Call(JsValue.Object(property.Setter), receiver, [value]);
+                    return true;
+                }
+
+                if (!property.Writable)
+                {
+                    return false;
+                }
+
+                break;
+            }
+
+            current = current.Prototype;
+        }
+
+        return LandOnReceiver(receiver, key, value);
+    }
+
+    /// <summary>The same write for a Symbol-keyed property.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=2E77B3
+    // Broiler-Human:        PENDING
+    internal bool SetSymbolWithReceiver(JsObject target, JsSymbol key, JsValue value, JsValue receiver)
+    {
+        var current = target;
+
+        while (current is not null)
+        {
+            if (current.TryGetOwnSymbol(key, out var property))
+            {
+                if (property.IsAccessor)
+                {
+                    if (property.Setter is null)
+                    {
+                        return false;
+                    }
+
+                    Call(JsValue.Object(property.Setter), receiver, [value]);
+                    return true;
+                }
+
+                if (!property.Writable)
+                {
+                    return false;
+                }
+
+                break;
+            }
+
+            current = current.Prototype;
+        }
+
+        if (!receiver.IsObject)
+        {
+            return false;
+        }
+
+        var holder = receiver.AsObject();
+
+        if (holder.TryGetOwnSymbol(key, out var existing))
+        {
+            if (existing.IsAccessor || !existing.Writable)
+            {
+                return false;
+            }
+
+            existing.Value = value;
+            holder.SetOwnSymbol(key, existing);
+            return true;
+        }
+
+        if (!holder.Extensible)
+        {
+            return false;
+        }
+
+        holder.SetOwnSymbol(key, JsProperty.Data(value, JsPropertyAttributes.Default));
+        return true;
+    }
+
+    /// <summary>Where a reflective write ends up: an own property of the receiver, or a refusal.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=974BD1
+    // Broiler-Human:        PENDING
+    private static bool LandOnReceiver(JsValue receiver, string key, JsValue value)
+    {
+        if (!receiver.IsObject)
+        {
+            return false;
+        }
+
+        var holder = receiver.AsObject();
+
+        if (holder.TryGetOwnProperty(key, out var existing))
+        {
+            if (existing.IsAccessor || !existing.Writable)
+            {
+                return false;
+            }
+
+            existing.Value = value;
+            holder.SetOwnProperty(key, existing);
+            return true;
+        }
+
+        if (!holder.Extensible)
+        {
+            return false;
+        }
+
+        holder.SetOwnProperty(key, JsProperty.Data(value, JsPropertyAttributes.Default));
+        return true;
     }
 
     // ---- classes -------------------------------------------------------------------------------
@@ -2144,7 +2364,7 @@ internal sealed class JsEngine
     /// have run for a throw from the instruction itself, and no unwinding is reimplemented.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=4B6DBC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=CD7594
     // Broiler-Human:        PENDING
     private JsValue Execute(
         JsProgram program,
@@ -2521,7 +2741,30 @@ internal sealed class JsEngine
                         {
                             var value = stack[--sp];
                             var key = stack[--sp];
-                            SetIndexed(stack[sp - 1], key, value, strict: false);
+                            DefineByKey(stack[sp - 1].AsObject(), key, value);
+                            pc++;
+                            break;
+                        }
+
+                        case JsOpcode.SetPrototypeLiteral:
+                        {
+                            var wanted = stack[--sp];
+
+                            // A VALUE THAT IS NEITHER AN OBJECT NOR `null` IS IGNORED rather than
+                            // refused: `{ __proto__: 5 }` is an ordinary object, and the member is
+                            // dropped. No cycle is reachable here and no refusal is possible - the
+                            // object is one this instruction sequence just built, so it is
+                            // extensible and nothing else holds a reference through which it could
+                            // appear in the chain being installed.
+                            if (wanted.IsObject)
+                            {
+                                stack[sp - 1].AsObject().Prototype = wanted.AsObject();
+                            }
+                            else if (wanted.Type == JsType.Null)
+                            {
+                                stack[sp - 1].AsObject().Prototype = null;
+                            }
+
                             pc++;
                             break;
                         }

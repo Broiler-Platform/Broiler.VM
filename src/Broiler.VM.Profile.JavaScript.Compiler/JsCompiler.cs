@@ -3092,11 +3092,13 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E66756
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=40EFAD
     // Broiler-Human:        PENDING
     private void CompileObject(JsObjectLiteral literal)
     {
         Emit(JsOpcode.NewObject);
+
+        var prototyped = false;
 
         foreach (var entry in literal.Entries)
         {
@@ -3158,6 +3160,29 @@ public sealed class JsCompiler
                 CompileExpression(entry.Computed);
                 CompileExpression(entry.Value);
                 Emit(JsOpcode.DefineIndexed);
+                continue;
+            }
+
+            // `__proto__: p` IS THE ONE MEMBER THAT IS NOT A MEMBER. The language spells it like a
+            // property and gives it a different meaning - it sets the prototype - and the three
+            // spellings that do NOT mean that are all excluded above or here: a computed key, a
+            // method, and the shorthand. Writing it twice is a syntax error, because a literal that
+            // set its prototype twice would have an order nobody could read off the source.
+            if (!entry.Shorthand && string.Equals(entry.Key, "__proto__", System.StringComparison.Ordinal))
+            {
+                if (prototyped)
+                {
+                    Refuse(
+                        entry.Span,
+                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        "an object literal may set `__proto__` once");
+
+                    continue;
+                }
+
+                prototyped = true;
+                CompileExpression(entry.Value);
+                Emit(JsOpcode.SetPrototypeLiteral);
                 continue;
             }
 

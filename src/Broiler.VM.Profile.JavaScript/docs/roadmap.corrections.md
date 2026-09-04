@@ -4261,3 +4261,78 @@ basic plane, which needs a predicate over code points rather than over UTF-16 un
 
 **Authority and date.** The implementation of 2026-09-04 in this checkout, the sweep that counted the
 refusals, and the cases appended to `src/tests/differential/the-general-surface.js`. 2026-09-04.
+
+### JSC-106
+
+**Where:** the lowering of an object literal, and the instruction set it lowers to.
+
+**Two members of an object literal were compiled as assignments, and neither of them is one.** The
+computed member `{ [k]: v }` was lowered to the ordinary store, and `{ __proto__: p }` to an ordinary
+property definition. Both were invisible for as long as nothing on `Object.prototype` had an opinion
+about a key.
+
+**What made them visible was a repair.** `Object.prototype.__proto__` is an accessor pair, and this
+realm did not have it until the same day; the moment it did, `{ [k]: v }` with `k` of `"__proto__"`
+stopped defining a property and started moving the object's prototype, because a store walks the
+chain and finds a setter where a definition does not look. The second member had been wrong from the
+beginning and in the other direction: `{ __proto__: p }` set no prototype and made an own property
+called `__proto__`, which `Object.keys` reported, `JSON.stringify` serialised, and every program that
+expected `p` to be the prototype read as an ordinary object.
+
+**Neither is an assignment, and the language says so in different ways.** A computed member is
+`CreateDataPropertyOrThrow`, which is why it answers to nothing on the chain — not a setter, not a
+read-only property inherited from a frozen prototype. The `__proto__` member is a *separate
+production*: it is not a property definition at all, it sets `[[Prototype]]` directly, and it
+answers to nothing on the chain either — not even to the accessor of the same name, which a program
+may delete without changing what a literal means.
+
+**Three spellings that look like it are not it, and the lowering has to tell them apart**:
+`{ ["__proto__"]: p }` and `{ __proto__() {} }` define properties, and so does the shorthand
+`{ __proto__ }` — which is the one the parser had no way to distinguish by the time the lowering
+saw it, so the entry now records that it was written shorthand. Writing the member twice is an early
+error, because a literal that set its prototype twice would have an order nobody could read off the
+source.
+
+**What replaced them.** `SetPrototypeLiteral`, an instruction rather than a store, for the reason
+above: the operation the language performs here answers to nothing that a store would consult. The
+computed member defines. Twenty cases covering all four spellings, both directions of
+`Object.getPrototypeOf`, a spread of a `__proto__` own property, `JSON.parse` — which makes an own
+property and not a prototype — and the destructuring pattern that reuses the same syntax, agree with
+the comparison engine and are retained.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the probe that found the
+first while checking the repair that caused it, and the cases appended to
+`src/tests/differential/the-statement-and-object-surface.js`. 2026-09-04.
+
+### JSC-107
+
+**Where:** `Reflect.construct`, and what an engine answers when asked whether its own built-ins are
+constructors.
+
+**`Reflect.construct` checked that its target and its new target were CALLABLE.** The language says
+constructor, and the two are not the same set: an arrow, a method, a getter and every built-in in
+this realm that has no `[[Construct]]` are all callable and none of them may be `new`ed.
+
+**The cost is larger than the function, because the suite asks this question THROUGH it.** test262's
+own `isConstructor` is written as a call to `Reflect.construct` with the function under test as the
+new target, so a callable check here makes the realm answer *"yes, that is a constructor"* about
+thirteen of its own built-ins — every function whose test asserts the opposite. Twenty-eight variants
+failed for one wrong predicate, and the same predicate would have let a guest write
+`Reflect.construct(C, [], Math.max)` and get an instance whose prototype came from a function that
+has none.
+
+**Two neighbours were wrong in the same file and found by the same sweep.**
+`Reflect.setPrototypeOf` reported `false` for setting the prototype an object already has when the
+object was not extensible — `[[SetPrototypeOf]]` asks whether the answer would *change*, and a
+non-extensible object refuses only a change — and it let a cycle throw where this namespace answers
+every refusal with `false`. `Reflect.defineProperty` read its property key inside the `try` that
+turns a refusal into `false`, so a `toString` on the key that threw was reported as the object
+declining rather than as the program's own exception.
+
+**What replaced them.** The constructor predicate the object model already carries, the two
+`[[SetPrototypeOf]]` steps in the specification's order, and the key and descriptor read before the
+`try` that may swallow. The pinned suite's `built-ins/Reflect` subtree moved from 250 of 306 variants
+to 286; the twenty that remain all name `Proxy`, which this realm does not have.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout and the sweep of
+`test/built-ins/Reflect` that found all three. 2026-09-04.

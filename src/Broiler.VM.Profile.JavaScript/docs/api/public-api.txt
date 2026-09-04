@@ -1177,6 +1177,7 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ReturnUndefined : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 52
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.SetIndex : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 37
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.SetProperty : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 35
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.SetPrototypeLiteral : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 63
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ShiftLeft : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 85
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ShiftRight : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 86
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ShiftRightUnsigned : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 87

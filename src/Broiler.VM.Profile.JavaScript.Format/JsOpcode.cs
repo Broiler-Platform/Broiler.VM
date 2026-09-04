@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   16
 // Annotated:        16/16
-// Exempt:           103
+// Exempt:           104
 // Human-reviewed:   0/16
 // IP risk:          None
 // Security risk:    Medium
@@ -71,7 +71,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// is why they are ordinary instructions in this set and need no section of their own.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=D5E924
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=DDCCD7
 // Broiler-Human:        PENDING
 public enum JsOpcode : byte
 {
@@ -390,6 +390,34 @@ public enum JsOpcode : byte
     /// </remarks>
     SuperCallSpread = 0x3E,
 
+    /// <summary>
+    /// Pop a value; make it the prototype of the object beneath, which stays. A value that is
+    /// neither an object nor <c>null</c> is discarded and the object is left alone.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b><c>{ __proto__: p }</c> is not a property definition and cannot be lowered as one.</b> The
+    /// language spells one member of an object literal with a name and gives it an entirely
+    /// different meaning: it sets the object's prototype rather than defining a key. Lowering it to
+    /// <see cref="DefineField"/> makes an own property called <c>__proto__</c>, which is observable
+    /// as a wrong answer from <c>Object.keys</c>, from <c>JSON.stringify</c>, and from every
+    /// prototype the literal was supposed to have.
+    /// </para>
+    /// <para>
+    /// <b>It is an instruction rather than a store through the accessor of the same name</b>,
+    /// because the two are not the same operation. The accessor lives on
+    /// <c>Object.prototype</c>, so a program that deletes it, or a literal that spread an own
+    /// <c>__proto__</c> onto itself first, would change what the literal means; the language says
+    /// the literal form sets the prototype directly and answers to nothing on the chain.
+    /// </para>
+    /// <para>
+    /// <b>The shorthand does not reach this opcode.</b> <c>{ __proto__ }</c> defines a property, and
+    /// only the <c>name: value</c> and <c>"name": value</c> forms set the prototype — a distinction
+    /// the lowering makes, since by here the two would look alike.
+    /// </para>
+    /// </remarks>
+    SetPrototypeLiteral = 0x3F,
+
     // ---- operators ---------------------------------------------------------------------------------
 
     /// <summary>The <c>+</c> operator, which concatenates when either operand is a String.</summary>
@@ -678,7 +706,7 @@ public static class JsOpcodes
     public const byte MemberBits = MemberIsGetter | MemberIsSetter | MemberIsEnumerable;
 
     /// <summary>Every opcode format version 2 defines, in ascending numeric order.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=2F47E3
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=884038
     // Broiler-Human:        PENDING
     public static readonly JsOpcode[] All =
     [
@@ -700,6 +728,7 @@ public static class JsOpcodes
         JsOpcode.SuperCall, JsOpcode.SuperCallForwarded, JsOpcode.NewClass,
         JsOpcode.ArrayHoles, JsOpcode.SpreadArray, JsOpcode.SpreadObject,
         JsOpcode.CallSpread, JsOpcode.ConstructSpread, JsOpcode.SuperCallSpread,
+        JsOpcode.SetPrototypeLiteral,
         JsOpcode.Add, JsOpcode.Subtract, JsOpcode.Multiply, JsOpcode.Divide,
         JsOpcode.Remainder, JsOpcode.Exponent, JsOpcode.Negate, JsOpcode.ToNumber,
         JsOpcode.Not, JsOpcode.BitwiseNot,
@@ -762,7 +791,7 @@ public static class JsOpcodes
     /// The operand shape of <paramref name="opcode"/>, or <see langword="null"/> when this format
     /// version does not define it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=EA19B9
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=CBF84E
     // Broiler-Human:        PENDING
     public static JsOperandShape? Shape(JsOpcode opcode) => opcode switch
     {
@@ -786,6 +815,7 @@ public static class JsOpcodes
         JsOpcode.Throw or JsOpcode.ForInStart or
         JsOpcode.ArrayAppend or JsOpcode.SpreadArray or JsOpcode.SpreadObject or
         JsOpcode.CallSpread or JsOpcode.ConstructSpread or JsOpcode.SuperCallSpread or
+        JsOpcode.SetPrototypeLiteral or
         JsOpcode.IterateStart or JsOpcode.IterateRest or
         JsOpcode.Yield or JsOpcode.YieldDelegate or
         JsOpcode.Pop or JsOpcode.Duplicate or JsOpcode.DuplicateTwo or JsOpcode.Swap
@@ -823,7 +853,7 @@ public static class JsOpcodes
     /// and the verifier's abstract height is computed from them alone. A false answer means the
     /// opcode is not one this format version defines - not that its effect is unknown.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=F7B3BA
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=93C1A5
     // Broiler-Human:        PENDING
     public static bool TryDescribe(JsOpcode opcode, uint operand, out int pops, out int pushes)
     {
@@ -883,6 +913,7 @@ public static class JsOpcodes
             case JsOpcode.ArrayAppend:
             case JsOpcode.SpreadArray:
             case JsOpcode.SpreadObject:
+            case JsOpcode.SetPrototypeLiteral:
                 pops = 1;
                 return true;
 

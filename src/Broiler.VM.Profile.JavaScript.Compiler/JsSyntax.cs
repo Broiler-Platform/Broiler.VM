@@ -139,7 +139,13 @@ internal enum JsPropertyKind
 /// the shape here and the LOWERING refuses one that reached it, which is exactly the set that was
 /// never reinterpreted.
 /// </param>
-// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=F1E8B2
+/// <param name="Shorthand">
+/// Whether the entry was written as <c>{ x }</c> rather than as <c>{ x: x }</c>. <b>The two mean the
+/// same thing for every name but one</b>: <c>{ __proto__: p }</c> sets the object's prototype and
+/// <c>{ __proto__ }</c> defines a property, so the lowering has to be able to tell them apart and
+/// by then nothing else distinguishes them.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=C81D9D
 // Broiler-Human:        PENDING
 internal sealed record JsObjectEntry(
     SliceSourceSpan Span,
@@ -148,7 +154,8 @@ internal sealed record JsObjectEntry(
     JsExpression? Computed,
     JsExpression Value,
     bool IsMethod = false,
-    bool Cover = false) : JsNode(Span);
+    bool Cover = false,
+    bool Shorthand = false) : JsNode(Span);
 
 /// <summary>An object literal.</summary>
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=3CE3F5

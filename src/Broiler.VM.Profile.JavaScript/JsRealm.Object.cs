@@ -58,7 +58,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>Object</c>, <c>Object.prototype</c> and the statics on the constructor.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=D5CB70
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1F1550
     // Broiler-Human:        PENDING
     private void SetupObject()
     {
@@ -79,7 +79,17 @@ internal sealed partial class JsRealm
                 return JsValue.String("[object Null]");
             }
 
-            return JsValue.String("[object " + engine.ToObject(thisValue).ClassName + "]");
+            var host = engine.ToObject(thisValue);
+
+            // `Symbol.toStringTag` OVERRIDES THE CLASS AND IS WHAT MAKES THIS EXTENSIBLE. A guest
+            // object carrying one reports it — which is how `[object Generator]`, `[object Map]`
+            // and every tag a program sets on a class of its own are produced. A tag that is not a
+            // String is ignored rather than coerced, because a tag is a name and coercing one would
+            // let `[object 42]` through.
+            var tagged = engine.GetSymbol(thisValue, engine.Realm.ToStringTagSymbol);
+
+            return JsValue.String(
+                "[object " + (tagged.Type == JsType.String ? tagged.AsString() : host.ClassName) + "]");
         });
 
         Method(ObjectPrototype, "toLocaleString", 0, static (engine, thisValue, arguments) =>
@@ -230,6 +240,24 @@ internal sealed partial class JsRealm
             {
                 engine.Charge(1);
                 result.Push(JsValue.String(key));
+            }
+
+            return JsValue.Object(result);
+        });
+
+        // THE SYMBOL KEYS ARE A SEPARATE TABLE AND THEREFORE A SEPARATE ANSWER. `getOwnPropertyNames`
+        // must not report them and this must report nothing else, which is the whole reason the
+        // language has two functions where a reader might expect one filter.
+        Method(constructor, "getOwnPropertySymbols", 1, (engine, thisValue, arguments) =>
+        {
+            _ = thisValue;
+            var target = engine.ToObject(ArgOfObject(arguments, 0));
+            var result = NewArray();
+
+            foreach (var key in target.OwnSymbolKeys())
+            {
+                engine.Charge(1);
+                result.Push(JsValue.Symbol(key));
             }
 
             return JsValue.Object(result);

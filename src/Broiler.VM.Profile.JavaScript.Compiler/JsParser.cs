@@ -2292,7 +2292,7 @@ internal sealed class JsParser
         return new JsObjectLiteral(span, entries);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=1F2690
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=EB2CCE
     // Broiler-Human:        PENDING
     private JsObjectEntry ParseObjectEntry()
     {
@@ -2381,9 +2381,12 @@ internal sealed class JsParser
 
         if (Current.Kind is SliceTokenKind.Comma or SliceTokenKind.CloseBrace)
         {
-            // A shorthand property: `{ x }` is `{ x: x }`, and the key is a name in scope.
+            // A shorthand property: `{ x }` is `{ x: x }`, and the key is a name in scope. It is
+            // recorded AS a shorthand because the equivalence has one exception: `{ __proto__ }`
+            // defines a property where `{ __proto__: p }` sets the prototype.
             return new JsObjectEntry(
-                span, JsPropertyKind.Init, key, computed, new JsIdentifier(span, key));
+                span, JsPropertyKind.Init, key, computed, new JsIdentifier(span, key),
+                Shorthand: true);
         }
 
         // `{ a = 1 }` IS NOT AN OBJECT LITERAL AND MAY STILL BE A LEGAL PROGRAM. It is the cover
