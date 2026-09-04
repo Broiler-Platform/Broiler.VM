@@ -129,7 +129,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>ArrayBuffer</c>, its one static and its prototype.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=59EE3E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=37A168
     // Broiler-Human:        PENDING
     private void SetupArrayBuffer()
     {
@@ -145,6 +145,8 @@ internal sealed partial class JsRealm
         // `isView` ANSWERS FOR BOTH VIEW KINDS AND FOR NOTHING ELSE. It is not "is this backed by a
         // buffer" - an ArrayBuffer itself answers false, which is the question callers actually
         // need answered before they reach for `byteOffset`.
+        SpeciesGetter(constructor);
+
         Method(constructor, "isView", 1, static (engine, thisValue, arguments) =>
             JsValue.Boolean(ArgOfBinary(arguments, 0).AsObjectOrNull() is JsTypedArray or JsDataView));
 
@@ -1134,7 +1136,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>%TypedArray%</c> and the nine constructors that inherit from it.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=FB5644
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=9BCE6A
     // Broiler-Human:        PENDING
     private void SetupTypedArrayConstructors()
     {
@@ -1151,6 +1153,8 @@ internal sealed partial class JsRealm
                 engine.ThrowTypeError("Abstract class TypedArray not directly callable"),
             static (engine, thisValue, arguments) =>
                 engine.ThrowTypeError("Abstract class TypedArray not directly constructable"));
+
+        SpeciesGetter(superclass);
 
         superclass.SetOwnProperty(
             "prototype",

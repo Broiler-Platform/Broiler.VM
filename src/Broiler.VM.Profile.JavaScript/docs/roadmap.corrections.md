@@ -4639,3 +4639,63 @@ are the host's own. It is now a declared divergence rather than an unstated abse
 
 **Authority and date.** The implementation of 2026-09-04 in this checkout, and the ninety-eight cases
 appended to `src/tests/differential/the-general-surface.js`. 2026-09-04.
+
+### JSC-118
+
+**Where:** the four keyed-collection constructors, and the iterator protocol they reach their
+arguments through.
+
+**What was assumed.** That `new Map(entries)` may read the entries and store them, because storing
+them is what it does.
+
+**What was true.** The language builds a Map by reading the collection's **own `set`** once and
+CALLING it per entry, and a Set by calling its own `add`. Two things follow that this realm did not
+do. A subclass that overrides `set` sees its override used by the constructor — observable, and the
+reason the rule exists. And **a `set` that throws stops the walk**, which is the only thing that ends
+`new Map(iterable)` over an iterator that never reports done.
+
+**What that cost, measured.** This realm collected the whole iterable into a list first and stored
+second. Over an infinite iterator that never returns, so the pinned suite's
+`Map/iterator-close-after-set-failure.js` and its four neighbours spent the wall clock rather than
+answering — **ten variants of `built-ins/Map` ended in exhaustion**, which is the verdict this
+harness reserves for a program that ran out of allowance rather than one that was wrong.
+
+**What replaced it.** A walk that hands one element at a time to a step, closing the iterator when
+the step is abrupt, and constructors that read their own adder and call it. `built-ins/Map` went from
+326 of 405 variants to 399, with no exhaustion left.
+
+**Three absences and a species accessor were found in the same sweep.** `Map.prototype.getOrInsert`
+and `getOrInsertComputed` are ES2026 members the pinned suite tests and the comparison engine does
+not have — the one direction where the suite is the oracle and the comparison is behind. The seven
+**set operations** — `union`, `intersection`, `difference`, `symmetricDifference`, `isSubsetOf`,
+`isSupersetOf` and `isDisjointFrom` — were absent, and `built-ins/Set` went from 456 of 764 variants
+to 730 when they arrived. `Symbol.species` had no accessor on any constructor; it is installed now,
+with the divergence stated where it is installed: the methods here still build a result of the
+receiver's own kind rather than consulting it.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the sweeps of
+`test/built-ins/Map` and `test/built-ins/Set` before and after, and the thirty-one cases appended to
+`src/tests/differential/the-later-library-methods.js`. 2026-09-04.
+
+### JSC-119
+
+**Where:** `JsEngine.TryIterateNext`, which is every `for … of`, every spread, every destructuring
+and every built-in that iterates.
+
+**What it did.** Read `value` off an iterator result that had just said it was `done`.
+
+**What the language says.** `IteratorStep` reads `done`; the `value` of a done result is read by
+`IteratorValue`, which only a caller that WANTS the return value calls — and there is exactly one
+such caller, the `yield*` delegation, whose own value is the inner iterator's return value.
+
+**Why an extra property read is a defect rather than a waste.** It is observable. A result object
+with a `value` **getter** counts the read, and the pinned suite counts exactly that: its set-like
+iterators record every `getting done` and `getting value`, and compare the trace with the one the
+specification prescribes. Twelve variants across the Set operations failed on a trace that was right
+except for one read at the end.
+
+**What replaced it.** The caller says whether it wants the completion value, and only the delegation
+does.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout and the
+`set-like-class-order` cases of the pinned suite, which are what the trace comes from. 2026-09-04.

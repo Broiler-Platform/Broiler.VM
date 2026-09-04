@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   17
-// Annotated:        17/17
+// Relevant units:   18
+// Annotated:        18/18
 // Exempt:           19
-// Human-reviewed:   0/17
+// Human-reviewed:   0/18
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       17
+// Unverified:       18
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -265,6 +265,38 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     internal System.Collections.Generic.Dictionary<string, JsNativeFunction> ErrorConstructors { get; } =
         new(System.StringComparer.Ordinal);
+
+    /// <summary>Installs <c>get [Symbol.species]</c>, which answers the receiver.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is a getter and not a data property, and that is the point of it.</b> A subclass
+    /// overrides it — <c>static get [Symbol.species]() { return Array; }</c> — to say what its
+    /// methods should build, and a program reads it to find out. Absent, both of those are a
+    /// <c>TypeError</c> about a member that should be there.
+    /// </para>
+    /// <para>
+    /// <b>What this realm's built-ins do with the answer is nothing, and that is stated rather than
+    /// implied.</b> <c>map</c>, <c>filter</c>, <c>slice</c> and their neighbours here build a result
+    /// of the receiver's own kind rather than consulting the species of its constructor, which is a
+    /// declared divergence *(the remarks in `JsRealm.Array.cs` and `JsRealm.Binary.cs` carry it)*.
+    /// Installing the accessor makes the member readable and overridable; it does not claim the
+    /// methods obey it.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A44252
+    // Broiler-Human:        PENDING
+    internal void SpeciesGetter(JsObject constructor) =>
+        constructor.SetOwnSymbol(
+            SpeciesSymbol,
+            JsProperty.Accessor(
+                Native("get [Symbol.species]", 0, static (engine, thisValue, arguments) =>
+                {
+                    _ = engine;
+                    _ = arguments;
+                    return thisValue;
+                }),
+                null,
+                JsPropertyAttributes.Configurable));
 
     /// <summary>Builds a built-in function object.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=87A99A

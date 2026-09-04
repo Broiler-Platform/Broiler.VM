@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   19
-// Annotated:        19/19
+// Relevant units:   27
+// Annotated:        27/27
 // Exempt:           6
-// Human-reviewed:   0/19
+// Human-reviewed:   0/27
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  4/10 max
-// Unverified:       19
+// Unverified:       27
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -123,7 +123,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>Map</c> and <c>Map.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=9841E8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=06C9C6
     // Broiler-Human:        PENDING
     private void SetupMap()
     {
@@ -144,7 +144,19 @@ internal sealed partial class JsRealm
                 // that meant to pass entries.
                 if (!source.IsNullish)
                 {
-                    foreach (var entry in CollectionElements(engine, source))
+                    // THE ENTRIES GO IN THROUGH THE OBJECT'S OWN `set`, read once, called per
+                    // entry. It is not a detour: a subclass that overrides `set` sees its override
+                    // used by the constructor, and a `set` that throws stops the walk - which is
+                    // the only thing that ends `new Map(iterable)` over an iterator that never
+                    // reports done.
+                    var adder = engine.GetProperty(JsValue.Object(made), "set");
+
+                    if (!adder.IsObject || !adder.AsObject().IsCallable)
+                    {
+                        return engine.ThrowTypeError("Map.prototype.set is not a function");
+                    }
+
+                    CollectionEach(engine, source, entry =>
                     {
                         if (!entry.IsObject)
                         {
@@ -152,11 +164,13 @@ internal sealed partial class JsRealm
                                 "TypeError", "Iterator value is not an entry object");
                         }
 
-                        engine.Charge(1);
                         engine.Retain(CollectionEntryBytes);
-                        made.Table.Set(
-                            engine.GetProperty(entry, "0"), engine.GetProperty(entry, "1"));
-                    }
+
+                        engine.Call(
+                            adder,
+                            JsValue.Object(made),
+                            [engine.GetProperty(entry, "0"), engine.GetProperty(entry, "1")]);
+                    });
                 }
 
                 return JsValue.Object(made);
@@ -197,6 +211,59 @@ internal sealed partial class JsRealm
             }
 
             return JsValue.Object(made);
+        });
+
+        // ONE LOOKUP WHERE A PROGRAM WOULD WRITE TWO, and that is the whole of it: `has` then `set`
+        // hashes the key twice and reads it twice, and a key whose hashing is expensive - a long
+        // string, an object in a large table - pays for both. The pair also spells the intent, which
+        // is why the language added them rather than leaving the idiom to the caller.
+        SpeciesGetter(mapConstructor);
+
+        Method(MapPrototype, "getOrInsert", 2, static (engine, thisValue, arguments) =>
+        {
+            var table = CollectionThisMap(engine, thisValue, "getOrInsert").Table;
+            var key = ArgOfCollection(arguments, 0);
+            engine.Charge(1);
+
+            if (table.TryGet(key, out var held))
+            {
+                return held;
+            }
+
+            var value = ArgOfCollection(arguments, 1);
+            engine.Retain(CollectionEntryBytes);
+            table.Set(key, value);
+            return value;
+        });
+
+        // THE CALLBACK RUNS ONLY WHEN THE KEY IS ABSENT, which is the difference from the pair
+        // above and the reason both exist: a default that costs something to build - a parse, an
+        // allocation, a request - should not be built for a key that is already there.
+        Method(MapPrototype, "getOrInsertComputed", 2, static (engine, thisValue, arguments) =>
+        {
+            var table = CollectionThisMap(engine, thisValue, "getOrInsertComputed").Table;
+            var key = ArgOfCollection(arguments, 0);
+            var callback = ArgOfCollection(arguments, 1);
+
+            if (!callback.IsObject || !callback.AsObject().IsCallable)
+            {
+                return engine.ThrowTypeError("Map.prototype.getOrInsertComputed: the callback is not a function");
+            }
+
+            engine.Charge(1);
+
+            if (table.TryGet(key, out var held))
+            {
+                return held;
+            }
+
+            // THE CALLBACK IS GUEST CODE AND MAY HAVE TOUCHED THIS MAP, so the table is asked again
+            // afterwards and the answer this call inserts wins: the language says the entry is set
+            // after the callback returns, which overwrites whatever the callback put there.
+            var value = engine.Call(callback, JsValue.Undefined, [CollectionCanonicalKey(key)]);
+            engine.Retain(CollectionEntryBytes);
+            table.Set(key, value);
+            return value;
         });
 
         Method(MapPrototype, "get", 1, static (engine, thisValue, arguments) =>
@@ -256,11 +323,11 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>Set</c> and <c>Set.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=8F7314
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=9E82CD
     // Broiler-Human:        PENDING
     private void SetupSet()
     {
-        _ = Constructor(
+        var setConstructor = Constructor(
             "Set",
             0,
             SetPrototype,
@@ -273,16 +340,27 @@ internal sealed partial class JsRealm
 
                 if (!source.IsNullish)
                 {
-                    foreach (var member in CollectionElements(engine, source))
+                    // THROUGH THE OBJECT'S OWN `add`, for the reason the Map's constructor states.
+                    var adder = engine.GetProperty(JsValue.Object(made), "add");
+
+                    if (!adder.IsObject || !adder.AsObject().IsCallable)
                     {
-                        engine.Charge(1);
-                        engine.Retain(CollectionEntryBytes);
-                        made.Table.Set(member, member);
+                        return engine.ThrowTypeError("Set.prototype.add is not a function");
                     }
+
+                    CollectionEach(engine, source, member =>
+                    {
+                        engine.Retain(CollectionEntryBytes);
+                        engine.Call(adder, JsValue.Object(made), [member]);
+                    });
                 }
 
                 return JsValue.Object(made);
             });
+
+        SetupSetOperations();
+
+        SpeciesGetter(setConstructor);
 
         Method(SetPrototype, "has", 1, static (engine, thisValue, arguments) =>
             JsValue.Boolean(
@@ -336,7 +414,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>WeakMap</c> and <c>WeakMap.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=19471A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=978CD6
     // Broiler-Human:        PENDING
     private void SetupWeakMap()
     {
@@ -353,7 +431,14 @@ internal sealed partial class JsRealm
 
                 if (!source.IsNullish)
                 {
-                    foreach (var entry in CollectionElements(engine, source))
+                    var adder = engine.GetProperty(JsValue.Object(made), "set");
+
+                    if (!adder.IsObject || !adder.AsObject().IsCallable)
+                    {
+                        return engine.ThrowTypeError("WeakMap.prototype.set is not a function");
+                    }
+
+                    CollectionEach(engine, source, entry =>
                     {
                         if (!entry.IsObject)
                         {
@@ -361,17 +446,13 @@ internal sealed partial class JsRealm
                                 "TypeError", "Iterator value is not an entry object");
                         }
 
-                        engine.Charge(1);
                         engine.Retain(CollectionEntryBytes);
-                        var key = engine.GetProperty(entry, "0");
 
-                        if (!key.IsObject)
-                        {
-                            throw engine.Error("TypeError", "Invalid value used as weak map key");
-                        }
-
-                        made.Set(key.AsObject(), engine.GetProperty(entry, "1"));
-                    }
+                        engine.Call(
+                            adder,
+                            JsValue.Object(made),
+                            [engine.GetProperty(entry, "0"), engine.GetProperty(entry, "1")]);
+                    });
                 }
 
                 return JsValue.Object(made);
@@ -420,7 +501,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>WeakSet</c> and <c>WeakSet.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=45EC46
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=B8A16A
     // Broiler-Human:        PENDING
     private void SetupWeakSet()
     {
@@ -437,17 +518,18 @@ internal sealed partial class JsRealm
 
                 if (!source.IsNullish)
                 {
-                    foreach (var member in CollectionElements(engine, source))
-                    {
-                        if (!member.IsObject)
-                        {
-                            throw engine.Error("TypeError", "Invalid value used in weak set");
-                        }
+                    var adder = engine.GetProperty(JsValue.Object(made), "add");
 
-                        engine.Charge(1);
-                        engine.Retain(CollectionEntryBytes);
-                        made.Add(member.AsObject());
+                    if (!adder.IsObject || !adder.AsObject().IsCallable)
+                    {
+                        return engine.ThrowTypeError("WeakSet.prototype.add is not a function");
                     }
+
+                    CollectionEach(engine, source, member =>
+                    {
+                        engine.Retain(CollectionEntryBytes);
+                        engine.Call(adder, JsValue.Object(made), [member]);
+                    });
                 }
 
                 return JsValue.Object(made);
@@ -752,6 +834,444 @@ internal sealed partial class JsRealm
         finally
         {
             table.ExitIteration();
+        }
+    }
+
+    /// <summary>The seven set operations, which arrived long after <c>Set</c> itself.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The argument is a SET-LIKE and not a Set</b>, and that is the whole design of these seven:
+    /// each reads a <c>size</c>, a <c>has</c> and a <c>keys</c> off whatever it is handed, so a Map,
+    /// a custom collection, or anything else with those three participates. Requiring a real Set
+    /// would have made the methods useless for exactly the objects a program most wants to combine
+    /// with one.
+    /// </para>
+    /// <para>
+    /// <b>Which side is walked depends on which is smaller, and it is OBSERVABLE.</b>
+    /// <c>intersection</c>, <c>difference</c> and <c>isDisjointFrom</c> walk the receiver when it is
+    /// the smaller and the argument's keys when it is not - so the result's ORDER and the calls the
+    /// argument sees both differ with the sizes. That is the specification's own arrangement, not an
+    /// optimisation taken here, and reproducing it is the job.
+    /// </para>
+    /// <para>
+    /// <b>The declared size is read once and trusted for the branch</b>, which is why a set-like
+    /// that lies about its size is a case the suite tests: the branch is chosen from the number it
+    /// reported, and the walk that follows uses its real contents.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=DFD771
+    // Broiler-Human:        PENDING
+    private void SetupSetOperations()
+    {
+        Method(SetPrototype, "union", 1, (engine, thisValue, arguments) =>
+        {
+            var table = CollectionThisSet(engine, thisValue, "union").Table;
+            var other = CollectionSetRecord(engine, ArgOfCollection(arguments, 0), "union");
+            var made = new JsSetObject(SetPrototype);
+            CollectionCopyInto(engine, table, made);
+
+            foreach (var member in CollectionSetKeys(engine, other))
+            {
+                engine.Charge(1);
+                engine.Retain(CollectionEntryBytes);
+                var key = CollectionCanonicalKey(member);
+                made.Table.Set(key, key);
+            }
+
+            return JsValue.Object(made);
+        });
+
+        Method(SetPrototype, "intersection", 1, (engine, thisValue, arguments) =>
+        {
+            var table = CollectionThisSet(engine, thisValue, "intersection").Table;
+            var other = CollectionSetRecord(engine, ArgOfCollection(arguments, 0), "intersection");
+            var made = new JsSetObject(SetPrototype);
+
+            if (table.Count <= other.Size)
+            {
+                foreach (var member in CollectionMembers(table))
+                {
+                    engine.Charge(1);
+
+                    if (engine.Call(other.Has, other.Receiver, [member]).ToBooleanValue())
+                    {
+                        made.Table.Set(member, member);
+                    }
+                }
+
+                return JsValue.Object(made);
+            }
+
+            foreach (var member in CollectionSetKeys(engine, other))
+            {
+                engine.Charge(1);
+                var key = CollectionCanonicalKey(member);
+
+                if (table.Has(key))
+                {
+                    made.Table.Set(key, key);
+                }
+            }
+
+            return JsValue.Object(made);
+        });
+
+        Method(SetPrototype, "difference", 1, (engine, thisValue, arguments) =>
+        {
+            var table = CollectionThisSet(engine, thisValue, "difference").Table;
+            var other = CollectionSetRecord(engine, ArgOfCollection(arguments, 0), "difference");
+            var made = new JsSetObject(SetPrototype);
+            CollectionCopyInto(engine, table, made);
+
+            if (table.Count <= other.Size)
+            {
+                foreach (var member in CollectionMembers(table))
+                {
+                    engine.Charge(1);
+
+                    if (engine.Call(other.Has, other.Receiver, [member]).ToBooleanValue())
+                    {
+                        made.Table.Delete(member);
+                    }
+                }
+
+                return JsValue.Object(made);
+            }
+
+            foreach (var member in CollectionSetKeys(engine, other))
+            {
+                engine.Charge(1);
+                made.Table.Delete(CollectionCanonicalKey(member));
+            }
+
+            return JsValue.Object(made);
+        });
+
+        Method(SetPrototype, "symmetricDifference", 1, (engine, thisValue, arguments) =>
+        {
+            var table = CollectionThisSet(engine, thisValue, "symmetricDifference").Table;
+            var other = CollectionSetRecord(
+                engine, ArgOfCollection(arguments, 0), "symmetricDifference");
+
+            var made = new JsSetObject(SetPrototype);
+            CollectionCopyInto(engine, table, made);
+
+            // THE RECEIVER IS ASKED AND THE RESULT IS CHANGED, which are two different tables here
+            // for a reason: a member the argument yields twice would otherwise be removed and then
+            // added back, and the language says the membership question is about the RECEIVER.
+            foreach (var member in CollectionSetKeys(engine, other))
+            {
+                engine.Charge(1);
+                var key = CollectionCanonicalKey(member);
+
+                if (table.Has(key))
+                {
+                    made.Table.Delete(key);
+                }
+                else
+                {
+                    engine.Retain(CollectionEntryBytes);
+                    made.Table.Set(key, key);
+                }
+            }
+
+            return JsValue.Object(made);
+        });
+
+        Method(SetPrototype, "isSubsetOf", 1, (engine, thisValue, arguments) =>
+        {
+            var table = CollectionThisSet(engine, thisValue, "isSubsetOf").Table;
+            var other = CollectionSetRecord(engine, ArgOfCollection(arguments, 0), "isSubsetOf");
+
+            if (table.Count > other.Size)
+            {
+                return JsValue.False;
+            }
+
+            foreach (var member in CollectionMembers(table))
+            {
+                engine.Charge(1);
+
+                if (!engine.Call(other.Has, other.Receiver, [member]).ToBooleanValue())
+                {
+                    return JsValue.False;
+                }
+            }
+
+            return JsValue.True;
+        });
+
+        Method(SetPrototype, "isSupersetOf", 1, (engine, thisValue, arguments) =>
+        {
+            var table = CollectionThisSet(engine, thisValue, "isSupersetOf").Table;
+            var other = CollectionSetRecord(engine, ArgOfCollection(arguments, 0), "isSupersetOf");
+
+            if (table.Count < other.Size)
+            {
+                return JsValue.False;
+            }
+
+            foreach (var member in CollectionSetKeys(engine, other))
+            {
+                engine.Charge(1);
+
+                if (!table.Has(CollectionCanonicalKey(member)))
+                {
+                    return JsValue.False;
+                }
+            }
+
+            return JsValue.True;
+        });
+
+        Method(SetPrototype, "isDisjointFrom", 1, (engine, thisValue, arguments) =>
+        {
+            var table = CollectionThisSet(engine, thisValue, "isDisjointFrom").Table;
+            var other = CollectionSetRecord(engine, ArgOfCollection(arguments, 0), "isDisjointFrom");
+
+            if (table.Count <= other.Size)
+            {
+                foreach (var member in CollectionMembers(table))
+                {
+                    engine.Charge(1);
+
+                    if (engine.Call(other.Has, other.Receiver, [member]).ToBooleanValue())
+                    {
+                        return JsValue.False;
+                    }
+                }
+
+                return JsValue.True;
+            }
+
+            foreach (var member in CollectionSetKeys(engine, other))
+            {
+                engine.Charge(1);
+
+                if (table.Has(CollectionCanonicalKey(member)))
+                {
+                    return JsValue.False;
+                }
+            }
+
+            return JsValue.True;
+        });
+    }
+
+    /// <summary>What one of the seven reads off the object it was handed.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=B18E2A
+    // Broiler-Human:        PENDING
+    private readonly record struct JsSetLike(JsValue Receiver, double Size, JsValue Has, JsValue Keys);
+
+    /// <summary>The specification's <c>GetSetRecord</c>, in the order it reads its three members.</summary>
+    /// <remarks>
+    /// <b>The order is observable and is therefore fixed here</b>: the size is read and coerced
+    /// first - so a <c>size</c> getter runs before a <c>has</c> getter - a <c>NaN</c> size is a
+    /// <c>TypeError</c> where a negative one is a <c>RangeError</c>, and only then are the two
+    /// methods read and tested for callability.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=181D66
+    // Broiler-Human:        PENDING
+    private static JsSetLike CollectionSetRecord(JsEngine engine, JsValue other, string member)
+    {
+        if (!other.IsObject)
+        {
+            throw engine.Error("TypeError", "Set.prototype." + member + ": the argument is not an object");
+        }
+
+        var declared = engine.ToNumber(engine.GetProperty(other, "size"));
+
+        if (double.IsNaN(declared))
+        {
+            throw engine.Error("TypeError", "Set.prototype." + member + ": the size is not a number");
+        }
+
+        var size = JsValue.ToInteger(declared);
+
+        if (size < 0)
+        {
+            throw engine.Error("RangeError", "Set.prototype." + member + ": the size is negative");
+        }
+
+        var has = engine.GetProperty(other, "has");
+
+        if (!has.IsObject || !has.AsObject().IsCallable)
+        {
+            throw engine.Error("TypeError", "Set.prototype." + member + ": `has` is not a function");
+        }
+
+        var keys = engine.GetProperty(other, "keys");
+
+        if (!keys.IsObject || !keys.AsObject().IsCallable)
+        {
+            throw engine.Error("TypeError", "Set.prototype." + member + ": `keys` is not a function");
+        }
+
+        return new JsSetLike(other, size, has, keys);
+    }
+
+    /// <summary>Walks the set-like's own <c>keys</c> iterator, one step at a time.</summary>
+    /// <remarks>
+    /// <b>LAZILY, and the difference is observable through the argument.</b> A consumer that has its
+    /// answer stops asking - <c>isDisjointFrom</c> stops at the first common member - and the
+    /// specification's traces are written against exactly that: draining the iterator first shows up
+    /// as extra <c>next</c> calls the argument can see and count. Stopping early closes the
+    /// iterator, which is what tells a generator to run its <c>finally</c>.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=08814F
+    // Broiler-Human:        PENDING
+    private static System.Collections.Generic.IEnumerable<JsValue> CollectionSetKeys(
+        JsEngine engine, JsSetLike other)
+    {
+        var iterator = engine.Call(other.Keys, other.Receiver, System.Array.Empty<JsValue>());
+
+        if (!iterator.IsObject)
+        {
+            throw engine.Error("TypeError", "`keys` did not answer an iterator");
+        }
+
+        // THE ITERATOR IS ALREADY OPEN, so the record is built around it rather than by asking the
+        // object for one: `keys` answered an iterator, and asking THAT for its `Symbol.iterator`
+        // would be a second protocol step the language does not take here.
+        var record = new JsIteratorRecord(iterator, engine.GetProperty(iterator, "next"));
+        var drained = false;
+
+        try
+        {
+            while (engine.TryIterateNext(record, out var member))
+            {
+                engine.Charge(1);
+                yield return member;
+            }
+
+            drained = true;
+        }
+        finally
+        {
+            if (!drained)
+            {
+                engine.CloseIteratorQuietly(record);
+            }
+        }
+    }
+
+    /// <summary>The receiver's members, in insertion order, as they stand WHEN EACH IS REACHED.</summary>
+    /// <remarks>
+    /// <b>A slot walk over the live table and not a snapshot of it.</b> The argument's <c>has</c> is
+    /// guest code and may delete from the receiver, and the language says a member deleted before
+    /// the walk reaches it is not visited - which a copy taken up front would visit anyway. The
+    /// bound is taken once, so a member APPENDED during the walk is not visited either.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=2A70D5
+    // Broiler-Human:        PENDING
+    private static System.Collections.Generic.IEnumerable<JsValue> CollectionMembers(JsKeyedTable table)
+    {
+        var bound = table.SlotCount;
+
+        for (var slot = 0; slot < bound; slot++)
+        {
+            if (table.TryAt(slot, out var key, out _))
+            {
+                yield return key;
+            }
+        }
+    }
+
+    /// <summary>Copies one Set's members into another, in order.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=7E7F9E
+    // Broiler-Human:        PENDING
+    private static void CollectionCopyInto(JsEngine engine, JsKeyedTable table, JsSetObject made)
+    {
+        for (var slot = 0; slot < table.SlotCount; slot++)
+        {
+            if (!table.TryAt(slot, out var key, out _))
+            {
+                continue;
+            }
+
+            engine.Charge(1);
+            engine.Retain(CollectionEntryBytes);
+            made.Table.Set(key, key);
+        }
+    }
+
+    /// <summary>The key a collection stores, which is the key it was given with one exception.</summary>
+    /// <remarks>
+    /// <b><c>-0</c> is stored as <c>+0</c>.</b> The table keys on <c>SameValueZero</c>, under which
+    /// the two are one key; the language says the stored key is the normalized one, so a callback
+    /// handed the key of an entry it is about to create is handed <c>+0</c> even where the caller
+    /// wrote <c>-0</c>.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=AA04C6
+    // Broiler-Human:        PENDING
+    private static JsValue CollectionCanonicalKey(JsValue key) =>
+        key.IsNumber && key.AsNumber() == 0 ? JsValue.Number(0) : key;
+
+    /// <summary>Walks a source ONE element at a time, handing each to <paramref name="step"/>.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The constructors cannot collect first and store second, and an infinite iterator is why.</b>
+    /// The language builds a Map by reading the collection's own <c>set</c> once and CALLING it per
+    /// entry, so a <c>set</c> that throws stops the walk at the first entry — which is the only thing
+    /// that terminates <c>new Map(iterable)</c> over an iterator that never reports done. Collecting
+    /// the elements into a list first runs that iterator for ever, and this realm did exactly that
+    /// until the pinned suite spent its wall clock on it.
+    /// </para>
+    /// <para>
+    /// <b>An abrupt step closes the iterator</b>, which is the other half of the same rule: the
+    /// iterator is told the consumer stopped early, so a generator's <c>finally</c> runs and a
+    /// hand-written iterator's <c>return</c> is called exactly once.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=4835DC
+    // Broiler-Human:        PENDING
+    private static void CollectionEach(JsEngine engine, JsValue source, System.Action<JsValue> step)
+    {
+        if (!source.IsObject && !source.IsString)
+        {
+            throw engine.Error("TypeError", "the argument is not iterable");
+        }
+
+        if (engine.TryGetSymbolMethod(source, engine.Realm.IteratorSymbol, out _))
+        {
+            var record = engine.GetIterator(source);
+
+            while (engine.TryIterateNext(record, out var element))
+            {
+                engine.Charge(1);
+
+                try
+                {
+                    step(element);
+                }
+                catch (JsThrow)
+                {
+                    engine.CloseIteratorQuietly(record);
+                    throw;
+                }
+            }
+
+            return;
+        }
+
+        var declared = engine.GetProperty(source, "length");
+
+        if (declared.Type == JsType.Undefined)
+        {
+            throw engine.Error("TypeError", "the argument is not iterable");
+        }
+
+        var length = JsValue.ToInteger(engine.ToNumber(declared));
+
+        if (length > 4294967295.0)
+        {
+            throw engine.Error("RangeError", "Invalid collection length");
+        }
+
+        for (uint at = 0; at < length; at++)
+        {
+            engine.Charge(1);
+            step(engine.GetProperty(source, JsNumberFormat.ToUintString(at)));
         }
     }
 

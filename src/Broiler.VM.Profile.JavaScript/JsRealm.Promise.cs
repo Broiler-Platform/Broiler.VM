@@ -92,7 +92,7 @@ internal sealed partial class JsRealm
     internal JsNativeFunction PromiseConstructor { get; private set; } = null!;
 
     /// <summary>Builds <c>Promise</c>, its prototype and its statics.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=45334E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=8E809E
     // Broiler-Human:        PENDING
     private void SetupPromise()
     {
@@ -133,6 +133,8 @@ internal sealed partial class JsRealm
 
                 return JsValue.Object(promise);
             });
+
+        SpeciesGetter(PromiseConstructor);
 
         SetupPromiseReactions();
         SetupPromiseCombinators();

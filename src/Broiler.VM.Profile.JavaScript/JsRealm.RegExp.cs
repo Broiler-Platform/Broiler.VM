@@ -114,13 +114,13 @@ internal sealed partial class JsRealm
     private JsRegExpCharge? regExpCharge;
 
     /// <summary>Builds <c>RegExp</c>, <c>RegExp.prototype</c>, and the String methods that take one.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=A95AAD
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=069E54
     // Broiler-Human:        PENDING
     private void SetupRegExp()
     {
         var prototype = RegExpPrototype;
 
-        Constructor(
+        var regExpConstructor = Constructor(
             "RegExp",
             2,
             prototype,
@@ -197,6 +197,8 @@ internal sealed partial class JsRealm
 
         RegExpFlagGetter(prototype, "hasIndices", 'd');
         RegExpFlagGetter(prototype, "global", 'g');
+        SpeciesGetter(regExpConstructor);
+
         RegExpFlagGetter(prototype, "ignoreCase", 'i');
         RegExpFlagGetter(prototype, "multiline", 'm');
         RegExpFlagGetter(prototype, "dotAll", 's');

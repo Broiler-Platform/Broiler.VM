@@ -207,3 +207,39 @@ p(function(){ var a = new Int8Array([3,1,2]); return String(a.toSorted() instanc
 p(function(){ return typeof Int8Array.prototype.toSpliced; });
 p(function(){ return Int8Array.from.length + "," + Int8Array.of.length; });
 p(function(){ try { var f = Int8Array.from; return f.call({}, [1]).join(); } catch(e){ return e.name; } });
+
+// --- the set operations, the upsert pair, and `Symbol.species`. APPENDED for the reason the
+// numbering asks. It is the pass that found `new Map(iterable)` bypassing the object's own `set` -
+// which is what stops an infinite iterator - and the iterator protocol reading the `value` of a
+// result that had just said it was done.
+p(function(){ return [...new Set([1,2]).union(new Set([2,3]))].join(); });
+p(function(){ return [...new Set([1,2,3]).intersection(new Set([2,3,4]))].join(); });
+p(function(){ return [...new Set([1,2,3]).difference(new Set([2]))].join(); });
+p(function(){ return [...new Set([1,2]).symmetricDifference(new Set([2,3]))].join(); });
+p(function(){ return String(new Set([1]).isSubsetOf(new Set([1,2]))) + new Set([1,2]).isSubsetOf(new Set([1])); });
+p(function(){ return String(new Set([1,2]).isSupersetOf(new Set([1]))) + new Set([1]).isSupersetOf(new Set([1,2])); });
+p(function(){ return String(new Set([1]).isDisjointFrom(new Set([2]))) + new Set([1]).isDisjointFrom(new Set([1])); });
+p(function(){ return [...new Set([1,2]).union(new Map([[3,"x"]]))].join(); });
+p(function(){ try { new Set([1]).union([1,2]); return "no-throw"; } catch(e){ return e.name; } });
+p(function(){ try { new Set([1]).union({size: NaN, has(){}, keys(){}}); return "no-throw"; } catch(e){ return e.name; } });
+p(function(){ try { new Set([1]).union({size: -1, has(){}, keys(){}}); return "no-throw"; } catch(e){ return e.name; } });
+p(function(){ return [...new Set([-0]).union(new Set([]))].map(function(x){return 1/x;}).join(); });
+p(function(){ return String(new Set([1,2,3]).intersection(new Set([3,2,1])).size); });
+p(function(){ return [...new Set([1,2,3]).symmetricDifference(new Set([3,4]))].join(); });
+p(function(){ return Set.prototype.union.length + "," + Set.prototype.isSubsetOf.length; });
+p(function(){ return String(new Set().union(new Set()) instanceof Set); });
+p(function(){ var s = new Set([1,2]); var u = s.union(new Set([3])); return s.size + "," + u.size; });
+p(function(){ return [...new Set(["a","b"]).difference(new Set(["b"]))].join(); });
+p(function(){ var order = []; var like = { get size(){ order.push("size"); return 1; }, get has(){ order.push("has"); return function(){ return true; }; }, get keys(){ order.push("keys"); return function(){ return [1][Symbol.iterator](); }; } }; new Set([1]).union(like); return order.join(); });
+p(function(){ var seen=[]; var like = { size: 0, has: function(v){ seen.push(v); return false; }, keys: function(){ return [][Symbol.iterator](); } }; new Set([1,2]).difference(like); return seen.join(); });
+p(function(){ var count = 0; var it = {}; it[Symbol.iterator] = function(){ return { next: function(){ return {value:[1,2], done:false}; }, "return": function(){ count++; return {}; } }; }; var saved = Map.prototype.set; Map.prototype.set = function(){ throw new TypeError("stop"); }; try { new Map(it); } catch(e) {} Map.prototype.set = saved; return count; });
+p(function(){ var seen = []; var saved = Map.prototype.set; Map.prototype.set = function(k,v){ seen.push(k); return saved.call(this,k,v); }; var m = new Map([[1,1],[2,2]]); Map.prototype.set = saved; return seen.join() + "|" + m.size; });
+p(function(){ var seen = 0; var saved = Set.prototype.add; Set.prototype.add = function(v){ seen++; return saved.call(this,v); }; var s = new Set([1,2,3]); Set.prototype.add = saved; return seen + "|" + s.size; });
+p(function(){ var trace = []; var it = { i: 0, next: function(){ trace.push("next"); var done = this.i >= 1; this.i++; return { get done(){ trace.push("done"); return done; }, get value(){ trace.push("value"); return 1; } }; } }; var iterable = {}; iterable[Symbol.iterator] = function(){ return it; }; for (var x of iterable) {} return trace.join(","); });
+p(function(){ var m = new Map(); return m.getOrInsert ? m.getOrInsert("a", 1) + "," + m.getOrInsert("a", 2) + "," + m.size : "absent"; });
+p(function(){ var m = new Map(); if (!m.getOrInsertComputed) return "absent"; var calls = 0; var v = m.getOrInsertComputed("k", function(){ calls++; return 5; }); var v2 = m.getOrInsertComputed("k", function(){ calls++; return 6; }); return v + "," + v2 + "," + calls; });
+p(function(){ var m = new Map(); if (!m.getOrInsert) return "absent"; m.getOrInsert(-0, "z"); return String(1/[...m.keys()][0]); });
+p(function(){ var out = []; var names = ["Array","Map","Set","RegExp","Promise","ArrayBuffer"]; for (var i=0;i<names.length;i++){ var C = globalThis[names[i]]; var d = Object.getOwnPropertyDescriptor(C, Symbol.species); out.push(names[i]+":"+(d?typeof d.get:"absent")); } return out.join(); });
+p(function(){ return String(Array[Symbol.species] === Array) + String(Object.getOwnPropertyDescriptor(Map, Symbol.species).set); });
+p(function(){ return String(Object.getOwnPropertyDescriptor(WeakMap, Symbol.species) === undefined); });
+p(function(){ var d = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(Int8Array), Symbol.species); return String(d !== undefined) + "," + (d ? d.get.name : ""); });

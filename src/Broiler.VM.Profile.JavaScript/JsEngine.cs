@@ -1913,13 +1913,14 @@ internal sealed class JsEngine
     /// send: an iterator written in the guest can see the difference in its own
     /// <c>arguments.length</c>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=2C1F72
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=47A7F8
     // Broiler-Human:        PENDING
     internal bool TryIterateNext(
         JsIteratorRecord record,
         JsValue[] sent,
         out JsValue value,
-        out JsValue completed)
+        out JsValue completed,
+        bool wantsCompleted = false)
     {
         value = JsValue.Undefined;
         completed = JsValue.Undefined;
@@ -1948,10 +1949,20 @@ internal sealed class JsEngine
             ThrowTypeError("Iterator result " + Describe(result) + " is not an object");
         }
 
+        // THE `value` OF A DONE RESULT IS READ ONLY BY A CALLER THAT WANTS IT, which is one: the
+        // `yield*` delegation, whose own value is the inner iterator's return value. Reading it for
+        // everybody is observable through a getter - the pinned suite's set-like iterators count
+        // exactly these reads - and a `for … of` that read it would be asking a question the
+        // language does not ask.
         if (GetProperty(result, "done").ToBooleanValue())
         {
             record.Done = true;
-            completed = GetProperty(result, "value");
+
+            if (wantsCompleted)
+            {
+                completed = GetProperty(result, "value");
+            }
+
             return false;
         }
 
@@ -3783,7 +3794,7 @@ internal sealed class JsEngine
     /// silently getting its own exception back.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=F145EB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=F0AF03
     // Broiler-Falsified-If: a `return` or a `throw` that arrives while a `yield*` is suspended is not offered to the inner iterator first
     // Broiler-Human:        PENDING
     private JsValue Delegate(JsFrame frame, JsValue[] stack, ref int sp, int pc)
@@ -3864,7 +3875,7 @@ internal sealed class JsEngine
                 // record's `next` is the function read once at acquisition, the sent value is
                 // forwarded as its argument, and the inner iterator's own COMPLETION VALUE is what
                 // `yield*` evaluates to - the half of delegation a loop written by hand forgets.
-                if (!TryIterateNext(record, [sent], out var element, out var completed))
+                if (!TryIterateNext(record, [sent], out var element, out var completed, wantsCompleted: true))
                 {
                     frame.Delegate = null;
                     return completed;

@@ -43,11 +43,12 @@ namespace Broiler.VM.Profile.JavaScript;
 internal sealed partial class JsRealm
 {
     /// <summary>Builds <c>Array</c>, its statics and <c>Array.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FA2AD6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=11210D
     // Broiler-Human:        PENDING
     private void SetupArray()
     {
         var constructor = Constructor("Array", 1, ArrayPrototype, ArrayBuild, ArrayBuild);
+        SpeciesGetter(constructor);
 
         Method(constructor, "isArray", 1, (engine, thisValue, arguments) =>
             JsValue.Boolean(ArgOfArray(arguments, 0).AsObjectOrNull() is JsArray));
