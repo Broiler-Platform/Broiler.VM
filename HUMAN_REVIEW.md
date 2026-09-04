@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 2349 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 2351 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 116 |
-| Code units | 4312 |
-| Relevant | 2349 |
-| Exempt | 1963 |
-| Assessed | 2349 of 2349 (100%) |
-| Human reviewed | 0 of 2349 (0%) |
-| Unverified | 2349 |
+| Code units | 4315 |
+| Relevant | 2351 |
+| Exempt | 1964 |
+| Assessed | 2351 of 2351 (100%) |
+| Human reviewed | 0 of 2351 (0%) |
+| Unverified | 2351 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 2349 |
+| HUMAN_PENDING | 2351 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 1963 |
+| EXEMPT | 1964 |
 
 ## 5. Aliases In The Tree
 
@@ -185,7 +185,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsObject.cs` | 51 | 27 | 24 | 27 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsProgram.cs` | 40 | 14 | 26 | 14 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Array.cs` | 29 | 29 | 0 | 29 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.Binary.cs` | 30 | 26 | 4 | 26 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Binary.cs` | 33 | 28 | 5 | 28 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Boolean.cs` | 4 | 4 | 0 | 4 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.CollectionIterators.cs` | 4 | 4 | 0 | 4 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Collections.cs` | 25 | 19 | 6 | 19 | Low | Medium | 0/0 |
@@ -658,7 +658,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 2349 of the 2349 assessed units declare
+That is not a figure of speech. 2351 of the 2351 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

@@ -4489,3 +4489,63 @@ beside the bound in `JsEngine.MaximumCallDepth`, in `JavaScriptProfile`'s maxima
 `eng/measure-frame-cost.py` performs — one against the published binary, one against a build with the
 engine's bound and the profile's call-depth maximum lifted, which is what reports the capacity rather
 than the promise. 2026-09-04.
+
+### JSC-113
+
+**Where:** `JsRealm.CreateListIterator`, which every iterator over a keyed collection is built from,
+and the remark on it that said the list is the live one.
+
+**What was assumed.** That the iterator could hold the cursor and step it by one per call, and that
+the reader it was given would answer about the slot it was handed.
+
+**What was true.** A keyed collection's table does not compact — it keeps a deleted entry as a
+tombstone precisely so that an iterator's position stays meaningful — so its reader walks *past* a
+tombstone to the next live slot and answers about a slot the caller did not name. A cursor stepped
+by one then re-read the entry the reader had just answered with. **A Map with one deleted entry
+yielded its last entry twice**, and did so through `keys`, `values`, `entries`, the spread, and
+`for … of` — every path except `forEach`, which walks the table itself and was right all along.
+`size` said two while the iterator produced three.
+
+**Two things kept it hidden.** The realm's own tests build collections and read them; they do not
+delete from one and then iterate it. And `forEach` — the shape a program written by a person is
+most likely to use — took the other path.
+
+**What replaced it.** The reader answers with the slot the cursor should land on, which is the only
+party that knows. Exhaustion is latched at the same time, because the language retires the iterator
+when it runs out — it drops the reference to what it was iterating — and a cursor that merely sat at
+the end would have reached an entry appended afterwards. Both directions agree with the comparison
+engine and are retained.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout and the probe over the
+collections that found it, retained in `src/tests/differential/the-later-library-methods.js`.
+2026-09-04.
+
+### JSC-114
+
+**Where:** `%TypedArray%`, its prototype, and the nine constructors under it.
+
+**What the code said.** That `Int8Array.from` is reachable through the superclass *(the remark on
+`constructor.Prototype = superclass` says exactly that)* — and then defined `from` and `of` on each
+of the nine constructors, so nothing was ever reached through the superclass. A program that asks
+`Int8Array.from === Uint8Array.from` got `false` where the language says `true`, and
+`Object.getOwnPropertyNames(Int8Array)` listed two members the language does not put there.
+
+**What else was missing, measured against the comparison engine.** Six members of
+`%TypedArray%.prototype`: `findLast`, `findLastIndex`, `toLocaleString`, and the change-by-copy trio
+`toReversed`, `toSorted` and `with`. `toSpliced` is **not** among them and its absence is correct —
+splicing changes a length, and a view over a buffer has none to change.
+
+**And `from` read only an array-like**, which its own remark defended on the grounds that iterables
+were out of this profile's scope. They stopped being out of scope when `for … of` and
+`Symbol.iterator` were admitted, and the remark outlived the reason: `Int8Array.from(new Set([1,2]))`
+answered with an empty view rather than with two elements.
+
+**What replaced them.** One `from` and one `of`, on the superclass, resolving the kind from the
+receiver through a map from constructor to kind — so a receiver that is not one of the nine is
+refused by name rather than answered with a view of some default kind. The six members are defined,
+each returning a view of the receiver's own kind. Twenty cases covering the member lists, the
+identity of the shared functions, the iterable source and the copying methods agree with the
+comparison engine and are retained.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout and the probe over the
+binary surface, retained in `src/tests/differential/the-later-library-methods.js`. 2026-09-04.

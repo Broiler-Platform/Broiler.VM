@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   26
-// Annotated:        26/26
-// Exempt:           4
-// Human-reviewed:   0/26
+// Relevant units:   28
+// Annotated:        28/28
+// Exempt:           5
+// Human-reviewed:   0/28
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  4/10 max
-// Unverified:       26
+// Unverified:       28
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -95,8 +95,22 @@ internal sealed partial class JsRealm
     internal System.Collections.Generic.Dictionary<JsElementKind, JsObject> TypedArrayPrototypes { get; } =
         new();
 
+    /// <summary>The nine constructors, by the object each is, so a receiver can name its kind.</summary>
+    /// <remarks>
+    /// <b><c>%TypedArray%.from</c> and <c>%TypedArray%.of</c> are ONE function each and not nine</b>,
+    /// which is what the language says and what a program can see: <c>Int8Array.from</c> and
+    /// <c>Uint8Array.from</c> are the same function object, and each answers with a view of the kind
+    /// its RECEIVER names. So the function is defined on the superclass and looks its receiver up
+    /// here, where nine copies closing over a kind would have needed no lookup and would have been
+    /// nine functions where the language has one.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=EA6347
+    // Broiler-Human:        PENDING
+    private readonly System.Collections.Generic.Dictionary<JsObject, JsElementKind> typedArrayKinds =
+        new();
+
     /// <summary>Builds the whole binary surface, in dependency order.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C774E4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C971A3
     // Broiler-Human:        PENDING
     private void SetupBinary()
     {
@@ -110,6 +124,7 @@ internal sealed partial class JsRealm
         SetupTypedArrayMutators();
         SetupTypedArrayReaders();
         SetupTypedArrayIteration();
+        SetupTypedArrayLaterAdditions();
         SetupTypedArrayConstructors();
     }
 
@@ -711,6 +726,183 @@ internal sealed partial class JsRealm
         });
     }
 
+    /// <summary>The members added to this prototype after the views themselves were.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A view's surface is not a subset of an Array's and never was.</b> <c>%TypedArray%</c> got
+    /// <c>findLast</c> and <c>findLastIndex</c> alongside <c>Array.prototype</c>, and the
+    /// change-by-copy trio the same year — but only three of the four: <c>toSpliced</c> is Array's
+    /// alone, because splicing changes a length and a view over a buffer does not have one to
+    /// change. The three that are here return a NEW view of the same kind rather than an Array,
+    /// which is the difference that makes them worth having on a view at all.
+    /// </para>
+    /// <para>
+    /// <b><c>toLocaleString</c> is here and does what this profile's <c>Array</c> one does</b>,
+    /// which is to call each element's own <c>toLocaleString</c>; the realm is built with
+    /// globalization invariant, so what that answers is the invariant formatting and not a locale's.
+    /// The method is present because a program that calls it on a view should get a string rather
+    /// than a <c>TypeError</c> about a method the prototype does not have.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=1CC748
+    // Broiler-Human:        PENDING
+    private void SetupTypedArrayLaterAdditions()
+    {
+        Method(TypedArrayPrototype, "findLast", 1, (engine, thisValue, arguments) =>
+        {
+            var array = BinaryLiveTypedArray(engine, thisValue, "findLast");
+            var callback = BinaryCallbackOf(engine, arguments, "findLast");
+            var thisArg = ArgOfBinary(arguments, 1);
+
+            for (var at = array.Length - 1; at >= 0; at--)
+            {
+                engine.Charge(1);
+                var element = array.ElementAt(at);
+
+                if (engine.Call(callback, thisArg, [element, JsValue.Number(at), thisValue])
+                    .ToBooleanValue())
+                {
+                    return element;
+                }
+            }
+
+            return JsValue.Undefined;
+        });
+
+        Method(TypedArrayPrototype, "findLastIndex", 1, (engine, thisValue, arguments) =>
+        {
+            var array = BinaryLiveTypedArray(engine, thisValue, "findLastIndex");
+            var callback = BinaryCallbackOf(engine, arguments, "findLastIndex");
+            var thisArg = ArgOfBinary(arguments, 1);
+
+            for (var at = array.Length - 1; at >= 0; at--)
+            {
+                engine.Charge(1);
+
+                if (engine.Call(
+                        callback, thisArg, [array.ElementAt(at), JsValue.Number(at), thisValue])
+                    .ToBooleanValue())
+                {
+                    return JsValue.Number(at);
+                }
+            }
+
+            return JsValue.Number(-1);
+        });
+
+        Method(TypedArrayPrototype, "toReversed", 0, (engine, thisValue, arguments) =>
+        {
+            _ = arguments;
+            var array = BinaryLiveTypedArray(engine, thisValue, "toReversed");
+            var made = BinaryNewTypedArray(engine, array.Kind, array.Length);
+
+            for (var at = 0; at < array.Length; at++)
+            {
+                engine.Charge(1);
+                _ = array.TryReadAt((array.Length - at) - 1, out var element);
+                _ = made.TryWriteAt(at, element);
+            }
+
+            return JsValue.Object(made);
+        });
+
+        Method(TypedArrayPrototype, "toSorted", 1, (engine, thisValue, arguments) =>
+        {
+            var comparator = ArgOfBinary(arguments, 0);
+
+            if (comparator.Type != JsType.Undefined &&
+                (!comparator.IsObject || !comparator.AsObject().IsCallable))
+            {
+                return engine.ThrowTypeError(
+                    "the comparison function must be either a function or undefined");
+            }
+
+            var array = BinaryLiveTypedArray(engine, thisValue, "toSorted");
+            var items = new System.Collections.Generic.List<double>(array.Length);
+
+            for (var at = 0; at < array.Length; at++)
+            {
+                engine.Charge(1);
+                _ = array.TryReadAt(at, out var element);
+                items.Add(element);
+            }
+
+            if (items.Count > 1)
+            {
+                var buffer = new System.Collections.Generic.List<double>(items);
+                BinaryMergeSort(engine, comparator, items, buffer, 0, items.Count);
+            }
+
+            // THE COPY IS MADE AFTER THE COMPARATOR HAS RUN, which is what makes this method safe
+            // where the in-place one needs care: a comparator that detaches the buffer has nothing
+            // to corrupt here, because the answer was never in that buffer.
+            var made = BinaryNewTypedArray(engine, array.Kind, items.Count);
+
+            for (var at = 0; at < items.Count; at++)
+            {
+                engine.Charge(1);
+                _ = made.TryWriteAt(at, items[at]);
+            }
+
+            return JsValue.Object(made);
+        });
+
+        Method(TypedArrayPrototype, "with", 2, (engine, thisValue, arguments) =>
+        {
+            var array = BinaryLiveTypedArray(engine, thisValue, "with");
+            var wanted = JsValue.ToInteger(engine.ToNumber(ArgOfBinary(arguments, 0)));
+            var index = wanted < 0 ? array.Length + wanted : wanted;
+
+            // THE CONVERSION HAPPENS BEFORE THE RANGE TEST, and the order is observable: a value
+            // whose `valueOf` throws throws even for an index nobody could write to.
+            var element = engine.ToNumber(ArgOfBinary(arguments, 1));
+
+            if (index < 0 || index >= array.Length)
+            {
+                return engine.ThrowRangeError("Invalid index : " + JsNumberFormat.ToJsString(wanted));
+            }
+
+            var made = BinaryNewTypedArray(engine, array.Kind, array.Length);
+
+            for (var at = 0; at < array.Length; at++)
+            {
+                engine.Charge(1);
+                _ = array.TryReadAt(at, out var held);
+                _ = made.TryWriteAt(at, at == (int)index ? element : held);
+            }
+
+            return JsValue.Object(made);
+        });
+
+        Method(TypedArrayPrototype, "toLocaleString", 0, (engine, thisValue, arguments) =>
+        {
+            _ = arguments;
+            var array = BinaryLiveTypedArray(engine, thisValue, "toLocaleString");
+            var text = new System.Text.StringBuilder();
+
+            for (var at = 0; at < array.Length; at++)
+            {
+                engine.Charge(1);
+
+                if (at > 0)
+                {
+                    text.Append(',');
+                }
+
+                var element = array.ElementAt(at);
+                var method = engine.GetProperty(element, "toLocaleString");
+
+                text.Append(
+                    method.IsObject && method.AsObject().IsCallable
+                        ? engine.ToStringValue(
+                            engine.Call(method, element, System.Array.Empty<JsValue>()))
+                        : engine.ToStringValue(element));
+            }
+
+            return JsValue.String(text.ToString());
+        });
+    }
+
     /// <summary>The callback-taking methods.</summary>
     /// <remarks>
     /// None of them skips an index. A typed array has no holes - every slot in range is a number
@@ -942,7 +1134,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>%TypedArray%</c> and the nine constructors that inherit from it.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=50F4CD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=FB5644
     // Broiler-Human:        PENDING
     private void SetupTypedArrayConstructors()
     {
@@ -970,6 +1162,63 @@ internal sealed partial class JsRealm
                 JsValue.Object(superclass),
                 JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
 
+        Method(superclass, "of", 0, (engine, thisValue, arguments) =>
+        {
+            var kind = BinaryKindOfReceiver(engine, thisValue, "of");
+            var made = BinaryNewTypedArray(engine, kind, arguments.Length);
+
+            for (var at = 0; at < arguments.Length; at++)
+            {
+                engine.Charge(1);
+                _ = made.TryWriteAt(at, engine.ToNumber(arguments[at]));
+            }
+
+            return JsValue.Object(made);
+        });
+
+        // AN ITERABLE FIRST AND AN ARRAY-LIKE SECOND, which is the order the language reads its
+        // argument in and the opposite of what this profile could do when the views were written:
+        // the iteration protocol was not admitted then, so a Set or a generator arrived as an
+        // object with no `length` and produced an EMPTY view rather than a wrong one. It is
+        // admitted now, and a source that answers `Symbol.iterator` is drained through it.
+        Method(superclass, "from", 1, (engine, thisValue, arguments) =>
+        {
+            var kind = BinaryKindOfReceiver(engine, thisValue, "from");
+            var items = ArgOfBinary(arguments, 0);
+
+            if (items.IsNullish)
+            {
+                return engine.ThrowTypeError("%TypedArray%.from requires an array-like object");
+            }
+
+            var mapper = ArgOfBinary(arguments, 1);
+
+            if (mapper.Type != JsType.Undefined &&
+                (!mapper.IsObject || !mapper.AsObject().IsCallable))
+            {
+                return engine.ThrowTypeError("%TypedArray%.from: the mapping function is not a function");
+            }
+
+            var thisArg = ArgOfBinary(arguments, 2);
+            var collected = CollectionElements(engine, items);
+            var made = BinaryNewTypedArray(engine, kind, collected.Count);
+
+            for (var at = 0; at < collected.Count; at++)
+            {
+                engine.Charge(1);
+                var element = collected[at];
+
+                if (mapper.IsObject)
+                {
+                    element = engine.Call(mapper, thisArg, [element, JsValue.Number(at)]);
+                }
+
+                _ = made.TryWriteAt(at, engine.ToNumber(element));
+            }
+
+            return JsValue.Object(made);
+        });
+
         foreach (var kind in JsElements.All)
         {
             var name = JsElements.ConstructorNameOf(kind);
@@ -989,6 +1238,7 @@ internal sealed partial class JsRealm
             // what makes `Int8Array.from` reachable through the superclass in a real engine and
             // what a program checks when it asks whether something is one of the nine.
             constructor.Prototype = superclass;
+            typedArrayKinds[constructor] = kind;
 
             // ON BOTH THE CONSTRUCTOR AND THE PROTOTYPE, and frozen on each: the specification
             // defines it in both places, and code that computes an offset reads it off whichever
@@ -996,61 +1246,29 @@ internal sealed partial class JsRealm
             constructor.DefineFrozen("BYTES_PER_ELEMENT", JsValue.Number(width));
             prototype.DefineFrozen("BYTES_PER_ELEMENT", JsValue.Number(width));
 
-            Method(constructor, "of", 0, (engine, thisValue, arguments) =>
-            {
-                var made = BinaryNewTypedArray(engine, kind, arguments.Length);
-
-                for (var at = 0; at < arguments.Length; at++)
-                {
-                    engine.Charge(1);
-                    _ = made.TryWriteAt(at, engine.ToNumber(arguments[at]));
-                }
-
-                return JsValue.Object(made);
-            });
-
-            // ARRAY-LIKES ONLY, for the reason `Array.from` takes array-likes only: iterables are
-            // out of this profile's scope, so a Set or a generator arrives as an object with no
-            // `length` and produces an empty array rather than a wrong one.
-            Method(constructor, "from", 1, (engine, thisValue, arguments) =>
-            {
-                var items = ArgOfBinary(arguments, 0);
-
-                if (items.IsNullish)
-                {
-                    return engine.ThrowTypeError(name + ".from requires an array-like object");
-                }
-
-                var mapper = ArgOfBinary(arguments, 1);
-
-                if (mapper.Type != JsType.Undefined &&
-                    (!mapper.IsObject || !mapper.AsObject().IsCallable))
-                {
-                    return engine.ThrowTypeError(
-                        name + ".from: the mapping function is not a function");
-                }
-
-                var thisArg = ArgOfBinary(arguments, 2);
-                var source = items.IsObject ? items : JsValue.Object(engine.ToObject(items));
-                var length = engine.ToUint32(engine.GetProperty(source, "length"));
-                var made = BinaryNewTypedArray(engine, kind, length);
-
-                for (double at = 0; at < length; at++)
-                {
-                    engine.Charge(1);
-                    var element = engine.GetIndexed(source, JsValue.Number(at));
-
-                    if (mapper.IsObject)
-                    {
-                        element = engine.Call(mapper, thisArg, [element, JsValue.Number(at)]);
-                    }
-
-                    _ = made.TryWriteAt((int)at, engine.ToNumber(element));
-                }
-
-                return JsValue.Object(made);
-            });
         }
+    }
+
+    /// <summary>The kind the receiver of <c>from</c> or <c>of</c> names, or a <c>TypeError</c>.</summary>
+    /// <remarks>
+    /// <b>These two are generic over the nine and over nothing else.</b> The language says the
+    /// receiver must be a constructor and lets a subclass answer; this profile has no way to build a
+    /// view of a kind it does not know, so a receiver that is not one of the nine is refused by name
+    /// rather than answered with a view of some default kind - which is the answer that would look
+    /// like it worked.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=C57C92
+    // Broiler-Human:        PENDING
+    private JsElementKind BinaryKindOfReceiver(JsEngine engine, JsValue receiver, string member)
+    {
+        if (receiver.IsObject && typedArrayKinds.TryGetValue(receiver.AsObject(), out var kind))
+        {
+            return kind;
+        }
+
+        throw engine.Error(
+            "TypeError",
+            "%TypedArray%." + member + " called on a value that is not a typed array constructor");
     }
 
     /// <summary>Reads argument <paramref name="at"/>, which may not have been supplied.</summary>

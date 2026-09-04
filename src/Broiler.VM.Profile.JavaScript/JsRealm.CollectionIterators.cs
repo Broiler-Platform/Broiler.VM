@@ -117,7 +117,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>One iterator over a keyed collection's slots.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=057DAF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D8E690
     // Broiler-Human:        PENDING
     private JsObject CollectionIterator(
         JsEngine owner, JsValue receiver, string tag, IndexedIteratorKind kind, bool wantsMap)
@@ -130,18 +130,25 @@ internal sealed partial class JsRealm
             {
                 if (table.TryAt(slot, out var key, out var value))
                 {
-                    return (true, kind switch
-                    {
-                        IndexedIteratorKind.Key => key,
-                        IndexedIteratorKind.Value => wantsMap ? value : key,
-                        _ => JsValue.Object(NewArray([key, wantsMap ? value : key])),
-                    });
+                    // THE SLOT THE WALK STOPPED AT IS REPORTED, not the one it started from. A
+                    // tombstone the walk stepped over is a step the cursor has to make too, and a
+                    // cursor that made one step per call re-read the entry this walk had just
+                    // answered with.
+                    return (
+                        true,
+                        kind switch
+                        {
+                            IndexedIteratorKind.Key => key,
+                            IndexedIteratorKind.Value => wantsMap ? value : key,
+                            _ => JsValue.Object(NewArray([key, wantsMap ? value : key])),
+                        },
+                        slot + 1);
                 }
 
                 slot++;
             }
 
-            return (false, JsValue.Undefined);
+            return (false, JsValue.Undefined, slot);
         });
     }
 

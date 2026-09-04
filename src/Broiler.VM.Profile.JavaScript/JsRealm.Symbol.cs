@@ -492,15 +492,31 @@ internal sealed partial class JsRealm
 
     /// <summary>Builds an iterator over a list this realm already has in hand.</summary>
     /// <remarks>
+    /// <para>
     /// Used by the keyed collections, whose entries are a list the object owns rather than indexed
     /// properties. The list is the live one, so an entry added while iterating is reached.
+    /// </para>
+    /// <para>
+    /// <b>THE READER SAYS WHERE THE CURSOR LANDS, and it has to.</b> This held the cursor and
+    /// stepped it by one per call, which is right only if every position holds an entry. A table
+    /// with a deleted entry in it does not: its reader walks past the tombstone to the next live
+    /// slot, and a cursor stepped by one then re-read the slot the reader had already answered with
+    /// — so a Map with one deleted entry yielded its last entry TWICE and a `for … of` over it saw
+    /// one more element than the collection's own `size`.
+    /// </para>
+    /// <para>
+    /// <b>Exhaustion is latched.</b> The language retires the iterator when it runs out — it drops
+    /// the reference to what it was iterating — so an entry appended after that is not reached, and
+    /// a cursor that merely sat at the end would have reached it.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E49681
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9A4C5C
     // Broiler-Human:        PENDING
     internal JsObject CreateListIterator(
-        string tag, System.Func<int, (bool Found, JsValue Value)> read)
+        string tag, System.Func<int, (bool Found, JsValue Value, int Next)> read)
     {
         var at = 0;
+        var spent = false;
         var iterator = new JsObject(IteratorPrototype, tag);
 
         Method(iterator, "next", 0, (engine, thisValue, arguments) =>
@@ -509,7 +525,14 @@ internal sealed partial class JsRealm
             _ = arguments;
             engine.Charge(1);
             var result = new JsObject(engine.Realm.ObjectPrototype);
-            var (found, value) = read(at++);
+            var found = false;
+            var value = JsValue.Undefined;
+
+            if (!spent)
+            {
+                (found, value, at) = read(at);
+                spent = !found;
+            }
 
             result.DefineOrdinary("value", found ? value : JsValue.Undefined);
             result.DefineOrdinary("done", found ? JsValue.False : JsValue.True);
