@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 116 |
 | Files carrying an annotation | 116 |
-| Code units | 4271 |
-| Relevant | 2324 |
+| Code units | 4272 |
+| Relevant | 2325 |
 | Exempt by predicate | 1947 |
-| Annotated | 2324 of 2324 (100%) |
-| Human reviewed | 0 of 2324 (0%) |
-| Unverified | 2324 |
+| Annotated | 2325 of 2325 (100%) |
+| Human reviewed | 0 of 2325 (0%) |
+| Unverified | 2325 |
 
 ## Review states
 
@@ -28,7 +28,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 2324 |
+| HUMAN_PENDING | 2325 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -38,7 +38,7 @@ figures below are the measurement of how far from that claim the component is.
 
 | Value | Units |
 |---|---:|
-| None | 837 |
+| None | 838 |
 | Low | 1931 |
 | Medium | 82 |
 | High | 0 |
@@ -51,7 +51,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | None | 5 |
 | Low | 643 |
-| Medium | 2013 |
+| Medium | 2014 |
 | High | 189 |
 | Critical | 0 |
 | *not annotated* | 0 |
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.8 / 10 |
-| Units scored | 2324 |
+| Units scored | 2325 |
 
 ## High-security review areas
 
@@ -315,7 +315,7 @@ No unit in this component states a per-unit exemption.
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-4271 of them, exempt and relevant alike - with the fingerprint of its declaration.
+4272 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in

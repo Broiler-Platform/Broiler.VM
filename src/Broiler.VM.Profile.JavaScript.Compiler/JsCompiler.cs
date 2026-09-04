@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   123
-// Annotated:        123/123
+// Relevant units:   124
+// Annotated:        124/124
 // Exempt:           59
-// Human-reviewed:   0/123
+// Human-reviewed:   0/124
 // IP risk:          None
 // Security risk:    High
 // Criteria:         5/5
 // Resource impact:  3/10 max
-// Unverified:       123
+// Unverified:       124
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -646,7 +646,7 @@ public sealed class JsCompiler
     /// than bolted onto the lowering.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6E98ED
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=ED8285
     // Broiler-Human:        PENDING
     private void CompileParameters(
         System.Collections.Generic.IReadOnlyList<JsParameter> parameters)
@@ -670,7 +670,7 @@ public sealed class JsCompiler
                 // A DEFAULT RUNS WHEN THE ARGUMENT IS `undefined`, WHICH IS NOT THE SAME AS ABSENT.
                 // `f(undefined)` takes the default and `f(null)` does not, so the test is against
                 // the value rather than against the argument count.
-                ApplyDefault(parameter.Default);
+                ApplyDefault(parameter.Default, InferredFrom(parameter.Target));
             }
 
             BindPattern(parameter.Target, BindMode.Initialise);
@@ -749,9 +749,9 @@ public sealed class JsCompiler
     }
 
     /// <summary>Replaces <c>undefined</c> on the top of the stack with an initialiser's value.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8E28EE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2AB9C0
     // Broiler-Human:        PENDING
-    private void ApplyDefault(JsExpression? initialiser)
+    private void ApplyDefault(JsExpression? initialiser, string inferred)
     {
         if (initialiser is null)
         {
@@ -764,7 +764,11 @@ public sealed class JsCompiler
         Emit(JsOpcode.StrictEquals);
         Branch(JsOpcode.JumpIfFalse, keep);
         Emit(JsOpcode.Pop);
-        CompileExpression(initialiser);
+
+        // A DEFAULT IS ONE OF THE PLACES A NAME IS INFERRED. `function f(g = () => {})` gives the
+        // arrow the name `g`, and so does `var { g = () => {} } = {}` - the binding the default is
+        // for is the name, and it is the leaf's rather than the property's key.
+        CompileNamedValue(initialiser, inferred);
         Mark(keep);
     }
 
@@ -872,7 +876,7 @@ public sealed class JsCompiler
     /// what it would cost to close is a spill of every live operand to slots at every pattern.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=9CE234
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C9DF85
     // Broiler-Human:        PENDING
     private void BindArrayPattern(JsArrayPattern pattern, BindMode mode)
     {
@@ -898,7 +902,7 @@ public sealed class JsCompiler
                 continue;
             }
 
-            ApplyDefault(element.Default);
+            ApplyDefault(element.Default, InferredFrom(element.Target));
             BindPattern(element.Target, mode);
         }
 
@@ -929,7 +933,7 @@ public sealed class JsCompiler
     /// once would need an opcode whose only job is <c>ToPropertyKey</c>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=7A10CB
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=816DF2
     // Broiler-Human:        PENDING
     private void BindObjectPattern(JsObjectPattern pattern, BindMode mode)
     {
@@ -968,7 +972,7 @@ public sealed class JsCompiler
                 Emit(JsOpcode.GetIndex);
             }
 
-            ApplyDefault(property.Value.Default);
+            ApplyDefault(property.Value.Default, InferredFrom(property.Value.Target));
             BindPattern(property.Value.Target, mode);
         }
 
@@ -2944,16 +2948,38 @@ public sealed class JsCompiler
     /// Lowers a value whose name the language takes from what it is being bound to.
     /// </summary>
     /// <remarks>
-    /// <c>const C = class { };</c> gives the class the name <c>C</c>, which the class text does not
-    /// contain. It is done here rather than in the executor because the name is baked into the code
-    /// unit, and it is done for a class rather than for every anonymous function because the class
-    /// family is what this change admits - an anonymous function expression still reports the empty
-    /// name it always has, which is a divergence this profile already carried.
+    /// <para>
+    /// <c>const C = class { };</c> gives the class the name <c>C</c>, and <c>var f = function () {}</c>
+    /// gives the function the name <c>f</c>, neither of which the text contains. It is done here
+    /// rather than in the executor because the name is baked into the code unit, and a unit belongs
+    /// to exactly one syntactic site - so the name a site infers is the name every closure over that
+    /// site has.
+    /// </para>
+    /// <para>
+    /// <b>The closure is emitted here rather than through <see cref="CompileFunctionExpression"/>,
+    /// and the difference is a binding.</b> A function expression with a name in its TEXT binds that
+    /// name inside its own body: <c>var f = function g () { return g; }</c> can see <c>g</c>. An
+    /// inferred name is not that - <c>var f = function () { f = 1; }</c> assigns the outer <c>f</c> -
+    /// so the unit is named without the surrounding scope that a written name creates.
+    /// </para>
+    /// <para>
+    /// <b>A name is inferred only where the language infers one.</b> The positions are the ones that
+    /// call this: a declarator, an assignment to a name, a member of an object literal, and a default
+    /// - for a parameter or inside a pattern. <c>o.p = function () {}</c> is NOT one of them and its
+    /// function is anonymous, which is the case a reader is most likely to expect here and be wrong
+    /// about.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C4C0DF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D0EF9A
     // Broiler-Human:        PENDING
     private void CompileNamedValue(JsExpression value, string inferred)
     {
+        if (inferred.Length == 0)
+        {
+            CompileExpression(value);
+            return;
+        }
+
         if (value is JsClassExpression anonymous && anonymous.Class.Name.Length == 0)
         {
             Position(value.Span);
@@ -2961,8 +2987,26 @@ public sealed class JsCompiler
             return;
         }
 
+        if (value is JsFunctionExpression function && function.Function.Name.Length == 0)
+        {
+            Position(value.Span);
+            Emit(JsOpcode.Closure, (ushort)CompileFunction(function.Function with { Name = inferred }));
+            return;
+        }
+
         CompileExpression(value);
     }
+
+    /// <summary>The name a pattern's leaf infers for an anonymous default, or the empty string.</summary>
+    /// <remarks>
+    /// <b>Only a leaf that is one NAME infers anything.</b> <c>[a = function () {}]</c> names the
+    /// function <c>a</c>; <c>[o.p = function () {}]</c> names nothing, and neither does a leaf that is
+    /// itself a pattern - there is no one name for the default to take.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=27021F
+    // Broiler-Human:        PENDING
+    private static string InferredFrom(JsPattern target) =>
+        target is JsTargetPattern { Target: JsIdentifier name } ? name.Name : string.Empty;
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=873B5E
     // Broiler-Human:        PENDING
@@ -3092,7 +3136,7 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=40EFAD
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2D1356
     // Broiler-Human:        PENDING
     private void CompileObject(JsObjectLiteral literal)
     {
@@ -3186,7 +3230,7 @@ public sealed class JsCompiler
                 continue;
             }
 
-            CompileExpression(entry.Value);
+            CompileNamedValue(entry.Value, entry.Key);
             Emit(JsOpcode.DefineField, InternedName(entry.Key));
         }
     }
@@ -3549,7 +3593,7 @@ public sealed class JsCompiler
         Emit(JsOpcode.LoadUndefined);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=9DF2D1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=94B722
     // Broiler-Human:        PENDING
     private void CompileLogicalAssignment(JsAssignmentExpression assignment)
     {
@@ -3587,7 +3631,7 @@ public sealed class JsCompiler
         }
 
         Emit(JsOpcode.Pop);
-        CompileExpression(assignment.Value);
+        CompileNamedValue(assignment.Value, name.Name);
         StoreName(assignment.Span, name.Name);
         Mark(end);
     }

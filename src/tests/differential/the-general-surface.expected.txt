@@ -3,6 +3,9 @@
 # names a case that is EXPECTED to differ from the comparison engine, and the reason.
 #diverges 132 the arguments object is unmapped, so writing a parameter does not change arguments[n] (recorded in the ledger)
 #diverges 48 normalization needs the Unicode tables this component does not hold, and the platform's own is a no-op in globalization-invariant mode (JSC-91)
+#diverges 295 a computed member of an object literal does not name an anonymous function: the key is not known until it is evaluated, and this lowering names a unit rather than a function object
+#diverges 301 the same, for a Symbol-keyed computed member, whose inferred name is the description in brackets
+#diverges 313 Function.prototype.toString reports `[native code]` for a function written in the guest: the artifact carries no source text, so the source this owes cannot be produced from it
 1 "[object Object]"
 2 "[object Object]"
 3 true
@@ -286,3 +289,33 @@
 281 8364 0 0
 282 11823 0 0
 283 65024 0 1
+284 "f"
+285 "g"
+286 "C"
+287 "h"
+288 "m"
+289 "m"
+290 "m"
+291 "get x"
+292 "x"
+293 "y"
+294 "a"
+295 ""
+296 "named"
+297 ""
+298 "f"
+299 "f,g2"
+300 "b"
+301 ""
+302 "f"
+303 "g"
+304 "quoted"
+305 "5"
+306 "f"
+307 "f"
+308 "number"
+309 "function"
+310 "true,false,false"
+311 "2,f"
+312 "f"
+313 "function foo() { [native code] }"

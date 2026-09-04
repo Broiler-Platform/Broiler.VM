@@ -331,3 +331,36 @@ point(8304);
 point(8364);
 point(11823);
 point(65024);
+
+// --- the name a function takes from what it is bound to, which the text does not contain.
+// APPENDED, for the reason the sections above give: a case number is how a divergence is named.
+p(function(){ var f = function(){}; return f.name; });
+p(function(){ let g = () => {}; return g.name; });
+p(function(){ const C = class {}; return C.name; });
+p(function(){ var h; h = function(){}; return h.name; });
+p(function(){ var o = { m: function(){} }; return o.m.name; });
+p(function(){ var o = { m: () => {} }; return o.m.name; });
+p(function(){ var o = { m(){} }; return o.m.name; });
+p(function(){ var o = { get x(){ return 1; } }; return Object.getOwnPropertyDescriptor(o,"x").get.name; });
+p(function(){ var { x = function(){} } = {}; return x.name; });
+p(function(){ var [ y = () => {} ] = []; return y.name; });
+p(function(){ function q(a = function(){}) { return a.name; } return q(); });
+p(function(){ var k = "dyn"; var o = { [k]: function(){} }; return o.dyn.name; });
+p(function(){ var f = function named(){}; return f.name; });
+p(function(){ var o = {}; o.prop = function(){}; return o.prop.name; });
+p(function(){ var f = (function(){}); return f.name; });
+p(function(){ var f = function(){}, g2 = function(){}; return f.name + "," + g2.name; });
+p(function(){ var a = { b: class {} }; return a.b.name; });
+p(function(){ var s = Symbol("tag"); var o = { [s]: function(){} }; return o[s].name; });
+p(function(){ var f = function*(){}; return f.name; });
+p(function(){ var o = { *g(){} }; return o.g.name; });
+p(function(){ var o = { "quoted": function(){} }; return o.quoted.name; });
+p(function(){ var o = { 5: function(){} }; return o[5].name; });
+p(function(){ var f; f ||= function(){}; return f.name; });
+p(function(){ var f = null; f ??= function(){}; return f.name; });
+p(function(){ var f = function(){ f = 1; return typeof f; }; return f(); });
+p(function(){ var h = function named(){ return typeof named; }; return h(); });
+p(function(){ var f = function(){}; var d = Object.getOwnPropertyDescriptor(f, "name"); return d.configurable + "," + d.writable + "," + d.enumerable; });
+p(function(){ var f = function(a,b){}; return f.length + "," + f.name; });
+p(function(){ var f = function(){}; var g = f; return g.name; });
+p(function(){ return String(function foo(a,b){ return 1; }); });

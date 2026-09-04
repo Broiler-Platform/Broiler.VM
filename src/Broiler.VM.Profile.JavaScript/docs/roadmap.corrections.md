@@ -4336,3 +4336,49 @@ to 286; the twenty that remain all name `Proxy`, which this realm does not have.
 
 **Authority and date.** The implementation of 2026-09-04 in this checkout and the sweep of
 `test/built-ins/Reflect` that found all three. 2026-09-04.
+
+### JSC-108
+
+**Where:** the lowering of every position where the language infers a function's name, and the
+remark on `CompileNamedValue` that said only a class takes one.
+
+**What the remark said, and what it left out.** That `const C = class { }` names the class `C`,
+that this is done in the lowering because the name is baked into the code unit, and that *an
+anonymous function expression still reports the empty name it always has, which is a divergence this
+profile already carried*. The divergence was stated. What was not stated is its size: **every
+anonymous function in the realm reported the empty string**, which is the answer for
+`var f = function () {}`, for `{ m: function () {} }`, for `[a = () => {}]`, for a parameter default,
+and for a logical assignment — six positions the language names and this lowering did not.
+
+**What that cost, measured.** A sweep of `test/language/expressions/object` found **eighty variants
+failing on the name alone**, in five families — arrow, function, generator, class and the cover
+grammar — each asserting the name a destructuring default infers. The same five appear under every
+other subtree that has a destructuring pattern in it. It is the shape of failure that is easy to
+leave: nothing crashes, no program stops, and a suite reports a number.
+
+**Why a lowering rather than the executor.** A code unit belongs to exactly one syntactic site, so
+the name a site infers is the name every closure over that site has — there is no case where two
+closures over one unit need different names. **The closure is emitted directly rather than through
+the named-function-expression path, and the difference is a binding**: a name in the TEXT of a
+function expression is bound inside its own body, and an inferred one is not.
+`var f = function () { f = 1; }` assigns the outer `f`, and routing an inferred name through the
+path that creates the self-binding would have made that assignment silently write a binding nobody
+can see.
+
+**Two positions are still not named, and they have the same cause.** A computed member —
+`{ [k]: function () {} }` — infers its name from a key that is not known until it is evaluated, and
+this lowering names units rather than function objects. Naming it would need either an instruction
+that names the object on the stack or a marker saying that this particular value was written
+anonymously *here*; naming every unnamed function a computed member happens to receive would rename
+`{ [k]: alreadyAnonymous }`, which the language leaves alone. Both are retained as declared
+divergences rather than left for a reader to find.
+
+**A third divergence was found while checking this one and is now stated.**
+`Function.prototype.toString` answers `function f() { [native code] }` for a function written in the
+guest, where the language says the source text. The artifact carries no source — the position table
+maps offsets to positions, not to characters — so this cannot be produced from what the executor
+holds. It was undocumented until the inferred name changed which name appeared in it.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the sweep that counted
+the eighty, and the thirty cases appended to `src/tests/differential/the-general-surface.js`.
+2026-09-04.
