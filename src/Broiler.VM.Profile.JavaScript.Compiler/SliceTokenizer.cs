@@ -1605,7 +1605,7 @@ public sealed class SliceTokenizer
     /// silently turn an unsigned right shift into two comparisons, which is a program that parses
     /// and means something else.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=1F2B04
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E57116
     // Broiler-Falsified-If: a shorter punctuator is matched where a longer one starting at the same character exists
     // Broiler-Human:        PENDING
     private SliceToken ReadPunctuator(int startLine, int startColumn, bool sawNewline)
@@ -1620,6 +1620,27 @@ public sealed class SliceTokenizer
                 return new SliceToken(
                     kind, text, 0, string.Empty, startLine, startColumn, sawNewline, false);
             }
+        }
+
+        // A DECORATOR IS A CONSTRUCT AND NOT A STRAY CHARACTER, and it is named here because it is
+        // the only place that ever sees it: `@` begins no token either grammar defines, so the
+        // parser is never reached. While no class was admitted the whole decorated declaration was
+        // refused by name as a class; admitting the class family would otherwise have moved every
+        // decorator to an unexpected-character diagnostic, which a conformance runner scores as a
+        // failure rather than as a construct this manifest declines.
+        if (source[index] == '@')
+        {
+            Refuse(
+                SliceSourceDiagnosticCode.ConstructOutsideManifest,
+                "a decorator is not admitted by the declared feature manifest",
+                startLine,
+                startColumn);
+
+            index++;
+
+            return new SliceToken(
+                SliceTokenKind.EndOfSource, string.Empty, 0, string.Empty,
+                startLine, startColumn, false, false);
         }
 
         Refuse(

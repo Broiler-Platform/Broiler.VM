@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   9
-// Annotated:        9/9
+// Relevant units:   11
+// Annotated:        11/11
 // Exempt:           26
-// Human-reviewed:   0/9
+// Human-reviewed:   0/11
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       9
+// Unverified:       11
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -99,6 +99,18 @@ internal sealed class JsCodeUnit
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=AA2DE3
     // Broiler-Human:        PENDING
     internal bool UsesArguments => (Flags & Format.JsFormat.FunctionFlags.UsesArguments) != 0;
+
+    /// <summary>Whether the unit is a class constructor, which no call may reach.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C4661A
+    // Broiler-Human:        PENDING
+    internal bool IsClassConstructor =>
+        (Flags & Format.JsFormat.FunctionFlags.ClassConstructor) != 0;
+
+    /// <summary>Whether the unit's <c>this</c> is created by its <c>super()</c> rather than by its caller.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7FD2F4
+    // Broiler-Human:        PENDING
+    internal bool IsDerivedConstructor =>
+        (Flags & Format.JsFormat.FunctionFlags.DerivedConstructor) != 0;
 }
 
 /// <summary>One verified exception region.</summary>

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   11
-// Annotated:        11/11
-// Exempt:           81
-// Human-reviewed:   0/11
+// Relevant units:   16
+// Annotated:        16/16
+// Exempt:           87
+// Human-reviewed:   0/16
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  0/10 max
-// Unverified:       11
+// Unverified:       16
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -39,12 +39,23 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// </para>
 /// <para>
 /// <b>The set is deliberately not complete JavaScript.</b> There is no generator, no
-/// <c>await</c>, no class, no spread, no destructuring and no <c>with</c>; each is a construct the
+/// <c>await</c>, no spread, no destructuring and no <c>with</c>; each is a construct the
 /// manifest refuses at the front end rather than an opcode the executor would have to answer for.
 /// What is here is what a program that runs has to have.
 /// </para>
+/// <para>
+/// <b>A class is seven instructions and not a section.</b> <see cref="NewClass"/> builds the
+/// object graph the specification's <c>ClassDefinitionEvaluation</c> builds,
+/// <see cref="DefineMethod"/> attaches one member and gives it its home object, and
+/// <see cref="LoadSuperProperty"/>, <see cref="StoreSuperProperty"/>, <see cref="SuperCall"/>,
+/// <see cref="SuperCallForwarded"/> and <see cref="LoadNewTarget"/> are what a method and a
+/// derived constructor can ask that an ordinary function cannot. Everything else a class needs -
+/// the closures, the property definitions, the scope holding the class's own binding - is the
+/// instructions that were already here, because a class is mostly an object graph and only partly
+/// a new kind of frame.
+/// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=27C716
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=9110E4
 // Broiler-Human:        PENDING
 public enum JsOpcode : byte
 {
@@ -79,10 +90,12 @@ public enum JsOpcode : byte
     /// <c>undefined</c> in an ordinary call.
     /// </summary>
     /// <remarks>
-    /// <b>It is an opcode rather than a property of anything the frame already has</b> because it
-    /// is the one thing a function can observe about HOW it was entered rather than about what it
-    /// was entered with. An arrow function has none of its own and reads the enclosing function's,
-    /// which the lowering arranges by not giving an arrow a frame of its own to read.
+    /// <b>It is a FRAME value and not a property of anything the callee already has</b>, because
+    /// the answer differs between two frames running the same code unit: a base constructor reached
+    /// through <c>super()</c> answers with the DERIVED class, which is the whole reason the instance
+    /// it creates gets the derived prototype. It is the one thing a function can observe about HOW
+    /// it was entered rather than about what it was entered with. An arrow function has none of its
+    /// own and answers with the one it closed over.
     /// </remarks>
     LoadNewTarget = 0x08,
 
@@ -150,11 +163,60 @@ public enum JsOpcode : byte
     /// <summary>Pop a key and a base; push whether the deletion succeeded.</summary>
     DeleteIndex = 0x29,
 
-    /// <summary>Pop a function; define it as the getter for constant <c>u16</c> on the object beneath.</summary>
+    /// <summary>
+    /// Pop a function; define it as the getter for constant <c>u16</c> on the object beneath.
+    /// </summary>
+    /// <remarks>
+    /// <b>Superseded by <see cref="DefineMethod"/> and no longer emitted.</b> It cannot give the
+    /// accessor a home object and it cannot take a computed key, so every accessor now goes
+    /// through the one instruction that can do both. The opcode stays defined and the executor
+    /// still answers for it, because an opcode number in a published format version is not reused
+    /// and an artifact produced before the change is still an artifact this reader must verify.
+    /// </remarks>
     DefineGetter = 0x2A,
 
     /// <summary>Pop a function; define it as the setter for constant <c>u16</c> on the object beneath.</summary>
+    /// <remarks><inheritdoc cref="DefineGetter" path="/remarks"/></remarks>
     DefineSetter = 0x2B,
+
+    /// <summary>
+    /// Pop a function and a key; define the member on the object beneath, which stays.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The <c>u8</c> operand carries <see cref="JsOpcodes.MemberIsGetter"/>,
+    /// <see cref="JsOpcodes.MemberIsSetter"/> and <see cref="JsOpcodes.MemberIsEnumerable"/>. The
+    /// first two are exclusive and a member with both is refused by the verifier rather than
+    /// resolved by precedence.
+    /// </para>
+    /// <para>
+    /// <b>Defining a method is also what gives it its home object</b>, and that is why this is one
+    /// instruction rather than a definition followed by a store. A method's <c>super</c> starts
+    /// from the object the method was DEFINED on and never from the receiver a call site supplies,
+    /// so a method extracted from a prototype and called against a stranger still reaches the same
+    /// <c>super</c> - and an encoding in which the two steps could be separated would let a
+    /// verified artifact carry a method whose home object was some other object.
+    /// </para>
+    /// </remarks>
+    DefineMethod = 0x2C,
+
+    /// <summary>
+    /// Pop a key; push what the active function's home object inherits under it, read with the
+    /// frame's <c>this</c> as the receiver.
+    /// </summary>
+    LoadSuperProperty = 0x2D,
+
+    /// <summary>
+    /// Pop a value and a key; assign through the home object's prototype chain onto the frame's
+    /// <c>this</c>, and push the value back.
+    /// </summary>
+    /// <remarks>
+    /// The lookup starts at the home object's prototype and the WRITE lands on <c>this</c>, which
+    /// is the pair of facts that makes <c>super.x = 1</c> different from both <c>this.x = 1</c>
+    /// and a write to the prototype: an inherited setter runs with <c>this</c> as its receiver,
+    /// and an inherited data property is shadowed rather than replaced.
+    /// </remarks>
+    StoreSuperProperty = 0x2E,
 
     // ---- functions and calls ---------------------------------------------------------------------
 
@@ -195,6 +257,46 @@ public enum JsOpcode : byte
 
     /// <summary>Return <c>undefined</c> from the current frame.</summary>
     ReturnUndefined = 0x34,
+
+    /// <summary>
+    /// Pop the constructor - and the heritage beneath it when the <c>u8</c> operand carries
+    /// <see cref="JsOpcodes.ClassIsDerived"/> - and push the class.
+    /// </summary>
+    /// <remarks>
+    /// <b>One instruction because the graph it builds is not separable.</b> A class is a
+    /// constructor whose <c>prototype</c> is a fresh object that is not writable, not enumerable
+    /// and not configurable; whose prototype's <c>constructor</c> points back and is not
+    /// enumerable; whose own <c>[[Prototype]]</c> is the superclass rather than
+    /// <c>Function.prototype</c>; and whose home object is that same fresh prototype. Emitting
+    /// those as separate property definitions would leave a verified artifact able to describe a
+    /// half-built class - one whose <c>prototype</c> is writable, say - which is a shape the
+    /// language has no way to make and this executor would then have to answer for.
+    /// </remarks>
+    NewClass = 0x38,
+
+    /// <summary>
+    /// Pop <c>u8</c> arguments; construct the superclass with this frame's <c>new.target</c>, bind
+    /// the result as this frame's <c>this</c>, and push it.
+    /// </summary>
+    /// <remarks>
+    /// It throws a <c>ReferenceError</c> when this frame's <c>this</c> is already bound, which is
+    /// what makes calling <c>super()</c> twice an error rather than a second construction.
+    /// </remarks>
+    SuperCall = 0x36,
+
+    /// <summary>
+    /// As <see cref="SuperCall"/>, with this frame's own actual arguments rather than a count of
+    /// them from the operand stack.
+    /// </summary>
+    /// <remarks>
+    /// <b>This exists for the implicit constructor of a derived class and for nothing else.</b>
+    /// That constructor is <c>constructor(...args) { super(...args); }</c>, and the surface has no
+    /// rest parameter and no spread argument to lower it with - so rather than admit either half
+    /// of a construct this manifest refuses by name, the forwarding is the instruction. Its
+    /// declared parameter count is zero, which is also what the language reports for the length of
+    /// an implicit derived constructor.
+    /// </remarks>
+    SuperCallForwarded = 0x37,
 
     // ---- operators ---------------------------------------------------------------------------------
 
@@ -365,8 +467,46 @@ public enum JsOperandShape : byte
 // Broiler-Human:        PENDING
 public static class JsOpcodes
 {
+    /// <summary>The <see cref="JsOpcode.NewClass"/> operand bit that says the class has a heritage.</summary>
+    /// <remarks>
+    /// It changes the instruction's stack effect - a derived class pops its superclass as well as
+    /// its constructor - which is why it is an operand bit rather than a second opcode: the
+    /// verifier reads the effect from the operand it is looking at, and a pair of opcodes would
+    /// have said the same thing twice.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=144C80
+    // Broiler-Human:        PENDING
+    public const byte ClassIsDerived = 1;
+
+    /// <summary>The <see cref="JsOpcode.DefineMethod"/> operand bit for a getter.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=668250
+    // Broiler-Human:        PENDING
+    public const byte MemberIsGetter = 1;
+
+    /// <summary>The <see cref="JsOpcode.DefineMethod"/> operand bit for a setter.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=3BA507
+    // Broiler-Human:        PENDING
+    public const byte MemberIsSetter = 2;
+
+    /// <summary>
+    /// The <see cref="JsOpcode.DefineMethod"/> operand bit that makes the member enumerable.
+    /// </summary>
+    /// <remarks>
+    /// An object literal's members are enumerable and a class's are not, and that difference is
+    /// the whole of why the bit exists: <c>for…in</c> over an instance must not reach the class's
+    /// methods, and <c>Object.keys</c> over an object literal must reach its.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=FB6D81
+    // Broiler-Human:        PENDING
+    public const byte MemberIsEnumerable = 4;
+
+    /// <summary>Every operand bit <see cref="JsOpcode.DefineMethod"/> defines.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=CF6964
+    // Broiler-Human:        PENDING
+    public const byte MemberBits = MemberIsGetter | MemberIsSetter | MemberIsEnumerable;
+
     /// <summary>Every opcode format version 2 defines, in ascending numeric order.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=13C091
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=A16443
     // Broiler-Human:        PENDING
     public static readonly JsOpcode[] All =
     [
@@ -380,9 +520,11 @@ public static class JsOpcodes
         JsOpcode.GetProperty, JsOpcode.SetProperty, JsOpcode.GetIndex, JsOpcode.SetIndex,
         JsOpcode.DefineField, JsOpcode.DefineIndexed,
         JsOpcode.DeleteProperty, JsOpcode.DeleteIndex,
-        JsOpcode.DefineGetter, JsOpcode.DefineSetter,
+        JsOpcode.DefineGetter, JsOpcode.DefineSetter, JsOpcode.DefineMethod,
+        JsOpcode.LoadSuperProperty, JsOpcode.StoreSuperProperty,
         JsOpcode.Closure, JsOpcode.Call, JsOpcode.Construct,
         JsOpcode.Return, JsOpcode.ReturnUndefined, JsOpcode.CallEval,
+        JsOpcode.NewClass, JsOpcode.SuperCall, JsOpcode.SuperCallForwarded,
         JsOpcode.Add, JsOpcode.Subtract, JsOpcode.Multiply, JsOpcode.Divide,
         JsOpcode.Remainder, JsOpcode.Exponent, JsOpcode.Negate, JsOpcode.ToNumber,
         JsOpcode.Not, JsOpcode.BitwiseNot,
@@ -441,7 +583,7 @@ public static class JsOpcodes
     /// The operand shape of <paramref name="opcode"/>, or <see langword="null"/> when this format
     /// version does not define it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=95799A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=2BAD0B
     // Broiler-Human:        PENDING
     public static JsOperandShape? Shape(JsOpcode opcode) => opcode switch
     {
@@ -451,7 +593,8 @@ public static class JsOpcodes
         JsOpcode.PopScope or
         JsOpcode.NewObject or
         JsOpcode.GetIndex or JsOpcode.SetIndex or JsOpcode.DefineIndexed or JsOpcode.DeleteIndex or
-        JsOpcode.Return or JsOpcode.ReturnUndefined or
+        JsOpcode.LoadSuperProperty or JsOpcode.StoreSuperProperty or
+        JsOpcode.Return or JsOpcode.ReturnUndefined or JsOpcode.SuperCallForwarded or
         JsOpcode.Add or JsOpcode.Subtract or JsOpcode.Multiply or JsOpcode.Divide or
         JsOpcode.Remainder or JsOpcode.Exponent or JsOpcode.Negate or JsOpcode.ToNumber or
         JsOpcode.Not or JsOpcode.BitwiseNot or
@@ -465,7 +608,8 @@ public static class JsOpcodes
         JsOpcode.Pop or JsOpcode.Duplicate or JsOpcode.DuplicateTwo or JsOpcode.Swap
             => JsOperandShape.None,
 
-        JsOpcode.Call or JsOpcode.CallEval or JsOpcode.Construct or JsOpcode.Pick => JsOperandShape.U8,
+        JsOpcode.Call or JsOpcode.CallEval or JsOpcode.Construct or JsOpcode.Pick or
+        JsOpcode.DefineMethod or JsOpcode.NewClass or JsOpcode.SuperCall => JsOperandShape.U8,
 
         JsOpcode.LoadConstant or
         JsOpcode.LoadGlobal or JsOpcode.StoreGlobal or JsOpcode.LoadGlobalOrUndefined or
@@ -493,7 +637,7 @@ public static class JsOpcodes
     /// and the verifier's abstract height is computed from them alone. A false answer means the
     /// opcode is not one this format version defines - not that its effect is unknown.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=2C2925
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=0A9E73
     // Broiler-Human:        PENDING
     public static bool TryDescribe(JsOpcode opcode, uint operand, out int pops, out int pushes)
     {
@@ -524,6 +668,7 @@ public static class JsOpcodes
             case JsOpcode.Closure:
             case JsOpcode.Duplicate:
             case JsOpcode.Pick:
+            case JsOpcode.SuperCallForwarded:
                 pushes = 1;
                 return true;
 
@@ -560,6 +705,7 @@ public static class JsOpcodes
             case JsOpcode.TypeOf:
             case JsOpcode.Void:
             case JsOpcode.ForInStart:
+            case JsOpcode.LoadSuperProperty:
                 pops = 1;
                 pushes = 1;
                 return true;
@@ -598,6 +744,13 @@ public static class JsOpcodes
                 pushes = 1;
                 return true;
 
+            // The key goes and the value comes back, so a compound `super.x += 1` needs no
+            // temporary: the key is duplicated once and consumed by the read and the write.
+            case JsOpcode.StoreSuperProperty:
+                pops = 2;
+                pushes = 1;
+                return true;
+
             // The object stays. A literal is a run of definitions over one object, and popping it
             // between them would mean re-pushing it, which doubles the code for no gain.
             case JsOpcode.DefineField:
@@ -608,6 +761,24 @@ public static class JsOpcodes
 
             case JsOpcode.DefineIndexed:
                 pops = 2;
+                return true;
+
+            // The key and the function go and the object stays, exactly as DefineIndexed leaves
+            // it, so a run of members over one object is a run of these and nothing else.
+            case JsOpcode.DefineMethod:
+                pops = 2;
+                return true;
+
+            // A derived class pops its superclass too, which is the one thing the operand bit
+            // changes about this instruction and the reason the bit is not a second opcode.
+            case JsOpcode.NewClass:
+                pops = (operand & ClassIsDerived) != 0 ? 2 : 1;
+                pushes = 1;
+                return true;
+
+            case JsOpcode.SuperCall:
+                pops = checked((int)operand);
+                pushes = 1;
                 return true;
 
             // Callee, receiver and the arguments go; one result comes back. A direct `eval` has

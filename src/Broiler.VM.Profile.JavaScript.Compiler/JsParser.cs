@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   79
-// Annotated:        79/79
+// Relevant units:   84
+// Annotated:        84/84
 // Exempt:           13
-// Human-reviewed:   0/79
+// Human-reviewed:   0/84
 // IP risk:          None
 // Security risk:    High
 // Criteria:         2/2
 // Resource impact:  3/10 max
-// Unverified:       79
+// Unverified:       84
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -29,22 +29,32 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// callee.
 /// </para>
 /// <para>
-/// <b>What it refuses, it refuses by name.</b> The wide manifest admits no class, generator,
-/// <c>async</c> function, module declaration, destructuring pattern, spread, <c>for…of</c> or
-/// <c>with</c>. Each is parsed far enough to be recognised and then reported as a construct
-/// outside the manifest, at its own position - not as an unexpected token, which would send a
-/// reader looking for a typo.
+/// <b>What it refuses, it refuses by name.</b> The wide manifest admits no generator,
+/// <c>async</c> function, module declaration, destructuring pattern, spread, <c>for…of</c>,
+/// <c>with</c>, class field, private name, class static block or decorator. Each is parsed far
+/// enough to be recognised and then reported as a construct outside the manifest, at its own
+/// position - not as an unexpected token, which would send a reader looking for a typo.
 /// </para>
 /// <para>
-/// <b>Four families left that list on 2026-09-04 and are now PARSED rather than named.</b> A
+/// <b>Seven families left that list on 2026-09-04 and are now PARSED rather than named.</b> A
 /// template literal and a tagged template become a <see cref="JsTemplateLiteral"/> with its chunks
 /// split and its substitutions parsed; an optional chain becomes links carrying an
 /// <c>Optional</c> flag inside one <see cref="JsChainExpression"/>, which is the node that owns
-/// where the short circuit lands; and <c>new.target</c> becomes a node of its own, admitted only
-/// where the grammar admits it - inside an ordinary function body, and not at the top level of a
-/// script even through an arrow. Nothing else moved: every other refusal above is still spelled
-/// where it was, because the conformance runner grades the manifest boundary on the diagnostic
-/// code and a refusal removed by accident is a manifest change nobody declared.
+/// where the short circuit lands; <c>new.target</c> becomes a node of its own, admitted only where
+/// the grammar admits it - inside an ordinary function body, and not at the top level of a script
+/// even through an arrow; and a class declaration, a class expression and <c>super</c> become
+/// nodes of their own.
+/// </para>
+/// <para>
+/// <b>Admitting a family is where refusal-by-name is most easily lost, and the class family is the
+/// case in point.</b> Before classes were admitted, every construct that can only appear inside a
+/// class body was covered by one refusal naming the class; admitting the body means each of them
+/// now needs a refusal of its own, in the position it appears in - a field wherever a member may
+/// stand, a private name in a member, in a property access and as the left operand of <c>in</c>, a
+/// static block, and a decorator, which nothing named before because the class refusal had covered
+/// it. Nothing else moved: every other refusal above is still spelled where it was, because the
+/// conformance runner grades the manifest boundary on the diagnostic code and a refusal removed by
+/// accident is a manifest change nobody declared.
 /// </para>
 /// <para>
 /// <b>And it refuses by name in EVERY position the construct can appear in, which is a stronger
@@ -176,7 +186,7 @@ internal sealed class JsParser
 
     // ---- statements ----------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=4C80E3
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=E9B36C
     // Broiler-Human:        PENDING
     private JsStatement ParseStatement()
     {
@@ -254,7 +264,7 @@ internal sealed class JsParser
                     return OutsideStatement(span, "the `with` statement");
 
                 case SliceTokenKind.Class:
-                    return OutsideStatement(span, "a class declaration");
+                    return new JsClassDeclaration(span, ParseClass(span, declaration: true));
 
                 case SliceTokenKind.Import:
                 case SliceTokenKind.Export:
@@ -807,6 +817,204 @@ internal sealed class JsParser
         return new JsFunctionNode(span, name, parameters, body, isArrow, inner, directives);
     }
 
+    // ---- classes -------------------------------------------------------------------------------
+
+    /// <summary>Parses a class, in either of the two forms that share this body.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A class body is strict code whether or not anything around it is</b>, and the strictness
+    /// has to be set HERE rather than in the lowering because it changes the grammar: inside a
+    /// class body <c>yield</c> is a reserved word and a legacy octal literal is a syntax error,
+    /// and both are early errors that a lowering never gets to see because the parse already
+    /// succeeded. It is set before the heritage as well as the body, which is what the
+    /// specification's <c>ClassTail</c> covers.
+    /// </para>
+    /// <para>
+    /// The heritage is a <c>LeftHandSideExpression</c> and not an assignment expression, which is
+    /// why <c>class D extends a.b() { }</c> parses and <c>class D extends a = b { }</c> does not.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=33C27E
+    // Broiler-Human:        PENDING
+    private JsClassNode ParseClass(SliceSourceSpan span, bool declaration)
+    {
+        Expect(SliceTokenKind.Class, "class");
+        var outer = strict;
+        strict = true;
+        var name = string.Empty;
+
+        if (IsIdentifierName(Current.Kind))
+        {
+            name = Current.RawText;
+            Advance();
+        }
+        else if (declaration)
+        {
+            Refuse(span, SliceSourceDiagnosticCode.ExpectedToken, "a class declaration needs a name");
+        }
+
+        JsExpression? heritage = null;
+        var hasHeritage = false;
+
+        if (Current.Kind == SliceTokenKind.Extends)
+        {
+            Advance();
+            hasHeritage = true;
+            heritage = ParseCallChain();
+        }
+
+        Expect(SliceTokenKind.OpenBrace, "{");
+        var members = new System.Collections.Generic.List<JsClassMember>();
+
+        while (Current.Kind != SliceTokenKind.CloseBrace &&
+            Current.Kind != SliceTokenKind.EndOfSource &&
+            diagnostics.Count == 0)
+        {
+            // A LONE SEMICOLON IS A CLASS ELEMENT AND DEFINES NOTHING, which is why it is skipped
+            // here rather than refused as an empty field.
+            if (Current.Kind == SliceTokenKind.Semicolon)
+            {
+                Advance();
+                continue;
+            }
+
+            if (ParseClassMember() is { } member)
+            {
+                members.Add(member);
+            }
+        }
+
+        Expect(SliceTokenKind.CloseBrace, "}");
+        strict = outer;
+        return new JsClassNode(span, name, heritage, hasHeritage, members);
+    }
+
+    /// <summary>Parses one class element, or refuses one this manifest does not admit.</summary>
+    /// <remarks>
+    /// <b>Every modifier is settled before the key is read, and the discriminator is the token
+    /// AFTER it.</b> <c>static</c>, <c>get</c>, <c>set</c> and <c>async</c> are all legal member
+    /// names as well as modifiers, so <c>static() { }</c> is a method called <c>static</c> and
+    /// <c>static m() { }</c> is a static method - and reading the key first would have made the
+    /// second one a field called <c>static</c> followed by a surprise.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F742EF
+    // Broiler-Human:        PENDING
+    private JsClassMember? ParseClassMember()
+    {
+        var span = Span();
+        var isStatic = false;
+
+        if (Current.Kind == SliceTokenKind.Static && !IsMemberNameEnd(Peek(1).Kind))
+        {
+            if (Peek(1).Kind == SliceTokenKind.OpenBrace)
+            {
+                Refuse(span, "a class static block");
+                return null;
+            }
+
+            isStatic = true;
+            Advance();
+        }
+
+        if (Current.Kind == SliceTokenKind.Star)
+        {
+            Refuse(span, "a generator method");
+            return null;
+        }
+
+        if (Current.Kind == SliceTokenKind.Async &&
+            !Peek(1).PrecededByLineTerminator &&
+            !IsMemberNameEnd(Peek(1).Kind))
+        {
+            Refuse(
+                span,
+                Peek(1).Kind == SliceTokenKind.Star ? "an async generator method" : "an async method");
+
+            return null;
+        }
+
+        var kind = JsMethodKind.Method;
+
+        if (Current.Kind is SliceTokenKind.Get or SliceTokenKind.Set &&
+            !IsMemberNameEnd(Peek(1).Kind))
+        {
+            kind = Current.Kind == SliceTokenKind.Get ? JsMethodKind.Get : JsMethodKind.Set;
+            Advance();
+        }
+
+        if (IsPrivateName(Current))
+        {
+            Refuse(span, "a private name");
+            return null;
+        }
+
+        var key = PropertyKey(out var computed);
+
+        // A CLASS FIELD IS EVERY MEMBER THAT IS NOT FOLLOWED BY A PARAMETER LIST, and naming it
+        // that way covers `x = 1`, a bare `x`, and `x` followed by a newline in one answer. The
+        // alternative - refusing on the `=` alone - would have let a bare field come back as a
+        // missing `(`, which names the punctuation rather than the construct.
+        if (Current.Kind != SliceTokenKind.OpenParen)
+        {
+            Refuse(span, "a class field");
+            return null;
+        }
+
+        var parameters = ParseParameters();
+        var body = ParseFunctionBody(span, key, parameters, isArrow: false);
+        return new JsClassMember(span, kind, isStatic, key, computed, body);
+    }
+
+    /// <summary>
+    /// Whether a token can only follow a member NAME, so that the word before it was the name.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D515C9
+    // Broiler-Human:        PENDING
+    private static bool IsMemberNameEnd(SliceTokenKind kind) =>
+        kind is SliceTokenKind.OpenParen or SliceTokenKind.Equals or SliceTokenKind.Semicolon or
+            SliceTokenKind.CloseBrace;
+
+    /// <summary>Parses what follows <c>super</c>, which is never nothing.</summary>
+    /// <remarks>
+    /// <c>super</c> alone is not an expression: the grammar admits it only as the target of a
+    /// property access or as the callee of a call, and refusing anything else HERE is what keeps
+    /// <c>super + 1</c> from becoming a value this surface would then have to have a meaning for.
+    /// Whether the position admits it at all - a method for a property, a derived constructor for a
+    /// call - is decided by the lowering, which is the pass that knows what it is inside of.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=E2BBEB
+    // Broiler-Human:        PENDING
+    private JsExpression ParseSuper(SliceSourceSpan span)
+    {
+        Advance();
+
+        switch (Current.Kind)
+        {
+            case SliceTokenKind.OpenParen:
+                return new JsSuperCallExpression(span, ParseArguments());
+
+            case SliceTokenKind.Dot:
+                Advance();
+                return new JsSuperMemberExpression(span, MemberName(), null);
+
+            case SliceTokenKind.OpenBracket:
+            {
+                Advance();
+                var key = ParseExpression();
+                Expect(SliceTokenKind.CloseBracket, "]");
+                return new JsSuperMemberExpression(span, string.Empty, key);
+            }
+
+            default:
+                Refuse(
+                    span,
+                    SliceSourceDiagnosticCode.UnexpectedToken,
+                    "`super` is followed by `.`, `[` or `(` and by nothing else");
+
+                return new JsNullLiteral(span);
+        }
+    }
+
     // ---- expressions ---------------------------------------------------------------------------
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D7E858
@@ -832,7 +1040,7 @@ internal sealed class JsParser
         return new JsSequenceExpression(span, all);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=E12D71
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5C8235
     // Broiler-Human:        PENDING
     private JsExpression ParseAssignment(bool noIn = false)
     {
@@ -867,7 +1075,8 @@ internal sealed class JsParser
                     // conformance runner grades the manifest boundary on.
                     Refuse(span, "a destructuring assignment");
                 }
-                else if (target is not JsIdentifier and not JsMemberExpression)
+                else if (target is not JsIdentifier and not JsMemberExpression and
+                    not JsSuperMemberExpression)
                 {
                     Refuse(
                         span,
@@ -1468,7 +1677,7 @@ internal sealed class JsParser
         return arguments;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7FB015
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=CEFB59
     // Broiler-Human:        PENDING
     private JsExpression ParsePrimary()
     {
@@ -1549,6 +1758,13 @@ internal sealed class JsParser
                 return new JsNullLiteral(span);
             }
 
+            // `#x in obj` is the one production that writes a private name where an expression is
+            // expected, and it reaches here as an identifier whose first character is `#`. Left to
+            // the arm below it would have become a free name and a run-time `ReferenceError`.
+            case SliceTokenKind.Identifier when IsPrivateName(token):
+                Advance();
+                return OutsideExpression(span, "a private name");
+
             case SliceTokenKind.Identifier:
             case SliceTokenKind.Get:
             case SliceTokenKind.Set:
@@ -1590,10 +1806,10 @@ internal sealed class JsParser
                 return new JsFunctionExpression(span, ParseFunctionRest(span, declaration: false));
 
             case SliceTokenKind.Class:
-                return OutsideExpression(span, "a class expression");
+                return new JsClassExpression(span, ParseClass(span, declaration: false));
 
             case SliceTokenKind.Super:
-                return OutsideExpression(span, "`super`");
+                return ParseSuper(span);
 
             case SliceTokenKind.TemplateLiteral:
                 return ParseTemplate();
@@ -1674,7 +1890,7 @@ internal sealed class JsParser
         return new JsObjectLiteral(span, entries);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=12DD63
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=190FFE
     // Broiler-Human:        PENDING
     private JsObjectEntry ParseObjectEntry()
     {
@@ -1720,7 +1936,12 @@ internal sealed class JsParser
             var body = ParseFunctionBody(span, accessorKey, parameters, isArrow: false);
 
             return new JsObjectEntry(
-                span, kind, accessorKey, accessorComputed, new JsFunctionExpression(span, body));
+                span,
+                kind,
+                accessorKey,
+                accessorComputed,
+                new JsFunctionExpression(span, body),
+                IsMethod: true);
         }
 
         var key = PropertyKey(out var computed);
@@ -1731,7 +1952,12 @@ internal sealed class JsParser
             var body = ParseFunctionBody(span, key, parameters, isArrow: false);
 
             return new JsObjectEntry(
-                span, JsPropertyKind.Init, key, computed, new JsFunctionExpression(span, body));
+                span,
+                JsPropertyKind.Init,
+                key,
+                computed,
+                new JsFunctionExpression(span, body),
+                IsMethod: true);
         }
 
         if (Current.Kind is SliceTokenKind.Comma or SliceTokenKind.CloseBrace)
@@ -1784,14 +2010,44 @@ internal sealed class JsParser
             ? ((uint)value).ToString(System.Globalization.CultureInfo.InvariantCulture)
             : value.ToString("R", System.Globalization.CultureInfo.InvariantCulture);
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D7DEDB
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=67F4FE
     // Broiler-Human:        PENDING
     private string MemberName()
     {
         var token = Current;
+
+        // A PRIVATE NAME IS REFUSED WHERE IT IS WRITTEN AND NOT WHERE IT IS DECLARED. `this.#x`
+        // reads as an ordinary property access whose name happens to begin with `#`, so before
+        // classes were admitted it produced a run-time `undefined` and named nothing; with the
+        // class body admitted it is the one position left where a private name could still slip
+        // through under a diagnostic that does not name it.
+        if (IsPrivateName(token))
+        {
+            Refuse(Span(), "a private name");
+        }
+
         Advance();
         return token.RawText;
     }
+
+    /// <summary>Whether a token is a private name, which this manifest admits nowhere.</summary>
+    /// <remarks>
+    /// <para>
+    /// The tokenizer gives <c>#x</c> the identifier kind deliberately - an escaped keyword and a
+    /// private name are both "an identifier spelled oddly" as far as scanning goes - so the leading
+    /// <c>#</c> is what tells them apart, and this is the one place that asks.
+    /// </para>
+    /// <para>
+    /// <b>A lone <c>#</c> is not a private name and must not be refused as one.</b> It is what a
+    /// hashbang written anywhere but at offset zero scans as, and that source is a syntax error
+    /// about a character rather than a construct this manifest declines - which is the difference
+    /// the acceptance suite's second hashbang row exists to hold.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7729F3
+    // Broiler-Human:        PENDING
+    private static bool IsPrivateName(SliceToken token) =>
+        token.RawText.Length > 1 && token.RawText[0] == '#';
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3664C9
     // Broiler-Human:        PENDING

@@ -129,6 +129,43 @@ dead-zone/a-lexical-binding-after-its-initialiser.js|0|5
 hashbang/at-the-very-start.js|0|3
 hashbang/on-the-second-line.js|3|2102:ExpectedToken
 
+# THE CLASS FAMILY, ADMITTED. Six rows for the six things a class is that a function is not: a
+# body with every member form in it, a `super` call through three levels, a `super` that resolves
+# through the method's HOME OBJECT rather than through whatever receiver a call site supplied, a
+# body that is strict code with nothing saying so, a base constructor building its object from
+# `new.target`, and members that `for…in` does not reach.
+runs/a-class-with-methods-and-accessors.js|0|250
+runs/a-super-call-through-three-classes.js|0|base-middle-leaf Leaf>Base true
+runs/a-method-resolves-super-through-its-home-object.js|0|Upper Upper
+runs/a-class-body-is-strict-code.js|0|undefined TypeError
+runs/a-base-constructor-builds-from-new-target.js|0|Derived true true derived
+runs/a-class-member-is-not-enumerable.js|0|own falsetruetrue false falsefalsefalse
+runs/a-class-expression-binds-its-own-name.js|0|true Inner Anonymous undefined
+
+# AND THE THREE RULES THAT ARE RUN-TIME ERRORS RATHER THAN REFUSALS. Each source is admitted
+# whole - the front end has nothing to say about any of them - and only the path taken decides.
+# Exit 1 is a program that threw.
+runs/a-derived-constructor-that-never-calls-super.js|1|uncaught ReferenceError
+runs/a-this-read-before-super-returns.js|1|uncaught ReferenceError
+runs/a-class-called-without-new.js|1|cannot be invoked without 'new'
+
+# WHAT ADMITTING THE CLASS BODY PUT AT RISK, pinned here. Every construct below could only ever
+# appear inside a class body, so until 2026-09-04 all four were covered by one refusal naming the
+# class - and admitting the class is what made each of them need a refusal of its own. A
+# regression puts any of them back to an expected-token diagnostic, which a conformance runner
+# scores as a failure rather than as unsupported.
+refused/a-class-field.js|3|2104:ConstructOutsideManifest
+refused/a-private-name.js|3|2104:ConstructOutsideManifest
+refused/a-class-static-block.js|3|2104:ConstructOutsideManifest
+
+# TWO REFUSALS THAT MUST NOT BE 2104, and the reason is the same one from the other direction:
+# the manifest admits `super` and it admits a class binding, so a program that writes either
+# where the language has nothing for it is wrong about the LANGUAGE. Answering 2104 would say
+# this profile declines a construct it implements, and the conformance runner would stop scoring
+# a case it can answer.
+refused/a-super-property-outside-a-method.js|3|2101:UnexpectedToken
+refused/an-assignment-to-a-class-binding.js|3|2204:AssignmentToConstant
+
 # WHAT THIS IS AND WHAT IT IMPLEMENTS, which is the one surface a person reads before they read
 # anything else and which no row judged until 2026-09-03. Two rows rather than one, because the
 # second is the one that moves: it read `NOT archived` for as long as that was true, and the

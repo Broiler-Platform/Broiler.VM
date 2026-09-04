@@ -1368,7 +1368,7 @@ internal sealed class JsVerifier
             return Ok;
         }
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=74562B
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7F7F9E
         // Broiler-Human:        PENDING
         private VmVerifierOutcome Check(JsCodeUnit unit, JsOpcode opcode, uint operand, int offset)
         {
@@ -1433,6 +1433,31 @@ internal sealed class JsVerifier
                         : Invalid(
                             VmReason.SemanticValidationFailed,
                             JavaScriptDiagnosticCode.OperandStackOverflow,
+                            (ulong)offset);
+
+                // AN OPERAND BIT THIS VERSION DOES NOT DEFINE IS AN UNKNOWN FEATURE, and it is
+                // answered with the unknown-opcode reason for that reason: the byte names an
+                // instruction this reader knows and asks it for behaviour this reader does not
+                // have. A `NewClass` whose flags carried an undefined bit would also have a stack
+                // effect nothing has agreed on, since the defined bit is what decides it.
+                case JsOpcode.NewClass:
+                    return operand <= JsOpcodes.ClassIsDerived
+                        ? Ok
+                        : Invalid(
+                            VmReason.UnknownFeature,
+                            JavaScriptDiagnosticCode.UnknownOpcode,
+                            (ulong)offset);
+
+                // A member is a getter, or a setter, or neither - never both. Resolving the pair
+                // by precedence would give one encoding two readings.
+                case JsOpcode.DefineMethod:
+                    return operand <= JsOpcodes.MemberBits &&
+                        (operand & (JsOpcodes.MemberIsGetter | JsOpcodes.MemberIsSetter)) !=
+                            (JsOpcodes.MemberIsGetter | JsOpcodes.MemberIsSetter)
+                        ? Ok
+                        : Invalid(
+                            VmReason.UnknownFeature,
+                            JavaScriptDiagnosticCode.UnknownOpcode,
                             (ulong)offset);
 
                 // A CALL'S ARGUMENT COUNT NEEDS NO CHECK, and saying so is better than a check

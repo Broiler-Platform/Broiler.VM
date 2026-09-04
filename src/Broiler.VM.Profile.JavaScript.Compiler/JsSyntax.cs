@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   51
-// Annotated:        51/51
-// Exempt:           3
-// Human-reviewed:   0/51
+// Relevant units:   58
+// Annotated:        58/58
+// Exempt:           6
+// Human-reviewed:   0/58
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       51
+// Unverified:       58
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -112,14 +112,21 @@ internal enum JsPropertyKind
 /// <param name="Key">The literal key, when it is not computed.</param>
 /// <param name="Computed">The key expression, when it is computed.</param>
 /// <param name="Value">The value, the getter or the setter.</param>
-// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=D3377B
+/// <param name="IsMethod">
+/// Whether the entry was written in method form - <c>{ m() {} }</c>, <c>{ get x() {} }</c> - rather
+/// than as a property whose value happens to be a function. <b>The two are different objects in the
+/// language and not two spellings of one</b>: a method has a home object, so <c>super</c> inside it
+/// resolves, and it is not a constructor; <c>{ m: function () {} }</c> has neither property.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=653AA3
 // Broiler-Human:        PENDING
 internal sealed record JsObjectEntry(
     SliceSourceSpan Span,
     JsPropertyKind Kind,
     string Key,
     JsExpression? Computed,
-    JsExpression Value) : JsNode(Span);
+    JsExpression Value,
+    bool IsMethod = false) : JsNode(Span);
 
 /// <summary>An object literal.</summary>
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=3CE3F5
@@ -450,6 +457,89 @@ internal sealed record JsDebuggerStatement(SliceSourceSpan Span) : JsStatement(S
 // Broiler-Human:        PENDING
 internal sealed record JsFunctionDeclaration(SliceSourceSpan Span, JsFunctionNode Function)
     : JsStatement(Span);
+
+/// <summary>What one member of a class body defines.</summary>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=55B620
+// Broiler-Human:        PENDING
+internal enum JsMethodKind
+{
+    /// <summary>An ordinary method, which includes the constructor.</summary>
+    Method = 0,
+
+    /// <summary>A getter.</summary>
+    Get = 1,
+
+    /// <summary>A setter.</summary>
+    Set = 2,
+}
+
+/// <summary>One member of a class body.</summary>
+/// <param name="Span">Where the member begins.</param>
+/// <param name="Kind">Whether it defines a method, a getter or a setter.</param>
+/// <param name="IsStatic">Whether it lands on the constructor rather than on the prototype.</param>
+/// <param name="Key">The literal key, when it is not computed.</param>
+/// <param name="Computed">The key expression, when it is computed.</param>
+/// <param name="Function">The member's body.</param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=BC7D4D
+// Broiler-Human:        PENDING
+internal sealed record JsClassMember(
+    SliceSourceSpan Span,
+    JsMethodKind Kind,
+    bool IsStatic,
+    string Key,
+    JsExpression? Computed,
+    JsFunctionNode Function) : JsNode(Span);
+
+/// <summary>One class: the head, the heritage and the body, shared by both class forms.</summary>
+/// <param name="Span">Where the class begins.</param>
+/// <param name="Name">The class's own name, empty when it has none.</param>
+/// <param name="Heritage">The superclass expression, when there is an <c>extends</c> clause.</param>
+/// <param name="HasHeritage">
+/// Whether an <c>extends</c> clause was written. <b>It is not the same question as whether
+/// <see cref="Heritage"/> is null</b>: <c>class D extends null { }</c> has a heritage whose value
+/// is <c>null</c>, and its constructor is a DERIVED constructor with everything that follows from
+/// that, while <c>class D { }</c> has no heritage and a base constructor.
+/// </param>
+/// <param name="Members">The body, in source order.</param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=D0D9B5
+// Broiler-Human:        PENDING
+internal sealed record JsClassNode(
+    SliceSourceSpan Span,
+    string Name,
+    JsExpression? Heritage,
+    bool HasHeritage,
+    System.Collections.Generic.IReadOnlyList<JsClassMember> Members) : JsNode(Span);
+
+/// <summary>A class declaration.</summary>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=75C7B7
+// Broiler-Human:        PENDING
+internal sealed record JsClassDeclaration(SliceSourceSpan Span, JsClassNode Class)
+    : JsStatement(Span);
+
+/// <summary>A class expression.</summary>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=CCE3C2
+// Broiler-Human:        PENDING
+internal sealed record JsClassExpression(SliceSourceSpan Span, JsClassNode Class)
+    : JsExpression(Span);
+
+/// <summary><c>super.x</c> or <c>super[x]</c>.</summary>
+/// <remarks>
+/// It is not a <see cref="JsMemberExpression"/> over a <c>super</c> operand, because <c>super</c>
+/// alone is not an expression and has no value: the lookup starts at the enclosing method's home
+/// object and the receiver is <c>this</c>, and a tree that made <c>super</c> a target would invite
+/// a lowering that evaluated it.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=BE5F44
+// Broiler-Human:        PENDING
+internal sealed record JsSuperMemberExpression(
+    SliceSourceSpan Span, string Name, JsExpression? Computed) : JsExpression(Span);
+
+/// <summary><c>super(...)</c>, which only a derived constructor may write.</summary>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=DFE543
+// Broiler-Human:        PENDING
+internal sealed record JsSuperCallExpression(
+    SliceSourceSpan Span,
+    System.Collections.Generic.IReadOnlyList<JsExpression> Arguments) : JsExpression(Span);
 
 /// <summary>A whole program: a directive prologue and a statement list.</summary>
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=5F7C89

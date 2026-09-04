@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   59
-// Annotated:        59/59
-// Exempt:           12
-// Human-reviewed:   0/59
+// Relevant units:   65
+// Annotated:        65/65
+// Exempt:           13
+// Human-reviewed:   0/65
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         5/5
 // Resource impact:  7/10 max
-// Unverified:       59
+// Unverified:       65
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -981,6 +981,321 @@ internal sealed class JsEngine
         target.SetOwnProperty(key, JsProperty.Data(value, JsPropertyAttributes.Default));
     }
 
+    // ---- classes -------------------------------------------------------------------------------
+
+    /// <summary>Reads a <c>this</c> that a derived constructor may not have bound yet.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=7893CB
+    // Broiler-Human:        PENDING
+    private JsValue ThisBinding(JsCell binding)
+    {
+        if (binding.Value.IsEmpty)
+        {
+            ThrowReferenceError(
+                "Must call super constructor in derived class before accessing 'this' or " +
+                "returning from derived constructor");
+        }
+
+        return binding.Value;
+    }
+
+    /// <summary>
+    /// Defines one method-shaped member, and gives it the home object that makes its <c>super</c>
+    /// resolve.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The member's name is set here and not where the closure was made</b>, because a computed
+    /// key is not known until now: <c>class C { [k]() { } }</c> has to report <c>k</c>'s value as
+    /// the method's name, and an accessor reports <c>"get x"</c> rather than <c>"x"</c>. The code
+    /// unit carries whatever the source spelled, which is right for the common case and empty for
+    /// the computed one.
+    /// </para>
+    /// <para>
+    /// A getter and a setter for one key are one property, so defining either keeps whichever half
+    /// is already there - but only when what is already there is an accessor. A data property of
+    /// the same name is replaced outright, which is what redeclaring it in a class body means.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=720A94
+    // Broiler-Human:        PENDING
+    private void DefineMember(JsObject host, string key, JsValue member, byte flags)
+    {
+        // DEFINING A MEMBER IS DefinePropertyOrThrow AND NOT AN UNCHECKED WRITE, and the one key
+        // that can already be there and refuse is a class's own `prototype`: it is not
+        // configurable, so `class C { static ['prototype']() { } }` is a TypeError rather than a
+        // class whose `prototype` is a method. Every other key a member can name - `name`,
+        // `length`, `constructor`, anything an object literal writes - is configurable, so this
+        // refuses nothing a program is entitled to do.
+        if (host.TryGetOwnProperty(key, out var standing) && !standing.Configurable)
+        {
+            ThrowTypeError("Cannot redefine property: " + key);
+        }
+
+        var getter = (flags & JsOpcodes.MemberIsGetter) != 0;
+        var setter = (flags & JsOpcodes.MemberIsSetter) != 0;
+
+        var attributes = JsPropertyAttributes.Configurable |
+            ((flags & JsOpcodes.MemberIsEnumerable) != 0
+                ? JsPropertyAttributes.Enumerable
+                : JsPropertyAttributes.None);
+
+        if (member.IsObject && member.AsObject() is JsScriptFunction bodied)
+        {
+            bodied.HomeObject = host;
+            var label = getter ? "get " + key : setter ? "set " + key : key;
+            bodied.FunctionName = label;
+
+            bodied.SetOwnProperty(
+                "name",
+                JsProperty.Data(JsValue.String(label), JsPropertyAttributes.Configurable));
+        }
+
+        if (!getter && !setter)
+        {
+            host.SetOwnProperty(
+                key, JsProperty.Data(member, attributes | JsPropertyAttributes.Writable));
+
+            return;
+        }
+
+        host.TryGetOwnProperty(key, out var existing);
+        var accessor = member.AsObjectOrNull();
+
+        host.SetOwnProperty(
+            key,
+            JsProperty.Accessor(
+                getter ? accessor : existing.IsAccessor ? existing.Getter : null,
+                setter ? accessor : existing.IsAccessor ? existing.Setter : null,
+                attributes));
+    }
+
+    /// <summary>Builds the object graph a class definition is.</summary>
+    /// <remarks>
+    /// <b>The heritage is validated before anything is built</b>, so a bad <c>extends</c> leaves no
+    /// half-made class behind: a superclass that is neither <c>null</c> nor a constructor, or one
+    /// whose <c>prototype</c> is a primitive, is a TypeError at the definition rather than a
+    /// surprise at the first <c>new</c>.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=42386B
+    // Broiler-Human:        PENDING
+    private JsValue BuildClass(JsValue constructor, bool derived, JsValue heritage)
+    {
+        Charge(8);
+        var target = (JsScriptFunction)constructor.AsObject();
+        JsObject? inherited = Realm.ObjectPrototype;
+        JsObject? constructorParent = Realm.FunctionPrototype;
+
+        if (derived && heritage.Type != JsType.Null)
+        {
+            if (!heritage.IsObject || !heritage.AsObject().IsConstructor)
+            {
+                return ThrowTypeError(
+                    "Class extends value " + Describe(heritage) +
+                    " is not a constructor or null");
+            }
+
+            var parentPrototype = GetProperty(heritage, "prototype");
+
+            if (!parentPrototype.IsObject && parentPrototype.Type != JsType.Null)
+            {
+                return ThrowTypeError(
+                    "Class extends value does not have valid prototype property " +
+                    Describe(parentPrototype));
+            }
+
+            inherited = parentPrototype.AsObjectOrNull();
+            constructorParent = heritage.AsObject();
+        }
+        else if (derived)
+        {
+            // `extends null` GIVES THE PROTOTYPE NO PROTOTYPE and leaves the constructor an
+            // ordinary function object. The class is still DERIVED, which is why constructing one
+            // fails: its `super()` has `Function.prototype` above it and that is not a constructor.
+            inherited = null;
+        }
+
+        var prototype = new JsObject(inherited);
+
+        prototype.SetOwnProperty(
+            "constructor",
+            JsProperty.Data(
+                constructor,
+                JsPropertyAttributes.Writable | JsPropertyAttributes.Configurable));
+
+        target.Prototype = constructorParent;
+        target.HomeObject = prototype;
+
+        target.SetOwnProperty(
+            "prototype",
+            JsProperty.Data(JsValue.Object(prototype), JsPropertyAttributes.None));
+
+        return constructor;
+    }
+
+    /// <summary>Runs a <c>super()</c>: constructs the superclass and binds the result as <c>this</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=93BF15
+    // Broiler-Human:        PENDING
+    private JsValue SuperConstruct(
+        JsScriptFunction? active, JsCell? binding, JsValue newTarget, JsValue[] arguments)
+    {
+        if (active is null || binding is null)
+        {
+            throw new JsAbort(
+                JsAbortKind.InternalDefect, "a super call reached a frame with no this binding");
+        }
+
+        var parent = active.Prototype;
+
+        if (parent is null || !parent.IsConstructor)
+        {
+            return ThrowTypeError(
+                "Super constructor of " + active.FunctionName + " is not a constructor");
+        }
+
+        var constructed = Construct(JsValue.Object(parent), arguments, newTarget);
+
+        // CALLING `super()` TWICE IS AN ERROR AND NOT A SECOND BINDING, and the check happens
+        // AFTER the superclass has run rather than before. That order is the specification's and
+        // it is observable: a second `super()` still constructs the superclass, with whatever the
+        // superclass constructor does, and only the attempt to bind the result fails. Checking
+        // first would have been the obvious encoding and it makes the superclass's side effects
+        // disappear.
+        if (!binding.Value.IsEmpty)
+        {
+            return ThrowReferenceError("Super constructor may only be called once");
+        }
+
+        binding.Value = constructed;
+        return constructed;
+    }
+
+    /// <summary>The object a <c>super</c> lookup starts from.</summary>
+    /// <remarks>
+    /// <para>
+    /// It is the home object's PROTOTYPE, and the receiver of the lookup is <c>this</c> - the pair
+    /// that makes <c>super.m()</c> reach the parent's <c>m</c> and run it against the instance.
+    /// Starting at the receiver's prototype instead would find the method itself and recur
+    /// forever, which is the defect this design exists to make unrepresentable.
+    /// </para>
+    /// <para>
+    /// <b>A home object with no prototype is a TypeError and not an <c>undefined</c>.</b> The
+    /// specification requires the base to be object-coercible before it reads anything through it,
+    /// so <c>super.x</c> inside a method of an object whose prototype is <c>null</c> fails the way
+    /// <c>null.x</c> fails rather than quietly answering nothing.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=25892B
+    // Broiler-Human:        PENDING
+    private JsObject SuperBase(JsScriptFunction? active)
+    {
+        var home = active?.HomeObject;
+
+        if (home is null)
+        {
+            ThrowTypeError("'super' keyword unexpected here");
+        }
+
+        if (home!.Prototype is null)
+        {
+            ThrowTypeError("Cannot read properties of null (reading a 'super' property)");
+        }
+
+        return home.Prototype!;
+    }
+
+    /// <summary>Writes a property through the active method's home object.</summary>
+    /// <remarks>
+    /// The chain the write consults starts above the home object and the write itself lands on
+    /// <c>this</c>: an inherited setter runs with <c>this</c> as its receiver, an inherited
+    /// non-writable data property refuses the write, and anything else creates or replaces an own
+    /// property of the instance rather than touching the prototype it was found on.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=A8CBB6
+    // Broiler-Human:        PENDING
+    private void SetSuper(
+        JsObject start, JsValue receiver, string key, JsValue value, bool strict)
+    {
+        var current = start;
+
+        while (current is not null)
+        {
+            if (current.TryGetOwnProperty(key, out var found))
+            {
+                if (found.IsAccessor)
+                {
+                    if (found.Setter is null)
+                    {
+                        if (strict)
+                        {
+                            ThrowTypeError(
+                                "Cannot set property " + key + " which has only a getter");
+                        }
+
+                        return;
+                    }
+
+                    Call(JsValue.Object(found.Setter), receiver, [value]);
+                    return;
+                }
+
+                if (!found.Writable)
+                {
+                    if (strict)
+                    {
+                        ThrowTypeError("Cannot assign to read only property '" + key + "'");
+                    }
+
+                    return;
+                }
+
+                break;
+            }
+
+            current = current.Prototype;
+        }
+
+        var instance = receiver.AsObjectOrNull();
+
+        if (instance is null)
+        {
+            if (strict)
+            {
+                ThrowTypeError("Cannot create property '" + key + "' on a primitive");
+            }
+
+            return;
+        }
+
+        if (instance.TryGetOwnProperty(key, out var own) && !own.IsAccessor)
+        {
+            if (!own.Writable)
+            {
+                if (strict)
+                {
+                    ThrowTypeError("Cannot assign to read only property '" + key + "'");
+                }
+
+                return;
+            }
+
+            own.Value = value;
+            instance.SetOwnProperty(key, own);
+            return;
+        }
+
+        if (!instance.Extensible)
+        {
+            if (strict)
+            {
+                ThrowTypeError("Cannot add property " + key + ", object is not extensible");
+            }
+
+            return;
+        }
+
+        instance.SetOwnProperty(key, JsProperty.Data(value, JsPropertyAttributes.Default));
+    }
+
     /// <summary>The <c>in</c> operator's lookup: does any object in the chain have the key.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=913AFA
     // Broiler-Human:        PENDING
@@ -1013,7 +1328,7 @@ internal sealed class JsEngine
     // ---- calling -------------------------------------------------------------------------------
 
     /// <summary>Calls <paramref name="callee"/>, whatever kind of callable it is.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=2094C0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=BD3102
     // Broiler-Human:        PENDING
     internal JsValue Call(JsValue callee, JsValue thisValue, JsValue[] arguments)
     {
@@ -1084,8 +1399,17 @@ internal sealed class JsEngine
                         bound.BoundThis,
                         Concat(bound.BoundArguments, arguments));
 
+                // A CLASS IS NOT CALLABLE AND THE REFUSAL BELONGS HERE. Every route into a
+                // function - a call site, `Function.prototype.call`, a comparison function handed
+                // to `sort` - arrives at this switch, and a guard inside the constructor's own
+                // code would answer for none of them because the frame is never entered.
+                case JsScriptFunction script when script.IsClassConstructor:
+                    return ThrowTypeError(
+                        "Class constructor " + script.FunctionName +
+                        " cannot be invoked without 'new'");
+
                 case JsScriptFunction script:
-                    return Invoke(script, thisValue, arguments, null);
+                    return Invoke(script, thisValue, arguments, JsValue.Undefined, null);
 
                 default:
                     return ThrowTypeError("value is not a function");
@@ -1098,10 +1422,31 @@ internal sealed class JsEngine
         }
     }
 
-    /// <summary>Constructs with <paramref name="callee"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=8A1C4D
+    /// <summary>Constructs with <paramref name="callee"/>, which is also the <c>new.target</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=B91950
     // Broiler-Human:        PENDING
-    internal JsValue Construct(JsValue callee, JsValue[] arguments)
+    internal JsValue Construct(JsValue callee, JsValue[] arguments) =>
+        Construct(callee, arguments, callee);
+
+    /// <summary>Constructs with <paramref name="callee"/> on behalf of <paramref name="newTarget"/>.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The instance is made from <c>new.target</c>'s prototype and not from the callee's</b>,
+    /// and the two differ exactly when a derived class calls up: <c>new C()</c> on a three-deep
+    /// chain runs <c>A</c>'s constructor with <c>new.target</c> still <c>C</c>, so the object it
+    /// creates is a <c>C</c>. Reading the callee's own prototype would have made every instance of
+    /// a subclass an instance of its base.
+    /// </para>
+    /// <para>
+    /// <b>A derived constructor is entered with NO instance at all.</b> Its <c>this</c> is
+    /// whatever its <c>super()</c> eventually returns, so what is passed down is an empty box the
+    /// <c>super()</c> fills; a frame that read it before then gets the <c>ReferenceError</c> the
+    /// language promises rather than a half-built object.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=AC7153
+    // Broiler-Human:        PENDING
+    internal JsValue Construct(JsValue callee, JsValue[] arguments, JsValue newTarget)
     {
         if (!callee.IsObject || !callee.AsObject().IsConstructor)
         {
@@ -1113,18 +1458,57 @@ internal sealed class JsEngine
 
         if (target is JsNativeFunction native)
         {
-            return native.Construct(this, arguments);
+            var made = native.Construct(this, arguments);
+
+            // A BUILT-IN REACHED THROUGH `super()` MUST STILL MAKE AN INSTANCE OF THE DERIVED
+            // CLASS. `class Failure extends Error { }` is the case that matters: the built-in
+            // builds the object, and it builds it against its own prototype because that is all a
+            // C# body is given - so without this the instance would be an Error and not a Failure,
+            // and `catch (e) { e instanceof Failure }` would be false for an object the program
+            // just threw. The re-pointing is skipped when the built-in is what `new` named, which
+            // is every ordinary construction.
+            if (made.IsObject && !ReferenceEquals(newTarget.AsObjectOrNull(), target))
+            {
+                var wanted = GetProperty(newTarget, "prototype");
+
+                if (wanted.IsObject)
+                {
+                    made.AsObject().Prototype = wanted.AsObject();
+                }
+            }
+
+            return made;
         }
 
         if (target is JsBoundFunction bound)
         {
-            return Construct(JsValue.Object(bound.Target), Concat(bound.BoundArguments, arguments));
+            // A BOUND FUNCTION'S `new.target` FOLLOWS THROUGH TO ITS TARGET when the bound function
+            // is the one being constructed, and is left alone otherwise - which is what makes
+            // `new (D.bind(null))()` produce a `D`.
+            return Construct(
+                JsValue.Object(bound.Target),
+                Concat(bound.BoundArguments, arguments),
+                ReferenceEquals(newTarget.AsObjectOrNull(), bound)
+                    ? JsValue.Object(bound.Target)
+                    : newTarget);
         }
 
-        var prototype = GetProperty(callee, "prototype");
+        var script = (JsScriptFunction)target;
+        var derived = script.IsDerivedConstructor;
+        JsObject? instance = null;
 
-        var instance = new JsObject(
-            prototype.IsObject ? prototype.AsObject() : Realm.ObjectPrototype);
+        if (!derived)
+        {
+            var prototype = GetProperty(newTarget, "prototype");
+
+            instance = new JsObject(
+                prototype.IsObject ? prototype.AsObject() : Realm.ObjectPrototype);
+        }
+
+        var binding = new JsCell
+        {
+            Value = derived ? JsValue.Empty : JsValue.Object(instance!),
+        };
 
         // THE TWO BACKSTOPS ARE DIFFERENT ANSWERS TO DIFFERENT QUESTIONS, and folding them into one
         // condition - which is what this was - cost the language its own error.
@@ -1175,13 +1559,39 @@ internal sealed class JsEngine
 
         try
         {
-            var returned = Invoke(
-                (JsScriptFunction)target, JsValue.Object(instance), arguments, null, callee);
+            var returned = Invoke(script, binding.Value, arguments, newTarget, binding);
 
             // A CONSTRUCTOR THAT RETURNS AN OBJECT RETURNS THAT OBJECT, and one that returns
             // anything else returns the instance. Getting this backwards makes every factory
             // written as a constructor produce the wrong thing.
-            return returned.IsObject ? returned : JsValue.Object(instance);
+            if (returned.IsObject)
+            {
+                return returned;
+            }
+
+            if (!derived)
+            {
+                return JsValue.Object(instance!);
+            }
+
+            // A DERIVED CONSTRUCTOR IS HELD TO MORE THAN A BASE ONE. Returning a primitive other
+            // than `undefined` is a TypeError rather than being ignored, and falling off the end
+            // without having called `super()` is a ReferenceError rather than producing nothing -
+            // which is the check that makes the whole temporal dead zone worth having.
+            if (returned.Type != JsType.Undefined)
+            {
+                return ThrowTypeError(
+                    "Derived constructors may only return object or undefined");
+            }
+
+            if (binding.Value.IsEmpty)
+            {
+                return ThrowReferenceError(
+                    "Must call super constructor in derived class before accessing 'this' or " +
+                    "returning from derived constructor");
+            }
+
+            return binding.Value;
         }
         finally
         {
@@ -1218,7 +1628,7 @@ internal sealed class JsEngine
     };
 
     /// <summary>Runs a program's entry point and answers what it completed with.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=7EF362
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=D16FB4
     // Broiler-Human:        PENDING
     internal JsValue RunEntry(JsProgram program, uint unit)
     {
@@ -1231,19 +1641,30 @@ internal sealed class JsEngine
             environment,
             JsValue.Object(Realm.GlobalObject),
             System.Array.Empty<JsValue>(),
+            null,
+            JsValue.Undefined,
             null);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=2838FC
+    /// <summary>Enters one bytecode function's frame.</summary>
+    /// <param name="function">The closure being entered.</param>
+    /// <param name="thisValue">The receiver the call site supplied.</param>
+    /// <param name="arguments">The actual arguments.</param>
+    /// <param name="newTarget">
+    /// The constructor a <c>new</c> named, or <c>undefined</c> for an ordinary call.
+    /// </param>
+    /// <param name="binding">
+    /// The box a construction holds its <c>this</c> in, or <see langword="null"/> for a call.
+    /// </param>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=42E8C7
     // Broiler-Human:        PENDING
     private JsValue Invoke(
         JsScriptFunction function,
         JsValue thisValue,
         JsValue[] arguments,
-        JsValue[]? ignored,
-        JsValue newTarget = default)
+        JsValue newTarget,
+        JsCell? binding)
     {
-        _ = ignored;
         var program = function.Program;
         var unit = program.Functions[function.Unit];
         var environment = new JsEnvironment((int)unit.ScopeSlots, function.Environment);
@@ -1270,12 +1691,23 @@ internal sealed class JsEngine
                         ? thisValue
                         : JsValue.Object(ToObject(thisValue));
 
-        return Execute(program, function.Unit, environment, receiver, arguments, function, newTarget);
+        // AN ARROW TAKES ALL THREE FROM WHERE IT WAS WRITTEN. It has no `this`, no `new.target`
+        // and no `super` of its own, so what the call site supplies for any of them is discarded
+        // here rather than being allowed to reach the frame.
+        return Execute(
+            program,
+            function.Unit,
+            environment,
+            receiver,
+            arguments,
+            function,
+            unit.IsArrow ? function.LexicalNewTarget : newTarget,
+            unit.IsArrow ? function.LexicalThisBinding : binding);
     }
 
     // ---- the loop ------------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=EFAAAD
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=7F2E9C
     // Broiler-Human:        PENDING
     private JsValue Execute(
         JsProgram program,
@@ -1284,7 +1716,8 @@ internal sealed class JsEngine
         JsValue thisValue,
         JsValue[] actualArguments,
         JsScriptFunction? self,
-        JsValue newTarget = default)
+        JsValue newTarget,
+        JsCell? thisBinding)
     {
         var unit = program.Functions[unitIndex];
         var code = program.Code;
@@ -1297,6 +1730,12 @@ internal sealed class JsEngine
         var strict = unit.IsStrict;
         var current = pc;
         JsRegion region = default;
+
+        // THE FUNCTION `super` BELONGS TO IS NOT ALWAYS THE ONE RUNNING. An arrow has no `super`
+        // of its own and reaches the enclosing method's, so both halves of `super` - the home
+        // object a property starts from and the superclass a call constructs - are read from here
+        // rather than from `self`.
+        var active = self is null ? null : unit.IsArrow ? self.LexicalActiveFunction : self;
 
         while (true)
         {
@@ -1340,7 +1779,14 @@ internal sealed class JsEngine
                             break;
 
                         case JsOpcode.LoadThis:
-                            stack[sp++] = thisValue;
+                            // A FRAME WITH A BINDING READS THE BINDING AND NOT THE VALUE IT WAS
+                            // ENTERED WITH, because a derived constructor's `this` arrives part
+                            // way through the frame and an arrow inside one has to see it when it
+                            // does. Every other frame has no binding and reads what it was given.
+                            stack[sp++] = thisBinding is null
+                                ? thisValue
+                                : ThisBinding(thisBinding);
+
                             pc++;
                             break;
 
@@ -1638,9 +2084,92 @@ internal sealed class JsEngine
 
                         case JsOpcode.Closure:
                             stack[sp++] = JsValue.Object(
-                                Realm.CreateClosure(program, U16(code, pc), scopes[^1], thisValue));
+                                Realm.CreateClosure(
+                                    program,
+                                    U16(code, pc),
+                                    scopes[^1],
+                                    thisValue,
+                                    thisBinding,
+                                    newTarget,
+                                    active));
 
                             pc += 3;
+                            break;
+
+                        case JsOpcode.DefineMethod:
+                        {
+                            var member = stack[--sp];
+                            var key = ToPropertyKey(stack[--sp]);
+                            DefineMember(stack[sp - 1].AsObject(), key, member, code[pc + 1]);
+                            pc += 2;
+                            break;
+                        }
+
+                        // THE ORDER OF THE THREE STEPS IS OBSERVABLE AND IS THE SPECIFICATION'S:
+                        // the this binding is read, then the base is taken from the home object,
+                        // and only then is the key converted. A key whose `toString` re-points the
+                        // home object's prototype still reads through the prototype the reference
+                        // was made against, and a derived constructor that has not called
+                        // `super()` fails before the conversion runs at all.
+                        case JsOpcode.LoadSuperProperty:
+                        {
+                            var receiver = thisBinding is null
+                                ? thisValue
+                                : ThisBinding(thisBinding);
+
+                            var start = SuperBase(active);
+                            var key = ToPropertyKey(stack[--sp]);
+                            stack[sp++] = Lookup(start, key, receiver);
+                            pc++;
+                            break;
+                        }
+
+                        case JsOpcode.StoreSuperProperty:
+                        {
+                            var value = stack[--sp];
+
+                            var receiver = thisBinding is null
+                                ? thisValue
+                                : ThisBinding(thisBinding);
+
+                            var start = SuperBase(active);
+                            var key = ToPropertyKey(stack[--sp]);
+                            SetSuper(start, receiver, key, value, strict);
+                            stack[sp++] = value;
+                            pc++;
+                            break;
+                        }
+
+                        case JsOpcode.NewClass:
+                        {
+                            var derived = (code[pc + 1] & JsOpcodes.ClassIsDerived) != 0;
+                            var constructor = stack[--sp];
+                            var heritage = derived ? stack[--sp] : JsValue.Undefined;
+                            stack[sp++] = BuildClass(constructor, derived, heritage);
+                            pc += 2;
+                            break;
+                        }
+
+                        case JsOpcode.SuperCall:
+                        {
+                            var argc = code[pc + 1];
+                            var passed = argc == 0 ? System.Array.Empty<JsValue>() : new JsValue[argc];
+
+                            for (var at = argc - 1; at >= 0; at--)
+                            {
+                                passed[at] = stack[--sp];
+                            }
+
+                            stack[sp++] = SuperConstruct(active, thisBinding, newTarget, passed);
+                            pc += 2;
+                            break;
+                        }
+
+                        case JsOpcode.SuperCallForwarded:
+                            stack[sp++] = SuperConstruct(
+                                active, thisBinding, newTarget, actualArguments);
+
+                            pc++;
                             break;
 
                         case JsOpcode.Call:
