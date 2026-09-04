@@ -99,6 +99,18 @@ internal sealed class JsCodeUnit
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=AA2DE3
     // Broiler-Human:        PENDING
     internal bool UsesArguments => (Flags & Format.JsFormat.FunctionFlags.UsesArguments) != 0;
+
+    /// <summary>Whether the unit is a class constructor, which no call may reach.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal bool IsClassConstructor =>
+        (Flags & Format.JsFormat.FunctionFlags.ClassConstructor) != 0;
+
+    /// <summary>Whether the unit's <c>this</c> is created by its <c>super()</c> rather than by its caller.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal bool IsDerivedConstructor =>
+        (Flags & Format.JsFormat.FunctionFlags.DerivedConstructor) != 0;
 }
 
 /// <summary>One verified exception region.</summary>

@@ -294,15 +294,40 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds a closure over a code unit.</summary>
+    /// <param name="program">The verified program the body lives in.</param>
+    /// <param name="unit">Which code unit the body is.</param>
+    /// <param name="environment">The environment record the closure captures.</param>
+    /// <param name="lexicalThis">The creating frame's <c>this</c>.</param>
+    /// <param name="lexicalThisBinding">The creating frame's <c>this</c> box, when it has one.</param>
+    /// <param name="lexicalNewTarget">The creating frame's <c>new.target</c>.</param>
+    /// <param name="lexicalActive">The creating frame's active function.</param>
+    /// <remarks>
+    /// <b>The four lexical values are recorded only for an arrow</b>, because an arrow is the one
+    /// unit that has none of them of its own: <c>this</c>, <c>new.target</c> and both halves of
+    /// <c>super</c> come from where it was written rather than from how it is called. Recording
+    /// them on every closure would cost nothing and mean nothing, and it would make a reader think
+    /// an ordinary function consults them.
+    /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0C1A55
     // Broiler-Human:        PENDING
     internal JsObject CreateClosure(
-        JsProgram program, int unit, JsEnvironment environment, JsValue lexicalThis)
+        JsProgram program,
+        int unit,
+        JsEnvironment environment,
+        JsValue lexicalThis,
+        JsCell? lexicalThisBinding,
+        JsValue lexicalNewTarget,
+        JsScriptFunction? lexicalActive)
     {
-        var function = new JsScriptFunction(FunctionPrototype, program, unit, environment)
+        var function = new JsScriptFunction(FunctionPrototype, program, unit, environment);
+
+        if (program.Functions[unit].IsArrow)
         {
-            LexicalThis = lexicalThis,
-        };
+            function.LexicalThis = lexicalThis;
+            function.LexicalThisBinding = lexicalThisBinding;
+            function.LexicalNewTarget = lexicalNewTarget;
+            function.LexicalActiveFunction = lexicalActive;
+        }
 
         function.SetOwnProperty(
             "length",
@@ -315,7 +340,12 @@ internal sealed partial class JsRealm
             JsProperty.Data(
                 JsValue.String(program.Functions[unit].Name), JsPropertyAttributes.Configurable));
 
-        if (function.IsConstructor)
+        // A CLASS CONSTRUCTOR'S `prototype` IS NOT THIS ONE. It is built by the instruction that
+        // builds the class, with the attributes the language gives it - not writable, not
+        // enumerable, not configurable - and creating an ordinary one here first would be an
+        // allocation nothing keeps and a writable property momentarily standing where a
+        // non-writable one belongs.
+        if (function.IsConstructor && !program.Functions[unit].IsClassConstructor)
         {
             // EVERY ORDINARY FUNCTION GETS A FRESH `prototype` WITH A `constructor` BACK-LINK.
             // The conformance harness compares `thrown.constructor` against the constructor it

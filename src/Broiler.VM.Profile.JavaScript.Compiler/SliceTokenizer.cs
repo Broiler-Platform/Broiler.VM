@@ -1622,6 +1622,27 @@ public sealed class SliceTokenizer
             }
         }
 
+        // A DECORATOR IS A CONSTRUCT AND NOT A STRAY CHARACTER, and it is named here because it is
+        // the only place that ever sees it: `@` begins no token either grammar defines, so the
+        // parser is never reached. While no class was admitted the whole decorated declaration was
+        // refused by name as a class; admitting the class family would otherwise have moved every
+        // decorator to an unexpected-character diagnostic, which a conformance runner scores as a
+        // failure rather than as a construct this manifest declines.
+        if (source[index] == '@')
+        {
+            Refuse(
+                SliceSourceDiagnosticCode.ConstructOutsideManifest,
+                "a decorator is not admitted by the declared feature manifest",
+                startLine,
+                startColumn);
+
+            index++;
+
+            return new SliceToken(
+                SliceTokenKind.EndOfSource, string.Empty, 0, string.Empty,
+                startLine, startColumn, false, false);
+        }
+
         Refuse(
             SliceSourceDiagnosticCode.UnexpectedCharacter,
             $"the character U+{(int)source[index]:X4} begins no token this grammar defines",

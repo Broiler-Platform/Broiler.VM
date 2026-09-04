@@ -115,6 +115,32 @@ public sealed class JsCompiler
     // Broiler-Human:        PENDING
     private bool strict;
 
+    /// <summary>
+    /// Whether the code being lowered is inside a method, so <c>super.x</c> resolves.
+    /// </summary>
+    /// <remarks>
+    /// <b>An arrow function inherits it and every other function resets it</b>, which is the whole
+    /// of the rule the language states as "an arrow has no <c>super</c> of its own". A method's
+    /// nested arrow may write <c>super.m()</c>; a function expression nested in the same method may
+    /// not, and refusing that at the parse would have needed the parser to track what it was
+    /// inside of.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private bool insideMethod;
+
+    /// <summary>Whether the code being lowered is inside a derived constructor, so <c>super()</c> resolves.</summary>
+    /// <remarks><inheritdoc cref="insideMethod" path="/remarks"/></remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private bool insideDerivedConstructor;
+
+    /// <summary>Whether the code being lowered is inside a function, so <c>new.target</c> resolves.</summary>
+    /// <remarks><inheritdoc cref="insideMethod" path="/remarks"/></remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private bool insideFunction;
+
     /// <summary>Compiles one source text as a script called <c>main</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D206EC
     // Broiler-Human:        PENDING
@@ -282,6 +308,13 @@ public sealed class JsCompiler
         var outerScope = scope;
         var outerDepth = blockDepth;
         var outerStrict = strict;
+        var outerMethod = insideMethod;
+        var outerDerived = insideDerivedConstructor;
+        var outerFunction = insideFunction;
+
+        insideMethod = false;
+        insideDerivedConstructor = false;
+        insideFunction = false;
 
         strict = program.IsStrict || forceStrict;
         var index = units.Count;
@@ -310,17 +343,48 @@ public sealed class JsCompiler
         scope = outerScope;
         blockDepth = outerDepth;
         strict = outerStrict;
+        insideMethod = outerMethod;
+        insideDerivedConstructor = outerDerived;
+        insideFunction = outerFunction;
         return index;
     }
 
+    /// <summary>Lowers one function body into a code unit of its own.</summary>
+    /// <param name="function">The body.</param>
+    /// <param name="extra">
+    /// Flags the CALLER knows and the body does not - that this unit is a class constructor, and
+    /// whether it is a derived one. Nothing in a constructor's own text says either.
+    /// </param>
+    /// <param name="isMethod">
+    /// Whether this is a method, which decides two unrelated things: that <c>super</c> resolves
+    /// inside it, and that it is <b>not a constructor</b>. <c>new (C.prototype.m)()</c> is a
+    /// TypeError in the language, and the flag is what makes it one here.
+    /// </param>
+    /// <param name="isDerived">Whether this is the constructor of a class with a heritage.</param>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=88C57E
     // Broiler-Human:        PENDING
-    private int CompileFunction(JsFunctionNode function)
+    private int CompileFunction(
+        JsFunctionNode function,
+        JsFormat.FunctionFlags extra = JsFormat.FunctionFlags.None,
+        bool isMethod = false,
+        bool isDerived = false)
     {
         var outerBuffer = buffer;
         var outerScope = scope;
         var outerDepth = blockDepth;
         var outerStrict = strict;
+        var outerMethod = insideMethod;
+        var outerDerived = insideDerivedConstructor;
+        var outerFunction = insideFunction;
+
+        // AN ARROW INHERITS EVERY ONE OF THESE AND ANY OTHER FUNCTION RESETS THEM. That single
+        // difference is what `super`, `this` and `new.target` mean inside an arrow.
+        if (!function.IsArrow)
+        {
+            insideMethod = isMethod;
+            insideDerivedConstructor = isDerived;
+            insideFunction = true;
+        }
 
         strict = strict || function.IsStrict;
 
@@ -330,6 +394,12 @@ public sealed class JsCompiler
         {
             flags = (flags & ~JsFormat.FunctionFlags.Constructible) | JsFormat.FunctionFlags.Arrow;
         }
+        else if (isMethod)
+        {
+            flags &= ~JsFormat.FunctionFlags.Constructible;
+        }
+
+        flags |= extra;
 
         var index = units.Count;
         var name = function.Name.Length == 0 ? (ushort)0 : (ushort)(InternedName(function.Name) + 1);
@@ -340,7 +410,7 @@ public sealed class JsCompiler
 
         foreach (var parameter in function.Parameters)
         {
-            scope.Declare(parameter, constant: false);
+            scope.DeclareParameter(parameter);
         }
 
         var usesArguments = !function.IsArrow && UsesArguments(function.Body);
@@ -368,6 +438,9 @@ public sealed class JsCompiler
         scope = outerScope;
         blockDepth = outerDepth;
         strict = outerStrict;
+        insideMethod = outerMethod;
+        insideDerivedConstructor = outerDerived;
+        insideFunction = outerFunction;
         return index;
     }
 
@@ -579,6 +652,15 @@ public sealed class JsCompiler
                     names.Add(declarator.Name);
                 }
             }
+
+            // A CLASS DECLARATION IS A LEXICAL DECLARATION AND NOT A HOISTED ONE. Leaving it out
+            // of this collection would mean the block enclosing it pushes no scope, and the class
+            // binding would land in whatever scope happened to be current - which for a class in a
+            // loop body is a slot the next turn overwrites.
+            if (statement is JsClassDeclaration declaration && declaration.Class.Name.Length != 0)
+            {
+                names.Add(declaration.Class.Name);
+            }
         }
     }
 
@@ -641,6 +723,10 @@ public sealed class JsCompiler
                 break;
 
             case JsFunctionDeclaration:
+                break;
+
+            case JsClassDeclaration declaration:
+                CompileClassDeclaration(declaration);
                 break;
 
             case JsBlockStatement block:
@@ -771,7 +857,7 @@ public sealed class JsCompiler
                     continue;
                 }
 
-                CompileExpression(declarator.Initialiser);
+                CompileNamedValue(declarator.Initialiser, declarator.Name);
                 Emit(JsOpcode.StoreGlobal, InternedName(declarator.Name));
                 continue;
             }
@@ -787,7 +873,7 @@ public sealed class JsCompiler
                     continue;
                 }
 
-                CompileExpression(declarator.Initialiser);
+                CompileNamedValue(declarator.Initialiser, declarator.Name);
                 StoreName(declarator.Span, declarator.Name);
                 Emit(JsOpcode.Pop);
                 continue;
@@ -803,7 +889,7 @@ public sealed class JsCompiler
             }
             else
             {
-                CompileExpression(declarator.Initialiser);
+                CompileNamedValue(declarator.Initialiser, declarator.Name);
             }
 
             EmitScoped(JsOpcode.InitialiseScoped, 0, slot);
@@ -1445,6 +1531,38 @@ public sealed class JsCompiler
                 CompileFunctionExpression(function.Function);
                 break;
 
+            case JsClassExpression definition:
+                CompileClass(definition.Class, string.Empty);
+                break;
+
+            case JsSuperMemberExpression member:
+                CompileSuperKey(member);
+                Emit(JsOpcode.LoadSuperProperty);
+                break;
+
+            case JsSuperCallExpression call:
+                CompileSuperCall(call);
+                break;
+
+            case JsNewTargetExpression target:
+                // `new.target` OUTSIDE A FUNCTION IS A SYNTAX ERROR AND NOT A MANIFEST REFUSAL.
+                // The manifest admits it perfectly well; the program wrote it where the language
+                // has nothing for it to mean, and the diagnostic code is what tells a conformance
+                // runner which of the two happened.
+                if (!insideFunction)
+                {
+                    Refuse(
+                        target.Span,
+                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        "`new.target` is only admitted inside a function");
+
+                    Emit(JsOpcode.LoadUndefined);
+                    break;
+                }
+
+                Emit(JsOpcode.LoadNewTarget);
+                break;
+
             case JsUnaryExpression unary:
                 CompileUnary(unary);
                 break;
@@ -1570,6 +1688,252 @@ public sealed class JsCompiler
         scope = outer;
     }
 
+    /// <summary>Binds a class declaration's name after building the class.</summary>
+    /// <remarks>
+    /// The binding is mutable, which a reader who has just seen the class's own binding declared
+    /// constant will want explained: they are two different bindings. <c>class C { }</c> introduces
+    /// <c>C</c> in the enclosing scope as an ordinary <c>let</c>, and separately introduces a
+    /// constant <c>C</c> that only the class body can see - which is why <c>C = 1</c> after the
+    /// declaration is fine and <c>C = 1</c> inside a method is not.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void CompileClassDeclaration(JsClassDeclaration declaration)
+    {
+        var name = declaration.Class.Name;
+        CompileClass(declaration.Class, name);
+
+        if (scope.Kind == ScopeKind.Program && blockDepth == 0)
+        {
+            Emit(JsOpcode.StoreGlobal, InternedName(name));
+            return;
+        }
+
+        var slot = scope.Has(name) ? scope.SlotOf(name) : scope.Declare(name, constant: false);
+        EmitScoped(JsOpcode.InitialiseScoped, 0, slot);
+    }
+
+    /// <summary>
+    /// Lowers a class, leaving the constructor on the operand stack.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The shape is: a scope, the heritage, the constructor, the class, then the members.</b>
+    /// The scope holds the class's own name and is pushed FIRST, because every closure the body
+    /// creates - the constructor included - has to capture it; a scope pushed after the constructor
+    /// closure would leave <c>C</c> unresolvable inside <c>C</c>'s own methods. It is popped at the
+    /// end, and popping it destroys nothing: the closures captured the record itself.
+    /// </para>
+    /// <para>
+    /// <b>The class binding is initialised LAST, after every member has been defined</b>, and that
+    /// ordering is observable: a computed member key that names the class reads a binding still in
+    /// its dead zone and throws, which is what the specification asks for and what a lowering that
+    /// initialised it early would answer <c>undefined</c> to.
+    /// </para>
+    /// <para>
+    /// While the members are defined the stack holds the constructor and the prototype, in that
+    /// order, so a prototype member needs no reload and a static member is one
+    /// <see cref="JsOpcode.Pick"/> away. The alternative - reading <c>C.prototype</c> before each
+    /// prototype member - would be a property lookup per member for no gain, and it would go
+    /// through a property this instruction set deliberately makes non-writable.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void CompileClass(JsClassNode node, string inferredName)
+    {
+        var outer = scope;
+        var named = node.Name.Length != 0;
+
+        if (named)
+        {
+            scope = new Scope(ScopeKind.Block, outer);
+            blockDepth++;
+            var site = buffer.Code.Count + 1;
+            Emit(JsOpcode.PushScope, (ushort)0);
+            buffer.ScopeSites.Add((site, scope));
+            scope.Declare(node.Name, constant: true);
+        }
+
+        if (node.HasHeritage)
+        {
+            CompileExpression(node.Heritage!);
+        }
+
+        var name = named ? node.Name : inferredName;
+        var constructor = FindConstructor(node);
+
+        var flags = JsFormat.FunctionFlags.ClassConstructor | JsFormat.FunctionFlags.Constructible |
+            (node.HasHeritage ? JsFormat.FunctionFlags.DerivedConstructor : JsFormat.FunctionFlags.None);
+
+        var unit = constructor is null
+            ? CompileImplicitConstructor(node.Span, name, node.HasHeritage, flags)
+            : CompileFunction(
+                constructor with { Name = name }, flags, isMethod: true, isDerived: node.HasHeritage);
+
+        Emit(JsOpcode.Closure, (ushort)unit);
+        Emit(JsOpcode.NewClass, (byte)(node.HasHeritage ? JsOpcodes.ClassIsDerived : 0));
+
+        var defines = node.Members.Count != 0 &&
+            (constructor is null || node.Members.Count != 1);
+
+        if (defines)
+        {
+            Emit(JsOpcode.Duplicate);
+            Emit(JsOpcode.GetProperty, InternedName("prototype"));
+        }
+
+        foreach (var member in node.Members)
+        {
+            if (ReferenceEquals(member.Function, constructor))
+            {
+                continue;
+            }
+
+            Position(member.Span);
+
+            if (member.IsStatic)
+            {
+                Emit(JsOpcode.Pick, (byte)1);
+            }
+
+            if (member.Computed is null)
+            {
+                Emit(JsOpcode.LoadConstant, StringConstant(member.Key));
+            }
+            else
+            {
+                CompileExpression(member.Computed);
+            }
+
+            Emit(JsOpcode.Closure, (ushort)CompileFunction(member.Function, isMethod: true));
+            Emit(JsOpcode.DefineMethod, MemberOperand(member.Kind, enumerable: false));
+
+            if (member.IsStatic)
+            {
+                Emit(JsOpcode.Pop);
+            }
+        }
+
+        if (defines)
+        {
+            Emit(JsOpcode.Pop);
+        }
+
+        if (!named)
+        {
+            return;
+        }
+
+        Emit(JsOpcode.Duplicate);
+        EmitScoped(JsOpcode.InitialiseScoped, 0, scope.SlotOf(node.Name));
+        Emit(JsOpcode.PopScope);
+        blockDepth--;
+        scope = outer;
+    }
+
+    /// <summary>The class body's own <c>constructor</c>, when it wrote one.</summary>
+    /// <remarks>
+    /// A STATIC member called <c>constructor</c> is not it, and neither is a getter of that name
+    /// nor a computed key that happens to evaluate to the string: the specification decides this
+    /// syntactically, on a non-static, non-computed method whose property name is
+    /// <c>constructor</c>, and so does this.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private static JsFunctionNode? FindConstructor(JsClassNode node)
+    {
+        foreach (var member in node.Members)
+        {
+            if (!member.IsStatic &&
+                member.Kind == JsMethodKind.Method &&
+                member.Computed is null &&
+                string.Equals(member.Key, "constructor", System.StringComparison.Ordinal))
+            {
+                return member.Function;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>Builds the constructor a class body did not write.</summary>
+    /// <remarks>
+    /// <b>There is no syntax tree behind this unit, and there could not be.</b> A base class's
+    /// implicit constructor is <c>constructor() { }</c>, which a tree could express; a derived
+    /// class's is <c>constructor(...args) { super(...args); }</c>, and this manifest admits neither
+    /// a rest parameter nor a spread argument - both are refused by name. Rather than admit half of
+    /// each to write one function nobody typed, the forwarding is an instruction.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private int CompileImplicitConstructor(
+        SliceSourceSpan span, string name, bool derived, JsFormat.FunctionFlags flags)
+    {
+        var outerBuffer = buffer;
+        var outerScope = scope;
+        var outerDepth = blockDepth;
+        var outerStrict = strict;
+
+        strict = true;
+        var index = units.Count;
+        var constant = name.Length == 0 ? (ushort)0 : (ushort)(InternedName(name) + 1);
+        buffer = new UnitBuffer(constant, flags | JsFormat.FunctionFlags.Strict);
+        units.Add(buffer);
+        scope = new Scope(ScopeKind.Function, outerScope);
+        blockDepth = 0;
+        Position(span);
+
+        if (derived)
+        {
+            Emit(JsOpcode.SuperCallForwarded);
+            Emit(JsOpcode.Pop);
+        }
+
+        Emit(JsOpcode.ReturnUndefined);
+        buffer.SlotCount = scope.SlotCount;
+        buffer = outerBuffer;
+        scope = outerScope;
+        blockDepth = outerDepth;
+        strict = outerStrict;
+        return index;
+    }
+
+    /// <summary>The <see cref="JsOpcode.DefineMethod"/> operand for one member.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private static byte MemberOperand(JsMethodKind kind, bool enumerable) => (byte)(
+        (kind switch
+        {
+            JsMethodKind.Get => JsOpcodes.MemberIsGetter,
+            JsMethodKind.Set => JsOpcodes.MemberIsSetter,
+            _ => 0,
+        }) | (enumerable ? JsOpcodes.MemberIsEnumerable : 0));
+
+    /// <summary>
+    /// Lowers a value whose name the language takes from what it is being bound to.
+    /// </summary>
+    /// <remarks>
+    /// <c>const C = class { };</c> gives the class the name <c>C</c>, which the class text does not
+    /// contain. It is done here rather than in the executor because the name is baked into the code
+    /// unit, and it is done for a class rather than for every anonymous function because the class
+    /// family is what this change admits - an anonymous function expression still reports the empty
+    /// name it always has, which is a divergence this profile already carried.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void CompileNamedValue(JsExpression value, string inferred)
+    {
+        if (value is JsClassExpression anonymous && anonymous.Class.Name.Length == 0)
+        {
+            Position(value.Span);
+            CompileClass(anonymous.Class, inferred);
+            return;
+        }
+
+        CompileExpression(value);
+    }
+
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=379F3A
     // Broiler-Human:        PENDING
     private void CompileArray(JsArrayLiteral array)
@@ -1626,6 +1990,38 @@ public sealed class JsCompiler
 
         foreach (var entry in literal.Entries)
         {
+            // A METHOD AND A PROPERTY WHOSE VALUE IS A FUNCTION ARE DIFFERENT OBJECTS. `{ m() {} }`
+            // makes a method - it has a home object, so `super` inside it resolves, and it is not
+            // a constructor - and `{ m: function () {} }` makes an ordinary function. They were
+            // one lowering until classes were admitted, which was invisible only because nothing
+            // could ask a function for its home object.
+            if (entry.IsMethod)
+            {
+                if (entry.Computed is null)
+                {
+                    Emit(JsOpcode.LoadConstant, StringConstant(entry.Key));
+                }
+                else
+                {
+                    CompileExpression(entry.Computed);
+                }
+
+                CompileMethodValue(entry.Value);
+
+                Emit(
+                    JsOpcode.DefineMethod,
+                    MemberOperand(
+                        entry.Kind switch
+                        {
+                            JsPropertyKind.Get => JsMethodKind.Get,
+                            JsPropertyKind.Set => JsMethodKind.Set,
+                            _ => JsMethodKind.Method,
+                        },
+                        enumerable: true));
+
+                continue;
+            }
+
             if (entry.Computed is not null)
             {
                 CompileExpression(entry.Computed);
@@ -1635,16 +2031,22 @@ public sealed class JsCompiler
             }
 
             CompileExpression(entry.Value);
-
-            Emit(
-                entry.Kind switch
-                {
-                    JsPropertyKind.Get => JsOpcode.DefineGetter,
-                    JsPropertyKind.Set => JsOpcode.DefineSetter,
-                    _ => JsOpcode.DefineField,
-                },
-                InternedName(entry.Key));
+            Emit(JsOpcode.DefineField, InternedName(entry.Key));
         }
+    }
+
+    /// <summary>Emits a closure for a member written in method form.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void CompileMethodValue(JsExpression value)
+    {
+        if (value is JsFunctionExpression method)
+        {
+            Emit(JsOpcode.Closure, (ushort)CompileFunction(method.Function, isMethod: true));
+            return;
+        }
+
+        CompileExpression(value);
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B036E8
@@ -1721,6 +2123,36 @@ public sealed class JsCompiler
             Emit(JsOpcode.LoadConstant, one);
             Emit(add);
             StoreName(update.Span, name.Name);
+            return;
+        }
+
+        if (update.Operand is JsSuperMemberExpression inherited)
+        {
+            var owner = FunctionScope();
+            var kept = owner.Declare("#update" + owner.SlotCount, constant: false);
+            CompileSuperKey(inherited);
+            Emit(JsOpcode.Duplicate);
+            Emit(JsOpcode.LoadSuperProperty);
+            Emit(JsOpcode.ToNumber);
+
+            if (!update.Prefix)
+            {
+                Emit(JsOpcode.Duplicate);
+                EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, kept);
+            }
+
+            Emit(JsOpcode.LoadConstant, one);
+            Emit(add);
+
+            if (update.Prefix)
+            {
+                Emit(JsOpcode.Duplicate);
+                EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, kept);
+            }
+
+            Emit(JsOpcode.StoreSuperProperty);
+            Emit(JsOpcode.Pop);
+            EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, kept);
             return;
         }
 
@@ -1830,8 +2262,16 @@ public sealed class JsCompiler
         {
             if (assignment.Target is JsIdentifier name)
             {
-                CompileExpression(assignment.Value);
+                CompileNamedValue(assignment.Value, name.Name);
                 StoreName(assignment.Span, name.Name);
+                return;
+            }
+
+            if (assignment.Target is JsSuperMemberExpression inherited)
+            {
+                CompileSuperKey(inherited);
+                CompileExpression(assignment.Value);
+                Emit(JsOpcode.StoreSuperProperty);
                 return;
             }
 
@@ -1876,6 +2316,19 @@ public sealed class JsCompiler
             CompileExpression(assignment.Value);
             Emit(opcode);
             StoreName(assignment.Span, target.Name);
+            return;
+        }
+
+        if (assignment.Target is JsSuperMemberExpression host)
+        {
+            // The key is computed once and duplicated, so the read and the write agree about it
+            // even when it is an expression with a side effect.
+            CompileSuperKey(host);
+            Emit(JsOpcode.Duplicate);
+            Emit(JsOpcode.LoadSuperProperty);
+            CompileExpression(assignment.Value);
+            Emit(opcode);
+            Emit(JsOpcode.StoreSuperProperty);
             return;
         }
 
@@ -1957,6 +2410,19 @@ public sealed class JsCompiler
     // Broiler-Human:        PENDING
     private void CompileCall(JsCallExpression call)
     {
+        // `super.m()` IS THE ONE CALL WHOSE CALLEE AND RECEIVER COME FROM DIFFERENT PLACES. The
+        // function is found through the method's home object and the receiver is `this`, so the
+        // ordinary member path - which duplicates the base and uses it for both - would have
+        // called the inherited method against the prototype instead of against the instance.
+        if (call.Callee is JsSuperMemberExpression inherited)
+        {
+            CompileSuperKey(inherited);
+            Emit(JsOpcode.LoadSuperProperty);
+            Emit(JsOpcode.LoadThis);
+            CompileArguments(call);
+            return;
+        }
+
         if (call.Callee is JsMemberExpression member)
         {
             CompileExpression(member.Target);
@@ -1982,6 +2448,14 @@ public sealed class JsCompiler
             Emit(JsOpcode.LoadUndefined);
         }
 
+        CompileArguments(call);
+    }
+
+    /// <summary>Pushes a call's arguments and emits the call itself.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void CompileArguments(JsCallExpression call)
+    {
         foreach (var argument in call.Arguments)
         {
             CompileExpression(argument);
@@ -1996,6 +2470,71 @@ public sealed class JsCompiler
         }
 
         Emit(JsOpcode.Call, (byte)System.Math.Min(call.Arguments.Count, 255));
+    }
+
+    /// <summary>
+    /// Pushes the key half of a <c>super</c> property access, refusing the access where the
+    /// language has no <c>super</c> to start it from.
+    /// </summary>
+    /// <remarks>
+    /// The key is pushed as a VALUE rather than encoded as a name operand, so that
+    /// <c>super.x</c> and <c>super[e]</c> are one instruction with one stack effect. A pair of
+    /// instructions would have bought nothing: the named form is a constant load either way.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void CompileSuperKey(JsSuperMemberExpression member)
+    {
+        if (!insideMethod)
+        {
+            Refuse(
+                member.Span,
+                SliceSourceDiagnosticCode.UnexpectedToken,
+                "`super` is only admitted inside a method");
+        }
+
+        if (member.Computed is null)
+        {
+            Emit(JsOpcode.LoadConstant, StringConstant(member.Name));
+            return;
+        }
+
+        // THE RECEIVER IS READ BEFORE THE KEY EXPRESSION, and the read is emitted for its effect
+        // alone. `super[f()]` in a derived constructor that has not called `super()` yet must be a
+        // ReferenceError about `this` and must not run `f` at all - the specification takes the
+        // this binding first and the key second. Leaving the read to the instruction that consumes
+        // the key would have run `f` first and reported whatever `f` did.
+        Emit(JsOpcode.LoadThis);
+        Emit(JsOpcode.Pop);
+        CompileExpression(member.Computed);
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void CompileSuperCall(JsSuperCallExpression call)
+    {
+        if (!insideDerivedConstructor)
+        {
+            Refuse(
+                call.Span,
+                SliceSourceDiagnosticCode.UnexpectedToken,
+                "a `super` call is only admitted in the constructor of a class with a heritage");
+        }
+
+        foreach (var argument in call.Arguments)
+        {
+            CompileExpression(argument);
+        }
+
+        if (call.Arguments.Count > 255)
+        {
+            Refuse(
+                call.Span,
+                SliceSourceDiagnosticCode.ConstructOutsideManifest,
+                "a call with more than 255 arguments is not admitted");
+        }
+
+        Emit(JsOpcode.SuperCall, (byte)System.Math.Min(call.Arguments.Count, 255));
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F5D034
@@ -2423,6 +2962,24 @@ public sealed class JsCompiler
             return slot;
         }
 
+        /// <summary>Declares one formal parameter, which needs a slot per POSITION.</summary>
+        /// <remarks>
+        /// <b><c>function f(a, a)</c> is an ordinary sloppy-mode function and its <c>a</c> is the
+        /// SECOND argument.</b> Declaring the name once gave the unit fewer slots than parameters,
+        /// and the verifier refuses that function row as malformed - so a program the language
+        /// admits produced an artifact this component's own verifier declined, which is the worst
+        /// shape a defect can take. Each position takes a slot and the later one shadows the
+        /// earlier, which is where the arguments land and which name wins.
+        /// </remarks>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal int DeclareParameter(string name)
+        {
+            var slot = SlotCount++;
+            names[name] = (slot, false);
+            return slot;
+        }
+
         // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1735B6
         // Broiler-Human:        PENDING
         internal bool Has(string name) => names.ContainsKey(name);
@@ -2793,6 +3350,45 @@ public sealed class JsCompiler
                     {
                         yield return entry.Computed;
                         yield return entry.Value;
+                    }
+
+                    break;
+
+                // A CLASS BODY IS NOT PART OF THE ENCLOSING FUNCTION AND ITS HEAD IS. The heritage
+                // and every computed member key are evaluated where the class is written, so an
+                // `arguments` in one belongs to the enclosing function; a member's body is a
+                // function of its own and has its own. Yielding the members but not their bodies
+                // is how the walk gets the second half right.
+                case JsClassExpression expression:
+                    yield return expression.Class;
+                    break;
+
+                case JsClassDeclaration statement:
+                    yield return statement.Class;
+                    break;
+
+                case JsClassNode definition:
+                    yield return definition.Heritage;
+
+                    foreach (var member in definition.Members)
+                    {
+                        yield return member;
+                    }
+
+                    break;
+
+                case JsClassMember member:
+                    yield return member.Computed;
+                    break;
+
+                case JsSuperMemberExpression expression:
+                    yield return expression.Computed;
+                    break;
+
+                case JsSuperCallExpression expression:
+                    foreach (var argument in expression.Arguments)
+                    {
+                        yield return argument;
                     }
 
                     break;

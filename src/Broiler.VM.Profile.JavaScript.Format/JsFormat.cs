@@ -145,6 +145,31 @@ public static class JsFormat
 
         /// <summary>The unit may be used as a constructor.</summary>
         Constructible = 16,
+
+        /// <summary>
+        /// The unit is a class constructor: calling it without <c>new</c> is a <c>TypeError</c>.
+        /// </summary>
+        /// <remarks>
+        /// It is a flag on the unit rather than a check the lowering emits, because the refusal has
+        /// to happen at every call site including the ones the lowering never sees - a method
+        /// handed to <c>Array.prototype.map</c>, a constructor reached through
+        /// <c>Function.prototype.call</c>. A guard in the callee's own first instruction would
+        /// answer for none of them, since the call never reaches the callee's code.
+        /// </remarks>
+        ClassConstructor = 32,
+
+        /// <summary>
+        /// The unit is the constructor of a class with a heritage: its <c>this</c> does not exist
+        /// until <c>super()</c> returns.
+        /// </summary>
+        /// <remarks>
+        /// This is what makes a derived constructor more than sugar. The frame is entered with no
+        /// <c>this</c> at all rather than with a fresh object, so reading <c>this</c> early is a
+        /// <c>ReferenceError</c> and the object the constructor ends up with is the one the BASE
+        /// constructor made from <c>new.target</c> - which is how an instance of a three-deep chain
+        /// gets the prototype of the class that was actually constructed.
+        /// </remarks>
+        DerivedConstructor = 64,
     }
 
     /// <summary>What an exception region does when control reaches its handler.</summary>

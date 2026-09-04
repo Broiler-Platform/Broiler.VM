@@ -238,11 +238,78 @@ internal sealed class JsScriptFunction : JsFunction
     // Broiler-Human:        PENDING
     internal JsValue LexicalThis { get; set; } = JsValue.Undefined;
 
+    /// <summary>
+    /// The object this function's <c>super</c> lookups start from, or <see langword="null"/> when
+    /// it is not a method.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is a property of the FUNCTION and not of the call.</b> A method extracted from a
+    /// prototype and called against an unrelated receiver still resolves <c>super</c> through the
+    /// object it was defined on, which is the whole reason the specification gives a method a home
+    /// object rather than deriving <c>super</c> from <c>this</c>. A lookup through the receiver's
+    /// prototype would also be an infinite regress: a method on <c>C.prototype</c> called on an
+    /// instance of a subclass would find itself.
+    /// </para>
+    /// <para>
+    /// It is the class prototype for a prototype method, the constructor itself for a
+    /// <c>static</c> method, and the object literal for a shorthand method. An arrow function has
+    /// none of its own and reaches the enclosing method's through
+    /// <see cref="LexicalActiveFunction"/>.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal JsObject? HomeObject { get; set; }
+
+    /// <summary>
+    /// The box holding the <c>this</c> an arrow function inherited, when the frame it closed over
+    /// had one that could still change.
+    /// </summary>
+    /// <remarks>
+    /// A derived constructor's <c>this</c> does not exist until <c>super()</c> returns, so an
+    /// arrow created before that point cannot capture a value - there is none - and must capture
+    /// the BINDING. Copying the value would have given every such arrow a permanently dead
+    /// <c>this</c>, which is the shape of defect that only shows up in a constructor that creates
+    /// its callbacks before it calls up.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal JsCell? LexicalThisBinding { get; set; }
+
+    /// <summary>The <c>new.target</c> an arrow function inherited, when it is one.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal JsValue LexicalNewTarget { get; set; } = JsValue.Undefined;
+
+    /// <summary>
+    /// The function an arrow's <c>super</c> belongs to, which is the nearest enclosing
+    /// non-arrow function.
+    /// </summary>
+    /// <remarks>
+    /// One field rather than two: the home object a <c>super</c> property needs and the superclass
+    /// a <c>super()</c> needs are both reached from the same function object, so carrying that
+    /// function is what an arrow inherits and the two answers follow from it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal JsScriptFunction? LexicalActiveFunction { get; set; }
+
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=0AB323
     // Broiler-Human:        PENDING
     internal override bool IsConstructor =>
         (Program.Functions[Unit].Flags & Format.JsFormat.FunctionFlags.Constructible) != 0;
+
+    /// <summary>Whether calling this function without <c>new</c> is a <c>TypeError</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal bool IsClassConstructor => Program.Functions[Unit].IsClassConstructor;
+
+    /// <summary>Whether this function's <c>this</c> is created by its own <c>super()</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal bool IsDerivedConstructor => Program.Functions[Unit].IsDerivedConstructor;
 }
 
 /// <summary>The result of <c>Function.prototype.bind</c>.</summary>

@@ -488,10 +488,11 @@ internal static class Program
         Console.WriteLine();
         Console.WriteLine($"This host runs the feature manifest {JavaScriptProfile.WideManifest} by");
         Console.WriteLine("default: objects, arrays, strings, functions, closures, prototypes,");
-        Console.WriteLine("exceptions, for-in, switch, labels and a standard library. It admits no");
-        Console.WriteLine("class, generator, async function, module, destructuring, spread, template");
-        Console.WriteLine("literal, for-of, Proxy, Symbol, BigInt or typed array, and no eval or");
-        Console.WriteLine("Function constructor. What has been measured against a conformance suite");
+        Console.WriteLine("classes with super and new.target, exceptions, for-in, switch, labels and");
+        Console.WriteLine("a standard library. It admits no generator, async function, module,");
+        Console.WriteLine("destructuring, spread, template literal, for-of, class field, private");
+        Console.WriteLine("name, class static block, Proxy, Symbol, BigInt or typed array, and no");
+        Console.WriteLine("eval or Function constructor. What has been measured against a suite");
         Console.WriteLine("is a handful of its subtrees, which measures those subtrees. Nothing here");
         Console.WriteLine("is reviewed, accepted or supported, and this host is advertised as");
         Console.WriteLine("nothing.");
