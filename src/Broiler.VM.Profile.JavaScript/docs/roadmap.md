@@ -7,13 +7,13 @@ document transcribes none of it.** Which milestones have moved, what each retain
 demonstrates, and what every open gate clause is, are read there and nowhere else: a plan that
 restates them is a second copy of the status, and the second copy is the one that goes stale
 *(corrected: JSC-20)*. What this document states about the present is only what no milestone can
-change without changing the ledger in the same breath — **this profile has a source front
-end for one small feature manifest and nothing beyond it: no object model, no standard library, no
-suspension, no guest-initiated load, no snapshot and no conformance harness; nothing in it has been
-read by a human; and nothing in it is accepted.** The tokenizer, the parser, the one
-static-semantic stage and the source lowering landed at JS-3b, for `broiler.javascript.slice`
-alone, and the ledger is the authority for what they demonstrate *(corrected: JSC-43)*. No
-milestone is complete because its design appears in this document.
+change without changing the ledger in the same breath — **this profile has two feature manifests
+and a source front end for each, two format versions, a value and object model, a standard library
+and two host modes; it has no suspension, no guest-initiated load and no snapshot; nothing in it
+has been read by a human; and nothing in it is accepted** *(corrected: JSC-70)*. The tokenizer,
+the parser, the one static-semantic stage and the source lowering landed at JS-3b, for
+`broiler.javascript.slice` alone, and the ledger is the authority for what they demonstrate
+*(corrected: JSC-43)*. No milestone is complete because its design appears in this document.
 
 `Broiler.VM.Profile.JavaScript` is a **language profile**: one bytecode format, one verifier, one
 value and frame model, one executor, one set of host imports, and one conformance suite, compiled
@@ -352,16 +352,16 @@ record of its own, and none may drift into one *(corrected: JSC-02)*.
 | `NestedLoadBytes` | Charged | Provider-returned bytes for one operation. |
 | `LiveRuntimes` | Charged | Core-metered; this profile adds nothing beyond the agent model of [section 13](#13-realms-agents-and-the-host-boundary). |
 
-**Four of those rows are declared inapplicable while the first manifest is the only one, and that
-is the descriptor being honest rather than the matrix being wrong.** A slice that imports no host
-capability and declares no guest-initiated load makes `HostCalls`, `NestedLoadDepth`,
-`NestedLoadFanOut` and `NestedLoadBytes` **structurally unreachable rather than merely unused** —
-and because the catalog checks each declaration against the structural consequences of the rest of
-the descriptor, declaring them charged would be a claim two rows further down contradicts. **JS-6
-flips the host-call row** when the standard library imports something and **JS-8 flips the three
-nested rows** when guest loads are declared. Their *defaults* stay generous throughout, because a
-zero on a dimension this profile does not use is a claim about every neighbour that adopts
-defaults *(corrected: JSC-02)*.
+**Three of those rows are declared inapplicable while no manifest declares a guest-initiated load,
+and that is the descriptor being honest rather than the matrix being wrong.** A manifest that
+declares no guest load makes `NestedLoadDepth`, `NestedLoadFanOut` and `NestedLoadBytes`
+**structurally unreachable rather than merely unused** — and because the catalog checks each
+declaration against the structural consequences of the rest of the descriptor, declaring them
+charged would be a claim two rows further down contradicts. **The host-call row is charged**,
+because this profile imports one optional host capability, `broiler.javascript.write`
+*(corrected: JSC-73)*, and **JS-8 flips the three nested rows** when guest loads are declared.
+Their *defaults* stay generous throughout, because a zero on a dimension this profile does not use
+is a claim about every neighbour that adopts defaults *(corrected: JSC-02)*.
 
 **Allowances accumulate; ceilings occupy, and the two use different members.** Seven of the
 fifteen are allowance-class and are consumed monotonically with no refund. The other eight are
@@ -759,6 +759,11 @@ never silently widened:
 | `broiler.javascript.intl` | Internationalization. | Deferred; excluded by name until it has a run |
 | `broiler.javascript.temporal` | The temporal surface. | Deferred; excluded by name until it has a run |
 
+**A further identity exists beside that table**: `broiler.javascript.wide`, a surface wider than
+the slice and narrower than `broiler.javascript.core`. The three rules above bind it like any
+other, and the first of them — a manifest with no retained run of its own is not accepted — is
+unmet for it *(corrected: JSC-70)*.
+
 ### Where the language is deliberately underspecified, and why a manifest has to say so
 
 A retained corpus compares an observed answer against a recorded one, byte for byte, across three
@@ -795,7 +800,9 @@ reason that is not a defect.
 
 ### The format
 
-Format version 1 is defined with the first manifest and grows with the interpreter. It is not
+**Two format versions exist.** Version 1 was defined with the first manifest; version 2 keeps its
+framing and its magic, admits the interned-name tag and the exception regions version 1 reserved
+and framed, and adds what a value and object model needs *(corrected: JSC-71)*. Neither is
 enumerated as a whole-language opcode set in advance, because an opcode set designed before the
 value model is a set that will be redesigned after it.
 
@@ -981,14 +988,22 @@ Each row carries correctness fixtures and Native AOT representation probes retai
 A recursing program must be refused as `ResourceExhaustion` naming `CallDepth`, on every RID a
 milestone claims, under Native AOT — **rather than terminating the process**. A stack overflow is
 not translatable into a result, so claiming to handle deep recursion without a measured bound would
-be an untruthful capability claim. Because a frame is a heap object rather than a CLR frame, the
-bound is a **counted number compared against a limit** and not a stack probe — which is what makes
-it promisable under Native AOT at all. The default is still measured rather than chosen: it is
+be an untruthful capability claim. The bound is a **counted number compared against a limit** and
+not a stack probe, which is what makes it promisable under Native AOT at all; the wide surface's
+interpreter recurses on the CLR stack and runs a guest invocation on a thread whose stack this
+profile declares, which is what a counted bound over CLR frames needs in order to mean the same
+thing on every host *(corrected: JSC-79)*. The default is still measured rather than chosen: it is
 derived from a retained, reproducible measurement of the per-frame cost on each claimed RID, and a
 recursion case proves the refusal on each.
 
 The same discipline fixes `MaxUnchargedWork`, `ChargingGranularity`, and `CancellationPollBound`:
 each is a number chosen from a measurement and recorded with it, not a round figure.
+
+**Two of the five rows that discipline covers are settled and three are not**
+*(corrected: JSC-72)*. `CancellationPollBound` and `MaxUnchargedWork` are measured by construction
+rather than by benchmark: the verifier reads every bulk run in windows no larger than the bound it
+declares, so the declaration and the behaviour are two statements of one fact. `CallDepth`'s
+default and maximum and `ChargingGranularity` still wait on theirs.
 
 ### Proportional charging
 
@@ -1409,7 +1424,10 @@ to score anything: it is to prove that a failing test comes back as a failure.
   declaring neither strictness is read twice, under names that say which reading each is; and
   because a third-party checkout holds none of this component's fixtures, the self-check directory
   is selectable independently of the suite. **Nothing in this is a suite:** the path handles a
-  format, fetches nothing, and holds no suite file.
+  format, fetches nothing, and holds no suite file. **A mode runs a pinned third-party checkout**
+  at a root the caller names, which this repository still does not hold, and answers a construct
+  the manifest does not admit as *unsupported* rather than as a pass or a failure
+  *(corrected: JSC-76)*.
 - **Every case runs in a runtime of its own** *(corrected: JSC-52)*. A budget allowance is spent
   over a runtime's life rather than reset per invocation, so a shard that composes the engine once
   reports every case after the first non-terminating one as a timeout — a total indistinguishable
@@ -1498,6 +1516,8 @@ distinction unreportable. A root that carries a lowering does not thereby claim
 `narrow-runtime-compiler`: that label belongs to a composition lowering a named restricted
 **source** surface, and there is no source surface until JS-3b writes the tokenizer and the static
 semantics. A root lowering anything else is a demonstration and says so *(corrected: JSC-12)*.
+**The end-user host lowers the wide surface by default and keeps the slice behind a flag**
+*(corrected: JSC-75)*.
 
 **No publish is evidence for another kind.** An execution-only publish is not evidence for a
 compiler-bearing closure and never appears in one's evidence bundle. Each composition's closure

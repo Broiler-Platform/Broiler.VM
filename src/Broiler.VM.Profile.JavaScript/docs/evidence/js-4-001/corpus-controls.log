@@ -1,0 +1,98 @@
+These controls are judged by running the execution-only composition against the retained
+corpus, NOT by the test suite. A language semantic is in no test project - rule A11
+forbids one to reference a profile assembly - so a corpus that could not detect a
+semantic regression would be a directory of bytes rather than a gate.
+
+[the-soak-stops-noticing-a-per-cycle-leak] PASS
+    why:       Sixty-four bytes are retained per soak cycle - the smallest leak this check is worth having. THIS CONTROL EXISTS BECAUSE ITS ABSENCE HID A DEFECT. The band was 2.0 against a baseline taken at cycle 99, and on 2026-09-01 that combination was found to fail on correct code under Native AOT - while a midpoint baseline at the same band could not have failed on ANY linear leak, because the ratio (B + N*L) / (B + N*L/2) rises towards 2.0 and never reaches it. A check nothing ever made fail is a check nobody knows the shape of, and this is the one that would have said so.
+    file:      src\compositions\Broiler.VM.Composition.JavaScript.ExecutionOnly\HostLifetimeChecks.cs
+    injected:  exit 1
+    reverted:  exit 0
+      FAIL recycled-runtimes-reach-a-heap-plateau: 10000 of 10000 cycles completed; the heap went from 820448 bytes at the midpoint to 1321856 at the end, a factor of 1.61 against a band of 1.2. Both readings are after warm-up, which is what makes them comparable in every publish mode. This is a plateau check and not a measurement. The curve, as cycle=bytes: 0=312824 625=378040 1250=441232 1875=496232 2500=567616 3125=622680 3750=677680 4375=765448 5000=820448 5625=875576 6250=930576 6875=985576 7500=1040576 8125=1095576 8750=1216112 9375=1271112 10000=1321856
+
+[the-language-guards-division-by-zero] PASS
+    why:       Division by zero is made a fault, which is what a calculator does and not what the language does. The corpus entry recording Infinity must stop agreeing.
+    file:      src\Broiler.VM.Profile.JavaScript\JavaScriptExecutor.cs
+    injected:  exit 1
+    reverted:  exit 0
+      FAIL corpus-replay: division-by-zero: expected Normal/NormalCompleted/0/Infinity/-/-/-, observed Normal/NormalCompleted/0/fault:RangeError/-/-/- (hash match); zero-over-zero: expected Normal/NormalCompleted/0/NaN/-/-/-, observed Normal/NormalCompleted/0/fault:RangeError/-/-/- (hash match); negative-zero-division: expected Normal/NormalCompleted/0/-Infinity/-/-/-, observed Normal/NormalCompleted/0/fault:RangeError/-/-/- (hash match); not-a-number-is-not-itself: expected Normal/NormalCompleted/0/false/-/-/-, observed Normal/NormalCompleted/0/fault:RangeError/-/-/- (hash match)
+
+[strict-equality-stops-comparing-kinds] PASS
+    why:       Strict equality is made to compare numbers whatever the kinds are, so `1 === true` becomes true. The entry recording false must stop agreeing.
+    file:      src\Broiler.VM.Profile.JavaScript\JavaScriptValue.cs
+    injected:  exit 1
+    reverted:  exit 0
+      FAIL corpus-replay: strict-equality-compares-kinds: expected Normal/NormalCompleted/0/false/-/-/-, observed Normal/NormalCompleted/0/true/-/-/- (hash match); source-strict-equality-compares-kinds: expected Normal/NormalCompleted/0/false/-/-/-, observed Normal/NormalCompleted/0/true/-/-/- (hash match)
+
+[to-uint32-becomes-a-cast] PASS
+    why:       The ToUint32 conversion is replaced by a C# cast, which saturates instead of reducing modulo 2^32. The bitwise-or entry recording -2147483648 must stop agreeing.
+    file:      src\Broiler.VM.Profile.JavaScript\JavaScriptValue.cs
+    injected:  exit 1
+    reverted:  exit 0
+      FAIL corpus-replay: unsigned-shift-goes-through-to-uint32: expected Normal/NormalCompleted/0/4294967295/-/-/-, observed Normal/NormalCompleted/0/0/-/-/- (hash match); source-unary-minus-binds-tighter-than-a-shift: expected Normal/NormalCompleted/0/4294967295/-/-/-, observed Normal/NormalCompleted/0/0/-/-/- (hash match)
+
+[the-position-encoding-loses-the-section-index] PASS
+    why:       A code-section position is reported with the artifact-relative marker again, which is the defect JS-3a corrected. The number stays right and the frame it names goes wrong, so no outcome, reason or diagnostic code moves - only the four rows that pin a position.
+    file:      src\Broiler.VM.Profile.JavaScript\JavaScriptPosition.cs
+    injected:  exit 1
+    reverted:  exit 0
+      FAIL corpus-replay: an-unknown-opcode: expected InvalidArtifact/UnknownFeature/1401/-/2:0:0:0/-/-, observed InvalidArtifact/UnknownFeature/1401/-/-1:0:0:0/-/- (hash match); a-position-row-inside-an-operand: expected InvalidArtifact/InconsistentStructure/1506/-/2:1:1:1/-/-, observed InvalidArtifact/InconsistentStructure/1506/-/-1:1:1:1/-/- (hash match); a-refusal-covered-by-the-second-position-row: expected InvalidArtifact/UnknownFeature/1401/-/2:3:7:5/-/-, observed InvalidArtifact/UnknownFeature/1401/-/-1:3:7:5/-/- (hash match)
+
+[the-position-lookup-takes-the-first-row] PASS
+    why:       The covering-row scan stops at the first row rather than the last one at or before the offset. Three of the four pinned rows are unaffected; the entry whose refusal sits under the SECOND row of a two-row table is the one that must notice.
+    file:      src\Broiler.VM.Profile.JavaScript\JavaScriptPosition.cs
+    injected:  exit 1
+    reverted:  exit 0
+      FAIL corpus-replay: a-refusal-covered-by-the-second-position-row: expected InvalidArtifact/UnknownFeature/1401/-/2:3:7:5/-/-, observed InvalidArtifact/UnknownFeature/1401/-/2:3:1:1/-/- (hash match)
+
+[an-entry-point-may-be-reached-with-operands] PASS
+    why:       The fall-through edge into an entry point stops being refused. A program is entered with an empty operand stack; without this check the artifact is answered by whichever fault the traversal reaches first, which is the order-dependence JS-3a removed.
+    file:      src\Broiler.VM.Profile.JavaScript\JavaScriptVerifier.cs
+    injected:  exit 1
+    reverted:  exit 0
+      FAIL corpus-replay: an-entry-point-reached-with-operands-on-the-stack: expected InvalidArtifact/SemanticValidationFailed/1505/-/-/-/-, observed InvalidArtifact/InconsistentStructure/1404/-/-/-/- (hash match)
+
+[the-constant-pool-is-sized-before-its-count-is-checked] PASS
+    why:       The pool array is allocated from the declared count BEFORE the count is compared against the limits section's maximum. This is the injection roadmap section 7's third discipline exists for, and it is the one that shows why the discipline is separate from the corpus: the outcome, the reason and the diagnostic code are all unchanged, so every replay row still agrees and only the ORDERING checks notice - a hostile entry declaring sixty thousand constants charges most of a megabyte from a fifty-seven-byte artifact before refusing it.
+    file:      src\Broiler.VM.Profile.JavaScript\JavaScriptVerifier.cs
+    injected:  exit 1
+    reverted:  exit 0
+      FAIL a-declaration-past-its-bound-sizes-nothing: a-constant-count-far-beyond-what-the-artifact-carries: charged 960000 allocated bytes before refusing; more-constants-than-the-limits-section-admits: charged 32 allocated bytes before refusing
+      FAIL allocation-is-proportional-to-the-bytes-present-not-to-what-they-declare: a-constant-count-far-beyond-what-the-artifact-carries: 960000 allocated bytes from 57 artifact bytes
+
+[the-executor-stops-charging-fuel-per-step] PASS
+    why:       The interpreter loop stops charging Fuel for the step it is about to take. Nothing about one program's ANSWER changes - a counting loop still returns 55 - so the corpus replay is unmoved. What breaks is every claim that rests on a budget being spent: two siblings under one parent stop exhausting it, and a host that declined stops declining. This is the control for the aggregate-budget exercise, and it is judged by the same run.
+    file:      src\Broiler.VM.Profile.JavaScript\JavaScriptExecutor.cs
+    injected:  exit 1
+    reverted:  exit 0
+      FAIL two-siblings-under-one-parent-spend-one-total: 128 invocations completed and 0 were refused across two siblings; the parent spent 128 of 4000 fuel. Which sibling was refused is not asserted: both draw on one total and the order is a race
+
+[the-guidance-loop-stops-keeping-new-answers] PASS
+    why:       The fuzz session's seed pool stops adding a mutant whose published answer nothing has reached, so the loop offers, counts and remembers - and keeps nothing. Every figure a session prints about its guidance stays plausible and the seed set silently stays the retained corpus, which is the state JSC-38 corrected this component for reporting as coverage-guided. The composition's own wiring check is what notices.
+    file:      src\compositions\Broiler.VM.Composition.JavaScript.ExecutionOnly\Fuzzing.cs
+    injected:  exit 1
+    reverted:  exit 0
+      FAIL the-fuzz-guidance-loop-is-wired: the pool holds 1 artifacts and the kept one is not among them
+
+[a-tight-ceiling-stops-being-tight] PASS
+    why:       The wall-clock allowance the tight mode states is raised from zero to the profile's own default, so the host stops declining and the artifact verifies and runs. This is the control for the seven exhaustion entries: their bytes are a well-formed program and what refuses them is the host, so a mode that quietly stopped refusing would leave seven rows recording an answer nothing produced.
+    file:      src\compositions\Broiler.VM.Composition.JavaScript.ExecutionOnly\Hosts.cs
+    injected:  exit 1
+    reverted:  exit 0
+      FAIL corpus-replay: a-wall-clock-allowance-already-spent: expected ResourceExhaustion/AllowanceExhausted/0/-/-/WallClock/Runtime, observed Normal/NormalCompleted/0/42/-/-/- (hash match)
+
+[an-exhaustion-answers-the-neighbouring-dimension] PASS
+    why:       The bounded reader's structural-depth status is mapped onto the section-count dimension. Both are ceilings, both answer CeilingReached, and both carry no diagnostic code - so the outcome, the reason and the code are unchanged on every row and the only thing that moves is the dimension one entry records. This is the injection the dimension column exists for, and before that column no row in this corpus could have noticed it. Rule N11 fails on the same injection from the other side, which is the point of having both: the rule sees an arm nothing answers on, and the replay sees an artifact answered wrongly.
+    file:      src\Broiler.VM.Profile.JavaScript\JavaScriptVerifier.cs
+    injected:  exit 1
+    reverted:  exit 0
+      FAIL corpus-replay: a-structural-depth-ceiling-this-host-declined: expected ResourceExhaustion/CeilingReached/0/-/-/StructuralDepth/Artifact, observed ResourceExhaustion/CeilingReached/0/-/-/SectionCount/Artifact (hash match)
+
+[the-verifier-stops-refusing-unreachable-code] PASS
+    why:       The unreachable-code check is removed, so an artifact carrying bytes no entry point reaches would verify. The entry recording that rejection must stop agreeing.
+    file:      src\Broiler.VM.Profile.JavaScript\JavaScriptVerifier.cs
+    injected:  exit 1
+    reverted:  exit 0
+      FAIL corpus-replay: an-instruction-no-entry-point-reaches: expected InvalidArtifact/InconsistentStructure/1411/-/-/-/-, observed Normal/NormalCompleted/0/1/-/-/- (hash match)
+
+corpus controls run: 13; passed: 13; SKIPPED: 0

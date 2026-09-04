@@ -75,8 +75,8 @@ internal static class DiagnosticRegistry
     /// <summary>The stage vocabulary a core-result row may name. Closed.</summary>
     internal static readonly string[] Stages =
     [
-        "header", "manifest", "framing", "limits", "constants", "code", "entries", "positions",
-        "reserved", "reader",
+        "header", "manifest", "framing", "limits", "constants", "code", "entries", "functions",
+        "positions", "reserved", "reader",
     ];
 
     /// <summary>The stage vocabulary an embedder-seam row may name. Closed.</summary>

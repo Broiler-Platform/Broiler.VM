@@ -153,6 +153,16 @@ rather than a decision record.
 | [JSC-67](#jsc-67) | the ledger's unopened-dependency row for the language edition, open since JS-0; the JS-10 row; Bundle JS-3A's exclusion 5 | The row was written as though there were two states and section 24 defines three: the edition is pinned PROVISIONALLY, and two of the three actions bought three checked claims and one disagreement | ECMA-262 retrieved at five editions and hashed |
 | [JSC-68](#jsc-68) | the ledger's conformance-suite row and its account of the test262 runs; Bundles [JS-3B-001](evidence/js-3b-001/README.md) and [JS-3B-002](evidence/js-3b-002/README.md) | The suite pin was not merely transient, it was SELF-CERTIFYING: `--pin` writes its digest into the directory it just read, so the checkout was vouching for itself | the archive retrieved and hashed twice, independently |
 | [JSC-69](#jsc-69) | `Fuzzing`'s remark on section 7's four surfaces; the ledger's JS-3b and JS-9 rows | Three of the four surfaces existed and the remark still said two, so the source front end was fuzzed by nothing while being described as absent | four sessions of 25,000 iterations over the source surface |
+| [JSC-70](#jsc-70) | roadmap section 6's manifest allocation table, and the same table in [JSD-0002](decisions/0002-feature-manifest-allocation.md) | The table gains a row: `broiler.javascript.wide`, minted for bring-up, which is deliberately NOT the `core` row JS-5 was promised and which closes no milestone | [JSD-0021](decisions/0021-the-wide-bring-up-manifest-and-format-version-2.md) |
+| [JSC-71](#jsc-71) | roadmap section 7, and `JavaScriptFormat`'s remark that version 1 is the only version this build defines | There are two format versions, and what version 2 adds - a function table, an environment model, exception regions carrying a scope depth - is what a version break exists for | [JSD-0021](decisions/0021-the-wide-bring-up-manifest-and-format-version-2.md) |
+| [JSC-72](#jsc-72) | roadmap section 8 and the descriptor's five provisional rows | Two of the five are settled by CONSTRUCTION and not by benchmark: a declared poll bound is an upper bound on the largest single charge the profile makes | the poll-bound violation a bulk code-section read produced |
+| [JSC-73](#jsc-73) | the descriptor's budget declaration matrix, and [JSD-0008](decisions/0008-descriptor-rows-that-are-provisional-and-why.md) | The `HostCalls` row is `Charged`, because one optional host capability import now exists - the flip JSD-0008 said JS-6 would make, arriving from another milestone | the descriptor, and the composition that registers the import |
+| [JSC-74](#jsc-74) | registry rows 1003 and 1006, and rule N7's admitted set | Two rows stopped being unreachable: a defensive row's justification is a fact about the build, and registering a second format version and a second manifest expired both | two retained corpus entries, one per direction |
+| [JSC-75](#jsc-75) | roadmap section 15 and [JSD-0017](decisions/0017-the-end-user-host-and-what-an-exit-code-promises.md) | The end-user host runs the wide surface by default, and naming several files runs them as separate scripts sharing ONE realm rather than as a sweep | the host's own closure report and its two workloads |
+| [JSC-76](#jsc-76) | roadmap section 14 and the conformance composition's `--run` mode | A second mode runs a pinned third-party checkout this repository does not hold, with four verdicts rather than two, because an unadmitted construct is neither a pass nor a failure | the retained runs over named subtrees |
+| [JSC-77](#jsc-77) | `JavaScriptFormat.MaximumFormatVersion`'s own remark | It is the version-1 reader's ceiling and not the descriptor's, and the two are different questions | the descriptor's declared range |
+| [JSC-78](#jsc-78) | the retained corpus manifest's header and roadmap section 7's corpus discipline | One corpus holds entries of two format versions, distinguished by the replay mode column that already distinguished the nine entries bytes alone cannot produce | the regenerated corpus and its replay |
+| [JSC-79](#jsc-79) | roadmap section 8's *`CallDepth` is measured, not chosen*; the gates' lifecycle clause | The interpreter recurses on the CLR stack, so the premise the bound rested on is false - and a conformance case terminated the process before anything refused it | the case that terminated it, and the declared stack that repairs it |
 
 ### JSC-01
 
@@ -2834,3 +2844,531 @@ does is check the seam invariant over tens of thousands of compiled programs.
 **Authority and date.** Four sessions of 25,000 iterations at seeds 1 to 4, and eight earlier ones
 that measured the seeding defect; the seam vocabulary of the published registry diffed against what
 the sessions reach; 2026-09-03.
+
+---
+
+### JSC-70
+
+**Where:** roadmap [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s
+allocation table, and the same table and its admission criterion in
+[JSD-0002](decisions/0002-feature-manifest-allocation.md).
+
+**What the plan said.** Seven identities, fixed at JS-0, each with the earliest milestone that may
+mint it: the slice at JS-1; `broiler.javascript.core` — "objects, prototypes, properties, closures,
+functions, classes, exceptions, iteration, destructuring, strict mode, and the core standard
+library" — at JS-5, with increments extending it; `modules` at JS-7; `dynamic` at JS-8; `regexp` at
+JS-6 "or excluded with a published failure"; `intl` and `temporal` deferred until each has a run.
+The table is "extendable by a later milestone but never silently widened", and JSD-0002's admission
+criterion says what extending it costs: an increment mints **one** further manifest identity with a
+reviewed scope, extends the retained malformed corpus, and re-runs the oracle against the ratchet.
+Three rules govern it — increments do not inherit; a manifest with no retained run of its own is
+not accepted; an increment closes no milestone and re-enters JS-5's vertical-slice loop.
+
+**What replaced it.** The table gains a row. `broiler.javascript.wide` is minted for bring-up, and
+format version 2 is defined against it ([JSC-71](#jsc-71)). It admits objects, prototypes,
+properties, closures, functions, exceptions, strict mode and a standard library, and it refuses by
+name at the front end every class, generator, `async` function, module, destructuring, spread,
+template literal, tagged template, `for … of`, optional chain, `with`, Proxy, Reflect, Symbol,
+BigInt, typed array, `eval` and `Function` constructor.
+
+**The question worth arguing is not why the table grew but why the new row is not the row that was
+already there**, because a reader looking at that list of admissions will reach for
+`broiler.javascript.core` and the two are close enough that the difference has to be stated rather
+than assumed. It is not `core`, for two reasons that are independent of each other and either of
+which is sufficient.
+
+**The first is the table's own column.** `core` is allocated to JS-5, and JS-5 has not started; the
+column exists precisely so that an identity is not minted by whoever happens to need one. Minting
+`core` here would not be extending the table — it would be spending a row the table had already
+promised to a milestone, which is the *silently widened* case in the same sentence that authorises
+extension at all.
+
+**The second is that it would have contradicted a neighbouring milestone on the day it was
+minted.** [JS-6's row](roadmap.delivery.md#19-milestones) requires the temporal,
+internationalization and regular-expression surfaces to be minted as separate manifest identities
+and **all three left out of `broiler.javascript.core`**. This manifest admits a `RegExp` — an
+approximation, translated to `System.Text.RegularExpressions` and declared as one in the file that
+does it, which is a second reason it does not belong under a name JS-6 owns. A surface with a
+regular expression in it cannot be called `core` without the name being wrong in exactly the
+direction JS-6 was told to keep it right.
+
+**And widening `slice` in place was never the third option it looks like.** The slice's artifacts,
+its retained corpus and its conformance fixtures all name `broiler.javascript.slice` and mean by it
+what they meant on the day each was written; widening that identity would silently change what
+every one of them claims, without editing any of them. A second name leaves all of them true.
+
+**What this row does not buy, stated so no reader infers it from the fact that something now
+runs.** It **closes no milestone** — rule 3 — and nothing in the ledger moves because it exists. It
+**inherits nothing** — rule 1 — so nothing the slice demonstrated is evidence about this manifest,
+and no argument of the form *the smaller manifest works, therefore this one does* is available to
+anybody. Its scope is written down and **nothing here has been read by a human**, so the half of the
+criterion asking for a *reviewed* scope is unmet and this entry does not claim it. And it has **no
+retained conformance run of its own**: what exists is runs over subtrees somebody chose, which
+measure those subtrees ([JSC-76](#jsc-76)). Section 6's sentence — *a manifest with no retained run
+of its own is not accepted, and the support table says so* — is therefore unmet on the day the
+manifest was minted, and it stays unmet.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, read against JSD-0002's
+allocation table and its three rules, and against JS-6's row in the delivery order; decision
+[JSD-0021](decisions/0021-the-wide-bring-up-manifest-and-format-version-2.md); 2026-09-04.
+
+---
+
+### JSC-71
+
+**Where:** roadmap [section 7](roadmap.md#7-the-bytecode-format-and-the-verifier), the format
+subsection and the first of its three disciplines; and `JavaScriptFormat`'s own remarks.
+
+**What the plan said.** "Format version 1 is defined with the first manifest and **grows with the
+interpreter**", and the constant carrying the number calls itself "the only format version this
+build defines". Section 7's corpus discipline says the retained malformed corpus **grows at every
+milestone that grows the format**, and that it holds control entries that verify successfully,
+because "a corpus in which nothing passes is a corpus that would not notice a verifier that rejects
+everything".
+
+**What replaced it.** A second format version, defined against `broiler.javascript.wide`
+([JSC-70](#jsc-70)). Version 2 keeps version 1's framing unchanged — the same magic, a
+variable-length version integer, a manifest identity, a declared section count, framed sections in
+strictly ascending kind order, and one opcode plus a fixed operand — so a version-2 artifact is
+refused by a version-1 reader **because the version integer differs, and not because a section it
+did not expect turned up**.
+
+**The plan's word was *grows*, and the correction is that this did not grow; it forked.** That is
+the distinction the four additions are worth reading for, because each is a version break rather
+than an extension, and for the same reason each time: a version-1 reader handed these bytes would
+not fail to understand them, it would understand them as something else.
+
+**A function table.** Version 1 declares one frame and one flat set of locals, which is what a
+program with no functions needs. Version 2 declares one code unit per function — parameter count,
+environment-slot count, operand-stack maximum, code range and flags — in a section of its own.
+Section 7 already settled what that costs: adding a section to a frozen format is a format-version
+break, which is why exception regions and suspension targets were framed from version 1 rather than
+added when something needed them.
+
+**An environment model addressed by depth and slot.** Bindings live in a chain of environment
+records and are reached by a static (depth, slot) pair; nothing addresses a variable by name at run
+time except a global, which is a property of an object and therefore a name by definition. This one
+could not have been an extension under any framing, because it changes what an existing operand
+*means*: the same index, the same width, a different referent.
+
+**Exception regions that carry a scope depth beside the operand-stack height.** A handler that knew
+neither would have to reconstruct both by walking back, and a handler entered at the wrong stack
+height is exactly the defect a verifier exists to make unrepresentable. A version-1 reader parsing a
+version-2 region would read the added fields as the beginning of the next one.
+
+**Absolute branch targets rather than version 1's displacements.** All code units share one code
+section, so an absolute target is checkable against the range of the unit that contains the branch,
+which a displacement is not. And this is the addition that settles the general rule: the operand is
+the same width in the same position and only its meaning moved, so there is no framing under which a
+reader could notice it was reading the wrong format. **A change a reader can skip is an extension; a
+change that re-reads bytes the reader already reads is a version.**
+
+**The corpus discipline was honoured rather than cited.** The retained corpus gained one entry per
+structural refusal version 2 adds — a function row the format cannot represent, an entry point
+naming no code unit, code units that do not tile the code section, a scope popped past the frame, an
+exception handler outside its code unit — two more where the caller mislabels the bytes
+([JSC-74](#jsc-74)), and **one whole version-2 program**, a closure called through a property of an
+object, which verifies, instantiates and completes with a value. The last of those is not padding:
+the discipline asks for entries that pass, and a set of refusals alone would be replayed green by a
+verifier that refused everything.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, read against section 7's
+format list and its first discipline; the retained corpus manifest, which names the entries added
+and the mode each replays under; decision
+[JSD-0021](decisions/0021-the-wide-bring-up-manifest-and-format-version-2.md); 2026-09-04.
+
+---
+
+### JSC-72
+
+**Where:** roadmap [section 8](roadmap.md#8-the-value-frame-and-call-model)'s measurement
+discipline, and the profile descriptor's own remarks, which name five provisional rows and the
+milestone that settles them.
+
+**What the plan said.** Five rows of the descriptor are provisional — the call-depth default and
+maximum, the uncharged-work bound, the charging granularity and the cancellation poll bound — each
+filled with a value that is safe rather than with a number that looks settled, and **JS-5 replaces
+all five with numbers derived from a retained measurement**, because section 8 says each is measured
+rather than chosen: "a number chosen from a measurement and recorded with it, not a round figure".
+
+**What replaced it.** Two of the five — the cancellation poll bound and the uncharged-work bound —
+are settled, and **not by a benchmark**. They are fixed by construction, which is the part worth
+reading, because *measured by construction* reads at first like a euphemism for chosen.
+
+**The argument runs through what the bound actually bounds.** The core's bounded reader charges one
+work unit per byte consumed and polls after every charge. The meter reports a poll that arrives
+after more work than the declared bound as a **poll-bound violation**. So the declared number is not
+a statement about how often this profile would *like* to be interruptible — it is an upper bound on
+the **largest single charge the profile makes**, asserted by the profile and checked by the meter
+against the profile's own behaviour. Those are two different quantities, and one number had been
+standing in for both.
+
+**Which means the old value was not conservative; it was false.** A verifier that reads a
+four-kilobyte code section in one call has made a single charge many times larger than a declared
+bound of 256, and the meter says so in those words. That is not a hypothesis about a workload — it
+is what the meter reported when a code-section read of that size met a bound of 256. **A profile
+cannot honestly declare a bound smaller than its own largest read.**
+
+**So the number and the behaviour are one fact stated twice.** The bound is 65,536; the verifier
+reads every bulk run in windows no larger than the bound; and either half of that pair can be
+derived from the other. A benchmark could not have produced this figure, because a benchmark
+measures how long something takes and this row asserts something about what the code does — which is
+the stronger derivation of the two, since a measurement is true of the machine it ran on and a
+construction is true of the source.
+
+**What a measurement would still be for, so this is not read as retiring the discipline.** Whether
+polling this often costs anything is a latency question, and it is open; nothing here measured it.
+What is settled is the direction the row constrains, and the row constrains it upward.
+
+**The other three stay provisional and JS-5 still owns them.** The call-depth default and maximum
+wait on a retained measurement of the per-frame cost on each claimed RID, which is a fact about the
+size of a heap object rather than about the structure of a loop, and the charging granularity waits
+with them. **A row settled by construction settles nothing about a row settled by a frame cost**,
+and an entry that let two of the five carry the other three would be the same conflation this one
+repairs.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout — the descriptor's two
+rows and the verifier's windowed reads, each stating the other's reason — read against section 8's
+measurement discipline and the descriptor's own account of its five provisional rows; decision
+[JSD-0021](decisions/0021-the-wide-bring-up-manifest-and-format-version-2.md); 2026-09-04.
+
+---
+
+### JSC-73
+
+**Where:** the profile descriptor's budget declaration matrix, and
+[JSD-0008](decisions/0008-format-version-1-the-entry-point-and-what-js-1-corrected.md), which dated
+the correction of four rows JSD-0004 had intended charged and named the milestone that would flip
+each.
+
+**What the plan said.** The `HostCalls` row says `NotApplicable`, and the reason given is structural
+rather than incidental: the slice **imports no host capability**, so the dimension is unreachable
+rather than merely unused, and declaring it charged would be a claim the rest of the descriptor
+contradicts. JSD-0008 recorded when that would stop being true: **JS-6 flips the host-call row when
+the standard library imports something**, and JS-8 flips the three nested-load rows when
+guest-initiated loads are declared.
+
+**What replaced it.** `Charged`. The wide surface's standard library has a `print`, and `print`
+reaches a host through one import, `broiler.javascript.write`, which carries one run of UTF-8 text.
+
+**Why an import at all, when a sink somebody sets would have been shorter.** A static sink on the
+profile type would be process-wide, would outlive a runtime, and would let one composition's output
+reach another's — which is the ambient platform surface the core's capability table exists to
+prevent. A `print` that reached a console without the composition having registered anything is that
+surface with a friendly name on it. Registration is the permission, and there is no other door.
+
+**The import is OPTIONAL, and that is the design rather than a hedge.** A composition that registers
+nothing still creates a runtime and still runs programs; what it does not have is a `print` that
+reaches anywhere. The profile asks whether the binding is bound and answers `undefined` either way,
+so the difference between a host that shows output and one that does not is a registration rather
+than a branch in the guest — which is also why the row is `Charged` outright rather than conditional
+on a composition. The dimension is reachable; whether a particular image reaches it is that image's
+business, and a matrix row is a statement about the profile.
+
+**This is the flip JSD-0008 anticipated, and it arrived from a different milestone than the one it
+named.** The record predicted the *event* exactly — the row moves when the standard library imports
+something — and named JS-6 as the milestone that would carry it, and JS-6 has not started. That is
+worth recording rather than smoothing over, because the same record's other prediction is still
+outstanding in its original form: the three nested-load rows still say `NotApplicable`, guest loads
+are still not declared, and JS-8 still owns them. A record whose first prediction landed early is not
+a record whose second one has.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout — the descriptor's one
+optional capability import and the matrix row that follows from it — read against JSD-0008's account
+of the four inapplicable rows and the milestones it assigned them; decision
+[JSD-0021](decisions/0021-the-wide-bring-up-manifest-and-format-version-2.md); 2026-09-04.
+
+---
+
+### JSC-74
+
+**Where:** `docs/diagnostics/registry.txt`, rows 1003 `DescriptorFormatVersionMismatch` and 1006
+`DescriptorManifestMismatch`; and rule N7, which holds the admitted set of codes no artifact
+reaches.
+
+**What the plan said.** Both rows are `defensive`, and had been since revision 1. The reason
+recorded for each is the same, and it is about the shape of the build rather than the shape of the
+code: the core screens an artifact's declared format version and feature manifest against the
+descriptor **before this profile's verifier is called**, and this build registered exactly one format
+version and admitted exactly one manifest — so each screen compared against a set with one member in
+it, and a mismatch was not a thing a caller could construct.
+
+**What replaced it.** Both are `corpus`, and each names the retained entry that reaches it: an
+artifact whose bytes are version 1 announced as version 2, and an artifact carrying the slice
+manifest announced as the wide one. Registering a second format version ([JSC-71](#jsc-71)) and
+admitting a second manifest ([JSC-70](#jsc-70)) is the whole of what changed. **No line of the screen
+was edited**, and that is the entry rather than an aside to it.
+
+**The general reading is what to carry away, because it applies to every defensive row this registry
+will ever hold.** A row marked defensive is making a claim about reachability, and the justification
+for these two was never a property of the code — it was a property of a *set* that happened to have
+one member. The code always compared the artifact's declaration against the descriptor's; what it
+lacked was anything to disagree with. **So the justification expires when the build changes,
+silently, with nothing failing.** A registry that never revisited its defensive rows would today
+carry two rows asserting that a mismatch cannot be observed, in a file whose own header names two
+format versions and two feature manifests — the contradiction sitting in one file, a few dozen lines
+apart, with nothing on either side able to notice it.
+
+**Which is why the admitting list lives in rule N7 and not in the registry.** A row claiming to be
+unreachable is a claim held by a rule written where the row cannot reach it, so moving a row out of
+that set is an edit to a rule rather than a change to a comment. The rows that remain defensive keep
+reasons of the same kind — facts about what this build contains rather than about what its code can
+do — and each is owed the same re-reading at the next change that widens what the build contains.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout — the registry at revision
+3, its two rows and the retained corpus entries they name, read against rule N7's admitted set and
+against the registry's own header; decision
+[JSD-0021](decisions/0021-the-wide-bring-up-manifest-and-format-version-2.md); 2026-09-04.
+
+---
+
+### JSC-75
+
+**Where:** roadmap
+[section 15](roadmap.md#15-deployment-compositions-native-aot-and-the-browser-embedding) and
+[JSD-0017](decisions/0017-the-end-user-host-and-what-an-exit-code-promises.md), the end-user host and
+what an exit code promises.
+
+**What the plan said.** The host is the `narrow-runtime-compiler` composition and the first root that
+earns the label; it is handed a path by a person; it compiles, verifies and runs
+`broiler.javascript.slice`; and **it is not advertised and not packable**, because "a tool advertised
+as a JavaScript host has to be able to run JavaScript, and `broiler.javascript.slice` admits no
+function, no object, no string value and no property access". Several named paths were several
+programs: each was run, each got a realm that did not outlive it, and the host reported the worst
+answer any of them gave.
+
+**What replaced it.** `broiler.javascript.wide` by default, the slice behind `--slice`, and — the
+part a reader would otherwise be surprised by — **naming several files runs them as separate scripts
+sharing one realm, in order**, rather than as a sweep with a realm each.
+
+**The reason is that both target workloads are shaped that way and neither can be expressed
+otherwise.** A benchmark harness and its benchmark, or a conformance harness and its test, are
+separate *scripts* that share a global object: the first defines what the second uses. Under a realm
+each, the second file cannot see the first, and every workload of that shape fails for a reason that
+is about the host rather than about the program.
+
+**And concatenating them into one script is a real defect rather than a shortcut**, which is worth
+arguing because it is the obvious cheap answer and it is wrong twice over. **It changes what a
+directive prologue means**: a prologue is only a prologue at the head of a script, so joining two
+files demotes the second file's `"use strict"` to an ordinary expression statement that does
+nothing, and promotes the first file's into a rule over everything after it — in both directions,
+silently. **And through that it changes `this` inside a constructor**: a function called without
+`new` sees the global object in sloppy mode and `undefined` in strict, so a harness whose error type
+assigns to `this` starts writing to a different object, or throws, depending on which file it was
+joined with. Neither is a syntax error. Both are a wrong verdict.
+
+**One realm and several scripts is what the format already provides**, rather than a convention the
+host has to keep: the wide surface's artifact carries one code unit and one named entry point per
+script, the instance is the realm, and an instance outlives one invocation. The host invokes in
+order against one instance and gets the required shape from the artifact.
+
+**A directory argument is still a sweep, and that asymmetry is deliberate.** A tree is not a program:
+one file's globals must not decide the next one's result, and a sweep that shared a realm would
+report a distribution in which every row after the first is contingent on the rows before it. Named
+files are what a person composed; a directory is what a person pointed at.
+
+**The host is still not advertised and still not packable, and only the reason has moved.** It used
+to be that the manifest admitted no function; it is now that the manifest refuses by name a long list
+a reader would expect a JavaScript host to run — every class, generator, `async` function, module,
+destructuring, spread, template literal, tagged template, `for … of`, optional chain, `with`, Proxy,
+Reflect, Symbol, BigInt, typed array, `eval` and `Function` constructor — that `RegExp` is translated
+to `System.Text.RegularExpressions` and is an approximation declared as one in the file that does it,
+that `Date` fixes the local time zone to UTC, that `arguments` is unmapped, that script-level `let`
+and `const` become properties of the global object so a read before the declaration answers
+`undefined` instead of throwing, and that there is no job queue at all. **A tool advertised as a
+JavaScript host still has to be able to run JavaScript**, and a manifest that refuses a named list is
+no more advertisable than one that refused everything — it is only likelier to be mistaken for one
+that does not. The exit-code contract JSD-0017 records is untouched.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout — the host's default
+surface, its `--slice` flag and its one-realm rule, read against JSD-0017's account of what the host
+runs and why it is not advertised; decision
+[JSD-0021](decisions/0021-the-wide-bring-up-manifest-and-format-version-2.md); 2026-09-04.
+
+---
+
+### JSC-76
+
+**Where:** roadmap [section 14](roadmap.md#14-the-conformance-oracle), and the conformance
+composition's `--run` mode.
+
+**What the plan said.** The harness scores this component's own fixture trees and nothing else. That
+is section 14 asking for exactly what it got — the harness is built "against the smallest scoring
+target that exists rather than after the language it will eventually score" — and it is also the
+ledger's own reading of what every figure the harness had produced was worth: a statement about the
+instrument rather than about JavaScript, because the declarations and the code that judges them have
+one author. No third-party suite was scored by anything here.
+
+**What replaced it.** The pin exists and the suite is retained as an archive ([JSC-68](#jsc-68)), and
+the composition gained a second mode: `--test262 <root>` runs an unpacked checkout of it, with
+`--test`, `--dir`, `--limit`, `--fuel` and `--wall`. Three things in it are decisions rather than
+mechanics, and each would be wrong in an interesting way if taken the other way.
+
+**The harness files are evaluated as SEPARATE scripts in the test's realm, because INTERPRETING.md
+requires exactly that.** The suite's own contract says so, and [JSC-75](#jsc-75) argues at length why
+concatenation is a defect rather than a shortcut — it moves a directive prologue and, through it,
+`this` inside a function called without `new`, which is precisely what a suite's own error type
+depends on. This runner gets the required shape from the format rather than from a convention it has
+to keep: one code unit and one named entry per script, and the instance is the realm.
+
+**A fresh realm per variant, because tests destroy the harness they were given.** They redefine
+`Object.prototype` members, freeze intrinsics and replace `assert`; a runner that reused a realm
+would score the next test against the previous one's wreckage, and would do it in an order-dependent
+way that a rerun of one test would not reproduce. A realm here is an instance, so a fresh one costs a
+runtime and nothing more — which is what makes the honest choice also the cheap one.
+
+**And a fourth verdict, UNSUPPORTED, beside pass, fail and skipped.** A front end that refuses a
+class declaration **has not found a syntax error** — it has found a construct it does not implement —
+and a test that expects a `SyntaxError` would be scored a pass on that refusal. Counting it would
+turn every unimplemented feature into a point, and the more the manifest refused the better the total
+would read. This is section 14's own rule — a refusal answers a question about the language only when
+it was a language answer ([JSC-54](#jsc-54)) — reaching a second harness by a different route.
+Unsupported is neither a pass nor a failure and is reported on its own. Module tests,
+`resolution`-phase negatives and the `CanBlockIsFalse` flag are declined by name rather than run and
+scored, and an asynchronous test cannot complete at all, because there is no job queue.
+
+**The mode scores nothing on its own, and this entry claims nothing on its behalf.** `--test262`
+takes a root and whichever subtrees somebody names, and **a run over a list somebody chose is a
+measurement of that list** — not of the suite, not of the manifest, and not of this profile. It sets
+no floor and admits no total. Section 6's rule that a manifest with no retained run of its own is not
+accepted is exactly the rule this does not answer ([JSC-70](#jsc-70)): what a whole-suite run would
+settle a named subtree cannot, and the difference is not one of size but of who chose the population.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout — the composition's second
+mode, its four verdicts, its per-variant realms and its separate-script evaluation — read against
+section 14's method and against the suite's own INTERPRETING.md at the retained pin; decision
+[JSD-0021](decisions/0021-the-wide-bring-up-manifest-and-format-version-2.md); 2026-09-04.
+
+---
+
+### JSC-77
+
+**Where:** `JavaScriptFormat.MaximumFormatVersion`, in the format assembly, and its own summary.
+
+**What the plan said.** That the constant is "the highest format version the profile descriptor
+accepts".
+
+**What replaced it.** It is the highest version **the version-1 reader** accepts. The descriptor's
+range now runs from the minimum up to format version 2's number ([JSC-71](#jsc-71)), which is wider
+than this constant, and the constant is the screen one verifier applies to bytes it is about to parse
+as version 1.
+
+**The two are different questions, and the name answers the one it is not about.** What this build
+admits is a fact about the descriptor; what a reader can parse is a fact about that reader. They were
+the same number for as long as there was one reader, and a name written while they agreed reads,
+once they diverge, as an assertion that they still do.
+
+**Nothing here is a defect in the code.** The constant is used where it belongs, its value is right
+for what it does, and no artifact is admitted or refused differently because of this entry. What is
+corrected is a reading: somebody who trusted the name would conclude this build admits one format
+version, and the same assembly's neighbour says otherwise.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout — the descriptor's
+format-version range read against the constant and against the verifier that uses it; 2026-09-04.
+
+---
+
+### JSC-78
+
+**Where:** the retained corpus manifest's own header, and roadmap
+[section 7](roadmap.md#7-the-bytecode-format-and-the-verifier)'s corpus discipline.
+
+**What the plan said.** The header names one manifest and one format version — the slice, at format
+version 1 — and the discipline says the corpus grows at every milestone that grows the format. Read
+together they say what the corpus is: the retained record of one manifest at one version.
+
+**What replaced it.** One corpus, one manifest, one integrity check over it, holding entries of
+**both** format versions and distinguishing them by the replay **mode** column. The `format version
+1` in that header is the sentence this entry retires; the discipline beside it is untouched, and is
+what produced the new entries ([JSC-71](#jsc-71)).
+
+**The mode column was already carrying information of exactly this kind, which is why it was the
+right place.** It is not a description of the bytes — it is what the replay must *do* — and it
+already held every case a row's bytes cannot express on their own: a token cancelled before the read
+begins, a profile the catalog does not hold, and one entry per ceiling a host declined — each of
+which asks something of the replay that no byte of an artifact can state. Which format a row's bytes
+are is an instruction of that shape: the replay has to know which reader to hand them to, and no
+byte of the artifact tells it anything the column does not.
+
+**Why one corpus rather than two, which is the choice a reader would otherwise wonder about.** The
+integrity check is over **the manifest**, not over the directory: a mutated entry is caught because
+the manifest records its hash and the replay recomputes it, and the control that proves this injects
+into the retained bytes rather than into source. A second corpus would therefore be a second
+manifest, a second integrity check, a second header to keep honest, and a second place the replay has
+to be told to look — four things to keep in step where there had been one, in exchange for a
+separation nothing needs. **And the replay's whole job is to compare an observed triple against a
+recorded one across three publish modes.** Splitting the record by format version splits that
+comparison along an axis that is not the comparison's, so a drift affecting both versions at once
+would be reported twice, with nothing relating the two reports.
+
+**What this does not claim.** The corpus is a corpus: it records what the verifier and the executor
+answered and holds them to it. Growing it across a format version shows that the discipline was
+applied, and no more than that.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout — the retained corpus
+manifest, its mode column and the integrity check over it — read against section 7's corpus
+discipline and against the header the manifest carried; decision
+[JSD-0021](decisions/0021-the-wide-bring-up-manifest-and-format-version-2.md); 2026-09-04.
+---
+
+### JSC-79
+
+**Where:** roadmap [section 8](roadmap.md#8-the-value-frame-and-call-model)'s *`CallDepth` is
+measured, not chosen*, and the lifecycle clause of
+[gates section 21](roadmap.gates.md#21-format-and-verifier-safety) that says a call-stack overflow
+is reported as a resource exhaustion and is not fatal.
+
+**What the plan said.** That the bound could be promised at all *because of how a frame is stored*:
+"Because a frame is a heap object rather than a CLR frame, the bound is a **counted number compared
+against a limit** and not a stack probe — which is what makes it promisable under Native AOT at
+all." The gates say the same thing from the other side, and name the failure it is protecting
+against as a stop condition: a process termination on a nesting case blocks the milestone, because
+a stack overflow is not translatable and claiming to handle it would be an untruthful capability
+claim.
+
+**What was actually built.** **The wide surface's interpreter recurses on the CLR stack.** One
+JavaScript call is one C# call - `Call`, then `Invoke`, then `Execute` - and a JavaScript frame is
+those three CLR frames plus a heap-allocated operand stack and environment. The plan's premise is
+therefore false for this executor, and the sentence that rests on it does not carry: a counted
+bound compared against a limit is still what the code does, but what it protects is a *native*
+stack rather than a heap the profile controls.
+
+**And the consequence was observed rather than reasoned about.** A conformance case that recurses a
+hundred thousand deep - `test/language/statements/if/tco-if-body.js`, one of a family testing
+tail-call optimisation - **terminated the process** at 776 frames on the one-megabyte stack a
+Windows process hands its main thread. Neither the call-depth ceiling nor the CLR's own
+sufficient-stack probe reached it first: the ceiling stood at a thousand, and the probe reserves a
+fixed margin that an interpreter frame of over a kilobyte can step past between two calls. **That is
+exactly the stop condition the gates name**, found by pointing a third-party suite at the host and
+not by anything here.
+
+**What replaced it.** Two changes, and the first is the one that makes the second promisable.
+
+**The profile runs a guest invocation on a thread whose stack it declares** - sixteen megabytes -
+rather than on whatever stack the caller happened to have. A call-depth bound that means one thing
+on a host's main thread and another on a thread pool's is not a bound the profile can promise, and
+the depth at which a process dies is not a property anybody can measure once and rely on. Choosing
+the stack is what turns the bound into a property of this profile rather than of its caller.
+The profile declares `Agile` thread affinity, so the core pins no operation to a thread, and the one
+host capability it imports declares caller-thread affinity - which this satisfies, because the
+thread that calls it is the thread the guest is running on.
+
+**And the ordinary answer to a recursing program is the budget, not the backstop.** The engine's own
+ceiling is now higher than the `CallDepth` default, so a recursing program is refused by the
+dimension the gate names, as a resource exhaustion the guest cannot catch. The engine's ceiling
+remains beneath it as the answer for a host that granted more call depth than the declared stack can
+hold, and it is a `RangeError` - which is what the language says and what a program that catches one
+expects.
+
+**What is still open, stated rather than implied.** The gate asks for the refusal **on every claimed
+RID under Native AOT**, and this component publishes Native AOT in a lane and retains nothing from
+it; the observation above is one machine, one RID, JIT. The per-frame cost is not measured and the
+sixteen megabytes is chosen against an estimate of it rather than against a retained measurement,
+which is the same discipline [JSC-72](#jsc-72) satisfied for two other rows and does not satisfy
+here. And the plan's own answer - a heap frame model, which section 8 lists among the rows JS-4 must
+settle before it closes - is not built and is not withdrawn: this entry records that the executor
+that exists does not have one, not that the design was abandoned.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the conformance case
+that terminated the process, and
+[JSD-0021](decisions/0021-the-wide-bring-up-manifest-and-format-version-2.md). 2026-09-04.

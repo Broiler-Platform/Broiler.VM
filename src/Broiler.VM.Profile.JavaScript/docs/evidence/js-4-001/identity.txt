@@ -1,0 +1,33 @@
+bundle:                JS-4-001
+milestone:             JS-4
+collected (UTC):       2026-09-04T10:02:47+00:00
+component commit:      50c8862119bd6383027166c94f37218fe5fc92b9
+branch:                claude/js-mvp-es5-engine
+working tree:          DIRTY
+dirty entries:         19
+owner:                 MaiRat
+reviewer:              none
+
+Every path below is relative to the component root. A figure in this bundle is this
+component's own; no result from any other component is evidence here.
+
+Dirty entries at collection time, listed rather than summarised:
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/js-4-001/README.md
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/js-4-001/android-controls.log
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/js-4-001/assurance-gate.log
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/js-4-001/assurance-release.log
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/js-4-001/build.log
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/js-4-001/corpus-controls.log
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/js-4-001/corpus-integrity.log
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/js-4-001/environment.txt
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/js-4-001/fuzz-controls.log
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/js-4-001/fuzz.log
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/js-4-001/hashes.txt
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/js-4-001/identity.txt
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/js-4-001/negative-controls.log
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/js-4-001/octane-benchmarks.log
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/js-4-001/snapshot-identity.txt
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/js-4-001/suite.log
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/js-4-001/test262-subtrees.log
+   M src/compositions/Broiler.VM.Composition.JavaScript.Cli/WideHost.cs
+   M src/tests/cli/expected.txt

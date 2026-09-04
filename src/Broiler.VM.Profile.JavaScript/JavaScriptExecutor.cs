@@ -254,13 +254,18 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
     public VmProfileId ProfileId { get; }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=24CFB9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=F2CD86
     // Broiler-Falsified-If: a handle this profile did not verify produces an instance
     // Broiler-Human:        PENDING
     public VmExecutionStep Instantiate(
         VmVerifiedArtifact artifact,
         System.Threading.CancellationToken cancellationToken)
     {
+        if (artifact.TryGetState(out var wide) && wide is JsProgram wideProgram)
+        {
+            return JsExecution.Instantiate(wideProgram, environment, cancellationToken);
+        }
+
         if (!artifact.TryGetState(out var state) || state is not JavaScriptProgram program)
         {
             // A handle this profile did not produce, or one that has been disposed. Either way it
@@ -286,7 +291,7 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=1DAA4C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=59C786
     // Broiler-Falsified-If: an unknown entry point is reported as anything but a language fault, or a foreign instance state runs
     // Broiler-Human:        PENDING
     public VmExecutionStep Invoke(
@@ -294,6 +299,11 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
         in VmInvocationRequest request,
         System.Threading.CancellationToken cancellationToken)
     {
+        if (state is JsInstance wide)
+        {
+            return JsExecution.Invoke(ProfileId, wide, in request);
+        }
+
         if (state is not JavaScriptInstance instance)
         {
             return VmExecutionStep.ContractViolation(VmReason.ForeignPayload);

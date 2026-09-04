@@ -165,11 +165,18 @@ internal static class CorpusReplay
         var request = new VmInvocationRequest(new VmUtf8Text("main"u8));
         var result = instance.Invoke(in request, CancellationToken.None);
 
+        // TWO SURFACES, TWO PAYLOAD KINDS, ONE COLUMN. A version-2 instance answers with the
+        // wide surface's own completion payload, and a replay that only knew the version-1 one
+        // would record every passing version-2 entry as having produced nothing.
         var completion = JavaScriptProfile.TryGetCompletion(in result, out var value)
             ? value.Value.ToDiagnosticString()
-            : JavaScriptProfile.TryGetFault(in result, out var fault)
-                ? "fault:" + fault.Kind
-                : "-";
+            : JavaScriptProfile.TryGetWideCompletion(in result, out var wide)
+                ? (wide.TypeOf == "undefined" ? "undefined" : wide.Value)
+                : JavaScriptProfile.TryGetFault(in result, out var fault)
+                    ? "fault:" + fault.Kind
+                    : JavaScriptProfile.TryGetUncaught(in result, out var uncaught)
+                        ? "uncaught:" + uncaught.ErrorName
+                        : "-";
 
         return new ReplayObservation(
             entry.Name,

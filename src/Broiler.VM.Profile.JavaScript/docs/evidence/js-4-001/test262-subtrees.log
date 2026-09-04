@@ -1,0 +1,250 @@
+# A real test262 checkout at the pinned revision, run through the conformance
+# composition, 2026-09-04, win-x64.
+#
+# THE PIN IS THE ARCHIVE THIS REPOSITORY HOLDS, at
+# src/tests/conformance/pins/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e.tar.gz. It was
+# extracted to a scratch directory outside this repository and run from there; nothing was
+# fetched and nothing written back.
+#
+# Command per section:
+#   Broiler.VM.Composition.JavaScript.Conformance --test262 <checkout> --dir <subtree>
+#
+# THESE ARE MEASUREMENTS OF THE SUBTREES NAMED AND OF NOTHING ELSE. The subtrees were
+# chosen; a run over a chosen list is a measurement of that list, and no total here is a
+# conformance figure for the suite or for this manifest.
+#
+# `unsupported` is a construct the feature manifest does not admit. It is neither a pass
+# nor a failure and is counted separately, because counting a refused class declaration as
+# a pass on a test that expects a SyntaxError would turn every unimplemented feature into a
+# point.
+#
+## test/harness  (exit 1)
+   # test262 116 files: pass 126, fail 38, unsupported 68, skipped 0
+   first failures, at most twenty:
+     FAIL        test/harness/assert-throws-same-realm.js [strict]  uncaught TypeError: $262.createRealm: this profile creates no nested realm
+     FAIL        test/harness/assert-throws-same-realm.js [sloppy]  uncaught TypeError: $262.createRealm: this profile creates no nested realm
+     FAIL        test/harness/asyncHelpers-asyncTest-without-async-flag.js [strict]  uncaught TypeError: undefined is not a function
+     FAIL        test/harness/asyncHelpers-asyncTest-without-async-flag.js [sloppy]  uncaught TypeError: undefined is not a function
+     FAIL        test/harness/compare-array-message.js [strict]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/harness/compare-array-message.js [sloppy]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/harness/compare-array-sparse.js [strict]  the verifier refused an artifact this runner produced: InvalidArtifact/SemanticValidationFailed
+     FAIL        test/harness/compare-array-sparse.js [sloppy]  the verifier refused an artifact this runner produced: InvalidArtifact/SemanticValidationFailed
+     FAIL        test/harness/compare-array-symbol.js [strict]  uncaught Error: Expected SameValue(Â«function ReferenceError() { [native code] }Â», Â«function Test262Error() { [native code] }Â») to be true
+     FAIL        test/harness/compare-array-symbol.js [sloppy]  uncaught Error: Expected SameValue(Â«function ReferenceError() { [native code] }Â», Â«function Test262Error() { [native code] }Â») to be true
+     FAIL        test/harness/detachArrayBuffer.js [strict]  uncaught ReferenceError: ArrayBuffer is not defined
+     FAIL        test/harness/detachArrayBuffer.js [sloppy]  uncaught ReferenceError: ArrayBuffer is not defined
+     FAIL        test/harness/fnGlobalObject.js [strict]  a harness file threw: TypeError: Function: the broiler.javascript.wide manifest does not admit the Function constructor, because this profile declares no guest-initiated load and cannot turn source into code at run time
+     FAIL        test/harness/fnGlobalObject.js [sloppy]  a harness file threw: TypeError: Function: the broiler.javascript.wide manifest does not admit the Function constructor, because this profile declares no guest-initiated load and cannot turn source into code at run time
+     FAIL        test/harness/propertyhelper-verifyenumerable-enumerable-symbol.js [strict]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/harness/propertyhelper-verifyenumerable-enumerable-symbol.js [sloppy]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/harness/propertyhelper-verifyenumerable-not-enumerable-symbol.js [strict]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/harness/propertyhelper-verifyenumerable-not-enumerable-symbol.js [sloppy]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/harness/propertyhelper-verifynotenumerable-enumerable-symbol.js [strict]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/harness/propertyhelper-verifynotenumerable-enumerable-symbol.js [sloppy]  uncaught ReferenceError: Symbol is not defined
+     ... and 18 more, all in the run above
+
+## test/built-ins/Math  (exit 1)
+   # test262 327 files: pass 622, fail 30, unsupported 2, skipped 0
+   first failures, at most twenty:
+     FAIL        test/built-ins/Math/Symbol.toStringTag.js [strict]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/built-ins/Math/Symbol.toStringTag.js [sloppy]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/built-ins/Math/f16round/length.js [strict]  uncaught TypeError: Cannot convert undefined or null to object
+     FAIL        test/built-ins/Math/f16round/length.js [sloppy]  uncaught TypeError: Cannot convert undefined or null to object
+     FAIL        test/built-ins/Math/f16round/name.js [strict]  uncaught TypeError: Cannot convert undefined or null to object
+     FAIL        test/built-ins/Math/f16round/name.js [sloppy]  uncaught TypeError: Cannot convert undefined or null to object
+     FAIL        test/built-ins/Math/f16round/not-a-constructor.js [strict]  uncaught Error: isConstructor invoked with a non-function value
+     FAIL        test/built-ins/Math/f16round/not-a-constructor.js [sloppy]  uncaught Error: isConstructor invoked with a non-function value
+     FAIL        test/built-ins/Math/f16round/prop-desc.js [strict]  uncaught Error: f16round should be an own property
+     FAIL        test/built-ins/Math/f16round/prop-desc.js [sloppy]  uncaught Error: f16round should be an own property
+     FAIL        test/built-ins/Math/f16round/value-conversion.js [strict]  uncaught TypeError: undefined is not a function
+     FAIL        test/built-ins/Math/f16round/value-conversion.js [sloppy]  uncaught TypeError: undefined is not a function
+     FAIL        test/built-ins/Math/sumPrecise/length.js [strict]  uncaught TypeError: Cannot convert undefined or null to object
+     FAIL        test/built-ins/Math/sumPrecise/length.js [sloppy]  uncaught TypeError: Cannot convert undefined or null to object
+     FAIL        test/built-ins/Math/sumPrecise/name.js [strict]  uncaught TypeError: Cannot convert undefined or null to object
+     FAIL        test/built-ins/Math/sumPrecise/name.js [sloppy]  uncaught TypeError: Cannot convert undefined or null to object
+     FAIL        test/built-ins/Math/sumPrecise/not-a-constructor.js [strict]  uncaught Error: isConstructor invoked with a non-function value
+     FAIL        test/built-ins/Math/sumPrecise/not-a-constructor.js [sloppy]  uncaught Error: isConstructor invoked with a non-function value
+     FAIL        test/built-ins/Math/sumPrecise/prop-desc.js [strict]  uncaught Error: sumPrecise should be an own property
+     FAIL        test/built-ins/Math/sumPrecise/prop-desc.js [sloppy]  uncaught Error: sumPrecise should be an own property
+     ... and 10 more, all in the run above
+
+## test/built-ins/Number  (exit 1)
+   # test262 340 files: pass 650, fail 30, unsupported 0, skipped 0
+   first failures, at most twenty:
+     FAIL        test/built-ins/Number/is-a-constructor.js [strict]  uncaught Error: isConstructor(Number) must return true Expected SameValue(Â«falseÂ», Â«trueÂ») to be true
+     FAIL        test/built-ins/Number/is-a-constructor.js [sloppy]  uncaught Error: isConstructor(Number) must return true Expected SameValue(Â«falseÂ», Â«trueÂ») to be true
+     FAIL        test/built-ins/Number/isFinite/arg-is-not-number.js [strict]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/built-ins/Number/isFinite/arg-is-not-number.js [sloppy]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/built-ins/Number/isInteger/arg-is-not-number.js [strict]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/built-ins/Number/isInteger/arg-is-not-number.js [sloppy]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/built-ins/Number/isNaN/arg-is-not-number.js [strict]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/built-ins/Number/isNaN/arg-is-not-number.js [sloppy]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/built-ins/Number/isSafeInteger/arg-is-not-number.js [strict]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/built-ins/Number/isSafeInteger/arg-is-not-number.js [sloppy]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/built-ins/Number/parseFloat.js [strict]  uncaught Error: Expected SameValue(Â«function parseFloat() { [native code] }Â», Â«function parseFloat() { [native code] }Â») to be true
+     FAIL        test/built-ins/Number/parseFloat.js [sloppy]  uncaught Error: Expected SameValue(Â«function parseFloat() { [native code] }Â», Â«function parseFloat() { [native code] }Â») to be true
+     FAIL        test/built-ins/Number/parseInt.js [strict]  uncaught Error: Expected SameValue(Â«function parseInt() { [native code] }Â», Â«function parseInt() { [native code] }Â») to be true
+     FAIL        test/built-ins/Number/parseInt.js [sloppy]  uncaught Error: Expected SameValue(Â«function parseInt() { [native code] }Â», Â«function parseInt() { [native code] }Â») to be true
+     FAIL        test/built-ins/Number/proto-from-ctor-realm.js [strict]  uncaught TypeError: $262.createRealm: this profile creates no nested realm
+     FAIL        test/built-ins/Number/proto-from-ctor-realm.js [sloppy]  uncaught TypeError: $262.createRealm: this profile creates no nested realm
+     FAIL        test/built-ins/Number/prototype/toExponential/return-abrupt-tointeger-fractiondigits-symbol.js [strict]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/built-ins/Number/prototype/toExponential/return-abrupt-tointeger-fractiondigits-symbol.js [sloppy]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/built-ins/Number/prototype/toExponential/this-type-not-number-or-number-object.js [strict]  uncaught Error: symbol Expected a TypeError but got a ReferenceError
+     FAIL        test/built-ins/Number/prototype/toExponential/this-type-not-number-or-number-object.js [sloppy]  uncaught Error: symbol Expected a TypeError but got a ReferenceError
+     ... and 10 more, all in the run above
+
+## test/built-ins/Boolean  (exit 1)
+   # test262 51 files: pass 90, fail 11, unsupported 0, skipped 0
+   first failures, at most twenty:
+     FAIL        test/built-ins/Boolean/S9.2_A1_T1.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/built-ins/Boolean/S9.2_A1_T1.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/built-ins/Boolean/S9.2_A6_T1.js [strict]  uncaught TypeError: Function: the broiler.javascript.wide manifest does not admit the Function constructor, because this profile declares no guest-initiated load and cannot turn source into code at run time
+     FAIL        test/built-ins/Boolean/S9.2_A6_T1.js [sloppy]  uncaught TypeError: Function: the broiler.javascript.wide manifest does not admit the Function constructor, because this profile declares no guest-initiated load and cannot turn source into code at run time
+     FAIL        test/built-ins/Boolean/is-a-constructor.js [strict]  uncaught Error: isConstructor(Boolean) must return true Expected SameValue(Â«falseÂ», Â«trueÂ») to be true
+     FAIL        test/built-ins/Boolean/is-a-constructor.js [sloppy]  uncaught Error: isConstructor(Boolean) must return true Expected SameValue(Â«falseÂ», Â«trueÂ») to be true
+     FAIL        test/built-ins/Boolean/proto-from-ctor-realm.js [strict]  uncaught TypeError: $262.createRealm: this profile creates no nested realm
+     FAIL        test/built-ins/Boolean/proto-from-ctor-realm.js [sloppy]  uncaught TypeError: $262.createRealm: this profile creates no nested realm
+     FAIL        test/built-ins/Boolean/prototype/S15.6.3.1_A3.js [strict]  uncaught Error: Expected a TypeError to be thrown but no exception was thrown at all
+     FAIL        test/built-ins/Boolean/symbol-coercion.js [strict]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/built-ins/Boolean/symbol-coercion.js [sloppy]  uncaught ReferenceError: Symbol is not defined
+
+## test/built-ins/parseInt  (exit 0)
+   # test262 55 files: pass 110, fail 0, unsupported 0, skipped 0
+   first failures, at most twenty:
+
+## test/built-ins/parseFloat  (exit 0)
+   # test262 54 files: pass 108, fail 0, unsupported 0, skipped 0
+   first failures, at most twenty:
+
+## test/language/statements/if  (exit 1)
+   # test262 69 files: pass 39, fail 50, unsupported 34, skipped 2
+   first failures, at most twenty:
+     FAIL        test/language/statements/if/S12.5_A11.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/statements/if/S12.5_A11.js [sloppy]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/statements/if/S12.5_A2.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/if/S12.5_A2.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/if/cptn-else-false-abrupt-empty.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/if/cptn-else-false-abrupt-empty.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/if/cptn-else-false-nrml.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/if/cptn-else-false-nrml.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/if/cptn-else-true-abrupt-empty.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/if/cptn-else-true-abrupt-empty.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/if/cptn-else-true-nrml.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/if/cptn-else-true-nrml.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/if/cptn-empty-statement.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/if/cptn-empty-statement.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/if/cptn-no-else-false.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/if/cptn-no-else-false.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/if/cptn-no-else-true-abrupt-empty.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/if/cptn-no-else-true-abrupt-empty.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/if/cptn-no-else-true-nrml.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/if/cptn-no-else-true-nrml.js [sloppy]  uncaught ReferenceError: eval is not defined
+     ... and 30 more, all in the run above
+
+## test/language/statements/while  (exit 1)
+   # test262 38 files: pass 37, fail 24, unsupported 10, skipped 1
+   first failures, at most twenty:
+     FAIL        test/language/statements/while/S12.6.2_A15.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/statements/while/S12.6.2_A15.js [sloppy]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/statements/while/S12.6.2_A3.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/while/S12.6.2_A3.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/while/S12.6.2_A5.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/while/S12.6.2_A5.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/while/S12.6.2_A7.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/while/S12.6.2_A7.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/while/S12.6.2_A8.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/while/S12.6.2_A8.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/while/cptn-abrupt-empty.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/while/cptn-abrupt-empty.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/while/cptn-iter.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/while/cptn-iter.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/while/cptn-no-iter.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/while/cptn-no-iter.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/while/decl-const.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/statements/while/decl-const.js [sloppy]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/statements/while/decl-fun.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/statements/while/decl-fun.js [sloppy]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     ... and 4 more, all in the run above
+
+## test/language/statements/do-while  (exit 1)
+   # test262 36 files: pass 38, fail 22, unsupported 9, skipped 1
+   first failures, at most twenty:
+     FAIL        test/language/statements/do-while/S12.6.1_A15.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/statements/do-while/S12.6.1_A15.js [sloppy]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/statements/do-while/S12.6.1_A3.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/do-while/S12.6.1_A3.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/do-while/S12.6.1_A5.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/do-while/S12.6.1_A5.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/do-while/S12.6.1_A7.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/do-while/S12.6.1_A7.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/do-while/S12.6.1_A8.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/do-while/S12.6.1_A8.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/do-while/cptn-abrupt-empty.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/do-while/cptn-abrupt-empty.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/do-while/cptn-normal.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/do-while/cptn-normal.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/statements/do-while/decl-const.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/statements/do-while/decl-const.js [sloppy]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/statements/do-while/decl-fun.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/statements/do-while/decl-fun.js [sloppy]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/statements/do-while/decl-let.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/statements/do-while/decl-let.js [sloppy]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     ... and 2 more, all in the run above
+
+## test/language/expressions/typeof  (exit 1)
+   # test262 16 files: pass 20, fail 12, unsupported 0, skipped 0
+   first failures, at most twenty:
+     FAIL        test/language/expressions/typeof/bigint.js [strict]  uncaught Error: typeof 0n === 'bigint' Expected SameValue(Â«"number"Â», Â«"bigint"Â») to be true
+     FAIL        test/language/expressions/typeof/bigint.js [sloppy]  uncaught Error: typeof 0n === 'bigint' Expected SameValue(Â«"number"Â», Â«"bigint"Â») to be true
+     FAIL        test/language/expressions/typeof/built-in-ordinary-objects-no-call.js [strict]  uncaught Error: typeof Reflect === "object" Expected SameValue(Â«"undefined"Â», Â«"object"Â») to be true
+     FAIL        test/language/expressions/typeof/built-in-ordinary-objects-no-call.js [sloppy]  uncaught Error: typeof Reflect === "object" Expected SameValue(Â«"undefined"Â», Â«"object"Â») to be true
+     FAIL        test/language/expressions/typeof/native-call.js [strict]  uncaught TypeError: Function: the broiler.javascript.wide manifest does not admit the Function constructor, because this profile declares no guest-initiated load and cannot turn source into code at run time
+     FAIL        test/language/expressions/typeof/native-call.js [sloppy]  uncaught TypeError: Function: the broiler.javascript.wide manifest does not admit the Function constructor, because this profile declares no guest-initiated load and cannot turn source into code at run time
+     FAIL        test/language/expressions/typeof/proxy.js [strict]  uncaught ReferenceError: Proxy is not defined
+     FAIL        test/language/expressions/typeof/proxy.js [sloppy]  uncaught ReferenceError: Proxy is not defined
+     FAIL        test/language/expressions/typeof/symbol.js [strict]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/language/expressions/typeof/symbol.js [sloppy]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/language/expressions/typeof/syntax.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/expressions/typeof/syntax.js [sloppy]  uncaught ReferenceError: eval is not defined
+
+## test/language/expressions/addition  (exit 1)
+   # test262 48 files: pass 65, fail 30, unsupported 0, skipped 0
+   first failures, at most twenty:
+     FAIL        test/language/expressions/addition/S11.6.1_A1.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/expressions/addition/S11.6.1_A1.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/expressions/addition/S11.6.1_A2.2_T2.js [strict]  uncaught Error: #1: var date = new Date(0); date + date === date.toString() + date.toString(). Actual: 0
+     FAIL        test/language/expressions/addition/S11.6.1_A2.2_T2.js [sloppy]  uncaught Error: #1: var date = new Date(0); date + date === date.toString() + date.toString(). Actual: 0
+     FAIL        test/language/expressions/addition/bigint-and-number.js [strict]  uncaught Error: 1n + 1 throws TypeError Expected a TypeError to be thrown but no exception was thrown at all
+     FAIL        test/language/expressions/addition/bigint-and-number.js [sloppy]  uncaught Error: 1n + 1 throws TypeError Expected a TypeError to be thrown but no exception was thrown at all
+     FAIL        test/language/expressions/addition/bigint-arithmetic.js [strict]  uncaught Error: The result of (0xFEDCBA9876543210n + 0xFEDCBA98n) is 0xFEDCBA997530ECA8n Expected SameValue(Â«18364758548768942000Â», Â«18364758548768944000Â») to be true
+     FAIL        test/language/expressions/addition/bigint-arithmetic.js [sloppy]  uncaught Error: The result of (0xFEDCBA9876543210n + 0xFEDCBA98n) is 0xFEDCBA997530ECA8n Expected SameValue(Â«18364758548768942000Â», Â«18364758548768944000Â») to be true
+     FAIL        test/language/expressions/addition/bigint-errors.js [strict]  uncaught Error: Symbol("1") + 0n throws TypeError Expected a TypeError but got a ReferenceError
+     FAIL        test/language/expressions/addition/bigint-errors.js [sloppy]  uncaught Error: Symbol("1") + 0n throws TypeError Expected a TypeError but got a ReferenceError
+     FAIL        test/language/expressions/addition/bigint-toprimitive.js [strict]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/language/expressions/addition/bigint-toprimitive.js [sloppy]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/language/expressions/addition/bigint-wrapped-values.js [strict]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/language/expressions/addition/bigint-wrapped-values.js [sloppy]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/language/expressions/addition/coerce-bigint-to-string.js [strict]  uncaught Error: Expected SameValue(Â«"1.23456789e+23"Â», Â«"123456789000000000000000"Â») to be true
+     FAIL        test/language/expressions/addition/coerce-bigint-to-string.js [sloppy]  uncaught Error: Expected SameValue(Â«"1.23456789e+23"Â», Â«"123456789000000000000000"Â») to be true
+     FAIL        test/language/expressions/addition/coerce-symbol-to-prim-err.js [strict]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/language/expressions/addition/coerce-symbol-to-prim-err.js [sloppy]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/language/expressions/addition/coerce-symbol-to-prim-invocation.js [strict]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/language/expressions/addition/coerce-symbol-to-prim-invocation.js [sloppy]  uncaught ReferenceError: Symbol is not defined
+     ... and 10 more, all in the run above
+
+## test/language/expressions/strict-equals  (exit 1)
+   # test262 30 files: pass 47, fail 12, unsupported 0, skipped 0
+   first failures, at most twenty:
+     FAIL        test/language/expressions/strict-equals/S11.9.4_A1.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/expressions/strict-equals/S11.9.4_A1.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/expressions/strict-equals/S11.9.4_A6.1.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/expressions/strict-equals/S11.9.4_A6.1.js [sloppy]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/expressions/strict-equals/bigint-and-bigint.js [strict]  uncaught Error: The result of (0x1fffffffffffff01n === 0x1fffffffffffff02n) is false Expected SameValue(Â«trueÂ», Â«falseÂ») to be true
+     FAIL        test/language/expressions/strict-equals/bigint-and-bigint.js [sloppy]  uncaught Error: The result of (0x1fffffffffffff01n === 0x1fffffffffffff02n) is false Expected SameValue(Â«trueÂ», Â«falseÂ») to be true
+     FAIL        test/language/expressions/strict-equals/bigint-and-incomparable-primitive.js [strict]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/language/expressions/strict-equals/bigint-and-incomparable-primitive.js [sloppy]  uncaught ReferenceError: Symbol is not defined
+     FAIL        test/language/expressions/strict-equals/bigint-and-number-extremes.js [strict]  uncaught Error: The result of (0xfffffffffffff7ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffn === Number.MAX_VALUE) is false Expected SameValue(Â«trueÂ», Â«falseÂ») to be true
+     FAIL        test/language/expressions/strict-equals/bigint-and-number-extremes.js [sloppy]  uncaught Error: The result of (0xfffffffffffff7ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffn === Number.MAX_VALUE) is false Expected SameValue(Â«trueÂ», Â«falseÂ») to be true
+     FAIL        test/language/expressions/strict-equals/bigint-and-number.js [strict]  uncaught Error: The result of (0n === 0) is false Expected SameValue(Â«trueÂ», Â«falseÂ») to be true
+     FAIL        test/language/expressions/strict-equals/bigint-and-number.js [sloppy]  uncaught Error: The result of (0n === 0) is false Expected SameValue(Â«trueÂ», Â«falseÂ») to be true
+

@@ -31,6 +31,7 @@ does not contain says so in its own text.
 | [JSD-0017](0017-the-end-user-host-and-what-an-exit-code-promises.md) | The end-user host: that it is a host and not the toolchain the core defers, the seven exit codes and which two of them accuse this component, how a file is read honestly, and why the first root a person would expect to be shipped is not | JS-3b |
 | [JSD-0018](0018-which-tests-are-about-this-language-and-who-decides.md) | That the suite's own feature list decides which constructs are proposals, that reading it is required rather than offered, and that the exclusion is its own counted stage asked before the run's own filter | JS-3a |
 | [JSD-0019](0019-the-pinned-language-edition-and-what-two-of-three-actions-buy.md) | The language-specification edition pinned by commit and digest, why a tag and the errata revision were both refused, what retrieval and hashing buy while the archive is outstanding, and the one place the pin and the conformance suite's own feature list disagree | JS-3a |
+| [JSD-0021](0021-the-wide-bring-up-manifest-and-format-version-2.md) | The second manifest identity `broiler.javascript.wide` and the format version defined against it, why the slice was not widened and the core name not taken, why a version break rather than more opcodes, the one verifier both versions are read through, and the condition that retires or narrows this identity | JS-5 |
 
 ## What a record must carry
 

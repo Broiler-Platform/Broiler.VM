@@ -844,7 +844,7 @@ internal static class ArchitectureRules
     /// registry alone decided which rows may claim it, the excuse would be available by editing
     /// the file the rule reads. Adding a fourth is an edit to this test, which is a review.
     /// </remarks>
-    internal static readonly int[] DefensiveCodes = [1003, 1006, 1903, 2303];
+    internal static readonly int[] DefensiveCodes = [1903, 2303];
 
     /// <summary>
     /// N7: every registry row is reachable from a named case. A <c>corpus</c> row names an entry
@@ -854,10 +854,13 @@ internal static class ArchitectureRules
     /// <remarks>
     /// This is the backward half of the binding and the expensive one to satisfy honestly: a
     /// registry can always be made to agree with the enum, and it takes a corpus to show that the
-    /// codes are reachable at all. Three rows are not, each for a reason that is a fact about the
-    /// build rather than a gap - two because the core screens the descriptor before this profile
-    /// is called, one because the reader's status set is exhausted by the arms above it - and each
-    /// states its reason where a reader meets the row.
+    /// codes are reachable at all. Two rows are not - one because the reader's status set is
+    /// exhausted by the arms above it, one because the parse-depth bound refuses long before the
+    /// operand-stack ceiling can be reached - and each states its reason where a reader meets the
+    /// row. It was four while this profile registered one format version and accepted one
+    /// manifest: the two descriptor-mismatch rows were unobservable because the core screened the
+    /// descriptor against a set with one member in it, and registering a second version and a
+    /// second manifest made both reachable and gave each a retained entry.
     /// </remarks>
     internal static IEnumerable<string> N7(
         IReadOnlyList<DiagnosticRegistryRow> registry,

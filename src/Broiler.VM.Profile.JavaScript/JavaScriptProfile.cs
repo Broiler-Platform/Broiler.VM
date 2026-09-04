@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   9
-// Annotated:        9/9
-// Exempt:           3
-// Human-reviewed:   0/9
+// Relevant units:   14
+// Annotated:        14/14
+// Exempt:           5
+// Human-reviewed:   0/14
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         4/4
 // Resource impact:  3/10 max
-// Unverified:       9
+// Unverified:       14
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -59,6 +59,22 @@ public static class JavaScriptProfile
     public static VmFeatureManifestId SliceManifest { get; } =
         VmFeatureManifestId.Parse("broiler.javascript.slice");
 
+    /// <summary>
+    /// The wider feature manifest: objects, functions, closures, exceptions and a standard library.
+    /// </summary>
+    /// <remarks>
+    /// <b>It is a second manifest and not a wider first one.</b> The slice's artifacts, its
+    /// retained corpus and its conformance fixtures all name <c>broiler.javascript.slice</c> and
+    /// mean by it exactly what they meant on the day they were written; widening that identity in
+    /// place would silently change what every one of them claims. This name is what format version
+    /// 2 is defined against, and an artifact naming one manifest at the other's format version is
+    /// refused.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=AB89AD
+    // Broiler-Human:        PENDING
+    public static VmFeatureManifestId WideManifest { get; } =
+        VmFeatureManifestId.Parse("broiler.javascript.wide");
+
     /// <summary>The kind ID stamped on a completion value.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C9902C
     // Broiler-Human:        PENDING
@@ -68,6 +84,51 @@ public static class JavaScriptProfile
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=68B648
     // Broiler-Human:        PENDING
     public const int FaultKindId = 1002;
+
+    /// <summary>The kind ID stamped on a wide-surface completion value.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F39355
+    // Broiler-Human:        PENDING
+    public const int WideCompletionKindId = 1003;
+
+    /// <summary>The kind ID stamped on a wide-surface uncaught exception.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4D1110
+    // Broiler-Human:        PENDING
+    public const int WideFaultKindId = 1004;
+
+    /// <summary>The binding index the wide surface's <c>print</c> reaches the host through.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A9FBB7
+    // Broiler-Human:        PENDING
+    public const int WriteBindingIndex = 0;
+
+    /// <summary>
+    /// The one host capability this profile imports: write one run of UTF-8 text.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is OPTIONAL, and that is the whole design.</b> A composition that registers nothing
+    /// still creates a runtime and still runs programs; what it does not have is a <c>print</c>
+    /// that reaches anywhere. The profile asks <c>IsBound</c> and answers <c>undefined</c> either
+    /// way, so the difference between a host that shows output and one that does not is a
+    /// registration and not a code path in the guest.
+    /// </para>
+    /// <para>
+    /// <b>Why a capability rather than a property somebody sets.</b> A static sink on this type
+    /// would be process-wide, would outlive a runtime, and would let one composition's output reach
+    /// another's - which is exactly the ambient platform surface the capability table exists to
+    /// prevent. Registration is the permission, and there is no other door.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=77AB79
+    // Broiler-Human:        PENDING
+    public static VmHostCapabilityDescriptor WriteCapability { get; } =
+        new(
+            VmCapabilityId.Parse("broiler.javascript.write"),
+            version: 1,
+            VmCapabilitySignatureId.FromCanonicalDescription("(bytes)->unit"),
+            VmCapabilityKind.Value,
+            VmCapabilityReentrancy.NonReentrant,
+            VmCapabilityThreadAffinity.CallerThread,
+            VmExceptionTranslation.TerminateOperation);
 
     /// <summary>The descriptor a composition root names directly.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=FBD334
@@ -90,6 +151,18 @@ public static class JavaScriptProfile
     // Broiler-Human:        PENDING
     public static bool TryGetFault(in VmInvocationResult result, out JavaScriptFault fault) =>
         result.TryGetPayload(out fault);
+
+    /// <summary>Projects a wide-surface completion value out of an invocation result.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=AC0F96
+    // Broiler-Human:        PENDING
+    public static bool TryGetWideCompletion(in VmInvocationResult result, out JsCompletion completion) =>
+        result.TryGetPayload(out completion);
+
+    /// <summary>Projects a wide-surface uncaught exception out of an invocation result.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=56397D
+    // Broiler-Human:        PENDING
+    public static bool TryGetUncaught(in VmInvocationResult result, out JsUncaught uncaught) =>
+        result.TryGetPayload(out uncaught);
 
     /// <summary>
     /// The one full-arity construction, with every row filled and the language-shaped ones marked.
@@ -116,7 +189,7 @@ public static class JavaScriptProfile
     /// rather than left as a drift between a record and a construction.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=BA5E70
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=11B609
     // Broiler-Falsified-If: a row here disagrees with decision JSD-0004 or JSD-0008 without a dated record of the correction
     // Broiler-Human:        PENDING
     private static VmProfileDescriptor Build()
@@ -128,8 +201,8 @@ public static class JavaScriptProfile
             displayName: "Broiler JavaScript",
             descriptorRevision: 1,
             supportedFormatVersions: new VmFormatVersionRange(
-                JavaScriptFormat.MinimumFormatVersion, JavaScriptFormat.MaximumFormatVersion),
-            acceptedFeatureManifests: ImmutableArray.Create(SliceManifest),
+                JavaScriptFormat.MinimumFormatVersion, Format.JsFormat.FormatVersion),
+            acceptedFeatureManifests: ImmutableArray.Create(SliceManifest, WideManifest),
             verifier: new JavaScriptVerifier(Id, SliceManifest),
             executorFactory: environment => new JavaScriptExecutor(Id, environment),
             artifactRepresentationKind: VmArtifactRepresentationKind.Decoded,
@@ -137,18 +210,24 @@ public static class JavaScriptProfile
             supportsConcurrentVerification: true,
             threadAffinity: VmThreadAffinity.Agile,
 
-            // Provisional; JS-5 measures it. One poll per instruction is far inside this, which is
-            // what makes the number safe to carry rather than right.
-            cancellationPollBound: 256,
+            // MEASURED BY CONSTRUCTION rather than chosen, and it is the largest single work
+            // charge this profile makes: the bounded reader charges one unit per byte consumed and
+            // polls on every charge, so a charge larger than this bound is reported as a poll-bound
+            // violation - which is exactly what a 4 KB code-section read produced while this said
+            // 256. The verifier reads every bulk run in windows no larger than this, so the bound
+            // and the behaviour are two statements of one fact.
+            cancellationPollBound: 65_536,
             abandonBudget: 0,
             limitDefaults: Defaults(),
             profileHardMaxima: Maxima(),
             budgetDeclarationMatrix: Matrix(),
 
-            // No host capability at all. The slice has no standard library and nothing to import,
-            // and a profile that imports nothing is the case that makes "registering a capability
-            // never implies a provider" easy to see.
-            hostCapabilityDescriptors: ImmutableArray<VmCapabilityImport>.Empty,
+            // ONE OPTIONAL IMPORT, and it arrived with the wide manifest's standard library.
+            // The slice imports nothing and still does; what changed is that a surface with a
+            // `print` exists, and a `print` that reached the console without the composition
+            // registering anything would be the ambient surface the capability table forbids.
+            hostCapabilityDescriptors: ImmutableArray.Create(
+                new VmCapabilityImport(WriteCapability, VmCapabilityImportKind.Optional)),
 
             // No `eval`, no Function constructor, no dynamic import. The `broiler.javascript.dynamic`
             // manifest is a separate identity precisely so a composition can decline exactly this
@@ -170,8 +249,8 @@ public static class JavaScriptProfile
                 "Broiler.VM.Profile.JavaScript", "0.1.0-preview.1", "broiler.javascript"),
             faultRecovery: VmFaultRecovery.InstanceRecoverable,
 
-            // Provisional; JS-5 measures both.
-            maxUnchargedWork: 256,
+            // The same figure and for the same reason; see the poll bound above.
+            maxUnchargedWork: 65_536,
             chargingGranularity: 1,
             artifactSharing: VmArtifactSharing.Shareable);
     }
@@ -262,12 +341,12 @@ public static class JavaScriptProfile
     /// <remarks>
     /// There is no default row: a dimension this profile does not charge says so, and the catalog
     /// checks the declaration against the structural consequences of the rest of the descriptor.
-    /// Four rows are inapplicable here because the slice imports no capability and declares no
-    /// guest load, which makes those dimensions unreachable rather than merely unused - and
-    /// declaring an unreachable dimension charged would be a claim this descriptor contradicts
-    /// two rows further down.
+    /// Three rows are inapplicable here because this profile declares no guest load, which makes
+    /// those dimensions unreachable rather than merely unused. The host-call row was inapplicable
+    /// until the wide manifest imported a capability and is charged now, which is the flip JSD-0008
+    /// said JS-6 would make.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=6308B1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=2B6844
     // Broiler-Falsified-If: a row says charged for a dimension no code path charges, or inapplicable for one that is reachable
     // Broiler-Human:        PENDING
     private static VmBudgetDeclarationMatrix Matrix()
@@ -279,7 +358,6 @@ public static class JavaScriptProfile
             rows[index] = VmBudgetApplicability.Charged;
         }
 
-        rows[(int)VmBudgetDimension.HostCalls] = VmBudgetApplicability.NotApplicable;
         rows[(int)VmBudgetDimension.NestedLoadDepth] = VmBudgetApplicability.NotApplicable;
         rows[(int)VmBudgetDimension.NestedLoadFanOut] = VmBudgetApplicability.NotApplicable;
         rows[(int)VmBudgetDimension.NestedLoadBytes] = VmBudgetApplicability.NotApplicable;

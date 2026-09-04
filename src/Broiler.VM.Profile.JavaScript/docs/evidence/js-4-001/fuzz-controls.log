@@ -1,0 +1,26 @@
+These controls are judged by a FUZZ SESSION. A session that reports no counterexample is
+worth what the demonstration that it would have reported one is worth, and nothing more.
+
+A control PASSES when the injected session exits with the code its own row names, and 0
+after the revert. Any other exit code is a session that failed for a reason unrelated to
+the injection, and is not a pass. Most rows name 1 - a finding - and a row about a clause
+the session judges about ITSELF names that clause's own code, because a session that may
+not be believed is not a session that found something.
+
+[the-session-stops-offering-mutants-to-the-seed-pool] PASS
+    why:       The feedback loop's offer is deleted, so the session draws every mutant from the retained corpus and never grows its seed set. NOTHING ELSE IN A SESSION'S OUTPUT MOVES - the histogram, the counterexample count and the verified count are all unchanged - which is why the session counts its own offers and refuses to be read as guided when the count is short. Exit 5, not 1: this is a session that may not be believed rather than a defect it found.
+    file:      src\compositions\Broiler.VM.Composition.JavaScript.ExecutionOnly\Fuzzing.cs
+    injected:  exit 5 (expected 5)
+    reverted:  exit 0
+      broiler-js-fuzz: 0 of 25000 mutants were offered to the seed pool, so the session took feedback from some of what it drew and not all. It may not be read as guided.
+
+[the-constant-index-is-admitted-unchecked] PASS
+    why:       The verifier stops checking a LoadConstant operand against the pool size. The artifact then verifies and the executor indexes past the pool - the core catches the exception and reports a fault the profile did not author, which is the executor-surface invariant. TWENTY-FIVE THOUSAND UNDIRECTED ITERATIONS DID NOT FIND THIS, and the operand-targeting mutation was written because of it; the session finds it in under two hundred now.
+    file:      src\Broiler.VM.Profile.JavaScript\JavaScriptVerifier.cs
+    injected:  exit 1 (expected 1)
+    reverted:  exit 0
+      broiler-js-fuzz: FINDING at iteration 10 of seed 1
+      a verified artifact faulted with no typed payload, so something threw out of the executor and the core reported it
+      minimized from 105 bytes (79 non-zero) to 105 bytes (74 non-zero)
+
+fuzz controls run: 2; passed: 2; SKIPPED: 0

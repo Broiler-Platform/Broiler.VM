@@ -346,6 +346,14 @@ internal static class CorpusBuilder
             Unnamed,
             Unnamed,
             SliceLowering.Addition()),
+
+        // ---- format version 2: the structural refusals the wide surface adds -----------------
+        //
+        // They live in WideCorpus.cs because they are a different format, and they are SPLICED in
+        // here rather than kept in a corpus of their own because the retained corpus is one
+        // manifest with one integrity check over it. The mode column is what says which format a
+        // row's bytes are.
+        ..WideCorpus.Build(),
     ];
 
     private static CorpusEntry Ok(string name, byte[] bytes, string completion) =>
@@ -1028,6 +1036,27 @@ internal static class CorpusBuilder
 /// </remarks>
 internal static class JavaScriptDiagnosticCodes
 {
+    /// <summary>The artifact descriptor's format version disagrees with the payload's.</summary>
+    internal const int DescriptorFormatVersionMismatch = 1003;
+
+    /// <summary>The artifact descriptor's manifest disagrees with the payload's.</summary>
+    internal const int DescriptorManifestMismatch = 1006;
+
+    /// <summary>A code-unit row states a figure format version 2 cannot represent.</summary>
+    internal const int MalformedFunctionRow = 1601;
+
+    /// <summary>An index names a code unit the functions section does not declare.</summary>
+    internal const int FunctionIndexOutOfRange = 1602;
+
+    /// <summary>A code unit's declared range is not the next disjoint run of the code section.</summary>
+    internal const int CodeUnitRangeInvalid = 1603;
+
+    /// <summary>A scope depth is past what the encoding or the structure allows.</summary>
+    internal const int ScopeDepthOutOfRange = 1604;
+
+    /// <summary>An exception region states a range, a handler or a kind this format refuses.</summary>
+    internal const int MalformedExceptionRegion = 1605;
+
     internal const int WrongMagic = 1001;
     internal const int UnsupportedFormatVersion = 1002;
     internal const int ManifestIdTooLong = 1005;

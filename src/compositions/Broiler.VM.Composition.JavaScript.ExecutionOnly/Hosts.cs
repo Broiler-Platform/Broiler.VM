@@ -60,20 +60,39 @@ internal static class Hosts
     /// the one it names.
     /// </para>
     /// </remarks>
-    internal static VmArtifactDescriptor Descriptor(string mode) =>
-        string.Equals(mode, "foreign-profile", StringComparison.Ordinal)
-            ? new VmArtifactDescriptor(
+    internal static VmArtifactDescriptor Descriptor(string mode)
+    {
+        if (string.Equals(mode, "foreign-profile", StringComparison.Ordinal))
+        {
+            return new VmArtifactDescriptor(
                 AbsentProfile,
                 1,
                 VmFeatureManifestId.Parse("com.example.absent.base"),
                 default,
-                VmCallerIdentity.FromCanonicalIdentity("js-execution-only://corpus"))
-            : new VmArtifactDescriptor(
+                VmCallerIdentity.FromCanonicalIdentity("js-execution-only://corpus"));
+        }
+
+        // THE WIDE MODE IS A DESCRIPTOR AND NOTHING ELSE. The bytes of a version-2 entry are
+        // version-2 bytes; what this mode changes is which format version and manifest the caller
+        // says they are, because a descriptor that said version 1 would be refused for the
+        // mismatch before the version-2 pass ever read a section.
+        if (string.Equals(mode, "wide", StringComparison.Ordinal))
+        {
+            return new VmArtifactDescriptor(
                 JavaScriptProfile.Id,
-                1,
-                JavaScriptProfile.SliceManifest,
+                Broiler.VM.Profile.JavaScript.Format.JsFormat.FormatVersion,
+                JavaScriptProfile.WideManifest,
                 default,
                 VmCallerIdentity.FromCanonicalIdentity("js-execution-only://corpus"));
+        }
+
+        return new VmArtifactDescriptor(
+            JavaScriptProfile.Id,
+            1,
+            JavaScriptProfile.SliceManifest,
+            default,
+            VmCallerIdentity.FromCanonicalIdentity("js-execution-only://corpus"));
+    }
 
     /// <summary>
     /// The tight modes: one per budget dimension a verification of this profile can answer a

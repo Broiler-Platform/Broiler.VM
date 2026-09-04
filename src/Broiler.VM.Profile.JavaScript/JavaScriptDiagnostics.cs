@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   8
 // Annotated:        8/8
-// Exempt:           41
+// Exempt:           46
 // Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    High
@@ -48,7 +48,7 @@ namespace Broiler.VM.Profile.JavaScript;
 /// predicate's own record calls a worse record than one block on the vocabulary.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=623679
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=16E590
 // Broiler-Human:        PENDING
 public enum JavaScriptDiagnosticCode
 {
@@ -189,6 +189,29 @@ public enum JavaScriptDiagnosticCode
     /// admits.
     /// </summary>
     SuspensionTargetOutsideManifest = 1508,
+
+    // ---- 1600: format version 2, which frames what version 1 declares and refuses -----------
+
+    /// <summary>A code-unit row states a figure this format cannot represent.</summary>
+    MalformedFunctionRow = 1601,
+
+    /// <summary>An index names a code unit the functions section does not declare.</summary>
+    FunctionIndexOutOfRange = 1602,
+
+    /// <summary>
+    /// A code unit's declared range is not the next disjoint run of the code section.
+    /// </summary>
+    /// <remarks>
+    /// Overlapping ranges are what makes a per-unit branch check meaningless, so the ranges are
+    /// required to tile the section exactly rather than merely to fit inside it.
+    /// </remarks>
+    CodeUnitRangeInvalid = 1603,
+
+    /// <summary>A scope depth is past what the encoding or the structure allows.</summary>
+    ScopeDepthOutOfRange = 1604,
+
+    /// <summary>An exception region states a range, a handler or a kind this format refuses.</summary>
+    MalformedExceptionRegion = 1605,
 
     // ---- 1900: the bounded reader's own statuses, mapped -----------------------------------
 

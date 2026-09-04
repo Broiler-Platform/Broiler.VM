@@ -1,0 +1,69 @@
+# The end-user host over the Octane benchmark, one benchmark per run, 2026-09-04, win-x64.
+#
+# THE HOST TAKES A PATH AND KEEPS NO COPY. The checkout is a working tree that already
+# existed on this machine, outside this repository. Nothing was fetched and nothing written
+# back. There is no pin and no digest, because retrieving, hashing and archiving is the
+# human action ledger section 3 records as open.
+#
+# Command per row:
+#   Broiler.VM.Composition.JavaScript.Cli --fuel <n> --wall <ms> --max-depth 512 \
+#     <octane>/base.js <octane>/<benchmark>.js src/tests/octane/run-one.js
+#
+# A benchmark that does not appear here as `score` did not produce one, and the lines
+# beneath it say what it did instead. Every row is retained, including the failures.
+#
+## richards  (exit 0)
+   start Richards
+   result Richards 70.0
+   score 70.0
+   undefined
+
+## deltablue  (exit 0)
+   start DeltaBlue
+   result DeltaBlue 69.4
+   score 69.4
+   undefined
+
+## crypto  (exit 0)
+   start Crypto
+   result Crypto 47.6
+   score 47.6
+   undefined
+
+## raytrace  (exit 0)
+   start RayTrace
+   result RayTrace 230
+   score 230
+   undefined
+
+## navier-stokes  (exit 0)
+   start NavierStokes
+   result NavierStokes 73.5
+   score 73.5
+   undefined
+
+## splay  (exit 0)
+   start Splay
+   result Splay 324
+   result SplayLatency 1439
+   score 682
+   undefined
+
+## earley-boyer  (exit 0)
+   start EarleyBoyer
+   result EarleyBoyer 241
+   score 241
+   undefined
+
+## regexp  (exit 1)
+   start RegExp
+   error RegExp Error: Wrong checksum.
+   score NaN
+   broiler-js: D:/Broiler/tests/octane/checkout/base.js D:/Broiler/tests/octane/checkout/regexp.js src/tests/octane/run-one.js: uncaught Error: a benchmark reported an error: RegExp: Error: Wrong checksum.
+
+## box2d  (exit 0)
+   start Box2D
+   result Box2D 241
+   score 241
+   undefined
+
