@@ -547,7 +547,12 @@ internal static class Program
                 JavaScriptProfile.Descriptor.PackageIdentity.PackageId,
                 JavaScriptProfile.Descriptor.DescriptorRevision,
                 JavaScriptProfile.Descriptor.HostCapabilityDescriptors.Length));
-        Console.WriteLine(string.Join(' ', "manifest", JavaScriptProfile.SliceManifest));
+        Console.WriteLine(
+            string.Join(
+                ' ',
+                "manifest",
+                JavaScriptProfile.SliceManifest,
+                JavaScriptProfile.WideManifest));
         Console.WriteLine(
             string.Join(
                 ' ',

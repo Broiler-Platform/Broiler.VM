@@ -98,7 +98,10 @@ internal static class Program
         // the corpus.
         const string Eol = "\n";
 
-        manifest.Append("# broiler.javascript.slice retained corpus, format version 1").Append(Eol);
+        manifest.Append(
+                "# broiler.javascript retained corpus, feature manifests slice and wide, " +
+                "format versions 1 and 2")
+            .Append(Eol);
         manifest
             .Append("# name|sha256|mode|outcome|reason|diagnostic|completion|position|dimension|scope")
             .Append(Eol);

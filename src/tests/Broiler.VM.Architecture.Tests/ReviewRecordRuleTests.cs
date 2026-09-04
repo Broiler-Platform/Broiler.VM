@@ -946,7 +946,7 @@ public sealed class ReviewRecordRuleTests
         // nothing could reach, and the seventy-third is the pinned language edition. Each is
         // covered for the same reason every other product file is, which is that it compiles into
         // an assembly this component builds.
-        Assert.Equal(73, AssuranceSources.Files.Count);
+        Assert.Equal(102, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

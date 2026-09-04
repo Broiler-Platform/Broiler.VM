@@ -13,14 +13,14 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 73 |
-| Files carrying an annotation | 73 |
-| Code units | 2426 |
-| Relevant | 1124 |
-| Exempt by predicate | 1302 |
-| Annotated | 1124 of 1124 (100%) |
-| Human reviewed | 0 of 1124 (0%) |
-| Unverified | 1124 |
+| Files scanned | 102 |
+| Files carrying an annotation | 102 |
+| Code units | 3476 |
+| Relevant | 1823 |
+| Exempt by predicate | 1653 |
+| Annotated | 1823 of 1823 (100%) |
+| Human reviewed | 0 of 1823 (0%) |
+| Unverified | 1823 |
 
 ## Review states
 
@@ -28,19 +28,19 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 1124 |
+| HUMAN_PENDING | 1823 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 1302 |
+| EXEMPT | 1653 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
-| None | 387 |
-| Low | 848 |
-| Medium | 0 |
+| None | 670 |
+| Low | 1431 |
+| Medium | 38 |
 | High | 0 |
 | Unknown | 0 |
 | *not annotated* | 0 |
@@ -50,9 +50,9 @@ figures below are the measurement of how far from that claim the component is.
 | Value | Units |
 |---|---:|
 | None | 5 |
-| Low | 558 |
-| Medium | 517 |
-| High | 155 |
+| Low | 625 |
+| Medium | 1352 |
+| High | 157 |
 | Critical | 0 |
 | *not annotated* | 0 |
 
@@ -61,8 +61,8 @@ figures below are the measurement of how far from that claim the component is.
 | Metric | Value |
 |---|---:|
 | Maximum | 8 / 10 |
-| Average over annotated units | 0.8 / 10 |
-| Units scored | 1124 |
+| Average over annotated units | 1.3 / 10 |
+| Units scored | 1823 |
 
 ## High-security review areas
 
@@ -213,6 +213,8 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JavaScriptVerifier.InvalidInCode(VmReason, JavaScriptDiagnosticCode, ulong, in SectionSet)` in `src/Broiler.VM.Profile.JavaScript/JavaScriptVerifier.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JavaScriptVerifier.Stopped(System.Threading.CancellationToken)` in `src/Broiler.VM.Profile.JavaScript/JavaScriptVerifier.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JavaScriptVerifier.FromReader(ref VmBoundedReader, ulong)` in `src/Broiler.VM.Profile.JavaScript/JavaScriptVerifier.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.MaximumCallDepth` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsExecution.RunOnGuestStack(JsInstance, uint)` in `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` - Security=High, human line PENDING
 - `Broiler.VM.VmInstanceImplementation.Dispose(System.TimeSpan)` in `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` - Security=High, human line PENDING
 - `Broiler.VM.VmInstanceImplementation.LeaveStep()` in `src/Broiler.VM.Runtime/VmInstanceImplementation.cs` - Security=High, human line PENDING
 - `Broiler.VM.VmLimitPrecedence.TryApply(VmBudgetScope, ulong[], VmLimitOverrides, out ulong[], out VmBudgetDimension, out VmReason)` in `src/Broiler.VM.Runtime/VmLimitPrecedence.cs` - Security=High, human line PENDING
@@ -226,8 +228,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 202 |
-| Units required to carry one | 155 |
+| Units carrying a criterion | 204 |
+| Units required to carry one | 157 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -254,14 +256,14 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 372 |
-| ParameterAssigningConstructor | 73 |
-| TrivialExpressionBodiedMember | 21 |
+| TrivialPropertyOrAccessor | 524 |
+| ParameterAssigningConstructor | 78 |
+| TrivialExpressionBodiedMember | 27 |
 | CompilerSuppliedRecordOrEnumMember | 4 |
-| DelegatingOverrideOrOperator | 98 |
+| DelegatingOverrideOrOperator | 101 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 192 |
-| EnumMemberOfADeclaredVocabulary | 542 |
+| FieldDeclaringStorage | 233 |
+| EnumMemberOfADeclaredVocabulary | 686 |
 | DeclaredInSource | 0 |
 
 ## Per-unit exemptions
@@ -281,7 +283,7 @@ No unit in this component states a per-unit exemption.
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-2426 of them, exempt and relevant alike - with the fingerprint of its declaration.
+3476 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
@@ -289,7 +291,7 @@ this component has moved off `PENDING`. What the manifest adds is that a unit th
 predicate treats as trivial is no longer invisible: a semantic change to one moves a value
 in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
 
-Beside the units it lists **every covered file** - 73 of them - with a
+Beside the units it lists **every covered file** - 102 of them - with a
 fingerprint over the complete token stream of its compilation unit. A unit entry exists only
 for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an
 `[assembly: ...]` attribute is a member of nothing and can be in no unit at all.

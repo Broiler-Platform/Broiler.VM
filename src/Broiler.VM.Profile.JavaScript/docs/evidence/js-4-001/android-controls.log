@@ -1,0 +1,22 @@
+These controls are judged by an ANDROID HEAD THAT RAN. Nothing in the other tables can:
+a suite may not reference a profile assembly, and the corpus replay and the fuzz session
+are both desktop processes. A control PASSES when the injected run does not print the
+sentinel and the reverted run does.
+
+An application hands no exit code to a harness, so the sentinel's ABSENCE is what a
+broken run and a failed check have in common - which is the direction this reads. A
+control that looked for the word FAIL would pass on a run that never started.
+
+[the-extraction-changes-one-byte] FAIL
+    why:       The resource extraction flips one byte on its way to the cache directory. THIS IS THE CONTROL FOR AN ANDROID-SPECIFIC CLAIM: the corpus travels into this image as embedded resources and is written out before the replay opens it, and the bundle's argument that the round trip cannot corrupt the evidence rests on the replay re-hashing every entry. Until this control ran, that argument was asserted rather than shown. The injected run must report a hash MISMATCH rather than a passing replay.
+    file:      src\compositions\Broiler.VM.Composition.JavaScript.Android\MainActivity.cs
+    injected:  sentinel ABSENT
+    reverted:  sentinel ABSENT
+
+[the-language-guards-division-by-zero-on-the-device] FAIL
+    why:       Division by zero is made a fault in the PROFILE, which is what a calculator does and not what the language does - the same injection a desktop corpus control uses. It is judged here by a device run instead, and that is the point: it shows this head detects a real engine regression on Android rather than only detecting its own plumbing. The corpus entry recording Infinity must stop agreeing, on the device.
+    file:      src\Broiler.VM.Profile.JavaScript\JavaScriptExecutor.cs
+    injected:  sentinel ABSENT
+    reverted:  sentinel ABSENT
+
+android controls run: 2; passed: 0; SKIPPED: 0

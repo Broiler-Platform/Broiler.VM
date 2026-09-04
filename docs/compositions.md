@@ -104,11 +104,11 @@ the exact closure this register exists to describe.
 |---|---|---|---|---|---|---|---|
 | `Broiler.VM.Composition.Calculator` | demonstration | `com.example.calculator` | `Com.Example.Calculator` | none | `com.example.host.unreachable` (imported by no composed profile) | none registered | `docs/evidence/vm-6` |
 | `Broiler.VM.Composition.Workbench` | demonstration | `com.example.calculator`, `com.example.ledger` | `Com.Example.Calculator`, `Com.Example.Ledger` | none | `com.example.ledger.stamp` (optional import of `com.example.ledger`; the calculator imports nothing) | none registered | `docs/evidence/vm-6` |
-| `Broiler.VM.Composition.JavaScript.ExecutionOnly` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format` | none registered | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-1` |
-| `Broiler.VM.Composition.JavaScript.SliceCompiler` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler` | none registered | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-1` |
-| `Broiler.VM.Composition.JavaScript.Android` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format` | none registered | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-001` |
-| `Broiler.VM.Composition.JavaScript.Conformance` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler` | none registered | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-3a-004` |
-| `Broiler.VM.Composition.JavaScript.Cli` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler` | none registered | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-3b-001` |
+| `Broiler.VM.Composition.JavaScript.ExecutionOnly` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format` | `broiler.javascript.write` (optional import of `broiler.javascript`) | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-1` |
+| `Broiler.VM.Composition.JavaScript.SliceCompiler` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler` | `broiler.javascript.write` (optional import of `broiler.javascript`) | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-1` |
+| `Broiler.VM.Composition.JavaScript.Android` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format` | `broiler.javascript.write` (optional import of `broiler.javascript`) | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-001` |
+| `Broiler.VM.Composition.JavaScript.Conformance` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler` | `broiler.javascript.write` (optional import of `broiler.javascript`) | `broiler.javascript.write` | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-3a-004` |
+| `Broiler.VM.Composition.JavaScript.Cli` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler` | `broiler.javascript.write` (optional import of `broiler.javascript`) | `broiler.javascript.write` | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-3b-001` |
 
 **The Android head composes exactly what the execution-only root composes**, and
 that is the point of it rather than an accident: it names the profile and not the
@@ -198,14 +198,25 @@ first to print the label itself.
 
 **It is the end-user host, and it is a demonstration anyway.** Point it at a
 `.js` file and it compiles, verifies and runs it, printing the completion value;
-point it at a directory and it sweeps every `.js` file under it and prints the
-distribution. That is the shape a person expects of a JavaScript tool, which is
-exactly why its Kind column needs reading rather than skimming: **a tool
-advertised as a JavaScript host has to be able to run JavaScript**, and
-`broiler.javascript.slice` admits no function, no object, no string value and no
-property access. Pointed at the Octane benchmark it refuses all twenty-four
-files. Advertising it would be the untruthful support claim the core roadmap
-makes a stop condition, and section 1's advertised set stays empty.
+name several files and it runs them as separate scripts sharing one realm, in
+order; point it at a directory and it sweeps every `.js` file under it, a realm
+each, and prints the distribution. **From 2026-09-04 it lowers
+`broiler.javascript.wide` by default and keeps the slice behind `--slice`**, and
+what that changes about this row is one sentence and not the Kind column. The
+sentence that changed: pointed at the Octane benchmark it used to refuse every
+file, and it now runs several of them and prints a score.
+
+**The Kind column did not change, and that is the part worth reading rather than
+skimming.** **A tool advertised as a JavaScript host has to be able to run
+JavaScript**, and running some of it is not the claim advertising would make.
+`broiler.javascript.wide` admits no class, generator, `async` function, module,
+destructuring, spread, template literal, `for … of`, Proxy, Symbol, BigInt,
+typed array, `eval` or `Function` constructor; its regular expressions are
+translated to the platform's engine and are declared an approximation where that
+is done; nothing in it has been read by a human; and it has no conformance run of
+its own over the pinned suite. Advertising it would be the untruthful support
+claim the core roadmap makes a stop condition, and section 1's advertised set
+stays empty.
 
 **Its closure is the one with nothing to explain away, and that is the point of
 it.** The paragraph further down records what the other JavaScript roots carry
@@ -217,7 +228,12 @@ verifies it, runs it, and reports; a reader comparing its closure against sectio
 15's row for the label finds the assemblies the label names and no others. That
 property is why the label could not simply have been asserted of a sibling.
 
-**What it registers is nothing, and that is its content policy.** No capability
+**What it registers is one capability, and what it does NOT register is its content
+policy.** From 2026-09-04 it registers `broiler.javascript.write`, which is how a
+program's `print` reaches standard output; the import is optional, so a sibling that
+registers nothing composes the same profile, runs the same programs, and has a
+`print` that reaches nowhere. What it still registers is no artifact provider, and
+that is the policy: no capability
 and no artifact provider, so every guest-initiated load is refused
 deterministically — the only policy a manifest with no `eval`, no `Function`
 constructor and no dynamic `import()` could have. It states no ceiling either: the

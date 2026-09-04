@@ -58,7 +58,9 @@ internal static class Program
         if (args.Contains("--version", StringComparer.Ordinal))
         {
             Console.WriteLine(
-                $"broiler-js {JavaScriptProfile.Id} manifest {JavaScriptProfile.SliceManifest} format 1");
+                $"broiler-js {JavaScriptProfile.Id} manifest {JavaScriptProfile.WideManifest} format " +
+                Broiler.VM.Profile.JavaScript.Format.JsFormat.FormatVersion.ToString(
+                    System.Globalization.CultureInfo.InvariantCulture));
 
             // WHAT THE MANIFEST IS DEFINED AGAINST, on the line a person asks for when they ask
             // what this is. A manifest name is not a conformance claim and neither is an edition
@@ -80,10 +82,19 @@ internal static class Program
         var checkOnly = args.Contains("--check", StringComparer.Ordinal);
         var all = args.Contains("--all", StringComparer.Ordinal);
         var quiet = args.Contains("--quiet", StringComparer.Ordinal);
+        var slice = args.Contains("--slice", StringComparer.Ordinal);
+        var forceStrict = args.Contains("--strict", StringComparer.Ordinal);
+        var sweep = args.Contains("--sweep", StringComparer.Ordinal);
 
         if (!Fuel(args, out var fuel, out var fuelComplaint))
         {
             Console.Error.WriteLine("broiler-js: " + fuelComplaint);
+            return ExitCodes.Usage;
+        }
+
+        if (!Wall(args, out var wall, out var wallComplaint))
+        {
+            Console.Error.WriteLine("broiler-js: " + wallComplaint);
             return ExitCodes.Usage;
         }
 
@@ -98,6 +109,7 @@ internal static class Program
         for (var index = 0; index < args.Length; index++)
         {
             if (string.Equals(args[index], "--fuel", StringComparison.Ordinal) ||
+                string.Equals(args[index], "--wall", StringComparison.Ordinal) ||
                 string.Equals(args[index], "--max-depth", StringComparison.Ordinal))
             {
                 index++;
@@ -143,7 +155,28 @@ internal static class Program
             return missing.Count == 0 ? ExitCodes.Usage : ExitCodes.Unreadable;
         }
 
-        return Run(files, module, checkOnly, all, quiet, fuel, depth, missing.Count);
+        // SEVERAL NAMED FILES ARE ONE PROGRAM IN ONE REALM, unless a sweep was asked for. That
+        // is what a shell does, and it is what both target workloads need: a benchmark harness and
+        // its benchmark, or a conformance harness and its test, are separate SCRIPTS that share a
+        // global object. A directory is different - a sweep over a tree wants a fresh realm per
+        // file, or one file's globals would decide the next one's result.
+        var oneRealm = !slice && !sweep && paths.TrueForAll(File.Exists) && files.Count > 1;
+
+        if (oneRealm)
+        {
+            var read = new List<SourceFile>(files.Count);
+
+            foreach (var path in files)
+            {
+                read.Add(SourceFiles.Read(path));
+            }
+
+            var joined = WideHost.Run(read, module, checkOnly, forceStrict, fuel, wall, depth);
+            Report(string.Join(' ', files), joined, single: true, all, quiet);
+            return ExitCodes.For(joined.Status);
+        }
+
+        return Run(files, module, checkOnly, all, quiet, fuel, wall, depth, missing.Count, slice, forceStrict);
     }
 
     /// <summary>Runs every named file and reports the worst answer any of them gave.</summary>
@@ -154,8 +187,11 @@ internal static class Program
         bool all,
         bool quiet,
         ulong? fuel,
+        ulong? wall,
         int? depth,
-        int missing)
+        int missing,
+        bool slice,
+        bool forceStrict)
     {
         // ONE FILE AND MANY FILES ARE REPORTED DIFFERENTLY, on purpose. Asked to run one program a
         // host should print what the program produced and nothing else, so its output can be piped.
@@ -167,7 +203,11 @@ internal static class Program
 
         foreach (var path in files)
         {
-            var result = Host.Run(SourceFiles.Read(path), module, checkOnly, fuel, depth);
+            var source = SourceFiles.Read(path);
+
+            var result = slice
+                ? Host.Run(source, module, checkOnly, fuel, depth)
+                : WideHost.Run([source], module, checkOnly, forceStrict, fuel, wall, depth);
 
             counts[result.Status] = counts.TryGetValue(result.Status, out var seen) ? seen + 1 : 1;
 
@@ -292,6 +332,34 @@ internal static class Program
         return true;
     }
 
+    /// <summary>Reads the wall-clock allowance, or says why the argument is not one.</summary>
+    private static bool Wall(string[] args, out ulong? wall, out string complaint)
+    {
+        wall = null;
+        complaint = string.Empty;
+        var at = Array.IndexOf(args, "--wall");
+
+        if (at < 0)
+        {
+            return true;
+        }
+
+        if (at == args.Length - 1)
+        {
+            complaint = "--wall needs a number of milliseconds";
+            return false;
+        }
+
+        if (!ulong.TryParse(args[at + 1], out var stated) || stated == 0)
+        {
+            complaint = $"`{args[at + 1]}` is not a positive number of milliseconds";
+            return false;
+        }
+
+        wall = stated;
+        return true;
+    }
+
     /// <summary>Reads the instruction allowance, or says why the argument is not one.</summary>
     private static bool Fuel(string[] args, out ulong? fuel, out string complaint)
     {
@@ -329,7 +397,7 @@ internal static class Program
     private static readonly string[] Known =
     [
         "--module", "--check", "--all", "--quiet", "--fuel", "--max-depth", "--closure",
-        "--help", "--version",
+        "--slice", "--strict", "--sweep", "--wall", "--help", "--version",
     ];
 
     /// <summary>The closure this image actually has, read off its own loaded assemblies.</summary>
@@ -358,7 +426,15 @@ internal static class Program
                 JavaScriptProfile.Descriptor.PackageIdentity.PackageId,
                 JavaScriptProfile.Descriptor.DescriptorRevision,
                 JavaScriptProfile.Descriptor.HostCapabilityDescriptors.Length));
-        Console.WriteLine(string.Join(' ', "manifest", JavaScriptProfile.SliceManifest));
+        // EVERY MANIFEST THE DESCRIPTOR ACCEPTS, not the one this root happens to prefer. A
+        // closure claim naming one while the image admits two would be read as the image
+        // refusing the other, which is the opposite of true.
+        Console.WriteLine(
+            string.Join(
+                ' ',
+                "manifest",
+                JavaScriptProfile.SliceManifest,
+                JavaScriptProfile.WideManifest));
         Console.WriteLine(
             string.Join(
                 ' ',
@@ -382,11 +458,21 @@ internal static class Program
         Console.WriteLine("  broiler-js [options] <path>...");
         Console.WriteLine();
         Console.WriteLine("  <path>      a .js file to run, or a directory swept for .js files");
+        Console.WriteLine();
+        Console.WriteLine("Several named files are run as separate scripts sharing ONE realm, in the");
+        Console.WriteLine("order given - which is what a benchmark harness and its benchmark, or a");
+        Console.WriteLine("conformance harness and its test, need. A directory is swept instead, one");
+        Console.WriteLine("realm per file, so one file's globals cannot decide the next one's result.");
+        Console.WriteLine();
         Console.WriteLine("  --module    read each file under the module goal rather than the script goal");
+        Console.WriteLine("  --strict    compile every script as strict-mode code");
+        Console.WriteLine("  --sweep     run each named file in a realm of its own rather than sharing one");
+        Console.WriteLine("  --slice     use the narrow broiler.javascript.slice surface instead");
         Console.WriteLine("  --check     compile and verify only; do not run");
         Console.WriteLine("  --all       report every refusal in a file rather than the first");
         Console.WriteLine("  --quiet     do not print the completion value");
-        Console.WriteLine("  --fuel <n>  the instruction allowance per file; the profile's default otherwise");
+        Console.WriteLine("  --fuel <n>  the instruction allowance per run; the profile's default otherwise");
+        Console.WriteLine("  --wall <ms> the wall-clock allowance per run; the profile's 10,000 ms otherwise");
         Console.WriteLine("  --max-depth <n>");
         Console.WriteLine("              the nesting depth the parser admits; the parse options' 64 otherwise.");
         Console.WriteLine("              Two files of the Octane benchmark nest deeper than 64 and are refused");
@@ -400,10 +486,18 @@ internal static class Program
         Console.WriteLine("Over several files the worst code wins, and 4 and 7 outrank the rest");
         Console.WriteLine("because both name a defect in this host rather than in the input.");
         Console.WriteLine();
-        Console.WriteLine($"This host accepts the feature manifest {JavaScriptProfile.SliceManifest},");
-        Console.WriteLine("which admits numbers, booleans, undefined, local bindings, the operators");
-        Console.WriteLine("this format has opcodes for and structured control flow - and admits no");
-        Console.WriteLine("function, no object, no string value and no property access. It is NOT a");
-        Console.WriteLine("JavaScript implementation and is advertised as nothing.");
+        Console.WriteLine($"This host runs the feature manifest {JavaScriptProfile.WideManifest} by");
+        Console.WriteLine("default: objects, arrays, strings, functions, closures, prototypes,");
+        Console.WriteLine("exceptions, for-in, switch, labels and a standard library. It admits no");
+        Console.WriteLine("class, generator, async function, module, destructuring, spread, template");
+        Console.WriteLine("literal, for-of, Proxy, Symbol, BigInt or typed array, and no eval or");
+        Console.WriteLine("Function constructor. What has been measured against a conformance suite");
+        Console.WriteLine("is a handful of its subtrees, which measures those subtrees. Nothing here");
+        Console.WriteLine("is reviewed, accepted or supported, and this host is advertised as");
+        Console.WriteLine("nothing.");
+        Console.WriteLine();
+        Console.WriteLine($"--slice selects {JavaScriptProfile.SliceManifest} instead, which admits");
+        Console.WriteLine("numbers, booleans, undefined, local bindings, the operators format");
+        Console.WriteLine("version 1 has opcodes for and structured control flow, and nothing else.");
     }
 }

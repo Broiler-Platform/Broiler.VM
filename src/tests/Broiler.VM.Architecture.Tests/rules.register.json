@@ -890,6 +890,16 @@
       "activationMilestone": null,
       "nonVacuousWhen": "The retained pin exists from 2026-09-03 and declares every key the rule reads, so the rule compares enforced values against real documents rather than passing over an absent subject. The archived clause decides a real state: the suite is retrieved and hashed and not archived, so the unarchived branch is the branch that runs.",
       "witness": "RetainedSuitePinRuleTests in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
+      "id": "N16",
+      "owningAdr": "0001",
+      "status": "Active",
+      "statement": "Two bytecode format versions are read by one verifier object, and a format version is bound to the feature manifest it is defined against. The gates make a second verifier a stop condition in those words - two verifiers that must agree are a security defect with a schedule - and adding a format version is the change that invites one, because the second version's structure has almost nothing in common with the first's. The pairing half is the other way the same mistake arrives: a payload announcing one version's manifest under the other's version would be read by a pass whose refusals are written against a surface it does not have.",
+      "evidence": "The descriptor source's declared version range and accepted manifest set; every type of the profile assembly that declares the verifier contract, read off the parsed sources; the ordering of the dispatch within the one verifier's own Verify body; and the two retained corpus rows that record a mislabelled payload in each direction.",
+      "activationMilestone": null,
+      "nonVacuousWhen": "Both format versions exist and both manifests are accepted from 2026-09-04, and the second pass is a real file in the same assembly that the contract clause must not count - so the implementation clause compares a found set against an expected one rather than passing over an assembly with nothing in it. The corpus rows it reads are produced by the same run that replays them.",
+      "witness": "N16WideSurfaceRuleTests in Broiler.VM.Architecture.Tests.dll"
     }
   ]
 }

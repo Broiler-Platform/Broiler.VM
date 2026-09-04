@@ -1,10 +1,10 @@
 # broiler.javascript.slice diagnostic-code registry
 #
-# registry-revision: 2
-# published-at-milestone: JS-3a (revision 1), JS-3b (revision 2)
+# registry-revision: 3
+# published-at-milestone: JS-3a (revision 1), JS-3b (revision 2), JS-4 (revision 3)
 # owning-decision: JSD-0009
-# format-version: 1
-# feature-manifest: broiler.javascript.slice
+# format-version: 1, 2
+# feature-manifest: broiler.javascript.slice, broiler.javascript.wide
 #
 # code|name|half|reason|stage|reachability|case|since
 #
@@ -26,8 +26,9 @@
 #                core result, so there is no reason for it to carry and inventing one would be
 #                claiming a transport the code does not use.
 # stage          the pass that refuses. For the core-result half: header, manifest, framing,
-#                limits, constants, code, entries, positions, reserved, reader. For the
-#                embedder-seam half: tokenizer, parser, semantics, lowering.
+#                limits, constants, code, entries, functions, positions, reserved, reader. For the
+#                embedder-seam half: tokenizer, parser, semantics, lowering. `functions` arrived
+#                with format version 2, which is the first version to have a function table.
 # reachability   corpus     a named entry of the retained corpus produces this code.
 #                source     a named entry of the retained SOURCE corpus is refused with this code.
 #                           The source corpus is src/tests/corpus/js-1/source/source.manifest, and
@@ -42,10 +43,10 @@
 #                a code be dated by the revision it was recorded under.
 1001|WrongMagic|core-result|MalformedEncoding|header|corpus|wrong-magic|1
 1002|UnsupportedFormatVersion|core-result|UnsupportedProfileFormatVersion|header|corpus|unsupported-format-version|1
-1003|DescriptorFormatVersionMismatch|core-result|DescriptorMismatch|header|defensive|the core screens the descriptor's format version against the registered range before the profile is called, and this build registers exactly one version|1
+1003|DescriptorFormatVersionMismatch|core-result|DescriptorMismatch|header|corpus|wide-a-version-1-artifact-announced-as-version-2|3
 1004|UnsupportedFeatureManifest|core-result|UnsupportedFeatureManifest|manifest|corpus|a-manifest-this-build-does-not-accept|1
 1005|ManifestIdTooLong|core-result|InconsistentStructure|manifest|corpus|a-manifest-identity-longer-than-the-format-admits|1
-1006|DescriptorManifestMismatch|core-result|DescriptorMismatch|manifest|defensive|the core screens the descriptor's manifest against the accepted set before the profile is called, and this build accepts exactly one manifest|1
+1006|DescriptorManifestMismatch|core-result|DescriptorMismatch|manifest|corpus|wide-a-slice-manifest-announced-as-the-wide-one|3
 1101|UnknownSectionKind|core-result|UnknownFeature|framing|corpus|an-unknown-section-kind|1
 1102|SectionOrder|core-result|InconsistentStructure|framing|corpus|a-duplicated-section|1
 1103|MissingSection|core-result|InconsistentStructure|framing|corpus|no-code-section|1
@@ -77,6 +78,17 @@
 1506|MalformedPositionRow|core-result|InconsistentStructure|positions|corpus|a-position-row-inside-an-operand|1
 1507|ExceptionRegionOutsideManifest|core-result|UnknownFeature|reserved|corpus|an-exception-region-the-manifest-excludes|1
 1508|SuspensionTargetOutsideManifest|core-result|UnknownFeature|reserved|corpus|a-suspension-target-the-manifest-excludes|1
+#
+# 1600: the structural refusals format version 2 adds. Version 1 has one frame, one flat set of
+# locals and no exception region a manifest admits; version 2 has a function table, an environment
+# model addressed by depth and slot, and regions that carry a scope depth. Each of the five is a
+# way an artifact can be wrong that version 1 has no vocabulary for, so each takes a NEW number
+# rather than borrowing one whose published meaning is about something else.
+1601|MalformedFunctionRow|core-result|InconsistentStructure|functions|corpus|wide-a-function-row-the-format-cannot-represent|3
+1602|FunctionIndexOutOfRange|core-result|InconsistentStructure|functions|corpus|wide-an-entry-point-naming-no-code-unit|3
+1603|CodeUnitRangeInvalid|core-result|InconsistentStructure|functions|corpus|wide-code-units-that-do-not-tile-the-code-section|3
+1604|ScopeDepthOutOfRange|core-result|InconsistentStructure|code|corpus|wide-a-scope-popped-past-the-frame|3
+1605|MalformedExceptionRegion|core-result|InconsistentStructure|reserved|corpus|wide-an-exception-handler-outside-its-code-unit|3
 1901|Truncated|core-result|Truncated|reader|corpus|a-truncated-payload|1
 1902|MalformedEncoding|core-result|MalformedEncoding|reader|corpus|an-overlong-variable-length-integer|1
 1903|ReaderStopped|core-result|InconsistentStructure|reader|defensive|every bounded-read status this build was compiled against has its own arm, so this one answers a status the reader does not currently have|1

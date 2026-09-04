@@ -47,13 +47,14 @@ public sealed class DiagnosticRegistryRuleTests
     {
         Assert.Empty(ArchitectureRules.N5(Registry, Vocabulary, SeamVocabulary, DiagnosticRegistry.Revision));
 
-        // Non-vacuous: forty core-result codes and twenty-four embedder-seam ones, sixty-four rows,
-        // so a clean result is a comparison over two real sets rather than over an empty one. The
-        // seam half was declared and empty at revision 1 and is the half at revision 2.
-        Assert.Equal(40, Vocabulary.Count);
+        // Non-vacuous: forty-five core-result codes and twenty-four embedder-seam ones,
+        // sixty-nine rows, so a clean result is a comparison over two real sets rather than over an
+        // empty one. The seam half was declared and empty at revision 1 and is the half at revision
+        // 2; revision 3 is the five structural refusals format version 2 adds.
+        Assert.Equal(45, Vocabulary.Count);
         Assert.Equal(24, SeamVocabulary.Count);
         Assert.Equal(Vocabulary.Count + SeamVocabulary.Count, Registry.Count);
-        Assert.Equal(2, DiagnosticRegistry.Revision);
+        Assert.Equal(3, DiagnosticRegistry.Revision);
 
         // The two vocabularies live in two assemblies that cannot see each other, so the one thing
         // no compiler could catch is a number used in both. Nothing else in the build reads both
@@ -135,16 +136,18 @@ public sealed class DiagnosticRegistryRuleTests
 
         Assert.Empty(ArchitectureRules.N7(Registry, corpus, sourceCorpus));
 
-        // Non-vacuous, and the figures that matter: thirty-seven of the forty core-result rows are
-        // reached by a retained corpus entry and three are not, which is the count rule N7 fixes
+        // Non-vacuous, and the figures that matter: forty-four of the forty-five core-result rows
+        // are reached by a retained corpus entry and one is not, which is the count rule N7 fixes
         // rather than the registry; and every one of the twenty-two embedder-seam rows JS-3b
-        // published is reached by a retained source entry, with none defensive. The seam half has
+        // published is reached by a retained source entry, with none defensive. Seven of the
+        // forty-four arrived with format version 2: five refusals the version adds, and two that
+        // registering a second version and a second manifest made observable at all. The seam half has
         // no defensive row on purpose - all three of its format-ceiling codes ARE reachable by a
         // program, and recording them as unreachable would have been recording something untrue to
         // avoid generating three sources.
-        Assert.Equal(4, ArchitectureRules.DefensiveCodes.Length);
+        Assert.Equal(2, ArchitectureRules.DefensiveCodes.Length);
         Assert.Equal(
-            37,
+            44,
             Registry.Count(static row => row.Reachability == "corpus"));
         Assert.Equal(
             23,
@@ -226,7 +229,7 @@ public sealed class DiagnosticRegistryRuleTests
 
         // Non-vacuous: the producer restates the codes its corpus pins, and there are enough of
         // them that agreement is a comparison.
-        Assert.True(mirror.Count >= 37);
+        Assert.True(mirror.Count >= 42);
 
         var violations = ArchitectureRules
             .N8(Registry, DiagnosticRegistry.Mirror(ParseWitness("N8-the-mirror-disagrees-with-the-registry.cs.witness")))
@@ -437,13 +440,11 @@ public sealed class DiagnosticRegistryRuleTests
         // declarations in these files - the punctuator table and the reserved-name list among
         // them - which it correctly does not report.
         //
-        // FOURTEEN FILES. The prose here said "eleven - JS-1's three and JS-3b's eight" while the
-        // figure beside it read 13, so the breakdown was already two revisions stale and is not
-        // replaced with a third one that will go the same way: the count is what this clause
-        // asserts, and which milestone contributed which file is what the graph manifest is for.
-        // The fourteenth is SliceControlFlow, added when the lowering stopped emitting a loop
-        // continuation nothing could reach.
-        Assert.Equal(14, lowering.Length);
+        // The count is what this clause asserts, and which milestone contributed which file is
+        // what the graph manifest is for. It went from fourteen to seventeen when the wide
+        // surface's own front end - its syntax tree, its parser and its lowering - joined the
+        // assembly, and every one of the three is scanned by the same rule for the same reason.
+        Assert.Equal(17, lowering.Length);
         Assert.Contains(
             ArchitectureRules.N12([], filesScanned: 0),
             violation => violation.Contains(

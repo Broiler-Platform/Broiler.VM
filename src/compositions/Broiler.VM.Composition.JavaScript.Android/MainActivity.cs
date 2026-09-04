@@ -144,7 +144,11 @@ public sealed class MainActivity : Activity
                 JavaScriptProfile.Descriptor.PackageIdentity.PackageId,
                 JavaScriptProfile.Descriptor.DescriptorRevision,
                 JavaScriptProfile.Descriptor.HostCapabilityDescriptors.Length),
-            string.Join(' ', "manifest", JavaScriptProfile.SliceManifest),
+            string.Join(
+                ' ',
+                "manifest",
+                JavaScriptProfile.SliceManifest,
+                JavaScriptProfile.WideManifest),
             string.Join(
                 ' ',
                 "format-versions",

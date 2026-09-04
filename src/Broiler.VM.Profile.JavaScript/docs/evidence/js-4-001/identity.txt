@@ -1,0 +1,88 @@
+bundle:                JS-4-001
+milestone:             JS-4
+collected (UTC):       2026-09-04T09:14:09+00:00
+component commit:      d888400f6a492a8e23ae8404e71acec598a7eab8
+branch:                claude/js-mvp-es5-engine
+working tree:          DIRTY
+dirty entries:         74
+owner:                 MaiRat
+reviewer:              none
+
+Every path below is relative to the component root. A figure in this bundle is this
+component's own; no result from any other component is evidence here.
+
+Dirty entries at collection time, listed rather than summarised:
+   M CODE-ASSURANCE.md
+   M HUMAN_REVIEW.md
+   M assurance.manifest.json
+   M docs/compositions.md
+   M eng/collect-js-evidence.py
+   M src/Broiler.VM.Profile.JavaScript/JavaScriptDiagnostics.cs
+   M src/Broiler.VM.Profile.JavaScript/JavaScriptExecutor.cs
+   M src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs
+   M src/Broiler.VM.Profile.JavaScript/JavaScriptVerifier.cs
+   M src/Broiler.VM.Profile.JavaScript/docs/api/public-api.txt
+   M src/Broiler.VM.Profile.JavaScript/docs/decisions/README.md
+   M src/Broiler.VM.Profile.JavaScript/docs/diagnostics/registry.txt
+   M src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md
+   M src/Broiler.VM.Profile.JavaScript/docs/roadmap.md
+   M src/Broiler.VM.Profile.JavaScript/docs/roadmap.status.md
+   M src/compositions/Broiler.VM.Composition.JavaScript.Android/MainActivity.cs
+   M src/compositions/Broiler.VM.Composition.JavaScript.Cli/Program.cs
+   M src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Program.cs
+   M src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/CorpusReplay.cs
+   M src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/Hosts.cs
+   M src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/Program.cs
+   M src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/CorpusBuilder.cs
+   M src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Program.cs
+   M src/tests/Broiler.VM.Architecture.Tests/ArchitectureRules.cs
+   M src/tests/Broiler.VM.Architecture.Tests/DiagnosticRegistry.cs
+   M src/tests/Broiler.VM.Architecture.Tests/DiagnosticRegistryRuleTests.cs
+   M src/tests/Broiler.VM.Architecture.Tests/ReviewRecordRuleTests.cs
+   M src/tests/Broiler.VM.Architecture.Tests/RuleRegisterTests.cs
+   M src/tests/Broiler.VM.Architecture.Tests/rules.register.json
+   M src/tests/corpus/js-1/corpus.manifest
+  ?? src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs
+  ?? src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs
+  ?? src/Broiler.VM.Profile.JavaScript.Compiler/JsSyntax.cs
+  ?? src/Broiler.VM.Profile.JavaScript.Format/JsArtifactWriter.cs
+  ?? src/Broiler.VM.Profile.JavaScript.Format/JsFormat.cs
+  ?? src/Broiler.VM.Profile.JavaScript.Format/JsOpcode.cs
+  ?? src/Broiler.VM.Profile.JavaScript/JsArray.cs
+  ?? src/Broiler.VM.Profile.JavaScript/JsEngine.cs
+  ?? src/Broiler.VM.Profile.JavaScript/JsExecution.cs
+  ?? src/Broiler.VM.Profile.JavaScript/JsFunction.cs
+  ?? src/Broiler.VM.Profile.JavaScript/JsNumberFormat.cs
+  ?? src/Broiler.VM.Profile.JavaScript/JsObject.cs
+  ?? src/Broiler.VM.Profile.JavaScript/JsProgram.cs
+  ?? src/Broiler.VM.Profile.JavaScript/JsRealm.Array.cs
+  ?? src/Broiler.VM.Profile.JavaScript/JsRealm.Boolean.cs
+  ?? src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs
+  ?? src/Broiler.VM.Profile.JavaScript/JsRealm.Error.cs
+  ?? src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs
+  ?? src/Broiler.VM.Profile.JavaScript/JsRealm.Global.cs
+  ?? src/Broiler.VM.Profile.JavaScript/JsRealm.Json.cs
+  ?? src/Broiler.VM.Profile.JavaScript/JsRealm.Math.cs
+  ?? src/Broiler.VM.Profile.JavaScript/JsRealm.Number.cs
+  ?? src/Broiler.VM.Profile.JavaScript/JsRealm.Object.cs
+  ?? src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs
+  ?? src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs
+  ?? src/Broiler.VM.Profile.JavaScript/JsRealm.cs
+  ?? src/Broiler.VM.Profile.JavaScript/JsThrow.cs
+  ?? src/Broiler.VM.Profile.JavaScript/JsValue.cs
+  ?? src/Broiler.VM.Profile.JavaScript/JsVerifier.cs
+  ?? src/Broiler.VM.Profile.JavaScript/docs/decisions/0021-the-wide-bring-up-manifest-and-format-version-2.md
+  ?? src/compositions/Broiler.VM.Composition.JavaScript.Cli/WideHost.cs
+  ?? src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Command.cs
+  ?? src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Test262Run.cs
+  ?? src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/WideCorpus.cs
+  ?? src/tests/Broiler.VM.Architecture.Tests/N16WideSurfaceRuleTests.cs
+  ?? src/tests/corpus/js-1/wide-a-function-row-the-format-cannot-represent.bjsb
+  ?? src/tests/corpus/js-1/wide-a-method-called-through-a-property.bjsb
+  ?? src/tests/corpus/js-1/wide-a-scope-popped-past-the-frame.bjsb
+  ?? src/tests/corpus/js-1/wide-a-slice-manifest-announced-as-the-wide-one.bjsb
+  ?? src/tests/corpus/js-1/wide-a-version-1-artifact-announced-as-version-2.bjsb
+  ?? src/tests/corpus/js-1/wide-an-entry-point-naming-no-code-unit.bjsb
+  ?? src/tests/corpus/js-1/wide-an-exception-handler-outside-its-code-unit.bjsb
+  ?? src/tests/corpus/js-1/wide-code-units-that-do-not-tile-the-code-section.bjsb
+  ?? src/tests/octane/

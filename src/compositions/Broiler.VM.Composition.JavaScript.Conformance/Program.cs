@@ -68,6 +68,13 @@ internal static class Program
                 return RunHarnessChecks(verbose);
             }
 
+            var checkout = Argument(args, "--test262");
+
+            if (checkout is not null)
+            {
+                return Test262Command.Run(checkout, args, verbose);
+            }
+
             var merge = Argument(args, "--merge");
 
             if (merge is not null)
@@ -89,7 +96,7 @@ internal static class Program
                 Console.WriteLine(
                     "broiler-js-conformance: no --suite <directory> was given. Modes: --closure, " +
                     "--harness-checks, --self-check, --run, --write-artifacts, --pin, " +
-                    "--merge <dir>, --floor <file> --report <file>. A run adds " +
+                    "--merge <dir>, --floor <file> --report <file>, --test262 <root>. A run adds " +
                     "--dialect native|ingested, --selfcheck <dir> and --expect <retained pin>.");
 
                 return ExitCodes.Usage;
@@ -711,7 +718,12 @@ internal static class Program
                 JavaScriptProfile.Descriptor.PackageIdentity.PackageId,
                 JavaScriptProfile.Descriptor.DescriptorRevision,
                 JavaScriptProfile.Descriptor.HostCapabilityDescriptors.Length));
-        Console.WriteLine(string.Join(' ', "manifest", JavaScriptProfile.SliceManifest));
+        Console.WriteLine(
+            string.Join(
+                ' ',
+                "manifest",
+                JavaScriptProfile.SliceManifest,
+                JavaScriptProfile.WideManifest));
         Console.WriteLine(
             string.Join(
                 ' ',

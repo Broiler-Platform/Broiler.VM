@@ -230,7 +230,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
     /// examining a payload byte. That ordering is asserted by a named case rather than left to be
     /// read off this file.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=79B660
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=284671
     // Broiler-Falsified-If: a payload byte is read on a path that answers UnsupportedProfile
     // Broiler-Human:        PENDING
     public VmVerifierOutcome Verify(
@@ -242,6 +242,17 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
         if (descriptor.ProfileId != ProfileId)
         {
             return VmVerifierOutcome.UnsupportedProfile();
+        }
+
+        // TWO SURFACES, TWO FORMAT VERSIONS, ONE VERIFIER OBJECT. The descriptor names the version
+        // the caller says these bytes are, and the payload names the version they actually are;
+        // the version-2 pass checks the second against the first exactly as this one does. What is
+        // decided here is only which pass reads them, and it is decided from the descriptor,
+        // because reading a payload byte to find out how to read the payload is the one ordering
+        // this component refuses to have.
+        if (descriptor.FormatVersion == Format.JsFormat.FormatVersion)
+        {
+            return JsVerifier.Verify(in descriptor, payload, context, cancellationToken);
         }
 
         var adapter = new JavaScriptReadAdapter(context.Meter);

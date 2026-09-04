@@ -301,6 +301,17 @@ def snapshot_identity(out):
     write(os.path.join(out, "snapshot-identity.txt"), "\n".join(lines) + "\n")
 
 
+# The Android head's row of the composition register, verbatim and with its newline, because
+# three controls inject by replacing it. IT IS ONE CONSTANT RATHER THAN THREE LITERALS so a
+# row that moves is repaired once: on 2026-09-04 the profile gained an optional capability
+# import, every root's imports cell moved with it, and two K1 controls reported SKIPPED
+# because their anchors no longer matched. What this is NOT is a fuzzy match. An anchor that
+# tolerated drift would stop reporting SKIPPED, and a control that quietly matches something
+# adjacent is worse than one that says it found nothing.
+ANDROID_REGISTER_ROW = (
+    "| `Broiler.VM.Composition.JavaScript.Android` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format` | `broiler.javascript.write` (optional import of `broiler.javascript`) | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-001` |\n")
+
+
 CONTROLS = [
     (
         "N1-profile-references-the-runtime",
@@ -477,14 +488,8 @@ CONTROLS = [
         "subject to K1 now, and this fires K1 alone.",
         COMPOSITION_REGISTER,
         lambda text: text.replace(
-            "| `Broiler.VM.Composition.JavaScript.Android` | demonstration | `broiler.javascript` "
-            "| `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format` | none "
-            "registered | none registered | "
-            "`src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-001` |\n",
-            "| `Broiler.VM.Composition.JavaScript.Android` | demonstration | `broiler.javascript` "
-            "| `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format` | none "
-            "registered | none registered | "
-            "`src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-001` |\n"
+            ANDROID_REGISTER_ROW,
+            ANDROID_REGISTER_ROW +
             "| `Broiler.VM.Composition.Deleted` | demonstration | `com.example.gone` | "
             "`Com.Example.Gone` | none | none registered | none registered | "
             "`docs/evidence/vm-6` |\n"),
@@ -502,10 +507,7 @@ CONTROLS = [
         "caught it.",
         COMPOSITION_REGISTER,
         lambda text: text.replace(
-            "| `Broiler.VM.Composition.JavaScript.Android` | demonstration | `broiler.javascript` "
-            "| `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format` | none "
-            "registered | none registered | "
-            "`src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-001` |\n",
+            ANDROID_REGISTER_ROW,
             ""),
     ),
     (
