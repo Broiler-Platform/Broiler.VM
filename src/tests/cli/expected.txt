@@ -339,3 +339,9 @@ limits/a-wide-unbounded-recursion.js|1|uncaught RangeError: Maximum call stack s
 --call-depth 100000 limits/an-unbounded-recursion.js|1|uncaught RangeError: Maximum call stack size exceeded
 --call-depth 100 limits/an-unbounded-recursion.js|5|CeilingReached on CallDepth
 --call-depth 0 limits/an-unbounded-recursion.js|2|is not a positive frame count
+# A STRICT SCRIPT WITH A FUNCTION DECLARATION, which every strict test262 variant is and which
+# this host refused for a day: a hoisted function was WRITTEN to the global object and never
+# DECLARED there, so the moment a strict store stopped creating bindings (JSC-93) the declaration
+# threw about the function it was declaring.
+--strict runs/a-strict-script-with-a-function-declaration.js|0|declared 3
+runs/a-strict-script-with-a-function-declaration.js|0|declared 3

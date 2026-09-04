@@ -137,3 +137,20 @@ p(function () { return String(123456789012345678901234567890); });
 p(function () { return (1e-10).toExponential(); });
 p(function () { return JSON.stringify(1e-7); });
 p(function () { return String(Number.MIN_VALUE); });
+
+// --- strict mode, whose runtime half was enforced later than its grammar half. APPENDED
+// rather than inserted: a case number is how a divergence is named, and renumbering would
+// silently move every declaration that points at one.
+p(function(){ "use strict"; return typeof hoisted; function hoisted(){} });
+p(function(){ "use strict"; var o = {}; return typeof o.x; });
+p(function(){ "use strict"; try { undeclaredHere = 1; return "no-throw"; } catch (e) { return e.name; } });
+p(function(){ "use strict"; var q = 1; return q; });
+p(function(){ "use strict"; function inner(){ return 5; } return inner(); });
+p(function(){ "use strict"; return (function(){ function deep(){ return 6; } return deep(); })(); });
+p(function(){ function sloppyHoisted(){ return 7; } return sloppyHoisted(); });
+p(function(){ "use strict"; let l = 8; return l; });
+p(function(){ "use strict"; const c = 9; return c; });
+p(function(){ "use strict"; class K { m(){ return 10; } } return new K().m(); });
+p(function(){ "use strict"; function* g(){ yield 11; } return g().next().value; });
+p(function(){ "use strict"; var o = Object.freeze({a:1}); try { o.a = 2; return "no-throw"; } catch (e) { return e.name; } });
+p(function(){ "use strict"; var o = {}; Object.defineProperty(o,"x",{value:1,configurable:false}); try { delete o.x; return "no-throw"; } catch (e) { return e.name; } });

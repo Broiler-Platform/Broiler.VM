@@ -1008,7 +1008,7 @@ public sealed class JsCompiler
 
     // ---- hoisting ------------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A1AF9D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1114B8
     // Broiler-Human:        PENDING
     private void HoistProgram(System.Collections.Generic.IReadOnlyList<JsStatement> body)
     {
@@ -1019,6 +1019,18 @@ public sealed class JsCompiler
         foreach (var name in names)
         {
             Emit(JsOpcode.DeclareGlobal, InternedName(name));
+        }
+
+        // A FUNCTION DECLARATION CREATES ITS GLOBAL BINDING BEFORE IT IS WRITTEN, and until
+        // 2026-09-04 the write was the only step. It worked because a store to a name the global
+        // object did not have created it — which is exactly what strict code may not do, so the
+        // moment `StoreGlobal` began refusing that *(JSC-93)*, EVERY strict script with a function
+        // declaration in it threw a `ReferenceError` about the function it was declaring. The
+        // declaration is separate from the write in the specification for this reason: the binding
+        // exists before anything assigns to it.
+        foreach (var function in functions)
+        {
+            Emit(JsOpcode.DeclareGlobal, InternedName(function.Name));
         }
 
         foreach (var function in functions)

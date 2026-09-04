@@ -4193,3 +4193,33 @@ a merge's to make. **A fixture pins the current answer** — `runs/a-generator-d
 **Authority and date.** The implementation of 2026-09-04 in this checkout and the 113-case probe
 over the seam between generators and the constructs merged beside them, retained as
 `src/tests/differential/the-seam-between-generators-and-the-rest.js`. 2026-09-04.
+
+### JSC-104
+
+**Where:** [JSC-93](#jsc-93), which made an assignment to an undeclared name in strict code a
+`ReferenceError` — *the single thing `"use strict"` buys a reader of an unfamiliar program* — and the
+program-level hoisting the lowering performs.
+
+**What JSC-93 did not check, and what it broke.** A function declaration at the top level of a script
+was **written** to the global object and never **declared** there: the lowering emitted a closure and
+a store, and the store created the property. That worked for as long as a store could create one. The
+moment strict code was forbidden from creating a global by assigning to one, **every strict script
+containing a function declaration threw a `ReferenceError` about the function it was declaring**.
+
+**It survived four differential probes, an acceptance table and a full architecture suite**, and the
+reason is worth more than the repair: every probe here is a sloppy script, and the acceptance table's
+strict rows exercised refusals rather than declarations. A repair that narrows what a program may do
+has to be checked against the programs that were *already* doing the narrower thing, and nothing here
+was.
+
+**What found it.** A test262 sweep over the subtrees this programme has just admitted, where the
+`[strict]` variant of case after case failed with *`g` is not defined* about a generator declared two
+lines above. The suite runs every test in both strictnesses; nothing written in this repository did.
+
+**What replaced it.** The declaration is emitted separately from the write, which is what the
+specification does and for this reason: the binding exists before anything assigns to it. Fourteen
+cases covering strict declarations, strict refusals and the sloppy forms beside them are retained,
+and two acceptance rows pin a strict script with a function declaration in both directions.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the sweep that found it,
+and the cases appended to `src/tests/differential/the-statement-and-object-surface.js`. 2026-09-04.

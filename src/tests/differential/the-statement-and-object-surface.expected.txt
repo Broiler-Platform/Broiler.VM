@@ -104,3 +104,16 @@
 100 "1e-10"
 101 "1e-7"
 102 "5e-324"
+103 "function"
+104 "undefined"
+105 "ReferenceError"
+106 1
+107 5
+108 6
+109 7
+110 8
+111 9
+112 10
+113 11
+114 "TypeError"
+115 "TypeError"
