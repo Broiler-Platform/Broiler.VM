@@ -130,6 +130,20 @@ internal sealed class JsCodeUnit
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CF19D5
     // Broiler-Human:        PENDING
     internal bool IsGenerator => (Flags & Format.JsFormat.FunctionFlags.Generator) != 0;
+
+    /// <summary>
+    /// Whether calling the unit STARTS its code on a heap frame and answers a promise.
+    /// </summary>
+    /// <remarks>
+    /// <b>The verb is what separates this from <see cref="IsGenerator"/>.</b> A generator's call
+    /// runs no instruction of its body; an async function's call runs the body straight through to
+    /// its first <c>await</c>, on the same native stack the caller is on, and only then returns.
+    /// The two share the frame representation and share none of the timing, and a program can see
+    /// the difference on its very first line.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal bool IsAsync => (Flags & Format.JsFormat.FunctionFlags.Async) != 0;
 }
 
 /// <summary>One verified exception region.</summary>

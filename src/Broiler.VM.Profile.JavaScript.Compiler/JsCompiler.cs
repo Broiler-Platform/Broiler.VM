@@ -464,6 +464,16 @@ public sealed class JsCompiler
             flags = (flags & ~JsFormat.FunctionFlags.Constructible) | JsFormat.FunctionFlags.Generator;
         }
 
+        // AN ASYNC FUNCTION IS NOT A CONSTRUCTOR EITHER, and the arrow bit is left alone. That is
+        // the one place the two suspension kinds differ in this method: a generator arrow is not a
+        // production of the grammar, and an async arrow is - so the flags are set independently and
+        // the verifier's own consistency check admits `Async | Arrow` while refusing
+        // `Generator | Arrow`.
+        if (function.IsAsync)
+        {
+            flags = (flags & ~JsFormat.FunctionFlags.Constructible) | JsFormat.FunctionFlags.Async;
+        }
+
         var index = units.Count;
         var name = function.Name.Length == 0 ? (ushort)0 : (ushort)(InternedName(function.Name) + 1);
 
@@ -2645,6 +2655,30 @@ public sealed class JsCompiler
                 }
 
                 Emit(yielded.IsDelegate ? JsOpcode.YieldDelegate : JsOpcode.Yield);
+                break;
+
+            // `await` LEAVES ONE VALUE WHERE IT TOOK ONE, exactly as `yield` does, so it needs
+            // nothing around it either and may stand anywhere an expression may.
+            case JsAwaitExpression awaited:
+                CompileExpression(awaited.Operand);
+
+                // AND THE UNIT IS CHECKED HERE, where the alternative is the worst failure shape
+                // this component has: an `Await` in a unit carrying no async flag is refused by
+                // THIS HOST'S OWN VERIFIER, on bytes THIS HOST'S OWN lowering produced, which is
+                // the internal-consistency failure roadmap section 3.4 names. The parser's
+                // `[Await]` contexts are what make this unreachable; this is what makes it a
+                // diagnostic naming the construct rather than a refused artifact if they ever stop.
+                if ((buffer.Flags & JsFormat.FunctionFlags.Async) == 0)
+                {
+                    Refuse(
+                        awaited.Span,
+                        SliceSourceDiagnosticCode.ConstructOutsideManifest,
+                        "`await` is only admitted inside an async function");
+
+                    break;
+                }
+
+                Emit(JsOpcode.Await);
                 break;
 
             case JsSequenceExpression sequence:
@@ -5045,6 +5079,14 @@ public sealed class JsCompiler
                 // `function* g() { yield arguments[0]; }` decide it does not use `arguments` - so
                 // the frame would not materialise one and the read would fail at run time.
                 case JsYieldExpression expression:
+                    yield return expression.Operand;
+                    break;
+
+                // AND SO DOES AN `await`, for the same reason: without this arm,
+                // `async function f(){ await arguments[0]; }` would decide it does not use
+                // `arguments`, the frame would materialise none, and the read would fail at run
+                // time inside a construct that has nothing to do with `arguments`.
+                case JsAwaitExpression expression:
                     yield return expression.Operand;
                     break;
 

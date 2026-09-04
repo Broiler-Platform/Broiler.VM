@@ -18,15 +18,27 @@
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
-/// The generator intrinsics: <c>%GeneratorPrototype%</c>, <c>%GeneratorFunction.prototype%</c> and
-/// <c>%GeneratorFunction%</c> itself.
+/// The intrinsics of the two function kinds whose body may suspend:
+/// <c>%GeneratorPrototype%</c>, <c>%GeneratorFunction.prototype%</c>, <c>%GeneratorFunction%</c>,
+/// <c>%AsyncFunction.prototype%</c> and <c>%AsyncFunction%</c>.
 /// </summary>
 /// <remarks>
 /// <para>
 /// <b>None of these is a global, in this realm or in any other.</b> The only way a program reaches
-/// them is by walking up from a generator function or a generator object, which is exactly how the
-/// specification arranges them, so building them here rather than in <c>SetupGlobal</c> is not a
-/// hiding place - it is where they live.
+/// them is by walking up from a generator function, a generator object or an async function, which
+/// is exactly how the specification arranges them, so building them here rather than in
+/// <c>SetupGlobal</c> is not a hiding place - it is where they live.
+/// </para>
+/// <para>
+/// <b>An async function's intrinsic is one object where a generator's is three, and the asymmetry
+/// is the language's.</b> A generator function has a <c>prototype</c> whose objects are what its
+/// calls return, and those objects need <c>next</c>, <c>return</c> and <c>throw</c>. An async
+/// function's call returns an ordinary <c>Promise</c> of this realm, so there is nothing for an
+/// <c>%AsyncFunctionPrototype%</c> to be the prototype OF: the intrinsic exists only so that
+/// <c>Object.getPrototypeOf(async function(){})</c> answers something other than
+/// <c>Function.prototype</c> and <c>Object.prototype.toString</c> answers
+/// <c>[object AsyncFunction]</c>. Giving it a <c>prototype</c> property would have been the natural
+/// mistake and would make <c>new (async function(){})</c> look constructible.
 /// </para>
 /// <para>
 /// <b>The iteration protocol is NOT built here, and that is the whole of what this file is not.</b>
@@ -123,7 +135,59 @@ internal sealed partial class JsRealm
         GeneratorFunctionPrototype.SetOwnProperty(
             "constructor",
             JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Configurable));
+
+        SetupAsyncFunction();
     }
+
+    /// <summary><c>%AsyncFunction.prototype%</c>: what every async function inherits from.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal JsObject AsyncFunctionPrototype { get; private set; } = null!;
+
+    /// <summary>Builds the async-function intrinsics.</summary>
+    /// <remarks>
+    /// <b>It is called from <see cref="SetupGenerator"/> and not from the realm's setup list</b>,
+    /// because it needs the same one thing that does: the <c>Function</c> constructor that
+    /// <c>SetupGlobal</c> has already published. Two entries in the list would have been two places
+    /// to keep that ordering constraint in, and the second one is the one that would drift.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void SetupAsyncFunction()
+    {
+        AsyncFunctionPrototype = new JsObject(FunctionPrototype, "AsyncFunction");
+
+        AsyncFunctionPrototype.SetOwnSymbol(
+            ToStringTagSymbol,
+            JsProperty.Data(JsValue.String("AsyncFunction"), JsPropertyAttributes.Configurable));
+
+        // THE CONSTRUCTOR EXISTS AND REFUSES, for the reason `Function` and `GeneratorFunction` do.
+        // What this manifest declines is the one thing it does - turning source into code at run
+        // time - and a program that walks two hops off an async function finds the intrinsic the
+        // specification says is there rather than an absence it has to guess the cause of.
+        var constructor = new JsNativeFunction(
+            GlobalFunctionConstructor(),
+            "AsyncFunction",
+            1,
+            static (engine, thisValue, arguments) => engine.ThrowTypeError(AsyncFunctionRefusal),
+            static (engine, thisValue, arguments) => engine.ThrowTypeError(AsyncFunctionRefusal));
+
+        constructor.SetOwnProperty(
+            "prototype",
+            JsProperty.Data(JsValue.Object(AsyncFunctionPrototype), JsPropertyAttributes.None));
+
+        AsyncFunctionPrototype.SetOwnProperty(
+            "constructor",
+            JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Configurable));
+    }
+
+    /// <summary>What a call or a construction of <c>AsyncFunction</c> is told, and why.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private const string AsyncFunctionRefusal =
+        "AsyncFunction: the broiler.javascript.wide manifest does not admit the AsyncFunction " +
+        "constructor, because this profile declares no guest-initiated load and cannot turn " +
+        "source into code at run time";
 
     /// <summary>What a call or a construction of <c>GeneratorFunction</c> is told, and why.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=31EF54

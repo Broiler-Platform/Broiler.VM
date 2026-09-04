@@ -255,6 +255,31 @@ public enum JavaScriptDiagnosticCode
     /// </remarks>
     GeneratorFlagsInconsistent = 1610,
 
+    /// <summary>
+    /// An <c>Await</c> instruction appears in a code unit that is not an async function body.
+    /// </summary>
+    /// <remarks>
+    /// It is a code of its own rather than a second use of
+    /// <see cref="YieldOutsideGenerator"/>, because the two name different missing FLAGS and a
+    /// payload author acts on the flag. An artifact that awaits in a generator body is not an
+    /// artifact that yields outside one, and telling it the latter would send its author to
+    /// exactly the wrong bit.
+    /// </remarks>
+    AwaitOutsideAsync = 1611,
+
+    /// <summary>
+    /// A code-unit row combines the async flag with a flag that contradicts it.
+    /// </summary>
+    /// <remarks>
+    /// An async function is neither the program body, nor a constructor, nor a generator. The
+    /// third is the one worth stating: this profile admits no async generator, and a unit claiming
+    /// both bits would be asking the executor to pick a driver - suspended-start with a caller
+    /// pulling it, or running-start with the job queue pushing it - where the format offers no way
+    /// to say which. An async ARROW is not on the list, because an arrow with a suspendable body
+    /// is exactly what <c>async () =&gt; { await x; }</c> is.
+    /// </remarks>
+    AsyncFlagsInconsistent = 1612,
+
     // ---- 1900: the bounded reader's own statuses, mapped -----------------------------------
 
     /// <summary>The payload ended inside a value the reader was part-way through.</summary>

@@ -38,9 +38,10 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// the jump came from.
 /// </para>
 /// <para>
-/// <b>The set is deliberately not complete JavaScript.</b> There is no <c>await</c> and no
-/// <c>with</c>; each is a construct the manifest refuses at the front end rather than an opcode
-/// the executor would have to answer for. What is here is what a program that runs has to have.
+/// <b>The set is deliberately not complete JavaScript.</b> There is no <c>with</c> and nothing a
+/// module declaration needs; each is a construct the manifest refuses at the front end rather than
+/// an opcode the executor would have to answer for. What is here is what a program that runs has
+/// to have.
 /// </para>
 /// <para>
 /// <b>Spread, destructuring and <c>for … of</c> ARE here, and each earned an opcode rather than a
@@ -64,11 +65,14 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// a new kind of frame.
 /// </para>
 /// <para>
-/// <b>The two suspension opcodes are NOT section 6's suspension targets.</b> Section 6 of the
+/// <b>The three suspension opcodes are NOT section 6's suspension targets.</b> Section 6 of the
 /// format frames the core's own suspend-and-resume across the host boundary, which this profile's
-/// verifier refuses outright. <see cref="Yield"/> and <see cref="YieldDelegate"/> suspend one guest
-/// invocation and resume it from inside the same interpreter, never crossing that boundary - which
-/// is why they are ordinary instructions in this set and need no section of their own.
+/// verifier refuses outright. <see cref="Yield"/>, <see cref="YieldDelegate"/> and
+/// <see cref="Await"/> suspend one guest invocation and resume it from inside the same interpreter,
+/// never crossing that boundary - which is why they are ordinary instructions in this set and need
+/// no section of their own. What differs between them is only WHO resumes: a generator's
+/// resumption comes from the guest calling <c>next</c>, and an <c>await</c>'s comes from the job
+/// queue the host drains.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=D5E924
@@ -586,6 +590,31 @@ public enum JsOpcode : byte
     /// </remarks>
     YieldDelegate = 0x6B,
 
+    /// <summary>
+    /// Pop one value, suspend the frame on it, and push what the resumption sent. The
+    /// <c>await</c> operator.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Its stack effect is <see cref="Yield"/>'s exactly, which is why one resumption path
+    /// serves both.</b> What differs is entirely outside the operand stack: a <c>yield</c> hands
+    /// its value to whoever called <c>next</c>, and an <c>await</c> hands its value to
+    /// <c>PromiseResolve</c> and registers the frame's own continuation as that promise's reaction.
+    /// The frame that comes back is the same frame either way. The two happen to be the same WIDTH
+    /// as well, and the resumption deliberately does not rely on that: it steps past the
+    /// instruction actually at the pointer, so a suspension with an operand could be added without
+    /// silently resuming one byte inside it.
+    /// </para>
+    /// <para>
+    /// <b>It is a SEPARATE opcode from <see cref="Yield"/> rather than a flag on it</b>, because
+    /// the verifier's answer differs: a suspension is admitted only in a unit whose flag says the
+    /// executor allocated it a heap frame, and the two flags are different bits naming two
+    /// different drivers. One opcode with a mode operand would have made a unit flagged
+    /// <c>Async</c> able to encode a <c>yield</c>, which no driver of this profile can resume.
+    /// </para>
+    /// </remarks>
+    Await = 0x6C,
+
     // ---- stack ------------------------------------------------------------------------------------------
 
     /// <summary>Pop one and discard it.</summary>
@@ -713,7 +742,7 @@ public static class JsOpcodes
         JsOpcode.Jump, JsOpcode.JumpIfFalse, JsOpcode.JumpIfTrue, JsOpcode.Throw,
         JsOpcode.ForInStart, JsOpcode.ForInNext,
         JsOpcode.IterateStart, JsOpcode.IterateNext, JsOpcode.IterateRest, JsOpcode.IterateClose,
-        JsOpcode.Yield, JsOpcode.YieldDelegate,
+        JsOpcode.Yield, JsOpcode.YieldDelegate, JsOpcode.Await,
         JsOpcode.Pop, JsOpcode.Duplicate, JsOpcode.DuplicateTwo, JsOpcode.Swap, JsOpcode.Pick,
     ];
 
@@ -787,7 +816,7 @@ public static class JsOpcodes
         JsOpcode.ArrayAppend or JsOpcode.SpreadArray or JsOpcode.SpreadObject or
         JsOpcode.CallSpread or JsOpcode.ConstructSpread or JsOpcode.SuperCallSpread or
         JsOpcode.IterateStart or JsOpcode.IterateRest or
-        JsOpcode.Yield or JsOpcode.YieldDelegate or
+        JsOpcode.Yield or JsOpcode.YieldDelegate or JsOpcode.Await or
         JsOpcode.Pop or JsOpcode.Duplicate or JsOpcode.DuplicateTwo or JsOpcode.Swap
             => JsOperandShape.None,
 
@@ -1032,6 +1061,7 @@ public static class JsOpcodes
             // height at this one, which is what a reader of the lowering expects `yield` to be.
             case JsOpcode.Yield:
             case JsOpcode.YieldDelegate:
+            case JsOpcode.Await:
                 pops = 1;
                 pushes = 1;
                 return true;

@@ -57,13 +57,13 @@ runs/a-template-literal-in-a-spread-argument.js|0|a-b-c 2
 # 2104 is the code the conformance runner grades the manifest boundary on; anything else scores a
 # negative test expecting a syntax error as a false pass.
 #
-# THREE OF THESE ROWS NAMED A FAMILY THAT IS NO LONGER OUT. The class and the template literal were
+# FOUR OF THESE ROWS NAMED A FAMILY THAT IS NO LONGER OUT. The class and the template literal were
 # both outside the manifest when the parameter-default bundle was written and are inside it now,
-# and the GENERATOR left it when this bundle arrived, so a row asserting any of the three is
-# refused asserts something false. None is deleted: each moved to `runs/` above, where it checks
-# the composition the change makes possible instead - which is the position the refusal was
-# guarding, still covered, from the other side.
-refused/an-async-arrow-in-a-pattern-default.js|3|2104:ConstructOutsideManifest
+# the GENERATOR left it when that bundle arrived, and the ASYNC ARROW left it with this one - so a
+# row asserting any of the four is refused asserts something false. None is deleted: each moved to
+# `runs/` above, where it checks the composition the change makes possible instead - which is the
+# position the refusal was guarding, still covered, from the other side. The async arrow's is
+# `runs/an-async-arrow-in-a-pattern-default.js`.
 
 # AND ONE THAT IS NOT THE MANIFEST'S TO REFUSE. A shorthand's key is also its binding name, so a
 # word strict code reserves is answered for as a reserved word - the syntax error every engine
@@ -339,3 +339,76 @@ limits/a-wide-unbounded-recursion.js|1|uncaught RangeError: Maximum call stack s
 --call-depth 100000 limits/an-unbounded-recursion.js|1|uncaught RangeError: Maximum call stack size exceeded
 --call-depth 100 limits/an-unbounded-recursion.js|5|CeilingReached on CallDepth
 --call-depth 0 limits/an-unbounded-recursion.js|2|is not a positive frame count
+
+# THE ASYNC FAMILY, which moved from refused-by-name to admitted on 2026-09-04. Every value below
+# was taken from the comparison engine before it was written here, so each row is a comparison
+# against another implementation rather than an assertion this component made about itself.
+#
+# THE FIRST ROW IS THE ONE THAT SAYS WHY THIS IS NOT SUGAR OVER THE GENERATOR MACHINERY. A
+# generator's call runs no instruction of its body and an async function's runs the body to its
+# first `await`, so the two drivers are distinguishable on the first line of a program - and an
+# implementation that made an async function suspended-start would answer `before,after` there and
+# pass every other row in this block.
+runs/an-async-call-starts-its-body-and-a-generators-does-not.js|0|before,async-body,after
+
+# THE THREE ORDERING ROWS, which are the ones most likely to be wrong and the ones a reader should
+# check first. `await 0` costs exactly one turn, `await` of a native promise costs the same one, and
+# `await` of a thenable costs two - and each lands at a stated point in a `then` chain registered
+# beside it, so a resumption a turn early or a turn late moves the line.
+runs/an-await-of-a-plain-value-still-yields-to-the-queue.js|0|a1,t1,a2,t2
+runs/an-await-of-a-thenable-costs-a-second-turn.js|0|then-entered,1,then-resumed,2,got:value,3,4,5
+
+# WHAT A THROW DOES, ON BOTH SIDES OF THE FIRST SUSPENSION. Before it the body is running on the
+# CALLER's stack, so letting the exception out would have been the natural thing to do and is the
+# wrong thing: `call-returned` is what the row asserts did not become `threw-at-the-call`.
+runs/an-async-function-that-throws-before-its-first-await.js|0|call-returned early:TypeError:before late:RangeError:after
+
+# A REJECTED `await` RAISES AT THE `await`, so the body's own regions run - and the loop carries on
+# afterwards, which is what a resumption that unwound the frame instead would fail.
+runs/an-await-of-a-rejection-reaches-the-bodys-own-catch.js|0|ok:0,f0,ok:1,f1,caught:bad,f2,ok:3,f3
+runs/an-await-inside-a-finally-defers-the-return.js|0|try,finally-in,finally-out,settled:from-try b
+
+# `this`, `super` AND `new.target` ACROSS A SUSPENSION. The frame is resumed by a JOB, which knows
+# nothing about the call site, so all three have to have been recorded on the frame rather than
+# re-supplied - and the async ARROW is the case that needs the `this` BOX rather than the value,
+# because a derived constructor's `this` does not exist until `super()` returns.
+runs/an-async-method-resolves-this-and-super.js|0|Base/tag/m
+runs/an-async-arrow-closes-over-this.js|0|Base/derived/false plain
+
+# WHAT AN ASYNC FUNCTION IS AS AN OBJECT: not constructible, no `prototype` property, and a
+# prototype chain two hops from `Function.prototype` through `%AsyncFunction.prototype%`.
+runs/an-async-function-is-not-a-constructor.js|0|TypeError true 2 declared false true AsyncFunction [object AsyncFunction] [object AsyncFunction] member
+
+# AND THE ROW THE ASYNC FAMILY'S ADMISSION MOVED, which was `refused/an-async-arrow-in-a-pattern-
+# default.js`: the position the refusal was guarding, checked from the other side.
+runs/an-async-arrow-in-a-pattern-default.js|0|from-the-default,from-the-array [object AsyncFunction]
+
+# THE HOST'S STATED DRAIN POINT, WITH A JOB THAT FELL DUE AFTER THE LAST SCRIPT. Two scripts in one
+# realm: the first suspends an async call at an `await` and the second runs to its end with that
+# call still suspended, so the resumption can only have happened at the drain this host performs
+# after the last script. A profile that drained implicitly at the end of each script would print
+# `resumed-at-the-drain` before `second-script-ended`, which is the behaviour no embedder could
+# reason about. The two files are named so they sort in the order they run, because this host
+# expands its arguments into a stable ordinal order rather than the order they were typed.
+runs/a-first-script-that-leaves-a-job-owed.js runs/a-second-script-the-owed-job-outlives.js|0|suspended-in-the-first-script,first-script-ended,second-script-ended,resumed-at-the-drain
+
+# A REJECTION NOBODY HANDLED IS SILENT AND THE DRAIN CONTINUES. The silence is a stated deviation -
+# this profile has no host hook a rejection report could reach, and the comparison engine prints one
+# at exit - and the continuation is the part this row pins: a drain that treated the rejection as a
+# fault would swallow every job enqueued after it.
+runs/an-unhandled-rejection-does-not-stop-the-drain.js|0|and kept running
+
+# AND THE FAMILY'S EXHAUSTION. A program that awaits for ever must end as a NAMED resource
+# exhaustion - never as a hang, and never as a terminated process. Each turn makes a promise,
+# enqueues a reaction and resumes a frame, and all three are charged, so what bounds it is the
+# allowance rather than the queue's length. The native stack does not grow with it, which is why
+# this answers on Fuel where the delegation chain above answers on the call depth.
+--fuel 200000 limits/an-await-that-never-ends.js|5|did not settle within its allowance
+
+# WHAT ADMITTING `async` PUT AT RISK, pinned here. Each of these three was only ever reachable from
+# a position this manifest refused first, and admitting the async function is what made each of them
+# need a refusal of its own. A regression puts any of them back to an expected-token diagnostic,
+# which a conformance runner scores as a failure rather than as unsupported.
+refused/an-async-generator-function.js|3|2104:ConstructOutsideManifest
+refused/an-async-generator-method-of-a-class-body.js|3|2104:ConstructOutsideManifest
+refused/a-for-await-in-an-async-function.js|3|2104:ConstructOutsideManifest

@@ -758,6 +758,88 @@ internal sealed partial class JsRealm
         error.DefineBuiltIn("errors", JsValue.Object(errors));
         return JsValue.Object(error);
     }
+
+    // ---- what an async function needs from this file ------------------------------------------
+    //
+    // THREE METHODS AND NOT A REIMPLEMENTATION. An async function's promise is an ordinary promise
+    // of this realm: it settles through the same `PromiseResolveWith` and `PromiseSettle` a
+    // `resolve` callback goes through, and its `await` attaches through the same `PromiseThen`
+    // `p.then(f)` goes through. That is what makes an `await` and a `then` on the same promise
+    // interleave in the order the specification fixes rather than in an order this profile
+    // invented - and a second settle path here would have been exactly the way to get that wrong.
+
+    /// <summary>The pending promise a call of an async function answers with.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal JsPromiseObject NewAsyncPromise() => new(PromisePrototype);
+
+    /// <summary>
+    /// Settles an async call's promise with what its body completed with.
+    /// </summary>
+    /// <remarks>
+    /// <b>A RETURN resolves and does not fulfil, and the difference is a whole turn.</b>
+    /// <c>return p</c> from an async function where <c>p</c> is a promise adopts <c>p</c>'s
+    /// eventual state through the resolve procedure, so a caller awaiting the outer promise waits
+    /// for the inner one; fulfilling with the promise as a VALUE would have handed the caller a
+    /// promise where the language hands it the promise's result. A THROW rejects with the reason
+    /// exactly as it stands, because a rejection reason is never adopted.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal void SettleAsyncPromise(
+        JsEngine engine, JsPromiseObject promise, JsValue value, bool rejected)
+    {
+        if (rejected)
+        {
+            PromiseSettle(engine, promise, value, JsPromiseState.Rejected);
+            return;
+        }
+
+        PromiseResolveWith(engine, promise, value);
+    }
+
+    /// <summary>
+    /// Performs <c>Await</c>: resolves <paramref name="value"/> the way <c>Promise.resolve</c>
+    /// does and registers <paramref name="resume"/> to run on whichever side it settles.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It goes through <c>PromiseResolve</c> and not through a shortcut for the non-promise
+    /// case, and that is the ordering the whole family is graded on.</b> <c>await 0</c> is not
+    /// free: it makes an already-fulfilled promise and attaches a reaction to it, which the queue
+    /// runs on the next turn - so <c>async function f(){ print(1); await 0; print(3); } f();
+    /// print(2);</c> prints 1, 2, 3. An implementation that noticed <c>0</c> was not a thenable
+    /// and carried straight on would print 1, 3, 2 and would be the Zalgo defect
+    /// <see cref="PromiseSchedule"/> exists to make uninspectable.
+    /// </para>
+    /// <para>
+    /// <b>The two handlers are native functions rather than a reaction shape of their own</b>, so
+    /// the reaction the queue runs is the same record a <c>then</c> makes and the ordering between
+    /// an <c>await</c> and a <c>then</c> on one promise is decided by one queue and one list.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=TBF
+    // Broiler-Falsified-If: an `await` of a value that is not a promise continues without yielding to the job queue
+    // Broiler-Human:        PENDING
+    internal void AwaitOn(
+        JsEngine engine, JsValue value, System.Action<JsEngine, JsValue, bool> resume)
+    {
+        var awaited = PromiseResolveValue(engine, value);
+
+        var onFulfil = JsValue.Object(Native("", 1, (inner, thisValue, arguments) =>
+        {
+            resume(inner, ArgOfPromise(arguments, 0), false);
+            return JsValue.Undefined;
+        }));
+
+        var onReject = JsValue.Object(Native("", 1, (inner, thisValue, arguments) =>
+        {
+            resume(inner, ArgOfPromise(arguments, 0), true);
+            return JsValue.Undefined;
+        }));
+
+        _ = PromiseThen(engine, awaited, onFulfil, onReject);
+    }
 }
 
 /// <summary>Which combinator a <c>PromiseCombine</c> walk is performing.</summary>
