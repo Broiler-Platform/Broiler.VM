@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 2310 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 2312 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 115 |
-| Code units | 4256 |
-| Relevant | 2310 |
+| Code units | 4258 |
+| Relevant | 2312 |
 | Exempt | 1946 |
-| Assessed | 2310 of 2310 (100%) |
-| Human reviewed | 0 of 2310 (0%) |
-| Unverified | 2310 |
+| Assessed | 2312 of 2312 (100%) |
+| Human reviewed | 0 of 2312 (0%) |
+| Unverified | 2312 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,7 +96,7 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 2310 |
+| HUMAN_PENDING | 2312 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -157,7 +157,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourcePrograms.cs` | 10 | 9 | 1 | 9 | None | High | 5/3 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceStaticSemantics.cs` | 40 | 24 | 16 | 24 | None | High | 14/14 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSyntax.cs` | 29 | 26 | 3 | 26 | None | Medium | 1/0 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` | 136 | 36 | 100 | 36 | None | High | 22/18 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/SliceTokenizer.cs` | 138 | 38 | 100 | 38 | None | High | 22/18 |
 | `src/Broiler.VM.Profile.JavaScript.Format/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptArtifactWriter.cs` | 20 | 17 | 3 | 17 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptFormat.cs` | 26 | 14 | 12 | 14 | None | Medium | 0/0 |
@@ -645,7 +645,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 2310 of the 2310 assessed units declare
+That is not a figure of speech. 2312 of the 2312 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

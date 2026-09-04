@@ -4223,3 +4223,41 @@ and two acceptance rows pin a strict script with a function declaration in both 
 
 **Authority and date.** The implementation of 2026-09-04 in this checkout, the sweep that found it,
 and the cases appended to `src/tests/differential/the-statement-and-object-surface.js`. 2026-09-04.
+
+### JSC-105
+
+**Where:** the tokenizer's identifier predicate, its own remark, and section 3 of the ledger, which
+carries **the Unicode data acquisition as an open external dependency** with a named holder.
+
+**What the remark said.** That identifiers are ASCII plus `$` and `_`; that the language's answer is
+the Unicode `ID_Start` property, which needs data this component has not acquired; and that a
+non-ASCII identifier is therefore refused as an unexpected character, recorded as a conformance
+exclusion.
+
+**Two things were wrong with that, and they point in opposite directions.** The code had not matched
+the remark for some time — it admitted any character `char.IsLetter` accepts. And the dependency the
+remark leaned on is not the one this needs: **the identifier properties are derivable from the
+general categories the platform already carries**, plus two small literal sets Unicode publishes as
+lists. What the unacquired data is actually for is case folding, normalisation and the property
+escapes in a pattern.
+
+**What that cost, measured.** `char.IsLetter` answers the letter categories and nothing else, so
+`Nl` — a Roman numeral is an identifier — and the six characters Unicode lists as `Other_ID_Start`
+were refused, along with every combining mark, connector punctuation, non-ASCII digit, and the
+zero-width joiner and non-joiner in continuation position. A sweep of the subtrees this programme has
+just admitted found **1,012 variants refused as an unexpected character**, `U+2118` alone accounting
+for 980. That is the one refusal this front end may not make about a construct the language admits:
+a reader is sent looking for a typo, and the harness scores a failure rather than an unsupported
+construct.
+
+**What replaced it.** `ID_Start` and `ID_Continue` as the specification derives them, with one
+subtraction stated where it is made: `U+2E2F` is the only character in both the letter categories
+and `Pattern_Syntax`, and every other character that subtraction would remove is put back by
+`Other_ID_Start` — which is why that set exists. Fifty-three code points spanning every category
+involved agree with the comparison engine, and the cases are retained.
+
+**What is still excluded is now stated rather than implied**: an identifier character outside the
+basic plane, which needs a predicate over code points rather than over UTF-16 units.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the sweep that counted the
+refusals, and the cases appended to `src/tests/differential/the-general-surface.js`. 2026-09-04.

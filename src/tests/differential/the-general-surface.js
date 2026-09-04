@@ -269,3 +269,65 @@ p(function () { return new Uint8Array(new ArrayBuffer(8), 4).length; });
 p(function () { return Object.prototype.toString.call(new Uint8Array(1)); });
 p(function () { return new Uint8Array([1,2,3]).subarray(1).join(","); });
 p(function () { return Array.prototype.slice.call(new Uint8Array([1,2])).join(","); });
+
+// --- which characters may be in an identifier. APPENDED rather than inserted: a case
+// number is how a divergence is named, and renumbering would move every declaration that
+// points at one. Each case prints the code point and whether it may START and whether it may
+// CONTINUE an identifier, which is two different Unicode properties and was one predicate.
+var indirect = (0, eval);
+function admits(source){ try { indirect(source); return 1; } catch (failure) { return 0; } }
+function point(cp){ var ch = String.fromCharCode(cp);
+  __n++; print(__n + " " + cp + " " + admits("var " + ch + ";") + " " + admits("var a" + ch + ";")); }
+point(8472);
+point(8494);
+point(12443);
+point(12444);
+point(6277);
+point(6278);
+point(183);
+point(903);
+point(4969);
+point(4976);
+point(4977);
+point(6618);
+point(8204);
+point(8205);
+point(8544);
+point(8545);
+point(12295);
+point(5870);
+point(768);
+point(769);
+point(1456);
+point(2364);
+point(2307);
+point(2363);
+point(2434);
+point(8255);
+point(8256);
+point(65075);
+point(65343);
+point(1632);
+point(1776);
+point(2406);
+point(65296);
+point(170);
+point(181);
+point(186);
+point(688);
+point(913);
+point(1488);
+point(19968);
+point(160);
+point(8232);
+point(8233);
+point(8192);
+point(169);
+point(11776);
+point(65533);
+point(178);
+point(188);
+point(8304);
+point(8364);
+point(11823);
+point(65024);
