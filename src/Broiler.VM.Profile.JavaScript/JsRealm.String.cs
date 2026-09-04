@@ -56,7 +56,7 @@ internal sealed partial class JsRealm
     private const int StringLengthCeiling = 1 << 24;
 
     /// <summary>Builds <c>String</c>, <c>String.fromCharCode</c> and <c>String.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B794C9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=82308C
     // Broiler-Human:        PENDING
     private void SetupString()
     {
@@ -73,6 +73,14 @@ internal sealed partial class JsRealm
                 if (arguments.Length == 0)
                 {
                     return JsValue.String(string.Empty);
+                }
+
+                // `String(symbol)` IS THE ONE EXPLICIT COERCION A SYMBOL ALLOWS, and it is here
+                // rather than in `ToString` on purpose: every implicit path must keep throwing, so
+                // the exception is spelled out at the one call site the language exempts.
+                if (arguments[0].IsSymbol)
+                {
+                    return JsValue.String(arguments[0].AsSymbol().Rendered);
                 }
 
                 var text = engine.ToStringValue(ArgOfString(arguments, 0));

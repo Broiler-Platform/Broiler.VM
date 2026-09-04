@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   17
-// Annotated:        17/17
-// Exempt:           22
-// Human-reviewed:   0/17
+// Relevant units:   18
+// Annotated:        18/18
+// Exempt:           23
+// Human-reviewed:   0/18
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  0/10 max
-// Unverified:       17
+// Unverified:       18
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -63,7 +63,7 @@ public static class JsFormat
     /// version-1 meanings; their bodies are read under version 2's rules where those differ, and
     /// the two places they differ - the limits body and the exception-region body - say so.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=8895FC
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=01A16C
     // Broiler-Human:        PENDING
     public enum SectionKind : uint
     {
@@ -90,6 +90,17 @@ public static class JsFormat
 
         /// <summary>The code units: one row per function, plus row zero for the program body.</summary>
         Functions = 8,
+
+        /// <summary>
+        /// The optional feature manifests this artifact declares beside the one it names in its
+        /// header.
+        /// </summary>
+        /// <remarks>
+        /// It is optional and its absence means the artifact declares none, which is what every
+        /// artifact written before this kind existed says. See <see cref="JsSurfaces"/> for why a
+        /// surface made only of globals has to be declared at all.
+        /// </remarks>
+        Surfaces = 9,
     }
 
     /// <summary>The constant-pool entry tags version 2 reads.</summary>
@@ -219,4 +230,14 @@ public static class JsFormat
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=817566
     // Broiler-Human:        PENDING
     public const uint CeilingCodeBytes = 67_108_864;
+
+    /// <summary>The most optional surfaces one artifact may declare.</summary>
+    /// <remarks>
+    /// It is deliberately smaller than the number of names it bounds. An artifact declaring more
+    /// surfaces than this build has is declaring something nobody wrote, and a ceiling that
+    /// tracked the roster would have to move every time the roster did.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=6A8F76
+    // Broiler-Human:        PENDING
+    public const uint CeilingSurfaces = 16;
 }

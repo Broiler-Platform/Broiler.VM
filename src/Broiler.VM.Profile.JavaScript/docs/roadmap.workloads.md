@@ -83,23 +83,34 @@ principles.
 
 ### 3.1 What each workload meets today
 
-| Workload | What it meets | What would have to exist | What owns it now |
-|---|---|---|---|
-| Octane `mandreel` | A reference error naming a typed array constructor | The binary surface | **Nothing** — JSW-2 |
-| Octane `gbemu` | The benchmark's own report that typed arrays are unsupported | The binary surface | **Nothing** — JSW-2 |
-| Octane `zlib` | A reference error naming `eval` | The dynamic surface | `broiler.javascript.dynamic`, JS-8 — JSW-3 |
-| Octane `code-load` | A reference error naming `eval` | The dynamic surface | `broiler.javascript.dynamic`, JS-8 — JSW-3 |
-| Octane `regexp` | It runs, and the benchmark's own checksum disagrees with what it produced | Regular expressions over the from-scratch matcher | `broiler.javascript.regexp`, JS-6 — JSW-4 |
-| Octane `pdfjs` | **The verifier refuses an artifact this host produced** | Nothing new; this is a defect | **Nothing** — JSW-1 |
-| Octane `typescript` | A type error reading a property of `undefined`, after running for a while | Nothing new; this is a defect | **Nothing** — JSW-1 |
-| test262, asynchronous cases | They cannot complete, because a promise never settles | A job queue | JS-7 — JSW-7 |
-| test262, module cases | They are not run as modules by this host | The module goal | `broiler.javascript.modules`, JS-7 — JSW-8 |
-| test262, the suite as a whole | Only chosen subtrees have run | The runs themselves, per manifest | Roadmap [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s rule — JSW-10 |
+**This table has two columns of history and one of the present.** It was written when every row
+below was a gap; the stages of section 5 have since been built, and what each row *met* then and
+*meets now* are both recorded, because a plan that quietly replaced the first with the second would
+be a plan a reader could not check *(corrected: JSC-87)*.
+
+| Workload | What it met when this was written | What it meets now |
+|---|---|---|
+| Octane `mandreel` | A reference error naming a typed array constructor | It reports a score |
+| Octane `gbemu` | The benchmark's own report that typed arrays are unsupported | It reports a score |
+| Octane `zlib` | A reference error naming `eval` | A **host** absence rather than a language one: `read`, which no manifest owns and which core contract version 1 has no shape for *(JSC-84)* |
+| Octane `code-load` | A reference error naming `eval` | It reports a score |
+| Octane `regexp` | It runs, and the benchmark's own checksum disagrees with what it produced | Its own checksum agrees |
+| Octane `pdfjs` | **The verifier refuses an artifact this host produced** | It reports a score *(JSC-81)* |
+| Octane `typescript` | A type error reading a property of `undefined`, after running for a while | It reports a score *(JSC-82)* |
+| test262, asynchronous cases | They cannot complete, because a promise never settles | A promise settles, at a drain point the host states and asks for |
+| test262, module cases | They are not run as modules by this host | Unchanged: there is no module goal |
+| test262, the suite as a whole | Only chosen subtrees have run | Unchanged: roadmap [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s rule is still unmet, and JSW-10 still owns it |
 
 **Every row above is a behaviour, and every one of them is reproducible from the commands the
-retained bundle's procedure section already carries.** Two rows are defects rather than absences and
+retained bundle's procedure section already carries.** Two rows were defects rather than absences and
 section 3.4 separates them out, because a plan that schedules a repair as though it were a feature
 has mis-stated both.
+
+**One row changed kind rather than closing, and that is the finding worth keeping.** `zlib` no longer
+meets a language absence; it meets a **shell** the benchmark assumes and this host does not have.
+Nothing in the seven-identity allocation of section 6 would ever have caught it, because it is not a
+language surface at all — and asking for it is the first amendment this profile has an observed
+reason to put to the core.
 
 ### 3.2 The surface that is absent from the realm
 
@@ -108,10 +119,17 @@ hides no other — the wide manifest's realm answers to `Object`, `Function`, `A
 `Number`, `Boolean`, `Math`, `JSON`, `Date`, `RegExp`, `Error` and `globalThis`, plus the host's
 own `print`.
 
-**Absent, and present in the comparison engine:** `Symbol`, `BigInt`, `Proxy`, `Reflect`,
-`Promise`, `WeakRef`, `FinalizationRegistry`, `Map`, `Set`, `WeakMap`, `WeakSet`, `ArrayBuffer`,
-`SharedArrayBuffer`, `DataView`, every typed array constructor, `Atomics`, `Intl`, `Temporal`, and
-`eval`.
+**Absent when this was written, and present in the comparison engine:** `Symbol`, `BigInt`,
+`Proxy`, `Reflect`, `Promise`, `WeakRef`, `FinalizationRegistry`, `Map`, `Set`, `WeakMap`,
+`WeakSet`, `ArrayBuffer`, `SharedArrayBuffer`, `DataView`, every typed array constructor,
+`Atomics`, `Intl`, `Temporal`, and `eval`.
+
+**Absent still, and the list is shorter than it was** *(corrected: JSC-87)*. `Proxy`, `Reflect`,
+`BigInt`, `Intl` and `Temporal` are absent; `SharedArrayBuffer` and `Atomics` are absent
+**deliberately**, excluded by name from the binary identity for the reason section 4 gives. The
+rest — `Symbol`, `Promise`, the keyed collections, the weak references, `ArrayBuffer`, `DataView`,
+the typed array constructors and `eval` — are present, three of them behind an optional surface a
+composition may decline.
 
 **That set is wider than the retained bundle's exclusion list, and the difference is the reason
 this section exists rather than pointing.** Bundle [JS-4-001](evidence/js-4-001/README.md) names
@@ -148,12 +166,30 @@ admit, or the format admits something the verifier's semantic stage then rejects
 two it is, is the first question JSW-1 answers**, and the answer decides whether the repair belongs
 to the lowering or to the format's specification.
 
+**The answer was neither, and the fork was drawn one level too high** *(corrected:
+[JSC-81](roadmap.corrections.md#jsc-81))*. The lowering emitted only instructions the format admits
+and the verifier decodes, and the verifier was right to refuse the composition of them: an array
+literal that is not dense-and-small left **nothing** on the operand stack where its caller expected
+one value. A lowering can be internally inconsistent while emitting nothing either named component
+could object to on its own, and a stage that had only looked for a disagreement between the two
+would not have found it.
+
 **`typescript` fails with a type error against a value the program did not expect to be
 `undefined`.** That is a semantic defect somewhere inside the admitted surface, found the way the
 three defects bundle JS-4-001 records were found — by a program longer and stranger than anything
 anybody in this repository would write. It is exactly the outcome section 3 of that bundle says the
 workloads exist to produce, and recording it as a defect rather than repairing it quietly is the
 same discipline.
+
+**It was the `arguments` binding, and the program that found it is one nobody here would have
+written** *(corrected: [JSC-82](roadmap.corrections.md#jsc-82))*. A formal parameter named
+`arguments` had its value destroyed on entry, because the compile-time scope answers a repeat
+declaration with the slot it already has and the arguments object was written into the parameter's
+own slot. The Octane TypeScript compiler has
+`function FuncDecl(name, bod, isConstructor, arguments, …)` and then reads `this.arguments`. Asking
+what else the same walk answered wrongly found a second defect the workload never reached
+*(corrected: [JSC-83](roadmap.corrections.md#jsc-83))*, which is the habit rather than the benchmark
+producing the finding.
 
 ---
 

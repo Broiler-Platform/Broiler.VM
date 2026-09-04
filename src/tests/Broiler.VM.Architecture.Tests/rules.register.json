@@ -900,6 +900,16 @@
       "activationMilestone": null,
       "nonVacuousWhen": "Both format versions exist and both manifests are accepted from 2026-09-04, and the second pass is a real file in the same assembly that the contract clause must not count - so the implementation clause compares a found set against an expected one rather than passing over an assembly with nothing in it. The corpus rows it reads are produced by the same run that replays them.",
       "witness": "N16WideSurfaceRuleTests in Broiler.VM.Architecture.Tests.dll"
+    },
+    {
+      "id": "N17",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "The realm publishes its own admitted global set, written by running Object.getOwnPropertyNames(globalThis) in a verified artifact, and no document's list of absent globals names anything on it. Both directions are decided: a document calling a present global absent fails, and the published set is checked to be a real, sorted set of identifiers rather than an empty file or prose.",
+      "evidence": "docs/realm/globals.txt, the ledger's absent-globals block",
+      "activationMilestone": null,
+      "nonVacuousWhen": "The realm admits a set containing Object, Promise, Uint8Array, print and globalThis, and the ledger's block names surfaces that are genuinely absent, so a clean result is a comparison over two real sets. A published list was the authority before this rule and was true without being exhaustive, which is the failure the rule exists to make impossible.",
+      "witness": "witnesses/register/N17-a-document-calls-a-present-global-absent.txt.witness"
     }
   ]
 }

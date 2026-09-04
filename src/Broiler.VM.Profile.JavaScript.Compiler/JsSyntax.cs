@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   47
-// Annotated:        47/47
+// Relevant units:   51
+// Annotated:        51/51
 // Exempt:           3
-// Human-reviewed:   0/47
+// Human-reviewed:   0/51
 // IP risk:          None
-// Security risk:    Low
+// Security risk:    Medium
 // Criteria:         0/0
-// Resource impact:  0/10 max
-// Unverified:       47
+// Resource impact:  3/10 max
+// Unverified:       51
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -200,19 +200,101 @@ internal sealed record JsConditionalExpression(
 /// <summary>A property access, dotted or computed.</summary>
 /// <param name="Name">The property name, when the access is dotted.</param>
 /// <param name="Computed">The key expression, when the access is computed.</param>
-// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=691B1F
+/// <param name="Optional">
+/// Whether the access was spelled <c>?.</c> and therefore SHORT-CIRCUITS the chain it belongs to
+/// when its target is nullish. It is a flag on the link rather than a node of its own because the
+/// short circuit does not belong to the link: it belongs to the <see cref="JsChainExpression"/>
+/// that encloses it, and a node per optional link would say the opposite.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=BAE977
 // Broiler-Human:        PENDING
 internal sealed record JsMemberExpression(
-    SliceSourceSpan Span, JsExpression Target, string Name, JsExpression? Computed)
-    : JsExpression(Span);
+    SliceSourceSpan Span,
+    JsExpression Target,
+    string Name,
+    JsExpression? Computed,
+    bool Optional = false) : JsExpression(Span);
 
 /// <summary>A call.</summary>
-// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=58E9A9
+/// <param name="Optional">Whether the call was spelled <c>?.(</c>, which tests the CALLEE.</param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=DF7A99
 // Broiler-Human:        PENDING
 internal sealed record JsCallExpression(
     SliceSourceSpan Span,
     JsExpression Callee,
-    System.Collections.Generic.IReadOnlyList<JsExpression> Arguments) : JsExpression(Span);
+    System.Collections.Generic.IReadOnlyList<JsExpression> Arguments,
+    bool Optional = false) : JsExpression(Span);
+
+/// <summary>
+/// The whole of an optional chain: the outermost link, and the place its short circuit lands.
+/// </summary>
+/// <remarks>
+/// <para>
+/// <b>The short circuit is a property of the CHAIN and not of the <c>?.</c> that triggers it</b>,
+/// and that is the entire difficulty of the construct. In <c>a?.b.c.d</c> the only optional link
+/// is the first one, yet a nullish <c>a</c> answers <c>undefined</c> for the whole expression and
+/// <c>.c</c> is never attempted - so the jump target is not "the next link" but "past every
+/// remaining link", which is a position only the enclosing node knows. A lowering that treated
+/// <c>a?.b</c> as a self-contained conditional would evaluate <c>.c</c> on <c>undefined</c> and
+/// throw, which is precisely the throw the construct exists to prevent.
+/// </para>
+/// <para>
+/// <b>A parenthesis ends a chain, and this node is how that fact survives to the lowering.</b>
+/// <c>(a?.b).c</c> throws when <c>a</c> is nullish, because the parenthesised chain completed with
+/// <c>undefined</c> and <c>.c</c> is an ordinary access on it. The parser wraps at exactly the
+/// point where it stops looking for more links, so the wrap IS the parenthesis.
+/// </para>
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8B562C
+// Broiler-Human:        PENDING
+internal sealed record JsChainExpression(SliceSourceSpan Span, JsExpression Chain)
+    : JsExpression(Span);
+
+/// <summary>
+/// A template literal: the cooked chunks, the raw chunks, and the substitutions between them.
+/// </summary>
+/// <remarks>
+/// <para>
+/// <b>There is always one more chunk than there is substitution</b>, empty chunks included, and
+/// every consumer depends on it: <c>`${x}`</c> has the two empty chunks around one substitution
+/// and <c>``</c> has one empty chunk and no substitution at all. Dropping an empty chunk would
+/// make a tagged template's <c>strings</c> array the wrong length, which is observable.
+/// </para>
+/// <para>
+/// <b>Cooked and raw are both carried because a tagged template needs both.</b> The cooked chunk
+/// is what <c>\n</c> means; the raw chunk is what <c>\n</c> was written as. An untagged template
+/// uses only the cooked ones, but the tree is the same tree either way and deciding which to keep
+/// at parse time would need the parser to know what it does not yet know.
+/// </para>
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5DA672
+// Broiler-Human:        PENDING
+internal sealed record JsTemplateLiteral(
+    SliceSourceSpan Span,
+    System.Collections.Generic.IReadOnlyList<string> Cooked,
+    System.Collections.Generic.IReadOnlyList<string> Raw,
+    System.Collections.Generic.IReadOnlyList<JsExpression> Substitutions) : JsExpression(Span);
+
+/// <summary>A tagged template: <c>tag`a${x}b`</c>.</summary>
+/// <remarks>
+/// It is not a template that happens to have a function in front of it. The template is never
+/// concatenated at all - the tag receives the chunks as an Array and the substitutions as ordinary
+/// arguments, and what it does with them is its own business.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=EC53F6
+// Broiler-Human:        PENDING
+internal sealed record JsTaggedTemplate(
+    SliceSourceSpan Span, JsExpression Tag, JsTemplateLiteral Quasi) : JsExpression(Span);
+
+/// <summary><c>new.target</c>.</summary>
+/// <remarks>
+/// A node of its own rather than a member access on a <c>new</c>, because it is neither: the
+/// grammar spells it as one token sequence with no expression in it, and <c>new</c> here is a
+/// keyword rather than an operator with an operand.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CD5043
+// Broiler-Human:        PENDING
+internal sealed record JsNewTargetExpression(SliceSourceSpan Span) : JsExpression(Span);
 
 /// <summary><c>new</c>.</summary>
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=44BD6A

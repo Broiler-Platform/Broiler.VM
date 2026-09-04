@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   8
 // Annotated:        8/8
-// Exempt:           46
+// Exempt:           49
 // Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    High
@@ -48,7 +48,7 @@ namespace Broiler.VM.Profile.JavaScript;
 /// predicate's own record calls a worse record than one block on the vocabulary.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=16E590
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=FA4D44
 // Broiler-Human:        PENDING
 public enum JavaScriptDiagnosticCode
 {
@@ -212,6 +212,26 @@ public enum JavaScriptDiagnosticCode
 
     /// <summary>An exception region states a range, a handler or a kind this format refuses.</summary>
     MalformedExceptionRegion = 1605,
+
+    /// <summary>The artifact declares one optional surface twice.</summary>
+    DuplicateSurface = 1606,
+
+    /// <summary>The artifact declares an optional surface this build does not implement.</summary>
+    /// <remarks>
+    /// It is a different failure from <see cref="SurfaceOutsideComposition"/> and the difference is
+    /// who is wrong: this one says nobody wrote the surface, that one says somebody declined it.
+    /// </remarks>
+    UnknownSurface = 1607,
+
+    /// <summary>
+    /// The artifact declares an optional surface this composition did not admit.
+    /// </summary>
+    /// <remarks>
+    /// This is the manifest boundary as a policy boundary, refused at verification, which roadmap
+    /// section 6 distinguishes by name from the run-time refusal a composition that admits a
+    /// surface and registers no provider produces.
+    /// </remarks>
+    SurfaceOutsideComposition = 1608,
 
     // ---- 1900: the bounded reader's own statuses, mapped -----------------------------------
 

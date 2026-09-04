@@ -53,8 +53,22 @@ opened `broiler.javascript.core` at JS-5, and the row the table gained instead i
 still says is that regular expressions go through a from-scratch matcher at JS-6 or out with a
 published failure**, and neither is what shipped; section 3's row carries that.
 
-**There is still no suspension, no guest-initiated load and no snapshot**, and the three rows that
-moved are `[PARTIAL]`: each owns a bundle that demonstrates some of its gate, with every unmet
+**A second batch of work landed on 2026-09-04, against the workload roadmap's stages rather than
+against a milestone, and it moves no row here.** What it did is repair two defects two Octane
+benchmarks found; mint an optional-surface mechanism and two identities over it —
+`broiler.javascript.binary` and `broiler.javascript.dynamic` — so that a composition declining one
+refuses an artifact declaring it **at verification** rather than at run time; replace the regular
+expression translation with a matcher this profile owns; add `Symbol`, the keyed collections, the
+weak references and `Promise`; give the realm a job queue drained at a point the host states; and
+measure the per-frame cost of this interpreter, which found the call-depth bound wrong in both
+directions and terminating the process at its own limit. The corrections file carries the readings
+each of those replaced, at [JSC-81](roadmap.corrections.md#jsc-81) through
+[JSC-87](roadmap.corrections.md#jsc-87). **Every one of them is observed repository state under
+section 1's third category**: it explains a status and satisfies no gate, because no bundle has been
+collected over any of it and nobody has reviewed a line.
+
+**There is still no suspension and no snapshot; there IS a guest-initiated load now**, and the three
+rows that moved on 2026-09-04 are `[PARTIAL]`: each owns a bundle that demonstrates some of its gate, with every unmet
 clause named in that bundle's own exclusions. **A third-party suite is pinned and run now, and what
 it was run over is subtrees somebody chose** — which measures those subtrees and not the suite, so
 roadmap [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s rule,
@@ -635,24 +649,64 @@ unrelated reason produces a near-perfect total that means nothing — the mistak
 the pass column of one of these runs without the unsupported column beside it is reading a number
 about which subtree was chosen.
 
+**What is absent from the realm is now a list a rule decides rather than a list a document
+asserts.** Bundle JS-4-001 published one; every name on it was absent and the list was not the whole
+set, which is the failure the workload roadmap's section 3.2 names — *a list a later reader mistakes
+for the whole set is how a gap survives a review*. The realm now publishes what it admits, by
+running `Object.getOwnPropertyNames(globalThis)` in a verified artifact and writing the answer to
+[`docs/realm/globals.txt`](realm/globals.txt); rule N17 compares that file with the block below and
+fails when the two disagree in either direction. **The block is the claim; the file is the fact.**
+
+```absent-globals
+Atomics
+BigInt
+BigInt64Array
+BigUint64Array
+Intl
+Proxy
+Reflect
+SharedArrayBuffer
+Temporal
+```
+
+**Two of the nine are absent DELIBERATELY rather than for want of work.** `SharedArrayBuffer` and
+`Atomics` are the multi-agent surface; they need the agent model of roadmap
+[section 13](roadmap.md#13-realms-agents-and-the-host-boundary), and folding them into the binary
+identity would let a composition that wanted an ordinary byte buffer admit cross-agent shared memory
+by accident. `BigInt64Array` and `BigUint64Array` are absent *because* `BigInt` is: a typed array of
+a value kind the realm does not have would be a constructor that cannot answer.
+
 **What the wide manifest does not admit is a list, and nothing on it is admitted partially.** It is
 the same list the end-user host's own correction carries as the reason that host is still not
 advertised ([JSC-75](roadmap.corrections.md#jsc-75)), and the manifest's minting records it too
-([JSC-70](roadmap.corrections.md#jsc-70)). Refused **by name at the front end**: `class`, generator,
-`async` function, module, destructuring, spread, template literal, tagged template, `for … of`,
-optional chain, `with`, Proxy, Reflect,
-Symbol, BigInt, typed array, `eval` and the `Function` constructor. A refusal by name is what the
+([JSC-70](roadmap.corrections.md#jsc-70)). Refused **by name at the front end**: `class`, `super`,
+generator, `yield`, `async` function, `await`, module, destructuring — pattern, parameter and catch
+parameter alike — a rest parameter, a parameter default, spread, `for … of` and `with`. Absent
+**from the realm** rather than from the grammar: Proxy, Reflect and BigInt.
+
+**Seven entries left that list, and the list is worth reading for what leaving it means.** A
+template literal, a tagged template, an optional chain and `new.target` are admitted by the front
+end and exercised. `Symbol` is a primitive of the realm and the typed arrays are objects in it,
+each behind a manifest identity a composition may decline — `broiler.javascript.binary` for the
+buffers and the views, `broiler.javascript.dynamic` for `eval` and the `Function` constructor —
+and a composition that declines one refuses an artifact naming it **at verification**, which is the
+difference between an absence and a refusal. A refusal by name is what the
 harness's `unsupported` verdict counts, and a program using any of these is refused rather than
 mis-run — which is the manifest boundary roadmap
 [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted) states, applied to
 a manifest wide enough that a reader might now expect a fallback. There is none.
 
-**Three approximations are shipped rather than excluded, and each is declared where it is made**
-([JSC-75](roadmap.corrections.md#jsc-75) carries them beside the list above).
-**RegExp is translated to `System.Text.RegularExpressions`**, and the file that does it declares the
-approximation rather than leaving a reader to find it; **the Octane RegExp benchmark runs and fails
-its own checksum**, which is the shape of what an approximation costs — it does not refuse, and it
-does not agree. **`Date` fixes the local time zone to UTC.** **`arguments` is unmapped.**
+**Three approximations were shipped rather than excluded, and one of the three is gone.**
+([JSC-75](roadmap.corrections.md#jsc-75) carries them beside the list above.) **RegExp was translated
+to `System.Text.RegularExpressions`**, and the Octane RegExp benchmark ran and failed its own
+checksum — the shape of what an approximation costs, since it neither refused nor agreed. **It is
+now a matcher this profile owns**: a pattern is parsed, lowered to an instruction array and run by a
+metered backtracker, no call site in the closure constructs a compiled-mode regular expression from
+the host platform, and the benchmark's own checksum agrees. What that leaves is a shorter list of
+named divergences published in the file's own header rather than an approximation covering
+everything. **`Date` still fixes the local time zone to UTC.** **`arguments` is still unmapped** —
+though a formal parameter of that name is now the binding rather than being overwritten by the
+object ([JSC-82](roadmap.corrections.md#jsc-82)).
 
 **The refusal by name is the manifest boundary's whole enforcement, and it was leaking.** An audit
 of every excluded construct family against every syntactic position it admits found the refusals
@@ -674,21 +728,37 @@ of throwing**. A reader who saw the temporal dead zone repaired on 2026-09-03
 read before initialisation throw where the binding is a binding, and a script-level `let` here is a
 property.
 
-**The suite found one defect of the kind it exists to find, and it is recorded rather than
-quietly repaired.** Three subtrees of the first run did not report a result at all: a
-tail-call-optimisation case recursing a hundred thousand deep **terminated the process**, at a
-depth neither the call-depth ceiling nor the runtime's own sufficient-stack probe reached
-first. A stack overflow is the one failure the CLR cannot turn into an exception, so nothing
-downstream could have reported it. It is repaired - the profile runs a guest invocation on a
-thread whose stack it declares, and a recursing program is refused as a resource exhaustion
-naming `CallDepth` - and what the repair does not do is measure the per-frame cost the declared
-stack was chosen against, or show the refusal under Native AOT on any RID.
-[JSC-79](roadmap.corrections.md#jsc-79) carries the reading of the plan this changed.
+**The suite found one defect of the kind it exists to find, the repair for it was wrong in a way
+only a measurement could show, and both are recorded rather than quietly fixed.** Three subtrees of
+the first run did not report a result at all: a tail-call-optimisation case recursing a hundred
+thousand deep **terminated the process**, at a depth neither the call-depth ceiling nor the
+runtime's own sufficient-stack probe reached first. A stack overflow is the one failure the CLR
+cannot turn into an exception, so nothing downstream could have reported it. The repair — a guest
+invocation on a thread whose stack the profile declares, and a counted bound compared against a
+limit — did not measure the per-frame cost the declared stack was chosen against, and
+[JSC-79](roadmap.corrections.md#jsc-79) said so.
 
-**And there is no job queue.** An asynchronous test262 case cannot complete, whatever the front end
-does with its syntax. The two facts are separate and both are true: the `async` function is refused
-by name at the manifest boundary, and the host has nowhere to run a job that would fall due after a
-script returns.
+**The measurement was then taken and the bound it checked was wrong twice over**
+([JSC-85](roadmap.corrections.md#jsc-85)). A bisection over the published binary, retained as
+`eng/measure-frame-cost.py`, shows the interpreter surviving far more frames than the bound admitted
+— and shows the bound **terminating the process at its own limit**, because the bound reported itself
+by throwing an exception whose construction and dispatch needed stack the program had spent getting
+there. A counted bound that reports itself by throwing is a bound whose safety depends on the cost
+of the throw. The backstop now ends the operation as a resource exhaustion, the profile's declared
+call-depth maximum is short enough that the budget ceiling always answers first, and four acceptance
+rows pin the answers. **What is still not shown is the refusal under Native AOT on any RID**, which
+is a collection rather than a change to this checkout.
+
+**There is a job queue now, and the second half of that sentence is what changed.** This paragraph
+read *there is no job queue*, and the two facts it separated were that the `async` function is
+refused by name at the manifest boundary and that the host had nowhere to run a job falling due
+after a script returns. The second is closed: a promise settles, its reactions run as jobs, and the
+queue is drained **at a point the host chooses and states** — by invoking a reserved entry point,
+because a queue drained implicitly at an unstated point is a behaviour no embedder can reason about.
+The end-user host states its drain point as "after the last script". A job that enqueues jobs for
+ever spends the allowance and ends as a resource exhaustion rather than hanging. **The first fact
+still holds**: `async` and `await` are still refused by name, so an asynchronous test262 case still
+cannot be written in the syntax the suite writes it in.
 
 **What none of this is.** **Native AOT was not published on the machine this was written on**,
 and the component's lane is the authority for what publishes — under section 1 a lane retains

@@ -83,7 +83,7 @@ internal sealed partial class JsRealm
     private readonly JsEngine engine;
 
     /// <summary>Builds a realm on <paramref name="owner"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6AAA1A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7AB57C
     // Broiler-Human:        PENDING
     internal JsRealm(JsEngine owner)
     {
@@ -114,6 +114,26 @@ internal sealed partial class JsRealm
         SetupJson();
         SetupDate();
         SetupRegExp();
+
+        // THE OPTIONAL SURFACES ARE BUILT BEFORE THE GLOBAL SETUP AND ONLY WHEN ADMITTED. A
+        // composition that declined one has already had every artifact declaring it refused at
+        // verification, so nothing that runs here can reach these names; building them anyway would
+        // put a global on the object that no admitted program may use and that a `typeof` would
+        // nonetheless find.
+        if (owner.Admits(Format.JsSurfaces.Binary))
+        {
+            SetupBinary();
+        }
+
+        if (owner.Admits(Format.JsSurfaces.Dynamic))
+        {
+            SetupDynamic();
+        }
+
+        SetupSymbol();
+        SetupCollections();
+        SetupCollectionIterators();
+        SetupPromise();
         SetupGlobal();
     }
 

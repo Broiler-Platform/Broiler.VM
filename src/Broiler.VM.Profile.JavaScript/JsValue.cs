@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   26
-// Annotated:        26/26
-// Exempt:           19
-// Human-reviewed:   0/26
+// Relevant units:   29
+// Annotated:        29/29
+// Exempt:           20
+// Human-reviewed:   0/29
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       26
+// Unverified:       29
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -19,13 +19,13 @@ namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>The value kinds the <c>broiler.javascript.wide</c> surface has.</summary>
 /// <remarks>
-/// Six of the language's seven primitive types are here, and Symbol and BigInt are not: the
-/// manifest admits neither, so a value of either kind is unreachable rather than unhandled.
+/// Six of the language's seven primitive types were here at first and Symbol has since joined them;
+/// BigInt has not, so a value of that kind is unreachable rather than unhandled.
 /// <see cref="Empty"/> is not a language value at all - it is the marker a binding holds before it
 /// is initialised, and reading it is what makes the temporal dead zone a throw rather than an
 /// <c>undefined</c>.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7A80F2
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2B2B1B
 // Broiler-Human:        PENDING
 internal enum JsType : byte
 {
@@ -49,6 +49,14 @@ internal enum JsType : byte
 
     /// <summary>An object, which includes every function and every array.</summary>
     Object = 6,
+
+    /// <summary>A Symbol: a unique value usable as a property key.</summary>
+    /// <remarks>
+    /// It arrived after the other six and the enum says so by its number rather than by a comment
+    /// somewhere else. BigInt is still absent: a value of that kind is unreachable rather than
+    /// unhandled, and the seventh primitive type this surface has is this one.
+    /// </remarks>
+    Symbol = 7,
 }
 
 /// <summary>
@@ -141,6 +149,21 @@ internal readonly struct JsValue : System.IEquatable<JsValue>
     // Broiler-Human:        PENDING
     internal static JsValue Object(JsObject value) => new(JsType.Object, 0, value);
 
+    /// <summary>A Symbol.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3B602A
+    // Broiler-Human:        PENDING
+    internal static JsValue Symbol(JsSymbol value) => new(JsType.Symbol, 0, value);
+
+    /// <summary>Whether this is a Symbol.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5719D9
+    // Broiler-Human:        PENDING
+    internal bool IsSymbol => Type == JsType.Symbol;
+
+    /// <summary>The Symbol this holds.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=000C3F
+    // Broiler-Human:        PENDING
+    internal JsSymbol AsSymbol() => (JsSymbol)reference!;
+
     /// <summary>Whether this is the uninitialised-binding marker.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5A93EC
     // Broiler-Human:        PENDING
@@ -192,7 +215,7 @@ internal readonly struct JsValue : System.IEquatable<JsValue>
     internal JsObject? AsObjectOrNull() => Type == JsType.Object ? (JsObject)reference! : null;
 
     /// <summary>The abstract operation <c>ToBoolean</c>, which calls nothing.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=BF17CE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8A68D4
     // Broiler-Human:        PENDING
     internal bool ToBooleanValue() => Type switch
     {
@@ -200,6 +223,7 @@ internal readonly struct JsValue : System.IEquatable<JsValue>
         JsType.Number => number != 0 && !double.IsNaN(number),
         JsType.String => ((string)reference!).Length != 0,
         JsType.Object => true,
+        JsType.Symbol => true,
         _ => false,
     };
 
@@ -208,7 +232,7 @@ internal readonly struct JsValue : System.IEquatable<JsValue>
     /// <c>typeof null</c> is <c>"object"</c>. It is a defect of the language that every
     /// implementation reproduces, and reproducing it is the whole job.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=ADEDDC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C41635
     // Broiler-Human:        PENDING
     internal string TypeOf() => Type switch
     {
@@ -217,6 +241,7 @@ internal readonly struct JsValue : System.IEquatable<JsValue>
         JsType.Boolean => "boolean",
         JsType.Number => "number",
         JsType.String => "string",
+        JsType.Symbol => "symbol",
         _ => ((JsObject)reference!).IsCallable ? "function" : "object",
     };
 
@@ -228,7 +253,7 @@ internal readonly struct JsValue : System.IEquatable<JsValue>
     /// equal when they are the same object and never otherwise; two Strings are equal when their
     /// code-unit sequences are.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=50076E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E7A4CA
     // Broiler-Human:        PENDING
     internal bool StrictlyEquals(JsValue other)
     {
@@ -243,7 +268,7 @@ internal readonly struct JsValue : System.IEquatable<JsValue>
             JsType.Boolean => number == other.number,
             JsType.Number => number == other.number,
             JsType.String => System.String.Equals((string)reference!, (string)other.reference!, System.StringComparison.Ordinal),
-            JsType.Object => ReferenceEquals(reference, other.reference),
+            JsType.Object or JsType.Symbol => ReferenceEquals(reference, other.reference),
             _ => true,
         };
     }

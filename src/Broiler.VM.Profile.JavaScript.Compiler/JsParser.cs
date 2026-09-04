@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   57
-// Annotated:        57/57
-// Exempt:           7
-// Human-reviewed:   0/57
+// Relevant units:   79
+// Annotated:        79/79
+// Exempt:           13
+// Human-reviewed:   0/79
 // IP risk:          None
-// Security risk:    Medium
-// Criteria:         0/0
-// Resource impact:  2/10 max
-// Unverified:       57
+// Security risk:    High
+// Criteria:         2/2
+// Resource impact:  3/10 max
+// Unverified:       79
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -30,10 +30,21 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// </para>
 /// <para>
 /// <b>What it refuses, it refuses by name.</b> The wide manifest admits no class, generator,
-/// <c>async</c> function, module declaration, destructuring pattern, spread, template literal,
-/// <c>for…of</c>, <c>with</c> or optional chain. Each is parsed far enough to be recognised and
-/// then reported as a construct outside the manifest, at its own position - not as an unexpected
-/// token, which would send a reader looking for a typo.
+/// <c>async</c> function, module declaration, destructuring pattern, spread, <c>for…of</c> or
+/// <c>with</c>. Each is parsed far enough to be recognised and then reported as a construct
+/// outside the manifest, at its own position - not as an unexpected token, which would send a
+/// reader looking for a typo.
+/// </para>
+/// <para>
+/// <b>Four families left that list on 2026-09-04 and are now PARSED rather than named.</b> A
+/// template literal and a tagged template become a <see cref="JsTemplateLiteral"/> with its chunks
+/// split and its substitutions parsed; an optional chain becomes links carrying an
+/// <c>Optional</c> flag inside one <see cref="JsChainExpression"/>, which is the node that owns
+/// where the short circuit lands; and <c>new.target</c> becomes a node of its own, admitted only
+/// where the grammar admits it - inside an ordinary function body, and not at the top level of a
+/// script even through an arrow. Nothing else moved: every other refusal above is still spelled
+/// where it was, because the conformance runner grades the manifest boundary on the diagnostic
+/// code and a refusal removed by accident is a manifest change nobody declared.
 /// </para>
 /// <para>
 /// <b>And it refuses by name in EVERY position the construct can appear in, which is a stronger
@@ -80,9 +91,22 @@ internal sealed class JsParser
     // Broiler-Human:        PENDING
     private bool strict;
 
-    /// <summary>Creates a parser over an already-tokenized source.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9D7915
+    /// <summary>
+    /// How many ordinary function bodies enclose the cursor, which is what <c>new.target</c> needs.
+    /// </summary>
+    /// <remarks>
+    /// <b>An arrow does not count, and that is the whole reason this is a count of ORDINARY
+    /// bodies.</b> An arrow has no <c>new.target</c> of its own - it reads the enclosing function's,
+    /// exactly as it reads the enclosing <c>this</c> - so <c>function f() { return () =&gt;
+    /// new.target; }</c> is admitted while <c>() =&gt; new.target</c> at the top level is the
+    /// syntax error every engine reports. A counter that incremented for arrows would answer the
+    /// second one wrong in the direction that matters, by admitting a program the language does not.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=837D17
     // Broiler-Human:        PENDING
+    private int functionDepth;
+
+    /// <summary>Creates a parser over an already-tokenized source.</summary>
     /// <param name="stream">The tokens to read.</param>
     /// <param name="parseOptions">The goal and the ceilings this parse is held to.</param>
     /// <param name="forceStrict">
@@ -94,11 +118,23 @@ internal sealed class JsParser
     /// reached the lowering only, so every strict-only early error was invisible in exactly the
     /// variant that exists to test it.
     /// </param>
-    internal JsParser(SliceToken[] stream, SliceParseOptions parseOptions, bool forceStrict = false)
+    /// <param name="enclosingFunctionDepth">
+    /// How many ordinary function bodies enclose the tokens this parser is given. It is non-zero
+    /// only for the sub-parse of a template substitution, whose tokens are a slice of a source
+    /// this parser never sees the rest of - so the nesting it sits inside has to be handed to it.
+    /// </param>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=A0C1D5
+    // Broiler-Human:        PENDING
+    internal JsParser(
+        SliceToken[] stream,
+        SliceParseOptions parseOptions,
+        bool forceStrict = false,
+        int enclosingFunctionDepth = 0)
     {
         tokens = stream;
         options = parseOptions;
         strict = forceStrict;
+        functionDepth = enclosingFunctionDepth;
     }
 
     /// <summary>Every refusal this pass produced, in source order.</summary>
@@ -735,7 +771,7 @@ internal sealed class JsParser
         return parameters;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=581A91
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=02ADFD
     // Broiler-Human:        PENDING
     private JsFunctionNode ParseFunctionBody(
         SliceSourceSpan span,
@@ -748,11 +784,21 @@ internal sealed class JsParser
         var directives = ParseDirectives();
         var body = new System.Collections.Generic.List<JsStatement>();
 
+        if (!isArrow)
+        {
+            functionDepth++;
+        }
+
         while (Current.Kind != SliceTokenKind.CloseBrace &&
             Current.Kind != SliceTokenKind.EndOfSource &&
             diagnostics.Count == 0)
         {
             body.Add(ParseStatement());
+        }
+
+        if (!isArrow)
+        {
+            functionDepth--;
         }
 
         Expect(SliceTokenKind.CloseBrace, "}");
@@ -1155,29 +1201,69 @@ internal sealed class JsParser
         return operand;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=4A7D70
+    /// <summary>
+    /// Parses a run of member accesses, calls, tagged templates and optional links from one head.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The whole run is one chain, and the wrap at the end is what says so.</b> An optional
+    /// link short-circuits past EVERY remaining link and not merely past the next one, so the node
+    /// that has to exist is one enclosing the outermost link - which is the value this loop holds
+    /// when it stops. Wrapping only when a <c>?.</c> was actually seen keeps every chain-free
+    /// program's tree byte-for-byte what it was.
+    /// </para>
+    /// <para>
+    /// <b>And where the loop stops IS the parenthesis.</b> <c>(a?.b).c</c> reaches this method
+    /// twice: the inner call wraps and returns, and the outer one sees a wrapped value with a
+    /// <c>.</c> after it and no <c>?.</c> of its own. So the outer access is ordinary and throws on
+    /// a nullish <c>a</c>, which is what the language says and what a chain that leaked past its
+    /// parentheses would get wrong.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=750BDD
     // Broiler-Human:        PENDING
     private JsExpression ParseCallChain()
     {
         var span = Span();
         JsExpression current;
+        var optional = false;
 
         if (Current.Kind == SliceTokenKind.New)
         {
             Advance();
 
+            // `new.target` IS A MEMBER EXPRESSION AND NOT A FINISHED ONE, so it joins the loop
+            // below rather than returning. `new.target.name` and `new.target === C` are both
+            // ordinary programs; returning here would hand the `.` to a caller that has no reading
+            // for it and report a syntax error against a construct the language admits.
             if (Current.Kind == SliceTokenKind.Dot)
             {
-                return OutsideExpression(span, "`new.target`");
+                current = ParseNewTarget(span);
             }
+            else
+            {
+                var callee = ParseMemberOnly();
 
-            var callee = ParseMemberOnly();
+                var arguments = Current.Kind == SliceTokenKind.OpenParen
+                    ? ParseArguments()
+                    : [];
 
-            var arguments = Current.Kind == SliceTokenKind.OpenParen
-                ? ParseArguments()
-                : [];
+                current = new JsNewExpression(span, callee, arguments);
 
-            current = new JsNewExpression(span, callee, arguments);
+                // `new a?.b()` HAS NO READING. The language forbids an optional link directly on a
+                // `new` expression, and the reason is that `new` needs a reference the chain has
+                // already agreed may not exist. Saying so here is the honest answer; letting the
+                // loop below take it would silently produce `(new a)?.b()`, a different program.
+                if (Current.Kind == SliceTokenKind.QuestionDot)
+                {
+                    Refuse(
+                        Span(),
+                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        "an optional chain does not begin at a `new` expression");
+
+                    return current;
+                }
+            }
         }
         else
         {
@@ -1194,7 +1280,45 @@ internal sealed class JsParser
                     break;
 
                 case SliceTokenKind.QuestionDot:
-                    return OutsideExpression(span, "an optional chain");
+                {
+                    optional = true;
+                    Advance();
+
+                    if (Current.Kind == SliceTokenKind.OpenParen)
+                    {
+                        current = new JsCallExpression(
+                            span, current, ParseArguments(), Optional: true);
+
+                        break;
+                    }
+
+                    if (Current.Kind == SliceTokenKind.OpenBracket)
+                    {
+                        Advance();
+                        var optionalKey = ParseExpression();
+                        Expect(SliceTokenKind.CloseBracket, "]");
+
+                        current = new JsMemberExpression(
+                            span, current, string.Empty, optionalKey, Optional: true);
+
+                        break;
+                    }
+
+                    if (Current.Kind == SliceTokenKind.TemplateLiteral)
+                    {
+                        Refuse(
+                            Span(),
+                            SliceSourceDiagnosticCode.UnexpectedToken,
+                            "a tagged template has no reading inside an optional chain");
+
+                        return new JsChainExpression(span, current);
+                    }
+
+                    current = new JsMemberExpression(
+                        span, current, MemberName(), null, Optional: true);
+
+                    break;
+                }
 
                 case SliceTokenKind.OpenBracket:
                 {
@@ -1210,16 +1334,71 @@ internal sealed class JsParser
                     break;
 
                 case SliceTokenKind.TemplateLiteral:
-                    return OutsideExpression(span, "a tagged template");
+                {
+                    // THE SAME PROHIBITION FROM THE OTHER SIDE. `a?.b`c`` is refused wherever the
+                    // template sits in the chain, because a tag receives a reference and an
+                    // optional chain is the one expression that may have declined to produce one.
+                    if (optional)
+                    {
+                        Refuse(
+                            Span(),
+                            SliceSourceDiagnosticCode.UnexpectedToken,
+                            "a tagged template has no reading inside an optional chain");
+
+                        return new JsChainExpression(span, current);
+                    }
+
+                    current = new JsTaggedTemplate(span, current, ParseTemplate());
+                    break;
+                }
 
                 default:
-                    return current;
+                    return optional ? new JsChainExpression(span, current) : current;
             }
         }
     }
 
+    /// <summary>Parses <c>new.target</c>, having already consumed the <c>new</c>.</summary>
+    /// <remarks>
+    /// <b>It is admitted only where the grammar admits it.</b> <c>new.target</c> at the top level
+    /// of a script is a syntax error in every engine, and so is one inside a top-level arrow -
+    /// because the arrow reads the enclosing function's, and there is none. Reporting that as an
+    /// unexpected token rather than as a construct outside the manifest is the point: the manifest
+    /// is not what forbids it, the language is.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B6B03F
+    // Broiler-Human:        PENDING
+    private JsExpression ParseNewTarget(SliceSourceSpan span)
+    {
+        Advance();
+
+        if (!string.Equals(Current.RawText, "target", System.StringComparison.Ordinal))
+        {
+            Refuse(
+                Span(),
+                SliceSourceDiagnosticCode.UnexpectedToken,
+                "`new.` is followed by `target` and by nothing else");
+
+            return new JsNullLiteral(span);
+        }
+
+        Advance();
+
+        if (functionDepth == 0)
+        {
+            Refuse(
+                span,
+                SliceSourceDiagnosticCode.UnexpectedToken,
+                "`new.target` names how a function was called and no function encloses this one");
+
+            return new JsNullLiteral(span);
+        }
+
+        return new JsNewTargetExpression(span);
+    }
+
     /// <summary>Parses the callee of a <c>new</c>, which stops before the argument list.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=95FA4C
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5B0A3D
     // Broiler-Human:        PENDING
     private JsExpression ParseMemberOnly()
     {
@@ -1243,6 +1422,14 @@ internal sealed class JsParser
                     current = new JsMemberExpression(span, current, string.Empty, key);
                     break;
                 }
+
+                // A TAGGED TEMPLATE IS A MEMBER EXPRESSION, so `new tag`x`` constructs with the
+                // TAG's result and not with the `new` expression tagged afterwards. The two
+                // readings differ in which function is called with what, so the grammar's answer
+                // is the one to keep.
+                case SliceTokenKind.TemplateLiteral:
+                    current = new JsTaggedTemplate(span, current, ParseTemplate());
+                    break;
 
                 default:
                     return current;
@@ -1281,7 +1468,7 @@ internal sealed class JsParser
         return arguments;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=1C93C8
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7FB015
     // Broiler-Human:        PENDING
     private JsExpression ParsePrimary()
     {
@@ -1409,7 +1596,7 @@ internal sealed class JsParser
                 return OutsideExpression(span, "`super`");
 
             case SliceTokenKind.TemplateLiteral:
-                return OutsideExpression(span, "a template literal");
+                return ParseTemplate();
 
             default:
                 Refuse(
@@ -1627,6 +1814,365 @@ internal sealed class JsParser
         return "#invalid";
     }
 
+    // ---- templates -----------------------------------------------------------------------------
+
+    /// <summary>Splits the template at the cursor into its chunks and its substitutions.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The tokenizer hands a template over WHOLE - one token, backtick to backtick - so this is
+    /// where it is taken apart.</b> That is a deliberate division and not an oversight: the slice
+    /// front end, which shares the tokenizer, admits no template of any shape and only needs to
+    /// count one, so a tokenizer that split templates into parts would have to invent a part token
+    /// that one of its two consumers has no use for. The cost is that the substitutions are scanned
+    /// a second time here, bounded by the length of the template itself.
+    /// </para>
+    /// <para>
+    /// <b>Both spellings of every chunk are kept, because a tagged template needs both.</b> The
+    /// cooked chunk is what the escapes mean and the raw chunk is what they were written as, and
+    /// the one normalisation applied to both is that a carriage return - alone or before a line
+    /// feed - becomes a line feed, which is what the language says the value of a template line
+    /// break is regardless of how the file was saved.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=BF0E92
+    // Broiler-Human:        PENDING
+    private JsTemplateLiteral ParseTemplate()
+    {
+        var token = Current;
+        var span = new SliceSourceSpan(token.Line, token.Column);
+        Advance();
+
+        var cooked = new System.Collections.Generic.List<string>();
+        var raw = new System.Collections.Generic.List<string>();
+        var substitutions = new System.Collections.Generic.List<JsExpression>();
+        var reader = new TemplateReader(token.RawText, token.Line, token.Column);
+        var chunk = new System.Text.StringBuilder();
+
+        reader.Step();
+        var chunkStart = reader.At;
+
+        while (!reader.AtEnd)
+        {
+            var c = reader.Current;
+
+            if (c == '\\')
+            {
+                if (!CookEscape(reader, chunk, span))
+                {
+                    return new JsTemplateLiteral(span, [string.Empty], [string.Empty], []);
+                }
+
+                continue;
+            }
+
+            if (c == '`')
+            {
+                break;
+            }
+
+            if (c == '$' && reader.Peek(1) == '{')
+            {
+                raw.Add(Normalise(reader.Slice(chunkStart, reader.At)));
+                cooked.Add(chunk.ToString());
+                chunk.Clear();
+                reader.Step();
+                reader.Step();
+
+                var innerLine = reader.Line;
+                var innerColumn = reader.Column;
+                var innerStart = reader.At;
+                reader.ScanSubstitution();
+                var innerEnd = System.Math.Max(innerStart, reader.At - 1);
+
+                substitutions.Add(
+                    ParseInterpolation(reader.Slice(innerStart, innerEnd), innerLine, innerColumn));
+
+                chunkStart = reader.At;
+                continue;
+            }
+
+            if (c == '\r')
+            {
+                chunk.Append('\n');
+                reader.Step();
+                continue;
+            }
+
+            chunk.Append(c);
+            reader.Step();
+        }
+
+        raw.Add(Normalise(reader.Slice(chunkStart, reader.At)));
+        cooked.Add(chunk.ToString());
+        return new JsTemplateLiteral(span, cooked, raw, substitutions);
+    }
+
+    /// <summary>Reads one escape of a template chunk, appending what it means.</summary>
+    /// <remarks>
+    /// The same rule a string literal follows, and for the same reason: every escape the language
+    /// does not name is the character itself, so <c>\d</c> is <c>d</c> and a backslash before a
+    /// line break is a continuation that contributes nothing at all. Only <c>\x</c> and <c>\u</c>
+    /// can be malformed, because only those two promise digits they may not have.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=441AD8
+    // Broiler-Human:        PENDING
+    private bool CookEscape(
+        TemplateReader reader, System.Text.StringBuilder cooked, SliceSourceSpan span)
+    {
+        reader.Step();
+
+        if (reader.AtEnd)
+        {
+            return true;
+        }
+
+        var escape = reader.Current;
+
+        switch (escape)
+        {
+            case 'n': cooked.Append('\n'); reader.Step(); return true;
+            case 't': cooked.Append('\t'); reader.Step(); return true;
+            case 'r': cooked.Append('\r'); reader.Step(); return true;
+            case 'b': cooked.Append('\b'); reader.Step(); return true;
+            case 'f': cooked.Append('\f'); reader.Step(); return true;
+            case 'v': cooked.Append('\v'); reader.Step(); return true;
+            case '0': cooked.Append('\0'); reader.Step(); return true;
+
+            case 'x':
+            {
+                reader.Step();
+                var value = 0;
+
+                for (var digit = 0; digit < 2; digit++)
+                {
+                    if (reader.AtEnd || !System.Uri.IsHexDigit(reader.Current))
+                    {
+                        Refuse(
+                            span,
+                            SliceSourceDiagnosticCode.UnknownEscapeSequence,
+                            "a hexadecimal escape with fewer than two digits");
+
+                        return false;
+                    }
+
+                    value = (value * 16) + System.Uri.FromHex(reader.Current);
+                    reader.Step();
+                }
+
+                cooked.Append((char)value);
+                return true;
+            }
+
+            case 'u':
+            {
+                reader.Step();
+
+                if (!ReadUnicodeEscape(reader, out var scalar))
+                {
+                    Refuse(
+                        span,
+                        SliceSourceDiagnosticCode.UnknownEscapeSequence,
+                        "a unicode escape that names no code point");
+
+                    return false;
+                }
+
+                AppendScalar(cooked, scalar);
+                return true;
+            }
+
+            default:
+                if (escape is '\n' or '\r' or '\u2028' or '\u2029')
+                {
+                    reader.Step();
+                    return true;
+                }
+
+                cooked.Append(escape);
+                reader.Step();
+                return true;
+        }
+    }
+
+    /// <summary>Reads the body of a <c>\u</c> escape, braced or not.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1FE911
+    // Broiler-Human:        PENDING
+    private static bool ReadUnicodeEscape(TemplateReader reader, out int scalar)
+    {
+        scalar = 0;
+
+        if (!reader.AtEnd && reader.Current == '{')
+        {
+            reader.Step();
+            var digits = 0;
+
+            while (!reader.AtEnd && reader.Current != '}')
+            {
+                if (!System.Uri.IsHexDigit(reader.Current))
+                {
+                    return false;
+                }
+
+                scalar = (scalar * 16) + System.Uri.FromHex(reader.Current);
+                digits++;
+
+                if (scalar > 0x10FFFF)
+                {
+                    return false;
+                }
+
+                reader.Step();
+            }
+
+            if (digits == 0 || reader.AtEnd)
+            {
+                return false;
+            }
+
+            reader.Step();
+            return true;
+        }
+
+        for (var digit = 0; digit < 4; digit++)
+        {
+            if (reader.AtEnd || !System.Uri.IsHexDigit(reader.Current))
+            {
+                return false;
+            }
+
+            scalar = (scalar * 16) + System.Uri.FromHex(reader.Current);
+            reader.Step();
+        }
+
+        return true;
+    }
+
+    /// <summary>Appends one code point as UTF-16, a lone surrogate included.</summary>
+    /// <remarks>
+    /// <c>char.ConvertFromUtf32</c> is not usable here: <c>\uD800</c> is a legal escape naming a
+    /// lone surrogate, and a JavaScript String is a sequence of code UNITS that may hold one.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C1BAF6
+    // Broiler-Human:        PENDING
+    private static void AppendScalar(System.Text.StringBuilder cooked, int scalar)
+    {
+        if (scalar <= 0xFFFF)
+        {
+            cooked.Append((char)scalar);
+            return;
+        }
+
+        var shifted = scalar - 0x10000;
+        cooked.Append((char)(0xD800 + (shifted >> 10)));
+        cooked.Append((char)(0xDC00 + (shifted & 0x3FF)));
+    }
+
+    /// <summary>Turns every carriage return of a raw chunk into the line feed the language sees.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4D167D
+    // Broiler-Human:        PENDING
+    private static string Normalise(string text) =>
+        text.IndexOf('\r', System.StringComparison.Ordinal) < 0
+            ? text
+            : text
+                .Replace("\r\n", "\n", System.StringComparison.Ordinal)
+                .Replace("\r", "\n", System.StringComparison.Ordinal);
+
+    /// <summary>Parses one substitution, whose text is a slice of the source this parser was given.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Every token it produces is moved back to where it really is.</b> The substitution is
+    /// tokenized on its own, so its first line begins at column one - and a diagnostic reported at
+    /// that column would name a position in a file the reader is looking at and point at the wrong
+    /// character. The first line is shifted by the column the substitution starts at and every
+    /// later line by the line count alone, which is exactly the arithmetic of pasting a slice back
+    /// into the text it came out of.
+    /// </para>
+    /// <para>
+    /// <b>The strictness and the function nesting cross the boundary with it</b>, because both
+    /// change the GRAMMAR and neither is recoverable from the slice: <c>`${yield}`</c> in strict
+    /// code is a reserved word and <c>`${new.target}`</c> is admitted only where a function
+    /// encloses it.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F13E14
+    // Broiler-Human:        PENDING
+    private JsExpression ParseInterpolation(string text, int line, int column)
+    {
+        var tokenizer = new SliceTokenizer(text);
+        var stream = tokenizer.Tokenize();
+
+        if (tokenizer.Diagnostics.Count != 0)
+        {
+            foreach (var diagnostic in tokenizer.Diagnostics)
+            {
+                Refuse(
+                    Move(new SliceSourceSpan(diagnostic.Line, diagnostic.Column), line, column),
+                    diagnostic.Code,
+                    diagnostic.Message);
+            }
+
+            return new JsNullLiteral(new SliceSourceSpan(line, column));
+        }
+
+        for (var index = 0; index < stream.Length; index++)
+        {
+            var token = stream[index];
+            var moved = Move(new SliceSourceSpan(token.Line, token.Column), line, column);
+            stream[index] = token with { Line = moved.Line, Column = moved.Column };
+        }
+
+        var inner = new JsParser(stream, options, strict, functionDepth);
+        var value = inner.ParseInterpolationBody();
+
+        foreach (var diagnostic in inner.Diagnostics)
+        {
+            Refuse(
+                new SliceSourceSpan(diagnostic.Line, diagnostic.Column),
+                diagnostic.Code,
+                diagnostic.Message);
+        }
+
+        return value;
+    }
+
+    /// <summary>Where a position inside a substitution's own text is in the whole source.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=105752
+    // Broiler-Human:        PENDING
+    private static SliceSourceSpan Move(SliceSourceSpan inner, int line, int column) =>
+        inner.Line <= 1
+            ? new SliceSourceSpan(line, column + inner.Column - 1)
+            : new SliceSourceSpan(line + inner.Line - 1, inner.Column);
+
+    /// <summary>Parses the one expression a substitution is, and nothing after it.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D4EC22
+    // Broiler-Human:        PENDING
+    private JsExpression ParseInterpolationBody()
+    {
+        var span = Span();
+
+        if (Current.Kind == SliceTokenKind.EndOfSource)
+        {
+            Refuse(
+                span,
+                SliceSourceDiagnosticCode.UnexpectedToken,
+                "a template substitution holds no expression");
+
+            return new JsNullLiteral(span);
+        }
+
+        var value = ParseExpression();
+
+        if (Current.Kind != SliceTokenKind.EndOfSource && diagnostics.Count == 0)
+        {
+            Refuse(
+                Span(),
+                SliceSourceDiagnosticCode.UnexpectedToken,
+                "`" + Describe(Current) + "` follows the expression of a template substitution");
+        }
+
+        return value;
+    }
+
     // ---- token plumbing ------------------------------------------------------------------------
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=0ABBA3
@@ -1778,4 +2324,331 @@ internal sealed class JsParser
     // Broiler-Human:        PENDING
     private static string Describe(SliceToken token) =>
         token.Kind == SliceTokenKind.EndOfSource ? "end of source" : token.RawText;
+
+    /// <summary>
+    /// A cursor over one template's raw text that knows where in the whole source it is.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It repeats the tokenizer's substitution scan on purpose, and the repetition is the
+    /// contract.</b> The tokenizer already found where this template ends, using brace counting
+    /// that skips a string, a comment, a regular expression and a nested template whole; if this
+    /// cursor disagreed with it about where a substitution ends, the two would carve the same text
+    /// differently and the parse would be of something the tokenizer never saw. So the rules here
+    /// are the tokenizer's rules, including its <c>/</c> heuristic - and where that heuristic is
+    /// wrong, both are wrong together, which is a defect a reader can find rather than a
+    /// disagreement they cannot.
+    /// </para>
+    /// <para>
+    /// <b>It counts lines while it goes because the substitutions need it.</b> A diagnostic inside
+    /// <c>`${x +</c> … <c>}`</c> that spans lines has to name the line it is really on, and the only
+    /// place that is known is here, one character at a time, with CRLF counted once.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=09F45E
+    // Broiler-Falsified-If: this cursor ends a substitution at a different character than the tokenizer did
+    // Broiler-Human:        PENDING
+    private sealed class TemplateReader(string text, int line, int column)
+    {
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=BDDF6F
+        // Broiler-Human:        PENDING
+        private readonly string source = text;
+
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=98C321
+        // Broiler-Human:        PENDING
+        private int at;
+
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F54545
+        // Broiler-Human:        PENDING
+        private int currentLine = line;
+
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=53EEF2
+        // Broiler-Human:        PENDING
+        private int currentColumn = column;
+
+        /// <summary>How far into the template's text the cursor is.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=992608
+        // Broiler-Human:        PENDING
+        internal int At => at;
+
+        /// <summary>The line of the whole source the cursor is on.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C5FF9A
+        // Broiler-Human:        PENDING
+        internal int Line => currentLine;
+
+        /// <summary>The column of the whole source the cursor is at.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=02AF1F
+        // Broiler-Human:        PENDING
+        internal int Column => currentColumn;
+
+        /// <summary>Whether the cursor has run out of template.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=680D30
+        // Broiler-Human:        PENDING
+        internal bool AtEnd => at >= source.Length;
+
+        /// <summary>The character under the cursor.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4020AA
+        // Broiler-Human:        PENDING
+        internal char Current => source[at];
+
+        /// <summary>The character <paramref name="ahead"/> past the cursor, or NUL past the end.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3B5C11
+        // Broiler-Human:        PENDING
+        internal char Peek(int ahead) => at + ahead < source.Length ? source[at + ahead] : '\0';
+
+        /// <summary>The template's text between two cursor positions.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6A62E5
+        // Broiler-Human:        PENDING
+        internal string Slice(int start, int end) =>
+            source[System.Math.Min(start, source.Length)..System.Math.Min(end, source.Length)];
+
+        /// <summary>Advances one character, counting CRLF as the one line break it is.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=79BAEA
+        // Broiler-Human:        PENDING
+        internal void Step()
+        {
+            if (at >= source.Length)
+            {
+                return;
+            }
+
+            var c = source[at];
+
+            if (c is '\n' or '\r' or '\u2028' or '\u2029')
+            {
+                if (c == '\r' && at + 1 < source.Length && source[at + 1] == '\n')
+                {
+                    at++;
+                }
+
+                at++;
+                currentLine++;
+                currentColumn = 1;
+                return;
+            }
+
+            at++;
+            currentColumn++;
+        }
+
+        /// <summary>Advances past the brace that closes the substitution the cursor is inside.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=90E31B
+        // Broiler-Falsified-If: a brace inside a string, a comment, a nested template or an object literal closes the substitution
+        // Broiler-Human:        PENDING
+        internal void ScanSubstitution()
+        {
+            var braces = 0;
+            var previous = '\0';
+
+            while (!AtEnd)
+            {
+                var c = Current;
+
+                if (c == '/' && Peek(1) == '/')
+                {
+                    while (!AtEnd && Current is not '\n' and not '\r' and not '\u2028' and not '\u2029')
+                    {
+                        Step();
+                    }
+
+                    continue;
+                }
+
+                if (c == '/' && Peek(1) == '*')
+                {
+                    Step();
+                    Step();
+
+                    while (!AtEnd && !(Current == '*' && Peek(1) == '/'))
+                    {
+                        Step();
+                    }
+
+                    Step();
+                    Step();
+                    continue;
+                }
+
+                if (c == '/' && StartsRegularExpression(previous))
+                {
+                    ScanRegularExpression();
+                    previous = '/';
+                    continue;
+                }
+
+                if (c is '"' or '\'')
+                {
+                    ScanString(c);
+                    previous = c;
+                    continue;
+                }
+
+                if (c == '`')
+                {
+                    Step();
+                    ScanTemplateBody();
+                    previous = '`';
+                    continue;
+                }
+
+                if (c == '{')
+                {
+                    braces++;
+                    Step();
+                    previous = '{';
+                    continue;
+                }
+
+                if (c == '}')
+                {
+                    Step();
+
+                    if (braces == 0)
+                    {
+                        return;
+                    }
+
+                    braces--;
+                    previous = '}';
+                    continue;
+                }
+
+                if (!char.IsWhiteSpace(c))
+                {
+                    previous = c;
+                }
+
+                Step();
+            }
+        }
+
+        /// <summary>Advances past the backtick that closes a nested template.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B8B0F5
+        // Broiler-Human:        PENDING
+        private void ScanTemplateBody()
+        {
+            while (!AtEnd)
+            {
+                var c = Current;
+
+                if (c == '\\')
+                {
+                    Step();
+                    Step();
+                    continue;
+                }
+
+                if (c == '`')
+                {
+                    Step();
+                    return;
+                }
+
+                if (c == '$' && Peek(1) == '{')
+                {
+                    Step();
+                    Step();
+                    ScanSubstitution();
+                    continue;
+                }
+
+                Step();
+            }
+        }
+
+        /// <summary>Advances past the quote that closes a string literal.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8183F6
+        // Broiler-Human:        PENDING
+        private void ScanString(char quote)
+        {
+            Step();
+
+            while (!AtEnd)
+            {
+                var c = Current;
+
+                if (c == '\\')
+                {
+                    Step();
+                    Step();
+                    continue;
+                }
+
+                if (c == quote)
+                {
+                    Step();
+                    return;
+                }
+
+                if (c is '\n' or '\r' or '\u2028' or '\u2029')
+                {
+                    return;
+                }
+
+                Step();
+            }
+        }
+
+        /// <summary>Advances past a regular-expression literal and its flags.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F86139
+        // Broiler-Human:        PENDING
+        private void ScanRegularExpression()
+        {
+            Step();
+            var inClass = false;
+
+            while (!AtEnd)
+            {
+                var c = Current;
+
+                if (c is '\n' or '\r' or '\u2028' or '\u2029')
+                {
+                    return;
+                }
+
+                if (c == '\\')
+                {
+                    Step();
+                    Step();
+                    continue;
+                }
+
+                if (c == '[')
+                {
+                    inClass = true;
+                }
+                else if (c == ']')
+                {
+                    inClass = false;
+                }
+                else if (c == '/' && !inClass)
+                {
+                    Step();
+
+                    while (!AtEnd && (char.IsLetterOrDigit(Current) || Current is '$' or '_'))
+                    {
+                        Step();
+                    }
+
+                    return;
+                }
+
+                Step();
+            }
+        }
+
+        /// <summary>
+        /// Whether a <c>/</c> after this character opens a regular expression rather than dividing.
+        /// </summary>
+        /// <remarks>
+        /// The tokenizer's own heuristic, character for character. It is consulted only to find
+        /// where a substitution ends, and both scans have to reach the same answer or they carve
+        /// the source differently.
+        /// </remarks>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=17FBC0
+        // Broiler-Human:        PENDING
+        private static bool StartsRegularExpression(char previous) =>
+            previous is '\0' or '(' or ',' or '=' or ':' or '[' or '!' or '&' or '|' or '?' or
+                '{' or '}' or ';' or '+' or '-' or '*' or '%' or '<' or '>' or '~' or '^';
+    }
 }

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   23
-// Annotated:        23/23
+// Relevant units:   24
+// Annotated:        24/24
 // Exempt:           0
-// Human-reviewed:   0/23
+// Human-reviewed:   0/24
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       23
+// Unverified:       24
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -228,6 +228,30 @@ public static class JsArtifactWriter
     // Broiler-Human:        PENDING
     public static byte[] Positions((uint Offset, uint Line, uint Column)[] rows, uint? declaredCount = null) =>
         JavaScriptArtifactWriter.Positions(rows, declaredCount);
+
+    /// <summary>Encodes the surfaces section body: one length-prefixed manifest identity each.</summary>
+    /// <remarks>
+    /// The identities are written as the caller ordered them and nothing here sorts or deduplicates
+    /// them, for the reason the class remark gives: an encoder that could only produce a valid
+    /// artifact could not produce a negative control, and a duplicate surface is one of the things
+    /// the verifier has to be shown refusing.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=E66F6F
+    // Broiler-Human:        PENDING
+    public static byte[] Surfaces(string[] manifestIds, uint? declaredCount = null)
+    {
+        var buffer = new System.Collections.Generic.List<byte>();
+        JavaScriptArtifactWriter.WriteVarUInt(buffer, declaredCount ?? (ulong)manifestIds.Length);
+
+        foreach (var identity in manifestIds)
+        {
+            var bytes = System.Text.Encoding.UTF8.GetBytes(identity);
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, (ulong)bytes.Length);
+            buffer.AddRange(bytes);
+        }
+
+        return buffer.ToArray();
+    }
 
     /// <summary>Appends one instruction with no operand.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=CBED9A

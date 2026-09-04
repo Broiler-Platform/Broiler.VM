@@ -3540,3 +3540,153 @@ workload found both.
 **Authority and date.** The implementation of 2026-09-04 in this checkout, and the fixture
 `src/tests/cli/runs/a-parameter-named-arguments.js`, whose fourth and fifth lines are the arrow
 cases. 2026-09-04.
+
+### JSC-84
+
+**Where:** the workload roadmap's [section 1](roadmap.workloads.md#1-the-target-stated-as-behaviour-rather-than-as-a-score),
+which states the Octane target as *every benchmark reports a score through the ordinary command
+line*, and roadmap [section 18](roadmap.md#18-amendments-this-profile-expects-to-ask-of-the-core).
+
+**What the plan said.** That the gap between this profile and a whole Octane run is a gap in the
+**language** surface, and that section 3.1's table — a manifest identity per row — names all of it.
+
+**What one benchmark showed instead.** `zlib` carries an asm.js module whose emscripten runtime
+decides which host it is on by asking for `window`, `process` and `importScripts`, concludes "a
+shell" when it finds none, and then reads the global **`read`** to wire into its own module object.
+It never calls it. That is not a language surface and no manifest owns it: it is the **host shell**,
+and a profile that answered a `ReferenceError` there was refusing a whole program over a capability
+the program does not use.
+
+**What replaced it.** The realm has a `read` that exists and refuses, in the shape
+`$262.agent`'s members already established: answering `undefined` would let a program proceed on a
+false premise, and refusing to exist makes an environment probe fail rather than answer.
+
+**And why it refuses rather than working, which is the part that belongs in section 18.** A value
+capability takes bytes and answers a `long` or an opaque reference, and an opaque reference is by
+construction not dereferenceable. **There is no registration any composition could make that would
+let a host answer a guest with a file's contents.** That is a limit of core contract version 1, not
+a decision of this profile's, and it is the first amendment this profile has an observed reason to
+ask for: a value capability that answers with bytes.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, and the Octane `zlib`
+benchmark, whose failure moved from a language absence to this. 2026-09-04.
+
+### JSC-85
+
+**Where:** roadmap [section 8](roadmap.md#8-the-value-frame-and-call-model)'s *`CallDepth` is
+measured, not chosen*, the workload roadmap's
+[JSW-9](roadmap.workloads.md#jsw-9--the-depth-a-generated-program-needs), and
+[JSC-79](#jsc-79), which recorded the repair this entry corrects.
+
+**What the plan said, and what JSC-79 left standing.** That a recursing program is refused as a
+resource exhaustion naming `CallDepth` and never terminates the process; and that the repair for the
+conformance case that DID terminate the process was a counted bound compared against a limit.
+[JSC-79](#jsc-79) recorded what that repair did not do: *measure the per-frame cost the declared
+stack was chosen against*. The bound stood at three thousand frames on a sixteen-megabyte stack.
+
+**What the measurement found.** Two things, and the second is the one nobody would have guessed.
+
+**First, the per-frame cost.** `eng/measure-frame-cost.py` bisects the published binary against a
+recursion with no base case, raising the call-depth ceiling one step at a time and asking of each
+child process whether it ANSWERED or DIED. This interpreter survives **8,666** JavaScript calls on
+the declared stack: **1,936 bytes of native stack per call** — and the same figure for a frame
+holding nineteen live values across a call as for one holding none, because the operand stack and
+the environment are heap objects and only `Call`, `Invoke` and `Execute` are on the stack. So the
+three-thousand-frame bound was not too generous. It was **too small by a factor of nearly three**,
+which is a defect of a different kind: it refused programs the stack could have run.
+
+**Second, and this is the correction.** With the bound at three thousand, a recursion **terminated
+the process at three thousand frames** — on a stack holding 8,666 of them. Not because the frames
+did not fit, but because **the refusal did not**: the bound was reported by throwing a
+`RangeError`, and building and dispatching that exception from that depth needed stack the program
+had spent getting there. The bound was checked before the runtime's own stack probe, so the probe
+never ran. **A counted bound that reports itself by throwing is a bound whose safety depends on the
+cost of the throw**, and nothing in the plan said so because nobody had measured it.
+
+**What replaced it.** Three changes that only make sense together. The backstop **ends the
+operation as a resource exhaustion** rather than throwing a value the guest could catch, which is
+what section 8 asked for in those words and what makes the report survive the depth it reports on.
+The backstop is set to 6,000 — a third short of what the stack holds. And the profile's declared
+call-depth **maximum** comes down from 16,384 to 4,096, which is short of the backstop, so the
+ordinary answer is always the budget ceiling's named exhaustion and the backstop is reached only by
+a host that granted more than the profile said it could. Sixteen thousand frames was four times what
+the stack holds and had never been reached by anything.
+
+**What is still open.** The measurement was taken on one machine, on Linux, under the JIT. The gate
+asks for the recursive workload under Native AOT on every claimed runtime identifier, and that is a
+collection rather than a change to this checkout; until one exists, the figures above are a
+measurement of this configuration and the margins are what carry the rest.
+
+**Authority and date.** The measurement of 2026-09-04, retained as `eng/measure-frame-cost.py` and
+reproducible against `src/tests/cli/limits/an-unbounded-recursion.js`, and the four acceptance rows
+that pin the answers. 2026-09-04.
+
+### JSC-86
+
+**Where:** roadmap [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s
+allocation table and its rule that *a well-formed artifact that uses a construct outside its declared
+manifest is rejected at verification*.
+
+**What the plan said.** That a feature manifest is a thing an artifact **names**, one per artifact,
+and that the rule above follows from that: a composition declines a manifest by not accepting it,
+and an artifact naming it is refused before it runs. The table listed seven identities and read as
+though every one of them worked that way. The whole of the reasoning is sound for a surface made of
+**constructs** — a module declaration, a `class`, `eval` as a spelled call site — because the front
+end refuses those by name and they never reach an artifact at all.
+
+**What implementing two of the identities showed.** It does not work for a surface made of
+**globals**. A program that constructs a `Uint8Array` is, byte for byte, a program that reads a
+name; there is no construct to refuse, no section that says which names matter, and an artifact
+using the binary surface is indistinguishable from one that does not. A composition could decline
+`broiler.javascript.binary` and the artifact would verify and then meet an absent constructor at run
+time — which is exactly the run-time refusal section 6 distinguishes a declined manifest FROM.
+
+**What replaced it.** A second kind of identity, named as such in section 6. An **optional surface**
+is declared by the artifact **beside** the manifest it names, in a section of its own that the
+verifier reads and refuses an unadmitted entry of. The lowering records a surface when a free name
+that belongs to one resolves to a global; a `typeof` deliberately records nothing, so
+`typeof Uint8Array === "undefined"` stays a question rather than becoming a refusal. A composition
+declines by naming the surfaces it admits when it builds the descriptor it registers, and there is
+no other door.
+
+**What that costs, stated plainly.** The artifact format grew a section kind and the diagnostic
+registry grew three codes — one for a surface declared twice, one for a surface this build does not
+implement, one for a surface the composition declined — and the three are distinguished because a
+reader of a refusal should not have to guess whether the artifact or the composition was the reason.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the three retained corpus
+entries `wide-a-surface-declared-twice`, `wide-a-surface-this-build-does-not-implement` and
+`wide-a-surface-the-composition-declined`, and the four composition-root checks that record what
+each configuration answers. 2026-09-04.
+
+### JSC-87
+
+**Where:** the workload roadmap's
+[section 3.1](roadmap.workloads.md#31-what-each-workload-meets-today), titled *what each workload
+meets today*, and [section 3.2](roadmap.workloads.md#32-the-surface-that-is-absent-from-the-realm)'s
+list of what is absent from the realm.
+
+**What the plan said.** Both sections state facts in the present tense about a checkout, which is
+what makes them checkable — and what makes them go out of date the moment the work they describe is
+done. Section 3.1 named, for each workload, the absence it met and the stage that owned it; section
+3.2 named the globals the realm did not have.
+
+**What replaced it.** Both now carry **two readings**: what the workload met when the document was
+written, and what it meets now. That shape is deliberate and is not tidiness. The document's own
+method is that "every row above is a behaviour, and every one of them is reproducible" — a row
+rewritten in place would still be reproducible and would have destroyed the only evidence that the
+programme did anything. A reader who wants to know whether the binary surface was worth building
+needs both columns.
+
+**One row changed kind rather than closing**, and the document says so where a reader meets it:
+`zlib` no longer meets a language absence, it meets a **shell** the benchmark assumes — the global
+`read` — which no manifest in section 6's allocation owns and which core contract version 1 has no
+shape for ([JSC-84](#jsc-84)).
+
+**What is NOT corrected.** Sections 1 and 7 are unchanged. The target is still that the suite RUNS
+with the `unsupported` column empty for the claiming manifest, no stage's exit gate has been
+accepted by anybody, and nothing here moves a row in the ledger — which section 5's own preamble
+says and which stays true however much of section 5 is built.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout and the Octane runs
+through the ordinary command line that produced the second column. 2026-09-04.

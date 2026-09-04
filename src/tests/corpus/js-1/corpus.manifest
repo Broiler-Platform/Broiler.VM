@@ -98,6 +98,9 @@ wide-an-entry-point-naming-no-code-unit|97b1a55bde318e19e2e8c637b0708e6edbabe90a
 wide-code-units-that-do-not-tile-the-code-section|290532dad36c009823999e63a5ace05b5720b0b5abbe00228e4792a4669ef124|wide|InvalidArtifact|InconsistentStructure|1603|-|-|-|-
 wide-a-scope-popped-past-the-frame|b8a80a2b22afeae818ddeea5959d39c1cbd5bfda677807a035d4ef86a2bc330e|wide|InvalidArtifact|InconsistentStructure|1604|-|-|-|-
 wide-an-exception-handler-outside-its-code-unit|dad806325a80adae048856eb7a9b445af082baf49c8329a5ff2a94bd371f4c44|wide|InvalidArtifact|InconsistentStructure|1605|-|-|-|-
+wide-a-surface-declared-twice|763301f90f9ec241909aab2bf5aaa10326c66510099e3cbc5d7cb7bcd3fdec62|wide|InvalidArtifact|InconsistentStructure|1606|-|-|-|-
+wide-a-surface-this-build-does-not-implement|a6c7f038d6609cf58531f48bcb1f34bfdb8331101471747114da1c014a23619b|wide|InvalidArtifact|UnknownFeature|1607|-|-|-|-
+wide-a-surface-the-composition-declined|40ab3c7ea14b90488fd431b58bfc3895ce790c01c92a72d1c9fe8bfa0f3974d6|wide-declining|InvalidArtifact|UnsupportedFeatureManifest|1608|-|-|-|-
 wide-a-version-1-artifact-announced-as-version-2|4a871c79683bcd1c0192ed7cfd50d4d8a9caf59d62f8071e9776188fee5d8156|wide|InvalidArtifact|DescriptorMismatch|1003|-|-|-|-
 wide-a-slice-manifest-announced-as-the-wide-one|820f00f2877b8bebc95b8ec462f6fa6c9aade306bf7de8eb32b9d48f065fcd2d|wide|InvalidArtifact|DescriptorMismatch|1006|-|-|-|-
 wide-a-method-called-through-a-property|a97116d8e18904eae5b1b9f31511a94bad92f2b0c3bbebbf62a1f90a42b308d9|wide|Normal|NormalCompleted|0|7|-|-|-

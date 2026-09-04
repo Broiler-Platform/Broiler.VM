@@ -143,3 +143,34 @@ runs/an-array-literal-with-holes.js|0|2:false:1
 runs/a-parameter-named-arguments.js|0|parameter-named-arguments ok
 runs/a-parameter-named-arguments.js|0|third
 runs/a-parameter-named-arguments.js|0|captured
+
+# THE BINARY SURFACE, EXERCISED WHERE IT IS EXOTIC. An integer-indexed object does not inherit its
+# indices, an out-of-range write is discarded rather than creating a property, a write converts
+# through `ToNumber` - which for an object means calling its `valueOf` - and a detached buffer takes
+# every element with it. The last row is the DELIBERATE absence: `SharedArrayBuffer` and `Atomics`
+# are the multi-agent surface and the binary identity excludes them by name, so that row goes red
+# the day somebody folds them in.
+runs/a-typed-array-over-a-buffer.js|0|typed-array-over-a-buffer ok
+runs/a-typed-array-over-a-buffer.js|0|undefined:false
+runs/a-typed-array-over-a-buffer.js|0|0,2,2,255
+runs/a-typed-array-over-a-buffer.js|0|undefined:undefined:undefined
+
+# THE DYNAMIC SURFACE. This host registers an artifact provider, so `eval` can answer; the two rows
+# below it are the published exclusion - a direct `eval` inside a function is refused by name rather
+# than answered with a global's value, and the same source through an indirect call is admitted.
+runs/an-indirect-eval.js|0|indirect-eval ok
+runs/an-indirect-eval.js|0|EvalError:true
+runs/an-indirect-eval.js|0|5:2:function
+
+# THE DEPTH A RECURSING PROGRAM IS REFUSED AT, AND THE THING IT MUST NEVER DO. A stack overflow is
+# the one failure the CLR cannot turn into an exception, so nothing downstream could report it;
+# JSC-79 records the day a conformance case terminated the process, and JSC-85 records that the
+# counted bound put in its place was set by an estimate that was wrong in the other direction - the
+# refusal itself needed stack it had spent. The bound is measured now, by
+# `eng/measure-frame-cost.py`, and the profile's declared maximum is short enough that the CEILING
+# always answers first. The third row is the one that matters: a host asking for far more than the
+# profile said it could still gets an answer, because the core holds it to the declared maximum.
+limits/an-unbounded-recursion.js|5|CeilingReached on CallDepth
+limits/a-wide-unbounded-recursion.js|5|CeilingReached on CallDepth
+--call-depth 100000 limits/an-unbounded-recursion.js|5|CeilingReached on CallDepth
+--call-depth 0 limits/an-unbounded-recursion.js|2|is not a positive frame count

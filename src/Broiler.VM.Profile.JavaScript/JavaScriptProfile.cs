@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   14
-// Annotated:        14/14
-// Exempt:           5
-// Human-reviewed:   0/14
+// Relevant units:   16
+// Annotated:        16/16
+// Exempt:           8
+// Human-reviewed:   0/16
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         4/4
+// Criteria:         6/6
 // Resource impact:  3/10 max
-// Unverified:       14
+// Unverified:       16
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -75,6 +75,42 @@ public static class JavaScriptProfile
     public static VmFeatureManifestId WideManifest { get; } =
         VmFeatureManifestId.Parse("broiler.javascript.wide");
 
+    /// <summary>
+    /// The binary surface: <c>ArrayBuffer</c>, <c>DataView</c> and the typed array constructors.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is an optional surface rather than a third manifest an artifact could name.</b> An
+    /// artifact still names <see cref="WideManifest"/> in its header; what the binary identity does
+    /// is let that artifact <b>declare</b> that it also reaches this surface, and let a composition
+    /// decline exactly that. The identity exists for the reason
+    /// <see cref="DynamicManifest"/>'s does — so a composition can answer one question separately —
+    /// and the question here is whether a guest whose whole argument is a verified artifact under a
+    /// metered budget may hold shared mutable memory addressed by index.
+    /// </para>
+    /// <para>
+    /// <b><c>SharedArrayBuffer</c> and <c>Atomics</c> are deliberately not in it.</b> They are the
+    /// multi-agent surface and they need the agent model; folding them in would let a composition
+    /// that wanted an ordinary byte buffer admit cross-agent shared memory by accident.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=50C297
+    // Broiler-Human:        PENDING
+    public static VmFeatureManifestId BinaryManifest { get; } =
+        VmFeatureManifestId.Parse(Format.JsSurfaces.Binary);
+
+    /// <summary>
+    /// The dynamic surface: <c>eval</c> and the <c>Function</c> constructor.
+    /// </summary>
+    /// <remarks>
+    /// Separate because a composition that registers no artifact provider must be able to decline
+    /// exactly this and say so, which is roadmap section 6's reason and not a new one.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CDF67F
+    // Broiler-Human:        PENDING
+    public static VmFeatureManifestId DynamicManifest { get; } =
+        VmFeatureManifestId.Parse(Format.JsSurfaces.Dynamic);
+
     /// <summary>The kind ID stamped on a completion value.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C9902C
     // Broiler-Human:        PENDING
@@ -130,10 +166,87 @@ public static class JavaScriptProfile
             VmCapabilityThreadAffinity.CallerThread,
             VmExceptionTranslation.TerminateOperation);
 
-    /// <summary>The descriptor a composition root names directly.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=FBD334
+    /// <summary>
+    /// The optional artifact-provider capability this profile imports: source in, artifact out.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is the only route by which a String becomes code, and it is optional.</b> A
+    /// composition that registers nothing still creates a runtime and still runs programs; what it
+    /// does not have is an <c>eval</c> that can answer. That refusal is a run-time error the guest
+    /// may catch, and it is deliberately NOT the same event as a composition declining
+    /// <c>broiler.javascript.binary</c>'s sibling identity <c>broiler.javascript.dynamic</c>, which
+    /// refuses the artifact at verification before the guest exists. Roadmap section 6 names both
+    /// and says they must stay distinguishable.
+    /// </para>
+    /// <para>
+    /// <b>The request payload is the source text, UTF-8, and nothing else.</b> The core carries it
+    /// without decoding it, because what a specifier means is a language concept; a provider that
+    /// wants to know whether it was a direct <c>eval</c> cannot be told, because the answer would
+    /// not change what it may compile.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=9A3E06
+    // Broiler-Falsified-If: this profile obtains executable bytes by any route but a provider registered under this identity
     // Broiler-Human:        PENDING
-    public static VmProfileDescriptor Descriptor { get; } = Build();
+    public static VmHostCapabilityDescriptor SourceProviderCapability { get; } =
+        new(
+            VmCapabilityId.Parse("broiler.javascript.source-provider"),
+            version: 1,
+            VmCapabilitySignatureId.FromCanonicalDescription("(source-utf8)->artifact"),
+            VmCapabilityKind.ArtifactProvider,
+            VmCapabilityReentrancy.NonReentrant,
+            VmCapabilityThreadAffinity.CallerThread,
+            VmExceptionTranslation.TerminateOperation);
+
+    /// <summary>The descriptor a composition root names directly, admitting every surface.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4F7006
+    // Broiler-Human:        PENDING
+    public static VmProfileDescriptor Descriptor { get; } = Build(EverySurface);
+
+    /// <summary>
+    /// A descriptor admitting only the optional surfaces named, so a composition can decline one.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Declining is a composition's act and this is the only door to it.</b> There is no
+    /// property anybody sets and no ambient switch: a composition states which surfaces it admits
+    /// when it builds the descriptor it registers, and every artifact declaring one it did not name
+    /// is refused at verification with an invalid-artifact reason. That is the outcome roadmap
+    /// section 6 distinguishes by name from the run-time refusal a composition that admits a
+    /// surface and registers no provider produces.
+    /// </para>
+    /// <para>
+    /// <b>It is a method rather than a second static property</b>, because the set of interesting
+    /// combinations is the power set of the surfaces and a property per member is a list that goes
+    /// stale the day a surface is added.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=420B8F
+    // Broiler-Falsified-If: a descriptor built here accepts an optional surface its caller did not name
+    // Broiler-Human:        PENDING
+    public static VmProfileDescriptor DescriptorAdmitting(params VmFeatureManifestId[] surfaces)
+    {
+        var names = ImmutableArray.CreateBuilder<string>();
+
+        foreach (var surface in surfaces)
+        {
+            names.Add(surface.ToString());
+        }
+
+        return Build(names.ToImmutable());
+    }
+
+    /// <summary>Every optional surface this build implements.</summary>
+    /// <remarks>
+    /// <b>Computed on each read rather than initialised once</b>, because a static field is
+    /// initialised in declaration order and <see cref="Descriptor"/> — which is declared above it
+    /// and reads it — would otherwise be handed a default array. That is a defect a build cannot
+    /// see and a type initialiser reports as a null reference from somewhere else entirely.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6C43BD
+    // Broiler-Human:        PENDING
+    private static ImmutableArray<string> EverySurface => ImmutableArray.Create(Format.JsSurfaces.All);
 
     /// <summary>Projects a completion value out of an invocation result.</summary>
     /// <remarks>
@@ -179,22 +292,29 @@ public static class JavaScriptProfile
     /// than chosen.
     /// </para>
     /// <para>
-    /// <b>Four matrix rows say <c>NotApplicable</c> and JSD-0004 intended them charged.</b> That
-    /// decision described the profile this component is growing into; this descriptor describes
-    /// what it is now. The slice imports no host capability and declares no guest-initiated load,
-    /// so host calls and the three nested-load dimensions are structurally unreachable, and
-    /// declaring them charged would be a claim the rest of this descriptor contradicts. JS-6 flips
-    /// the host-call row when the standard library imports something and JS-8 flips the three
-    /// nested rows when guest loads are declared. The correction is dated in decision JSD-0008
-    /// rather than left as a drift between a record and a construction.
+    /// <b>Every matrix row says <c>Charged</c>, and it took two milestones to get there.</b>
+    /// JSD-0004 intended them charged; the descriptor as first written marked four
+    /// <c>NotApplicable</c>, because the slice imported no host capability and declared no
+    /// guest-initiated load, so those dimensions were structurally unreachable and declaring them
+    /// charged would have been a claim the rest of the descriptor contradicted. The host-call row
+    /// flipped when the standard library imported <c>print</c>; the three nested-load rows flip
+    /// here, with <c>eval</c>. The correction was dated in decision JSD-0008 rather than left as a
+    /// drift between a record and a construction, and this paragraph is what closes it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=11B609
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=929887
     // Broiler-Falsified-If: a row here disagrees with decision JSD-0004 or JSD-0008 without a dated record of the correction
     // Broiler-Human:        PENDING
-    private static VmProfileDescriptor Build()
+    private static VmProfileDescriptor Build(ImmutableArray<string> admittedSurfaces)
     {
         VmDiagnosticsIdentity.TryCreate(Id, "broiler.javascript.diagnostics", out var diagnostics);
+
+        var accepted = ImmutableArray.Create(SliceManifest, WideManifest);
+
+        foreach (var surface in admittedSurfaces)
+        {
+            accepted = accepted.Add(VmFeatureManifestId.Parse(surface));
+        }
 
         return new VmProfileDescriptor(
             profileId: Id,
@@ -202,8 +322,8 @@ public static class JavaScriptProfile
             descriptorRevision: 1,
             supportedFormatVersions: new VmFormatVersionRange(
                 JavaScriptFormat.MinimumFormatVersion, Format.JsFormat.FormatVersion),
-            acceptedFeatureManifests: ImmutableArray.Create(SliceManifest, WideManifest),
-            verifier: new JavaScriptVerifier(Id, SliceManifest),
+            acceptedFeatureManifests: accepted,
+            verifier: new JavaScriptVerifier(Id, SliceManifest, admittedSurfaces),
             executorFactory: environment => new JavaScriptExecutor(Id, environment),
             artifactRepresentationKind: VmArtifactRepresentationKind.Decoded,
             artifactLifetimeKind: VmArtifactLifetimeKind.Managed,
@@ -227,12 +347,30 @@ public static class JavaScriptProfile
             // `print` exists, and a `print` that reached the console without the composition
             // registering anything would be the ambient surface the capability table forbids.
             hostCapabilityDescriptors: ImmutableArray.Create(
-                new VmCapabilityImport(WriteCapability, VmCapabilityImportKind.Optional)),
+                new VmCapabilityImport(WriteCapability, VmCapabilityImportKind.Optional),
+                new VmCapabilityImport(SourceProviderCapability, VmCapabilityImportKind.Optional)),
 
-            // No `eval`, no Function constructor, no dynamic import. The `broiler.javascript.dynamic`
-            // manifest is a separate identity precisely so a composition can decline exactly this
-            // and say so, and JS-8 is where it is declared.
-            guestInitiatedLoads: VmGuestLoadDeclaration.NotDeclared,
+            // `eval` AND THE `Function` CONSTRUCTOR, THROUGH THE MEDIATOR AND NOWHERE ELSE. Both
+            // turn a String into a request and run whatever verified handle the composition's
+            // artifact provider answers with; neither compiles anything inside this profile, which
+            // is what keeps a compiler in a composition's declared closure. Dynamic `import()` is
+            // NOT declared here: it belongs to the module goal, which does not exist yet.
+            //
+            // THE BOUNDS ARE THIS PROFILE'S OWN HARD MAXIMA AND A COMPOSITION MAY ONLY TIGHTEN
+            // THEM. A depth of four admits an `eval` that evaluates source that evaluates source,
+            // twice more, and refuses the fourth - which is enough for every generated program this
+            // profile is built to run and far short of a recursion. The fan-out and byte bounds are
+            // generous because a code-loading benchmark evaluates thousands of small functions, and
+            // the fuel rate is what charges nested verification to the operation that asked rather
+            // than to a separate allowance nobody set.
+            guestInitiatedLoads: VmGuestLoadDeclaration.Declared(
+                minimumProviderCapabilityVersion: 1,
+                profileHardMaxima: new VmGuestLoadBounds(
+                    nestedLoadDepth: 4,
+                    nestedLoadFanOut: 1_000_000,
+                    nestedLoadBytes: 64L * 1024 * 1024,
+                    verifierWork: 1_000_000_000),
+                verifierWorkToFuelRate: 1),
 
             // No top-level await, because there are no modules. JS-7 declares it.
             asynchronousInstantiation: VmDeclaration.NotDeclared,
@@ -310,7 +448,7 @@ public static class JavaScriptProfile
     /// what this profile uses - the defaults above are that - but of the most it would tolerate a
     /// host granting.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=986107
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=FFF7DC
     // Broiler-Human:        PENDING
     private static VmLimitVector Maxima()
     {
@@ -320,7 +458,19 @@ public static class JavaScriptProfile
         values[(int)VmBudgetDimension.AllocatedBytes] = 4_294_967_296;
         values[(int)VmBudgetDimension.LiveBytes] = 2_147_483_648;
         values[(int)VmBudgetDimension.HostCalls] = 4_294_967_295;
-        values[(int)VmBudgetDimension.CallDepth] = 16_384;
+        // MEASURED, NOT CHOSEN, AND THE MEASUREMENT IS RECORDED WITH IT. `eng/measure-frame-cost.py`
+        // bisects the published binary against a recursion with no base case and finds that this
+        // interpreter survives 8,666 JavaScript calls on the sixteen-megabyte stack
+        // `JsExecution.GuestStackBytes` declares - one call costing 1,936 bytes of native stack,
+        // and costing the same whether the JavaScript frame is narrow or wide, because the operand
+        // stack and the environment are heap objects rather than stack ones. The maximum a host may
+        // be granted is set at less than half of that, so the CALL-DEPTH CEILING always reaches its
+        // limit before the native stack reaches its, and a recursing program is refused as a
+        // resource exhaustion naming the dimension rather than by the process dying.
+        //
+        // This row read 16,384 until the measurement was taken, which is four times what the stack
+        // holds *(corrected: JSC-85)*.
+        values[(int)VmBudgetDimension.CallDepth] = 4_096;
         values[(int)VmBudgetDimension.VerifierWork] = 1_099_511_627_776;
         values[(int)VmBudgetDimension.ArtifactBytes] = 536_870_912;
         values[(int)VmBudgetDimension.SectionCount] = 1_024;
@@ -346,7 +496,7 @@ public static class JavaScriptProfile
     /// until the wide manifest imported a capability and is charged now, which is the flip JSD-0008
     /// said JS-6 would make.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=2B6844
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=AAA8EB
     // Broiler-Falsified-If: a row says charged for a dimension no code path charges, or inapplicable for one that is reachable
     // Broiler-Human:        PENDING
     private static VmBudgetDeclarationMatrix Matrix()
@@ -358,9 +508,10 @@ public static class JavaScriptProfile
             rows[index] = VmBudgetApplicability.Charged;
         }
 
-        rows[(int)VmBudgetDimension.NestedLoadDepth] = VmBudgetApplicability.NotApplicable;
-        rows[(int)VmBudgetDimension.NestedLoadFanOut] = VmBudgetApplicability.NotApplicable;
-        rows[(int)VmBudgetDimension.NestedLoadBytes] = VmBudgetApplicability.NotApplicable;
+        // THE THREE NESTED-LOAD ROWS ARE CHARGED FROM THE DAY `eval` EXISTS, and the descriptor's
+        // own remark predicted exactly this: JS-8 flips them when guest loads are declared. Leaving
+        // them inapplicable beside a declared guest-initiated load would be a descriptor
+        // contradicting itself.
 
         VmBudgetDeclarationMatrix.TryCreate(rows, out var matrix);
         return matrix;

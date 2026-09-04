@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   17
-// Annotated:        17/17
+// Relevant units:   18
+// Annotated:        18/18
 // Exempt:           15
-// Human-reviewed:   0/17
+// Human-reviewed:   0/18
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
-// Resource impact:  2/10 max
-// Unverified:       17
+// Resource impact:  3/10 max
+// Unverified:       18
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -58,7 +58,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>Object</c>, <c>Object.prototype</c> and the statics on the constructor.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=D03199
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=12944D
     // Broiler-Human:        PENDING
     private void SetupObject()
     {
@@ -97,8 +97,16 @@ internal sealed partial class JsRealm
 
         Method(ObjectPrototype, "hasOwnProperty", 1, static (engine, thisValue, arguments) =>
         {
-            var key = engine.ToPropertyKey(ArgOfObject(arguments, 0));
-            return JsValue.Boolean(engine.ToObject(thisValue).HasOwnProperty(key));
+            var requested = ArgOfObject(arguments, 0);
+            var host = engine.ToObject(thisValue);
+
+            // A SYMBOL KEY IS A DIFFERENT TABLE AND SO A DIFFERENT QUESTION. Coercing it to a
+            // String first would ask about a property named `Symbol(x)`, which no object has and
+            // every object could.
+            return JsValue.Boolean(
+                requested.IsSymbol
+                    ? host.TryGetOwnSymbol(requested.AsSymbol(), out _)
+                    : host.HasOwnProperty(engine.ToPropertyKey(requested)));
         });
 
         Method(ObjectPrototype, "isPrototypeOf", 1, static (engine, thisValue, arguments) =>
@@ -130,8 +138,16 @@ internal sealed partial class JsRealm
 
         Method(ObjectPrototype, "propertyIsEnumerable", 1, static (engine, thisValue, arguments) =>
         {
-            var key = engine.ToPropertyKey(ArgOfObject(arguments, 0));
+            var requested = ArgOfObject(arguments, 0);
             var target = engine.ToObject(thisValue);
+
+            if (requested.IsSymbol)
+            {
+                return JsValue.Boolean(
+                    target.TryGetOwnSymbol(requested.AsSymbol(), out var owned) && owned.Enumerable);
+            }
+
+            var key = engine.ToPropertyKey(requested);
             return JsValue.Boolean(target.TryGetOwnProperty(key, out var property) && property.Enumerable);
         });
 
@@ -245,9 +261,22 @@ internal sealed partial class JsRealm
                 return engine.ThrowTypeError("Object.defineProperty called on non-object");
             }
 
-            var key = engine.ToPropertyKey(ArgOfObject(arguments, 1));
+            var requested = ArgOfObject(arguments, 1);
             var fields = ObjectToDescriptorFields(engine, ArgOfObject(arguments, 2));
-            ObjectApplyDescriptor(engine, target.AsObject(), key, fields);
+
+            if (requested.IsSymbol)
+            {
+                // THE SYMBOL TABLE HAS NO REDEFINITION RULES OF ITS OWN YET, so this defines
+                // rather than validating against a current descriptor the way the String path does.
+                // A Symbol-keyed property is either absent or defined by the code that owns the
+                // Symbol, and nothing in this surface can redefine one it did not create.
+                target.AsObject().SetOwnSymbol(
+                    requested.AsSymbol(), ObjectPropertyFromFields(engine, target.AsObject(), fields));
+
+                return target;
+            }
+
+            ObjectApplyDescriptor(engine, target.AsObject(), engine.ToPropertyKey(requested), fields);
             return target;
         });
 
@@ -269,7 +298,16 @@ internal sealed partial class JsRealm
         {
             _ = thisValue;
             var target = engine.ToObject(ArgOfObject(arguments, 0));
-            var key = engine.ToPropertyKey(ArgOfObject(arguments, 1));
+            var requested = ArgOfObject(arguments, 1);
+
+            if (requested.IsSymbol)
+            {
+                return target.TryGetOwnSymbol(requested.AsSymbol(), out var owned)
+                    ? JsValue.Object(ObjectDescriptorFor(owned))
+                    : JsValue.Undefined;
+            }
+
+            var key = engine.ToPropertyKey(requested);
 
             return target.TryGetOwnProperty(key, out var property)
                 ? JsValue.Object(ObjectDescriptorFor(property))
@@ -587,11 +625,49 @@ internal sealed partial class JsRealm
         return fields;
     }
 
+    /// <summary>The property a descriptor's fields describe, with nothing to redefine.</summary>
+    /// <remarks>
+    /// The Symbol-keyed path uses it: there is no current descriptor to validate against, so the
+    /// fields are read straight into a property. Absent attribute fields default to false, which is
+    /// what <c>DefinePropertyOrThrow</c> says for a property that did not exist.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BFF4D5
+    // Broiler-Human:        PENDING
+    private static JsProperty ObjectPropertyFromFields(
+        JsEngine engine, JsObject target, ObjectDescriptorFields fields)
+    {
+        _ = engine;
+        _ = target;
+        var attributes = JsPropertyAttributes.None;
+
+        if (fields.HasEnumerable && fields.Enumerable)
+        {
+            attributes |= JsPropertyAttributes.Enumerable;
+        }
+
+        if (fields.HasConfigurable && fields.Configurable)
+        {
+            attributes |= JsPropertyAttributes.Configurable;
+        }
+
+        if (fields.HasGet || fields.HasSet)
+        {
+            return JsProperty.Accessor(fields.Getter, fields.Setter, attributes);
+        }
+
+        if (fields.HasWritable && fields.Writable)
+        {
+            attributes |= JsPropertyAttributes.Writable;
+        }
+
+        return JsProperty.Data(fields.HasValue ? fields.Value : JsValue.Undefined, attributes);
+    }
+
     /// <summary>
     /// The specification's <c>ValidateAndApplyPropertyDescriptor</c>: refuse what the existing
     /// property forbids, then write the merge of the two.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=A520F1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A520F1
     // Broiler-Human:        PENDING
     private static void ObjectApplyDescriptor(
         JsEngine engine, JsObject target, string key, ObjectDescriptorFields fields)

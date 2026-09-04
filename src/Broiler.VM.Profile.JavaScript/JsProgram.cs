@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   8
-// Annotated:        8/8
-// Exempt:           25
-// Human-reviewed:   0/8
+// Relevant units:   9
+// Annotated:        9/9
+// Exempt:           26
+// Human-reviewed:   0/9
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       8
+// Unverified:       9
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -179,7 +179,7 @@ internal readonly struct JsEntry(string name, uint unit)
 internal sealed class JsProgram : IVmVerifiedState
 {
     /// <summary>Creates a verified program.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F22AF3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A12776
     // Broiler-Human:        PENDING
     internal JsProgram(
         JsValue[] constants,
@@ -188,7 +188,8 @@ internal sealed class JsProgram : IVmVerifiedState
         JsCodeUnit[] functions,
         JsRegion[] regions,
         JsEntry[] entries,
-        int positionRowCount)
+        int positionRowCount,
+        System.Collections.Immutable.ImmutableArray<string> admittedSurfaces)
     {
         Constants = constants;
         Names = names;
@@ -197,7 +198,24 @@ internal sealed class JsProgram : IVmVerifiedState
         Regions = regions;
         Entries = entries;
         PositionRowCount = positionRowCount;
+        AdmittedSurfaces = admittedSurfaces;
     }
+
+    /// <summary>The optional feature manifests the composition that verified this admits.</summary>
+    /// <remarks>
+    /// It travels on the verified state rather than being asked for again at execution, because the
+    /// composition's answer is fixed the moment it registers a profile descriptor and asking twice
+    /// is how two answers happen. The realm reads it to decide which intrinsics exist.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CAB5B1
+    // Broiler-Human:        PENDING
+    internal System.Collections.Immutable.ImmutableArray<string> AdmittedSurfaces { get; }
+
+    /// <summary>Whether the composition admitted <paramref name="manifestId"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9D7A37
+    // Broiler-Human:        PENDING
+    internal bool Admits(string manifestId) =>
+        !AdmittedSurfaces.IsDefault && AdmittedSurfaces.Contains(manifestId);
 
     /// <summary>The constant pool, as values.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4D5B5E

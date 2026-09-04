@@ -756,6 +756,7 @@ never silently widened:
 | `broiler.javascript.modules` | Module records, live bindings, import and export forms, and — where declared — top-level await. | JS-7 |
 | `broiler.javascript.dynamic` | `eval`, the `Function` constructor, and dynamic `import()`. Separate because a composition that registers no artifact provider must be able to decline exactly this and say so. | JS-8 |
 | `broiler.javascript.regexp` | Regular expressions, over the from-scratch matcher. | JS-6, or excluded with a published failure |
+| `broiler.javascript.binary` | `ArrayBuffer`, `DataView` and the typed array constructors. Separate because shared mutable memory addressed by index is a question a composition has to be able to answer on its own; `SharedArrayBuffer` and `Atomics` are deliberately **not** in it, because they are the multi-agent surface and need the agent model of [section 13](#13-realms-agents-and-the-host-boundary) *(corrected: JSC-86)*. | Opened by JSW-2 |
 | `broiler.javascript.intl` | Internationalization. | Deferred; excluded by name until it has a run |
 | `broiler.javascript.temporal` | The temporal surface. | Deferred; excluded by name until it has a run |
 
@@ -763,6 +764,34 @@ never silently widened:
 the slice and narrower than `broiler.javascript.core`. The three rules above bind it like any
 other, and the first of them — a manifest with no retained run of its own is not accepted — is
 unmet for it *(corrected: JSC-70)*.
+
+### Two kinds of identity, and how an artifact names the second
+
+The table above was written as though every manifest were a manifest an artifact **names in its
+header**, one per artifact. Two of its rows are not, and the difference is worth stating rather than
+leaving for a reader to notice *(corrected: JSC-86)*.
+
+**A manifest an artifact names is a whole surface**, and `broiler.javascript.slice` and
+`broiler.javascript.wide` are that: an artifact declares one, the format version is defined against
+it, and every construct in the artifact belongs to it.
+
+**An OPTIONAL SURFACE is something an artifact declares BESIDE the manifest it names**, and
+`broiler.javascript.binary` and `broiler.javascript.dynamic` are that. The artifact still names
+`broiler.javascript.wide`; a section of it lists the optional surfaces it reaches; and the verifier
+refuses an artifact declaring one the composition did not admit — at verification, with an
+invalid-artifact reason, which is the property this section already required and which now has a
+mechanism.
+
+**Why the second kind has to exist at all** is a fact about what the surfaces are made of. A
+construct the front end refuses by name — a module declaration, a `class` — cannot reach an artifact
+at all, so the artifact's own manifest carries it. A typed array constructor is a **global name**,
+and a program that constructs one is, byte for byte, a program that reads a name. Nothing in an
+artifact says which names matter unless the artifact says so. A `typeof` deliberately declares
+nothing, so `typeof Uint8Array === "undefined"` — the shape a machine-generated program uses to find
+out whether it may go on — stays a question this profile answers rather than an artifact it refuses.
+
+**And a composition declines by building a descriptor**, not by setting a flag: it names the
+optional surfaces it admits when it registers, and there is no other door.
 
 ### Where the language is deliberately underspecified, and why a manifest has to say so
 
@@ -1721,6 +1750,7 @@ asking alone; the other two are weaker than that and are corrected for their own
 | Lazy per-section verification | A browser compiles function bodies on first call and will not verify a whole bundle to run one entry point; version 1 fixes whole-artifact eager verification. | **Moderate, and actively declined by the counterweight**, which is offered the same permission by its own specification and refuses it because a deferred check is a check reported as a trap. This profile's invariant 3 fixes the shape of any proposal it would sign, and the two profiles agree on that shape: each section verified **completely** before that section's first execution, with no structural, index, stack-consistency, or handler-nesting check migrating into execution. Funded by a measurement, not by argument. |
 | Streaming or incremental verification | A browser wants to verify as bytes arrive. | **Strong: general**, and the core already carries a registered amendment shape for it. **Both profiles want it and neither needs it yet**: the other intended profile grades it *wanted eventually, needed by nobody yet* — it streams bytes and is not indifferent, but it has no measurement either. That bears on when the row is filed, not on how general it is. Reopened against a measurement, not against the observation that browsers stream. |
 | A persisted envelope | [Section 16](#16-persistence-and-the-code-cache). | **Strong: general**, graded the same by the other intended profile, and already admitted by contract. It needs a gate rather than an amendment. |
+| A host capability that answers a guest with **bytes** | A value capability takes bytes and answers a `long` or an opaque reference, and an opaque reference is by construction not dereferenceable. **There is no registration any composition could make that would let a host answer a guest with a file's contents**, so a shell-shaped global like `read` can exist and refuse and can never do anything else. | **Moderate, and it is the first row here reached by an OBSERVATION rather than by a design reading.** A third-party workload assumed the shell and this profile could not have it *(corrected: [JSC-84](roadmap.corrections.md#jsc-84))*. What weakens it is that the need is a HOST's rather than a language's: the guest asked for a byte channel, not for a filesystem, and a composition that wanted one could already pass bytes IN. Filed and held like every other row, with the deterministic refusal published in the meantime. |
 
 The rule that governs all of them: **a design that can only be hosted by a second core state
 machine is refused.** Exactly one core state machine and one core contract version exist in a

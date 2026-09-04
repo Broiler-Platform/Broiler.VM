@@ -23,14 +23,27 @@ internal static class Hosts
     /// There is no aggregate profile type to name instead, by design: one would reference every
     /// profile assembly and this closure would stop being a single-profile closure.
     /// </remarks>
-    internal static VmCatalog Catalog() => VmCatalog.CreateBuilder()
-        .Add(JavaScriptProfile.Descriptor)
+    internal static VmCatalog Catalog() => Catalog("default");
+
+    /// <summary>
+    /// The catalog a replay mode registers, which is where a composition declines a surface.
+    /// </summary>
+    /// <remarks>
+    /// <b>Declining is a registration and not a flag.</b> The declining mode registers a descriptor
+    /// built to admit no optional surface at all, which is exactly what a composition wanting an
+    /// execution image with no shared mutable memory would write. Nothing else about the mode
+    /// differs: the same bytes, the same descriptor presented with them, the same ceilings.
+    /// </remarks>
+    internal static VmCatalog Catalog(string mode) => VmCatalog.CreateBuilder()
+        .Add(string.Equals(mode, "wide-declining", StringComparison.Ordinal)
+            ? JavaScriptProfile.DescriptorAdmitting()
+            : JavaScriptProfile.Descriptor)
         .Build();
 
     /// <summary>Creates the runtime a replay mode calls for.</summary>
     internal static VmRuntime? Runtime(string mode, out string failure)
     {
-        var created = VmRuntime.Create(Catalog(), Options(mode));
+        var created = VmRuntime.Create(Catalog(mode), Options(mode));
 
         if (created.TryGetRuntime(out var runtime))
         {
@@ -76,7 +89,8 @@ internal static class Hosts
         // version-2 bytes; what this mode changes is which format version and manifest the caller
         // says they are, because a descriptor that said version 1 would be refused for the
         // mismatch before the version-2 pass ever read a section.
-        if (string.Equals(mode, "wide", StringComparison.Ordinal))
+        if (string.Equals(mode, "wide", StringComparison.Ordinal) ||
+            string.Equals(mode, "wide-declining", StringComparison.Ordinal))
         {
             return new VmArtifactDescriptor(
                 JavaScriptProfile.Id,

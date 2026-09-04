@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   27
-// Annotated:        27/27
-// Exempt:           20
-// Human-reviewed:   0/27
+// Relevant units:   28
+// Annotated:        28/28
+// Exempt:           21
+// Human-reviewed:   0/28
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       27
+// Unverified:       28
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -55,12 +55,13 @@ internal sealed class JsVerifier
 
 
     /// <summary>Verifies a version-2 payload and produces the program the executor runs.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=DD5485
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=DEEDF7
     // Broiler-Human:        PENDING
     internal static VmVerifierOutcome Verify(
         in VmArtifactDescriptor descriptor,
         System.ReadOnlySpan<byte> payload,
         IVmVerificationContext context,
+        System.Collections.Immutable.ImmutableArray<string> admittedSurfaces,
         System.Threading.CancellationToken cancellationToken)
     {
         var adapter = new JavaScriptReadAdapter(context.Meter);
@@ -127,7 +128,7 @@ internal sealed class JsVerifier
                 return Stopped(cancellationToken);
             }
 
-            var outcome = ReadSection(ref reader, adapter, ref previousKind, state);
+            var outcome = ReadSection(ref reader, adapter, ref previousKind, state, admittedSurfaces);
 
             if (outcome.Category != VmOutcome.Normal)
             {
@@ -146,7 +147,7 @@ internal sealed class JsVerifier
             return VmVerifierOutcome.Cancellation();
         }
 
-        return Link(state, adapter, cancellationToken);
+        return Link(state, adapter, admittedSurfaces, cancellationToken);
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BB9BC8
@@ -197,13 +198,14 @@ internal sealed class JsVerifier
         return VmVerifierOutcome.Verified(EmptyState.Instance, VmArtifactSharing.Shareable);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4E4B50
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=8C2539
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome ReadSection(
         ref VmBoundedReader reader,
         JavaScriptReadAdapter adapter,
         ref uint previousKind,
-        Sections state)
+        Sections state,
+        System.Collections.Immutable.ImmutableArray<string> admittedSurfaces)
     {
         var at = reader.Position;
 
@@ -217,7 +219,7 @@ internal sealed class JsVerifier
             return FromReader(ref reader, reader.Position);
         }
 
-        if (kind is < 1 or > 8)
+        if (kind is < 1 or > 9)
         {
             return Invalid(
                 VmReason.UnknownFeature, JavaScriptDiagnosticCode.UnknownSectionKind, at);
@@ -244,6 +246,7 @@ internal sealed class JsVerifier
             JsFormat.SectionKind.ExceptionRegions => ReadRegions(ref reader, state),
             JsFormat.SectionKind.Positions => ReadPositions(ref reader, state),
             JsFormat.SectionKind.Functions => ReadFunctions(ref reader, state),
+            JsFormat.SectionKind.Surfaces => ReadSurfaces(ref reader, state, admittedSurfaces),
             _ => Invalid(
                 VmReason.UnknownFeature,
                 JavaScriptDiagnosticCode.SuspensionTargetOutsideManifest,
@@ -527,6 +530,105 @@ internal sealed class JsVerifier
         return Ok;
     }
 
+    /// <summary>
+    /// Reads the optional surfaces this artifact declares, and refuses one the composition has not
+    /// admitted.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>This is where a composition declining a surface refuses an artifact, and it is at
+    /// verification rather than at run time on purpose.</b> Roadmap section 6 draws the
+    /// distinction: a composition that declines a manifest produces an invalid artifact the guest
+    /// never sees, and a composition that admits one while registering no provider produces a
+    /// run-time refusal the guest may catch. Two outcomes, two catchabilities, and reading them off
+    /// one behaviour is how a policy boundary quietly stops being one.
+    /// </para>
+    /// <para>
+    /// <b>Two refusals rather than one, and the difference is who is wrong.</b> A name this build
+    /// does not know is an artifact naming a surface nobody wrote; a name this build knows and this
+    /// composition did not admit is an artifact naming a surface somebody declined. The first is a
+    /// defect in whatever produced the bytes and the second is the composition doing its job, and a
+    /// reader of a diagnostic code should not have to guess which happened.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=2F6AFE
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome ReadSurfaces(
+        ref VmBoundedReader reader,
+        Sections state,
+        System.Collections.Immutable.ImmutableArray<string> admittedSurfaces)
+    {
+        if (!reader.TryReadDeclaredCount(out var count))
+        {
+            return FromReader(ref reader, reader.Position);
+        }
+
+        if (count > JsFormat.CeilingSurfaces)
+        {
+            return Invalid(
+                VmReason.InconsistentStructure,
+                JavaScriptDiagnosticCode.DeclaredMaximumTooLarge,
+                reader.Position);
+        }
+
+        var declared = new string[count];
+
+        for (var index = 0u; index < count; index++)
+        {
+            if (!reader.TryReadVarUInt32(out var length))
+            {
+                return FromReader(ref reader, reader.Position);
+            }
+
+            if (length is 0 or > JavaScriptFormat.MaximumManifestIdBytes)
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.ManifestIdTooLong,
+                    reader.Position);
+            }
+
+            if (!reader.TryReadBytes(length, out var bytes))
+            {
+                return FromReader(ref reader, reader.Position);
+            }
+
+            var identity = System.Text.Encoding.UTF8.GetString(bytes);
+
+            for (var earlier = 0u; earlier < index; earlier++)
+            {
+                if (string.Equals(declared[earlier], identity, System.StringComparison.Ordinal))
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.DuplicateSurface,
+                        reader.Position);
+                }
+            }
+
+            if (!JsSurfaces.IsKnown(identity))
+            {
+                return Invalid(
+                    VmReason.UnknownFeature,
+                    JavaScriptDiagnosticCode.UnknownSurface,
+                    reader.Position);
+            }
+
+            if (!admittedSurfaces.Contains(identity))
+            {
+                return Invalid(
+                    VmReason.UnsupportedFeatureManifest,
+                    JavaScriptDiagnosticCode.SurfaceOutsideComposition,
+                    reader.Position);
+            }
+
+            declared[index] = identity;
+        }
+
+        state.Surfaces = declared;
+        return Ok;
+    }
+
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9E02CD
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome ReadRegions(ref VmBoundedReader reader, Sections state)
@@ -658,11 +760,12 @@ internal sealed class JsVerifier
         return Ok;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9A3477
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C2BFD5
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome Link(
         Sections state,
         JavaScriptReadAdapter adapter,
+        System.Collections.Immutable.ImmutableArray<string> admittedSurfaces,
         System.Threading.CancellationToken cancellationToken)
     {
         if (!state.SawLimits || !state.SawConstants || !state.SawCode ||
@@ -794,6 +897,12 @@ internal sealed class JsVerifier
             }
         }
 
+        // THE REALM IS BUILT FROM WHAT THE COMPOSITION ADMITS, NOT FROM WHAT THE ARTIFACT DECLARED.
+        // The two sets are different questions and only one of them is a policy: the artifact's
+        // declaration is what this pass has just refused an unadmitted entry of, and the
+        // composition's is what the guest may find on the global object. Installing only what a
+        // particular artifact declared would make `typeof Uint8Array` answer differently for two
+        // programs a composition admits equally, which is a difference no embedder asked for.
         var program = new JsProgram(
             state.Constants!,
             state.Names!,
@@ -801,7 +910,8 @@ internal sealed class JsVerifier
             units,
             state.Regions,
             state.Entries,
-            state.PositionRows);
+            state.PositionRows,
+            admittedSurfaces);
 
         return VmVerifierOutcome.Verified(program, VmArtifactSharing.Shareable);
     }
@@ -913,6 +1023,10 @@ internal sealed class JsVerifier
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7415BF
         // Broiler-Human:        PENDING
         internal int PositionRows { get; set; }
+
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9FAFA3
+        // Broiler-Human:        PENDING
+        internal string[] Surfaces { get; set; } = [];
 
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4F7CE5
         // Broiler-Human:        PENDING

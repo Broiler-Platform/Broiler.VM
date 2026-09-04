@@ -66,6 +66,16 @@ public sealed class N16WideSurfaceRuleTests
             text,
             System.StringComparison.Ordinal);
 
+        // AND THE OPTIONAL SURFACES ARE ADDED TO THAT PAIR RATHER THAN BAKED INTO IT. An artifact
+        // still names one of the two manifests in its header; a surface is something it declares
+        // beside that, and a composition admitting none is a composition whose accepted set is
+        // exactly the pair above. A literal that listed the surfaces here would make every
+        // composition admit them.
+        Assert.Contains(
+            "accepted = accepted.Add(VmFeatureManifestId.Parse(surface))",
+            text,
+            System.StringComparison.Ordinal);
+
         // The range's upper bound is the version-2 constant rather than a literal, so a third
         // version cannot arrive without this line moving with it.
         Assert.Contains(
@@ -164,8 +174,12 @@ public sealed class N16WideSurfaceRuleTests
         Assert.Contains("JsFormat.ManifestId", second, System.StringComparison.Ordinal);
         Assert.DoesNotContain("SliceManifest", second, System.StringComparison.Ordinal);
 
+        // The construction still names the manifest the FIRST pass accepts, and it now also names
+        // the optional surfaces the composition admitted - which the second pass refuses an
+        // artifact for declaring outside. Both are arguments of the one verifier object, because a
+        // second object would be a second answer to the same question.
         Assert.Contains(
-            "new JavaScriptVerifier(Id, SliceManifest)",
+            "new JavaScriptVerifier(Id, SliceManifest, admittedSurfaces)",
             AssuranceSources.File(DescriptorPath).Text,
             System.StringComparison.Ordinal);
 

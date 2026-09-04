@@ -1,0 +1,9 @@
+A DOCUMENT THAT CALLS A PRESENT GLOBAL ABSENT, so rule N17's rejecting direction is decided by an
+input rather than by a comment. The list below is the shape the ledger publishes and it names
+`Object`, which every realm this profile builds has had since the first one.
+
+```absent-globals
+BigInt
+Object
+Proxy
+```

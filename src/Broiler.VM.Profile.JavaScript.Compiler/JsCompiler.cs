@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   80
-// Annotated:        80/80
-// Exempt:           50
-// Human-reviewed:   0/80
+// Relevant units:   96
+// Annotated:        96/96
+// Exempt:           52
+// Human-reviewed:   0/96
 // IP risk:          None
-// Security risk:    Medium
-// Criteria:         0/0
+// Security risk:    High
+// Criteria:         4/4
 // Resource impact:  3/10 max
-// Unverified:       80
+// Unverified:       96
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -99,6 +99,12 @@ public sealed class JsCompiler
     // Broiler-Human:        PENDING
     private readonly System.Collections.Generic.List<(string Name, uint Unit)> entries = [];
 
+    /// <summary>The optional surfaces this artifact reaches, one entry each.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=137511
+    // Broiler-Human:        PENDING
+    private readonly System.Collections.Generic.SortedSet<string> surfaces =
+        new(System.StringComparer.Ordinal);
+
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=237FC7
     // Broiler-Human:        PENDING
     private UnitBuffer buffer = null!;
@@ -114,6 +120,18 @@ public sealed class JsCompiler
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=989AE3
     // Broiler-Human:        PENDING
     private bool strict;
+
+    /// <summary>How many scripts of this artifact have been begun, which names their sites apart.</summary>
+    /// <remarks>
+    /// A tagged template's strings object is cached per CALL SITE, and the several scripts of one
+    /// artifact share one realm - so two scripts with a template at the same line and column would
+    /// share a cache entry and hand a tag the wrong strings. This counter is what makes the key
+    /// unique, and it is a count of scripts rather than of code units because a nested function's
+    /// unit index moves as the enclosing script is compiled.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C04DD3
+    // Broiler-Human:        PENDING
+    private int scripts;
 
     /// <summary>Compiles one source text as a script called <c>main</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D206EC
@@ -169,7 +187,7 @@ public sealed class JsCompiler
 
     // ---- assembly ------------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=EEE3A5
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B69343
     // Broiler-Human:        PENDING
     private byte[] Assemble()
     {
@@ -269,12 +287,26 @@ public sealed class JsCompiler
             (JavaScriptFormat.SectionKind)JsFormat.SectionKind.Functions,
             JsArtifactWriter.Functions(rows.ToArray())));
 
+        // THE SURFACES SECTION IS WRITTEN ONLY WHEN THERE IS ONE, and its absence is what every
+        // artifact written before the kind existed says: this program reaches no optional surface.
+        // An empty section would say the same thing in more bytes, and would make the difference
+        // between "declares none" and "declares nothing" a difference a reader has to look for.
+        if (surfaces.Count != 0)
+        {
+            var declared = new string[surfaces.Count];
+            surfaces.CopyTo(declared);
+
+            sections.Add(new JavaScriptArtifactWriter.Section(
+                (JavaScriptFormat.SectionKind)JsFormat.SectionKind.Surfaces,
+                JsArtifactWriter.Surfaces(declared)));
+        }
+
         return JsArtifactWriter.Write(JsFormat.ManifestId, sections.ToArray());
     }
 
     // ---- units ---------------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=567568
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A574F1
     // Broiler-Human:        PENDING
     private int CompileProgram(JsProgramNode program, bool forceStrict)
     {
@@ -284,6 +316,7 @@ public sealed class JsCompiler
         var outerStrict = strict;
 
         strict = program.IsStrict || forceStrict;
+        scripts++;
         var index = units.Count;
         buffer = new UnitBuffer(0, JsFormat.FunctionFlags.ProgramBody | Strictness());
         units.Add(buffer);
@@ -313,7 +346,7 @@ public sealed class JsCompiler
         return index;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=671DD9
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=64BE78
     // Broiler-Human:        PENDING
     private int CompileFunction(JsFunctionNode function)
     {
@@ -372,6 +405,18 @@ public sealed class JsCompiler
             var slot = scope.Declare("arguments", constant: false);
             Emit(JsOpcode.NewArguments);
             EmitScoped(JsOpcode.InitialiseScoped, 0, slot);
+        }
+
+        // AN ARROW READS THE ENCLOSING FUNCTION'S `new.target`, so the enclosing function is where
+        // it has to be captured. It is parked in a binding only when an arrow below actually reads
+        // one - a function that uses `new.target` itself reads the instruction and needs no slot -
+        // and it is captured at ENTRY, before any statement runs, because that is the only moment
+        // at which this frame's answer is still this frame's.
+        if (!function.IsArrow && UsesNewTargetThroughArrow(function.Body))
+        {
+            var captured = scope.Declare(NewTargetBinding, constant: false);
+            Emit(JsOpcode.LoadNewTarget);
+            EmitScoped(JsOpcode.InitialiseScoped, 0, captured);
         }
 
         HoistFunction(function.Body);
@@ -610,6 +655,31 @@ public sealed class JsCompiler
         foreach (var statement in body)
         {
             if (Walk.Mentions(statement, "arguments"))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Whether some arrow inside this body reads <c>new.target</c> and therefore needs it parked.
+    /// </summary>
+    /// <remarks>
+    /// <b>It answers no for a body that reads <c>new.target</c> directly</b>, which is the whole
+    /// distinction: that read is an instruction against this frame and needs no binding at all.
+    /// Only a read from inside an arrow needs one, because the arrow has a frame of its own whose
+    /// answer is the wrong answer.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F9937A
+    // Broiler-Human:        PENDING
+    private static bool UsesNewTargetThroughArrow(
+        System.Collections.Generic.IReadOnlyList<JsStatement> body)
+    {
+        foreach (var statement in body)
+        {
+            if (Walk.MentionsNewTarget(statement, insideArrow: false))
             {
                 return true;
             }
@@ -1415,7 +1485,7 @@ public sealed class JsCompiler
 
     // ---- expressions ---------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=469A26
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=ADA8A6
     // Broiler-Human:        PENDING
     private void CompileExpression(JsExpression expression)
     {
@@ -1530,6 +1600,22 @@ public sealed class JsCompiler
                 }
 
                 Emit(JsOpcode.Construct, (byte)construction.Arguments.Count);
+                break;
+
+            case JsTemplateLiteral template:
+                CompileTemplate(template);
+                break;
+
+            case JsTaggedTemplate tagged:
+                CompileTaggedTemplate(tagged);
+                break;
+
+            case JsChainExpression chain:
+                CompileChain(chain);
+                break;
+
+            case JsNewTargetExpression:
+                EmitNewTarget();
                 break;
 
             case JsSequenceExpression sequence:
@@ -1676,7 +1762,7 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B036E8
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2BDD97
     // Broiler-Human:        PENDING
     private void CompileUnary(JsUnaryExpression unary)
     {
@@ -1701,6 +1787,36 @@ public sealed class JsCompiler
                 }
 
                 return;
+
+            // `delete a?.b` DELETES, AND WHEN `a` IS NULLISH IT ANSWERS `true`. The chain is not
+            // evaluated to a value and then deleted - that would delete nothing and answer `true`
+            // for a reason the language does not give. It is the same chain lowering with the
+            // deletion as its last link and `true` as what its short circuit produces, which is
+            // exactly what the specification says a short-circuited `delete` completes with.
+            case SliceTokenKind.Delete when unary.Operand is JsChainExpression chain &&
+                chain.Chain is JsMemberExpression optional:
+            {
+                var end = NewLabel();
+                EmitChainLink(optional.Target, end, shortIsTrue: true);
+
+                if (optional.Optional)
+                {
+                    EmitNullishGuard(end, held: 1, shortIsTrue: true);
+                }
+
+                if (optional.Computed is null)
+                {
+                    Emit(JsOpcode.DeleteProperty, InternedName(optional.Name));
+                }
+                else
+                {
+                    CompileExpression(optional.Computed);
+                    Emit(JsOpcode.DeleteIndex);
+                }
+
+                Mark(end);
+                return;
+            }
 
             case SliceTokenKind.Delete:
                 CompileExpression(unary.Operand);
@@ -1982,11 +2098,103 @@ public sealed class JsCompiler
         Mark(end);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5E4FBA
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=516948
     // Broiler-Human:        PENDING
     private void CompileCall(JsCallExpression call)
     {
-        if (call.Callee is JsMemberExpression member)
+        EmitCallee(call.Callee);
+
+        foreach (var argument in call.Arguments)
+        {
+            CompileExpression(argument);
+        }
+
+        if (call.Arguments.Count > 255)
+        {
+            Refuse(
+                call.Span,
+                SliceSourceDiagnosticCode.ConstructOutsideManifest,
+                "a call with more than 255 arguments is not admitted");
+        }
+
+        // A DIRECT `eval` IS A FACT ABOUT THE SPELLING, and this is the only place that fact
+        // still exists. `eval(s)` and `(0, eval)(s)` reach the same function object with the same
+        // receiver and the same arguments; the language says the first evaluates in the caller's
+        // scope and the second in the global one, and no executor can recover the difference from
+        // the operand stack. So the lowering says it, with an opcode whose stack effect is the
+        // ordinary call's - which is what lets the verifier check it while knowing nothing about
+        // what it means. A locally bound `eval` is not this: it resolves to a slot and this
+        // condition is false.
+        var direct = call.Callee is JsIdentifier callee &&
+            string.Equals(callee.Name, "eval", System.StringComparison.Ordinal) &&
+            !Resolvable(callee.Name);
+
+        Emit(
+            direct ? JsOpcode.CallEval : JsOpcode.Call,
+            (byte)System.Math.Min(call.Arguments.Count, 255));
+    }
+
+    /// <summary>Pushes this frame's <c>new.target</c>, or the enclosing function's inside an arrow.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>An arrow has no <c>new.target</c> of its own, and this lowering gives it a frame
+    /// anyway.</b> Every arrow here is compiled as its own code unit and called as an ordinary
+    /// call, so <see cref="JsOpcode.LoadNewTarget"/> inside one would read that call's answer -
+    /// <c>undefined</c>, always, even when the function around it was reached by <c>new</c>. The
+    /// language says the opposite: an arrow reads the enclosing function's <c>new.target</c>
+    /// exactly as it reads the enclosing <c>this</c>.
+    /// </para>
+    /// <para>
+    /// <b>So the enclosing function parks it in a binding and the arrow reads it through the
+    /// closure it already has.</b> <see cref="CompileFunction"/> declares <c>#newtarget</c> and
+    /// fills it at entry, but only for a function that actually has an arrow reading it - the walk
+    /// that decides is arrow-transparent and stops at an ordinary function, which is the same
+    /// boundary <c>new.target</c> itself has. A function with no such arrow pays nothing and reads
+    /// the instruction directly.
+    /// </para>
+    /// <para>
+    /// The fall-through to the instruction when the binding is not in scope is a defence and not a
+    /// path: the parser refuses <c>new.target</c> where no ordinary function encloses it, so an
+    /// arrow that reaches here always has one above it.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4739C1
+    // Broiler-Human:        PENDING
+    private void EmitNewTarget()
+    {
+        if ((buffer.Flags & JsFormat.FunctionFlags.Arrow) != 0 &&
+            TryResolve(NewTargetBinding, out var hops, out var slot, out _))
+        {
+            EmitScoped(JsOpcode.LoadScoped, (byte)hops, slot);
+            return;
+        }
+
+        Emit(JsOpcode.LoadNewTarget);
+    }
+
+    /// <summary>The binding an enclosing function parks its <c>new.target</c> in for its arrows.</summary>
+    /// <remarks>
+    /// The leading <c>#</c> is what makes it unreachable from source: no JavaScript identifier
+    /// begins with one, so this name can never collide with a binding a program declared.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1A8E0A
+    // Broiler-Human:        PENDING
+    private const string NewTargetBinding = "#newtarget";
+
+    /// <summary>Pushes a callee and the receiver the calling convention wants above it.</summary>
+    /// <remarks>
+    /// <b>Which receiver a call gets is decided by the SPELLING of its callee and by nothing
+    /// else.</b> <c>o.f()</c> passes <c>o</c> and <c>(o.f)()</c> passes it too, while <c>(0,
+    /// o.f)()</c> and a tagged template whose tag is parenthesised pass <c>undefined</c> - the
+    /// difference being whether the callee expression is still a reference when the call reaches
+    /// it. This is the one place that decision is made, so an ordinary call and a tagged template
+    /// cannot drift apart on it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=FEEE29
+    // Broiler-Human:        PENDING
+    private void EmitCallee(JsExpression callee)
+    {
+        if (callee is JsMemberExpression member)
         {
             CompileExpression(member.Target);
             Emit(JsOpcode.Duplicate);
@@ -2004,13 +2212,366 @@ public sealed class JsCompiler
             // The receiver is under the callee and the calling convention wants it above, so one
             // exchange turns [receiver, callee] into [callee, receiver].
             Emit(JsOpcode.Swap);
-        }
-        else
-        {
-            CompileExpression(call.Callee);
-            Emit(JsOpcode.LoadUndefined);
+            return;
         }
 
+        CompileExpression(callee);
+        Emit(JsOpcode.LoadUndefined);
+    }
+
+    // ---- templates -----------------------------------------------------------------------------
+
+    /// <summary>Lowers a template literal to the concatenation it is.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A template is not sugar for <c>+</c>, and the difference is the coercion.</b> <c>`${x}`</c>
+    /// is <c>ToString(x)</c>, which asks an object for <c>toString</c> FIRST; <c>"" + x</c> is
+    /// addition, which asks for <c>valueOf</c> first. For <c>{ valueOf() { return 1 }, toString()
+    /// { return "s" } }</c> the two answer differently, and every engine answers <c>"s"</c>. So the
+    /// substitution goes through the realm's <c>String</c> rather than through <see
+    /// cref="JsOpcode.Add"/>, and only the joining is addition - of two Strings, where addition has
+    /// no coercion left to get wrong.
+    /// </para>
+    /// <para>
+    /// <b>Except for a Symbol, which must throw, and <c>String</c> is the one function that does
+    /// not.</b> <c>String(symbol)</c> is the language's single explicit Symbol-to-String coercion
+    /// and answers <c>"Symbol(x)"</c>; a template must throw a <c>TypeError</c> instead. So the
+    /// lowering tests the type first and, for a Symbol, reaches the throw the only way an opcode
+    /// set without a <c>ToString</c> instruction can - by adding it to a String, which is exactly
+    /// the implicit coercion the type refuses. The added value is never used: that path always
+    /// throws, and it falls through to the call only so that the two paths meet the verifier at one
+    /// height.
+    /// </para>
+    /// <para>
+    /// <b>The declared cost is that this reads the global <c>String</c>.</b> A program that
+    /// replaces it changes what a template produces, which the language does not allow. It is the
+    /// same dependency a regular-expression literal already takes on the global <c>RegExp</c>, and
+    /// it is taken for the same reason: this instruction set has no opcode for the operation, and a
+    /// wrong coercion in every template is a worse answer than a coercion a hostile program can
+    /// move.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=3E5E65
+    // Broiler-Falsified-If: a substitution coerces through `valueOf` before `toString`, or a Symbol substitution does not throw
+    // Broiler-Human:        PENDING
+    private void CompileTemplate(JsTemplateLiteral template)
+    {
+        Emit(JsOpcode.LoadConstant, StringConstant(template.Cooked[0]));
+
+        for (var index = 0; index < template.Substitutions.Count; index++)
+        {
+            EmitToString(template.Substitutions[index]);
+            Emit(JsOpcode.Add);
+
+            var tail = template.Cooked[index + 1];
+
+            if (tail.Length != 0)
+            {
+                Emit(JsOpcode.LoadConstant, StringConstant(tail));
+                Emit(JsOpcode.Add);
+            }
+        }
+    }
+
+    /// <summary>Pushes <c>ToString</c> of one expression, throwing for a Symbol as the language does.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=A802C8
+    // Broiler-Falsified-If: the two paths reach the call at different operand-stack heights
+    // Broiler-Human:        PENDING
+    private void EmitToString(JsExpression value)
+    {
+        Emit(JsOpcode.LoadGlobal, InternedName("String"));
+        Emit(JsOpcode.LoadUndefined);
+        CompileExpression(value);
+
+        var ordinary = NewLabel();
+        Emit(JsOpcode.Duplicate);
+        Emit(JsOpcode.TypeOf);
+        Emit(JsOpcode.LoadConstant, StringConstant("symbol"));
+        Emit(JsOpcode.StrictEquals);
+        Branch(JsOpcode.JumpIfFalse, ordinary);
+
+        // The Symbol path. `Add` of a String and a Symbol is the implicit coercion the type
+        // refuses, so this throws and never arrives below; it leaves one value behind on paper so
+        // that the fall-through and the branch agree about the height.
+        Emit(JsOpcode.LoadConstant, StringConstant(string.Empty));
+        Emit(JsOpcode.Swap);
+        Emit(JsOpcode.Add);
+
+        Mark(ordinary);
+        Emit(JsOpcode.Call, (byte)1);
+    }
+
+    /// <summary>Lowers a tagged template to the call it is.</summary>
+    /// <remarks>
+    /// The tag is called with the strings object first and every substitution after it, in source
+    /// order, and the template is never concatenated at all. The strings object is built by
+    /// <see cref="EmitTemplateStrings"/>, which is where the identity rule lives.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=04E30A
+    // Broiler-Human:        PENDING
+    private void CompileTaggedTemplate(JsTaggedTemplate tagged)
+    {
+        EmitCallee(tagged.Tag);
+        EmitTemplateStrings(tagged.Quasi);
+
+        foreach (var substitution in tagged.Quasi.Substitutions)
+        {
+            CompileExpression(substitution);
+        }
+
+        var count = tagged.Quasi.Substitutions.Count + 1;
+
+        if (count > 255)
+        {
+            Refuse(
+                tagged.Span,
+                SliceSourceDiagnosticCode.ConstructOutsideManifest,
+                "a tagged template with more than 254 substitutions is not admitted");
+        }
+
+        Emit(JsOpcode.Call, (byte)System.Math.Min(count, 255));
+    }
+
+    /// <summary>
+    /// Pushes the strings object of one tagged-template CALL SITE, the same object every time.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The identity is the specification's, and it is what a tag is usually written to
+    /// exploit.</b> <c>function f() { return tag`x`; } f() === f()</c> compares the strings object
+    /// of one site against itself and must answer true, because a tag that caches a compiled
+    /// result against the strings object - which is the reason the rule exists - would otherwise
+    /// recompile on every call and leak a cache entry each time.
+    /// </para>
+    /// <para>
+    /// <b>So the cache is keyed by the site, and lives on the global object because that is the
+    /// only per-realm store this instruction set can reach.</b> A slot of any environment is
+    /// per-invocation and would answer false for exactly the program above; the constant pool is
+    /// per-artifact and holds no objects. The key is the script's ordinal and the template's line
+    /// and column, spelled with a <c>#</c> that no source can write, so it collides with nothing a
+    /// program declares. <b>The declared cost is that the property is there</b>: a program that
+    /// enumerates the global object sees one entry per tagged-template site it has evaluated.
+    /// </para>
+    /// <para>
+    /// <b><see cref="JsOpcode.LoadGlobalOrUndefined"/> and not <see cref="JsOpcode.LoadGlobal"/></b>,
+    /// because the first evaluation of a site is exactly the case where the property is absent, and
+    /// the ordinary load throws for that.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=2E89AA
+    // Broiler-Falsified-If: two evaluations of one call site produce two strings objects
+    // Broiler-Human:        PENDING
+    private void EmitTemplateStrings(JsTemplateLiteral quasi)
+    {
+        var key = InternedName(
+            string.Create(
+                System.Globalization.CultureInfo.InvariantCulture,
+                $"#template@{scripts}:{quasi.Span.Line}:{quasi.Span.Column}"));
+
+        var have = NewLabel();
+        Emit(JsOpcode.LoadGlobalOrUndefined, key);
+        Emit(JsOpcode.Duplicate);
+        Emit(JsOpcode.LoadUndefined);
+        Emit(JsOpcode.StrictEquals);
+        Branch(JsOpcode.JumpIfFalse, have);
+
+        Emit(JsOpcode.Pop);
+        EmitFreshTemplateStrings(quasi);
+        Emit(JsOpcode.Duplicate);
+        Emit(JsOpcode.StoreGlobal, key);
+        Mark(have);
+    }
+
+    /// <summary>Builds one frozen strings object carrying its frozen <c>raw</c>.</summary>
+    /// <remarks>
+    /// <para>
+    /// This is <c>Object.freeze(Object.defineProperty(cooked, "raw", { value:
+    /// Object.freeze(raw) }))</c>, emitted rather than written, and every part of that shape is
+    /// load-bearing. <b>The freeze of <c>cooked</c> comes last</b>, because a frozen object accepts
+    /// no new property and defining <c>raw</c> afterwards would silently fail in sloppy code and
+    /// throw in strict. <b><c>defineProperty</c> rather than an ordinary assignment</b>, because
+    /// <c>raw</c> is not enumerable in the language and an enumerable one would show up in
+    /// <c>Object.keys(strings)</c>, which tags iterate.
+    /// </para>
+    /// <para>
+    /// <b>It reaches the global <c>Object</c> to do it</b>, for the reason
+    /// <see cref="CompileTemplate"/> reaches the global <c>String</c>: there is no opcode for
+    /// integrity levels, and an unfrozen strings object is observably not the one the language
+    /// describes. It runs once per site, behind the cache.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=FFA443
+    // Broiler-Human:        PENDING
+    private void EmitFreshTemplateStrings(JsTemplateLiteral quasi)
+    {
+        Emit(JsOpcode.LoadGlobal, InternedName("Object"));
+        Emit(JsOpcode.Duplicate);
+        Emit(JsOpcode.GetProperty, InternedName("freeze"));
+        Emit(JsOpcode.Swap);
+
+        Emit(JsOpcode.LoadGlobal, InternedName("Object"));
+        Emit(JsOpcode.Duplicate);
+        Emit(JsOpcode.GetProperty, InternedName("defineProperty"));
+        Emit(JsOpcode.Swap);
+
+        foreach (var cooked in quasi.Cooked)
+        {
+            Emit(JsOpcode.LoadConstant, StringConstant(cooked));
+        }
+
+        Emit(JsOpcode.NewArray, (ushort)quasi.Cooked.Count);
+        Emit(JsOpcode.LoadConstant, StringConstant("raw"));
+        Emit(JsOpcode.NewObject);
+
+        Emit(JsOpcode.LoadGlobal, InternedName("Object"));
+        Emit(JsOpcode.Duplicate);
+        Emit(JsOpcode.GetProperty, InternedName("freeze"));
+        Emit(JsOpcode.Swap);
+
+        foreach (var raw in quasi.Raw)
+        {
+            Emit(JsOpcode.LoadConstant, StringConstant(raw));
+        }
+
+        Emit(JsOpcode.NewArray, (ushort)quasi.Raw.Count);
+        Emit(JsOpcode.Call, (byte)1);
+
+        Emit(JsOpcode.DefineField, InternedName("value"));
+        Emit(JsOpcode.Call, (byte)3);
+        Emit(JsOpcode.Call, (byte)1);
+    }
+
+    // ---- optional chains -----------------------------------------------------------------------
+
+    /// <summary>Lowers one whole optional chain.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>One merge label for the chain, and every short circuit in it jumps there.</b> That is
+    /// the shape the construct demands: in <c>a?.b.c.d</c> a nullish <c>a</c> must skip <c>.c</c>
+    /// and <c>.d</c> as well, so the target of the jump is past the LAST link and not past the
+    /// next one - a position only this method knows, because only this method knows where the
+    /// chain ends.
+    /// </para>
+    /// <para>
+    /// <b>Both paths reach the merge holding exactly one value, and that is the whole of what the
+    /// verifier checks.</b> Each guard knows how many values the chain has pushed at the point it
+    /// tests - one for a plain access, two for a call whose receiver is already under its callee -
+    /// and pops exactly that many before pushing the answer. A guard that miscounted would reach
+    /// the merge at the wrong height and be refused with an inconsistent join, which is the good
+    /// failure: it is caught by the verifier rather than by the value being wrong at run time.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=E0C92D
+    // Broiler-Falsified-If: a link after a short-circuited one is evaluated, or the two paths meet at different heights
+    // Broiler-Human:        PENDING
+    private void CompileChain(JsChainExpression chain)
+    {
+        var end = NewLabel();
+        EmitChainLink(chain.Chain, end, shortIsTrue: false);
+        Mark(end);
+    }
+
+    /// <summary>Emits one link of a chain, leaving its value on the operand stack.</summary>
+    /// <remarks>
+    /// The recursion descends the chain to its head and builds back up, which is the order the
+    /// language evaluates in: the base, then the key or the arguments, and never the second when
+    /// the first declined. Anything that is not a member or a call is the head, and is compiled as
+    /// the ordinary expression it is - which is how a parenthesised chain inside another one keeps
+    /// its own merge.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=FBCB33
+    // Broiler-Human:        PENDING
+    private void EmitChainLink(JsExpression node, Label end, bool shortIsTrue)
+    {
+        switch (node)
+        {
+            case JsMemberExpression member:
+            {
+                EmitChainLink(member.Target, end, shortIsTrue);
+
+                if (member.Optional)
+                {
+                    EmitNullishGuard(end, held: 1, shortIsTrue);
+                }
+
+                if (member.Computed is null)
+                {
+                    Emit(JsOpcode.GetProperty, InternedName(member.Name));
+                }
+                else
+                {
+                    CompileExpression(member.Computed);
+                    Emit(JsOpcode.GetIndex);
+                }
+
+                return;
+            }
+
+            case JsCallExpression call when call.Callee is JsMemberExpression callee:
+            {
+                EmitChainLink(callee.Target, end, shortIsTrue);
+
+                if (callee.Optional)
+                {
+                    EmitNullishGuard(end, held: 1, shortIsTrue);
+                }
+
+                Emit(JsOpcode.Duplicate);
+
+                if (callee.Computed is null)
+                {
+                    Emit(JsOpcode.GetProperty, InternedName(callee.Name));
+                }
+                else
+                {
+                    CompileExpression(callee.Computed);
+                    Emit(JsOpcode.GetIndex);
+                }
+
+                // THE RECEIVER IS STILL UNDER THE CALLEE HERE, which is why the guard says two.
+                // Testing after the exchange would need to reach under the top of the stack for
+                // the value being tested, and testing before it is simply the same test one
+                // instruction earlier.
+                if (call.Optional)
+                {
+                    EmitNullishGuard(end, held: 2, shortIsTrue);
+                }
+
+                Emit(JsOpcode.Swap);
+                EmitChainArguments(call);
+                return;
+            }
+
+            case JsCallExpression call:
+            {
+                EmitChainLink(call.Callee, end, shortIsTrue);
+
+                if (call.Optional)
+                {
+                    EmitNullishGuard(end, held: 1, shortIsTrue);
+                }
+
+                Emit(JsOpcode.LoadUndefined);
+                EmitChainArguments(call);
+                return;
+            }
+
+            default:
+                CompileExpression(node);
+                return;
+        }
+    }
+
+    /// <summary>Emits a chained call's arguments and the call itself.</summary>
+    /// <remarks>
+    /// A call inside a chain is never a direct <c>eval</c>: <c>eval?.(s)</c> is spelled as an
+    /// optional call and the language makes that INDIRECT, which is the same answer <c>(0,
+    /// eval)(s)</c> gets and the reason no <see cref="JsOpcode.CallEval"/> is emitted here.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=431B77
+    // Broiler-Human:        PENDING
+    private void EmitChainArguments(JsCallExpression call)
+    {
         foreach (var argument in call.Arguments)
         {
             CompileExpression(argument);
@@ -2025,6 +2586,44 @@ public sealed class JsCompiler
         }
 
         Emit(JsOpcode.Call, (byte)System.Math.Min(call.Arguments.Count, 255));
+    }
+
+    /// <summary>Short-circuits the whole chain when the value on top is <c>null</c> or <c>undefined</c>.</summary>
+    /// <param name="end">Where the chain's two paths meet.</param>
+    /// <param name="held">
+    /// How many values this chain has on the operand stack right now, the tested one included. It
+    /// is the count the short-circuit path pops, and it is passed rather than computed because the
+    /// caller is the only thing that knows it.
+    /// </param>
+    /// <param name="shortIsTrue">
+    /// Whether the short circuit answers <c>true</c> rather than <c>undefined</c>, which is what
+    /// <c>delete a?.b</c> needs: deleting through a chain that declined to run succeeded, and the
+    /// language says so.
+    /// </param>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F0C38B
+    // Broiler-Human:        PENDING
+    private void EmitNullishGuard(Label end, int held, bool shortIsTrue)
+    {
+        // WHAT THE CHAIN IS HOLDING WHEN THE TEST RUNS IS WHAT IT IS STILL HOLDING IF THE TEST
+        // SAYS NO, and the straight-line stack model cannot see that, because the path it walks
+        // from here is the one that throws the holdings away. It is told afterwards.
+        var live = buffer.Height;
+
+        var target = NewLabel();
+        Emit(JsOpcode.Duplicate);
+        Emit(JsOpcode.LoadNull);
+        Emit(JsOpcode.LooseEquals);
+        Branch(JsOpcode.JumpIfFalse, target);
+
+        for (var index = 0; index < held; index++)
+        {
+            Emit(JsOpcode.Pop);
+        }
+
+        Emit(shortIsTrue ? JsOpcode.LoadTrue : JsOpcode.LoadUndefined);
+        Branch(JsOpcode.Jump, end);
+        Mark(target);
+        buffer.Rejoin(live);
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F5D034
@@ -2072,7 +2671,7 @@ public sealed class JsCompiler
 
     // ---- names ---------------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8C6533
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F8D9C4
     // Broiler-Human:        PENDING
     private void LoadName(SliceSourceSpan span, string name)
     {
@@ -2084,10 +2683,11 @@ public sealed class JsCompiler
             return;
         }
 
+        DeclareSurfaceOf(name);
         Emit(JsOpcode.LoadGlobal, InternedName(name));
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=838085
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D63E27
     // Broiler-Human:        PENDING
     private void StoreName(SliceSourceSpan span, string name)
     {
@@ -2107,7 +2707,44 @@ public sealed class JsCompiler
         }
 
         Emit(JsOpcode.Duplicate);
+        DeclareSurfaceOf(name);
         Emit(JsOpcode.StoreGlobal, InternedName(name));
+    }
+
+    /// <summary>
+    /// Records that this artifact reaches an optional surface, when the free name belongs to one.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A free name is the only evidence there is for a surface made of globals.</b> A construct
+    /// the manifest refuses — <c>eval</c> as a direct call, a module declaration — is refused at the
+    /// parse and never reaches an artifact at all. A typed array constructor is a name, and a
+    /// program that reads it is, byte for byte, a program that reads a name. So the lowering
+    /// records the surface here, in the one place a free name is resolved to a global, and
+    /// <see cref="Assemble"/> writes what it recorded.
+    /// </para>
+    /// <para>
+    /// <b>A name that resolves to a binding declares nothing</b>, which is why this is below the
+    /// resolution rather than beside the parse. A program with its own <c>var Uint8Array</c> is a
+    /// program about its own variable and reaches no surface at all.
+    /// </para>
+    /// <para>
+    /// <b>And a <c>typeof</c> declares nothing either</b>, because it does not come through here:
+    /// the lowering emits <c>LoadGlobalOrUndefined</c> for it, which is a different instruction
+    /// with a different answer for an absent name. That is what keeps
+    /// <c>typeof Uint8Array === "undefined"</c> — the shape a machine-generated program uses to
+    /// find out whether it may go on — a question this profile answers rather than an artifact it
+    /// refuses.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=FC755E
+    // Broiler-Human:        PENDING
+    private void DeclareSurfaceOf(string name)
+    {
+        if (JsSurfaces.TryOwner(name, out var manifestId))
+        {
+            surfaces.Add(manifestId);
+        }
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2CC181
@@ -2589,6 +3226,33 @@ public sealed class JsCompiler
             MaximumStack = System.Math.Max(MaximumStack, Height + 24);
         }
 
+        /// <summary>Re-states the height at a join this straight-line pass walked past.</summary>
+        /// <remarks>
+        /// <para>
+        /// <b><see cref="Track"/> follows the code as written, and an optional chain's guard is the
+        /// one lowering here whose written order is not its taken order.</b> The guard's
+        /// fall-through is the SHORT CIRCUIT - it pops what the chain was holding and pushes one
+        /// value - while the path that continues arrives by branch, holding everything the chain
+        /// had. So the pass leaves the model one value low for every guard that was holding two,
+        /// and a function with more of those than the twenty-four slots of slack absorb declares a
+        /// stack it then overflows. The verifier catches it, which is the good outcome and a poor
+        /// diagnosis: it names the instruction that overflowed and not the guard that mis-declared.
+        /// </para>
+        /// <para>
+        /// <b>So the guard says what the height really is instead of the slack being widened to
+        /// hide it.</b> Widening would buy a bigger number for every function in the artifact to
+        /// pay for an error in a few, and would leave the model wrong - which is worse than a
+        /// model that is right, because the next lowering to reach for it would inherit the error.
+        /// </para>
+        /// </remarks>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F87859
+        // Broiler-Human:        PENDING
+        internal void Rejoin(int height)
+        {
+            Height = System.Math.Max(0, height);
+            MaximumStack = System.Math.Max(MaximumStack, Height + 24);
+        }
+
         // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=78C1AF
         // Broiler-Human:        PENDING
         internal void CloseRegion(int tryStart, int tryEnd)
@@ -2682,7 +3346,57 @@ public sealed class JsCompiler
             return false;
         }
 
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5B4E67
+        /// <summary>Whether a <c>new.target</c> reached from inside an arrow appears in this node.</summary>
+        /// <remarks>
+        /// The same boundary <see cref="Mentions"/> uses and for the same reason: an arrow is
+        /// transparent to <c>new.target</c> and an ordinary function is not. The flag is what makes
+        /// the answer about arrows rather than about the construct - a direct read is found and
+        /// deliberately not reported, because a direct read needs no binding.
+        /// </remarks>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=EB3712
+        // Broiler-Human:        PENDING
+        internal static bool MentionsNewTarget(JsNode node, bool insideArrow)
+        {
+            switch (node)
+            {
+                case JsNewTargetExpression:
+                    return insideArrow;
+
+                case JsFunctionExpression expression:
+                    if (!expression.Function.IsArrow)
+                    {
+                        return false;
+                    }
+
+                    foreach (var statement in expression.Function.Body)
+                    {
+                        if (MentionsNewTarget(statement, insideArrow: true))
+                        {
+                            return true;
+                        }
+                    }
+
+                    return false;
+
+                case JsFunctionDeclaration:
+                    return false;
+
+                default:
+                    break;
+            }
+
+            foreach (var child in Children(node))
+            {
+                if (child is not null && MentionsNewTarget(child, insideArrow))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=027A5A
         // Broiler-Human:        PENDING
         private static System.Collections.Generic.IEnumerable<JsNode?> Children(JsNode node)
         {
@@ -2847,6 +3561,30 @@ public sealed class JsCompiler
                         yield return entry.Value;
                     }
 
+                    break;
+
+                // A NODE WITHOUT AN ARM HERE IS OPAQUE TO THIS WALK, WHICH IS NOT A GAP THAT
+                // FAILS LOUDLY. The one question the walk answers is whether a function mentions
+                // `arguments`, so a template whose substitution is `arguments[0]` and an optional
+                // chain whose head is `arguments` would each have left the enclosing function with
+                // no `arguments` object at all - and the mention would have fallen through to a
+                // global read that throws at run time. `new.target` has no children and needs no
+                // arm; every other node this change adds does.
+                case JsTemplateLiteral expression:
+                    foreach (var substitution in expression.Substitutions)
+                    {
+                        yield return substitution;
+                    }
+
+                    break;
+
+                case JsTaggedTemplate expression:
+                    yield return expression.Tag;
+                    yield return expression.Quasi;
+                    break;
+
+                case JsChainExpression expression:
+                    yield return expression.Chain;
                     break;
 
                 default:

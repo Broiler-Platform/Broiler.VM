@@ -104,13 +104,20 @@ internal static class Program
             return ExitCodes.Usage;
         }
 
+        if (!CallDepth(args, out var callDepth, out var callDepthComplaint))
+        {
+            Console.Error.WriteLine("broiler-js: " + callDepthComplaint);
+            return ExitCodes.Usage;
+        }
+
         var paths = new List<string>();
 
         for (var index = 0; index < args.Length; index++)
         {
             if (string.Equals(args[index], "--fuel", StringComparison.Ordinal) ||
                 string.Equals(args[index], "--wall", StringComparison.Ordinal) ||
-                string.Equals(args[index], "--max-depth", StringComparison.Ordinal))
+                string.Equals(args[index], "--max-depth", StringComparison.Ordinal) ||
+                string.Equals(args[index], "--call-depth", StringComparison.Ordinal))
             {
                 index++;
                 continue;
@@ -171,12 +178,14 @@ internal static class Program
                 read.Add(SourceFiles.Read(path));
             }
 
-            var joined = WideHost.Run(read, module, checkOnly, forceStrict, fuel, wall, depth);
+            var joined = WideHost.Run(read, module, checkOnly, forceStrict, fuel, wall, depth, callDepth);
             Report(string.Join(' ', files), joined, single: true, all, quiet);
             return ExitCodes.For(joined.Status);
         }
 
-        return Run(files, module, checkOnly, all, quiet, fuel, wall, depth, missing.Count, slice, forceStrict);
+        return Run(
+            files, module, checkOnly, all, quiet, fuel, wall, depth, callDepth, missing.Count, slice,
+            forceStrict);
     }
 
     /// <summary>Runs every named file and reports the worst answer any of them gave.</summary>
@@ -189,6 +198,7 @@ internal static class Program
         ulong? fuel,
         ulong? wall,
         int? depth,
+        ulong? callDepth,
         int missing,
         bool slice,
         bool forceStrict)
@@ -207,7 +217,7 @@ internal static class Program
 
             var result = slice
                 ? Host.Run(source, module, checkOnly, fuel, depth)
-                : WideHost.Run([source], module, checkOnly, forceStrict, fuel, wall, depth);
+                : WideHost.Run([source], module, checkOnly, forceStrict, fuel, wall, depth, callDepth);
 
             counts[result.Status] = counts.TryGetValue(result.Status, out var seen) ? seen + 1 : 1;
 
@@ -361,6 +371,44 @@ internal static class Program
     }
 
     /// <summary>Reads the instruction allowance, or says why the argument is not one.</summary>
+    /// <summary>
+    /// Reads <c>--call-depth</c>, the one ceiling a person measuring this interpreter has to move.
+    /// </summary>
+    /// <remarks>
+    /// <b>It exists so that the call-depth ceiling can be a MEASUREMENT rather than an estimate.</b>
+    /// Roadmap section 8 says the bound is measured and not chosen, and a bound nobody can raise
+    /// from outside can only be measured by editing the profile — which measures whatever the
+    /// editor happened to build. With this, `eng/measure-frame-cost.py` bisects the ceiling against
+    /// the real binary on the real stack and reports the depth at which the answer stops being a
+    /// named exhaustion.
+    /// </remarks>
+    private static bool CallDepth(string[] args, out ulong? callDepth, out string complaint)
+    {
+        callDepth = null;
+        complaint = string.Empty;
+        var at = Array.IndexOf(args, "--call-depth");
+
+        if (at < 0)
+        {
+            return true;
+        }
+
+        if (at == args.Length - 1)
+        {
+            complaint = "--call-depth needs a number of frames";
+            return false;
+        }
+
+        if (!ulong.TryParse(args[at + 1], out var stated) || stated == 0)
+        {
+            complaint = $"`{args[at + 1]}` is not a positive frame count";
+            return false;
+        }
+
+        callDepth = stated;
+        return true;
+    }
+
     private static bool Fuel(string[] args, out ulong? fuel, out string complaint)
     {
         fuel = null;
@@ -397,7 +445,7 @@ internal static class Program
     private static readonly string[] Known =
     [
         "--module", "--check", "--all", "--quiet", "--fuel", "--max-depth", "--closure",
-        "--slice", "--strict", "--sweep", "--wall", "--help", "--version",
+        "--slice", "--strict", "--sweep", "--wall", "--call-depth", "--help", "--version",
     ];
 
     /// <summary>The closure this image actually has, read off its own loaded assemblies.</summary>

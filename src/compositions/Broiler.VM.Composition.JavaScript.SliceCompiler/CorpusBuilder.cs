@@ -1057,6 +1057,15 @@ internal static class JavaScriptDiagnosticCodes
     /// <summary>An exception region states a range, a handler or a kind this format refuses.</summary>
     internal const int MalformedExceptionRegion = 1605;
 
+    /// <summary>The artifact declares one optional surface twice.</summary>
+    internal const int DuplicateSurface = 1606;
+
+    /// <summary>The artifact declares an optional surface this build does not implement.</summary>
+    internal const int UnknownSurface = 1607;
+
+    /// <summary>The artifact declares an optional surface this composition did not admit.</summary>
+    internal const int SurfaceOutsideComposition = 1608;
+
     internal const int WrongMagic = 1001;
     internal const int UnsupportedFormatVersion = 1002;
     internal const int ManifestIdTooLong = 1005;

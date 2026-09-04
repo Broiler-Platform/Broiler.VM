@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   11
 // Annotated:        11/11
-// Exempt:           79
+// Exempt:           81
 // Human-reviewed:   0/11
 // IP risk:          None
 // Security risk:    Medium
@@ -44,7 +44,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// What is here is what a program that runs has to have.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=C7B0B2
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=27C716
 // Broiler-Human:        PENDING
 public enum JsOpcode : byte
 {
@@ -73,6 +73,18 @@ public enum JsOpcode : byte
 
     /// <summary>Push a fresh <c>arguments</c> object built from the frame's actual arguments.</summary>
     NewArguments = 0x07,
+
+    /// <summary>
+    /// Push the frame's <c>new.target</c>: the constructor a <c>new</c> reached this frame with, or
+    /// <c>undefined</c> in an ordinary call.
+    /// </summary>
+    /// <remarks>
+    /// <b>It is an opcode rather than a property of anything the frame already has</b> because it
+    /// is the one thing a function can observe about HOW it was entered rather than about what it
+    /// was entered with. An arrow function has none of its own and reads the enclosing function's,
+    /// which the lowering arranges by not giving an arrow a frame of its own to read.
+    /// </remarks>
+    LoadNewTarget = 0x08,
 
     // ---- bindings ------------------------------------------------------------------------------
 
@@ -154,6 +166,29 @@ public enum JsOpcode : byte
 
     /// <summary>Pop <c>u8</c> arguments and a constructor; push the constructed object.</summary>
     Construct = 0x32,
+
+    /// <summary>
+    /// Pop <c>u8</c> arguments, a receiver and a callee, where the callee expression was the bare
+    /// name <c>eval</c>; push the result.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It exists because the difference between a direct and an indirect <c>eval</c> is a fact
+    /// about the CALL SITE and nothing else.</b> <c>eval(s)</c> and <c>(0, eval)(s)</c> reach the
+    /// same function object with the same receiver and the same arguments; what differs is that the
+    /// first is spelled as a call to that name and therefore, in the language, evaluates in the
+    /// caller's scope. No executor can recover that from the operand stack, so the lowering has to
+    /// say it, and an opcode is how the lowering says something the verifier can also check.
+    /// </para>
+    /// <para>
+    /// <b>It is not a promise that the callee IS <c>eval</c>.</b> A program may assign to the
+    /// global, and this instruction is emitted from the spelling rather than from the value; the
+    /// executor compares the callee against the intrinsic and performs an ordinary call when they
+    /// differ. Its stack effect is <see cref="Call"/>'s exactly, which is what lets a verifier that
+    /// knows nothing about <c>eval</c> check it.
+    /// </para>
+    /// </remarks>
+    CallEval = 0x35,
 
     /// <summary>Pop one value and return it from the current frame.</summary>
     Return = 0x33,
@@ -331,13 +366,13 @@ public enum JsOperandShape : byte
 public static class JsOpcodes
 {
     /// <summary>Every opcode format version 2 defines, in ascending numeric order.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=374CD6
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=13C091
     // Broiler-Human:        PENDING
     public static readonly JsOpcode[] All =
     [
         JsOpcode.Nop,
         JsOpcode.LoadUndefined, JsOpcode.LoadNull, JsOpcode.LoadTrue, JsOpcode.LoadFalse,
-        JsOpcode.LoadConstant, JsOpcode.LoadThis, JsOpcode.NewArguments,
+        JsOpcode.LoadConstant, JsOpcode.LoadThis, JsOpcode.NewArguments, JsOpcode.LoadNewTarget,
         JsOpcode.LoadScoped, JsOpcode.StoreScoped, JsOpcode.InitialiseScoped,
         JsOpcode.LoadGlobal, JsOpcode.StoreGlobal, JsOpcode.LoadGlobalOrUndefined,
         JsOpcode.PushScope, JsOpcode.PopScope, JsOpcode.CopyScope, JsOpcode.DeclareGlobal,
@@ -347,7 +382,7 @@ public static class JsOpcodes
         JsOpcode.DeleteProperty, JsOpcode.DeleteIndex,
         JsOpcode.DefineGetter, JsOpcode.DefineSetter,
         JsOpcode.Closure, JsOpcode.Call, JsOpcode.Construct,
-        JsOpcode.Return, JsOpcode.ReturnUndefined,
+        JsOpcode.Return, JsOpcode.ReturnUndefined, JsOpcode.CallEval,
         JsOpcode.Add, JsOpcode.Subtract, JsOpcode.Multiply, JsOpcode.Divide,
         JsOpcode.Remainder, JsOpcode.Exponent, JsOpcode.Negate, JsOpcode.ToNumber,
         JsOpcode.Not, JsOpcode.BitwiseNot,
@@ -406,13 +441,13 @@ public static class JsOpcodes
     /// The operand shape of <paramref name="opcode"/>, or <see langword="null"/> when this format
     /// version does not define it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=9F6EA7
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=95799A
     // Broiler-Human:        PENDING
     public static JsOperandShape? Shape(JsOpcode opcode) => opcode switch
     {
         JsOpcode.Nop or
         JsOpcode.LoadUndefined or JsOpcode.LoadNull or JsOpcode.LoadTrue or JsOpcode.LoadFalse or
-        JsOpcode.LoadThis or JsOpcode.NewArguments or
+        JsOpcode.LoadThis or JsOpcode.NewArguments or JsOpcode.LoadNewTarget or
         JsOpcode.PopScope or
         JsOpcode.NewObject or
         JsOpcode.GetIndex or JsOpcode.SetIndex or JsOpcode.DefineIndexed or JsOpcode.DeleteIndex or
@@ -430,7 +465,7 @@ public static class JsOpcodes
         JsOpcode.Pop or JsOpcode.Duplicate or JsOpcode.DuplicateTwo or JsOpcode.Swap
             => JsOperandShape.None,
 
-        JsOpcode.Call or JsOpcode.Construct or JsOpcode.Pick => JsOperandShape.U8,
+        JsOpcode.Call or JsOpcode.CallEval or JsOpcode.Construct or JsOpcode.Pick => JsOperandShape.U8,
 
         JsOpcode.LoadConstant or
         JsOpcode.LoadGlobal or JsOpcode.StoreGlobal or JsOpcode.LoadGlobalOrUndefined or
@@ -458,7 +493,7 @@ public static class JsOpcodes
     /// and the verifier's abstract height is computed from them alone. A false answer means the
     /// opcode is not one this format version defines - not that its effect is unknown.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=FCBDB3
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=2C2925
     // Broiler-Human:        PENDING
     public static bool TryDescribe(JsOpcode opcode, uint operand, out int pops, out int pushes)
     {
@@ -480,6 +515,7 @@ public static class JsOpcodes
             case JsOpcode.LoadFalse:
             case JsOpcode.LoadConstant:
             case JsOpcode.LoadThis:
+            case JsOpcode.LoadNewTarget:
             case JsOpcode.NewArguments:
             case JsOpcode.LoadScoped:
             case JsOpcode.LoadGlobal:
@@ -574,8 +610,11 @@ public static class JsOpcodes
                 pops = 2;
                 return true;
 
-            // Callee, receiver and the arguments go; one result comes back.
+            // Callee, receiver and the arguments go; one result comes back. A direct `eval` has
+            // exactly this effect, which is the whole reason it can be a separate opcode at all:
+            // the verifier checks it without knowing what it means.
             case JsOpcode.Call:
+            case JsOpcode.CallEval:
                 pops = checked((int)operand) + 2;
                 pushes = 1;
                 return true;

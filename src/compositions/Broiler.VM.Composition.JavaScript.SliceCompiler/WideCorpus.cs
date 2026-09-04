@@ -29,6 +29,19 @@ internal static class WideCorpus
     /// <summary>The replay mode a version-2 entry is presented under.</summary>
     internal const string Mode = "wide";
 
+    /// <summary>
+    /// The replay mode for a composition that admits no optional surface.
+    /// </summary>
+    /// <remarks>
+    /// <b>It is a different HOST, not different bytes.</b> The entry that carries it is a
+    /// well-formed artifact declaring the binary surface, and the only reason it is refused is that
+    /// the composition replaying it registered a descriptor admitting none. That is the property
+    /// roadmap section 6 describes and which no entry recorded until now: a composition declining a
+    /// manifest refuses the artifact at verification, with an invalid-artifact reason, rather than
+    /// letting it run and answering a run-time error the guest could catch.
+    /// </remarks>
+    internal const string DecliningMode = "wide-declining";
+
     /// <summary>Every version-2 entry, in the order the registry publishes their codes.</summary>
     internal static CorpusEntry[] Build() =>
     [
@@ -57,6 +70,35 @@ internal static class WideCorpus
             Artifact(regionHandlerOutsideUnit: true),
             "InconsistentStructure",
             JavaScriptDiagnosticCodes.MalformedExceptionRegion),
+
+        // ---- three rows about the optional surfaces an artifact may declare --------------------
+        //
+        // A surface made of globals cannot be refused by refusing a construct, because reading
+        // `Uint8Array` is byte for byte reading a name. The artifact declares what it reaches, and
+        // these are the three ways that declaration can be wrong: said twice, naming something
+        // nobody wrote, and naming something this composition declined. The last is the only one
+        // whose answer depends on the host, and it is the one the manifest boundary is FOR.
+        Entry(
+            "wide-a-surface-declared-twice",
+            Artifact(surfaces: [JsSurfaces.Binary, JsSurfaces.Binary]),
+            "InconsistentStructure",
+            JavaScriptDiagnosticCodes.DuplicateSurface),
+        Entry(
+            "wide-a-surface-this-build-does-not-implement",
+            Artifact(surfaces: ["broiler.javascript.telepathy"]),
+            "UnknownFeature",
+            JavaScriptDiagnosticCodes.UnknownSurface),
+        new CorpusEntry(
+            "wide-a-surface-the-composition-declined",
+            DecliningMode,
+            "InvalidArtifact",
+            "UnsupportedFeatureManifest",
+            JavaScriptDiagnosticCodes.SurfaceOutsideComposition,
+            "-",
+            "-",
+            "-",
+            "-",
+            Artifact(surfaces: [JsSurfaces.Binary])),
 
         // ---- two rows that were unreachable while one version was registered ------------------
         //
@@ -136,7 +178,8 @@ internal static class WideCorpus
         uint codeOffset = 0,
         byte[]? code = null,
         bool regionHandlerOutsideUnit = false,
-        string? manifest = null)
+        string? manifest = null,
+        string[]? surfaces = null)
     {
         var body = code ?? [(byte)JsOpcode.LoadConstant, 0x00, 0x00, (byte)JsOpcode.Return];
 
@@ -183,6 +226,13 @@ internal static class WideCorpus
                     (uint)body.Length,
                     (uint)JsFormat.FunctionFlags.ProgramBody),
             ])));
+
+        if (surfaces is not null)
+        {
+            sections.Add(new JavaScriptArtifactWriter.Section(
+                (JavaScriptFormat.SectionKind)JsFormat.SectionKind.Surfaces,
+                JsArtifactWriter.Surfaces(surfaces)));
+        }
 
         return JsArtifactWriter.Write(manifest ?? JsFormat.ManifestId, sections.ToArray());
     }

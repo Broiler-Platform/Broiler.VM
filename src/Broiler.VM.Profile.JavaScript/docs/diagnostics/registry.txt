@@ -1,7 +1,7 @@
 # broiler.javascript.slice diagnostic-code registry
 #
-# registry-revision: 3
-# published-at-milestone: JS-3a (revision 1), JS-3b (revision 2), JS-4 (revision 3)
+# registry-revision: 4
+# published-at-milestone: JS-3a (revision 1), JS-3b (revision 2), JS-4 (revision 3), JSW-2 (revision 4)
 # owning-decision: JSD-0009
 # format-version: 1, 2
 # feature-manifest: broiler.javascript.slice, broiler.javascript.wide
@@ -89,6 +89,9 @@
 1603|CodeUnitRangeInvalid|core-result|InconsistentStructure|functions|corpus|wide-code-units-that-do-not-tile-the-code-section|3
 1604|ScopeDepthOutOfRange|core-result|InconsistentStructure|code|corpus|wide-a-scope-popped-past-the-frame|3
 1605|MalformedExceptionRegion|core-result|InconsistentStructure|reserved|corpus|wide-an-exception-handler-outside-its-code-unit|3
+1606|DuplicateSurface|core-result|InconsistentStructure|manifest|corpus|wide-a-surface-declared-twice|4
+1607|UnknownSurface|core-result|UnknownFeature|manifest|corpus|wide-a-surface-this-build-does-not-implement|4
+1608|SurfaceOutsideComposition|core-result|UnsupportedFeatureManifest|manifest|corpus|wide-a-surface-the-composition-declined|4
 1901|Truncated|core-result|Truncated|reader|corpus|a-truncated-payload|1
 1902|MalformedEncoding|core-result|MalformedEncoding|reader|corpus|an-overlong-variable-length-integer|1
 1903|ReaderStopped|core-result|InconsistentStructure|reader|defensive|every bounded-read status this build was compiled against has its own arm, so this one answers a status the reader does not currently have|1

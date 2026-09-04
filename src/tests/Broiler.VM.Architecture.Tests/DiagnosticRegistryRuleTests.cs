@@ -47,14 +47,15 @@ public sealed class DiagnosticRegistryRuleTests
     {
         Assert.Empty(ArchitectureRules.N5(Registry, Vocabulary, SeamVocabulary, DiagnosticRegistry.Revision));
 
-        // Non-vacuous: forty-five core-result codes and twenty-four embedder-seam ones,
-        // sixty-nine rows, so a clean result is a comparison over two real sets rather than over an
+        // Non-vacuous: forty-eight core-result codes and twenty-four embedder-seam ones,
+        // seventy-two rows, so a clean result is a comparison over two real sets rather than over an
         // empty one. The seam half was declared and empty at revision 1 and is the half at revision
-        // 2; revision 3 is the five structural refusals format version 2 adds.
-        Assert.Equal(45, Vocabulary.Count);
+        // 2; revision 3 is the five structural refusals format version 2 adds, and revision 4 the
+        // three ways an artifact's declaration of an optional surface can be wrong.
+        Assert.Equal(48, Vocabulary.Count);
         Assert.Equal(24, SeamVocabulary.Count);
         Assert.Equal(Vocabulary.Count + SeamVocabulary.Count, Registry.Count);
-        Assert.Equal(3, DiagnosticRegistry.Revision);
+        Assert.Equal(4, DiagnosticRegistry.Revision);
 
         // The two vocabularies live in two assemblies that cannot see each other, so the one thing
         // no compiler could catch is a number used in both. Nothing else in the build reads both
@@ -147,7 +148,7 @@ public sealed class DiagnosticRegistryRuleTests
         // avoid generating three sources.
         Assert.Equal(2, ArchitectureRules.DefensiveCodes.Length);
         Assert.Equal(
-            44,
+            47,
             Registry.Count(static row => row.Reachability == "corpus"));
         Assert.Equal(
             23,

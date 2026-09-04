@@ -82,4 +82,10 @@ src/Broiler.VM.Profile.JavaScript/docs/specification/*.html binary
 # way, so nothing accidental is holding it. Declared at JS-3a in the change that archived it.
 src/tests/conformance/pins/*.tar.gz binary
 
+# THE RETAINED OCTANE ARCHIVE, and the same reason. It is `git archive` output at an exact commit
+# with `gzip -n`, so its bytes are a function of the commit and of nothing else; a filter that
+# rewrote a byte of it would move a digest the pin states and no reader could tell whether the
+# workload or the checkout had changed.
+src/tests/octane/pins/*.tar.gz binary
+
 *.png                     binary
