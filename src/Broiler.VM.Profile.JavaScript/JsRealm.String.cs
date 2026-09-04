@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   14
-// Annotated:        14/14
+// Relevant units:   15
+// Annotated:        15/15
 // Exempt:           0
-// Human-reviewed:   0/14
+// Human-reviewed:   0/15
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       14
+// Unverified:       15
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -56,7 +56,7 @@ internal sealed partial class JsRealm
     private const int StringLengthCeiling = 1 << 24;
 
     /// <summary>Builds <c>String</c>, <c>String.fromCharCode</c> and <c>String.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=623D89
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=795264
     // Broiler-Human:        PENDING
     private void SetupString()
     {
@@ -284,6 +284,55 @@ internal sealed partial class JsRealm
             return at < 0 || at >= text.Length
                 ? JsValue.Undefined
                 : JsValue.String(text[(int)at].ToString());
+        });
+
+        // A STRING IS A SEQUENCE OF UTF-16 UNITS AND NOT OF TEXT, and these two are where the
+        // language admits it. A lone surrogate is a legal String and an illegal scalar sequence, so
+        // a program handing one to anything that encodes - a URL, a file, a socket - has to know
+        // first, and until these existed the only way to ask was to write the surrogate arithmetic
+        // by hand.
+        Method(prototype, "isWellFormed", 0, static (engine, thisValue, arguments) =>
+        {
+            _ = arguments;
+            var text = StringThis(engine, thisValue);
+            StringCharge(engine, text.Length + 1);
+            return JsValue.Boolean(StringWellFormed(text));
+        });
+
+        Method(prototype, "toWellFormed", 0, static (engine, thisValue, arguments) =>
+        {
+            _ = arguments;
+            var text = StringThis(engine, thisValue);
+            StringCharge(engine, text.Length + 1);
+
+            if (StringWellFormed(text))
+            {
+                return JsValue.String(text);
+            }
+
+            var built = new System.Text.StringBuilder(text.Length);
+
+            for (var at = 0; at < text.Length; at++)
+            {
+                var unit = text[at];
+
+                if (char.IsHighSurrogate(unit) &&
+                    at + 1 < text.Length &&
+                    char.IsLowSurrogate(text[at + 1]))
+                {
+                    built.Append(unit).Append(text[at + 1]);
+                    at++;
+                    continue;
+                }
+
+                // THE REPLACEMENT IS ONE UNIT PER LONE SURROGATE, so the answer has the same length
+                // as the receiver. That is the language's rule and it is worth stating, because a
+                // reader who expects an encoder's behaviour would expect a lone surrogate to become
+                // three bytes and the two lengths to differ.
+                built.Append(char.IsSurrogate(unit) ? '\ufffd' : unit);
+            }
+
+            return JsValue.String(built.ToString());
         });
 
         Method(prototype, "indexOf", 1, static (engine, thisValue, arguments) =>
@@ -603,6 +652,33 @@ internal sealed partial class JsRealm
             // An ordinal one is consistent, reproducible across hosts, and the same order `<` uses.
             return JsValue.Number(System.Math.Sign(string.CompareOrdinal(text, other)));
         });
+    }
+
+    /// <summary>Whether every surrogate in the text is half of a pair.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E44D92
+    // Broiler-Human:        PENDING
+    private static bool StringWellFormed(string text)
+    {
+        for (var at = 0; at < text.Length; at++)
+        {
+            var unit = text[at];
+
+            if (!char.IsSurrogate(unit))
+            {
+                continue;
+            }
+
+            if (!char.IsHighSurrogate(unit) ||
+                at + 1 >= text.Length ||
+                !char.IsLowSurrogate(text[at + 1]))
+            {
+                return false;
+            }
+
+            at++;
+        }
+
+        return true;
     }
 
     /// <summary>Reads one argument, which may not have been passed.</summary>

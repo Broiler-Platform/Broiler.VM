@@ -313,7 +313,7 @@ internal sealed class JsVerifier
         return Ok;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7CCEA8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=58E734
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome ReadConstants(
         ref VmBoundedReader reader, JavaScriptReadAdapter adapter, Sections state)
@@ -397,7 +397,7 @@ internal sealed class JsVerifier
                         return FromReader(ref reader, reader.Position);
                     }
 
-                    names[index] = System.Text.Encoding.UTF8.GetString(text);
+                    names[index] = Format.JsFormat.DecodeText(text);
                     values[index] = JsValue.String(names[index]);
                     break;
 

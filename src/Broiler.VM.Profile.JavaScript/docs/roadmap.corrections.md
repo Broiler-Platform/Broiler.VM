@@ -4549,3 +4549,60 @@ comparison engine and are retained.
 
 **Authority and date.** The implementation of 2026-09-04 in this checkout and the probe over the
 binary surface, retained in `src/tests/differential/the-later-library-methods.js`. 2026-09-04.
+
+### JSC-115
+
+**Where:** the constant and name tables of format version 2 — how a String is written into an
+artifact and read back out of one.
+
+**What was assumed.** That a JavaScript String is text, and that the platform's UTF-8 encoder
+therefore carries one.
+
+**What was true.** A JavaScript String is a sequence of UTF-16 code **units**, not of scalar values.
+`"\uD800"` is a legal String with a legal length, a legal `charCodeAt` and a legal comparison; it is
+also an unpaired surrogate, which **no UTF-8 sequence encodes**. `System.Text.Encoding.UTF8` answers
+a replacement character for it and says nothing, so the literal reached the artifact as `U+FFFD` and
+every later answer about it was about the replacement: its units, its length in a comparison, its
+equality with another such literal, and what `JSON.stringify` escaped.
+
+**It was silent in both directions, which is what makes it worth an entry.** Nothing threw, no
+verification failed, and the corruption happened between a front end that had the right units and an
+executor that never saw them. The probe that found it was not looking for it: an unpaired surrogate
+reached a case by accident, and the case answered `true` where the comparison engine answered
+`false`.
+
+**What replaced it.** WTF-8, defined in the format rather than borrowed from the platform: a
+surrogate is written as its own three bytes, which UTF-8 forbids and this format therefore states.
+**Every well-formed String encodes to exactly the bytes it encoded before** — byte for byte, digest
+for digest, so the retained corpus is untouched — and only a String no UTF-8 encoder could have
+carried is written differently. The decoder answers replacement characters for malformed input
+rather than throwing, because an artifact is untrusted input and the verifier already ends a bad one
+by diagnosis.
+
+**Two members were missing beside it and are now present**: `String.prototype.isWellFormed` and
+`toWellFormed`, which are the language's own way to ask this question — and which could not have
+answered it truthfully while the artifact was destroying the evidence.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout and the probe over the
+pattern, text, instant and number surfaces, retained in
+`src/tests/differential/the-json-date-and-regexp-surface.js`. 2026-09-04.
+
+### JSC-116
+
+**Where:** `String.prototype.matchAll`, which was absent.
+
+**What its absence cost.** A global `match` answers the matched TEXT of each match and throws the
+captures away, so a program that wants every match *with* its groups has to loop `exec` and manage
+`lastIndex` by hand — which is the loop `matchAll` exists to be, and the loop a program written
+against a modern engine simply does not contain. A workload using it got a `TypeError` about a
+method the prototype did not have.
+
+**What it is, and the two things that are easy to get wrong.** It iterates over a **copy** of the
+pattern, so a program that interleaves `matchAll` with `exec` on one RegExp sees neither disturb the
+other's `lastIndex`; and it refuses a non-global RegExp with a `TypeError` rather than answering an
+iterator of one, because the loop would not terminate without the `lastIndex` a global pattern
+keeps. An empty match advances the cursor by hand, for the same reason the global `match` beside it
+does.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, and the twelve cases
+retained in `src/tests/differential/the-json-date-and-regexp-surface.js`. 2026-09-04.

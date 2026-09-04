@@ -114,7 +114,7 @@ internal sealed partial class JsRealm
     private JsRegExpCharge? regExpCharge;
 
     /// <summary>Builds <c>RegExp</c>, <c>RegExp.prototype</c>, and the String methods that take one.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=9965B7
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=A95AAD
     // Broiler-Human:        PENDING
     private void SetupRegExp()
     {
@@ -250,6 +250,62 @@ internal sealed partial class JsRealm
 
             pattern.LastIndex = JsValue.Number(0);
             return found.Length == 0 ? JsValue.Null : JsValue.Object(found);
+        });
+
+        // EVERY MATCH WITH ITS CAPTURES, WHICH IS THE ONE THING A GLOBAL `match` WILL NOT GIVE.
+        // `"a1".match(/(\w)(\d)/g)` answers the matched TEXT of each match and throws the groups
+        // away, so a program that wants both has to loop `exec` and remember `lastIndex` itself.
+        // This is that loop, as an iterator, and it is the reason the method exists.
+        Method(StringPrototype, "matchAll", 1, (engine, thisValue, arguments) =>
+        {
+            var input = RegExpStringThis(engine, thisValue);
+            var given = ArgOfRegExp(arguments, 0);
+
+            // A NON-GLOBAL REGULAR EXPRESSION IS A TYPE ERROR AND NOT AN ITERATOR OF ONE. The
+            // language refuses it because the loop this performs would not terminate without the
+            // `lastIndex` a global pattern keeps, and answering with a single match would have been
+            // a different method wearing this one's name.
+            if (given.AsObjectOrNull() is RegExpObject supplied && !supplied.Global)
+            {
+                return engine.ThrowTypeError(
+                    "String.prototype.matchAll called with a non-global RegExp argument");
+            }
+
+            // THE ITERATION RUNS OVER A COPY, so the pattern the caller handed in keeps its own
+            // `lastIndex`: a program that interleaves `matchAll` with `exec` on one RegExp sees
+            // neither disturb the other, which is what the language says and what a shared object
+            // would not give.
+            var pattern = RegExpBuild(
+                engine,
+                given.AsObjectOrNull() is RegExpObject source ? source.Source : engine.ToStringValue(given),
+                given.AsObjectOrNull() is RegExpObject held ? held.Flags : "g");
+
+            pattern.LastIndex = given.AsObjectOrNull() is RegExpObject from
+                ? JsValue.Number(engine.ToInteger(from.LastIndex))
+                : JsValue.Number(0);
+
+            engine.Charge((ulong)input.Length + 16);
+
+            return JsValue.Object(CreateListIterator("RegExp String Iterator", slot =>
+            {
+                var match = RegExpMatchOne(engine, pattern, input);
+
+                if (match is null)
+                {
+                    return (false, JsValue.Undefined, slot);
+                }
+
+                // AN EMPTY MATCH ADVANCES THE CURSOR BY HAND, because the matcher leaves
+                // `lastIndex` where the match ended and an empty match ends where it began. Without
+                // this the iterator answers the same empty match for ever.
+                if (match.Length == 0)
+                {
+                    pattern.LastIndex = JsValue.Number(
+                        JsRegExpMatcher.Advance(input, match.End, pattern.Unicode));
+                }
+
+                return (true, JsValue.Object(RegExpResult(engine, pattern, match, input)), slot + 1);
+            }));
         });
 
         Method(StringPrototype, "search", 1, (engine, thisValue, arguments) =>

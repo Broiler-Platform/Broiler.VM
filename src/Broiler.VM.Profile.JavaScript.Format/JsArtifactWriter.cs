@@ -328,11 +328,15 @@ public static class JsArtifactWriter
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=4D25A8
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=9D6476
     // Broiler-Human:        PENDING
     private static byte[] Text(JsFormat.ConstantTag tag, string value)
     {
-        var bytes = System.Text.Encoding.UTF8.GetBytes(value);
+        // WTF-8 AND NOT THE PLATFORM'S UTF-8, for the reason `JsFormat.EncodeText` states: a
+        // JavaScript String may hold an unpaired surrogate, no UTF-8 sequence encodes one, and the
+        // platform's encoder answers a replacement character rather than saying so. Every
+        // well-formed String encodes to exactly the bytes it did before.
+        var bytes = JsFormat.EncodeText(value);
         var buffer = new System.Collections.Generic.List<byte>(bytes.Length + 5) { (byte)tag };
         JavaScriptArtifactWriter.WriteVarUInt(buffer, (ulong)bytes.Length);
         buffer.AddRange(bytes);

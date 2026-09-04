@@ -1061,6 +1061,8 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.ConstantTag.String : const Broiler.VM.Profile.JavaScript.Format.JsFormat.ConstantTag = 5
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.ConstantTag.Undefined : const Broiler.VM.Profile.JavaScript.Format.JsFormat.ConstantTag = 1
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.ConstantTag.value__ : System.Byte
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.DecodeText(System.ReadOnlySpan<System.Byte> bytes) : static System.String
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.EncodeText(System.String value) : static System.Byte[]
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FormatVersion : const System.UInt32 = 2
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags.Arrow : const Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags = 2
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags.Async : const Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags = 512

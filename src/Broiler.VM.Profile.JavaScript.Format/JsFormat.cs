@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   18
-// Annotated:        18/18
+// Relevant units:   20
+// Annotated:        20/20
 // Exempt:           28
-// Human-reviewed:   0/18
+// Human-reviewed:   0/20
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
-// Resource impact:  0/10 max
-// Unverified:       18
+// Resource impact:  1/10 max
+// Unverified:       20
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -317,4 +317,145 @@ public static class JsFormat
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=6A8F76
     // Broiler-Human:        PENDING
     public const uint CeilingSurfaces = 16;
+
+    /// <summary>Encodes a JavaScript String for the constant and name tables.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A JavaScript String is a sequence of UTF-16 code UNITS and not of scalar values, and UTF-8
+    /// cannot carry one.</b> <c>"\uD800"</c> is a legal String with a legal length and a legal
+    /// <c>charCodeAt</c>; it is also an unpaired surrogate, which no UTF-8 sequence encodes. The
+    /// platform's encoder answers a replacement character for it, silently, so a literal containing
+    /// one reached the artifact as <c>U+FFFD</c> and every later answer about it — its length, its
+    /// units, its comparison with another such literal — was about the replacement instead.
+    /// </para>
+    /// <para>
+    /// <b>So a surrogate is written as its own three bytes, which UTF-8 forbids and this format
+    /// therefore defines.</b> The encoding is WTF-8: identical to UTF-8 for every well-formed
+    /// String, so an artifact that carries no unpaired surrogate has exactly the bytes it had
+    /// before, byte for byte and digest for digest, and only a String no UTF-8 encoder could have
+    /// carried is written differently.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=B10193
+    // Broiler-Human:        PENDING
+    public static byte[] EncodeText(string value)
+    {
+        var buffer = new System.Collections.Generic.List<byte>(value.Length + 8);
+
+        for (var at = 0; at < value.Length; at++)
+        {
+            var unit = value[at];
+
+            if (char.IsHighSurrogate(unit) && at + 1 < value.Length && char.IsLowSurrogate(value[at + 1]))
+            {
+                var scalar = char.ConvertToUtf32(unit, value[at + 1]);
+                buffer.Add((byte)(0xF0 | (scalar >> 18)));
+                buffer.Add((byte)(0x80 | ((scalar >> 12) & 0x3F)));
+                buffer.Add((byte)(0x80 | ((scalar >> 6) & 0x3F)));
+                buffer.Add((byte)(0x80 | (scalar & 0x3F)));
+                at++;
+                continue;
+            }
+
+            if (unit < 0x80)
+            {
+                buffer.Add((byte)unit);
+                continue;
+            }
+
+            if (unit < 0x800)
+            {
+                buffer.Add((byte)(0xC0 | (unit >> 6)));
+                buffer.Add((byte)(0x80 | (unit & 0x3F)));
+                continue;
+            }
+
+            // THE UNPAIRED SURROGATE TAKES THIS PATH AND SO DOES EVERY ORDINARY THREE-BYTE
+            // CHARACTER: the arithmetic is the same, and the only difference is that UTF-8 forbids
+            // the result for one of them.
+            buffer.Add((byte)(0xE0 | (unit >> 12)));
+            buffer.Add((byte)(0x80 | ((unit >> 6) & 0x3F)));
+            buffer.Add((byte)(0x80 | (unit & 0x3F)));
+        }
+
+        return buffer.ToArray();
+    }
+
+    /// <summary>Decodes what <see cref="EncodeText"/> wrote.</summary>
+    /// <remarks>
+    /// <b>Malformed input answers with replacement characters rather than throwing</b>, exactly as
+    /// the platform's decoder does, because this runs on bytes a caller supplied: an artifact is
+    /// untrusted input, and a decoder that threw would be a second way to end a verification that
+    /// the verifier already ends by diagnosis.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=489A01
+    // Broiler-Human:        PENDING
+    public static string DecodeText(System.ReadOnlySpan<byte> bytes)
+    {
+        var built = new System.Text.StringBuilder(bytes.Length);
+
+        for (var at = 0; at < bytes.Length;)
+        {
+            var lead = bytes[at];
+
+            if (lead < 0x80)
+            {
+                built.Append((char)lead);
+                at++;
+                continue;
+            }
+
+            var width = lead >= 0xF0 ? 4 : lead >= 0xE0 ? 3 : lead >= 0xC0 ? 2 : 0;
+
+            if (width == 0 || at + width > bytes.Length)
+            {
+                built.Append('\ufffd');
+                at++;
+                continue;
+            }
+
+            var scalar = lead & (0xFF >> (width + 1));
+            var ok = true;
+
+            for (var step = 1; step < width; step++)
+            {
+                var trail = bytes[at + step];
+
+                if ((trail & 0xC0) != 0x80)
+                {
+                    ok = false;
+                    break;
+                }
+
+                scalar = (scalar << 6) | (trail & 0x3F);
+            }
+
+            if (!ok)
+            {
+                built.Append('\ufffd');
+                at++;
+                continue;
+            }
+
+            at += width;
+
+            if (scalar > 0x10FFFF)
+            {
+                built.Append('\ufffd');
+                continue;
+            }
+
+            if (scalar > 0xFFFF)
+            {
+                built.Append(char.ConvertFromUtf32(scalar));
+                continue;
+            }
+
+            // A SURROGATE ARRIVES AS ITSELF, which is the whole point of the pair: the unit the
+            // encoder could not put through UTF-8 comes back as the unit it was.
+            built.Append((char)scalar);
+        }
+
+        return built.ToString();
+    }
 }
