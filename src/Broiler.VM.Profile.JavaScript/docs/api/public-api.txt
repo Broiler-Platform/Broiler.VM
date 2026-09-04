@@ -1051,6 +1051,7 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FormatVersion : const System.UInt32 = 2
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags.Arrow : const Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags = 2
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags.Constructible : const Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags = 16
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags.Generator : const Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags = 32
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags.None : const Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags = 0
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags.ProgramBody : const Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags = 8
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags.Strict : const Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags = 1
@@ -1158,6 +1159,8 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ToNumber : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 71
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.TypeOf : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 88
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Void : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 91
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Yield : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 102
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.YieldDelegate : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 103
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.value__ : System.Byte
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcodes.All : static readonly Broiler.VM.Profile.JavaScript.Format.JsOpcode[]
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcodes.HasCodeTarget(Broiler.VM.Profile.JavaScript.Format.JsOpcode opcode) : static System.Boolean

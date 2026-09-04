@@ -115,6 +115,11 @@ internal sealed partial class JsRealm
         SetupDate();
         SetupRegExp();
         SetupGlobal();
+
+        // LAST, BECAUSE IT READS `Function` BACK OFF THE GLOBAL. `%GeneratorFunction%` inherits
+        // from the `Function` constructor the way the specification says it does, and that
+        // constructor is published by SetupFunction into the global object above.
+        SetupGenerator();
     }
 
     /// <summary>The realm's global object.</summary>
@@ -299,10 +304,23 @@ internal sealed partial class JsRealm
     internal JsObject CreateClosure(
         JsProgram program, int unit, JsEnvironment environment, JsValue lexicalThis)
     {
-        var function = new JsScriptFunction(FunctionPrototype, program, unit, environment)
+        // A GENERATOR FUNCTION INHERITS FROM `%GeneratorFunction.prototype%` AND NOT FROM
+        // `Function.prototype`, and it is two hops rather than one to the latter. That is what
+        // makes `Object.getPrototypeOf(g).constructor.name` answer `GeneratorFunction`, and it is
+        // also what carries the `[object GeneratorFunction]` this realm reports through
+        // `[[Class]]` in the absence of a Symbol to hang a tag on.
+        var isGenerator = program.Functions[unit].IsGenerator;
+
+        var function = new JsScriptFunction(
+            isGenerator ? GeneratorFunctionPrototype : FunctionPrototype, program, unit, environment)
         {
             LexicalThis = lexicalThis,
         };
+
+        if (isGenerator)
+        {
+            function.ClassName = "GeneratorFunction";
+        }
 
         function.SetOwnProperty(
             "length",
@@ -314,6 +332,23 @@ internal sealed partial class JsRealm
             "name",
             JsProperty.Data(
                 JsValue.String(program.Functions[unit].Name), JsPropertyAttributes.Configurable));
+
+        if (isGenerator)
+        {
+            // A GENERATOR FUNCTION'S `prototype` HAS NO `constructor` BACK-LINK, and giving it one
+            // would be the natural mistake: nothing is ever constructed from it, so there is
+            // nothing for a back-link to name. What a program reads as `g.prototype.constructor`
+            // is INHERITED from `%GeneratorPrototype%` and is an object rather than a function.
+            // The property is writable and neither enumerable nor configurable, which is the one
+            // descriptor shape a generator function's `prototype` has.
+            function.SetOwnProperty(
+                "prototype",
+                JsProperty.Data(
+                    JsValue.Object(new JsObject(GeneratorPrototype, "Generator")),
+                    JsPropertyAttributes.Writable));
+
+            return function;
+        }
 
         if (function.IsConstructor)
         {

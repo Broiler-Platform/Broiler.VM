@@ -705,6 +705,22 @@ internal sealed class JsVerifier
                 return Invalid(VmReason.InconsistentStructure, JavaScriptDiagnosticCode.EmptyCode, (ulong)index);
             }
 
+            // A GENERATOR IS NONE OF THE OTHER THREE THINGS A FLAG CAN SAY IT IS. The executor
+            // decides whether an invocation gets a heap frame from this bit alone, and each of the
+            // three it is refused with here would have already sent the invocation somewhere else.
+            var unitFlags = (JsFormat.FunctionFlags)row.Flags;
+
+            if ((unitFlags & JsFormat.FunctionFlags.Generator) != 0 &&
+                (unitFlags & (JsFormat.FunctionFlags.Arrow |
+                    JsFormat.FunctionFlags.ProgramBody |
+                    JsFormat.FunctionFlags.Constructible)) != 0)
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.GeneratorFlagsInconsistent,
+                    (ulong)index);
+            }
+
             // DISJOINT AND ASCENDING, both. Two units whose ranges overlapped would let a branch
             // verified against one unit's range land inside the other's instruction stream, and
             // every check downstream of that is checking the wrong thing.
@@ -1302,6 +1318,19 @@ internal sealed class JsVerifier
                         : Invalid(
                             VmReason.InconsistentStructure,
                             JavaScriptDiagnosticCode.FunctionIndexOutOfRange,
+                            (ulong)offset);
+
+                // ONLY A GENERATOR BODY MAY SUSPEND. The executor allocates the frame a suspension
+                // saves itself into from the unit's flag, before a single instruction runs, so an
+                // artifact that yields anywhere else is refused here rather than met by a null
+                // frame in the middle of the dispatch loop.
+                case JsOpcode.Yield:
+                case JsOpcode.YieldDelegate:
+                    return (unit.Flags & JsFormat.FunctionFlags.Generator) != 0
+                        ? Ok
+                        : Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.YieldOutsideGenerator,
                             (ulong)offset);
 
                 case JsOpcode.PushScope:

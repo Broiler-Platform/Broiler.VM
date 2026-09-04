@@ -488,10 +488,12 @@ internal static class Program
         Console.WriteLine();
         Console.WriteLine($"This host runs the feature manifest {JavaScriptProfile.WideManifest} by");
         Console.WriteLine("default: objects, arrays, strings, functions, closures, prototypes,");
-        Console.WriteLine("exceptions, for-in, switch, labels and a standard library. It admits no");
-        Console.WriteLine("class, generator, async function, module, destructuring, spread, template");
-        Console.WriteLine("literal, for-of, Proxy, Symbol, BigInt or typed array, and no eval or");
-        Console.WriteLine("Function constructor. What has been measured against a conformance suite");
+        Console.WriteLine("exceptions, generators, for-in, switch, labels and a standard library.");
+        Console.WriteLine("It admits no class, async function, module, destructuring, spread,");
+        Console.WriteLine("template literal, for-of, Proxy, Symbol, BigInt or typed array, and no");
+        Console.WriteLine("eval or Function constructor. A generator is iterable through `yield*`");
+        Console.WriteLine("only, because the iteration protocol needs a Symbol this realm has not.");
+        Console.WriteLine("What has been measured against a conformance suite");
         Console.WriteLine("is a handful of its subtrees, which measures those subtrees. Nothing here");
         Console.WriteLine("is reviewed, accepted or supported, and this host is advertised as");
         Console.WriteLine("nothing.");

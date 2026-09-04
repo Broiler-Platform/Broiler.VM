@@ -38,10 +38,17 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// the jump came from.
 /// </para>
 /// <para>
-/// <b>The set is deliberately not complete JavaScript.</b> There is no generator, no
-/// <c>await</c>, no class, no spread, no destructuring and no <c>with</c>; each is a construct the
-/// manifest refuses at the front end rather than an opcode the executor would have to answer for.
-/// What is here is what a program that runs has to have.
+/// <b>The set is deliberately not complete JavaScript.</b> There is no <c>await</c>, no class, no
+/// spread, no destructuring and no <c>with</c>; each is a construct the manifest refuses at the
+/// front end rather than an opcode the executor would have to answer for. What is here is what a
+/// program that runs has to have.
+/// </para>
+/// <para>
+/// <b>The two suspension opcodes are NOT section 6's suspension targets.</b> Section 6 of the
+/// format frames the core's own suspend-and-resume across the host boundary, which this profile's
+/// verifier refuses outright. <see cref="Yield"/> and <see cref="YieldDelegate"/> suspend one guest
+/// invocation and resume it from inside the same interpreter, never crossing that boundary - which
+/// is why they are ordinary instructions in this set and need no section of their own.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=C7B0B2
@@ -277,6 +284,35 @@ public enum JsOpcode : byte
     /// </remarks>
     ForInNext = 0x65,
 
+    // ---- suspension -------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Pop one value, suspend the frame yielding it, and push what the resumption sent.
+    /// </summary>
+    /// <remarks>
+    /// <b>Its stack effect is net zero, and the pushed value comes from OUTSIDE the unit.</b> Nothing
+    /// in the instruction stream put the resume value there - <c>next(v)</c> did, from the host side
+    /// of the generator object - so a reader tracing the code will not find its producer. It is
+    /// counted as one pop and one push anyway, because that is what the frame's operand stack does
+    /// across the suspension, and the verifier's abstract height has to agree with it at the
+    /// instruction after.
+    /// </remarks>
+    Yield = 0x66,
+
+    /// <summary>
+    /// Pop an iterable, drive it to exhaustion yielding each value, and push the iterator's own
+    /// return value. The <c>yield*</c> operator.
+    /// </summary>
+    /// <remarks>
+    /// <b>One opcode rather than a lowered loop, because the loop has to survive an abrupt
+    /// resumption.</b> <c>return</c> and <c>throw</c> arriving while the delegation is suspended are
+    /// forwarded to the inner iterator, and a lowering would have to catch each of them at a
+    /// <see cref="Yield"/> it emitted - which the exception regions of this format cannot express
+    /// without a handler kind for "resumed abruptly". Its stack effect is one pop and one push, the
+    /// same as <see cref="Yield"/>, and for the same reason.
+    /// </remarks>
+    YieldDelegate = 0x67,
+
     // ---- stack ------------------------------------------------------------------------------------------
 
     /// <summary>Pop one and discard it.</summary>
@@ -359,6 +395,7 @@ public static class JsOpcodes
         JsOpcode.TypeOf, JsOpcode.InstanceOf, JsOpcode.In, JsOpcode.Void,
         JsOpcode.Jump, JsOpcode.JumpIfFalse, JsOpcode.JumpIfTrue, JsOpcode.Throw,
         JsOpcode.ForInStart, JsOpcode.ForInNext,
+        JsOpcode.Yield, JsOpcode.YieldDelegate,
         JsOpcode.Pop, JsOpcode.Duplicate, JsOpcode.DuplicateTwo, JsOpcode.Swap, JsOpcode.Pick,
     ];
 
@@ -427,6 +464,7 @@ public static class JsOpcodes
         JsOpcode.ShiftLeft or JsOpcode.ShiftRight or JsOpcode.ShiftRightUnsigned or
         JsOpcode.TypeOf or JsOpcode.InstanceOf or JsOpcode.In or JsOpcode.Void or
         JsOpcode.Throw or JsOpcode.ForInStart or
+        JsOpcode.Yield or JsOpcode.YieldDelegate or
         JsOpcode.Pop or JsOpcode.Duplicate or JsOpcode.DuplicateTwo or JsOpcode.Swap
             => JsOperandShape.None,
 
@@ -590,6 +628,16 @@ public static class JsOpcodes
             // rule the verifier applies at the target rather than here, because one instruction
             // with two effects is exactly what a stack-height check exists to pin down.
             case JsOpcode.ForInNext:
+                pops = 1;
+                pushes = 1;
+                return true;
+
+            // NET ZERO, AND THE PUSH HAS NO PRODUCER IN THE CODE. What a suspension pushes is what
+            // the resumption sent it, which arrived from outside the unit entirely; counting it as
+            // a push is what makes the abstract height at the following instruction equal the
+            // height at this one, which is what a reader of the lowering expects `yield` to be.
+            case JsOpcode.Yield:
+            case JsOpcode.YieldDelegate:
                 pops = 1;
                 pushes = 1;
                 return true;

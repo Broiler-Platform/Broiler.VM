@@ -136,6 +136,12 @@ internal sealed record JsObjectLiteral(
 /// <param name="IsArrow">Whether this is an arrow function, which has no <c>this</c> of its own.</param>
 /// <param name="IsStrict">Whether the body is strict-mode code.</param>
 /// <param name="Directives">The directive prologue, which is where <c>use strict</c> lives.</param>
+/// <param name="IsGenerator">
+/// Whether the body is a generator's. It is a property of the FUNCTION and not of its statements,
+/// because it decides three separate things at once: that <c>yield</c> is an operator inside it,
+/// that calling it builds a generator object rather than running it, and that it is not a
+/// constructor.
+/// </param>
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=6E534E
 // Broiler-Human:        PENDING
 internal sealed record JsFunctionNode(
@@ -145,7 +151,21 @@ internal sealed record JsFunctionNode(
     System.Collections.Generic.IReadOnlyList<JsStatement> Body,
     bool IsArrow,
     bool IsStrict,
-    System.Collections.Generic.IReadOnlyList<JsStringLiteral> Directives) : JsNode(Span);
+    System.Collections.Generic.IReadOnlyList<JsStringLiteral> Directives,
+    bool IsGenerator = false) : JsNode(Span);
+
+/// <summary><c>yield</c>, <c>yield expr</c> or <c>yield* expr</c>.</summary>
+/// <param name="Operand">
+/// What is yielded. A <c>yield</c> with no operand yields <c>undefined</c>, and it is
+/// <see langword="null"/> here rather than a synthesised <c>undefined</c> literal so that the
+/// lowering can tell "the source wrote nothing" from "the source wrote <c>undefined</c>" - a
+/// distinction nothing needs today and one a reader of the tree would otherwise have to guess at.
+/// </param>
+/// <param name="IsDelegate">Whether this is <c>yield*</c>, which drives an inner iterator.</param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
+// Broiler-Human:        PENDING
+internal sealed record JsYieldExpression(
+    SliceSourceSpan Span, JsExpression? Operand, bool IsDelegate) : JsExpression(Span);
 
 /// <summary>A function expression.</summary>
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=E66830

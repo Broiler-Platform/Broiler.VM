@@ -145,6 +145,18 @@ public static class JsFormat
 
         /// <summary>The unit may be used as a constructor.</summary>
         Constructible = 16,
+
+        /// <summary>
+        /// The unit is a generator body: calling it builds a generator object rather than running
+        /// it, and it is the only kind of unit whose code may suspend.
+        /// </summary>
+        /// <remarks>
+        /// <b>It is a flag on the unit and not a property of the call site</b>, because whether an
+        /// invocation gets a heap-allocated frame has to be decidable before any of its code runs.
+        /// The verifier refuses a suspension opcode in a unit without this bit, so a frame the
+        /// executor did not allocate can never be the frame an instruction tries to suspend.
+        /// </remarks>
+        Generator = 32,
     }
 
     /// <summary>What an exception region does when control reaches its handler.</summary>

@@ -99,6 +99,19 @@ internal sealed class JsCodeUnit
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=AA2DE3
     // Broiler-Human:        PENDING
     internal bool UsesArguments => (Flags & Format.JsFormat.FunctionFlags.UsesArguments) != 0;
+
+    /// <summary>
+    /// Whether calling the unit builds a generator object instead of running its code.
+    /// </summary>
+    /// <remarks>
+    /// <b>This bit test is the WHOLE of what the ordinary call path pays for generators
+    /// existing.</b> It reads a field the invocation had already loaded, and it decides whether the
+    /// frame lives in the interpreter's own locals - which is what every ordinary call still gets,
+    /// unchanged - or on the heap where a suspension can leave it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal bool IsGenerator => (Flags & Format.JsFormat.FunctionFlags.Generator) != 0;
 }
 
 /// <summary>One verified exception region.</summary>

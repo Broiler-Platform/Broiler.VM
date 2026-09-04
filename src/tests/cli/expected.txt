@@ -119,6 +119,27 @@ dead-zone/a-lexical-binding-after-its-initialiser.js|0|5
 hashbang/at-the-very-start.js|0|3
 hashbang/on-the-second-line.js|3|2102:ExpectedToken
 
+# THE GENERATOR FAMILY, which moved from refused-by-name to admitted on 2026-09-04. Every value
+# below was taken from node before it was written here, so each row is a comparison against another
+# implementation rather than an assertion this component made about itself. The four that matter
+# most are the last four: a forced return that a `catch` must NOT see, a `finally` that yields and
+# so defers that return, a delegation that forwards a `throw` into the inner generator and then
+# refuses one an Array iterator cannot take, and a re-entry that is a TypeError rather than two
+# interpreters walking one operand stack.
+runs/a-generator-that-yields-twice.js|0|1,11,done,undefined,true
+runs/a-return-that-runs-a-finally-across-a-yield.js|0|caught=0 finalised=1 value=forced done=true
+runs/a-finally-that-yields-defers-the-return.js|0|one from the finaliser/false asked/true undefined/true
+runs/a-delegation-that-forwards-a-throw.js|0|inner caught BANG / outer got inner-return / TypeError
+runs/a-generator-that-is-already-running.js|0|TypeError then done=true
+runs/a-generator-prototype-chain.js|0|true 0 true object constructor,next,return,throw [object Generator] true
+
+# AND THE FAMILY'S EXHAUSTION, which is the row that would go red as a TERMINATED PROCESS rather
+# than as a wrong answer. A resumption is a second interpreter frame on the same native stack, so a
+# `yield*` chain holds two live frames per level; until the resumption was charged for its own
+# frame this file overflowed the guest stack and killed the host, which is the one outcome
+# JSC-79 exists to forbid.
+limits/a-delegation-chain-with-no-bottom.js|5|CeilingReached on CallDepth
+
 # WHAT THIS IS AND WHAT IT IMPLEMENTS, which is the one surface a person reads before they read
 # anything else and which no row judged until 2026-09-03. Two rows rather than one, because the
 # second is the one that moves: it read `NOT archived` for as long as that was true, and the
