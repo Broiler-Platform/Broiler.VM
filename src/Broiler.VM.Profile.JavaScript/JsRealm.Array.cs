@@ -1331,10 +1331,10 @@ internal sealed partial class JsRealm
         engine.GetIndexed(target, JsValue.Number(at));
 
     /// <summary>Writes index <paramref name="at"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B5AC03
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=09CE6D
     // Broiler-Human:        PENDING
     private static void ArraySetAt(JsEngine engine, JsValue target, double at, JsValue value) =>
-        engine.SetIndexed(target, JsValue.Number(at), value, false);
+        engine.SetIndexed(target, JsValue.Number(at), value, true);
 
     /// <summary>Removes index <paramref name="at"/>, leaving a hole.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FEFCDF
@@ -1350,10 +1350,16 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Writes the receiver's <c>length</c> back.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FA6D19
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=01DBE3
     // Broiler-Human:        PENDING
+    /// <remarks>
+    /// <b>Strict, which is the specification's own choice for these built-ins and not a policy this
+    /// file adds.</b> Every mutator here performs <c>Set(O, key, value, true)</c>, so a receiver
+    /// that refuses the write — a frozen Array, or one whose <c>length</c> has been closed — makes
+    /// the call throw rather than answer a new length that is not the one it has.
+    /// </remarks>
     private static void ArrayWriteLength(JsEngine engine, JsValue target, double length) =>
-        engine.SetProperty(target, "length", JsValue.Number(length), false);
+        engine.SetProperty(target, "length", JsValue.Number(length), true);
 
     /// <summary>The relative-index rule a negative or out-of-range bound is clamped by.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=206341

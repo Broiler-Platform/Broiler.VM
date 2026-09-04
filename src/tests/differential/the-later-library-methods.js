@@ -67,3 +67,29 @@ p(function () { return String.raw.length; });
 p(function () { return [1,2,3].at.length + "," + [].flat.length + "," + [].flatMap.length; });
 p(function () { return [].with.length + "," + [].toSpliced.length + "," + [].toSorted.length; });
 p(function () { return Object.getOwnPropertyDescriptor(Array.prototype, "at").enumerable; });
+
+// --- an Array's `length` when it has been closed, and the integrity levels around it.
+// APPENDED rather than inserted, because a case number is how a divergence is named and
+// renumbering the cases above would silently move every declaration that points at one.
+p(function(){ var a=[1]; Object.defineProperty(a,"length",{value:1,writable:false}); return t(function(){a.push(2);}); });
+p(function(){ var a=[1]; Object.defineProperty(a,"length",{value:1,writable:false}); return a.length; });
+p(function(){ var a=[1]; Object.defineProperty(a,"length",{value:1,writable:false}); a[5]=1; return a.length+":"+String(a[5]); });
+p(function(){ var a=[1]; Object.defineProperty(a,"length",{value:1,writable:false}); a[0]=9; return a[0]; });
+p(function(){ var a=[1]; Object.defineProperty(a,"length",{value:1,writable:false}); return JSON.stringify(Object.getOwnPropertyDescriptor(a,"length")); });
+p(function(){ var a=[1,2,3]; return JSON.stringify(Object.getOwnPropertyDescriptor(a,"length")); });
+p(function(){ var a=[1]; return t(function(){ Object.defineProperty(a,"length",{value:0,writable:false}); return a.length; }); });
+p(function(){ var a=Object.freeze([1]); return t(function(){ a.push(2); }); });
+p(function(){ var a=Object.freeze([1]); return t(function(){ a[0]=2; return a[0]; }); });
+p(function(){ var a=[1,2]; a.length=1; return a.join(","); });
+p(function(){ var a=[1,2]; return a.push(3); });
+p(function(){ var a=[1,2,3]; a.length=0; return a.length; });
+p(function(){ var a=Object.seal([1,2]); return t(function(){ a.push(3); }); });
+p(function(){ var a=Object.seal([1,2]); a[0]=9; return a[0]; });
+p(function(){ var a=[1,2,3]; return a.splice(1,1).join(","); });
+p(function(){ var a=[1,2,3]; a.reverse(); return a.join(","); });
+p(function(){ var a=[3,1,2]; a.sort(); return a.join(","); });
+p(function(){ var a=[1,2,3]; a.fill(0,1); return a.join(","); });
+p(function(){ var a=[1,2,3]; a.copyWithin(0,1); return a.join(","); });
+p(function(){ var a=[1,2,3]; return a.pop()+":"+a.length; });
+p(function(){ var a=[1,2,3]; return a.shift()+":"+a.join(","); });
+p(function(){ var a=[1,2]; return a.unshift(0)+":"+a.join(","); });

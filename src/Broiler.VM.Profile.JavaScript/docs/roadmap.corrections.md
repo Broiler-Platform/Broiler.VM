@@ -4037,3 +4037,27 @@ implementation for.
 **Authority and date.** The implementation of 2026-09-04 in this checkout, cases 34 and 36 of
 `src/tests/differential/the-json-date-and-regexp-surface.js`, and a twenty-case round-trip probe.
 2026-09-04.
+
+### JSC-99
+
+**Where:** the object model's treatment of an Array's <c>length</c>, and roadmap
+[section 8](roadmap.md#8-the-value-frame-and-call-model)'s exotic-object rules.
+
+**What the code did.** An Array's <c>length</c> was reported as always writable, because it is
+derived from the elements and there is nowhere in the property store for its attributes to live.
+So <c>Object.defineProperty(a, "length", { writable: false })</c> was **accepted, reported as
+accepted, and then ignored by the next <c>push</c>**.
+
+**That is the one answer this profile refuses to give**: not a refusal and not an absence, but a
+refusal that reports success. A program that closes an Array's length is doing so because something
+downstream depends on it not moving, and every such program was told it had.
+
+**What replaced it.** The Array carries the attribute itself, reports it, and refuses both a length
+change and an element write past the length while it is closed. The prototype mutators now write
+strictly — <c>Set(O, key, value, true)</c>, which is the specification's own choice for them and not
+a policy added here — so a receiver that refuses makes the call throw rather than answer a new length
+it does not have. A twenty-three-case probe over the closed length, <c>Object.freeze</c> and
+<c>Object.seal</c> agrees with the comparison engine throughout.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout and cases 51 to 73 of
+`src/tests/differential/the-later-library-methods.js`. 2026-09-04.

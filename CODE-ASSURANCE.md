@@ -15,9 +15,9 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 113 |
 | Files carrying an annotation | 113 |
-| Code units | 4073 |
+| Code units | 4074 |
 | Relevant | 2205 |
-| Exempt by predicate | 1868 |
+| Exempt by predicate | 1869 |
 | Annotated | 2205 of 2205 (100%) |
 | Human reviewed | 0 of 2205 (0%) |
 | Unverified | 2205 |
@@ -32,14 +32,14 @@ figures below are the measurement of how far from that claim the component is.
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 1868 |
+| EXEMPT | 1869 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
 | None | 737 |
-| Low | 1876 |
+| Low | 1877 |
 | Medium | 82 |
 | High | 0 |
 | Unknown | 0 |
@@ -51,7 +51,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | None | 5 |
 | Low | 625 |
-| Medium | 1881 |
+| Medium | 1882 |
 | High | 184 |
 | Critical | 0 |
 | *not annotated* | 0 |
@@ -289,7 +289,7 @@ that the rule is reviewable in one place rather than in several hundred.
 | CompilerSuppliedRecordOrEnumMember | 4 |
 | DelegatingOverrideOrOperator | 102 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 308 |
+| FieldDeclaringStorage | 309 |
 | EnumMemberOfADeclaredVocabulary | 743 |
 | DeclaredInSource | 0 |
 
@@ -310,7 +310,7 @@ No unit in this component states a per-unit exemption.
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-4073 of them, exempt and relevant alike - with the fingerprint of its declaration.
+4074 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
