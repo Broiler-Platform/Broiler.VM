@@ -285,7 +285,8 @@ internal static class Test262Run
         }
 
         var printed = new List<string>();
-        var created = VmRuntime.Create(manifest.Catalog, Options(fuel, wallClock, printed));
+        var created = VmRuntime.Create(
+            manifest.Catalog, Options(manifest, fuel, wallClock, printed));
 
         if (created.Outcome == VmOutcome.ResourceExhaustion)
         {
@@ -584,7 +585,7 @@ internal static class Test262Run
     }
 
     private static VmRuntimeCreationOptions Options(
-        ulong fuel, ulong wallClock, List<string> printed)
+        Test262Manifest manifest, ulong fuel, ulong wallClock, List<string> printed)
     {
         var ceilings = ImmutableArray.CreateBuilder<VmCeilingSpec>();
 
@@ -609,6 +610,18 @@ internal static class Test262Run
                 printed.Add(System.Text.Encoding.UTF8.GetString(argument.Span));
                 return VmHostCallOutcome.Completed;
             }));
+
+        // A HARNESS THAT REGISTERED NO ARTIFACT PROVIDER WAS MEASURING A COMPOSITION NOBODY SHIPS.
+        // The suite reaches `eval` in hundreds of cases, not to test `eval` but because it is how a
+        // test builds a program whose early error it wants to observe. Every one of those answered
+        // `HostFailure/ProviderNotRegistered`, and the harness scored it a FAILURE OF THE ENGINE —
+        // a fact about this file's own wiring, reported as a fact about the language surface.
+        //
+        // It answers at the manifest and format version the run is taken under, so a slice-mode run
+        // cannot be handed wide-mode bytes through a door the guest opened.
+        capabilities.Add(VmCapabilityRegistration.ArtifactProvider(
+            JavaScriptProfile.SourceProviderCapability,
+            new SourceProvider(manifest.Id, manifest.FormatVersion)));
 
         return new VmRuntimeCreationOptions(
             aggregateBudget: null,
