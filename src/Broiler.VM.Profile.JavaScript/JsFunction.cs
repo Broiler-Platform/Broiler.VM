@@ -30,8 +30,19 @@ namespace Broiler.VM.Profile.JavaScript;
 /// throws a <c>ReferenceError</c>, which is the behaviour <c>let</c> and <c>const</c> need and
 /// which no representation without a distinguished empty value can produce.
 /// </para>
+/// <para>
+/// <b>ONE record kind is the exception, and it is the only one with names in it: the object
+/// environment record a <c>with</c> makes.</b> It holds a guest object in <see cref="Binding"/> and
+/// no slots at all, and a name is asked of it through the object's own property lookup. It sits on
+/// the same chain as every other record and is counted by <see cref="Ancestor"/> like any other, so
+/// a <c>(depth, slot)</c> pair emitted inside a <c>with</c> body still reaches what it was compiled
+/// to reach. <b>A declarative record cannot be searched by name and that is deliberate</b>: there
+/// are no names in one to search, so a dynamic lookup can reach an object a <c>with</c> put on the
+/// chain and can reach nothing else.
+/// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=D0AAD1
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=TBF
+// Broiler-Falsified-If: a lookup by name reaches a slot of a declarative record
 // Broiler-Human:        PENDING
 internal sealed class JsEnvironment
 {
@@ -44,18 +55,43 @@ internal sealed class JsEnvironment
         Parent = parent;
     }
 
+    /// <summary>Creates the object environment record a <c>with</c> statement puts on the chain.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal JsEnvironment(JsObject binding, JsEnvironment? parent)
+    {
+        Slots = System.Array.Empty<JsValue>();
+        Parent = parent;
+        Binding = binding;
+    }
+
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=3991BD
     // Broiler-Human:        PENDING
-    private JsEnvironment(JsValue[] slots, JsEnvironment? parent)
+    private JsEnvironment(JsValue[] slots, JsEnvironment? parent, JsObject? binding)
     {
         Slots = slots;
         Parent = parent;
+        Binding = binding;
     }
 
     /// <summary>The slots this record holds.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C8800E
     // Broiler-Human:        PENDING
     internal JsValue[] Slots { get; }
+
+    /// <summary>
+    /// The object this record binds names through, or <see langword="null"/> in a declarative one.
+    /// </summary>
+    /// <remarks>
+    /// It is the whole of what makes this record kind different, and it is READ-ONLY here: the
+    /// record never rebinds, so an object a <c>with</c> put on the chain is the object every name
+    /// resolved through that record asks, for as long as the record is on it. What CAN change is
+    /// the object's own properties, which is why nothing about a name resolved through one is
+    /// cached anywhere.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal JsObject? Binding { get; }
 
     /// <summary>The enclosing record, or <see langword="null"/> at the top.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=6449D8
@@ -83,7 +119,11 @@ internal sealed class JsEnvironment
             copied[at] = Slots[at];
         }
 
-        return new JsEnvironment(copied, Parent);
+        // The binding travels with the copy. A per-iteration copy is only ever emitted for a
+        // declarative record, so this arm is unreachable from this lowering - and dropping the
+        // binding rather than carrying it would turn an artifact that copied an object record into
+        // one whose names silently stopped resolving, which is a worse answer than the honest one.
+        return new JsEnvironment(copied, Parent, Binding);
     }
 
     /// <summary>Walks <paramref name="depth"/> records outward from this one.</summary>

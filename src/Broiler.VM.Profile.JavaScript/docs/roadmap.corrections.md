@@ -4193,3 +4193,54 @@ a merge's to make. **A fixture pins the current answer** — `runs/a-generator-d
 **Authority and date.** The implementation of 2026-09-04 in this checkout and the 113-case probe
 over the seam between generators and the constructs merged beside them, retained as
 `src/tests/differential/the-seam-between-generators-and-the-rest.js`. 2026-09-04.
+
+
+### JSC-104
+
+**Where:** the lowering's refusal of `return` outside a function, which asked the CURRENT compile-time
+scope rather than the enclosing hoisting one.
+
+**What it let through.** `return` at the top level of a script is an early error in the language, and
+the lowering refused it by testing `scope.Kind == ScopeKind.Program`. That test is true only when no
+scope has been pushed since the program's own — so `{ let a; return 1; }` at the top of a script,
+whose block pushes a scope because it declares a lexical name, was **admitted**: the lowering emitted
+a `Return` in the program's code unit, the verifier accepted it because a `Return` at height one is a
+legal instruction there, and the script completed with the returned value. The same shape with no
+lexical declaration in the block was refused, because that block pushes nothing. **A refusal that
+depends on whether an unrelated declaration is present is not a refusal anybody can predict.**
+
+**Why admitting `with` is what found it.** A `with` pushes a scope unconditionally, so it opened a
+second way in — `with ({}) { return 1; }` at the top of a script — and writing the fixture for that
+position is what made the first case visible. The defect is older than the construct that exposed it,
+which is the shape [JSC-82](#jsc-82) and [JSC-83](#jsc-83) also have.
+
+**What replaced it.** The test is `FunctionScope().Kind == ScopeKind.Program`, which walks past every
+block and every object environment record to the hoisting scope the `return` would return from. That
+is the question the rule was always asking; the old test answered it only when nothing was in the way.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, and the acceptance fixtures
+for the `with` family, which exercise a `return` out of two nested object environment records.
+2026-09-04.
+
+### JSC-105
+
+**Where:** [JSC-101](#jsc-101), which measures the per-frame cost of the executor's dispatch loop and
+derives the call-depth bound from it, re-taken for the fourth time.
+
+**What the measurement says now.** Admitting `with` adds two arms to the dispatch loop, one of which
+holds a walk of the scope chain, and the executor's own frame grew from **3,463 bytes to 3,479**. The
+sixty-four-megabyte guest stack holds **19,288** calls where it held 19,377, against an engine bound
+of 6,000 and a call-depth maximum a host may be granted of 8,192 — a factor of 2.35, so nothing had to
+move. `eng/measure-frame-cost.py` reports both depths stopped by the declared bound rather than by the
+stack, which is the outcome the script exists to require.
+
+**It is recorded even though nothing changed, and that is the point.** JSC-101's finding was that a
+bound derived from a measurement goes stale silently, and a bundle that skipped the measurement because
+it expected no change would be making exactly the assumption JSC-101 named. The figures are recorded
+beside the bound in `JsEngine.MaximumCallDepth`, in `JavaScriptProfile`'s maxima and in
+`JsExecution.GuestStackBytes`.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout and the two bisections
+`eng/measure-frame-cost.py` performs — one against the published binary, one against a build with the
+engine's bound and the profile's call-depth maximum lifted, which is what reports the capacity rather
+than the promise. 2026-09-04.

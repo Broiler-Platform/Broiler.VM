@@ -1169,9 +1169,11 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Pick : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 116
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Pop : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 112
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.PopScope : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 23
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.PushObjectScope : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 26
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.PushScope : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 22
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Remainder : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 68
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.RequireCoercible : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 92
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ResolveName : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 27
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.RestArguments : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 10
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Return : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 51
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ReturnUndefined : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 52

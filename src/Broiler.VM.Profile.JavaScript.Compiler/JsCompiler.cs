@@ -63,6 +63,19 @@ public sealed record JsCompilation(
 /// what the specification says and what makes one script's declarations visible to the next.
 /// </para>
 /// <para>
+/// <b><c>with</c> is the one construct that suspends that, and it suspends it for exactly the names
+/// it must.</b> Inside a <c>with</c> body a name is resolved against the object FIRST — through
+/// <c>HasProperty</c>, so the prototype chain counts, and minus whatever
+/// <c>Symbol.unscopables</c> hides — and only then against the enclosing scopes. So the lowering
+/// resolves such a name twice: statically, exactly as it always did, and again at run time by a
+/// search over the object environment records between the reference and that static answer. The
+/// static answer is what the search falls back to, which is what keeps the static half of the model
+/// intact: a name inside a <c>with</c> body can reach an object a <c>with</c> put on the chain, or
+/// the binding the language's own scope rules give it, and nothing else. <b>A name outside such a
+/// body pays none of this</b>, because <c>Shadowable</c> answers false for it and the lowering is
+/// the one that was already here.
+/// </para>
+/// <para>
 /// <b>One declared deviation, stated where it is made.</b> Script-level <c>let</c> and
 /// <c>const</c> also become global properties rather than bindings of a separate global lexical
 /// environment. The observable difference is that a read before the declaration answers
@@ -1125,6 +1138,15 @@ public sealed class JsCompiler
                     CollectVarScope(block.Body, names, functions, null);
                     break;
 
+                // A `with` IS NOT A HOISTING SCOPE. `with (o) { var x; function f() { } }` declares
+                // both in the enclosing function, which is what makes `x` survive the body and what
+                // makes `f` callable after it - and it is also why an assignment to `x` INSIDE the
+                // body still asks the object first: the binding is the function's and the write is
+                // resolved dynamically.
+                case JsWithStatement scoped:
+                    CollectVarScope([scoped.Body], names, functions, null);
+                    break;
+
                 case JsIfStatement conditional:
                     CollectVarScope([conditional.Consequent], names, functions, null);
 
@@ -1386,6 +1408,10 @@ public sealed class JsCompiler
                 CompileBlock(block, completion);
                 break;
 
+            case JsWithStatement scoped:
+                CompileWith(scoped, completion);
+                break;
+
             case JsIfStatement conditional:
                 CompileIf(conditional, completion);
                 break;
@@ -1613,6 +1639,43 @@ public sealed class JsCompiler
             blockDepth--;
             scope = outer;
         }
+    }
+
+    /// <summary>Lowers <c>with</c>: one object environment record around one statement.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is a block whose record holds an object, and every exit is the exits a block already
+    /// has.</b> The depth counter rises with the record and falls with it, so
+    /// <see cref="Unwrap"/> — which is what <c>break</c>, <c>continue</c> and <c>return</c> unwind
+    /// through — discards it without knowing what kind of record it is, and an exception region
+    /// opened inside the body records the depth WITH it and is truncated back to the same figure by
+    /// the executor. Nothing about the object record needed its own unwinding path, which is the
+    /// whole reason it is a record on the ordinary chain rather than a second one.
+    /// </para>
+    /// <para>
+    /// <b>The scope it pushes declares nothing and cannot.</b> A <c>var</c> inside the body was
+    /// hoisted to the enclosing function or to the global object before this ran, and a lexical
+    /// declaration cannot be a <c>with</c> body at all — the parser refuses that as the syntax error
+    /// the language calls it. So a name declared inside a <c>with</c> body is a name declared in the
+    /// block inside it, which pushes a record of its own.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void CompileWith(JsWithStatement statement, int completion)
+    {
+        CompileExpression(statement.Object);
+        Emit(JsOpcode.PushObjectScope);
+
+        var outer = scope;
+        scope = new Scope(ScopeKind.With, outer);
+        blockDepth++;
+
+        CompileStatement(statement.Body, completion);
+
+        Emit(JsOpcode.PopScope);
+        blockDepth--;
+        scope = outer;
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DF30EA
@@ -2228,7 +2291,11 @@ public sealed class JsCompiler
     // Broiler-Human:        PENDING
     private void CompileReturn(JsReturnStatement returned)
     {
-        if (scope.Kind == ScopeKind.Program)
+        // THE QUESTION IS WHICH HOISTING SCOPE ENCLOSES THIS, NOT WHICH SCOPE IS CURRENT. A block
+        // that declares a lexical name pushes a scope of its own, and so does a `with`, so asking
+        // the current scope let `{ let a; return 1; }` at the top of a script through - and admitting
+        // `with` would have added a second way in.
+        if (FunctionScope().Kind == ScopeKind.Program)
         {
             Refuse(
                 returned.Span,
@@ -3175,9 +3242,48 @@ public sealed class JsCompiler
         switch (unary.Operator)
         {
             case SliceTokenKind.Typeof when unary.Operand is JsIdentifier name && !Resolvable(name.Name):
-                Emit(JsOpcode.LoadGlobalOrUndefined, InternedName(name.Name));
+                if (Shadowable(name.Name, out var absent))
+                {
+                    // `with (o) { typeof x }` is the object's value when it has one and the absent
+                    // global's `"undefined"` when nothing has it, so the search's fall-back arm is
+                    // the read that does not throw.
+                    EmitDynamicName(name.Name, absent, wantsBase: false, orUndefined: true);
+                }
+                else
+                {
+                    Emit(JsOpcode.LoadGlobalOrUndefined, InternedName(name.Name));
+                }
+
                 Emit(JsOpcode.TypeOf);
                 return;
+
+            // `delete x` INSIDE A `with` BODY DELETES A PROPERTY WHEN THE OBJECT HAS THE NAME, which
+            // is the one spelling of `delete` that reaches an environment record at all. When no
+            // object on the chain has it the answer is about a binding rather than about a property:
+            // a slot binding is not configurable and the language answers `false`, which is what the
+            // fall-back arm pushes. The operand is NOT evaluated on either path, because `delete` of
+            // a reference never evaluates it.
+            case SliceTokenKind.Delete when unary.Operand is JsIdentifier bare &&
+                Shadowable(bare.Name, out var reachable):
+            {
+                var live = buffer.Height;
+                var key = InternedName(bare.Name);
+                var enclosing = NewLabel();
+                var settled = NewLabel();
+
+                EmitResolve(reachable, key);
+                Emit(JsOpcode.Duplicate);
+                Branch(JsOpcode.JumpIfFalse, enclosing);
+                Emit(JsOpcode.DeleteProperty, key);
+                Branch(JsOpcode.Jump, settled);
+
+                Mark(enclosing);
+                Emit(JsOpcode.Pop);
+                Emit(Resolvable(bare.Name) ? JsOpcode.LoadFalse : JsOpcode.LoadTrue);
+                Mark(settled);
+                buffer.Rejoin(live + 1);
+                return;
+            }
 
             case SliceTokenKind.Delete when unary.Operand is JsMemberExpression member:
                 CompileExpression(member.Target);
@@ -3619,6 +3725,17 @@ public sealed class JsCompiler
             // The receiver is under the callee and the calling convention wants it above, so one
             // exchange turns [receiver, callee] into [callee, receiver].
             Emit(JsOpcode.Swap);
+            return;
+        }
+
+        // A CALLEE RESOLVED THROUGH AN OBJECT ENVIRONMENT RECORD IS CALLED AGAINST THAT OBJECT.
+        // `with (o) { f() }` runs `f` with `o` as its `this` and `with ({}) { f() }` runs it with
+        // `undefined`, and the difference is decided by which of the two branches the search took -
+        // which is why the receiver is produced by the same lowering that produced the callee
+        // rather than pushed after it.
+        if (callee is JsIdentifier bare && Shadowable(bare.Name, out var limit))
+        {
+            EmitDynamicName(bare.Name, limit, wantsBase: true, orUndefined: false);
             return;
         }
 
@@ -4184,6 +4301,20 @@ public sealed class JsCompiler
     {
         _ = span;
 
+        if (Shadowable(name, out var limit))
+        {
+            EmitDynamicName(name, limit, wantsBase: false, orUndefined: false);
+            return;
+        }
+
+        EmitStaticLoad(name, orUndefined: false);
+    }
+
+    /// <summary>Pushes a name the way the enclosing scopes alone would resolve it.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void EmitStaticLoad(string name, bool orUndefined)
+    {
         if (TryResolve(name, out var hops, out var slot, out _))
         {
             EmitScoped(JsOpcode.LoadScoped, (byte)hops, slot);
@@ -4191,12 +4322,63 @@ public sealed class JsCompiler
         }
 
         DeclareSurfaceOf(name);
-        Emit(JsOpcode.LoadGlobal, InternedName(name));
+
+        Emit(
+            orUndefined ? JsOpcode.LoadGlobalOrUndefined : JsOpcode.LoadGlobal,
+            InternedName(name));
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D63E27
     // Broiler-Human:        PENDING
     private void StoreName(SliceSourceSpan span, string name)
+    {
+        // A WRITE ASKS THE SAME OBJECTS A READ ASKS, AND THE TWO ANSWERS DIFFER. `with (o) { x = 1 }`
+        // sets `o.x` when the object has the name and reaches the enclosing binding when it does
+        // not, so the write is the read's shape with `SetProperty` where `GetProperty` was. Both
+        // branches leave the assigned value on the stack, because an assignment is an expression.
+        if (Shadowable(name, out var limit))
+        {
+            // The value is already on the stack and both branches give it back, so the height at
+            // the join is the height here - which the straight-line model cannot see, because the
+            // path it walks is only one of the two.
+            var live = buffer.Height;
+            var key = InternedName(name);
+            var enclosing = NewLabel();
+            var done = NewLabel();
+
+            EmitResolve(limit, key);
+            Emit(JsOpcode.Duplicate);
+            Branch(JsOpcode.JumpIfFalse, enclosing);
+
+            // The value is under the base and `SetProperty` wants it above, so one exchange turns
+            // [value, base] into [base, value] and the instruction gives the value back.
+            Emit(JsOpcode.Swap);
+            Emit(JsOpcode.SetProperty, key);
+            Branch(JsOpcode.Jump, done);
+
+            Mark(enclosing);
+            Emit(JsOpcode.Pop);
+            EmitStaticStore(span, name);
+            Mark(done);
+            buffer.Rejoin(live);
+            return;
+        }
+
+        EmitStaticStore(span, name);
+    }
+
+    /// <summary>Writes a name the way the enclosing scopes alone would resolve it.</summary>
+    /// <remarks>
+    /// <b>The constant refusal stays a COMPILE-TIME one inside a <c>with</c> body, which the
+    /// language makes a run-time <c>TypeError</c>.</b> That difference is this profile's already —
+    /// an assignment to a <c>const</c> is refused at the front end wherever it appears — and a
+    /// <c>with</c> around it changes which branch would have run rather than what the rule is.
+    /// Deferring it here alone would have made one construct's answer disagree with every other
+    /// occurrence of the same mistake.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void EmitStaticStore(SliceSourceSpan span, string name)
     {
         if (TryResolve(name, out var hops, out var slot, out var constant))
         {
@@ -4217,6 +4399,146 @@ public sealed class JsCompiler
         DeclareSurfaceOf(name);
         Emit(JsOpcode.StoreGlobal, InternedName(name));
     }
+
+    /// <summary>
+    /// Whether an enclosing <c>with</c> could bind <paramref name="name"/>, and over how many
+    /// records the executor must look for one.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>This is the whole of what admitting <c>with</c> costs the binding model, and it costs it
+    /// in exactly the names it has to.</b> The walk is the ordinary resolution walk with one extra
+    /// question asked at each step: is this record an object one. A name that reaches its binding
+    /// without passing an object record is lowered to the <c>(depth, slot)</c> pair it always was
+    /// and pays nothing; a name that passes one is lowered to a search, a branch and then that same
+    /// pair on the branch the search did not take.
+    /// </para>
+    /// <para>
+    /// <b>The bound is the OUTERMOST object record before the binding, and not the binding.</b>
+    /// Searching further would let an outer <c>with</c> shadow a declaration that already shadows
+    /// it; searching less far would miss one. A name that resolves to nothing is a global, and then
+    /// every record on the chain is between the reference and it.
+    /// </para>
+    /// <para>
+    /// <b>It crosses function boundaries, because the scope chain does.</b> A closure created inside
+    /// a <c>with</c> body captures the object record, so a free name in its body has to ask that
+    /// object when the closure is CALLED — long after the <c>with</c> statement finished. The
+    /// compile-time chain spans functions exactly as the run-time one does, which is what makes the
+    /// hop count answerable at all.
+    /// </para>
+    /// <para>
+    /// <b>A chain deeper than the format's scope-depth ceiling is clamped, and the clamp is safe in
+    /// one direction only.</b> Clamping searches FEWER records, so a name falls through to the
+    /// static address the language's own rules give it; the opposite clamp would have let a record
+    /// past the binding answer. The same ceiling already bounds a hop count, so a chain this deep
+    /// has a wrong <c>LoadScoped</c> in it before it has a wrong search.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-Falsified-If: the bound reaches a record at or beyond the binding this name resolves to
+    // Broiler-Human:        PENDING
+    private bool Shadowable(string name, out int limit)
+    {
+        limit = 0;
+        var outermost = -1;
+        var hops = 0;
+        var current = scope;
+
+        while (current is not null)
+        {
+            if (current.Kind == ScopeKind.With)
+            {
+                outermost = hops;
+            }
+            else if (current.Has(name))
+            {
+                break;
+            }
+
+            hops++;
+            current = current.Parent;
+        }
+
+        if (outermost < 0)
+        {
+            return false;
+        }
+
+        limit = System.Math.Min(outermost + 1, (int)JsFormat.CeilingScopeDepth);
+        return true;
+    }
+
+    /// <summary>
+    /// Lowers one dynamically resolved name: ask the objects, and fall back to the static address.
+    /// </summary>
+    /// <param name="name">The name being resolved.</param>
+    /// <param name="limit">How many records the search covers.</param>
+    /// <param name="wantsBase">
+    /// Whether the receiver is wanted above the value, which is what a CALL through such a name
+    /// needs: <c>with (o) { f() }</c> calls <c>o.f</c> with <c>o</c> as its <c>this</c>, and the
+    /// object the search answered with is that receiver.
+    /// </param>
+    /// <param name="orUndefined">
+    /// Whether an absent global answers <c>undefined</c> rather than throwing, which is what
+    /// <c>typeof</c> needs and nothing else does.
+    /// </param>
+    /// <remarks>
+    /// <b>A name inside a <c>with</c> body costs a search, a duplicate, a branch and a property
+    /// read, and it costs that EVERY TIME it is mentioned.</b> Nothing is cached and nothing can be:
+    /// the object may gain or lose the property between two reads in the same body, and the
+    /// language says the second read sees that. That is the price of the construct rather than a
+    /// shortcoming of this lowering, and it is why nothing outside a <c>with</c> body pays any of it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void EmitDynamicName(string name, int limit, bool wantsBase, bool orUndefined)
+    {
+        var live = buffer.Height;
+        var key = InternedName(name);
+        var enclosing = NewLabel();
+        var done = NewLabel();
+
+        EmitResolve(limit, key);
+        Emit(JsOpcode.Duplicate);
+        Branch(JsOpcode.JumpIfFalse, enclosing);
+
+        if (wantsBase)
+        {
+            Emit(JsOpcode.Duplicate);
+        }
+
+        Emit(JsOpcode.GetProperty, key);
+
+        if (wantsBase)
+        {
+            // The receiver is under the callee and the calling convention wants it above, exactly
+            // as it does for `o.f()`.
+            Emit(JsOpcode.Swap);
+        }
+
+        Branch(JsOpcode.Jump, done);
+
+        Mark(enclosing);
+        Emit(JsOpcode.Pop);
+        EmitStaticLoad(name, orUndefined);
+
+        if (wantsBase)
+        {
+            Emit(JsOpcode.LoadUndefined);
+        }
+
+        Mark(done);
+
+        // One value arrives, or two when the receiver was wanted. The straight-line model walked
+        // both branches in sequence and would otherwise carry their sum onward.
+        buffer.Rejoin(live + (wantsBase ? 2 : 1));
+    }
+
+    /// <summary>Emits the search itself, with its bound and the name it is looking for.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void EmitResolve(int limit, ushort key) =>
+        EmitScoped(JsOpcode.ResolveName, (byte)limit, key);
 
     /// <summary>
     /// Records that this artifact reaches an optional surface, when the free name belongs to one.
@@ -4287,7 +4609,9 @@ public sealed class JsCompiler
     {
         var current = scope;
 
-        while (current.Kind == ScopeKind.Block && current.Parent is not null)
+        // A `with` scope is walked through exactly as a block is: a temporary the lowering needs
+        // belongs to the function, and a `with` record has nowhere to put one.
+        while (current.Kind is ScopeKind.Block or ScopeKind.With && current.Parent is not null)
         {
             current = current.Parent;
         }
@@ -4508,6 +4832,18 @@ public sealed class JsCompiler
         Program,
         Function,
         Block,
+
+        /// <summary>
+        /// The object environment record a <c>with</c> puts on the chain, which declares nothing.
+        /// </summary>
+        /// <remarks>
+        /// <b>It is in this chain so that the HOP COUNTS stay right.</b> The record exists at run
+        /// time and every <c>(depth, slot)</c> pair emitted inside a <c>with</c> body counts it, so
+        /// a compile-time chain that left it out would resolve every enclosing name one record too
+        /// close. It also declares no name and never can, which is what makes a name resolved
+        /// through it a lookup on an object rather than on a scope.
+        /// </remarks>
+        With,
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3336D6
@@ -4913,6 +5249,11 @@ public sealed class JsCompiler
                     yield return statement.Test;
                     yield return statement.Consequent;
                     yield return statement.Alternate;
+                    break;
+
+                case JsWithStatement statement:
+                    yield return statement.Object;
+                    yield return statement.Body;
                     break;
 
                 case JsWhileStatement statement:

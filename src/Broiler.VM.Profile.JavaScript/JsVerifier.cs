@@ -44,6 +44,19 @@ namespace Broiler.VM.Profile.JavaScript;
 /// so a handler whose declared height disagrees with what the code at it does is a join
 /// disagreement and is refused, rather than an operand-stack corruption at the first throw.
 /// </para>
+/// <para>
+/// <b>What a <c>with</c> body costs this pass is one thing and not the model.</b> An object
+/// environment record is a scope like any other here: <see cref="JsOpcode.PushObjectScope"/> raises
+/// the depth, <see cref="JsOpcode.PopScope"/> lowers it, and the two branches a dynamically
+/// resolved name lowers to are held to the same join rule every other branch is. Every read, write
+/// and deletion inside such a body is an ordinary property instruction, so this pass checks them.
+/// <b>What it stops being able to check is which environment a NAME reaches</b>: outside a
+/// <c>with</c> body a read names a slot and a depth this pass bounds, and inside one the answer
+/// depends on what an object holds when the instruction runs. That is not a check this pass gave
+/// up - it is a question the language stopped answering statically - and what keeps it harmless is
+/// that <see cref="JsOpcode.ResolveName"/> can only ever answer with an OBJECT that is already on
+/// the chain, never with a slot.
+/// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B42A78
 // Broiler-Human:        PENDING
@@ -1237,7 +1250,13 @@ internal sealed class JsVerifier
 
                     switch (opcode)
                     {
+                        // AN OBJECT ENVIRONMENT RECORD IS A SCOPE AND IS COUNTED AS ONE. It holds an
+                        // object where a declarative record holds slots, and nothing about the
+                        // abstract state distinguishes the two: a `with` body's exits - falling
+                        // through, `break`, `continue`, `return` and an exception unwinding to a
+                        // region - are checked against the same depth arithmetic every block gets.
                         case JsOpcode.PushScope:
+                        case JsOpcode.PushObjectScope:
                             afterDepth = depth + 1;
 
                             if (afterDepth > MaxScopeDepth)
@@ -1433,7 +1452,7 @@ internal sealed class JsVerifier
                     // A NAME OPERAND MUST NAME A NAME. Reading a Number constant as a property key
                     // would work by accident here and be a type confusion the first time somebody
                     // changed how a key is stored, so it is refused where it is representable.
-                    return state.Names![operand].Length != 0 || IsEmptyStringConstant(operand)
+                    return NamesAName(operand)
                         ? Ok
                         : Invalid(
                             VmReason.SemanticValidationFailed,
@@ -1520,11 +1539,40 @@ internal sealed class JsVerifier
                             JavaScriptDiagnosticCode.ScopeDepthOutOfRange,
                             (ulong)offset);
 
+                // WHAT IS CHECKABLE HERE IS THE ENCODING AND NOT THE RESOLUTION. The low half must
+                // name a name, exactly as every other name-carrying instruction's operand must, so
+                // an artifact asking this instruction to search for a Number constant is refused
+                // where it is representable. The high half needs no check, for the reason a call's
+                // argument count needs none: it is one byte and the scope-depth ceiling is 255, so
+                // every encodable bound is admissible.
+                //
+                // What this pass CANNOT check is the bound's CORRECTNESS - whether it stops at the
+                // record the language's own scope rules stop at - because that is a fact about the
+                // source the lowering read and not about the bytes. A bound that is too small
+                // resolves fewer names dynamically and falls through to the static address, which is
+                // the safe direction; a bound that is too large lets an outer `with` shadow a
+                // binding, which is a wrong ANSWER and never a reachable slot, because the search
+                // reads object records and a declarative record has no names in it to match.
+                case JsOpcode.ResolveName:
+                    return NamesAName(operand & 0xFFFF)
+                        ? Ok
+                        : Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.ConstantIndexOutOfRange,
+                            (ulong)offset);
+
                 default:
                     _ = unit;
                     return Ok;
             }
         }
+
+        /// <summary>Whether constant <paramref name="operand"/> exists and is a name.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        private bool NamesAName(uint operand) =>
+            operand < state.Constants!.Length &&
+            (state.Names![operand].Length != 0 || IsEmptyStringConstant(operand));
 
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3676ED
         // Broiler-Human:        PENDING

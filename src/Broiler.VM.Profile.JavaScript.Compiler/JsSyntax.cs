@@ -469,6 +469,17 @@ internal sealed record JsIfStatement(
     SliceSourceSpan Span, JsExpression Test, JsStatement Consequent, JsStatement? Alternate)
     : JsStatement(Span);
 
+/// <summary><c>with (object) body</c>.</summary>
+/// <remarks>
+/// It carries the object expression and one statement, and nothing else: the body is a
+/// <c>Statement</c> and not a <c>StatementList</c>, so <c>with (o) x = 1;</c> and
+/// <c>with (o) { x = 1; }</c> are the same production with a different body node.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
+// Broiler-Human:        PENDING
+internal sealed record JsWithStatement(SliceSourceSpan Span, JsExpression Object, JsStatement Body)
+    : JsStatement(Span);
+
 /// <summary><c>while</c>.</summary>
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=28E41E
 // Broiler-Human:        PENDING
