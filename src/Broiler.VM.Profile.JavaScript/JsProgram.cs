@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   11
-// Annotated:        11/11
+// Relevant units:   12
+// Annotated:        12/12
 // Exempt:           26
-// Human-reviewed:   0/11
+// Human-reviewed:   0/12
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
-// Resource impact:  1/10 max
-// Unverified:       11
+// Resource impact:  2/10 max
+// Unverified:       12
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -111,6 +111,12 @@ internal sealed class JsCodeUnit
     // Broiler-Human:        PENDING
     internal bool IsDerivedConstructor =>
         (Flags & Format.JsFormat.FunctionFlags.DerivedConstructor) != 0;
+
+    /// <summary>Whether the unit's own prologue binds its parameters, so the frame copies none.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=EF5279
+    // Broiler-Human:        PENDING
+    internal bool BindsParameters =>
+        (Flags & Format.JsFormat.FunctionFlags.BindsParameters) != 0;
 }
 
 /// <summary>One verified exception region.</summary>

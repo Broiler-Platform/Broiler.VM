@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   18
 // Annotated:        18/18
-// Exempt:           25
+// Exempt:           26
 // Human-reviewed:   0/18
 // IP risk:          None
 // Security risk:    Medium
@@ -134,7 +134,7 @@ public static class JsFormat
     }
 
     /// <summary>The flag bits a code-unit row carries.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=280CAD
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=633A32
     // Broiler-Human:        PENDING
     [System.Flags]
     public enum FunctionFlags : uint
@@ -181,6 +181,22 @@ public static class JsFormat
         /// gets the prototype of the class that was actually constructed.
         /// </remarks>
         DerivedConstructor = 64,
+
+        /// <summary>
+        /// The unit binds its own parameters, so the frame copies no argument into a slot.
+        /// </summary>
+        /// <remarks>
+        /// <b>Without this flag <c>ParameterCount</c> means two things at once, and they part
+        /// company the moment a parameter list stops being simple.</b> It is the arity the function
+        /// reports as <c>length</c> - which counts nothing at or after the first default and never
+        /// counts a rest parameter - and it is how many arguments the frame copies into slots zero
+        /// upward. A default has to run code, a rest parameter has to build an Array and a pattern
+        /// has to destructure, so those units bind their parameters in their own prologue and this
+        /// flag is what tells the frame to keep its hands off. The slots then start EMPTY, which is
+        /// what makes a default reading a later parameter the <c>ReferenceError</c> the
+        /// specification says it is rather than a read of <c>undefined</c>.
+        /// </remarks>
+        BindsParameters = 128,
     }
 
     /// <summary>What an exception region does when control reaches its handler.</summary>

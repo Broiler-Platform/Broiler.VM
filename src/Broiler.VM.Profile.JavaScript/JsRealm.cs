@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   15
-// Annotated:        15/15
-// Exempt:           15
-// Human-reviewed:   0/15
+// Relevant units:   17
+// Annotated:        17/17
+// Exempt:           19
+// Human-reviewed:   0/17
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       15
+// Unverified:       17
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -58,6 +58,60 @@ internal sealed class JsEnumerator : JsObject
 }
 
 /// <summary>
+/// One iterator record: the iterator the guest handed over, its <c>next</c>, and whether it is done.
+/// </summary>
+/// <remarks>
+/// <para>
+/// <b>It is an object for the same reason <see cref="JsEnumerator"/> is</b> - the operand stack
+/// holds values - and guest code can never reach it, because nothing stores it in a property and
+/// only the four <c>Iterate…</c> opcodes accept one.
+/// </para>
+/// <para>
+/// <b>The done flag is the whole of why <c>IteratorClose</c> is safe to emit unconditionally.</b>
+/// The specification says an iterator that has already reported completion, or whose <c>next</c>
+/// threw, is not asked for its <c>return</c>; carrying that here rather than in the lowering means
+/// a <c>break</c>, a rest element and an exhausted loop all emit the same instruction and the
+/// record decides.
+/// </para>
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=87F67B
+// Broiler-Human:        PENDING
+internal sealed class JsIteratorRecord : JsObject
+{
+    /// <summary>Creates a record over an iterator object and the <c>next</c> read off it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=46425A
+    // Broiler-Human:        PENDING
+    internal JsIteratorRecord(JsValue iterator, JsValue next)
+        : base(null, "Iterator")
+    {
+        Iterator = iterator;
+        Next = next;
+    }
+
+    /// <summary>The iterator object the guest's <c>[Symbol.iterator]</c> answered with.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=DA1E9E
+    // Broiler-Human:        PENDING
+    internal JsValue Iterator { get; }
+
+    /// <summary>
+    /// The <c>next</c> method, read ONCE when the record was made.
+    /// </summary>
+    /// <remarks>
+    /// The specification reads it once at <c>GetIterator</c> and calls that same function for every
+    /// step, so an iterator that replaces its own <c>next</c> mid-loop does not change what the loop
+    /// calls. Re-reading each turn is the obvious implementation and it is observably wrong.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6ED865
+    // Broiler-Human:        PENDING
+    internal JsValue Next { get; }
+
+    /// <summary>Whether this iterator has finished, or failed, and is owed no <c>return</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=08F038
+    // Broiler-Human:        PENDING
+    internal bool Done { get; set; }
+}
+
+/// <summary>
 /// One realm: the global object, the intrinsics, and the factories the engine builds values with.
 /// </summary>
 /// <remarks>
@@ -81,6 +135,19 @@ internal sealed partial class JsRealm
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3283F6
     // Broiler-Human:        PENDING
     private readonly JsEngine engine;
+
+    /// <summary>
+    /// The one <c>%Array.prototype.values%</c>, which <c>arguments</c> borrows.
+    /// </summary>
+    /// <remarks>
+    /// <b>It is cached rather than read back off <c>Array.prototype</c></b>, because the
+    /// specification gives an <c>arguments</c> object the INTRINSIC function: a guest that deletes
+    /// or replaces <c>Array.prototype[Symbol.iterator]</c> does not thereby make its own
+    /// <c>arguments</c> uniterable.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=460DFC
+    // Broiler-Human:        PENDING
+    private JsValue arrayIterator = JsValue.Undefined;
 
     /// <summary>Builds a realm on <paramref name="owner"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7AB57C
@@ -287,7 +354,7 @@ internal sealed partial class JsRealm
     /// only exists in sloppy-mode functions with simple parameter lists, and nothing this profile
     /// is built to run depends on it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=47016A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A3FB01
     // Broiler-Human:        PENDING
     internal JsObject CreateArguments(JsValue[] arguments, JsScriptFunction? callee)
     {
@@ -309,6 +376,13 @@ internal sealed partial class JsRealm
             value.SetOwnProperty(
                 "callee", JsProperty.Data(JsValue.Object(callee), JsPropertyAttributes.BuiltIn));
         }
+
+        // `arguments` IS ITERABLE, ON THE REAL `Symbol.iterator`, which is what makes
+        // `f(...arguments)` and `[...arguments]` the ordinary forwarding idioms they are in the
+        // wild. It gets `%Array.prototype.values%` because it is an array-like with a `length`,
+        // which is all that iterator reads.
+        value.SetOwnSymbol(
+            IteratorSymbol, JsProperty.Data(arrayIterator, JsPropertyAttributes.BuiltIn));
 
         return value;
     }

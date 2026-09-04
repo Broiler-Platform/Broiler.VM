@@ -4101,3 +4101,36 @@ run of nothing.
 **Authority and date.** The implementation of 2026-09-04 in this checkout, the nine harness checks
 added with it, and the four-shard merge watched to equal an unsharded run over the same list.
 2026-09-04.
+
+### JSC-101
+
+**Where:** [JSC-85](#jsc-85) and [JSC-96](#jsc-96), which measure the depth this interpreter survives
+and set the engine's bound from the measurement, and `JsExecution.GuestStackBytes`, which declares
+the native stack one guest invocation runs on.
+
+**What both entries assumed without saying so.** That a per-frame cost measured once stays measured.
+The figure JSC-96 recorded — 1,936 bytes per JavaScript call, 8,061 calls on a sixteen-megabyte
+stack — was taken against the executor as it stood that morning.
+
+**What admitting three construct families did to it.** Each bundle added cases to the executor's
+dispatch loop, and a switch's frame is sized for the widest live set across all of its arms. The
+frame grew from 1,936 bytes to 3,158, so the same sixteen megabytes held **5,278** calls — below the
+engine's own bound of 6,000. The bound therefore could not be reached, and a runaway recursion
+**terminated the process** again, which is the outcome JSC-79, JSC-85 and JSC-96 each exist to
+prevent. Nothing in the language surface changed; the measurement did.
+
+**What replaced it.** The stack is 64 MB and the measurement is re-taken: 21,246 calls, against a
+call-depth maximum a host may be granted of 8,192 — a factor of 2.6 rather than the factor of 1.34
+that had silently become a factor of 0.88. The figures are recorded beside the bound they justify.
+
+**The finding is about the shape of the claim rather than about the number.** A bound derived from a
+measurement of the code is a bound that goes stale when the code changes, and it goes stale
+SILENTLY — a build in which it is wrong compiles, verifies, passes every fixture written at depth
+one, and dies only on a program that recurses. So the ratio between the measurement and the declared
+maximum is now stated where the bound is, and `eng/measure-frame-cost.py` reports both depths and
+fails a build in which they disagree. **A number nobody re-measures is an estimate with a date on
+it.**
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the bisections
+`eng/measure-frame-cost.py` performs before and after the merge, and the acceptance rows that
+distinguish the catchable refusal from the host's ceiling. 2026-09-04.

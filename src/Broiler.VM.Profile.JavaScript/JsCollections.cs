@@ -131,10 +131,10 @@ internal sealed class JsSameValueZero : System.Collections.Generic.IEqualityComp
 /// </para>
 /// <para>
 /// <b>What is NOT here: iterators.</b> There is no <c>keys</c>, <c>values</c>, <c>entries</c> or
-/// <c>@@iterator</c> on this table, because those are objects with a <c>next</c> method reached
-/// through <c>Symbol.iterator</c> and this realm's collection surface does not yet build them.
-/// <c>forEach</c> is what the realm exposes, and it is written against the slot walk below so that
-/// the iterators can be added later over the same walk rather than over a second one.
+/// <c>[Symbol.iterator]</c> on this table, because those are objects with a <c>next</c> method and
+/// a realm to hang off, which a table has no business knowing about. The realm builds them in
+/// <c>JsRealm.CollectionIterators.cs</c> over the slot walk below, so that <c>forEach</c> and
+/// every iterator read the same walk rather than two that can disagree.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=720256

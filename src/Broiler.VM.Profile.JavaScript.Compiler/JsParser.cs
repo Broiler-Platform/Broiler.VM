@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   84
-// Annotated:        84/84
+// Relevant units:   92
+// Annotated:        92/92
 // Exempt:           13
-// Human-reviewed:   0/84
+// Human-reviewed:   0/92
 // IP risk:          None
 // Security risk:    High
 // Criteria:         2/2
 // Resource impact:  3/10 max
-// Unverified:       84
+// Unverified:       92
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -30,31 +30,44 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// </para>
 /// <para>
 /// <b>What it refuses, it refuses by name.</b> The wide manifest admits no generator,
-/// <c>async</c> function, module declaration, destructuring pattern, spread, <c>for…of</c>,
-/// <c>with</c>, class field, private name, class static block or decorator. Each is parsed far
-/// enough to be recognised and then reported as a construct outside the manifest, at its own
-/// position - not as an unexpected token, which would send a reader looking for a typo.
+/// <c>async</c> function, module declaration, <c>with</c>, class field, private name, class static
+/// block or decorator. Each is parsed far enough to be recognised and then reported as a construct
+/// outside the manifest, at its own position - not as an unexpected token, which would send a
+/// reader looking for a typo. <c>await</c> and <c>yield</c> are not on that list and never were:
+/// they are contextual keywords, and where the goal or the strictness reserves one the answer is
+/// the reserved-word syntax error the language gives rather than a refusal this manifest owns.
 /// </para>
 /// <para>
-/// <b>Seven families left that list on 2026-09-04 and are now PARSED rather than named.</b> A
+/// <b>Twelve families left that list on 2026-09-04 and are now PARSED rather than named.</b> A
 /// template literal and a tagged template become a <see cref="JsTemplateLiteral"/> with its chunks
 /// split and its substitutions parsed; an optional chain becomes links carrying an
 /// <c>Optional</c> flag inside one <see cref="JsChainExpression"/>, which is the node that owns
 /// where the short circuit lands; <c>new.target</c> becomes a node of its own, admitted only where
 /// the grammar admits it - inside an ordinary function body, and not at the top level of a script
-/// even through an arrow; and a class declaration, a class expression and <c>super</c> become
-/// nodes of their own.
+/// even through an arrow; a class declaration, a class expression and <c>super</c> become nodes of
+/// their own; and parameter defaults, rest parameters, spread, destructuring - in a declaration,
+/// an assignment, a parameter and a catch clause alike - and <c>for … of</c> are admitted too.
 /// </para>
 /// <para>
-/// <b>Admitting a family is where refusal-by-name is most easily lost, and the class family is the
-/// case in point.</b> Before classes were admitted, every construct that can only appear inside a
-/// class body was covered by one refusal naming the class; admitting the body means each of them
-/// now needs a refusal of its own, in the position it appears in - a field wherever a member may
-/// stand, a private name in a member, in a property access and as the left operand of <c>in</c>, a
-/// static block, and a decorator, which nothing named before because the class refusal had covered
-/// it. Nothing else moved: every other refusal above is still spelled where it was, because the
-/// conformance runner grades the manifest boundary on the diagnostic code and a refusal removed by
-/// accident is a manifest change nobody declared.
+/// <b>Admitting a family removes the refusal something was relying on, and the risk is never that
+/// the family stops working: it is that a SIBLING family stops being refused BY NAME</b> and comes
+/// back as a surprise token, which the conformance runner scores as a failure and which turns a
+/// negative test expecting a <c>SyntaxError</c> into a false pass. Two things follow. The branches
+/// that recognise a still-refused construct stay ahead of the ones that now parse - <c>*</c>
+/// before a key is still a generator method where <c>...</c> in an object literal is a spread -
+/// and every new EXPRESSION POSITION the change opened has to answer the same way the old ones do:
+/// a parameter default, a pattern's default, the source of a <c>for … of</c> and the argument of a
+/// spread all reach the same primary-expression path, and a shorthand binding's key goes through
+/// the reserved-word answer <see cref="BindingName"/> gives one step away. The class family is the
+/// case in point on the other side of the same rule: before classes were admitted, every construct
+/// that can only appear inside a class body was covered by one refusal naming the class, and
+/// admitting the body means each of them now needs a refusal of its own, in the position it
+/// appears in - a field wherever a member may stand, a private name in a member, in a property
+/// access and as the left operand of <c>in</c>, a static block, and a decorator, which nothing
+/// named before because the class refusal had covered it. Nothing else moved: every other refusal
+/// above is still spelled where it was, because the conformance runner grades the manifest
+/// boundary on the diagnostic code and a refusal removed by accident is a manifest change nobody
+/// declared.
 /// </para>
 /// <para>
 /// <b>And it refuses by name in EVERY position the construct can appear in, which is a stronger
@@ -377,7 +390,7 @@ internal sealed class JsParser
         return new JsVariableStatement(span, kind, declarators);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=A23C93
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B5197D
     // Broiler-Human:        PENDING
     private System.Collections.Generic.List<JsDeclarator> ParseDeclarators(bool noIn)
     {
@@ -386,14 +399,18 @@ internal sealed class JsParser
         while (true)
         {
             var span = Span();
+            JsPattern? pattern = null;
+            var name = string.Empty;
 
             if (Current.Kind is SliceTokenKind.OpenBracket or SliceTokenKind.OpenBrace)
             {
-                Refuse(span, "a destructuring pattern");
-                return declarators;
+                pattern = ParseBindingPattern();
+            }
+            else
+            {
+                name = BindingName();
             }
 
-            var name = BindingName();
             JsExpression? initialiser = null;
 
             if (Current.Kind == SliceTokenKind.Equals)
@@ -402,7 +419,7 @@ internal sealed class JsParser
                 initialiser = ParseAssignment(noIn);
             }
 
-            declarators.Add(new JsDeclarator(span, name, initialiser));
+            declarators.Add(new JsDeclarator(span, name, pattern, initialiser));
 
             if (Current.Kind != SliceTokenKind.Comma)
             {
@@ -466,7 +483,7 @@ internal sealed class JsParser
         return new JsDoWhileStatement(span, body, test);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=AAEC79
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=986E89
     // Broiler-Human:        PENDING
     private JsStatement ParseFor()
     {
@@ -483,16 +500,16 @@ internal sealed class JsParser
         Expect(SliceTokenKind.OpenParen, "(");
 
         JsStatement? initialiser = null;
-        SliceDeclarationKind? declaration = null;
-        var name = string.Empty;
-        JsExpression? target = null;
 
         if (Current.Kind == SliceTokenKind.Semicolon)
         {
             Advance();
         }
         else if (Current.Kind is SliceTokenKind.Var or SliceTokenKind.Const ||
-            (Current.Kind == SliceTokenKind.Let && Peek(1).Kind != SliceTokenKind.OpenBracket))
+            (Current.Kind == SliceTokenKind.Let && Peek(1).Kind is SliceTokenKind.Identifier or
+                SliceTokenKind.Let or SliceTokenKind.Get or SliceTokenKind.Set or
+                SliceTokenKind.Of or SliceTokenKind.Async or SliceTokenKind.Static or
+                SliceTokenKind.OpenBracket or SliceTokenKind.OpenBrace))
         {
             var headSpan = Span();
             var kind = Current.Kind switch
@@ -505,19 +522,23 @@ internal sealed class JsParser
             Advance();
             var declarators = ParseDeclarators(noIn: true);
 
-            if (Current.Kind == SliceTokenKind.In && declarators.Count == 1)
+            if (Current.Kind is SliceTokenKind.In or SliceTokenKind.Of && declarators.Count == 1)
             {
+                // THE `of` HEAD TAKES AN AssignmentExpression AND THE `in` HEAD TAKES AN
+                // Expression, which is not a distinction anybody would guess: `for (x of a, b)` is
+                // a syntax error and `for (x in a, b)` iterates the keys of `b`.
+                var isOf = Current.Kind == SliceTokenKind.Of;
                 Advance();
-                declaration = kind;
-                name = declarators[0].Name;
-                var right = ParseExpression();
+                var source = isOf ? ParseAssignment() : ParseExpression();
                 Expect(SliceTokenKind.CloseParen, ")");
-                return new JsForInStatement(span, declaration, name, null, right, ParseStatement());
-            }
 
-            if (Current.Kind == SliceTokenKind.Of)
-            {
-                return OutsideStatement(span, "a `for … of` statement");
+                return isOf
+                    ? new JsForOfStatement(
+                        span, kind, declarators[0].Name, declarators[0].Pattern, null, source,
+                        ParseStatement())
+                    : new JsForInStatement(
+                        span, kind, declarators[0].Name, declarators[0].Pattern, null, source,
+                        ParseStatement());
             }
 
             initialiser = new JsVariableStatement(headSpan, kind, declarators);
@@ -528,18 +549,27 @@ internal sealed class JsParser
             var headSpan = Span();
             var expression = ParseExpression(noIn: true);
 
-            if (Current.Kind == SliceTokenKind.In)
+            if (Current.Kind is SliceTokenKind.In or SliceTokenKind.Of)
             {
+                var isOf = Current.Kind == SliceTokenKind.Of;
                 Advance();
-                target = expression;
-                var right = ParseExpression();
-                Expect(SliceTokenKind.CloseParen, ")");
-                return new JsForInStatement(span, null, string.Empty, target, right, ParseStatement());
-            }
 
-            if (Current.Kind == SliceTokenKind.Of)
-            {
-                return OutsideStatement(span, "a `for … of` statement");
+                // A LITERAL IN A HEAD IS A PATTERN AND NOT A VALUE. `for ([a, b] of pairs)` reached
+                // here as an array literal because nothing before the `of` could have told it
+                // apart from one, so the reinterpretation happens where the `of` finally does.
+                var pattern = expression is JsArrayLiteral or JsObjectLiteral
+                    ? ToPattern(expression)
+                    : null;
+
+                var head = pattern is null ? expression : null;
+                var source = isOf ? ParseAssignment() : ParseExpression();
+                Expect(SliceTokenKind.CloseParen, ")");
+
+                return isOf
+                    ? new JsForOfStatement(
+                        span, null, string.Empty, pattern, head, source, ParseStatement())
+                    : new JsForInStatement(
+                        span, null, string.Empty, pattern, head, source, ParseStatement());
             }
 
             initialiser = new JsExpressionStatement(headSpan, expression);
@@ -623,7 +653,7 @@ internal sealed class JsParser
         return new JsThrowStatement(span, value);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=4DCE56
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=0CEFB0
     // Broiler-Human:        PENDING
     private JsStatement ParseTry()
     {
@@ -631,6 +661,7 @@ internal sealed class JsParser
         Advance();
         var block = ParseBlock();
         var parameter = string.Empty;
+        JsPattern? catchPattern = null;
         JsBlockStatement? handler = null;
         JsBlockStatement? finaliser = null;
 
@@ -644,10 +675,13 @@ internal sealed class JsParser
 
                 if (Current.Kind is SliceTokenKind.OpenBracket or SliceTokenKind.OpenBrace)
                 {
-                    return OutsideStatement(span, "a destructuring catch parameter");
+                    catchPattern = ParseBindingPattern();
+                }
+                else
+                {
+                    parameter = BindingName();
                 }
 
-                parameter = BindingName();
                 Expect(SliceTokenKind.CloseParen, ")");
             }
 
@@ -665,7 +699,7 @@ internal sealed class JsParser
             Refuse(span, SliceSourceDiagnosticCode.ExpectedToken, "`try` needs a `catch` or a `finally`");
         }
 
-        return new JsTryStatement(span, block, parameter, handler, finaliser);
+        return new JsTryStatement(span, block, parameter, catchPattern, handler, finaliser);
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=2EBD7F
@@ -740,34 +774,42 @@ internal sealed class JsParser
         return ParseFunctionBody(span, name, parameters, isArrow: false);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D130A2
+    /// <summary>Parses a formal parameter list, defaults, patterns and a rest parameter included.</summary>
+    /// <remarks>
+    /// <b>A rest parameter ends the list</b>, and breaking rather than looping again is what makes
+    /// <c>f(...a, b)</c> answer "`)` was expected" at <c>,</c> instead of silently accepting a
+    /// parameter after the one that takes everything.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=202F04
     // Broiler-Human:        PENDING
-    private System.Collections.Generic.List<string> ParseParameters()
+    private System.Collections.Generic.List<JsParameter> ParseParameters()
     {
-        var parameters = new System.Collections.Generic.List<string>();
+        var parameters = new System.Collections.Generic.List<JsParameter>();
         Expect(SliceTokenKind.OpenParen, "(");
 
-        while (Current.Kind != SliceTokenKind.CloseParen && Current.Kind != SliceTokenKind.EndOfSource)
+        while (Current.Kind != SliceTokenKind.CloseParen &&
+            Current.Kind != SliceTokenKind.EndOfSource &&
+            diagnostics.Count == 0)
         {
+            var span = Span();
+
             if (Current.Kind == SliceTokenKind.DotDotDot)
             {
-                Refuse(Span(), "a rest parameter");
-                return parameters;
+                Advance();
+                parameters.Add(new JsParameter(span, ParseBindingTarget(), null, IsRest: true));
+                break;
             }
 
-            if (Current.Kind is SliceTokenKind.OpenBracket or SliceTokenKind.OpenBrace)
-            {
-                Refuse(Span(), "a destructuring parameter");
-                return parameters;
-            }
-
-            parameters.Add(BindingName());
+            var target = ParseBindingTarget();
+            JsExpression? initialiser = null;
 
             if (Current.Kind == SliceTokenKind.Equals)
             {
-                Refuse(Span(), "a parameter default");
-                return parameters;
+                Advance();
+                initialiser = ParseAssignment();
             }
+
+            parameters.Add(new JsParameter(span, target, initialiser, IsRest: false));
 
             if (Current.Kind != SliceTokenKind.Comma)
             {
@@ -781,12 +823,197 @@ internal sealed class JsParser
         return parameters;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=02ADFD
+    /// <summary>Parses one binding pattern: <c>[…]</c> or <c>{…}</c> where a NAME is bound.</summary>
+    /// <remarks>
+    /// <b>This is the declaration half of destructuring and its leaves are names, not
+    /// references.</b> <c>var [o.x] = y</c> is a syntax error while <c>[o.x] = y</c> is an ordinary
+    /// assignment, and the difference is which of the two entry points the pattern came through:
+    /// this one, or the reinterpretation in <see cref="ToPattern"/>. Sharing the tree and splitting
+    /// the entry points is what keeps that rule in one place each.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=810915
+    // Broiler-Human:        PENDING
+    private JsPattern ParseBindingPattern()
+    {
+        var span = Span();
+
+        // A PATTERN NESTS WITHOUT PASSING THROUGH ParseAssignment, so the depth guard every other
+        // recursive production borrows from `Enter` does not cover it. `var [[[[…]]]] = x` would
+        // recurse here until the parser's own stack ran out, which is a process termination rather
+        // than a refusal.
+        if (!EnterNesting())
+        {
+            return new JsTargetPattern(span, new JsIdentifier(span, "#invalid"));
+        }
+
+        try
+        {
+            return Current.Kind == SliceTokenKind.OpenBracket
+                ? ParseArrayBindingPattern(span)
+                : ParseObjectBindingPattern(span);
+        }
+        finally
+        {
+            depth--;
+        }
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=A55543
+    // Broiler-Human:        PENDING
+    private JsPattern ParseArrayBindingPattern(SliceSourceSpan span)
+    {
+        Expect(SliceTokenKind.OpenBracket, "[");
+        var elements = new System.Collections.Generic.List<JsPatternElement?>();
+        JsPattern? rest = null;
+
+        while (Current.Kind != SliceTokenKind.CloseBracket &&
+            Current.Kind != SliceTokenKind.EndOfSource &&
+            diagnostics.Count == 0)
+        {
+            if (Current.Kind == SliceTokenKind.Comma)
+            {
+                Advance();
+                elements.Add(null);
+                continue;
+            }
+
+            if (Current.Kind == SliceTokenKind.DotDotDot)
+            {
+                Advance();
+                rest = ParseBindingTarget();
+                break;
+            }
+
+            elements.Add(ParseBindingElement());
+
+            if (Current.Kind != SliceTokenKind.Comma)
+            {
+                break;
+            }
+
+            Advance();
+        }
+
+        Expect(SliceTokenKind.CloseBracket, "]");
+        return new JsArrayPattern(span, elements, rest);
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=43342A
+    // Broiler-Human:        PENDING
+    private JsPattern ParseObjectBindingPattern(SliceSourceSpan span)
+    {
+        Expect(SliceTokenKind.OpenBrace, "{");
+        var properties = new System.Collections.Generic.List<JsPatternProperty>();
+        JsPattern? rest = null;
+
+        while (Current.Kind != SliceTokenKind.CloseBrace &&
+            Current.Kind != SliceTokenKind.EndOfSource &&
+            diagnostics.Count == 0)
+        {
+            if (Current.Kind == SliceTokenKind.DotDotDot)
+            {
+                Advance();
+                rest = ParseBindingTarget();
+                break;
+            }
+
+            var entrySpan = Span();
+            var keyToken = Current;
+            var key = PropertyKey(out var computed);
+
+            if (Current.Kind == SliceTokenKind.Colon)
+            {
+                Advance();
+                properties.Add(new JsPatternProperty(entrySpan, key, computed, ParseBindingElement()));
+            }
+            else
+            {
+                if (computed is not null ||
+                    keyToken.Kind is SliceTokenKind.StringLiteral or SliceTokenKind.NumericLiteral)
+                {
+                    Refuse(
+                        entrySpan,
+                        SliceSourceDiagnosticCode.ExpectedToken,
+                        "`:` was expected and `" + Describe(Current) + "` was found");
+                }
+                else if (!IsIdentifierName(keyToken.Kind))
+                {
+                    // A SHORTHAND'S KEY IS ALSO ITS BINDING NAME, so a word this goal or this
+                    // strictness reserves is answered for as a reserved word - the same answer
+                    // `BindingName` gives one step away - and not as a missing colon. The
+                    // difference is not cosmetic: `"use strict"; var { yield } = {};` is a test
+                    // about the reservation, and a missing-colon diagnostic scores it as a failure
+                    // rather than as the syntax error it asked for.
+                    Refuse(
+                        entrySpan,
+                        SliceSourceDiagnosticCode.ReservedWordAsBinding,
+                        "`" + Describe(keyToken) + "` is not a binding name");
+                }
+
+                JsExpression? initialiser = null;
+
+                if (Current.Kind == SliceTokenKind.Equals)
+                {
+                    Advance();
+                    initialiser = ParseAssignment();
+                }
+
+                properties.Add(new JsPatternProperty(
+                    entrySpan,
+                    key,
+                    null,
+                    new JsPatternElement(
+                        entrySpan,
+                        new JsTargetPattern(entrySpan, new JsIdentifier(entrySpan, key)),
+                        initialiser)));
+            }
+
+            if (Current.Kind != SliceTokenKind.Comma)
+            {
+                break;
+            }
+
+            Advance();
+        }
+
+        Expect(SliceTokenKind.CloseBrace, "}");
+        return new JsObjectPattern(span, properties, rest);
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7732DD
+    // Broiler-Human:        PENDING
+    private JsPatternElement ParseBindingElement()
+    {
+        var span = Span();
+        var target = ParseBindingTarget();
+        JsExpression? initialiser = null;
+
+        if (Current.Kind == SliceTokenKind.Equals)
+        {
+            Advance();
+            initialiser = ParseAssignment();
+        }
+
+        return new JsPatternElement(span, target, initialiser);
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F338BC
+    // Broiler-Human:        PENDING
+    private JsPattern ParseBindingTarget()
+    {
+        var span = Span();
+
+        return Current.Kind is SliceTokenKind.OpenBracket or SliceTokenKind.OpenBrace
+            ? ParseBindingPattern()
+            : new JsTargetPattern(span, new JsIdentifier(span, BindingName()));
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B71F5D
     // Broiler-Human:        PENDING
     private JsFunctionNode ParseFunctionBody(
         SliceSourceSpan span,
         string name,
-        System.Collections.Generic.List<string> parameters,
+        System.Collections.Generic.List<JsParameter> parameters,
         bool isArrow)
     {
         var outer = strict;
@@ -1040,7 +1267,7 @@ internal sealed class JsParser
         return new JsSequenceExpression(span, all);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5C8235
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=2C219A
     // Broiler-Human:        PENDING
     private JsExpression ParseAssignment(bool noIn = false)
     {
@@ -1066,16 +1293,26 @@ internal sealed class JsParser
                     ? SliceTokenKind.Equals
                     : CompoundOperator(Current.RawText);
 
+                // `[a, b] = c` IS A DESTRUCTURING ASSIGNMENT, and nothing before the `=` could
+                // have said so: the left-hand side was read as an array literal because that is
+                // the only thing it could have been so far. This is where the cover grammar is
+                // resolved, and it is the only place a literal turns into a pattern.
                 if (target is JsArrayLiteral or JsObjectLiteral)
                 {
-                    // `[a, b] = c` IS A DESTRUCTURING ASSIGNMENT, which this manifest does not
-                    // admit - and calling it an invalid assignment target said the program was
-                    // wrong when the program is fine and this front end is the one that is
-                    // narrow. The two answers differ in their diagnostic code, which is what the
-                    // conformance runner grades the manifest boundary on.
-                    Refuse(span, "a destructuring assignment");
+                    if (op != SliceTokenKind.Equals)
+                    {
+                        Refuse(
+                            span,
+                            SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+                            "a destructuring assignment has no compound form");
+                    }
+
+                    Advance();
+                    return new JsDestructuringAssignment(
+                        span, ToPattern(target), ParseAssignment(noIn));
                 }
-                else if (target is not JsIdentifier and not JsMemberExpression and
+
+                if (target is not JsIdentifier and not JsMemberExpression and
                     not JsSuperMemberExpression)
                 {
                     Refuse(
@@ -1144,7 +1381,7 @@ internal sealed class JsParser
     /// expression and allocates nothing, so a source with many parenthesised expressions costs a
     /// bracket count each and not a speculative parse.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7ACBBC
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=63C31E
     // Broiler-Human:        PENDING
     private bool TryParseArrow(SliceSourceSpan span, out JsExpression arrow)
     {
@@ -1169,7 +1406,15 @@ internal sealed class JsParser
                 return false;
             }
 
-            var single = new System.Collections.Generic.List<string> { Current.RawText };
+            var single = new System.Collections.Generic.List<JsParameter>
+            {
+                new(
+                    span,
+                    new JsTargetPattern(span, new JsIdentifier(span, Current.RawText)),
+                    null,
+                    IsRest: false),
+            };
+
             Advance();
             Advance();
             arrow = ParseArrowBody(span, single);
@@ -1256,10 +1501,10 @@ internal sealed class JsParser
         return tokens[scan].Kind == SliceTokenKind.EqualsGreaterThan;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7A5DA0
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=E75ED1
     // Broiler-Human:        PENDING
     private JsExpression ParseArrowBody(
-        SliceSourceSpan span, System.Collections.Generic.List<string> parameters)
+        SliceSourceSpan span, System.Collections.Generic.List<JsParameter> parameters)
     {
         if (Current.Kind == SliceTokenKind.OpenBrace)
         {
@@ -1646,7 +1891,7 @@ internal sealed class JsParser
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=0E7AC7
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=FD5C14
     // Broiler-Human:        PENDING
     private System.Collections.Generic.List<JsExpression> ParseArguments()
     {
@@ -1659,11 +1904,14 @@ internal sealed class JsParser
         {
             if (Current.Kind == SliceTokenKind.DotDotDot)
             {
-                Refuse(Span(), "a spread argument");
-                return arguments;
+                var spreadSpan = Span();
+                Advance();
+                arguments.Add(new JsSpreadElement(spreadSpan, ParseAssignment()));
             }
-
-            arguments.Add(ParseAssignment());
+            else
+            {
+                arguments.Add(ParseAssignment());
+            }
 
             if (Current.Kind != SliceTokenKind.Comma)
             {
@@ -1825,7 +2073,7 @@ internal sealed class JsParser
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=43DB2A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B37576
     // Broiler-Human:        PENDING
     private JsExpression ParseArrayLiteral()
     {
@@ -1846,11 +2094,14 @@ internal sealed class JsParser
 
             if (Current.Kind == SliceTokenKind.DotDotDot)
             {
-                Refuse(Span(), "a spread element");
-                break;
+                var spreadSpan = Span();
+                Advance();
+                elements.Add(new JsSpreadElement(spreadSpan, ParseAssignment()));
             }
-
-            elements.Add(ParseAssignment());
+            else
+            {
+                elements.Add(ParseAssignment());
+            }
 
             if (Current.Kind != SliceTokenKind.Comma)
             {
@@ -1890,7 +2141,7 @@ internal sealed class JsParser
         return new JsObjectLiteral(span, entries);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=190FFE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B746E9
     // Broiler-Human:        PENDING
     private JsObjectEntry ParseObjectEntry()
     {
@@ -1898,9 +2149,10 @@ internal sealed class JsParser
 
         if (Current.Kind == SliceTokenKind.DotDotDot)
         {
-            Refuse(span, "a spread property");
             Advance();
-            return new JsObjectEntry(span, JsPropertyKind.Init, string.Empty, null, new JsNullLiteral(span));
+
+            return new JsObjectEntry(
+                span, JsPropertyKind.Spread, string.Empty, null, ParseAssignment());
         }
 
         // A METHOD MODIFIER IS NOT A PROPERTY KEY. `{ *m() {} }` and `{ async m() {} }` reached
@@ -1944,6 +2196,7 @@ internal sealed class JsParser
                 IsMethod: true);
         }
 
+        var keyToken = Current;
         var key = PropertyKey(out var computed);
 
         if (Current.Kind == SliceTokenKind.OpenParen)
@@ -1965,6 +2218,25 @@ internal sealed class JsParser
             // A shorthand property: `{ x }` is `{ x: x }`, and the key is a name in scope.
             return new JsObjectEntry(
                 span, JsPropertyKind.Init, key, computed, new JsIdentifier(span, key));
+        }
+
+        // `{ a = 1 }` IS NOT AN OBJECT LITERAL AND MAY STILL BE A LEGAL PROGRAM. It is the cover
+        // grammar of `({ a = 1 } = o)`, and whether this brace is a literal or a pattern is not
+        // settled until the token after the closing one. Refusing it here would refuse the
+        // assignment too; the entry is marked instead and the LOWERING refuses whichever of these
+        // reached it, which is exactly the set that was never reinterpreted.
+        if (Current.Kind == SliceTokenKind.Equals && computed is null && IsIdentifierName(keyToken.Kind))
+        {
+            Advance();
+
+            return new JsObjectEntry(
+                span,
+                JsPropertyKind.Init,
+                key,
+                null,
+                new JsAssignmentExpression(
+                    span, SliceTokenKind.Equals, new JsIdentifier(span, key), ParseAssignment()),
+                Cover: true);
         }
 
         Expect(SliceTokenKind.Colon, ":");
@@ -2429,6 +2701,129 @@ internal sealed class JsParser
         return value;
     }
 
+    // ---- the cover grammar ---------------------------------------------------------------------
+
+    /// <summary>
+    /// Reinterprets an already-parsed literal as the assignment pattern it turned out to be.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Reinterpretation rather than a speculative parse, and the choice is forced.</b>
+    /// <c>[a, b]</c> and <c>[a, b] = c</c> are the same characters until the <c>=</c>, and no
+    /// bounded lookahead settles it: the left-hand side can be arbitrarily long and can contain
+    /// arbitrary expressions. Parsing it twice would mean an unbounded re-parse and a source with
+    /// nested literals could make it quadratic. So it is parsed once as a literal and rewritten in
+    /// place, which is exactly what the specification's cover grammar prescribes.
+    /// </para>
+    /// <para>
+    /// <b>The leaves an ASSIGNMENT pattern admits are wider than a declaration's</b> - <c>o.x</c>
+    /// and <c>a[i]</c> are references and are legal here - which is why this is a separate entry
+    /// point from <see cref="ParseBindingPattern"/> rather than a flag on it.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9DE154
+    // Broiler-Human:        PENDING
+    private JsPattern ToPattern(JsExpression expression)
+    {
+        switch (expression)
+        {
+            case JsArrayLiteral array:
+            {
+                var elements = new System.Collections.Generic.List<JsPatternElement?>();
+                JsPattern? rest = null;
+
+                for (var index = 0; index < array.Elements.Count; index++)
+                {
+                    var element = array.Elements[index];
+
+                    if (element is null)
+                    {
+                        elements.Add(null);
+                        continue;
+                    }
+
+                    if (element is JsSpreadElement spread)
+                    {
+                        if (index != array.Elements.Count - 1)
+                        {
+                            Refuse(
+                                spread.Span,
+                                SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+                                "a rest element is admitted only as the last element of a pattern");
+                        }
+
+                        rest = ToPattern(spread.Argument);
+                        continue;
+                    }
+
+                    elements.Add(ToPatternElement(element));
+                }
+
+                return new JsArrayPattern(array.Span, elements, rest);
+            }
+
+            case JsObjectLiteral literal:
+            {
+                var properties = new System.Collections.Generic.List<JsPatternProperty>();
+                JsPattern? rest = null;
+
+                for (var index = 0; index < literal.Entries.Count; index++)
+                {
+                    var entry = literal.Entries[index];
+
+                    if (entry.Kind == JsPropertyKind.Spread)
+                    {
+                        if (index != literal.Entries.Count - 1)
+                        {
+                            Refuse(
+                                entry.Span,
+                                SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+                                "a rest property is admitted only as the last entry of a pattern");
+                        }
+
+                        rest = ToPattern(entry.Value);
+                        continue;
+                    }
+
+                    if (entry.Kind != JsPropertyKind.Init)
+                    {
+                        Refuse(
+                            entry.Span,
+                            SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+                            "an accessor is not an assignment target");
+
+                        continue;
+                    }
+
+                    properties.Add(new JsPatternProperty(
+                        entry.Span, entry.Key, entry.Computed, ToPatternElement(entry.Value)));
+                }
+
+                return new JsObjectPattern(literal.Span, properties, rest);
+            }
+
+            case JsIdentifier:
+            case JsMemberExpression:
+                return new JsTargetPattern(expression.Span, expression);
+
+            default:
+                Refuse(
+                    expression.Span,
+                    SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+                    "the left-hand side of a destructuring assignment is not a reference");
+
+                return new JsTargetPattern(expression.Span, expression);
+        }
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7DE10D
+    // Broiler-Human:        PENDING
+    private JsPatternElement ToPatternElement(JsExpression expression) =>
+        expression is JsAssignmentExpression { Operator: SliceTokenKind.Equals } assignment
+            ? new JsPatternElement(
+                expression.Span, ToPattern(assignment.Target), assignment.Value)
+            : new JsPatternElement(expression.Span, ToPattern(expression), null);
+
     // ---- token plumbing ------------------------------------------------------------------------
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=0ABBA3
@@ -2515,6 +2910,29 @@ internal sealed class JsParser
                 " levels these parse options allow");
 
         refusal = new JsEmptyStatement(span);
+        return false;
+    }
+
+    /// <summary>The same nesting guard <see cref="Enter"/> applies, for a production with no node.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9C3B5D
+    // Broiler-Human:        PENDING
+    private bool EnterNesting()
+    {
+        depth++;
+
+        if (depth <= options.MaximumNestingDepth)
+        {
+            return true;
+        }
+
+        depth--;
+
+        Refuse(
+            Span(),
+            SliceSourceDiagnosticCode.NestingTooDeep,
+            "the source nests deeper than the " + options.MaximumNestingDepth +
+                " levels these parse options allow");
+
         return false;
     }
 

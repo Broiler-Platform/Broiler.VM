@@ -332,7 +332,7 @@ internal sealed partial class JsRealm
     /// iteration stops early. Copying the elements first would be easier and would be a different
     /// program.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BD69E5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=DB444D
     // Broiler-Human:        PENDING
     private void SetupIterators()
     {
@@ -360,6 +360,12 @@ internal sealed partial class JsRealm
 
         ArrayPrototype.SetOwnSymbol(
             IteratorSymbol, JsProperty.Data(JsValue.Object(arrayValues), JsPropertyAttributes.BuiltIn));
+
+        // ONE FUNCTION OBJECT UNDER BOTH KEYS AND IN THE FIELD, because
+        // `Array.prototype.values === Array.prototype[Symbol.iterator]` is a fact programs test
+        // for, and because an `arguments` object is given this same intrinsic rather than whatever
+        // `Array.prototype` happens to carry when it is built.
+        arrayIterator = JsValue.Object(arrayValues);
 
         // A STRING ITERATES BY CODE POINT AND NOT BY CODE UNIT, which is the one place the language
         // treats a surrogate pair as one thing. Every index this profile exposes elsewhere is a code

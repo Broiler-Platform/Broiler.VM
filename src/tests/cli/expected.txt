@@ -16,6 +16,60 @@ runs/a-boolean.js|0|true
 runs/a-loop-that-ends.js|0|45
 --module runs/a-module-goal-program.js|0|3
 
+# THE FAMILIES JSW-5 MOVED FROM REFUSED TO ADMITTED, one row per family, and every value here was
+# taken from the comparison engine rather than reasoned out: the file is handed to `node -p`, which
+# prints the value of its last expression the same way this host prints a completion value.
+runs/a-parameter-default.js|0|a-a- a+a+ a-z 1
+runs/a-rest-parameter.js|0|1:0::true 1:2:2,3:true 1
+runs/a-spread-element-and-argument.js|0|1,2,3 1/2/3 a,b 3
+runs/an-object-spread.js|0|{"a":1,"b":3,"c":4} {}
+runs/a-destructuring-declaration.js|0|1 2 5 {"c":3,"d":4} 10 9 0
+runs/a-destructuring-assignment.js|0|2 1 7 8 {"b":9}
+runs/a-destructuring-parameter.js|0|n:2:0,0 n:5:1,2 1
+runs/a-destructuring-catch-parameter.js|0|TypeError/true 3
+runs/a-for-of-over-the-iteration-protocol.js|0|a1,b2,x,y
+
+# `break` and a `throw` from the body each close the iterator, and running out does not - which is
+# the whole of what `IteratorClose` promises and the property a lowering loses first.
+runs/a-for-of-that-closes-its-iterator.js|0|next,closed,next,closed,RangeError
+
+# FOUR DEFECTS THE FAMILIES ABOVE UNCOVERED, pinned as regressions rather than as features, and
+# none of them needs any of those families to reproduce. Two were refused by this component's own
+# verifier on bytes this component produced - the internal-consistency failure JSW-1 exists for -
+# and one aborted the invocation; reverting those repairs puts their rows back to exit 4, exit 4
+# and exit 7. The last is the one worth reading: it compiled, it VERIFIED, and it answered the
+# wrong value, which is the failure a stack-height check cannot see.
+runs/an-array-literal-with-a-hole.js|0|3 false undefined 2
+runs/two-parameters-with-one-name.js|0|2/undefined/2
+runs/a-closure-in-a-for-of-body.js|0|1,2,3
+runs/a-return-from-a-catch-inside-a-finally.js|0|caught/finalised
+
+# AND THE TWO POSITIONS THE OTHER SIDE OF THIS MERGE TURNED FROM REFUSALS INTO COMPOSITIONS. Each
+# was a `refused/` row asserting that a still-excluded family was named where a newly opened
+# expression position let it appear; both families are admitted now, so each row checks the
+# composition instead. Both values are the comparison engine's.
+runs/a-class-in-a-parameter-default.js|0|default/named
+runs/a-template-literal-in-a-spread-argument.js|0|a-b-c 2
+
+# AND THE REFUSALS THE SAME CHANGE PUT AT RISK. Admitting a family opens expression positions that
+# did not exist before - a parameter default, a pattern default, the source of a `for … of`, the
+# argument of a spread - and a family that stayed out has to be refused BY NAME in each of them.
+# 2104 is the code the conformance runner grades the manifest boundary on; anything else scores a
+# negative test expecting a syntax error as a false pass.
+#
+# TWO OF THESE ROWS NAMED A FAMILY THAT IS NO LONGER OUT. The class and the template literal were
+# both outside the manifest when the parameter-default bundle was written and are inside it now,
+# so a row asserting they are refused asserts something false. They are not deleted: each moved to
+# `runs/` above, where it checks the composition the two changes make possible instead - which is
+# the position the refusal was guarding, still covered, from the other side.
+refused/a-generator-in-a-for-of-source.js|3|2104:ConstructOutsideManifest
+refused/an-async-arrow-in-a-pattern-default.js|3|2104:ConstructOutsideManifest
+
+# AND ONE THAT IS NOT THE MANIFEST'S TO REFUSE. A shorthand's key is also its binding name, so a
+# word strict code reserves is answered for as a reserved word - the syntax error every engine
+# gives - rather than as a construct outside the manifest or as a missing colon.
+refused/a-yield-shorthand-in-a-strict-pattern.js|3|2209:ReservedWordAsBinding
+
 # --check compiles and verifies without running, so it prints no value.
 --check runs/a-product.js|0|
 

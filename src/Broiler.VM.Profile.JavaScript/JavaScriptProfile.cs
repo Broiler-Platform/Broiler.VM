@@ -465,8 +465,8 @@ public static class JavaScriptProfile
         values[(int)VmBudgetDimension.HostCalls] = 4_294_967_295;
         // MEASURED, NOT CHOSEN, AND THE MEASUREMENT IS RECORDED WITH IT. `eng/measure-frame-cost.py`
         // bisects the published binary against a recursion with no base case and finds that this
-        // interpreter survives 8,666 JavaScript calls on the sixteen-megabyte stack
-        // `JsExecution.GuestStackBytes` declares - one call costing 1,936 bytes of native stack,
+        // interpreter survives 21,246 JavaScript calls on the sixty-four-megabyte stack
+        // `JsExecution.GuestStackBytes` declares - one call costing 3,158 bytes of native stack,
         // and costing the same whether the JavaScript frame is narrow or wide, because the operand
         // stack and the environment are heap objects rather than stack ones. The maximum a host may
         // be granted is set at less than half of that, so the CALL-DEPTH CEILING always reaches its
@@ -474,7 +474,10 @@ public static class JavaScriptProfile
         // resource exhaustion naming the dimension rather than by the process dying.
         //
         // This row read 16,384 until the measurement was taken, which is four times what the stack
-        // holds *(corrected: JSC-85)*.
+        // then held *(corrected: JSC-85)*. The per-call cost is the executor's own frame and grew
+        // with the instruction set, so the measurement is retaken whenever opcodes are added; the
+        // figures above are 2026-09-04's, with spread, destructuring, `for … of` and classes all
+        // in the set.
         values[(int)VmBudgetDimension.CallDepth] = 8_192;
         values[(int)VmBudgetDimension.VerifierWork] = 1_099_511_627_776;
         values[(int)VmBudgetDimension.ArtifactBytes] = 536_870_912;
