@@ -248,3 +248,61 @@
      FAIL        test/language/expressions/strict-equals/bigint-and-number.js [strict]  uncaught Error: The result of (0n === 0) is false Expected SameValue(Â«trueÂ», Â«falseÂ») to be true
      FAIL        test/language/expressions/strict-equals/bigint-and-number.js [sloppy]  uncaught Error: The result of (0n === 0) is false Expected SameValue(Â«trueÂ», Â«falseÂ») to be true
 
+## test/language/expressions/template-literal  (exit 1)
+   # test262 57 files: pass 0, fail 2, unsupported 112, skipped 0
+   first failures, at most twenty:
+     FAIL        test/language/expressions/template-literal/mongolian-vowel-separator-eval.js [strict]  uncaught ReferenceError: eval is not defined
+     FAIL        test/language/expressions/template-literal/mongolian-vowel-separator-eval.js [sloppy]  uncaught ReferenceError: eval is not defined
+
+## test/language/future-reserved-words  (exit 1)
+   # test262 55 files: pass 68, fail 17, unsupported 0, skipped 0
+   first failures, at most twenty:
+     FAIL        test/language/future-reserved-words/implements-strict-escaped.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/future-reserved-words/implements-strict.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/future-reserved-words/interface-strict-escaped.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/future-reserved-words/interface-strict.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/future-reserved-words/let-strict-escaped.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/future-reserved-words/let-strict.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/future-reserved-words/package-strict-escaped.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/future-reserved-words/package-strict.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/future-reserved-words/private-strict-escaped.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/future-reserved-words/private-strict.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/future-reserved-words/protected-strict-escaped.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/future-reserved-words/protected-strict.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/future-reserved-words/public-strict-escaped.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/future-reserved-words/public-strict.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/future-reserved-words/static-strict-escaped.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/future-reserved-words/static-strict.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/future-reserved-words/yield-strict-escaped.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+
+## test/language/keywords  (exit 1)
+   # test262 25 files: pass 46, fail 2, unsupported 2, skipped 0
+   first failures, at most twenty:
+     FAIL        test/language/keywords/ident-ref-this.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/keywords/ident-ref-this.js [sloppy]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+
+## test/language/literals  (exit 1)
+   # test262 534 files: pass 484, fail 553, unsupported 0, skipped 0
+   first failures, at most twenty:
+     FAIL        test/language/literals/bigint/exponent-part.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/literals/bigint/exponent-part.js [sloppy]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/literals/bigint/legacy-octal-like-invalid-00n.js [sloppy]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/literals/bigint/legacy-octal-like-invalid-01n.js [sloppy]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/literals/bigint/legacy-octal-like-invalid-07n.js [sloppy]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/literals/bigint/mv-is-not-integer-dil-dot-dds.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/literals/bigint/mv-is-not-integer-dil-dot-dds.js [sloppy]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/literals/bigint/mv-is-not-integer-dot-dds.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/literals/bigint/mv-is-not-integer-dot-dds.js [sloppy]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/literals/bigint/non-octal-like-invalid-0008n.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/literals/bigint/non-octal-like-invalid-0008n.js [sloppy]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/literals/bigint/non-octal-like-invalid-012348n.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/literals/bigint/non-octal-like-invalid-012348n.js [sloppy]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/literals/bigint/non-octal-like-invalid-08n.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/literals/bigint/non-octal-like-invalid-08n.js [sloppy]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/literals/bigint/non-octal-like-invalid-09n.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/literals/bigint/non-octal-like-invalid-09n.js [sloppy]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/literals/bigint/numeric-separators/numeric-separator-literal-bil-bd-nsl-bd-err.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/literals/bigint/numeric-separators/numeric-separator-literal-bil-bd-nsl-bd-err.js [sloppy]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     FAIL        test/language/literals/bigint/numeric-separators/numeric-separator-literal-bil-nsl-bd-dunder-err.js [strict]  expected a parse-phase SyntaxError and it threw at run time: Test262: This statement should not be evaluated.
+     ... and 533 more, all in the run above
+

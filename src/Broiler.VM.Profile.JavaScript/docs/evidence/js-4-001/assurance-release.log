@@ -14,9 +14,9 @@ exit 1
   Broiler.VM.Architecture.Tests -> D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\bin\Release\net10.0\Broiler.VM.Architecture.Tests.dll
 Testlauf für "D:\Broiler.Browser\Broiler.VM\src\tests\Broiler.VM.Architecture.Tests\bin\Release\net10.0\Broiler.VM.Architecture.Tests.dll" (.NETCoreApp,Version=v10.0)
 Insgesamt 1 Testdateien stimmten mit dem angegebenen Muster überein.
-  Fehler Broiler.VM.Architecture.Tests.AssuranceRuleTests.J11_A_Tree_May_Be_Published_Only_When_The_Record_Says_So [32 ms]
+  Fehler Broiler.VM.Architecture.Tests.AssuranceRuleTests.J11_A_Tree_May_Be_Published_Only_When_The_Record_Says_So [48 ms]
   Fehlermeldung:
-   1823 thing(s) block a release of this tree:
+   1829 thing(s) block a release of this tree:
   src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(43): Broiler.VM.VmArtifactDescriptor is HUMAN_PENDING and its human line reads 'PENDING'
   src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(84): Broiler.VM.VmArtifactDescriptor.IsWellFormed is HUMAN_PENDING and its human line reads 'PENDING'
   src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(93): Broiler.VM.VmArtifactDescriptor.Equals(VmArtifactDescriptor) is HUMAN_PENDING and its human line reads 'PENDING'
@@ -73,4 +73,4 @@ Insgesamt 1 Testdateien stimmten mit dem angegebenen Muster überein.
    at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
 
 Fehler!      : Fehler:     1, erfolgreich:   191, übersprungen:     0, gesamt:   192, Dauer: 4 s - Broiler.VM.Architecture.Tests.dll (net10.0)
-[xUnit.net 00:00:04.01]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J11_A_Tree_May_Be_Published_Only_When_The_Record_Says_So [FAIL]
+[xUnit.net 00:00:04.87]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J11_A_Tree_May_Be_Published_Only_When_The_Record_Says_So [FAIL]

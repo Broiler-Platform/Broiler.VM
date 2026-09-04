@@ -162,6 +162,7 @@ rather than a decision record.
 | [JSC-76](#jsc-76) | roadmap section 14 and the conformance composition's `--run` mode | A second mode runs a pinned third-party checkout this repository does not hold, with four verdicts rather than two, because an unadmitted construct is neither a pass nor a failure | the retained runs over named subtrees |
 | [JSC-77](#jsc-77) | `JavaScriptFormat.MaximumFormatVersion`'s own remark | It is the version-1 reader's ceiling and not the descriptor's, and the two are different questions | the descriptor's declared range |
 | [JSC-78](#jsc-78) | the retained corpus manifest's header and roadmap section 7's corpus discipline | One corpus holds entries of two format versions, distinguished by the replay mode column that already distinguished the nine entries bytes alone cannot produce | the regenerated corpus and its replay |
+| [JSC-80](#jsc-80) | roadmap section 9's *strict mode is recognised by the tokenizer and ruled on by the validator*, as JS-3b's ledger row states it | Strictness a CALLER imposes reached the lowering and never the parse, so every strict-only early error was invisible in the one variant that exists to test it | the conformance variant that regressed when an unconditional refusal stopped masking it |
 | [JSC-79](#jsc-79) | roadmap section 8's *`CallDepth` is measured, not chosen*; the gates' lifecycle clause | The interpreter recurses on the CLR stack, so the premise the bound rested on is false - and a conformance case terminated the process before anything refused it | the case that terminated it, and the declared stack that repairs it |
 
 ### JSC-01
@@ -3372,3 +3373,55 @@ that exists does not have one, not that the design was abandoned.
 **Authority and date.** The implementation of 2026-09-04 in this checkout, the conformance case
 that terminated the process, and
 [JSD-0021](decisions/0021-the-wide-bring-up-manifest-and-format-version-2.md). 2026-09-04.
+
+### JSC-80
+
+**Where:** roadmap [section 9](roadmap.md#9-the-semantic-front-end-and-lowering)'s answer that
+strict mode is **recognised** by the tokenizer and **ruled on** by the validator, as JS-3b's row of
+[the ledger](roadmap.status.md) states it.
+
+**What the plan said.** That strictness has two owners and both are inside the front end - the
+tokenizer recognises it, the validator rules on it - and that this is what deletes the seed's source
+re-scans rather than reimplementing them. Nothing in that reading is wrong about a program that
+declares its own strictness in a directive prologue.
+
+**What was actually built.** A third source of strictness that neither owner could see. A caller can
+impose strict mode without the source asking - `JsScriptUnit.ForceStrict` - and a conformance runner
+does exactly that to produce the strict variant of a test flagged `onlyStrict`. **That flag reached
+the LOWERING and never the parse.** The parser's own strictness came from the directive prologue and
+the module goal alone, so a force-strict variant was *parsed as sloppy* and only lowered as strict.
+
+**Why that is not a detail.** Strict mode changes the **grammar**, not only the semantics. `yield`
+becomes a reserved word; a legacy octal literal becomes a syntax error. Both are **early** errors,
+and an early error is precisely what a lowering never gets to see, because the parse it would have
+had to fail has already succeeded. So every strict-only early error was invisible in the one variant
+that exists to test it, and the profile answered a whole class of conformance cases by running a
+program the language says must not parse.
+
+**How it was found, which is the part worth keeping.** It was found by a REGRESSION, and only
+because something else was repaired first. `await` and `yield` had been refused unconditionally as
+constructs outside the manifest - wrong, since both are contextual keywords and `var await = 1` is
+an ordinary program in a script. Admitting them where the language admits them made one conformance
+case go from pass to fail: a test asserting that `yield` is a reserved word **in strict code**,
+which had been passing because the refusal fired regardless of strictness. **The unconditional
+refusal had been standing in for the missing rule and hiding its absence**, and the figure it
+produced was right for the wrong reason. No audit of refusals could have found this; only making
+one of them conditional could.
+
+**What replaced it.** Strictness imposed by a caller now reaches the parse, and the parser states
+the invariant it always relied on: nothing turns strictness off. A prologue can add it, the module
+goal can add it, and a caller that imposed it keeps it - so an inner function without a directive
+cannot undo an outer one that has it, and cannot undo the caller either.
+
+**What is still open, stated rather than implied.** The strict-only early errors this reaches are
+the ones the front end already knew how to report - a reserved word as a binding, and a legacy
+octal. **The rest of strict mode's early errors are not implemented and this does not implement
+them**: duplicate parameter names, `delete` of an unqualified name, `with`, assignment to an
+undeclared name at parse time, and octal escapes in strings are each their own rule, and none of
+them is written. What changed is that strictness is now *knowable* at parse; what is not claimed is
+that everything knowable is checked.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, and the conformance
+variant `test/language/future-reserved-words/yield-strict.js`, whose movement in both directions is
+in [Bundle JS-4-001](evidence/js-4-001/README.md).
+

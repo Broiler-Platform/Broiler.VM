@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   56
-// Annotated:        56/56
+// Relevant units:   57
+// Annotated:        57/57
 // Exempt:           7
-// Human-reviewed:   0/56
+// Human-reviewed:   0/57
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  2/10 max
-// Unverified:       56
+// Unverified:       57
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -81,12 +81,24 @@ internal sealed class JsParser
     private bool strict;
 
     /// <summary>Creates a parser over an already-tokenized source.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=833613
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9D7915
     // Broiler-Human:        PENDING
-    internal JsParser(SliceToken[] stream, SliceParseOptions parseOptions)
+    /// <param name="stream">The tokens to read.</param>
+    /// <param name="parseOptions">The goal and the ceilings this parse is held to.</param>
+    /// <param name="forceStrict">
+    /// <b>Strictness the caller imposes rather than the source declaring it</b>, which is what a
+    /// conformance runner does to produce the strict variant of a test. It has to reach the PARSE
+    /// and not only the lowering, because strict mode changes the GRAMMAR: <c>yield</c> becomes a
+    /// reserved word, a legacy octal literal becomes a syntax error, and both are early errors a
+    /// lowering never gets to see because the parse already succeeded. Until 2026-09-04 this flag
+    /// reached the lowering only, so every strict-only early error was invisible in exactly the
+    /// variant that exists to test it.
+    /// </param>
+    internal JsParser(SliceToken[] stream, SliceParseOptions parseOptions, bool forceStrict = false)
     {
         tokens = stream;
         options = parseOptions;
+        strict = forceStrict;
     }
 
     /// <summary>Every refusal this pass produced, in source order.</summary>
@@ -111,6 +123,10 @@ internal sealed class JsParser
         {
             strict = true;
         }
+
+        // NOTHING TURNS STRICTNESS OFF. A directive prologue can only add it, the module goal can
+        // only add it, and a caller that imposed it keeps it - so a `"use strict"` inside a
+        // function cannot be undone by an inner function without one, and neither can this.
 
         var body = new System.Collections.Generic.List<JsStatement>();
 
@@ -652,7 +668,7 @@ internal sealed class JsParser
 
     // ---- functions -----------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=E2A717
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=30402D
     // Broiler-Human:        PENDING
     private JsFunctionNode ParseFunctionRest(SliceSourceSpan span, bool declaration)
     {
@@ -664,8 +680,7 @@ internal sealed class JsParser
 
         var name = string.Empty;
 
-        if (Current.Kind is SliceTokenKind.Identifier or SliceTokenKind.Get or SliceTokenKind.Set or
-            SliceTokenKind.Of or SliceTokenKind.Async or SliceTokenKind.Static or SliceTokenKind.Let)
+        if (IsIdentifierName(Current.Kind))
         {
             name = Current.RawText;
             Advance();
@@ -826,6 +841,42 @@ internal sealed class JsParser
             depth--;
         }
     }
+
+    /// <summary>
+    /// Answers whether a token is a name this goal and this strictness admit as an identifier.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b><c>await</c> and <c>yield</c> are CONTEXTUAL and were treated as unconditional
+    /// keywords.</b> The tokenizer gives each its own kind, which is right, and the parser then
+    /// refused both everywhere, which is not: <c>var await = 1;</c> is an ordinary program in a
+    /// script and every engine runs it. Refusing it said this manifest does not admit a construct
+    /// when the construct is an identifier the manifest admits perfectly well.
+    /// </para>
+    /// <para>
+    /// <b>Where they ARE reserved, the answer is a syntax error and not a manifest refusal</b>, and
+    /// the difference matters to the conformance runner. <c>await</c> is reserved in a module and
+    /// ordinary in a script; <c>yield</c> is reserved in strict code and ordinary in sloppy. A test
+    /// asserting either of those reservations is a test this profile can pass rather than one it
+    /// has to decline, and it now passes for the reason the test names.
+    /// </para>
+    /// <para>
+    /// Neither can be an OPERATOR in anything this manifest admits, because it admits no async
+    /// function and no generator. So <c>await x</c> in a script is two identifiers in a row, which
+    /// is the syntax error every engine reports it as, and no refusal by name is owed for it.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=937960
+    // Broiler-Human:        PENDING
+    private bool IsIdentifierName(SliceTokenKind kind) => kind switch
+    {
+        SliceTokenKind.Identifier or SliceTokenKind.Get or SliceTokenKind.Set or
+            SliceTokenKind.Of or SliceTokenKind.Async or SliceTokenKind.Static or
+            SliceTokenKind.Let => true,
+        SliceTokenKind.Await => options.Goal != SliceGoal.Module,
+        SliceTokenKind.Yield => !strict,
+        _ => false,
+    };
 
     /// <summary>
     /// Recognises an arrow function, which the grammar cannot see coming from its first token.
@@ -1052,7 +1103,7 @@ internal sealed class JsParser
         _ => 0,
     };
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=FC8000
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=50D392
     // Broiler-Human:        PENDING
     private JsExpression ParseUnary()
     {
@@ -1080,12 +1131,6 @@ internal sealed class JsParser
                 Advance();
                 return new JsUpdateExpression(span, op, ParseUnary(), Prefix: true);
             }
-
-            case SliceTokenKind.Await:
-                return OutsideExpression(span, "`await`");
-
-            case SliceTokenKind.Yield:
-                return OutsideExpression(span, "`yield`");
 
             default:
                 return ParsePostfix();
@@ -1236,7 +1281,7 @@ internal sealed class JsParser
         return arguments;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=58FF1A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=1C93C8
     // Broiler-Human:        PENDING
     private JsExpression ParsePrimary()
     {
@@ -1296,13 +1341,26 @@ internal sealed class JsParser
             case SliceTokenKind.Import when Peek(1).Kind == SliceTokenKind.Dot:
                 return OutsideExpression(span, "`import.meta`");
 
-            // `await` and `yield` are refused as operators by ParseUnary, which the callee of a
-            // `new` never reaches: `new await(1)` goes to ParseMemberOnly and lands here.
-            case SliceTokenKind.Await:
-                return OutsideExpression(span, "`await`");
+            case SliceTokenKind.Await when options.Goal != SliceGoal.Module:
+            case SliceTokenKind.Yield when !strict:
+                Advance();
+                return new JsIdentifier(span, token.RawText);
 
+            // RESERVED HERE, ORDINARY THERE. Where the goal and the strictness make one of these
+            // a reserved word, the honest answer is the syntax error every engine gives and NOT a
+            // construct-outside-the-manifest refusal: the manifest is not what forbids it.
+            case SliceTokenKind.Await:
             case SliceTokenKind.Yield:
-                return OutsideExpression(span, "`yield`");
+            {
+                Refuse(
+                    span,
+                    SliceSourceDiagnosticCode.ReservedWordAsBinding,
+                    "`" + token.RawText + "` is a reserved word " +
+                        (token.Kind == SliceTokenKind.Await ? "in a module" : "in strict code"));
+
+                Advance();
+                return new JsNullLiteral(span);
+            }
 
             case SliceTokenKind.Identifier:
             case SliceTokenKind.Get:
@@ -1548,14 +1606,13 @@ internal sealed class JsParser
         return token.RawText;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=0AFB70
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3664C9
     // Broiler-Human:        PENDING
     private string BindingName()
     {
         var token = Current;
 
-        if (token.Kind is SliceTokenKind.Identifier or SliceTokenKind.Get or SliceTokenKind.Set or
-            SliceTokenKind.Of or SliceTokenKind.Async or SliceTokenKind.Static or SliceTokenKind.Let)
+        if (IsIdentifierName(token.Kind))
         {
             Advance();
             return token.RawText;
