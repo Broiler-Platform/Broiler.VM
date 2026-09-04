@@ -15,71 +15,142 @@
 # stack overflow is the one failure the CLR cannot turn into an exception, so a probe that asked
 # "would one more frame fit" could only answer by dying.
 #
-# So the measurement is made from OUTSIDE, by bisection over the published binary:
+# So the measurement is made from OUTSIDE, by bisection over the published binary, one child process
+# per trial, with the question "did it answer, or did it die".
 #
-#   * a recursion with no base case, `src/tests/cli/limits/an-unbounded-recursion.js`;
-#   * the `--call-depth` ceiling raised one step at a time;
-#   * for each ceiling, one child process, and the question "did it answer, or did it die".
+# THERE ARE TWO DEPTHS AND THEY ARE NOT THE SAME NUMBER. That is the finding this script exists to
+# keep visible:
 #
-# An answer is a named resource exhaustion on `CallDepth` - the outcome roadmap section 8 requires
-# and which JSC-79 records the profile once failing to give. A death is a stack overflow: the .NET
-# runtime prints `Stack overflow.` and terminates, and no exit code a caller reads means anything
-# after that. The largest ceiling that still ANSWERS is the deepest recursion this build survives,
-# and the declared guest stack divided by it is the per-frame cost.
+#   * how deep a recursion can go and RETURN; and
+#   * how deep a recursion can go and THROW, with the exception unwinding to a handler above it.
 #
-# WHAT THE NUMBER IS NOT. It is not a per-frame cost for a different program: a frame's size depends
-# on the operand stack the verifier computed for the unit, so a function with a wider expression
-# costs more. The recursion here is the SMALLEST frame this interpreter has, so the figure is a
-# LOWER bound on the cost and therefore an UPPER bound on the safe depth. A bound derived from it
-# must leave margin, and the margin belongs in the record beside the figure rather than in a
-# reader's head.
+# The second was an eighth of the first until 2026-09-04. A frame with a `catch` that rethrows is
+# entered during the runtime's second pass, so a throw crossing a thousand interpreter frames
+# accumulated a thousand funclets and their dispatchers and the process died - on a stack that holds
+# eight thousand ordinary calls. The executor catches by FILTER now, which runs in the first pass and
+# does not unwind per frame, and the two depths agree *(JSC-97)*. A build where they diverge again
+# has the same defect back, and this script is how that is noticed.
+#
+# WHAT THE NUMBERS ARE NOT. They are bounded ABOVE by the engine's own `MaximumCallDepth`, which
+# answers with a catchable `RangeError` rather than dying, and by the profile's declared call-depth
+# maximum, which the core holds a caller to. So what this reports is the smaller of the real capacity
+# and the declared bound - which is the right thing to report for a released build, and is NOT a
+# measurement of the stack. Measuring the raw capacity means lifting both bounds in a build of your
+# own; the figures that arrangement produced on 2026-09-04 are recorded in `JsEngine.MaximumCallDepth`
+# beside the bound derived from them.
 #
 #   python3 eng/measure-frame-cost.py [--binary-directory <dir>] [--stack-bytes <n>] [--ceiling <n>]
 
 import argparse
-import os
 import pathlib
 import subprocess
 import sys
+import tempfile
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DEFAULT_BINARY_DIRECTORY = (
     ROOT / "src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0"
 )
-FIXTURE = "limits/an-unbounded-recursion.js"
-CASES = ROOT / "src/tests/cli"
 
 # The stack `JsExecution.GuestStackBytes` declares for one guest invocation. It is stated here
 # rather than read, because a script that read it from the source would agree with the source by
 # construction and would stop being able to notice the two disagreeing.
 DEFAULT_STACK_BYTES = 16 * 1024 * 1024
 
+RETURNING = """function down(n) { return n === 0 ? 0 : down(n - 1); }
+print("answered " + down(%d));
+"""
 
-def answered(binary, ceiling, timeout):
-    """Whether the host ANSWERED at this ceiling, rather than dying."""
+# THE THROWING SHAPE HAS TO TELL ITS OWN EXCEPTION FROM THE BOUND'S. Both arrive at the same
+# `catch`, and a fixture that printed either as an answer would report that every depth completes -
+# which is what the engine's bound firing looks like from inside the program.
+THROWING = """function down(n) { if (n === 0) { throw new Error("here"); } down(n - 1); }
+try { down(%d); print("bounded no-throw"); }
+catch (failure) {
+  print(failure.message === "here" ? "answered " + failure.name : "bounded " + failure.name);
+}
+"""
+
+
+# THE THREE OUTCOMES, AND WHY THEY ARE THREE RATHER THAN TWO. A run that COMPLETED reached the
+# depth it was asked for; a run the engine's bound or the host's ceiling REFUSED did not reach it and
+# is not a failure; a run that DIED is the defect this whole exercise exists to keep out. Folding
+# the middle one into either of the others is what made an earlier version of this script report a
+# per-frame cost derived from a bound rather than from the stack.
+COMPLETED = "completed"
+BOUNDED = "bounded"
+DIED = "died"
+
+
+def outcome(binary, scratch, shape, depth, ceiling, timeout):
+    """What the host did at this recursion depth."""
+    source = scratch / "depth.js"
+    source.write_text(shape % depth, encoding="utf-8")
+
     try:
         done = subprocess.run(
-            [str(binary), FIXTURE, "--call-depth", str(ceiling)],
-            cwd=str(CASES),
-            capture_output=True,
-            text=True,
-            timeout=timeout,
+            [
+                str(binary), str(source), "--quiet",
+                "--call-depth", str(ceiling),
+                "--fuel", "100000000000",
+                "--wall", "600000",
+            ],
+            capture_output=True, text=True, timeout=timeout,
         )
     except subprocess.TimeoutExpired:
-        return False, "timed out"
+        return DIED, "timed out"
 
     both = done.stdout + done.stderr
 
-    if "CeilingReached on CallDepth" in both:
-        return True, "named exhaustion"
+    if both.startswith("answered"):
+        return COMPLETED, "answered"
+
+    if both.startswith("bounded"):
+        return BOUNDED, both.strip().splitlines()[0]
 
     if "Maximum call stack size exceeded" in both:
-        return True, "the engine's own backstop"
+        return BOUNDED, "the engine's own bound"
+
+    if "CeilingReached on CallDepth" in both:
+        return BOUNDED, "the budget ceiling"
 
     if "Stack overflow" in both or done.returncode < 0:
-        return False, "the process terminated"
+        return DIED, "the process terminated"
 
-    return False, f"exit {done.returncode}: {both.strip().splitlines()[-1] if both.strip() else ''}"
+    return DIED, f"exit {done.returncode}: {both.strip().splitlines()[-1] if both.strip() else ''}"
+
+
+def deepest(binary, scratch, shape, ceiling, timeout, label):
+    """The deepest recursion of this shape that COMPLETES, and what stopped it going deeper."""
+    low, high = 1, ceiling
+    verdict, why = outcome(binary, scratch, shape, low, ceiling, timeout)
+
+    if verdict != COMPLETED:
+        print(f"# {label}: the shallowest recursion did not complete: {why}", file=sys.stderr)
+        return None, verdict
+
+    verdict, why = outcome(binary, scratch, shape, high, ceiling, timeout)
+
+    if verdict == COMPLETED:
+        print(f"# {label}: every depth up to {high} completed")
+        return high, COMPLETED
+
+    # INVARIANT: `low` completed and `high` did not. Every step keeps it, so the loop ends with
+    # `low` the deepest recursion that completes and `high` the shallowest that does not.
+    stopped = verdict
+
+    while high - low > 1:
+        middle = (low + high) // 2
+        verdict, why = outcome(binary, scratch, shape, middle, ceiling, timeout)
+        print(f"#   {label} {middle}: {verdict} ({why})")
+
+        if verdict == COMPLETED:
+            low = middle
+        else:
+            high = middle
+            stopped = verdict
+
+    return low, stopped
 
 
 def main():
@@ -97,40 +168,46 @@ def main():
         return 2
 
     print(f"# measuring against {binary}")
-    print(f"# fixture {FIXTURE}, declared guest stack {arguments.stack_bytes} bytes")
+    print(f"# declared guest stack {arguments.stack_bytes} bytes")
 
-    low, high = 1, arguments.ceiling
-    ok, why = answered(binary, low, arguments.timeout)
+    with tempfile.TemporaryDirectory(prefix="broiler-depth-") as directory:
+        scratch = pathlib.Path(directory)
 
-    if not ok:
-        print(f"# the smallest ceiling already did not answer: {why}", file=sys.stderr)
+        returning, why_returning = deepest(
+            binary, scratch, RETURNING, arguments.ceiling, arguments.timeout, "returning")
+
+        throwing, why_throwing = deepest(
+            binary, scratch, THROWING, arguments.ceiling, arguments.timeout, "throwing")
+
+    if returning is None or throwing is None:
         return 1
 
-    ok, why = answered(binary, high, arguments.timeout)
+    print(f"deepest-returning-recursion {returning}")
+    print(f"stopped-by-returning {why_returning}")
+    print(f"deepest-throwing-recursion {throwing}")
+    print(f"stopped-by-throwing {why_throwing}")
+    print(f"declared-guest-stack-bytes {arguments.stack_bytes}")
 
-    if ok:
-        print(f"# every ceiling up to {high} answered ({why}); nothing to bisect")
-        print(f"deepest-answering-ceiling {high}")
+    if DIED in (why_returning, why_throwing):
+        print("# A RECURSION TERMINATED THE PROCESS, which is the outcome this bound exists against")
+        return 1
+
+    if why_returning == BOUNDED and why_throwing == BOUNDED:
+        print(
+            "# both were stopped by a declared bound and not by the stack, so this run reports what\n"
+            "# the build PROMISES rather than what the stack holds. Lift `MaximumCallDepth` and the\n"
+            "# profile's declared call-depth maximum in a build of your own to measure the capacity.")
+
         return 0
 
-    # INVARIANT: `low` answered and `high` did not. Every step keeps it, so the loop ends with
-    # `low` the deepest ceiling that answers and `high` the shallowest that does not.
-    while high - low > 1:
-        middle = (low + high) // 2
-        ok, why = answered(binary, middle, arguments.timeout)
-        print(f"#   {middle}: {'answered' if ok else 'died'} ({why})")
+    print(f"bytes-per-frame {arguments.stack_bytes / returning:.0f}")
 
-        if ok:
-            low = middle
-        else:
-            high = middle
+    # THE TWO MUST AGREE, or a throw is costing stack a call is not. Reporting it rather than
+    # asserting it is deliberate: this script measures and the acceptance table judges.
+    if abs(returning - throwing) > max(64, returning // 20):
+        print("# THE TWO DEPTHS DISAGREE, so an exception is costing stack a call is not")
+        return 1
 
-    per_frame = arguments.stack_bytes / low
-
-    print(f"deepest-answering-ceiling {low}")
-    print(f"shallowest-dying-ceiling {high}")
-    print(f"declared-guest-stack-bytes {arguments.stack_bytes}")
-    print(f"bytes-per-frame {per_frame:.0f}")
     return 0
 
 

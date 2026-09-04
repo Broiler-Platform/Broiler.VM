@@ -162,15 +162,25 @@ runs/an-indirect-eval.js|0|indirect-eval ok
 runs/an-indirect-eval.js|0|EvalError:true
 runs/an-indirect-eval.js|0|5:2:function
 
-# THE DEPTH A RECURSING PROGRAM IS REFUSED AT, AND THE THING IT MUST NEVER DO. A stack overflow is
-# the one failure the CLR cannot turn into an exception, so nothing downstream could report it;
-# JSC-79 records the day a conformance case terminated the process, and JSC-85 records that the
-# counted bound put in its place was set by an estimate that was wrong in the other direction - the
-# refusal itself needed stack it had spent. The bound is measured now, by
-# `eng/measure-frame-cost.py`, and the profile's declared maximum is short enough that the CEILING
-# always answers first. The third row is the one that matters: a host asking for far more than the
-# profile said it could still gets an answer, because the core holds it to the declared maximum.
-limits/an-unbounded-recursion.js|5|CeilingReached on CallDepth
-limits/a-wide-unbounded-recursion.js|5|CeilingReached on CallDepth
---call-depth 100000 limits/an-unbounded-recursion.js|5|CeilingReached on CallDepth
+# THE DEPTH A RECURSING PROGRAM IS REFUSED AT, AND THE THREE DIFFERENT ANSWERS IT CAN GET.
+#
+# A stack overflow is the one failure the CLR cannot turn into an exception, so nothing downstream
+# could report it; JSC-79 records the day a conformance case terminated the process, JSC-85 records
+# that the counted bound put in its place was set by an estimate wrong in the other direction, and
+# JSC-96 records that the arrangement which replaced it made stack exhaustion an abort no guest
+# could catch - so `try { recurse(); } catch (e) { }`, which real programs write, never ran its own
+# guard. The bound is measured, by `eng/measure-frame-cost.py`, and these four rows are the whole
+# behaviour:
+#
+#   * the ENGINE's bound is the ordinary answer and it is the language's own catchable `RangeError`,
+#     whether the program catches it (row one, exit 0) or not (rows two and three, exit 1);
+#   * a host asking for far more than the profile said it could still gets that answer, because the
+#     engine's bound is about the native stack rather than about policy (row four);
+#   * and a host asking for LESS gets the budget ceiling, which is an abort the guest cannot catch,
+#     because a budget a guest could swallow is not a budget (row five).
+limits/a-recursion-the-program-catches.js|0|RangeError after more than a thousand frames: true
+limits/an-unbounded-recursion.js|1|uncaught RangeError: Maximum call stack size exceeded
+limits/a-wide-unbounded-recursion.js|1|uncaught RangeError: Maximum call stack size exceeded
+--call-depth 100000 limits/an-unbounded-recursion.js|1|uncaught RangeError: Maximum call stack size exceeded
+--call-depth 100 limits/an-unbounded-recursion.js|5|CeilingReached on CallDepth
 --call-depth 0 limits/an-unbounded-recursion.js|2|is not a positive frame count

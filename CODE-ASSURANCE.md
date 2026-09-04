@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 113 |
 | Files carrying an annotation | 113 |
-| Code units | 4067 |
-| Relevant | 2200 |
-| Exempt by predicate | 1867 |
-| Annotated | 2200 of 2200 (100%) |
-| Human reviewed | 0 of 2200 (0%) |
-| Unverified | 2200 |
+| Code units | 4073 |
+| Relevant | 2205 |
+| Exempt by predicate | 1868 |
+| Annotated | 2205 of 2205 (100%) |
+| Human reviewed | 0 of 2205 (0%) |
+| Unverified | 2205 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 2200 |
+| HUMAN_PENDING | 2205 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 1867 |
+| EXEMPT | 1868 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
 | None | 737 |
-| Low | 1870 |
+| Low | 1876 |
 | Medium | 82 |
 | High | 0 |
 | Unknown | 0 |
@@ -51,8 +51,8 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | None | 5 |
 | Low | 625 |
-| Medium | 1876 |
-| High | 183 |
+| Medium | 1881 |
+| High | 184 |
 | Critical | 0 |
 | *not annotated* | 0 |
 
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.8 / 10 |
-| Units scored | 2200 |
+| Units scored | 2205 |
 
 ## High-security review areas
 
@@ -233,6 +233,7 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsEngine.Loader` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.Evaluate(JsValue[], bool, Format.JsFormat.FunctionFlags)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.MaximumCallDepth` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.reportingDepth` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsInstance.Environment` in `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsExecution.RunOnGuestStack(JsInstance, uint?)` in `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsRealm` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Dynamic.cs` - Security=High, human line PENDING
@@ -254,8 +255,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 231 |
-| Units required to carry one | 183 |
+| Units carrying a criterion | 232 |
+| Units required to carry one | 184 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -288,7 +289,7 @@ that the rule is reviewable in one place rather than in several hundred.
 | CompilerSuppliedRecordOrEnumMember | 4 |
 | DelegatingOverrideOrOperator | 102 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 307 |
+| FieldDeclaringStorage | 308 |
 | EnumMemberOfADeclaredVocabulary | 743 |
 | DeclaredInSource | 0 |
 
@@ -309,7 +310,7 @@ No unit in this component states a per-unit exemption.
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-4067 of them, exempt and relevant alike - with the fingerprint of its declaration.
+4073 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in

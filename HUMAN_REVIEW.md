@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 2200 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 2205 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 113 |
-| Code units | 4067 |
-| Relevant | 2200 |
-| Exempt | 1867 |
-| Assessed | 2200 of 2200 (100%) |
-| Human reviewed | 0 of 2200 (0%) |
-| Unverified | 2200 |
+| Code units | 4073 |
+| Relevant | 2205 |
+| Exempt | 1868 |
+| Assessed | 2205 of 2205 (100%) |
+| Human reviewed | 0 of 2205 (0%) |
+| Unverified | 2205 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 2200 |
+| HUMAN_PENDING | 2205 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 1867 |
+| EXEMPT | 1868 |
 
 ## 5. Aliases In The Tree
 
@@ -177,7 +177,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsArray.cs` | 16 | 13 | 3 | 13 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsBinary.cs` | 51 | 31 | 20 | 31 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsCollections.cs` | 84 | 49 | 35 | 49 | Low | High | 1/1 |
-| `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` | 69 | 58 | 11 | 58 | Low | High | 4/4 |
+| `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` | 71 | 59 | 12 | 59 | Low | High | 5/5 |
 | `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` | 24 | 13 | 11 | 13 | Low | High | 2/2 |
 | `src/Broiler.VM.Profile.JavaScript/JsFunction.cs` | 40 | 21 | 19 | 21 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsNumberFormat.cs` | 19 | 19 | 0 | 19 | Low | Medium | 0/0 |
@@ -188,7 +188,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Boolean.cs` | 4 | 4 | 0 | 4 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.CollectionIterators.cs` | 4 | 4 | 0 | 4 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Collections.cs` | 25 | 19 | 6 | 19 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs` | 62 | 53 | 9 | 53 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Date.cs` | 65 | 56 | 9 | 56 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Dynamic.cs` | 5 | 4 | 1 | 4 | Low | High | 5/5 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Error.cs` | 5 | 5 | 0 | 5 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Function.cs` | 7 | 7 | 0 | 7 | Low | Medium | 0/0 |
@@ -200,7 +200,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Promise.cs` | 24 | 18 | 6 | 18 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs` | 42 | 34 | 8 | 34 | Medium | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs` | 14 | 14 | 0 | 14 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.Symbol.cs` | 27 | 9 | 18 | 9 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Symbol.cs` | 28 | 10 | 18 | 10 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.cs` | 30 | 15 | 15 | 15 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRegExpMatcher.cs` | 213 | 120 | 93 | 120 | Medium | Medium | 1/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsSymbol.cs` | 5 | 2 | 3 | 2 | Low | Medium | 0/0 |
@@ -531,7 +531,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a descriptor built here accepts an optional surface its caller did not name
 - `Broiler.VM.Profile.JavaScript.JavaScriptProfile.Build(ImmutableArray<string>)` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, Spec=none cited, `929887`, PENDING
   - Falsified if: a row here disagrees with decision JSD-0004 or JSD-0008 without a dated record of the correction
-- `Broiler.VM.Profile.JavaScript.JavaScriptProfile.Defaults()` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, Spec=none cited, `8CA639`, PENDING
+- `Broiler.VM.Profile.JavaScript.JavaScriptProfile.Defaults()` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, Spec=none cited, `B1B19D`, PENDING
   - Falsified if: a default here is zero on a dimension this profile declares inapplicable, or any default exceeds its maximum
 - `Broiler.VM.Profile.JavaScript.JavaScriptProfile.Matrix()` in `src/Broiler.VM.Profile.JavaScript/JavaScriptProfile.cs` - Security=High, Spec=none cited, `AAA8EB`, PENDING
   - Falsified if: a row says charged for a dimension no code path charges, or inapplicable for one that is reachable
@@ -576,7 +576,9 @@ written out, so a unit that becomes `High` joins it at the next generation.
 - `Broiler.VM.Profile.JavaScript.JsEngine.Evaluate(JsValue[], bool, Format.JsFormat.FunctionFlags)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `4D1A6A`, PENDING
   - Falsified if: guest source becomes executable bytes without passing through the mediator
 - `Broiler.VM.Profile.JavaScript.JsEngine.MaximumCallDepth` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `321EE5`, PENDING
-  - Falsified if: a program recursing past this bound terminates the process rather than ending the operation
+  - Falsified if: a program recursing past this bound terminates the process rather than throwing a catchable RangeError
+- `Broiler.VM.Profile.JavaScript.JsEngine.reportingDepth` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `DA5D1D`, PENDING
+  - Falsified if: this stays set after the refusal has been thrown, so a later recursion is unbounded
 - `Broiler.VM.Profile.JavaScript.JsInstance.Environment` in `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` - Security=High, Spec=none cited, `1C7767`, PENDING
   - Falsified if: this environment is asked for a mediator outside an invocation it supplied one for
 - `Broiler.VM.Profile.JavaScript.JsExecution.RunOnGuestStack(JsInstance, uint?)` in `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` - Security=High, Spec=none cited, `CDA795`, PENDING
@@ -631,7 +633,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 2200 of the 2200 assessed units declare
+That is not a figure of speech. 2205 of the 2205 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

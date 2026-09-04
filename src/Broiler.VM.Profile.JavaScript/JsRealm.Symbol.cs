@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   9
-// Annotated:        9/9
+// Relevant units:   10
+// Annotated:        10/10
 // Exempt:           18
-// Human-reviewed:   0/9
+// Human-reviewed:   0/10
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       9
+// Unverified:       10
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -139,7 +139,7 @@ internal sealed partial class JsRealm
         new(System.StringComparer.Ordinal);
 
     /// <summary>Builds the <c>Symbol</c> intrinsic and the iterators the realm's own types need.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=381490
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=084B79
     // Broiler-Human:        PENDING
     private void SetupSymbol()
     {
@@ -278,7 +278,52 @@ internal sealed partial class JsRealm
                 JsPropertyAttributes.BuiltIn));
 
         SetupIterators();
+        SetupDatePrimitive();
     }
+
+    /// <summary>
+    /// Installs <c>Date.prototype[Symbol.toPrimitive]</c>, which is what makes a Date add as text.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A Date is the only object in the language whose DEFAULT hint means "string".</b>
+    /// <c>date + ""</c> and <c>"" + date</c> use hint <c>"default"</c>, and ordinary
+    /// <c>OrdinaryToPrimitive</c> answers that hint with <c>valueOf</c> — so without this a Date
+    /// concatenated with a string produced its epoch MILLISECONDS, a number that looks like an
+    /// answer and is not the one every program expects. <c>date - 0</c> keeps the number, because
+    /// subtraction asks with hint <c>"number"</c>.
+    /// </para>
+    /// <para>
+    /// <b>It is here rather than in the Date setup because the realm builds Date before it has a
+    /// Symbol to key this with</b>, which is the same join the collection iterators are in.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=13EB2A
+    // Broiler-Human:        PENDING
+    private void SetupDatePrimitive() =>
+        DatePrototype.SetOwnSymbol(
+            ToPrimitiveSymbol,
+            JsProperty.Data(
+                JsValue.Object(Native("[Symbol.toPrimitive]", 1, static (engine, thisValue, arguments) =>
+                {
+                    if (!thisValue.IsObject)
+                    {
+                        return engine.ThrowTypeError(
+                            "Date.prototype[Symbol.toPrimitive] is not generic");
+                    }
+
+                    var hint = arguments.Length == 0
+                        ? string.Empty
+                        : engine.ToStringValue(arguments[0]);
+
+                    return hint switch
+                    {
+                        "number" => engine.OrdinaryToPrimitive(thisValue, "number"),
+                        "string" or "default" => engine.OrdinaryToPrimitive(thisValue, "string"),
+                        _ => engine.ThrowTypeError("the hint must be one of default, number and string"),
+                    };
+                })),
+                JsPropertyAttributes.Configurable));
 
     /// <summary>Installs <c>[Symbol.iterator]</c> on the types this realm can iterate.</summary>
     /// <remarks>

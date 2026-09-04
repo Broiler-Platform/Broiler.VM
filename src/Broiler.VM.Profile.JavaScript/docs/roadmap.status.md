@@ -777,9 +777,32 @@ limit — did not measure the per-frame cost the declared stack was chosen again
 — and shows the bound **terminating the process at its own limit**, because the bound reported itself
 by throwing an exception whose construction and dispatch needed stack the program had spent getting
 there. A counted bound that reports itself by throwing is a bound whose safety depends on the cost
-of the throw. The backstop now ends the operation as a resource exhaustion, the profile's declared
-call-depth maximum is short enough that the budget ceiling always answers first, and four acceptance
-rows pin the answers. **What is still not shown is the refusal under Native AOT on any RID**, which
+of the throw.
+
+**The arrangement that replaced it was then wrong in a third way, and a fourth defect was hiding
+behind it.** Making the budget ceiling always answer first bought the property — no process
+termination — and cost the language's own answer, because a budget exhaustion is an abort a guest
+cannot catch: `try { recurse(); } catch (e) { }` never ran its own guard
+([JSC-96](roadmap.corrections.md#jsc-96)). The two bounds now answer two different questions in the
+right order — the runtime's stack probe ends the operation when there is no room to do anything, the
+engine's counted bound throws the catchable `RangeError` the language gives, and the budget ceiling
+stays the tighter limit a host may impose — and the profile's default sits above the engine's bound
+so a host that states nothing gets what every engine gives. Six acceptance rows pin all three
+answers.
+
+**The fourth was the one nothing here would have found without a program that recursed and then
+threw.** `Execute` wrapped its dispatch loop in a `catch` that rethrew, so a frame with no handler
+for the current instruction was entered during the runtime's second pass and started a fresh
+dispatch from a funclet above the stack. **A guest `throw` from any depth past about five hundred
+terminated the process** — on a stack that holds eight thousand ordinary calls — whether or not the
+guest had a `catch` waiting for it. Catching by FILTER rather than by catch-and-rethrow makes one
+dispatch reach the one frame that has a region, and the two depths now agree: a recursion returns
+from 8,061 frames and a throw unwinds from 8,047 ([JSC-97](roadmap.corrections.md#jsc-97)). The
+executor's exception handling had been documented accurately the whole time; what nobody had asked
+is what the described mechanism costs when there are a thousand of it, and **a per-frame cost that
+only appears at depth is invisible to every fixture written at depth one**.
+
+**What is still not shown is the refusal under Native AOT on any RID**, which
 is a collection rather than a change to this checkout.
 
 **There is a job queue now, and the second half of that sentence is what changed.** This paragraph

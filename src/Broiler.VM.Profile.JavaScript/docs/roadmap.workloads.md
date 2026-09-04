@@ -92,7 +92,7 @@ be a plan a reader could not check *(corrected: JSC-87)*.
 |---|---|---|
 | Octane `mandreel` | A reference error naming a typed array constructor | It reports a score |
 | Octane `gbemu` | The benchmark's own report that typed arrays are unsupported | It reports a score |
-| Octane `zlib` | A reference error naming `eval` | A **host** absence rather than a language one: `read`, which no manifest owns and which core contract version 1 has no shape for *(JSC-84)* |
+| Octane `zlib` | A reference error naming `eval` | It reports a score, past a **host** absence the realm answers by refusing rather than by being absent — `read`, which no manifest owns and which core contract version 1 has no shape for *(JSC-84)* — and under a memory allowance the caller states *(JSC-90)* |
 | Octane `code-load` | A reference error naming `eval` | It reports a score |
 | Octane `regexp` | It runs, and the benchmark's own checksum disagrees with what it produced | Its own checksum agrees |
 | Octane `pdfjs` | **The verifier refuses an artifact this host produced** | It reports a score *(JSC-81)* |
@@ -106,11 +106,14 @@ retained bundle's procedure section already carries.** Two rows were defects rat
 section 3.4 separates them out, because a plan that schedules a repair as though it were a feature
 has mis-stated both.
 
-**One row changed kind rather than closing, and that is the finding worth keeping.** `zlib` no longer
-meets a language absence; it meets a **shell** the benchmark assumes and this host does not have.
+**One row changed kind before it closed, and that is the finding worth keeping.** `zlib` stopped
+meeting a language absence and met a **shell** the benchmark assumes and this host does not have.
 Nothing in the seven-identity allocation of section 6 would ever have caught it, because it is not a
 language surface at all — and asking for it is the first amendment this profile has an observed
-reason to put to the core.
+reason to put to the core. The row closed once the realm answered that probe by REFUSING rather than
+by being absent, and once the memory allowance stopped being a figure only a rebuild could move: the
+benchmark printed its score and then met a ceiling, so the process exited non-zero on a run that had
+produced exactly what section 1 asks for *(JSC-90)*.
 
 ### 3.2 The surface that is absent from the realm
 

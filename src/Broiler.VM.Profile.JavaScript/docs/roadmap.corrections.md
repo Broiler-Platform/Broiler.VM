@@ -3929,3 +3929,111 @@ than a bound that was convenient.
 **Authority and date.** The implementation of 2026-09-04 in this checkout, case 97 of
 `src/tests/differential/the-statement-and-object-surface.js` and the twenty-three-case radix probe.
 2026-09-04.
+
+### JSC-96
+
+**Where:** [JSC-85](#jsc-85), which set the profile's declared call-depth maximum below the engine's
+own bound **so that the budget ceiling always answers first**, and roadmap
+[section 8](roadmap.md#8-the-value-frame-and-call-model)'s *`CallDepth` is measured, not chosen*.
+
+**What that arrangement bought and what it cost.** It bought the property JSC-79 exists for: a
+runaway recursion ends as a named resource exhaustion rather than terminating the process. It cost
+the language's own answer. A budget exhaustion is an **abort the guest cannot catch**, so
+`try { recurse(); } catch (e) { }` — written by a recursive descent probing its own depth, by a
+benchmark sizing a workload, and by every conformance case that asserts the error's type — never ran
+its own guard. `Maximum call stack size exceeded` is a catchable exception in every engine, and this
+profile did not have it at all.
+
+**What replaced it: two bounds answering two different questions, in the right order.**
+
+- The **runtime's stack probe** answers *is there room to do anything here*. When it says no there is
+  no safe action left, so the operation ends. That is the case JSC-85 diagnosed.
+- The **engine's counted bound** answers *has this interpreter recursed further than it promises*. It
+  is reached with the probe still satisfied, so a `RangeError` can be built and thrown — and it is
+  thrown, because that is what the language says. Folding the two into one condition, which is what
+  the code did, gave the unsafe case's answer to the safe one.
+- The **budget's `CallDepth` ceiling** is the host's own limit and stays an abort, because a budget a
+  guest could swallow is not a budget. What changed is that the profile's default now sits **above**
+  the engine's bound, so a host that states nothing gets the language's behaviour and a host that
+  wants a program refused at a hundred frames states that and gets it.
+
+**A third fault was hiding behind the first**, and only the split exposed it: building the
+`RangeError` runs `CreateError`, which constructs an object, which re-enters the bound at a depth
+already past it and throws again — a recursion with no base case inside the code that exists to
+refuse one. A flag is the base case, cleared as the exception unwinds.
+
+**The figures are re-measured rather than carried over**, because [JSC-97](#jsc-97) moved one of
+them by a factor of eight. `eng/measure-frame-cost.py` now reports two depths and refuses a build
+where they disagree.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the bisections
+`eng/measure-frame-cost.py` performs, and six rows of the CLI acceptance table pinning all three
+answers. 2026-09-04.
+
+### JSC-97
+
+**Where:** roadmap [section 10](roadmap.md#10-the-executor-and-the-realm)'s statement that a
+JavaScript `throw` travels on the CLR's own exception mechanism and each frame catches it and looks
+for a region covering the instruction that was executing.
+
+**What that described, and what it did.** The description is accurate and the implementation was
+literal: `Execute` wrapped its whole dispatch loop in `try { … } catch (JsThrow) { … throw; }`, and a
+frame with no region for the current instruction **rethrew**.
+
+**What a rethrow costs, which nothing here had measured.** A frame with a `catch` is entered during
+the runtime's *second* pass: the handler runs as a funclet above the current stack, and the rethrow
+starts a fresh dispatch from there. A throw crossing a thousand interpreter frames accumulated a
+thousand funclets and their dispatchers — **and the process died**, on a stack that holds eight
+thousand ordinary calls. **A guest `throw` from any depth past about five hundred was fatal**,
+whether or not the guest had a `catch` waiting for it. That is not a bound anybody chose; it is a
+cost nobody had looked for, and it made every deep recursive algorithm that reports failure by
+throwing unusable.
+
+**What replaced it.** An exception **filter**: `catch (JsThrow) when (TryFindHandler(…))`. A filter
+runs in the *first* pass, without unwinding and without a funclet per frame, so a frame with no
+region for this instruction answers false and is passed over and exactly one dispatch reaches the
+frame that has one. `TryFindHandler` is a pure search, which is what a filter has to be.
+
+**The two depths agree now and did not before**, which is the fact worth keeping rather than the
+repair: a recursion returns from 8,061 frames and a throw unwinds from 8,047. `eng/measure-frame-cost.py`
+measures both and fails a build where they diverge, because a divergence is this defect back.
+
+**What this says about the class.** The executor's exception handling had been read, reviewed and
+documented, and the documentation was *true*. What nobody had asked is what the described mechanism
+costs when there are a thousand of it. A per-frame cost that only appears at depth is invisible to
+every fixture written at depth one.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the bisection over a
+guest `throw` at increasing depths, and case 79 of
+`src/tests/differential/the-json-date-and-regexp-surface.js`, which is the recursion-inside-a-`try`
+that found it. 2026-09-04.
+
+### JSC-98
+
+**Where:** the realm's `Date` intrinsic, and the workload roadmap's own method of comparing
+behaviour against a second engine rather than against a document.
+
+**Two things a Date could not do.**
+
+**`date + ""` produced the epoch milliseconds.** A Date is the only object in the language whose
+*default* hint means `"string"`, and without `Date.prototype[Symbol.toPrimitive]` the ordinary
+conversion answered the default hint with `valueOf`. So a Date concatenated with a string became a
+number that looks like an answer and is not the one every program expects, while `String(date)` —
+which asks with the string hint — was right the whole time. The pair passing and failing together is
+what makes this the kind of defect a probe finds and a reader does not.
+
+**`Date.parse` refused this realm's own output.** The specification requires it to accept whatever
+`toString`, `toUTCString` and `toISOString` produced; only the ISO form was implemented, so
+`Date.parse(d.toUTCString())` was `NaN` and a round trip through the format a program is most likely
+to have stored did not come back.
+
+**What replaced them.** The exotic `Symbol.toPrimitive` the specification gives, installed where the
+realm has a Symbol to key it with rather than where Date is built; and a textual reader for the two
+forms this realm renders, written to accept what it produces and a little either side rather than to
+be a date-string parser — because every non-ISO format is implementation-defined, and accepting more
+would be inventing a dialect that every program relying on it would be relying on this
+implementation for.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, cases 34 and 36 of
+`src/tests/differential/the-json-date-and-regexp-surface.js`, and a twenty-case round-trip probe.
+2026-09-04.

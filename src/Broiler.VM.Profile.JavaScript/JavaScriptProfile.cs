@@ -412,7 +412,7 @@ public static class JavaScriptProfile
     /// else's verifier as a refusal naming a dimension they never touched.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=8CA639
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=B1B19D
     // Broiler-Falsified-If: a default here is zero on a dimension this profile declares inapplicable, or any default exceeds its maximum
     // Broiler-Human:        PENDING
     private static VmLimitVector Defaults()
@@ -423,7 +423,12 @@ public static class JavaScriptProfile
         values[(int)VmBudgetDimension.AllocatedBytes] = 64L * 1024 * 1024;
         values[(int)VmBudgetDimension.LiveBytes] = 32L * 1024 * 1024;
         values[(int)VmBudgetDimension.HostCalls] = 1_000_000;
-        values[(int)VmBudgetDimension.CallDepth] = 1_024;
+        // ABOVE THE ENGINE'S OWN BOUND, so the default answer to a runaway recursion is the
+        // language's catchable `RangeError` and not an abort. A host that wants a program
+        // refused at a hundred frames states that ceiling and gets it; a host that states
+        // nothing gets what every engine gives, which is what a program's own recursion guard
+        // is written against *(JSC-96)*.
+        values[(int)VmBudgetDimension.CallDepth] = 6_144;
         values[(int)VmBudgetDimension.VerifierWork] = 100_000_000;
         values[(int)VmBudgetDimension.ArtifactBytes] = 32L * 1024 * 1024;
         values[(int)VmBudgetDimension.SectionCount] = 64;
@@ -448,7 +453,7 @@ public static class JavaScriptProfile
     /// what this profile uses - the defaults above are that - but of the most it would tolerate a
     /// host granting.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=FFF7DC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=D45C6A
     // Broiler-Human:        PENDING
     private static VmLimitVector Maxima()
     {
@@ -470,7 +475,7 @@ public static class JavaScriptProfile
         //
         // This row read 16,384 until the measurement was taken, which is four times what the stack
         // holds *(corrected: JSC-85)*.
-        values[(int)VmBudgetDimension.CallDepth] = 4_096;
+        values[(int)VmBudgetDimension.CallDepth] = 8_192;
         values[(int)VmBudgetDimension.VerifierWork] = 1_099_511_627_776;
         values[(int)VmBudgetDimension.ArtifactBytes] = 536_870_912;
         values[(int)VmBudgetDimension.SectionCount] = 1_024;

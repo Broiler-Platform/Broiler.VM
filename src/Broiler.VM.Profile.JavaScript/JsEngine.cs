@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   58
-// Annotated:        58/58
-// Exempt:           11
-// Human-reviewed:   0/58
+// Relevant units:   59
+// Annotated:        59/59
+// Exempt:           12
+// Human-reviewed:   0/59
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         4/4
+// Criteria:         5/5
 // Resource impact:  7/10 max
-// Unverified:       58
+// Unverified:       59
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -478,38 +478,58 @@ internal sealed class JsEngine
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <b>This is the backstop and not the ordinary answer.</b> A recursing program is refused
-    /// first by the <c>CallDepth</c> budget, whose default is lower than this and whose exhaustion
-    /// is a resource exhaustion the guest cannot catch - which is what roadmap section 8 asks for
-    /// in those words. This bound exists for the case that ceiling does not cover: a host may grant
-    /// a call depth up to the profile's own declared maximum, which is far larger than the native
-    /// stack a guest invocation runs on can hold.
+    /// <b>This is the ORDINARY answer for a recursing program, and the budget ceiling is the
+    /// tighter bound a host may impose.</b> The two were the other way round until 2026-09-04, and
+    /// the reversal is a correction rather than a preference *(JSC-96)*: while the ceiling answered
+    /// first, a stack overflow was a resource exhaustion no guest could see, so
+    /// <c>try { recurse(); } catch (e) { }</c> — which a recursive descent probing its own depth, a
+    /// benchmark sizing a workload and a conformance case asserting the error's type all write —
+    /// never ran its own guard. <c>Maximum call stack size exceeded</c> is a catchable exception in
+    /// every engine and it is one here.
     /// </para>
     /// <para>
-    /// <b>It is a counted number and not a stack probe</b>, because a probe promises nothing under
-    /// Native AOT. The figure is MEASURED and not chosen: <c>eng/measure-frame-cost.py</c> bisects
-    /// the published binary against a recursion with no base case and finds that this interpreter
+    /// <b>It is a counted number, and the runtime's stack probe sits in front of it rather than
+    /// beside it.</b> The probe answers whether there is room to do anything at all; when it says
+    /// no, the operation ENDS, because building and dispatching an error object from there is what
+    /// terminated the process at 3,000 frames *(JSC-85)*. The counted bound is reached with the
+    /// probe still satisfied, so throwing from it is safe. Folding the two into one condition —
+    /// which is what this was — gave the unsafe case's answer to the safe one.
+    /// </para>
+    /// <para>
+    /// <b>The figure is MEASURED and not chosen</b>: <c>eng/measure-frame-cost.py</c> bisects the
+    /// published binary against a recursion with no base case and finds that this interpreter
     /// survives 8,666 JavaScript calls on the sixteen-megabyte stack
     /// <see cref="JsExecution"/> declares — 1,936 bytes of native stack per call, and the same
     /// figure whether the JavaScript frame is narrow or wide, because the operand stack and the
-    /// environment are heap objects rather than stack ones. This bound is set at 6,000, which is a
-    /// third short of what the stack holds, and the profile's declared call-depth MAXIMUM is 4,096,
-    /// which is short of this — so the ordinary answer is always the budget's, and this is reached
-    /// only by a host that granted more than the profile said it could.
+    /// environment are heap objects rather than stack ones. A guest `throw` unwinds from 8,047, which
+    /// is the same figure and was not before the executor caught by FILTER rather than by
+    /// catch-and-rethrow *(JSC-97)*. This bound is set at 6,000: a quarter short of both, with the
+    /// margin for a call shape costing more than the measured one and for the frames the refusal's
+    /// own error object needs.
     /// </para>
     /// <para>
-    /// <b>It ends the operation rather than throwing a <c>RangeError</c> the guest could catch, and
-    /// that is a correction rather than a preference.</b> The figure was 3,000 and produced a
-    /// PROCESS TERMINATION at 3,000 frames on a stack that holds 8,666 of them — not because the
-    /// frames did not fit, but because building and dispatching the <c>RangeError</c> from that
-    /// depth did not. Roadmap section 8 asks for a resource exhaustion naming its dimension and
-    /// that is now what this is *(corrected: JSC-85)*.
+    /// <b>What a host can still do is narrow it.</b> The <c>CallDepth</c> budget is charged on every
+    /// call and its exhaustion is an abort the guest cannot catch, which is what roadmap section 8
+    /// asks for in those words. A host that wants a program refused at a hundred frames sets the
+    /// ceiling there and gets it. What a host cannot do is widen past this bound, because this bound
+    /// is about the native stack rather than about policy.
     /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=321EE5
-    // Broiler-Falsified-If: a program recursing past this bound terminates the process rather than ending the operation
+    // Broiler-Falsified-If: a program recursing past this bound terminates the process rather than throwing a catchable RangeError
     // Broiler-Human:        PENDING
     internal int MaximumCallDepth { get; set; } = 6000;
+
+    /// <summary>Whether this engine is in the middle of reporting a call-depth refusal.</summary>
+    /// <remarks>
+    /// It exists so the refusal can allocate. Every other reading of it would be a reason to delete
+    /// it, and the one that matters is in <see cref="Call"/>: without it the bound refuses the
+    /// frames its own error object needs.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=DA5D1D
+    // Broiler-Falsified-If: this stays set after the refusal has been thrown, so a later recursion is unbounded
+    // Broiler-Human:        PENDING
+    private bool reportingDepth;
 
     // ---- metering ------------------------------------------------------------------------------
 
@@ -611,7 +631,7 @@ internal sealed class JsEngine
     // ---- conversions ---------------------------------------------------------------------------
 
     /// <summary>The abstract operation <c>ToPrimitive</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=1EBC46
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=B7C265
     // Broiler-Human:        PENDING
     internal JsValue ToPrimitive(JsValue value, string hint)
     {
@@ -636,6 +656,22 @@ internal sealed class JsEngine
             return ThrowTypeError("Cannot convert object to primitive value");
         }
 
+        return OrdinaryToPrimitive(value, hint);
+    }
+
+    /// <summary>
+    /// The abstract operation <c>OrdinaryToPrimitive</c>: the two methods, in the hint's order.
+    /// </summary>
+    /// <remarks>
+    /// It is separate from <see cref="ToPrimitive"/> because an exotic
+    /// <c>Symbol.toPrimitive</c> can need it: a Date's answers the <c>"default"</c> hint by asking
+    /// for the <c>"string"</c> ordering, and an implementation that recursed into
+    /// <see cref="ToPrimitive"/> to get it would find its own exotic method again.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=5A1F89
+    // Broiler-Human:        PENDING
+    internal JsValue OrdinaryToPrimitive(JsValue value, string hint)
+    {
         var order = string.Equals(hint, "string", System.StringComparison.Ordinal)
             ? new[] { "toString", "valueOf" }
             : ["valueOf", "toString"];
@@ -977,7 +1013,7 @@ internal sealed class JsEngine
     // ---- calling -------------------------------------------------------------------------------
 
     /// <summary>Calls <paramref name="callee"/>, whatever kind of callable it is.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=05D6A4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=2094C0
     // Broiler-Human:        PENDING
     internal JsValue Call(JsValue callee, JsValue thisValue, JsValue[] arguments)
     {
@@ -988,10 +1024,44 @@ internal sealed class JsEngine
 
         Charge(4);
 
-        if (depth >= MaximumCallDepth ||
-            !System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack())
+        // THE TWO BACKSTOPS ARE DIFFERENT ANSWERS TO DIFFERENT QUESTIONS, and folding them into one
+        // condition - which is what this was - cost the language its own error.
+        //
+        // The runtime's own stack probe answers "is there room to do ANYTHING here". When it says
+        // no there is no safe action left: constructing an error object and dispatching it needs
+        // stack the program has already spent, which is the process termination
+        // [JSC-85](roadmap.corrections.md#jsc-85) recorded. So that case ends the operation.
+        //
+        // The counted bound answers a different question - "has this interpreter recursed further
+        // than it will promise" - and it is reached with the stack probe still satisfied, so a
+        // `RangeError` can be built and thrown. It MUST be thrown rather than aborted, because
+        // `Maximum call stack size exceeded` is a catchable exception in every engine and real
+        // programs catch it: a recursive descent that probes its own depth, a benchmark that sizes
+        // a workload, a conformance case that asserts the error's type. An abort there is a
+        // resource exhaustion no guest can see, and the guard the program wrote never runs.
+        if (!System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack())
         {
             throw new JsAbort(JsAbortKind.Exhausted, "the call-depth backstop was reached");
+        }
+
+        if (depth >= MaximumCallDepth && !reportingDepth)
+        {
+            // THE REPORT NEEDS FRAMES OF ITS OWN, and refusing them is what turned this bound into
+            // a process termination *(JSC-85)*. Building the `RangeError` runs `CreateError`, which
+            // constructs an object, which re-enters here at a depth already past the bound and
+            // throws again — a recursion with no base case, inside the code that exists to refuse
+            // one. The flag is the base case. It is cleared as the exception unwinds, so the guest's
+            // own `catch` runs with the bound back in force.
+            reportingDepth = true;
+
+            try
+            {
+                ThrowRangeError("Maximum call stack size exceeded");
+            }
+            finally
+            {
+                reportingDepth = false;
+            }
         }
 
         if (!meter.TryCharge(VmBudgetDimension.CallDepth, 1))
@@ -1029,7 +1099,7 @@ internal sealed class JsEngine
     }
 
     /// <summary>Constructs with <paramref name="callee"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=816174
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=8A1C4D
     // Broiler-Human:        PENDING
     internal JsValue Construct(JsValue callee, JsValue[] arguments)
     {
@@ -1056,10 +1126,44 @@ internal sealed class JsEngine
         var instance = new JsObject(
             prototype.IsObject ? prototype.AsObject() : Realm.ObjectPrototype);
 
-        if (depth >= MaximumCallDepth ||
-            !System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack())
+        // THE TWO BACKSTOPS ARE DIFFERENT ANSWERS TO DIFFERENT QUESTIONS, and folding them into one
+        // condition - which is what this was - cost the language its own error.
+        //
+        // The runtime's own stack probe answers "is there room to do ANYTHING here". When it says
+        // no there is no safe action left: constructing an error object and dispatching it needs
+        // stack the program has already spent, which is the process termination
+        // [JSC-85](roadmap.corrections.md#jsc-85) recorded. So that case ends the operation.
+        //
+        // The counted bound answers a different question - "has this interpreter recursed further
+        // than it will promise" - and it is reached with the stack probe still satisfied, so a
+        // `RangeError` can be built and thrown. It MUST be thrown rather than aborted, because
+        // `Maximum call stack size exceeded` is a catchable exception in every engine and real
+        // programs catch it: a recursive descent that probes its own depth, a benchmark that sizes
+        // a workload, a conformance case that asserts the error's type. An abort there is a
+        // resource exhaustion no guest can see, and the guard the program wrote never runs.
+        if (!System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack())
         {
             throw new JsAbort(JsAbortKind.Exhausted, "the call-depth backstop was reached");
+        }
+
+        if (depth >= MaximumCallDepth && !reportingDepth)
+        {
+            // THE REPORT NEEDS FRAMES OF ITS OWN, and refusing them is what turned this bound into
+            // a process termination *(JSC-85)*. Building the `RangeError` runs `CreateError`, which
+            // constructs an object, which re-enters here at a depth already past the bound and
+            // throws again — a recursion with no base case, inside the code that exists to refuse
+            // one. The flag is the base case. It is cleared as the exception unwinds, so the guest's
+            // own `catch` runs with the bound back in force.
+            reportingDepth = true;
+
+            try
+            {
+                ThrowRangeError("Maximum call stack size exceeded");
+            }
+            finally
+            {
+                reportingDepth = false;
+            }
         }
 
         if (!meter.TryCharge(VmBudgetDimension.CallDepth, 1))
@@ -1171,7 +1275,7 @@ internal sealed class JsEngine
 
     // ---- the loop ------------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=64B247
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=EFAAAD
     // Broiler-Human:        PENDING
     private JsValue Execute(
         JsProgram program,
@@ -1192,6 +1296,7 @@ internal sealed class JsEngine
         var pc = (int)unit.CodeOffset;
         var strict = unit.IsStrict;
         var current = pc;
+        JsRegion region = default;
 
         while (true)
         {
@@ -1875,13 +1980,21 @@ internal sealed class JsEngine
                     }
                 }
             }
-            catch (JsThrow thrown)
+            // A FILTER AND NOT A CATCH-AND-RETHROW, and the difference is a process termination.
+            //
+            // A frame with a `catch` that rethrows is entered during the SECOND pass: the runtime
+            // runs the handler as a funclet above the current stack, and the rethrow starts a fresh
+            // dispatch from there. A throw crossing a thousand of these accumulated a thousand
+            // funclets and their dispatchers, and the process died - on a stack that holds eight
+            // thousand ordinary calls. A guest `throw` from any depth past about five hundred was
+            // fatal, whether or not the guest had a `catch` waiting for it.
+            //
+            // A FILTER runs in the FIRST pass, without unwinding and without a funclet per frame:
+            // a frame with no region for this instruction answers false and is passed over, and
+            // exactly one dispatch reaches the frame that has one. `TryFindHandler` is a pure
+            // search, which is what a filter has to be.
+            catch (JsThrow thrown) when (TryFindHandler(program, unitIndex, current, out region))
             {
-                if (!TryFindHandler(program, unitIndex, current, out var region))
-                {
-                    throw;
-                }
-
                 while (scopes.Count > region.ScopeDepth + 1)
                 {
                     scopes.RemoveAt(scopes.Count - 1);
