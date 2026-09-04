@@ -68,18 +68,22 @@ internal static class Program
                 return RunHarnessChecks(verbose);
             }
 
+            // THE MERGE IS ASKED FIRST BECAUSE A MERGE NEEDS NO SUITE. It reads a directory of shard
+            // reports and decides from their own headers which mode wrote them, so a caller that
+            // still has `--test262 <root>` on the command line from the run it is now merging gets
+            // the merge it asked for rather than a second run.
+            var merge = Argument(args, "--merge");
+
+            if (merge is not null)
+            {
+                return MergeShards(merge, Argument(args, "--output") ?? Argument(args, "--report"), verbose);
+            }
+
             var checkout = Argument(args, "--test262");
 
             if (checkout is not null)
             {
                 return Test262Command.Run(checkout, args, verbose);
-            }
-
-            var merge = Argument(args, "--merge");
-
-            if (merge is not null)
-            {
-                return MergeShards(merge, Argument(args, "--output"), verbose);
             }
 
             var floor = Argument(args, "--floor");
@@ -97,7 +101,11 @@ internal static class Program
                     "broiler-js-conformance: no --suite <directory> was given. Modes: --closure, " +
                     "--harness-checks, --self-check, --run, --write-artifacts, --pin, " +
                     "--merge <dir>, --floor <file> --report <file>, --test262 <root>. A run adds " +
-                    "--dialect native|ingested, --selfcheck <dir> and --expect <retained pin>.");
+                    "--dialect native|ingested, --selfcheck <dir> and --expect <retained pin>. " +
+                    "A --test262 run takes --manifest <id>, --decline <surface> (repeatable), " +
+                    "--shard <k>/<n>, --expect <retained pin>, --report <file>, --test <path> and " +
+                    "--dir <path> (both repeatable, and naming neither runs the whole test tree), " +
+                    "--limit <n>, --fuel <n> and --wall <ms>.");
 
                 return ExitCodes.Usage;
             }
@@ -513,12 +521,51 @@ internal static class Program
             return ExitCodes.Usage;
         }
 
-        var reports = Directory
+        var paths = Directory
             .EnumerateFiles(directory, "*.report")
             .OrderBy(static path => path, StringComparer.Ordinal)
-            .Select(Report.Read)
             .ToArray();
 
+        // WHICH MODE WROTE THEM IS READ OFF THE REPORTS AND NOT OFF THE COMMAND LINE. Two modes
+        // write reports into directories, and a caller who named the wrong one would otherwise get
+        // a parse error blaming a line rather than the directory. A directory holding both kinds is
+        // two runs and is refused as one, which is the same argument that refuses two revisions.
+        var test262 = paths.Where(Test262Report.Recognises).ToArray();
+
+        if (test262.Length != 0 && test262.Length != paths.Length)
+        {
+            Console.WriteLine(
+                $"broiler-js-conformance: {directory} holds {test262.Length} test262 report(s) and " +
+                $"{paths.Length - test262.Length} suite report(s); two modes' reports are two runs");
+
+            return ExitCodes.Failed;
+        }
+
+        if (test262.Length != 0)
+        {
+            var mergedRun = Merge.Combine(test262.Select(Test262Report.Read).ToArray());
+
+            if (output is not null)
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(output))!);
+                File.WriteAllText(output, mergedRun.Render());
+            }
+
+            Console.WriteLine($"broiler-js-conformance: merged {test262.Length} test262 shard report(s)");
+            Console.WriteLine("edition " + JavaScriptLanguageEdition.Describe());
+            Console.WriteLine("suite " + mergedRun.Suite);
+            Console.WriteLine(mergedRun.DescribeManifest());
+            Console.WriteLine(
+                "partition " + mergedRun.Partition + "; merged from " + mergedRun.ShardCount + " shards");
+
+            Console.WriteLine(
+                "selection candidates=" + mergedRun.Candidates + " selected=" + mergedRun.Selected +
+                " merged=" + mergedRun.Files);
+            Test262Command.Summarize(mergedRun);
+            return mergedRun.Failed ? ExitCodes.Failed : ExitCodes.Ok;
+        }
+
+        var reports = paths.Select(Report.Read).ToArray();
         var merged = Merge.Combine(reports);
 
         if (output is not null)

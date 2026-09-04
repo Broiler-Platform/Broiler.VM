@@ -49,6 +49,16 @@ limits/nesting-past-the-default.js|3|2103:NestingTooDeep
 # A program with no exit ends by spending its allowance, and says so rather than being killed.
 --fuel 200000 limits/a-loop-that-does-not-end.js|5|did not settle within its allowance
 
+# THE MEMORY ALLOWANCE IS A CEILING A CALLER MAY STATE, and the same program answers differently
+# either side of it. The first row is the profile's own default meeting a working set larger than
+# it; the second is the same program under an allowance the caller chose; the third is the option
+# refusing a value that is not one. Octane's `zlib` is why the option exists: it printed its score
+# and THEN met the default, so the process exited non-zero on a run that had produced exactly what
+# was asked of it (JSC-90).
+--fuel 2000000000 limits/a-working-set-past-the-allowance.js|5|CeilingReached on LiveBytes
+--fuel 2000000000 --live-bytes 268435456 limits/a-working-set-past-the-allowance.js|0|held 40
+--live-bytes 0 runs/a-product.js|2|is not a positive byte count
+
 # A byte-order mark is format-control whitespace a source text may open with, so an ordinary file
 # saved by an ordinary editor runs.
 encoding/with-a-byte-order-mark.js|0|7

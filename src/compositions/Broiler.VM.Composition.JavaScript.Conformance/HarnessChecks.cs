@@ -61,6 +61,12 @@ internal static class HarnessChecks
         // different thing: these are properties of the harness's arithmetic and its report format,
         // and those are properties of the rule that decides whether a refusal answered anything.
         .. IngestionChecks.Run(),
+
+        // And the whole-run machinery's, for the same reason again: how a third-party suite is cut
+        // into processes, merged back and reported with every unsupported family named is a third
+        // subject, and the checks that decide whether a transcript can be read at all belong beside
+        // each other rather than at the end of this list.
+        .. Test262Checks.Run(),
     ];
 
     private static (string, bool, string) ShardingIsStableAcrossProcesses()
