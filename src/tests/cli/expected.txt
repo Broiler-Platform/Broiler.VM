@@ -250,6 +250,40 @@ runs/a-generator-prototype-chain.js|0|true 0 true object constructor,next,return
 refused/a-generator-member-of-a-class-body.js|3|2104:ConstructOutsideManifest
 runs/a-generator-method-of-an-object-literal.js|0|11,13,15
 
+# THE `with` STATEMENT, which moved from refused-by-name to admitted on 2026-09-04 and is the last
+# family on the workload roadmap's section 3.3 list that this branch neither admitted nor left to
+# another stage. Every value below was taken from the comparison engine before it was written here.
+#
+# It is the one construct that suspends this profile's whole binding model: a name inside the body
+# is asked of an OBJECT first, through `HasProperty`, and only then of the (depth, slot) pair the
+# lowering resolved. So the rows are grouped by which half of that they would break. The first two
+# are the resolution itself, including `Symbol.unscopables`; the third is the write half, which an
+# implementation can get wrong while every read still passes; the fourth is the scope accounting on
+# every exit, which the verifier refuses when it is wrong and which answers the wrong value when it
+# is subtly wrong; the fifth is what may be on the chain at all; the sixth is that NOTHING is
+# cached, which is a wrong answer rather than a refusal and so is found only by comparison; the
+# seventh is hoisting and `delete`; and the last is the receiver a call through such a name gets,
+# which changes what a CALL means rather than what a name means.
+runs/a-with-that-shadows-and-does-not.js|0|held-var held-let held-const outer-var outer-let outer-const held passed undefined undefined undefined
+runs/a-with-over-a-prototype-chain.js|0|from-the-prototype the object function string my own values function 3 outer on the object
+runs/a-with-that-assigns-in-both-directions.js|0|written outer-before written-outside assigned/the variable on the prototype on the instance true set:7 false 3 100
+runs/a-with-left-by-every-exit.js|0|012 012 13 00010210 finally returned:3 inside/RangeError/undefined 02
+runs/a-with-whose-object-is-coerced.js|0|3 b ABC 42.00 6 true 3 10-20-30 1 1,2,3 3 2 TypeError TypeError named 0 function
+runs/a-with-resolved-again-at-every-mention.js|0|the enclosing binding the property the enclosing binding first second outer:false inner:true at capture changed after the with ended the enclosing binding 2
+runs/a-with-that-hoists-and-deletes.js|0|hoisted/callable still the function's true false true on the prototype false/still here
+runs/a-call-through-a-with-gets-the-object.js|0|the dispatcher true no receiver true false the object no receiver
+
+# AND THE THREE REFUSALS THE FAMILY BRINGS WITH IT, all `2101` and none of them `2104`. The manifest
+# ADMITS `with` now, so a program that writes one where the language has none is wrong about the
+# language rather than about this profile - and answering `2104` would take every strict-mode case
+# out of both the pass and the fail column instead of scoring the `SyntaxError` it expects. The
+# three ways code becomes strict are covered by the first two rows and by the module row further
+# up: a directive, a class body, and the module goal.
+refused/a-with-in-strict-code.js|3|2101:UnexpectedToken
+refused/a-with-in-a-class-body.js|3|2101:UnexpectedToken
+refused/a-declaration-as-the-body-of-a-with.js|3|2101:UnexpectedToken
+--module refused/a-declaration-as-the-body-of-a-with.js|3|the `with` statement is a syntax error in strict code
+
 # AND A DEVIATION FROM THE LANGUAGE THE JOIN OF THE TWO BUNDLES PRODUCED, pinned exactly as the
 # dead-zone rows below are. A generator with a NON-SIMPLE parameter list carries `BindsParameters`,
 # which moves parameter binding into the unit's own prologue - and a generator's prologue is body

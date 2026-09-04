@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   94
-// Annotated:        94/94
+// Relevant units:   95
+// Annotated:        95/95
 // Exempt:           15
-// Human-reviewed:   0/94
+// Human-reviewed:   0/95
 // IP risk:          None
 // Security risk:    High
 // Criteria:         2/2
 // Resource impact:  3/10 max
-// Unverified:       94
+// Unverified:       95
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -30,7 +30,7 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// </para>
 /// <para>
 /// <b>What it refuses, it refuses by name.</b> The wide manifest admits no
-/// <c>async</c> function, module declaration, <c>with</c>, class field, private name, class static
+/// <c>async</c> function, module declaration, class field, private name, class static
 /// block, decorator or generator MEMBER of a class body. Each is parsed far enough to be
 /// recognised and then reported as a construct
 /// outside the manifest, at its own position - not as an unexpected token, which would send a
@@ -99,6 +99,16 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// <c>import()</c> and <c>import.meta</c> as expressions, <c>await</c> and <c>yield</c> as the
 /// callee of a <c>new</c>, a destructuring assignment without a declaration, <c>let</c> before a
 /// binding pattern, and a label that is a contextual keyword.
+/// </para>
+/// <para>
+/// <b>The <c>with</c> statement left that list on 2026-09-04 and opened a POSITION rather than an
+/// expression.</b> A <c>with</c> body is an ordinary <c>Statement</c>, so every construct still
+/// refused can now be written one level inside one, and each has to answer there with its own name
+/// exactly as it does at the top level - which it does, because a <c>with</c> body is parsed by
+/// <see cref="ParseStatement"/> and by nothing of its own. What <c>with</c> adds to this list
+/// instead is two refusals of its own, both <c>2101</c> rather than <c>2104</c> because the
+/// manifest now admits the statement and the LANGUAGE is what has nothing here: <c>with</c> in
+/// strict code, and a declaration as its body.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3939D8
@@ -278,7 +288,7 @@ internal sealed class JsParser
 
     // ---- statements ----------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7CC575
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9160AB
     // Broiler-Human:        PENDING
     private JsStatement ParseStatement()
     {
@@ -353,7 +363,7 @@ internal sealed class JsParser
                     return new JsDebuggerStatement(span);
 
                 case SliceTokenKind.With:
-                    return OutsideStatement(span, "the `with` statement");
+                    return ParseWith();
 
                 case SliceTokenKind.Class:
                     return new JsClassDeclaration(span, ParseClass(span, declaration: true));
@@ -541,6 +551,68 @@ internal sealed class JsParser
         }
 
         return new JsIfStatement(span, test, consequent, alternate);
+    }
+
+    /// <summary>Parses <c>with</c>, and refuses it where the language has no such statement.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Strict code has no <c>with</c> statement, and the refusal is an EARLY ERROR rather than a
+    /// manifest refusal.</b> The two are different claims and a conformance runner scores them
+    /// differently: <c>2104</c> says this profile declines a construct it could otherwise run, and
+    /// would take every strict-mode <c>with</c> case out of both the pass and the fail column. The
+    /// manifest admits <c>with</c>, so a program that writes one in strict code is wrong about the
+    /// LANGUAGE — which is <c>2101</c>, exactly as a <c>super</c> property outside a method is.
+    /// </para>
+    /// <para>
+    /// <b>A function body, a class body and a module are all strict</b>, and the parser already
+    /// tracks that: a directive prologue sets it before the body's statements are read, a class body
+    /// sets it before its heritage, the module goal sets it at the top, and a caller may impose it.
+    /// So this test needs no walk of anything.
+    /// </para>
+    /// <para>
+    /// <b>The body is a <c>Statement</c> and a declaration is not one.</b> <c>with (o) let x = 1;</c>
+    /// and <c>with (o) function f() { }</c> are syntax errors in the language, and the reason they
+    /// are refused here rather than lowered is not tidiness: a lexical declaration whose only
+    /// enclosing scope is the object environment record would have nowhere to put its slot.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=422A12
+    // Broiler-Human:        PENDING
+    private JsStatement ParseWith()
+    {
+        var span = Span();
+
+        if (strict)
+        {
+            Refuse(
+                span,
+                SliceSourceDiagnosticCode.UnexpectedToken,
+                "the `with` statement is a syntax error in strict code");
+
+            return new JsEmptyStatement(span);
+        }
+
+        Advance();
+        Expect(SliceTokenKind.OpenParen, "(");
+        var target = ParseExpression();
+        Expect(SliceTokenKind.CloseParen, ")");
+
+        if (Current.Kind is SliceTokenKind.Function or SliceTokenKind.Class or
+                SliceTokenKind.Const ||
+            (Current.Kind == SliceTokenKind.Let && Peek(1).Kind is SliceTokenKind.Identifier or
+                SliceTokenKind.Let or SliceTokenKind.Get or SliceTokenKind.Set or
+                SliceTokenKind.Of or SliceTokenKind.Async or SliceTokenKind.Static or
+                SliceTokenKind.OpenBracket or SliceTokenKind.OpenBrace))
+        {
+            Refuse(
+                Span(),
+                SliceSourceDiagnosticCode.UnexpectedToken,
+                "a declaration is not a statement, so it cannot be the body of a `with`");
+
+            return new JsEmptyStatement(span);
+        }
+
+        return new JsWithStatement(span, target, ParseStatement());
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=CEFC11

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   27
-// Annotated:        27/27
+// Relevant units:   29
+// Annotated:        29/29
 // Exempt:           0
-// Human-reviewed:   0/27
+// Human-reviewed:   0/29
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  4/10 max
-// Unverified:       27
+// Unverified:       29
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -43,7 +43,7 @@ namespace Broiler.VM.Profile.JavaScript;
 internal sealed partial class JsRealm
 {
     /// <summary>Builds <c>Array</c>, its statics and <c>Array.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A3FCA6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FA2AD6
     // Broiler-Human:        PENDING
     private void SetupArray()
     {
@@ -137,7 +137,56 @@ internal sealed partial class JsRealm
         SetupArrayReaders();
         SetupArrayIteration();
         SetupArrayLaterAdditions();
+        SetupArrayUnscopables();
     }
+
+    /// <summary>
+    /// Installs <c>Array.prototype[Symbol.unscopables]</c>, the blocklist a <c>with</c> obeys.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>This list is a compatibility rule and not a nicety, and it is the reason the Symbol
+    /// exists.</b> Adding <c>values</c> to <c>Array.prototype</c> broke pages that wrote
+    /// <c>with (someArray) { values }</c> against an outer variable of that name, so the language
+    /// made the newer members invisible to <c>with</c>. A realm without the list answers those
+    /// programs with a method where they expect their own variable.
+    /// </para>
+    /// <para>
+    /// <b>Every name the specification lists is listed, whether or not this realm has the member.</b>
+    /// The list is a fixed property of <c>Array.prototype</c> and a program may read it; trimming it
+    /// to what this realm implements would make <c>Object.keys(Array.prototype[Symbol.unscopables])</c>
+    /// a report about this build rather than about the language.
+    /// </para>
+    /// <para>
+    /// <b>Its prototype is null</b>, which is what the specification asks for and what stops a name
+    /// like <c>toString</c> — inherited from <c>Object.prototype</c> and truthy — from being
+    /// unscopable by accident.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=98F923
+    // Broiler-Human:        PENDING
+    private void SetupArrayUnscopables()
+    {
+        var blocked = new JsObject(null);
+
+        foreach (var name in ArrayUnscopableNames)
+        {
+            blocked.SetOwnProperty(name, JsProperty.Data(JsValue.True, JsPropertyAttributes.Default));
+        }
+
+        ArrayPrototype.SetOwnSymbol(
+            UnscopablesSymbol,
+            JsProperty.Data(JsValue.Object(blocked), JsPropertyAttributes.Configurable));
+    }
+
+    /// <summary>The members of <c>Array.prototype</c> a <c>with</c> statement does not bind.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FBB4CC
+    // Broiler-Human:        PENDING
+    private static readonly string[] ArrayUnscopableNames =
+    [
+        "at", "copyWithin", "entries", "fill", "find", "findIndex", "findLast", "findLastIndex",
+        "flat", "flatMap", "includes", "keys", "toReversed", "toSorted", "toSpliced", "values",
+    ];
 
     /// <summary>
     /// The prototype methods the language added after the ones above, and which real programs use

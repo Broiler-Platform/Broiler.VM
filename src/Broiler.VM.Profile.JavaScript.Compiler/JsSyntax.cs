@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   70
-// Annotated:        70/70
+// Relevant units:   71
+// Annotated:        71/71
 // Exempt:           7
-// Human-reviewed:   0/70
+// Human-reviewed:   0/71
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       70
+// Unverified:       71
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -495,6 +495,17 @@ internal sealed record JsBlockStatement(
 // Broiler-Human:        PENDING
 internal sealed record JsIfStatement(
     SliceSourceSpan Span, JsExpression Test, JsStatement Consequent, JsStatement? Alternate)
+    : JsStatement(Span);
+
+/// <summary><c>with (object) body</c>.</summary>
+/// <remarks>
+/// It carries the object expression and one statement, and nothing else: the body is a
+/// <c>Statement</c> and not a <c>StatementList</c>, so <c>with (o) x = 1;</c> and
+/// <c>with (o) { x = 1; }</c> are the same production with a different body node.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=AE5F75
+// Broiler-Human:        PENDING
+internal sealed record JsWithStatement(SliceSourceSpan Span, JsExpression Object, JsStatement Body)
     : JsStatement(Span);
 
 /// <summary><c>while</c>.</summary>

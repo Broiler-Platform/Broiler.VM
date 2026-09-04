@@ -312,12 +312,13 @@ internal static class JsExecution
     /// <b>Sixty-four megabytes is MEASURED against the declared ceiling and not chosen.</b>
     /// <c>eng/measure-frame-cost.py</c> bisects the published binary and reports how deep a
     /// recursion this stack holds; dividing the stack by that depth gives the cost of one guest
-    /// call, which after the async family joined the instruction set is <b>3,671 bytes</b> - the
-    /// executor's own frame having grown as the set did, from 3,179 through 3,463 to this. Sixteen
+    /// call, which after the async family and <c>with</c> joined the instruction set is
+    /// <b>3,736 bytes</b> - the executor's own frame having grown as the set did, from 3,179
+    /// through 3,463 to this. Sixteen
     /// megabytes held 5,278 calls, which is BELOW
     /// <see cref="JsEngine.MaximumCallDepth"/>, so a runaway recursion reached the stack before it
     /// reached the bound and terminated the process - which is JSC-85 exactly, and is the failure
-    /// this figure exists to prevent. Sixty-four megabytes holds 18,277, which is more than
+    /// this figure exists to prevent. Sixty-four megabytes holds 17,963, which is more than
     /// twice the call-depth maximum the descriptor lets a host grant, and leaves the room the
     /// built-ins that recurse in C# without going through a call need - a comparison function
     /// driving a sort, a cycle-free walk of a deep object in JSON - along with the stack a host has

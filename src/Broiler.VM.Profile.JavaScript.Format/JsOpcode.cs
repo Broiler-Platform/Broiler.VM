@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   16
 // Annotated:        16/16
-// Exempt:           105
+// Exempt:           107
 // Human-reviewed:   0/16
 // IP risk:          None
 // Security risk:    Medium
@@ -38,10 +38,20 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// the jump came from.
 /// </para>
 /// <para>
-/// <b>The set is deliberately not complete JavaScript.</b> There is no <c>with</c> and nothing a
-/// module declaration needs; each is a construct the manifest refuses at the front end rather than
-/// an opcode the executor would have to answer for. What is here is what a program that runs has
-/// to have.
+/// <b>The set is deliberately not complete JavaScript.</b> There is nothing a module declaration
+/// needs; that is a construct the manifest refuses at the front end rather than an opcode the
+/// executor would have to answer for. What is here is what a program that runs has to have.
+/// </para>
+/// <para>
+/// <b><c>with</c> is TWO instructions and the rest of it is instructions that were already here.</b>
+/// <see cref="PushObjectScope"/> puts an object environment record on the scope chain and
+/// <see cref="ResolveName"/> asks the innermost few records, by name, which of them binds a name -
+/// answering with the OBJECT rather than with the value. What that object is then read with, written
+/// with or deleted from is <see cref="GetProperty"/>, <see cref="SetProperty"/> and
+/// <see cref="DeleteProperty"/>, unchanged, so the verifier checks every step of a <c>with</c> body
+/// except which object <see cref="ResolveName"/> answered with. The alternative - one instruction
+/// that resolved a name and read it - would have hidden a property read the verifier can see, and
+/// would have needed a fourth operand shape to carry a name and a branch target at once.
 /// </para>
 /// <para>
 /// <b>Spread, destructuring and <c>for … of</c> ARE here, and each earned an opcode rather than a
@@ -75,7 +85,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// queue the host drains.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=4D6D90
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=4C870C
 // Broiler-Human:        PENDING
 public enum JsOpcode : byte
 {
@@ -167,6 +177,59 @@ public enum JsOpcode : byte
 
     /// <summary>Define the global named by constant <c>u16</c> as <c>undefined</c> when absent.</summary>
     DeclareGlobal = 0x19,
+
+    /// <summary>
+    /// Pop a value and continue in an <b>object environment record</b> over <c>ToObject</c> of it,
+    /// whose parent is the current environment.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is the same scope chain and a different KIND of record, which is why it costs one
+    /// opcode rather than a second chain.</b> A record made here holds an object where every other
+    /// record holds slots; <see cref="PopScope"/> discards it exactly as it discards a block's, and
+    /// a <see cref="LoadScoped"/> whose hop count crosses it counts it as one hop like any other -
+    /// so the lowering's static addressing keeps working through a <c>with</c> body rather than
+    /// being suspended inside one.
+    /// </para>
+    /// <para>
+    /// <b>The coercion is <c>ToObject</c> and it is part of the instruction.</b> <c>with (null)</c>
+    /// and <c>with (undefined)</c> are a <c>TypeError</c>, and <c>with ("abc")</c> puts a String
+    /// wrapper on the chain, so <c>length</c> resolves inside the body. Coercing in the lowering
+    /// instead would have needed an opcode for <c>ToObject</c> that nothing else wants.
+    /// </para>
+    /// </remarks>
+    PushObjectScope = 0x1A,
+
+    /// <summary>
+    /// Push the object environment record binding constant <c>u16</c> within the innermost <c>u8</c>
+    /// records of the scope chain, or <c>undefined</c> when none of them binds it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It answers with the OBJECT and not with the value, and that is what keeps the rest of a
+    /// <c>with</c> body ordinary.</b> The lowering follows it with the instructions a property
+    /// access already uses - <see cref="GetProperty"/>, <see cref="SetProperty"/>,
+    /// <see cref="DeleteProperty"/> - so a getter on the <c>with</c> object runs through the same
+    /// path <c>o.x</c> runs through, and the verifier sees a property read where a program has one.
+    /// It also answers the receiver question for free: a call whose callee came from an object
+    /// environment record is made with THAT OBJECT as its <c>this</c>, and the object is the value
+    /// this instruction already pushed.
+    /// </para>
+    /// <para>
+    /// <b>The <c>u8</c> half is a SEARCH BOUND and it is what stops a name reaching a binding the
+    /// language does not give it.</b> The lowering resolves every name statically first; the bound
+    /// is the number of records between the reference and the binding it resolved to, so a record
+    /// beyond that binding is never asked. Searching the whole chain instead would let an outer
+    /// <c>with</c> shadow a declaration that already shadows it.
+    /// </para>
+    /// <para>
+    /// <b>Only an object record can answer.</b> A declarative record holds a <c>JsValue</c> array
+    /// and no names at all, so there is nothing in one for a search by name to match: a name this
+    /// instruction does not find on an object falls through to the address the lowering computed,
+    /// and to nothing else.
+    /// </para>
+    /// </remarks>
+    ResolveName = 0x1B,
 
     // ---- objects and properties ------------------------------------------------------------------
 
@@ -735,7 +798,7 @@ public static class JsOpcodes
     public const byte MemberBits = MemberIsGetter | MemberIsSetter | MemberIsEnumerable;
 
     /// <summary>Every opcode format version 2 defines, in ascending numeric order.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=875EA1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=833C07
     // Broiler-Human:        PENDING
     public static readonly JsOpcode[] All =
     [
@@ -746,6 +809,7 @@ public static class JsOpcodes
         JsOpcode.LoadScoped, JsOpcode.StoreScoped, JsOpcode.InitialiseScoped,
         JsOpcode.LoadGlobal, JsOpcode.StoreGlobal, JsOpcode.LoadGlobalOrUndefined,
         JsOpcode.PushScope, JsOpcode.PopScope, JsOpcode.CopyScope, JsOpcode.DeclareGlobal,
+        JsOpcode.PushObjectScope, JsOpcode.ResolveName,
         JsOpcode.NewObject, JsOpcode.NewArray,
         JsOpcode.GetProperty, JsOpcode.SetProperty, JsOpcode.GetIndex, JsOpcode.SetIndex,
         JsOpcode.DefineField, JsOpcode.DefineIndexed,
@@ -820,14 +884,14 @@ public static class JsOpcodes
     /// The operand shape of <paramref name="opcode"/>, or <see langword="null"/> when this format
     /// version does not define it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=877E59
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=7AECCE
     // Broiler-Human:        PENDING
     public static JsOperandShape? Shape(JsOpcode opcode) => opcode switch
     {
         JsOpcode.Nop or
         JsOpcode.LoadUndefined or JsOpcode.LoadNull or JsOpcode.LoadTrue or JsOpcode.LoadFalse or
         JsOpcode.LoadThis or JsOpcode.NewArguments or JsOpcode.LoadNewTarget or
-        JsOpcode.PopScope or
+        JsOpcode.PopScope or JsOpcode.PushObjectScope or
         JsOpcode.NewObject or
         JsOpcode.GetIndex or JsOpcode.SetIndex or JsOpcode.DefineIndexed or JsOpcode.DeleteIndex or
         JsOpcode.LoadSuperProperty or JsOpcode.StoreSuperProperty or
@@ -868,7 +932,12 @@ public static class JsOpcodes
         JsOpcode.ForInNext or JsOpcode.IterateNext
             => JsOperandShape.U32,
 
-        JsOpcode.LoadScoped or JsOpcode.StoreScoped or JsOpcode.InitialiseScoped
+        // `ResolveName` shares the shape the three slot instructions use, and for the same reason:
+        // one instruction carries a depth and a sixteen-bit index. Here the depth is a search bound
+        // rather than a hop count and the index names a constant rather than a slot, which is a
+        // difference in meaning and not in encoding.
+        JsOpcode.LoadScoped or JsOpcode.StoreScoped or JsOpcode.InitialiseScoped or
+        JsOpcode.ResolveName
             => JsOperandShape.U8U16,
 
         _ => null,
@@ -882,7 +951,7 @@ public static class JsOpcodes
     /// and the verifier's abstract height is computed from them alone. A false answer means the
     /// opcode is not one this format version defines - not that its effect is unknown.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=7477E4
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=1FB23C
     // Broiler-Human:        PENDING
     public static bool TryDescribe(JsOpcode opcode, uint operand, out int pops, out int pushes)
     {
@@ -908,6 +977,7 @@ public static class JsOpcodes
             case JsOpcode.LoadNewTarget:
             case JsOpcode.NewArguments:
             case JsOpcode.LoadScoped:
+            case JsOpcode.ResolveName:
             case JsOpcode.LoadGlobal:
             case JsOpcode.LoadGlobalOrUndefined:
             case JsOpcode.NewObject:
@@ -928,6 +998,7 @@ public static class JsOpcodes
             case JsOpcode.InitialiseScoped:
             case JsOpcode.StoreGlobal:
             case JsOpcode.Pop:
+            case JsOpcode.PushObjectScope:
             case JsOpcode.Throw:
             case JsOpcode.Return:
             case JsOpcode.JumpIfFalse:

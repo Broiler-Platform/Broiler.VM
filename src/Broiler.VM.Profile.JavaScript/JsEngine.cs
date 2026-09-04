@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   82
-// Annotated:        82/82
+// Relevant units:   84
+// Annotated:        84/84
 // Exempt:           13
-// Human-reviewed:   0/82
+// Human-reviewed:   0/84
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         8/8
+// Criteria:         9/9
 // Resource impact:  7/10 max
-// Unverified:       82
+// Unverified:       84
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -385,8 +385,8 @@ internal sealed class JsEngine
     /// <para>
     /// <b>The figure is MEASURED and not chosen</b>: <c>eng/measure-frame-cost.py</c> bisects the
     /// published binary against a recursion with no base case and finds that this interpreter
-    /// survives 18,277 JavaScript calls on the sixty-four-megabyte stack
-    /// <see cref="JsExecution"/> declares — 3,671 bytes of native stack per call, and the same
+    /// survives 17,963 JavaScript calls on the sixty-four-megabyte stack
+    /// <see cref="JsExecution"/> declares — 3,736 bytes of native stack per call, and the same
     /// figure whether the JavaScript frame is narrow or wide, because the operand stack and the
     /// environment are heap objects rather than stack ones. A guest `throw` unwinds from the same
     /// depth, which it did not before the executor caught by FILTER rather than by
@@ -406,9 +406,13 @@ internal sealed class JsEngine
     /// generator family grew it again, from 3,158 bytes to 3,463 - the two suspension arms and the
     /// heap frame they read - and the sixty-four megabytes still hold 19,377 calls, so the bound is
     /// still under a third of the capacity and the stack did not have to move. Admitting the ASYNC
-    /// family grew it once more, from 3,463 bytes to 3,671 - one more suspension arm and the two
-    /// locals the async driver carries across its own try - and the capacity fell from 19,377 calls
-    /// to 18,277, which is still more than twice the ceiling a host may be granted. The measurement
+    /// family and <c>with</c> grew it once more, from 3,463 bytes to 3,736 - one more suspension
+    /// arm, the two locals the async driver carries across its own try, and the scope-chain walk a
+    /// dynamic name resolution holds - and the capacity fell from 19,377 calls to 17,963, which is
+    /// still more than twice the ceiling a host may be granted. The two families were measured
+    /// apart before they were measured together, at 18,277 and 19,288 calls, and NEITHER of those
+    /// figures describes the build that ships both: a per-frame cost is a property of the whole
+    /// dispatch loop, so it is measured on the tree that has everything in it. The measurement
     /// was re-taken each time anyway, because a bound that is safe by arithmetic nobody re-did is a
     /// bound nobody knows is safe.
     /// </para>
@@ -2557,7 +2561,7 @@ internal sealed class JsEngine
     /// have run for a throw from the instruction itself, and no unwinding is reimplemented.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=9292E6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=76C90B
     // Broiler-Human:        PENDING
     private JsValue Execute(
         JsProgram program,
@@ -2856,6 +2860,20 @@ internal sealed class JsEngine
                         case JsOpcode.PushScope:
                             scopes.Add(new JsEnvironment(U16(code, pc), scopes[^1]));
                             pc += 3;
+                            break;
+
+                        case JsOpcode.PushObjectScope:
+                            // The coercion is charged like the allocation it usually is: a String or
+                            // a Number operand builds a wrapper object here, and `with (null)` is
+                            // the TypeError `ToObject` already throws.
+                            Charge(4);
+                            scopes.Add(new JsEnvironment(ToObject(stack[--sp]), scopes[^1]));
+                            pc++;
+                            break;
+
+                        case JsOpcode.ResolveName:
+                            stack[sp++] = ResolveName(scopes, code[pc + 1], names[U16(code, pc + 1)]);
+                            pc += 4;
                             break;
 
                         case JsOpcode.PopScope:
@@ -3924,6 +3942,78 @@ internal sealed class JsEngine
 
         region = default;
         return false;
+    }
+
+    /// <summary>
+    /// The object environment record that binds <paramref name="name"/> within the innermost
+    /// <paramref name="limit"/> records, or <c>undefined</c> when none of them does.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THIS IS THE ONLY LOOKUP BY NAME IN THE SCOPE CHAIN, AND IT CAN REACH NOTHING BUT AN
+    /// OBJECT A <c>with</c> PUT THERE.</b> A declarative record is a <c>JsValue</c> array with no
+    /// names in it, so this walk has nothing to compare a name against and skips it; a name the
+    /// objects do not have therefore falls through to the <c>(depth, slot)</c> address the lowering
+    /// computed from the language's own scope rules, and to nothing else. That is what stops a
+    /// <c>with</c> body reaching an enclosing function's binding by naming it.
+    /// </para>
+    /// <para>
+    /// <b><paramref name="limit"/> is the lowering's, and it is why an outer <c>with</c> cannot
+    /// shadow an inner declaration.</b> It counts the records between the reference and the binding
+    /// the lowering resolved, so a record past that binding is never asked. Walking the whole chain
+    /// would make <c>with (a) { function f() { var x; with (b) { x } } }</c> read <c>a.x</c>.
+    /// </para>
+    /// <para>
+    /// <b>Nothing here is cached, and that is the behaviour rather than a missing optimisation.</b>
+    /// Each mention of a name inside a <c>with</c> body runs this walk again, so an object that
+    /// gains the property between two reads is read from on the second and not on the first, and an
+    /// object that loses it goes back to the enclosing binding. An implementation that remembered
+    /// where a name resolved last time would answer the first reading for both.
+    /// </para>
+    /// <para>
+    /// <b><c>Symbol.unscopables</c> is consulted per record and per name</b>, which is where the
+    /// specification consults it - inside <c>HasBinding</c> - and is why a name listed truthily
+    /// there does not stop the walk. It is a property read on the guest's object and can therefore
+    /// run a getter, which is charged like any other call this walk makes.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=1AC0F4
+    // Broiler-Falsified-If: this walk answers with anything but an object a `PushObjectScope` placed on the chain
+    // Broiler-Human:        PENDING
+    private JsValue ResolveName(
+        System.Collections.Generic.List<JsEnvironment> scopes, int limit, string name)
+    {
+        var current = scopes[^1];
+
+        for (var step = 0; step < limit && current is not null; step++)
+        {
+            Charge(1);
+
+            if (current.Binding is { } bound && HasProperty(bound, name) && !Unscopable(bound, name))
+            {
+                return JsValue.Object(bound);
+            }
+
+            current = current.Parent;
+        }
+
+        return JsValue.Undefined;
+    }
+
+    /// <summary>Whether <paramref name="bound"/> hides <paramref name="name"/> from a <c>with</c>.</summary>
+    /// <remarks>
+    /// <b>The blocklist is read off the object every time, prototype chain included.</b> It is what
+    /// lets an Array put <c>values</c>, <c>keys</c> and <c>flat</c> on
+    /// <c>Array.prototype[Symbol.unscopables]</c> so that <c>with (someArray) { values }</c> reaches
+    /// an outer <c>values</c> rather than the method - which is the whole reason the Symbol was
+    /// added to the language, and is a compatibility rule rather than a nicety.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=47A445
+    // Broiler-Human:        PENDING
+    private bool Unscopable(JsObject bound, string name)
+    {
+        var blocked = GetSymbol(JsValue.Object(bound), Realm.UnscopablesSymbol);
+        return blocked.IsObject && GetProperty(blocked, name).ToBooleanValue();
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=6F7A88
