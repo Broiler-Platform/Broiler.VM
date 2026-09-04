@@ -4134,3 +4134,62 @@ it.**
 **Authority and date.** The implementation of 2026-09-04 in this checkout, the bisections
 `eng/measure-frame-cost.py` performs before and after the merge, and the acceptance rows that
 distinguish the catchable refusal from the host's ceiling. 2026-09-04.
+
+### JSC-102
+
+**Where:** [JSC-91](#jsc-91), which records a differential probe finding eight things wrong inside
+globals the realm has, and states that the instrument for that layer is the probe because no rule
+can see it.
+
+**What JSC-91 did not reach, and why.** A probe finds what its cases compose. JSC-91's cases were
+written when the realm had an iteration protocol and three construct families that use one — spread,
+`for … of` and destructuring — were still refused by name. **The seam between a protocol and the
+constructs that consume it cannot be probed until both exist**, so two absences sat in the realm
+unreachable by any case anybody could write.
+
+**What the seam showed the moment `for … of`, spread and generators landed.** `new Map(g())` and
+`new Set(userIterable)` answered a `TypeError` **saying the argument is not iterable**, about an
+argument that is: the collection constructors read an array-like and never consulted
+`Symbol.iterator`. And a typed array was indexable and not iterable — `[...bytes]`,
+`for (const b of bytes)` and `yield* bytes` all failed — because `%TypedArray%.prototype` carried no
+`[Symbol.iterator]`, `values`, `keys` or `entries`.
+
+**Both were correct when they were written and stopped being correct without being edited.** The
+collection reader's own remarks called it *this realm's stand-in for iterating an iterable*, which
+was the only reading available while the realm had no `Symbol`; the typed arrays were built before
+the symbols existed. Neither was a mistake. **A component that grows a capability has to be re-asked
+the questions its earlier answers were conditioned on**, and nothing here asks that question
+automatically.
+
+**What replaced them.** The collection constructors consult `Symbol.iterator` first and keep the
+array-like reading as the fallback; `%TypedArray%.prototype` has `values`, `keys`, `entries` and
+`[Symbol.iterator]`, with `values` and `[Symbol.iterator]` **the same function object**, as
+`Array.prototype` has them. A twenty-one-case probe over both agrees with the comparison engine
+throughout, and the cases are retained.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the merge of the
+generator bundle whose seam probe reported both, and the retained cases appended to
+`src/tests/differential/the-later-library-methods.js`. 2026-09-04.
+
+### JSC-103
+
+**Where:** [JSW-5](roadmap.workloads.md#jsw-5--the-core-language-surface-still-refused-by-name)'s
+clause that a family is *admitted and exercised*, and the parameter-binding prologue the
+non-simple-parameter-list lowering uses.
+
+**What is admitted and what is not quite right.** A generator with a **non-simple** parameter list —
+a default, a rest parameter or a pattern — binds its parameters in the unit's own prologue, and a
+generator's prologue is body code. So the defaults run at the **first `next()`** where the language
+runs them at the **call**: `function* g(a = side()) {}` orders the side effect after the call here
+and before it everywhere else, and a default that throws throws from `next()` rather than from
+`g()`. A simple parameter list is unaffected.
+
+**It is recorded rather than repaired, and the reason is the format.** Separating the two would need
+the code unit to declare where its prologue ends, so a generator's construction could run the
+prologue and suspend after it. That is a format change with a verifier rule attached, and it is not
+a merge's to make. **A fixture pins the current answer** — `runs/a-generator-default-runs-at-the-first-next.js`
+— and goes red the day it is repaired, which is the point of pinning it.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout and the 113-case probe
+over the seam between generators and the constructs merged beside them, retained as
+`src/tests/differential/the-seam-between-generators-and-the-rest.js`. 2026-09-04.

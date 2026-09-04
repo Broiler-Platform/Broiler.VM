@@ -93,3 +93,29 @@ p(function(){ var a=[1,2,3]; a.copyWithin(0,1); return a.join(","); });
 p(function(){ var a=[1,2,3]; return a.pop()+":"+a.length; });
 p(function(){ var a=[1,2,3]; return a.shift()+":"+a.join(","); });
 p(function(){ var a=[1,2]; return a.unshift(0)+":"+a.join(","); });
+
+// --- what is iterable, once the realm has an iteration protocol at all. APPENDED rather
+// than inserted, for the reason the block above gives: a case number is how a divergence is
+// named.
+function* pairs(){ yield [1,"a"]; yield [2,"b"]; }
+p(function(){ return new Map(pairs()).get(2); });
+p(function(){ return new Set(function*(){ yield 1; yield 1; yield 2; }()).size; });
+p(function(){ return new Map([[1,2]]).get(1); });
+p(function(){ return new Set([1,2,2]).size; });
+p(function(){ return new Set("abc").size; });
+p(function(){ var o = { [Symbol.iterator]: function(){ var i=0; return { next: function(){ return i<2 ? {value:i++,done:false} : {done:true}; } }; } }; return new Set(o).size; });
+p(function(){ return new Map(new Map([[1,2]])).get(1); });
+p(function(){ return t(function(){ return new Map(5); }); });
+p(function(){ return t(function(){ return new Set({}); }); });
+p(function(){ return new WeakSet([{}]) instanceof WeakSet; });
+p(function(){ return [...new Uint8Array([1,2,3])].join(","); });
+p(function(){ var s=0; for (const b of new Uint8Array([1,2])) s+=b; return s; });
+p(function(){ return Array.from(new Int16Array([4,5])).join(","); });
+p(function(){ return [...new Uint8Array([7]).entries()].map(function(e){return e.join(":");}).join(","); });
+p(function(){ return [...new Uint8Array([7]).keys()].join(","); });
+p(function(){ return new Uint8Array(1).values === new Uint8Array(1)[Symbol.iterator]; });
+p(function(){ return new Set(new Uint8Array([1,2,2])).size; });
+p(function(){ return [...new Uint8Array(0)].length; });
+p(function(){ return Object.prototype.toString.call(new Uint8Array(1)[Symbol.iterator]()); });
+p(function(){ function* d(){ yield* new Uint8Array([8,9]); } return [...d()].join(","); });
+p(function(){ return [...new Map([[1,2]])].map(function(e){return e.join("=");}).join(","); });

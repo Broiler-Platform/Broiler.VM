@@ -518,7 +518,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The searches, <c>join</c>, <c>at</c> and <c>toString</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=1FF61F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=F95984
     // Broiler-Human:        PENDING
     private void SetupTypedArrayReaders()
     {
@@ -602,6 +602,52 @@ internal sealed partial class JsRealm
             }
 
             return JsValue.False;
+        });
+
+        // A TYPED ARRAY IS ITERABLE, AND IT WAS NOT UNTIL 2026-09-04.
+        //
+        // `%TypedArray%.prototype[Symbol.iterator]` IS `values` - the same function object under
+        // both keys, exactly as `Array.prototype` has it - so `[...new Uint8Array([1, 2])]`,
+        // `for (const b of bytes)` and a `yield*` over one all work. Without it a typed array was
+        // indexable and not iterable, which is a distinction no program expects and which the
+        // seam between the binary surface and the iteration protocol made visible the moment both
+        // existed.
+        //
+        // The iterator is the ordinary indexed one: it reads `length` and the indices through the
+        // property path, so the integer-indexed exotic rules apply to it as they do to every other
+        // reader, and a detached buffer answers `undefined` rather than a stale byte.
+        var typedValues = Native("values", 0, static (engine, thisValue, arguments) =>
+        {
+            _ = arguments;
+            _ = BinaryLiveTypedArray(engine, thisValue, "values");
+
+            return JsValue.Object(
+                engine.Realm.CreateIndexedIterator(thisValue, IndexedIteratorKind.Value));
+        });
+
+        TypedArrayPrototype.SetOwnProperty(
+            "values", JsProperty.Data(JsValue.Object(typedValues), JsPropertyAttributes.BuiltIn));
+
+        TypedArrayPrototype.SetOwnSymbol(
+            IteratorSymbol,
+            JsProperty.Data(JsValue.Object(typedValues), JsPropertyAttributes.BuiltIn));
+
+        Method(TypedArrayPrototype, "keys", 0, (engine, thisValue, arguments) =>
+        {
+            _ = arguments;
+            _ = BinaryLiveTypedArray(engine, thisValue, "keys");
+
+            return JsValue.Object(
+                engine.Realm.CreateIndexedIterator(thisValue, IndexedIteratorKind.Key));
+        });
+
+        Method(TypedArrayPrototype, "entries", 0, (engine, thisValue, arguments) =>
+        {
+            _ = arguments;
+            _ = BinaryLiveTypedArray(engine, thisValue, "entries");
+
+            return JsValue.Object(
+                engine.Realm.CreateIndexedIterator(thisValue, IndexedIteratorKind.Entry));
         });
 
         Method(TypedArrayPrototype, "join", 1, (engine, thisValue, arguments) =>

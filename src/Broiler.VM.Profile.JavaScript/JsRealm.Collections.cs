@@ -732,12 +732,22 @@ internal sealed partial class JsRealm
     /// it under the loop filling it.
     /// </para>
     /// <para>
-    /// A value with no <c>length</c> is a <c>TypeError</c> and not an empty collection. Answering
-    /// empty would turn every "I passed the wrong thing" into a silently empty Map, which is the
-    /// failure mode with no symptom.
+    /// A value with no <c>length</c> and no <c>Symbol.iterator</c> is a <c>TypeError</c> and not an
+    /// empty collection. Answering empty would turn every "I passed the wrong thing" into a
+    /// silently empty Map, which is the failure mode with no symptom.
+    /// </para>
+    /// <para>
+    /// <b>THE ITERATION PROTOCOL COMES FIRST, and this method's remarks said otherwise until
+    /// 2026-09-04.</b> It described itself as this realm's stand-in for iterating an iterable and
+    /// read an array-like instead, which was the only reading available while the realm had no
+    /// <c>Symbol</c>. It stopped being the only reading and did not stop being what the code did:
+    /// <c>new Map(generator())</c> and <c>new Set(userIterable)</c> answered a <c>TypeError</c>
+    /// saying the argument is not iterable, about an argument that is. The array-like reading stays
+    /// as the fallback, because the specification's own <c>AddEntriesFromIterable</c> is reached
+    /// only through an iterator and an Array is one.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=60896F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=4DF0AE
     // Broiler-Human:        PENDING
     private static System.Collections.Generic.List<JsValue> CollectionElements(
         JsEngine engine, JsValue source)
@@ -747,6 +757,12 @@ internal sealed partial class JsRealm
         if (!source.IsObject && !source.IsString)
         {
             throw engine.Error("TypeError", "the argument is not iterable");
+        }
+
+        if (engine.TryGetSymbolMethod(source, engine.Realm.IteratorSymbol, out _))
+        {
+            engine.IterateInto(source, values);
+            return values;
         }
 
         var declared = engine.GetProperty(source, "length");
