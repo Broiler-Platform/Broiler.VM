@@ -127,3 +127,19 @@ hashbang/on-the-second-line.js|3|2102:ExpectedToken
 # passed in both states and judged nothing.
 --version|0|manifest broiler.javascript.wide
 --version|0|docs/specification/ecma-262-es2026-spec.html
+
+# THE TWO DEFECTS THE OCTANE WORKLOADS FOUND, pinned as programs this repository holds rather than
+# as a benchmark it does not. Neither fixture needs a third-party file, and each row is the ANSWER
+# the construct produces - so reverting either repair moves a value rather than killing the driver,
+# which is what makes these controls rather than crashes.
+#
+# The first was refused by this host's own verifier, at exit 4, on bytes this host's own lowering
+# produced: an array literal that is not dense-and-small used to leave nothing on the operand stack
+# *(JSC-81)*. The second and third were wrong answers: a formal parameter named `arguments` was
+# overwritten by the arguments object *(JSC-82)*, and a mention of `arguments` inside an arrow made
+# no object at all *(JSC-83)*.
+runs/an-array-literal-with-holes.js|0|array-literal-holes ok
+runs/an-array-literal-with-holes.js|0|2:false:1
+runs/a-parameter-named-arguments.js|0|parameter-named-arguments ok
+runs/a-parameter-named-arguments.js|0|third
+runs/a-parameter-named-arguments.js|0|captured

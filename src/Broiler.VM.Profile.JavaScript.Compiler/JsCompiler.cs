@@ -313,7 +313,7 @@ public sealed class JsCompiler
         return index;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=88C57E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=671DD9
     // Broiler-Human:        PENDING
     private int CompileFunction(JsFunctionNode function)
     {
@@ -343,7 +343,28 @@ public sealed class JsCompiler
             scope.Declare(parameter, constant: false);
         }
 
-        var usesArguments = !function.IsArrow && UsesArguments(function.Body);
+        // A PARAMETER NAMED `arguments` IS THE BINDING, AND THE OBJECT IS NOT CREATED AT ALL.
+        // `Scope.Declare` answers with the existing slot when the name is already declared, so a
+        // function whose formal parameter list contains `arguments` used to have its third or
+        // fourth actual overwritten by the arguments object between entry and the first statement -
+        // the parameter's value was simply gone. The specification says the same thing from the
+        // other end: function declaration instantiation sets `argumentsObjectNeeded` to false when
+        // `arguments` is one of the parameter names. A `var arguments` or a function declaration of
+        // that name is NOT this case: each is initialised after the object is, which is the order
+        // the specification asks for and the order the code below already produces
+        // *(corrected: JSC-82)*.
+        var shadowedByParameter = false;
+
+        foreach (var parameter in function.Parameters)
+        {
+            if (string.Equals(parameter, "arguments", System.StringComparison.Ordinal))
+            {
+                shadowedByParameter = true;
+                break;
+            }
+        }
+
+        var usesArguments = !function.IsArrow && !shadowedByParameter && UsesArguments(function.Body);
 
         if (usesArguments)
         {
@@ -1570,7 +1591,7 @@ public sealed class JsCompiler
         scope = outer;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=379F3A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=560120
     // Broiler-Human:        PENDING
     private void CompileArray(JsArrayLiteral array)
     {
@@ -1612,6 +1633,14 @@ public sealed class JsCompiler
 
         if (array.Elements.Count != 0)
         {
+            // THE ARRAY IS DUPLICATED FIRST BECAUSE `SetProperty` DOES NOT LEAVE ITS BASE BEHIND.
+            // It pops a value and a base and pushes the value back, so setting `length` directly on
+            // the array under construction replaces the array with the count, and the `Pop` that
+            // follows then discards the count - leaving the whole literal expression with nothing
+            // on the operand stack where its caller expects one value. The verifier reads that as an
+            // operand-stack underflow at whatever instruction next pops one value too many, which is
+            // a diagnosis a long way from the cause *(corrected: JSC-81)*.
+            Emit(JsOpcode.Duplicate);
             Emit(JsOpcode.LoadConstant, NumberConstant(array.Elements.Count));
             Emit(JsOpcode.SetProperty, InternedName("length"));
             Emit(JsOpcode.Pop);
@@ -2602,7 +2631,7 @@ public sealed class JsCompiler
     // Broiler-Human:        PENDING
     private static class Walk
     {
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=EDC888
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=83CCA1
         // Broiler-Human:        PENDING
         internal static bool Mentions(JsNode node, string name)
         {
@@ -2611,7 +2640,30 @@ public sealed class JsCompiler
                 case JsIdentifier identifier:
                     return string.Equals(identifier.Name, name, System.StringComparison.Ordinal);
 
-                case JsFunctionExpression:
+                // AN ARROW FUNCTION IS NOT A BOUNDARY FOR THIS SEARCH, AND AN ORDINARY FUNCTION IS.
+                // The question this walk answers is whether the enclosing function has to
+                // materialise an `arguments` object, and an arrow has no `arguments` of its own -
+                // a mention inside one reaches the enclosing function's. Stopping at arrows the way
+                // this stopped at every function-like node left `function f() { return () =>
+                // arguments[0]; }` with no `arguments` slot at all, so the inner reference fell
+                // through to a global read and threw a `ReferenceError` at run time
+                // *(corrected: JSC-83)*.
+                case JsFunctionExpression expression:
+                    if (!expression.Function.IsArrow)
+                    {
+                        return false;
+                    }
+
+                    foreach (var statement in expression.Function.Body)
+                    {
+                        if (Mentions(statement, name))
+                        {
+                            return true;
+                        }
+                    }
+
+                    return false;
+
                 case JsFunctionDeclaration:
                     return false;
 

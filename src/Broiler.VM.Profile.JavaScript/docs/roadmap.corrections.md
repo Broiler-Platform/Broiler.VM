@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap — corrections and rejections
 
-**Last updated:** 2026-09-03
+**Last updated:** 2026-09-04
 
 **This file is part of the [Broiler.VM.Profile.JavaScript roadmap](roadmap.md)**, which
 [names every file](roadmap.md#how-this-roadmap-is-split). It carries no numbered section of the
@@ -3425,3 +3425,118 @@ that everything knowable is checked.
 variant `test/language/future-reserved-words/yield-strict.js`, whose movement in both directions is
 in [Bundle JS-4-001](evidence/js-4-001/README.md).
 
+
+### JSC-81
+
+**Where:** the workload roadmap's
+[section 3.4](roadmap.workloads.md#34-the-two-failures-that-are-defects-rather-than-absences), which
+states that `pdfjs` is refused by this component's own verifier on bytes this component's own
+lowering produced, and asks which of two components was wrong.
+
+**What the plan said.** That the answer was one of two: *either* the lowering emits something the
+format does not admit, *or* the format admits something the verifier's semantic stage then rejects.
+The stage's objective is written around that fork, and its first clause is to decide it.
+
+**Which of the two it was.** **Neither, and the fork was drawn one level too high.** The lowering
+emitted only instructions the format admits and the verifier decodes, and the verifier's semantic
+stage was right to refuse them. What was wrong was the *composition* of instructions the lowering
+chose for one construct: an array literal that is not dense-and-under-a-thousand-elements is built
+element by element and then has its `length` set, and `SetProperty` **pops a value and a base and
+pushes the value back**. Setting `length` on the array under construction therefore replaced the
+array with the count, and the `Pop` that followed discarded the count — leaving the literal
+expression with **nothing** on the operand stack where every caller expects one value. The verifier
+reported an operand-stack underflow, at whatever later instruction first popped one value too many,
+which is a position a long way from the cause.
+
+**What replaced it.** The array is duplicated before its `length` is set, so the literal leaves
+exactly one value. Section 3.4's fork stands as a question a reader should ask; what this entry adds
+is the third answer it did not offer — **a lowering that is internally inconsistent while emitting
+nothing the format or the verifier could object to on its own**. A stage that had only looked for a
+disagreement between the two components named would not have found this.
+
+**What the repair does not do.** It does not make the verifier's position any nearer the cause. A
+version-2 artifact carries a position table that the verifier parses and discards, so a refusal
+still names a code-section offset and never a line — which is how a defect in eleven lines of
+JavaScript took a benchmark of thirty-three thousand to expose.
+
+**Retained as a fixture rather than as a benchmark.** `src/tests/cli/runs/an-array-literal-with-holes.js`
+is the same construct with no third-party file behind it, and its rows in
+`src/tests/cli/expected.txt` assert the answers rather than the exit code alone.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, and the Octane `pdfjs`
+run through the ordinary command line that moved from an exit-4 refusal to a named absent
+constructor. 2026-09-04.
+
+### JSC-82
+
+**Where:** the workload roadmap's
+[section 3.4](roadmap.workloads.md#34-the-two-failures-that-are-defects-rather-than-absences),
+which records the `typescript` benchmark failing with a type error against a value the program did
+not expect to be `undefined`, and the ledger's
+[section 2](roadmap.status.md#2-current-milestone-status) statement that **`arguments` is unmapped**.
+
+**What the plan said.** That the divergence in this area is the *mapping* — that the arguments
+object of a sloppy-mode function does not alias its parameters, which is a declared approximation
+and an observable one. Nothing said the binding itself could be wrong.
+
+**What was actually built.** A function whose formal parameter list contains the name `arguments`
+had that parameter's value **destroyed on entry**. The lowering declares the parameters into slots,
+then declares `arguments` for the object — and the compile-time scope answers a repeat declaration
+with the slot it already has, so the object was written into the parameter's own slot before the
+first statement ran. The actual the caller passed was simply gone. The specification says the
+opposite from the other end: function declaration instantiation sets `argumentsObjectNeeded` to
+false when `arguments` is one of the parameter names, precisely so that the parameter is the
+binding.
+
+**How it was found, which is the part worth keeping.** By a machine-generated program, exactly as
+[section 3.4](roadmap.workloads.md#34-the-two-failures-that-are-defects-rather-than-absences)
+predicted such a defect would be. The Octane TypeScript benchmark carries a compiler with
+`function FuncDecl(name, bod, isConstructor, arguments, vars, scopes, statics, nodeType)` and a
+body that reads `this.arguments`, so `arguments.members.length` read a property of the arguments
+object and threw. **No hand-written test in this repository would have contained that function**,
+and the shape is not exotic: naming a parameter `arguments` is legal sloppy-mode JavaScript that a
+code generator has no reason to avoid.
+
+**What replaced it.** A parameter named `arguments` suppresses the object entirely. A `var
+arguments` or a function declaration of that name is deliberately **not** this case: each is
+initialised after the object is, which is the order the specification asks for and the order the
+lowering already produced.
+
+**What is still true, and must not be read as repaired.** The arguments object is still **unmapped**
+— writing `arguments[0]` does not change the first parameter and vice versa. That divergence is the
+ledger's and this entry does not touch it.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the Octane `typescript`
+benchmark moving from a type error to a score through the ordinary command line, and the fixture
+`src/tests/cli/runs/a-parameter-named-arguments.js`. 2026-09-04.
+
+### JSC-83
+
+**Where:** roadmap [section 9](roadmap.md#9-the-semantic-front-end-and-lowering)'s account of the
+front end's static walks, and the same ledger sentence [JSC-82](#jsc-82) cites.
+
+**What the plan said.** Nothing that was wrong, and that is why this is a correction to a *reading*
+rather than to a sentence. The walk that decides whether a function must materialise an `arguments`
+object stops at every function-like node, because a nested function has an `arguments` of its own
+and a mention inside one is not a mention of the enclosing function's. That reading is correct for
+every function-like node **except one**.
+
+**What was actually built.** An arrow function is parsed as a function expression carrying an arrow
+flag, so the walk stopped at arrows too. An arrow has **no `arguments` of its own**: a mention
+inside one is a mention of the enclosing function's, which is the whole of what makes
+`function f() { return () => arguments[0]; }` a legal and ordinary program. The enclosing function
+therefore declared no slot, the inner reference fell through to a global read, and the program threw
+a `ReferenceError` naming `arguments` at run time — a refusal that looks exactly like an absent
+global rather than like a defect in a walk.
+
+**What replaced it.** The walk descends into an arrow's body and stops only at an ordinary function.
+
+**Why it is recorded beside [JSC-82](#jsc-82) rather than folded into it.** They are two defects in
+one binding, found by the same repair session, and only the first was reachable from either
+workload. The second was found by asking what *else* the same walk answers wrongly, which is the
+habit — not the benchmark — that produced it, and a record that collapsed them would say the
+workload found both.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, and the fixture
+`src/tests/cli/runs/a-parameter-named-arguments.js`, whose fourth and fifth lines are the arrow
+cases. 2026-09-04.
