@@ -360,9 +360,9 @@ internal sealed partial class JsRealm
     /// only exists in sloppy-mode functions with simple parameter lists, and nothing this profile
     /// is built to run depends on it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A3FB01
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=410437
     // Broiler-Human:        PENDING
-    internal JsObject CreateArguments(JsValue[] arguments, JsScriptFunction? callee)
+    internal JsObject CreateArguments(JsValue[] arguments, JsScriptFunction? callee, bool strict)
     {
         var value = new JsObject(ObjectPrototype, "Arguments");
 
@@ -377,7 +377,28 @@ internal sealed partial class JsRealm
             "length",
             JsProperty.Data(JsValue.Number(arguments.Length), JsPropertyAttributes.BuiltIn));
 
-        if (callee is not null)
+        // STRICT CODE MAY NOT ASK WHICH FUNCTION IT IS IN, and the refusal is a property rather
+        // than an absence: `callee` is an accessor pair whose halves both throw, so
+        // `arguments.callee` is a TypeError and `"callee" in arguments` is still true. Leaving the
+        // property out would have made the second one false, and a program that tests for the
+        // feature before using it would have taken the wrong branch.
+        if (strict)
+        {
+            var poison = Native("callee", 0, static (engine, thisValue, arguments) =>
+            {
+                _ = thisValue;
+                _ = arguments;
+
+                return engine.ThrowTypeError(
+                    "'caller', 'callee', and 'arguments' properties may not be accessed on strict " +
+                    "mode functions or the arguments objects for calls to them");
+            });
+
+            value.SetOwnProperty(
+                "callee",
+                JsProperty.Accessor(poison, poison, JsPropertyAttributes.Configurable));
+        }
+        else if (callee is not null)
         {
             value.SetOwnProperty(
                 "callee", JsProperty.Data(JsValue.Object(callee), JsPropertyAttributes.BuiltIn));

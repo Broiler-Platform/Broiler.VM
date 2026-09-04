@@ -123,11 +123,11 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>Map</c> and <c>Map.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=453D5A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=9841E8
     // Broiler-Human:        PENDING
     private void SetupMap()
     {
-        _ = Constructor(
+        var mapConstructor = Constructor(
             "Map",
             0,
             MapPrototype,
@@ -161,6 +161,43 @@ internal sealed partial class JsRealm
 
                 return JsValue.Object(made);
             });
+
+        // A MAP AND NOT AN OBJECT, which is the difference from `Object.groupBy` beside it: the
+        // key a program groups by is often not a string - a date, an object, a number that must not
+        // be spelled - and a Map is the only one of the two that keeps it as itself.
+        Method(mapConstructor, "groupBy", 2, (engine, thisValue, arguments) =>
+        {
+            _ = thisValue;
+            var source = ArgOfCollection(arguments, 0);
+            var chooser = ArgOfCollection(arguments, 1);
+
+            if (!chooser.IsObject || !chooser.AsObject().IsCallable)
+            {
+                return engine.ThrowTypeError("Map.groupBy: the callback is not a function");
+            }
+
+            var made = new JsMapObject(MapPrototype);
+            var at = 0;
+
+            foreach (var element in CollectionElements(engine, source))
+            {
+                engine.Charge(1);
+                engine.Retain(CollectionEntryBytes);
+                var key = engine.Call(chooser, JsValue.Undefined, [element, JsValue.Number(at)]);
+
+                if (!made.Table.TryGet(key, out var held) ||
+                    held.AsObjectOrNull() is not JsArray bucket)
+                {
+                    bucket = NewArray();
+                    made.Table.Set(key, JsValue.Object(bucket));
+                }
+
+                bucket.Push(element);
+                at++;
+            }
+
+            return JsValue.Object(made);
+        });
 
         Method(MapPrototype, "get", 1, static (engine, thisValue, arguments) =>
             CollectionThisMap(engine, thisValue, "get").Table

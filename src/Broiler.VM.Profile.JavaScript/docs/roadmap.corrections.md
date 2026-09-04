@@ -4606,3 +4606,36 @@ does.
 
 **Authority and date.** The implementation of 2026-09-04 in this checkout, and the twelve cases
 retained in `src/tests/differential/the-json-date-and-regexp-surface.js`. 2026-09-04.
+
+### JSC-117
+
+**Where:** four members of the realm that were absent, and one that answered where it should have
+refused. Found by one probe pass over the error objects, the global functions, the `Object` statics,
+the function objects and the Array.
+
+**`AggregateError` was absent**, and it is the one error subtype with a different shape: its first
+argument is the errors and its second is the message, where every other subtype takes the message
+first. That is not a wart — the type exists for `Promise.any`, which has a LIST of reasons and no one
+reason to report — and a program that catches what `Promise.any` rejects with had no constructor to
+test against.
+
+**`Object.fromEntries` was absent**, which is the inverse of `Object.entries` and takes an *iterable*
+rather than an Array, so `Object.fromEntries(map)` is the shape most programs use it in.
+**`Object.groupBy` and `Map.groupBy` were absent**: the first answers an object with a **null
+prototype**, which is the whole reason it beats the four lines a program would write instead — a
+group key of `toString` collides with nothing — and the second keeps a key that is not a string as
+itself.
+
+**And a strict `arguments.callee` answered with the function.** The language poisons it: `callee` on
+a strict arguments object is an accessor pair whose halves both throw, and the property is present
+so that `"callee" in arguments` stays true. This realm gave every arguments object the ordinary data
+property, so strict code could ask which function it was in — a question strict mode exists to
+refuse, and one a program can use to reach a function that was never handed to it.
+
+**One divergence found in the same pass is declared rather than repaired.** An error object here
+carries no `stack`. It is not a member the language defines, and producing one would need the
+executor to keep a frame list it does not keep — the depth is a counter, and the interpreter's frames
+are the host's own. It is now a declared divergence rather than an unstated absence.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, and the ninety-eight cases
+appended to `src/tests/differential/the-general-surface.js`. 2026-09-04.

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   5
-// Annotated:        5/5
+// Relevant units:   6
+// Annotated:        6/6
 // Exempt:           0
-// Human-reviewed:   0/5
+// Human-reviewed:   0/6
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       5
+// Unverified:       6
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -43,7 +43,7 @@ namespace Broiler.VM.Profile.JavaScript;
 internal sealed partial class JsRealm
 {
     /// <summary>Builds the Error constructor, its prototype and the six native subtypes.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1D9793
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=295840
     // Broiler-Human:        PENDING
     private void SetupError()
     {
@@ -102,6 +102,56 @@ internal sealed partial class JsRealm
         ErrorIntrinsicInstall("SyntaxError", baseConstructor);
         ErrorIntrinsicInstall("TypeError", baseConstructor);
         ErrorIntrinsicInstall("URIError", baseConstructor);
+        ErrorIntrinsicInstallAggregate(baseConstructor);
+    }
+
+    /// <summary>Builds <c>AggregateError</c>, which is the one subtype with a different shape.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Its first argument is the errors and its second is the message</b>, where every other
+    /// subtype takes the message first. That is not a wart of this implementation: the type exists
+    /// for <c>Promise.any</c>, which has a LIST of reasons and no one reason to report, so the list
+    /// is the argument that could not be left out.
+    /// </para>
+    /// <para>
+    /// <b>The list is read through the iteration protocol</b>, like every other list argument in the
+    /// language — so a Set of errors is as good as an Array of them — and it lands as an own
+    /// <c>errors</c> property that is writable and configurable and not enumerable, which is what a
+    /// program that walks the object sees and what one that reassigns it may do.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=196B4E
+    // Broiler-Human:        PENDING
+    private void ErrorIntrinsicInstallAggregate(JsNativeFunction baseConstructor)
+    {
+        var prototype = new JsObject(ErrorPrototype, "Error");
+
+        prototype.DefineBuiltIn("name", JsValue.String("AggregateError"));
+        prototype.DefineBuiltIn("message", JsValue.String(string.Empty));
+
+        JsNativeBody body = (engine, _, arguments) =>
+        {
+            var error = ErrorIntrinsicCreate(
+                engine,
+                prototype,
+                ErrorIntrinsicArg(arguments, 1),
+                ErrorIntrinsicArg(arguments, 2));
+
+            var collected = NewArray();
+
+            foreach (var reason in CollectionElements(engine, ErrorIntrinsicArg(arguments, 0)))
+            {
+                engine.Charge(1);
+                collected.Push(reason);
+            }
+
+            error.DefineBuiltIn("errors", JsValue.Object(collected));
+            return JsValue.Object(error);
+        };
+
+        var constructor = Constructor("AggregateError", 2, prototype, body, body);
+        constructor.Prototype = baseConstructor;
+        ErrorConstructors["AggregateError"] = constructor;
     }
 
     /// <summary>Reads one argument, which may not have been supplied.</summary>

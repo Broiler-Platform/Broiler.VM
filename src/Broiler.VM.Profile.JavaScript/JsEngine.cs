@@ -2561,7 +2561,7 @@ internal sealed class JsEngine
     /// have run for a throw from the instruction itself, and no unwinding is reimplemented.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=76C90B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=2F3DF6
     // Broiler-Human:        PENDING
     private JsValue Execute(
         JsProgram program,
@@ -2687,7 +2687,7 @@ internal sealed class JsEngine
 
                         case JsOpcode.NewArguments:
                             stack[sp++] = JsValue.Object(
-                                Realm.CreateArguments(actualArguments, self));
+                                Realm.CreateArguments(actualArguments, self, strict));
 
                             pc++;
                             break;

@@ -8,6 +8,7 @@
 # composition admitting every optional surface, sorted. A document's list of what is
 # absent is checked against this file rather than against another document.
 $262
+AggregateError
 Array
 ArrayBuffer
 Boolean

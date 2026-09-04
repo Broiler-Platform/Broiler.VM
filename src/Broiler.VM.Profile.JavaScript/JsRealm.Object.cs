@@ -58,7 +58,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>Object</c>, <c>Object.prototype</c> and the statics on the constructor.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1F1550
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F6551E
     // Broiler-Human:        PENDING
     private void SetupObject()
     {
@@ -228,6 +228,91 @@ internal sealed partial class JsRealm
         {
             _ = thisValue;
             return ObjectEnumerate(engine, ArgOfObject(arguments, 0), ObjectEntryKind.Pair);
+        });
+
+        // THE INVERSE OF `entries`, AND IT TAKES AN ITERABLE RATHER THAN AN ARRAY. That is what
+        // makes `Object.fromEntries(map)` work, which is the shape most programs use it in: a Map
+        // iterates as [key, value] pairs and needs no conversion first.
+        Method(constructor, "fromEntries", 1, (engine, thisValue, arguments) =>
+        {
+            _ = thisValue;
+            var source = ArgOfObject(arguments, 0);
+
+            if (source.IsNullish)
+            {
+                return engine.ThrowTypeError("Object.fromEntries requires an iterable argument");
+            }
+
+            var made = new JsObject(ObjectPrototype);
+
+            foreach (var entry in CollectionElements(engine, source))
+            {
+                engine.Charge(1);
+
+                if (!entry.IsObject)
+                {
+                    return engine.ThrowTypeError("Iterator value " + engine.ToStringValue(entry) +
+                        " is not an entry object");
+                }
+
+                var key = engine.GetIndexed(entry, JsValue.Number(0));
+                var value = engine.GetIndexed(entry, JsValue.Number(1));
+
+                // A DEFINITION AND NOT AN ASSIGNMENT, which is the same distinction a computed
+                // member of an object literal makes: a key of `__proto__` becomes an own property
+                // here rather than moving the object's prototype.
+                if (key.IsSymbol)
+                {
+                    made.SetOwnSymbol(
+                        key.AsSymbol(), JsProperty.Data(value, JsPropertyAttributes.Default));
+                }
+                else
+                {
+                    made.SetOwnProperty(
+                        engine.ToPropertyKey(key),
+                        JsProperty.Data(value, JsPropertyAttributes.Default));
+                }
+            }
+
+            return JsValue.Object(made);
+        });
+
+        // THE GROUPS ARE AN OBJECT WITH A NULL PROTOTYPE, and that is the whole reason this method
+        // is worth having over the four lines a program would write instead: a group key of
+        // `toString` or `constructor` does not collide with anything, because there is nothing on
+        // the chain to collide with.
+        Method(constructor, "groupBy", 2, (engine, thisValue, arguments) =>
+        {
+            _ = thisValue;
+            var source = ArgOfObject(arguments, 0);
+            var chooser = ArgOfObject(arguments, 1);
+
+            if (!chooser.IsObject || !chooser.AsObject().IsCallable)
+            {
+                return engine.ThrowTypeError("Object.groupBy: the callback is not a function");
+            }
+
+            var groups = new JsObject(null);
+            var at = 0;
+
+            foreach (var element in CollectionElements(engine, source))
+            {
+                engine.Charge(1);
+                var key = engine.ToPropertyKey(
+                    engine.Call(chooser, JsValue.Undefined, [element, JsValue.Number(at)]));
+
+                if (!groups.TryGetOwnProperty(key, out var held) || held.Value.AsObjectOrNull() is not JsArray bucket)
+                {
+                    bucket = NewArray();
+                    groups.SetOwnProperty(
+                        key, JsProperty.Data(JsValue.Object(bucket), JsPropertyAttributes.Default));
+                }
+
+                bucket.Push(element);
+                at++;
+            }
+
+            return JsValue.Object(groups);
         });
 
         Method(constructor, "getOwnPropertyNames", 1, (engine, thisValue, arguments) =>
