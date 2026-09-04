@@ -99,6 +99,12 @@ internal sealed class JsCodeUnit
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=AA2DE3
     // Broiler-Human:        PENDING
     internal bool UsesArguments => (Flags & Format.JsFormat.FunctionFlags.UsesArguments) != 0;
+
+    /// <summary>Whether the unit's own prologue binds its parameters, so the frame copies none.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal bool BindsParameters =>
+        (Flags & Format.JsFormat.FunctionFlags.BindsParameters) != 0;
 }
 
 /// <summary>One verified exception region.</summary>

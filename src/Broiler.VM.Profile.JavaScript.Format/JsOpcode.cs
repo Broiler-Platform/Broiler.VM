@@ -39,9 +39,18 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// </para>
 /// <para>
 /// <b>The set is deliberately not complete JavaScript.</b> There is no generator, no
-/// <c>await</c>, no class, no spread, no destructuring and no <c>with</c>; each is a construct the
-/// manifest refuses at the front end rather than an opcode the executor would have to answer for.
-/// What is here is what a program that runs has to have.
+/// <c>await</c>, no class and no <c>with</c>; each is a construct the manifest refuses at the front
+/// end rather than an opcode the executor would have to answer for. What is here is what a program
+/// that runs has to have.
+/// </para>
+/// <para>
+/// <b>Spread, destructuring and <c>for … of</c> ARE here, and each earned an opcode rather than a
+/// lowering to the ones already present.</b> Every one of them either has a stack effect the
+/// lowering cannot know statically - a spread contributes as many values as an iterator yields, and
+/// the argument count of <c>f(...xs)</c> is therefore not a <c>u8</c> the encoder can write - or
+/// performs an abstract operation with an observable protocol, which is what the four
+/// <c>Iterate…</c> opcodes are. Lowering those to a call sequence would have meant synthesising
+/// guest-visible functions to hold the protocol, and a guest could then reach them.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=C7B0B2
@@ -73,6 +82,23 @@ public enum JsOpcode : byte
 
     /// <summary>Push a fresh <c>arguments</c> object built from the frame's actual arguments.</summary>
     NewArguments = 0x07,
+
+    /// <summary>
+    /// Push actual argument <c>u16</c>, or <c>undefined</c> when the caller passed none there.
+    /// </summary>
+    /// <remarks>
+    /// <b>A frame whose parameter list is not simple binds its own parameters, and this is how it
+    /// reads them.</b> The frame copies arguments straight into slots only while every parameter is
+    /// one name with no initialiser; a default has to run code, a rest parameter has to build an
+    /// Array, and a pattern has to destructure - none of which the frame's copy loop can do. Reading
+    /// through a materialised <c>arguments</c> object instead would have been the alternative, and
+    /// it is wrong twice over: it allocates an object per call for a function that never mentions
+    /// one, and it makes a parameter's value depend on an object the body may have rewritten.
+    /// </remarks>
+    LoadArgument = 0x08,
+
+    /// <summary>Push a dense Array of the actual arguments from index <c>u16</c> onward.</summary>
+    RestArguments = 0x09,
 
     // ---- bindings ------------------------------------------------------------------------------
 
@@ -144,6 +170,34 @@ public enum JsOpcode : byte
     /// <summary>Pop a function; define it as the setter for constant <c>u16</c> on the object beneath.</summary>
     DefineSetter = 0x2B,
 
+    /// <summary>
+    /// Pop a value and define it at the Array beneath's current <c>length</c>, which grows.
+    /// </summary>
+    /// <remarks>
+    /// <b>An element's index stops being a compile-time constant the moment a literal spreads.</b>
+    /// <c>[a, ...xs, b]</c> puts <c>b</c> wherever <c>xs</c> ended, so the index has to be read off
+    /// the Array rather than counted by the encoder - which is what <see cref="DefineIndexed"/>
+    /// with a constant would have done.
+    /// </remarks>
+    ArrayAppend = 0x2C,
+
+    /// <summary>Extend the Array on top of the stack by <c>u16</c> holes, defining nothing.</summary>
+    ArrayHoles = 0x2D,
+
+    /// <summary>Pop an iterable; append everything it yields to the Array beneath, which stays.</summary>
+    SpreadArray = 0x2E,
+
+    /// <summary>
+    /// Pop a source; copy its own enumerable properties onto the object beneath, which stays.
+    /// </summary>
+    /// <remarks>
+    /// <b>This is <c>CopyDataProperties</c> and NOT the iteration protocol.</b> Object spread reads
+    /// properties and array spread iterates, which is why they are two opcodes rather than one with
+    /// a mode: <c>{...[1,2]}</c> is an object with the keys <c>0</c> and <c>1</c>, and
+    /// <c>{...null}</c> is an empty object rather than a <c>TypeError</c>.
+    /// </remarks>
+    SpreadObject = 0x2F,
+
     // ---- functions and calls ---------------------------------------------------------------------
 
     /// <summary>Push a function object over code unit <c>u16</c>, closing over the current environment.</summary>
@@ -160,6 +214,18 @@ public enum JsOpcode : byte
 
     /// <summary>Return <c>undefined</c> from the current frame.</summary>
     ReturnUndefined = 0x34,
+
+    /// <summary>Pop an Array of arguments, a receiver and a callee; push the result.</summary>
+    /// <remarks>
+    /// <b><see cref="Call"/> cannot express <c>f(...xs)</c> and no widening of its operand would
+    /// help</b>, because the count is not known until <c>xs</c> has been iterated. So the arguments
+    /// arrive as one Array the lowering built with <see cref="ArrayAppend"/> and
+    /// <see cref="SpreadArray"/>, and the stack effect is fixed again.
+    /// </remarks>
+    CallSpread = 0x35,
+
+    /// <summary>Pop an Array of arguments and a constructor; push the constructed object.</summary>
+    ConstructSpread = 0x36,
 
     // ---- operators ---------------------------------------------------------------------------------
 
@@ -247,6 +313,19 @@ public enum JsOpcode : byte
     /// <summary>Pop one and push <c>undefined</c>. The <c>void</c> operator.</summary>
     Void = 0x5B,
 
+    /// <summary>
+    /// Throw a <c>TypeError</c> naming constant <c>u16</c> when the top of the stack is
+    /// <c>null</c> or <c>undefined</c>; otherwise leave it alone.
+    /// </summary>
+    /// <remarks>
+    /// <b><c>RequireObjectCoercible</c>, and it exists because an EMPTY object pattern still
+    /// checks.</b> <c>var {a} = x</c> gets the check for free from the property read, but
+    /// <c>var {} = x</c> reads nothing and must still refuse <c>undefined</c>. Constructing the
+    /// error from the global <c>TypeError</c> instead would have let a guest that reassigned that
+    /// name decide what a destructuring failure throws.
+    /// </remarks>
+    RequireCoercible = 0x5C,
+
     // ---- control flow ---------------------------------------------------------------------------------
 
     /// <summary>Continue at absolute code offset <c>u32</c>.</summary>
@@ -276,6 +355,44 @@ public enum JsOpcode : byte
     /// is the good outcome - but the code they refuse is code a correct program produced.
     /// </remarks>
     ForInNext = 0x65,
+
+    /// <summary>Pop an iterable; push the iterator record <c>GetIterator</c> answers with.</summary>
+    /// <remarks>
+    /// The record is a value on this stack rather than a hidden register because the same lowering
+    /// has to hold two of them at once - <c>for (const [a] of pairs)</c> destructures each element
+    /// while the loop's own iterator is still live.
+    /// </remarks>
+    IterateStart = 0x66,
+
+    /// <summary>
+    /// Pop an iterator record; push the next value, or jump to <c>u32</c> when it is exhausted.
+    /// </summary>
+    /// <remarks>
+    /// The same two-effect shape <see cref="ForInNext"/> has, and for the same reason: on the taken
+    /// branch nothing arrives, so the target is one below this instruction's height. An exhausted
+    /// record is marked done, which is what makes a later <see cref="IterateClose"/> a no-op - the
+    /// specification does not call <c>return</c> on an iterator that already said it was finished.
+    /// </remarks>
+    IterateNext = 0x67,
+
+    /// <summary>Pop an iterator record; push a dense Array of everything it has left.</summary>
+    /// <remarks>
+    /// The record is left done, because a rest element consumes the iterator and the pattern that
+    /// contains it must not then close it.
+    /// </remarks>
+    IterateRest = 0x68,
+
+    /// <summary>
+    /// Pop an iterator record and perform <c>IteratorClose</c>, unless it is already done.
+    /// </summary>
+    /// <remarks>
+    /// <b>The <c>u8</c> operand says which completion is closing it, and the difference is
+    /// observable.</b> Zero is a normal or a <c>break</c>-shaped completion: an error from
+    /// <c>return</c> propagates, and a <c>return</c> that answers a non-object is itself a
+    /// <c>TypeError</c>. Anything else is a throw completion: whatever <c>return</c> does is
+    /// discarded, because the exception already in flight is the one the program is owed.
+    /// </remarks>
+    IterateClose = 0x69,
 
     // ---- stack ------------------------------------------------------------------------------------------
 
@@ -338,6 +455,7 @@ public static class JsOpcodes
         JsOpcode.Nop,
         JsOpcode.LoadUndefined, JsOpcode.LoadNull, JsOpcode.LoadTrue, JsOpcode.LoadFalse,
         JsOpcode.LoadConstant, JsOpcode.LoadThis, JsOpcode.NewArguments,
+        JsOpcode.LoadArgument, JsOpcode.RestArguments,
         JsOpcode.LoadScoped, JsOpcode.StoreScoped, JsOpcode.InitialiseScoped,
         JsOpcode.LoadGlobal, JsOpcode.StoreGlobal, JsOpcode.LoadGlobalOrUndefined,
         JsOpcode.PushScope, JsOpcode.PopScope, JsOpcode.CopyScope, JsOpcode.DeclareGlobal,
@@ -346,8 +464,11 @@ public static class JsOpcodes
         JsOpcode.DefineField, JsOpcode.DefineIndexed,
         JsOpcode.DeleteProperty, JsOpcode.DeleteIndex,
         JsOpcode.DefineGetter, JsOpcode.DefineSetter,
+        JsOpcode.ArrayAppend, JsOpcode.ArrayHoles,
+        JsOpcode.SpreadArray, JsOpcode.SpreadObject,
         JsOpcode.Closure, JsOpcode.Call, JsOpcode.Construct,
         JsOpcode.Return, JsOpcode.ReturnUndefined,
+        JsOpcode.CallSpread, JsOpcode.ConstructSpread,
         JsOpcode.Add, JsOpcode.Subtract, JsOpcode.Multiply, JsOpcode.Divide,
         JsOpcode.Remainder, JsOpcode.Exponent, JsOpcode.Negate, JsOpcode.ToNumber,
         JsOpcode.Not, JsOpcode.BitwiseNot,
@@ -357,8 +478,10 @@ public static class JsOpcodes
         JsOpcode.BitwiseOr, JsOpcode.BitwiseAnd, JsOpcode.BitwiseXor,
         JsOpcode.ShiftLeft, JsOpcode.ShiftRight, JsOpcode.ShiftRightUnsigned,
         JsOpcode.TypeOf, JsOpcode.InstanceOf, JsOpcode.In, JsOpcode.Void,
+        JsOpcode.RequireCoercible,
         JsOpcode.Jump, JsOpcode.JumpIfFalse, JsOpcode.JumpIfTrue, JsOpcode.Throw,
         JsOpcode.ForInStart, JsOpcode.ForInNext,
+        JsOpcode.IterateStart, JsOpcode.IterateNext, JsOpcode.IterateRest, JsOpcode.IterateClose,
         JsOpcode.Pop, JsOpcode.Duplicate, JsOpcode.DuplicateTwo, JsOpcode.Swap, JsOpcode.Pick,
     ];
 
@@ -398,7 +521,8 @@ public static class JsOpcodes
     // Broiler-Human:        PENDING
     public static bool HasCodeTarget(JsOpcode opcode) => opcode switch
     {
-        JsOpcode.Jump or JsOpcode.JumpIfFalse or JsOpcode.JumpIfTrue or JsOpcode.ForInNext => true,
+        JsOpcode.Jump or JsOpcode.JumpIfFalse or JsOpcode.JumpIfTrue or
+        JsOpcode.ForInNext or JsOpcode.IterateNext => true,
         _ => false,
     };
 
@@ -427,21 +551,27 @@ public static class JsOpcodes
         JsOpcode.ShiftLeft or JsOpcode.ShiftRight or JsOpcode.ShiftRightUnsigned or
         JsOpcode.TypeOf or JsOpcode.InstanceOf or JsOpcode.In or JsOpcode.Void or
         JsOpcode.Throw or JsOpcode.ForInStart or
+        JsOpcode.ArrayAppend or JsOpcode.SpreadArray or JsOpcode.SpreadObject or
+        JsOpcode.CallSpread or JsOpcode.ConstructSpread or
+        JsOpcode.IterateStart or JsOpcode.IterateRest or
         JsOpcode.Pop or JsOpcode.Duplicate or JsOpcode.DuplicateTwo or JsOpcode.Swap
             => JsOperandShape.None,
 
-        JsOpcode.Call or JsOpcode.Construct or JsOpcode.Pick => JsOperandShape.U8,
+        JsOpcode.Call or JsOpcode.Construct or JsOpcode.Pick or JsOpcode.IterateClose
+            => JsOperandShape.U8,
 
         JsOpcode.LoadConstant or
         JsOpcode.LoadGlobal or JsOpcode.StoreGlobal or JsOpcode.LoadGlobalOrUndefined or
         JsOpcode.PushScope or JsOpcode.CopyScope or JsOpcode.DeclareGlobal or
-        JsOpcode.NewArray or
+        JsOpcode.NewArray or JsOpcode.ArrayHoles or
         JsOpcode.GetProperty or JsOpcode.SetProperty or JsOpcode.DefineField or
         JsOpcode.DeleteProperty or JsOpcode.DefineGetter or JsOpcode.DefineSetter or
-        JsOpcode.Closure
+        JsOpcode.Closure or
+        JsOpcode.LoadArgument or JsOpcode.RestArguments or JsOpcode.RequireCoercible
             => JsOperandShape.U16,
 
-        JsOpcode.Jump or JsOpcode.JumpIfFalse or JsOpcode.JumpIfTrue or JsOpcode.ForInNext
+        JsOpcode.Jump or JsOpcode.JumpIfFalse or JsOpcode.JumpIfTrue or
+        JsOpcode.ForInNext or JsOpcode.IterateNext
             => JsOperandShape.U32,
 
         JsOpcode.LoadScoped or JsOpcode.StoreScoped or JsOpcode.InitialiseScoped
@@ -472,6 +602,7 @@ public static class JsOpcodes
             case JsOpcode.PushScope:
             case JsOpcode.CopyScope:
             case JsOpcode.DeclareGlobal:
+            case JsOpcode.ArrayHoles:
                 return true;
 
             case JsOpcode.LoadUndefined:
@@ -488,6 +619,8 @@ public static class JsOpcodes
             case JsOpcode.Closure:
             case JsOpcode.Duplicate:
             case JsOpcode.Pick:
+            case JsOpcode.LoadArgument:
+            case JsOpcode.RestArguments:
                 pushes = 1;
                 return true;
 
@@ -503,6 +636,16 @@ public static class JsOpcodes
             case JsOpcode.Return:
             case JsOpcode.JumpIfFalse:
             case JsOpcode.JumpIfTrue:
+            case JsOpcode.IterateClose:
+                pops = 1;
+                return true;
+
+            // The Array or the object underneath stays, exactly as it does for DefineField: a
+            // literal is a run of these over one value, and re-pushing it between them would double
+            // the code for nothing.
+            case JsOpcode.ArrayAppend:
+            case JsOpcode.SpreadArray:
+            case JsOpcode.SpreadObject:
                 pops = 1;
                 return true;
 
@@ -524,6 +667,9 @@ public static class JsOpcodes
             case JsOpcode.TypeOf:
             case JsOpcode.Void:
             case JsOpcode.ForInStart:
+            case JsOpcode.RequireCoercible:
+            case JsOpcode.IterateStart:
+            case JsOpcode.IterateRest:
                 pops = 1;
                 pushes = 1;
                 return true;
@@ -585,11 +731,24 @@ public static class JsOpcodes
                 pushes = 1;
                 return true;
 
+            // The argument Array carries the count, so these two have a fixed effect where Call and
+            // Construct have one that varies.
+            case JsOpcode.CallSpread:
+                pops = 3;
+                pushes = 1;
+                return true;
+
+            case JsOpcode.ConstructSpread:
+                pops = 2;
+                pushes = 1;
+                return true;
+
             // The FALLTHROUGH effect: the enumerator goes and a name arrives. On the taken
             // branch nothing arrives, so the target's height is one below this instruction's - a
             // rule the verifier applies at the target rather than here, because one instruction
             // with two effects is exactly what a stack-height check exists to pin down.
             case JsOpcode.ForInNext:
+            case JsOpcode.IterateNext:
                 pops = 1;
                 pushes = 1;
                 return true;

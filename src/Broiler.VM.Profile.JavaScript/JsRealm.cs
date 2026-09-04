@@ -58,6 +58,60 @@ internal sealed class JsEnumerator : JsObject
 }
 
 /// <summary>
+/// One iterator record: the iterator the guest handed over, its <c>next</c>, and whether it is done.
+/// </summary>
+/// <remarks>
+/// <para>
+/// <b>It is an object for the same reason <see cref="JsEnumerator"/> is</b> - the operand stack
+/// holds values - and guest code can never reach it, because nothing stores it in a property and
+/// only the four <c>Iterate…</c> opcodes accept one.
+/// </para>
+/// <para>
+/// <b>The done flag is the whole of why <c>IteratorClose</c> is safe to emit unconditionally.</b>
+/// The specification says an iterator that has already reported completion, or whose <c>next</c>
+/// threw, is not asked for its <c>return</c>; carrying that here rather than in the lowering means
+/// a <c>break</c>, a rest element and an exhausted loop all emit the same instruction and the
+/// record decides.
+/// </para>
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+// Broiler-Human:        PENDING
+internal sealed class JsIteratorRecord : JsObject
+{
+    /// <summary>Creates a record over an iterator object and the <c>next</c> read off it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal JsIteratorRecord(JsValue iterator, JsValue next)
+        : base(null, "Iterator")
+    {
+        Iterator = iterator;
+        Next = next;
+    }
+
+    /// <summary>The iterator object the guest's <c>@@iterator</c> answered with.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal JsValue Iterator { get; }
+
+    /// <summary>
+    /// The <c>next</c> method, read ONCE when the record was made.
+    /// </summary>
+    /// <remarks>
+    /// The specification reads it once at <c>GetIterator</c> and calls that same function for every
+    /// step, so an iterator that replaces its own <c>next</c> mid-loop does not change what the loop
+    /// calls. Re-reading each turn is the obvious implementation and it is observably wrong.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal JsValue Next { get; }
+
+    /// <summary>Whether this iterator has finished, or failed, and is owed no <c>return</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal bool Done { get; set; }
+}
+
+/// <summary>
 /// One realm: the global object, the intrinsics, and the factories the engine builds values with.
 /// </summary>
 /// <remarks>
@@ -81,6 +135,11 @@ internal sealed partial class JsRealm
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3283F6
     // Broiler-Human:        PENDING
     private readonly JsEngine engine;
+
+    /// <summary>The one <c>Array.prototype.values</c>, which <c>arguments</c> borrows.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private JsValue arrayIterator = JsValue.Undefined;
 
     /// <summary>Builds a realm on <paramref name="owner"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6AAA1A
@@ -115,6 +174,164 @@ internal sealed partial class JsRealm
         SetupDate();
         SetupRegExp();
         SetupGlobal();
+        SetupIteration();
+    }
+
+    /// <summary>
+    /// The property key that stands in for <c>Symbol.iterator</c> until this surface has Symbols.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A DECLARED DIVERGENCE, and the alternative was worse.</b> The iteration protocol is keyed
+    /// on a well-known Symbol, this surface has no Symbol primitive at all, and minting one is
+    /// another stage's work - it changes the value model, <c>typeof</c>, property keys and
+    /// enumeration together. So the protocol is keyed on this string instead. Everything the
+    /// language reaches through <c>Symbol.iterator</c> works; what differs is that the key is a
+    /// String, so it appears in <c>Object.getOwnPropertyNames</c> of the prototypes that carry it,
+    /// and a guest writes it as <c>obj["@@iterator"]</c> rather than <c>obj[Symbol.iterator]</c>.
+    /// </para>
+    /// <para>
+    /// <b>It is defined non-enumerable everywhere it is defined</b>, so <c>for … in</c>,
+    /// <c>Object.keys</c> and object spread do not see it - which is the half of Symbol-keyed
+    /// behaviour that a program is most likely to notice.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal const string IteratorKey = "@@iterator";
+
+    /// <summary>The prototype every built-in iterator this realm makes hangs off.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal JsObject IteratorPrototype { get; private set; } = null!;
+
+    /// <summary>Builds the iteration protocol: the shared prototype and the two iterables.</summary>
+    /// <remarks>
+    /// <c>Array.prototype</c> and <c>String.prototype</c> are the two the language gives an
+    /// iterator, and the <c>arguments</c> object is given the Array one because a program that
+    /// spreads its own arguments is ordinary. Everything else is iterable only because a guest made
+    /// it so, which is the point of a protocol.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void SetupIteration()
+    {
+        IteratorPrototype = new JsObject(ObjectPrototype);
+
+        // AN ITERATOR IS ITSELF ITERABLE, which is not decoration: `[...xs[Symbol.iterator]()]`
+        // and a `for … of` over a half-consumed iterator both depend on it.
+        Method(IteratorPrototype, IteratorKey, 0, static (_, thisValue, _) => thisValue);
+
+        var values = Native("values", 0, (engine, thisValue, _) =>
+        {
+            if (thisValue.IsNullish)
+            {
+                return engine.ThrowTypeError("Array.prototype.values called on null or undefined");
+            }
+
+            return JsValue.Object(CreateArrayIterator(
+                thisValue.IsObject ? thisValue : JsValue.Object(engine.ToObject(thisValue))));
+        });
+
+        // ONE FUNCTION OBJECT UNDER TWO KEYS, because `Array.prototype.values === Array.prototype[Symbol.iterator]`
+        // is a fact programs test for and a second closure would answer false.
+        ArrayPrototype.SetOwnProperty(
+            "values", JsProperty.Data(JsValue.Object(values), JsPropertyAttributes.BuiltIn));
+
+        ArrayPrototype.SetOwnProperty(
+            IteratorKey, JsProperty.Data(JsValue.Object(values), JsPropertyAttributes.BuiltIn));
+
+        arrayIterator = JsValue.Object(values);
+
+        Method(StringPrototype, IteratorKey, 0, (engine, thisValue, _) =>
+        {
+            if (thisValue.IsNullish)
+            {
+                return engine.ThrowTypeError("String.prototype iterator called on null or undefined");
+            }
+
+            return JsValue.Object(CreateStringIterator(engine.ToStringValue(thisValue)));
+        });
+    }
+
+    /// <summary>An iterator over an array-like's indices, reading <c>length</c> at every step.</summary>
+    /// <remarks>
+    /// Re-reading the length is the specification's own behaviour and it is observable: an array the
+    /// loop body grows is iterated further, and one it shortens stops early.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal JsObject CreateArrayIterator(JsValue target)
+    {
+        var at = 0d;
+        var iterator = new JsObject(IteratorPrototype, "Array Iterator");
+
+        Method(iterator, "next", 0, (engine, _, _) =>
+        {
+            engine.Charge(2);
+            var length = ArrayLengthOf(engine, target);
+
+            if (at >= length)
+            {
+                return JsValue.Object(IteratorResult(JsValue.Undefined, done: true));
+            }
+
+            var element = ArrayGetAt(engine, target, at);
+            at++;
+            return JsValue.Object(IteratorResult(element, done: false));
+        });
+
+        return iterator;
+    }
+
+    /// <summary>An iterator over a String's CODE POINTS rather than its code units.</summary>
+    /// <remarks>
+    /// <b>A surrogate pair is one step and not two.</b> <c>[...'😀']</c> has one element,
+    /// which is the whole reason the language gave String an iterator distinct from its index
+    /// properties - and an implementation that walked code units would silently split every
+    /// astral character in two.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal JsObject CreateStringIterator(string text)
+    {
+        var at = 0;
+        var iterator = new JsObject(IteratorPrototype, "String Iterator");
+
+        Method(iterator, "next", 0, (engine, _, _) =>
+        {
+            engine.Charge(2);
+
+            if (at >= text.Length)
+            {
+                return JsValue.Object(IteratorResult(JsValue.Undefined, done: true));
+            }
+
+            var width = at + 1 < text.Length && char.IsHighSurrogate(text[at]) &&
+                char.IsLowSurrogate(text[at + 1])
+                ? 2
+                : 1;
+
+            var piece = text.Substring(at, width);
+            at += width;
+            return JsValue.Object(IteratorResult(JsValue.String(piece), done: false));
+        });
+
+        return iterator;
+    }
+
+    /// <summary>The <c>{ value, done }</c> object every <c>next</c> answers with.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal JsObject IteratorResult(JsValue value, bool done)
+    {
+        var result = new JsObject(ObjectPrototype);
+        result.SetOwnProperty("value", JsProperty.Data(value, JsPropertyAttributes.Default));
+
+        result.SetOwnProperty(
+            "done", JsProperty.Data(JsValue.Boolean(done), JsPropertyAttributes.Default));
+
+        return result;
     }
 
     /// <summary>The realm's global object.</summary>
@@ -289,6 +506,12 @@ internal sealed partial class JsRealm
             value.SetOwnProperty(
                 "callee", JsProperty.Data(JsValue.Object(callee), JsPropertyAttributes.BuiltIn));
         }
+
+        // `arguments` IS ITERABLE, which is what makes `f(...arguments)` and `[...arguments]` the
+        // ordinary forwarding idioms they are in the wild. It gets the Array iterator because it is
+        // an array-like with a `length`, which is all that iterator reads.
+        value.SetOwnProperty(
+            IteratorKey, JsProperty.Data(arrayIterator, JsPropertyAttributes.BuiltIn));
 
         return value;
     }

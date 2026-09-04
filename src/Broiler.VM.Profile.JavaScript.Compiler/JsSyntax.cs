@@ -91,6 +91,17 @@ internal sealed record JsArrayLiteral(
     SliceSourceSpan Span,
     System.Collections.Generic.IReadOnlyList<JsExpression?> Elements) : JsExpression(Span);
 
+/// <summary><c>...x</c> as an array element or a call argument.</summary>
+/// <remarks>
+/// It is an expression node rather than a kind on its container because the two containers that
+/// admit it - an array literal and an argument list - already hold expression lists, and a parallel
+/// "is this one a spread" list beside each is the shape that goes out of step.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
+// Broiler-Human:        PENDING
+internal sealed record JsSpreadElement(SliceSourceSpan Span, JsExpression Argument)
+    : JsExpression(Span);
+
 /// <summary>What one entry of an object literal is.</summary>
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=9B9F52
 // Broiler-Human:        PENDING
@@ -104,14 +115,24 @@ internal enum JsPropertyKind
 
     /// <summary>A setter.</summary>
     Set = 2,
+
+    /// <summary><c>...o</c>, whose own enumerable properties are copied in.</summary>
+    Spread = 3,
 }
 
 /// <summary>One entry of an object literal.</summary>
 /// <param name="Span">Where the entry begins.</param>
-/// <param name="Kind">Whether it defines a value, a getter or a setter.</param>
+/// <param name="Kind">Whether it defines a value, a getter, a setter or a spread.</param>
 /// <param name="Key">The literal key, when it is not computed.</param>
 /// <param name="Computed">The key expression, when it is computed.</param>
-/// <param name="Value">The value, the getter or the setter.</param>
+/// <param name="Value">The value, the accessor, or the spread's source.</param>
+/// <param name="Cover">
+/// Whether this entry is a <c>{ a = 1 }</c> shorthand, which is <b>not</b> an object literal entry
+/// at all - it is only ever legal as the cover grammar of an assignment pattern. The parser cannot
+/// tell the two apart until it has seen whether an <c>=</c> follows the closing brace, so it records
+/// the shape here and the LOWERING refuses one that reached it, which is exactly the set that was
+/// never reinterpreted.
+/// </param>
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=D3377B
 // Broiler-Human:        PENDING
 internal sealed record JsObjectEntry(
@@ -119,7 +140,8 @@ internal sealed record JsObjectEntry(
     JsPropertyKind Kind,
     string Key,
     JsExpression? Computed,
-    JsExpression Value) : JsNode(Span);
+    JsExpression Value,
+    bool Cover = false) : JsNode(Span);
 
 /// <summary>An object literal.</summary>
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=3CE3F5
@@ -128,10 +150,20 @@ internal sealed record JsObjectLiteral(
     SliceSourceSpan Span,
     System.Collections.Generic.IReadOnlyList<JsObjectEntry> Entries) : JsExpression(Span);
 
+/// <summary>One formal parameter.</summary>
+/// <param name="Span">Where the parameter begins.</param>
+/// <param name="Target">The name or the pattern it binds.</param>
+/// <param name="Default">The initialiser, which runs only when the argument is <c>undefined</c>.</param>
+/// <param name="IsRest">Whether this is <c>...rest</c>, which takes every remaining argument.</param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
+// Broiler-Human:        PENDING
+internal sealed record JsParameter(
+    SliceSourceSpan Span, JsPattern Target, JsExpression? Default, bool IsRest) : JsNode(Span);
+
 /// <summary>One function: a declaration, an expression, an arrow or a program body.</summary>
 /// <param name="Span">Where the function begins.</param>
 /// <param name="Name">The function's name, empty when it is anonymous.</param>
-/// <param name="Parameters">The parameter names, in order.</param>
+/// <param name="Parameters">The formal parameters, in order.</param>
 /// <param name="Body">The statement list.</param>
 /// <param name="IsArrow">Whether this is an arrow function, which has no <c>this</c> of its own.</param>
 /// <param name="IsStrict">Whether the body is strict-mode code.</param>
@@ -141,7 +173,7 @@ internal sealed record JsObjectLiteral(
 internal sealed record JsFunctionNode(
     SliceSourceSpan Span,
     string Name,
-    System.Collections.Generic.IReadOnlyList<string> Parameters,
+    System.Collections.Generic.IReadOnlyList<JsParameter> Parameters,
     System.Collections.Generic.IReadOnlyList<JsStatement> Body,
     bool IsArrow,
     bool IsStrict,
@@ -229,11 +261,76 @@ internal sealed record JsSequenceExpression(
     SliceSourceSpan Span,
     System.Collections.Generic.IReadOnlyList<JsExpression> Expressions) : JsExpression(Span);
 
+/// <summary>
+/// The base of every binding or assignment pattern.
+/// </summary>
+/// <remarks>
+/// <para>
+/// <b>One tree serves both halves of destructuring, and the difference between them is a MODE the
+/// lowering carries rather than a second set of nodes.</b> <c>var [a] = x</c> and <c>[a] = x</c>
+/// have the same shape and differ only in what a leaf does with the value it receives - initialise
+/// a fresh binding, or store through an existing reference. Two trees would have meant two copies
+/// of the nesting, the defaults and the rest handling, and the second copy is the one that would
+/// have been missing a case.
+/// </para>
+/// <para>
+/// A leaf is a <see cref="JsTargetPattern"/> and it holds an EXPRESSION, because an assignment
+/// pattern's leaf may be <c>o.x</c> or <c>a[i]</c>. A declaration's leaf is always an identifier,
+/// and the lowering is what refuses anything else there.
+/// </para>
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
+// Broiler-Human:        PENDING
+internal abstract record JsPattern(SliceSourceSpan Span) : JsNode(Span);
+
+/// <summary>A leaf: one name, or one member expression when this is an assignment pattern.</summary>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
+// Broiler-Human:        PENDING
+internal sealed record JsTargetPattern(SliceSourceSpan Span, JsExpression Target) : JsPattern(Span);
+
+/// <summary>One element of an array pattern, or one value of an object pattern's property.</summary>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
+// Broiler-Human:        PENDING
+internal sealed record JsPatternElement(
+    SliceSourceSpan Span, JsPattern Target, JsExpression? Default) : JsNode(Span);
+
+/// <summary>An array pattern. A <see langword="null"/> element is an elision.</summary>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
+// Broiler-Human:        PENDING
+internal sealed record JsArrayPattern(
+    SliceSourceSpan Span,
+    System.Collections.Generic.IReadOnlyList<JsPatternElement?> Elements,
+    JsPattern? Rest) : JsPattern(Span);
+
+/// <summary>One property of an object pattern.</summary>
+/// <param name="Key">The literal key, when it is not computed.</param>
+/// <param name="Computed">The key expression, when it is computed.</param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
+// Broiler-Human:        PENDING
+internal sealed record JsPatternProperty(
+    SliceSourceSpan Span, string Key, JsExpression? Computed, JsPatternElement Value) : JsNode(Span);
+
+/// <summary>An object pattern, with an optional <c>...rest</c> property.</summary>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
+// Broiler-Human:        PENDING
+internal sealed record JsObjectPattern(
+    SliceSourceSpan Span,
+    System.Collections.Generic.IReadOnlyList<JsPatternProperty> Properties,
+    JsPattern? Rest) : JsPattern(Span);
+
+/// <summary><c>[a, b] = c</c> or <c>({x} = o)</c>: an assignment whose target is a pattern.</summary>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
+// Broiler-Human:        PENDING
+internal sealed record JsDestructuringAssignment(
+    SliceSourceSpan Span, JsPattern Target, JsExpression Value) : JsExpression(Span);
+
 /// <summary>One declarator of a variable statement.</summary>
+/// <param name="Name">The bound name, when the declarator names one directly.</param>
+/// <param name="Pattern">The pattern, when the declarator destructures.</param>
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=2C29D4
 // Broiler-Human:        PENDING
-internal sealed record JsDeclarator(SliceSourceSpan Span, string Name, JsExpression? Initialiser)
-    : JsNode(Span);
+internal sealed record JsDeclarator(
+    SliceSourceSpan Span, string Name, JsPattern? Pattern, JsExpression? Initialiser) : JsNode(Span);
 
 /// <summary>A <c>var</c>, <c>let</c> or <c>const</c> statement.</summary>
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=9AEB53
@@ -288,6 +385,7 @@ internal sealed record JsForStatement(
 /// <summary><c>for (left in right) body</c>.</summary>
 /// <param name="Declaration">The declaration kind, when the head declares its binding.</param>
 /// <param name="Name">The bound name, when the head names one directly.</param>
+/// <param name="Pattern">The pattern, when the head destructures each key.</param>
 /// <param name="Target">The assignment target, when the head is an expression.</param>
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=0520FF
 // Broiler-Human:        PENDING
@@ -295,6 +393,26 @@ internal sealed record JsForInStatement(
     SliceSourceSpan Span,
     SliceDeclarationKind? Declaration,
     string Name,
+    JsPattern? Pattern,
+    JsExpression? Target,
+    JsExpression Right,
+    JsStatement Body) : JsStatement(Span);
+
+/// <summary><c>for (left of right) body</c>, over the iteration protocol.</summary>
+/// <remarks>
+/// <b>A record of its own rather than a flag on <see cref="JsForInStatement"/>.</b> The two share a
+/// head grammar and nothing else: one enumerates property names off a snapshot and cannot fail
+/// part-way, the other drives a guest protocol that can throw at every step and that owes the
+/// iterator a <c>return</c> on every abrupt exit. A flag would have put those two lowerings in one
+/// method with a condition down the middle of it.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
+// Broiler-Human:        PENDING
+internal sealed record JsForOfStatement(
+    SliceSourceSpan Span,
+    SliceDeclarationKind? Declaration,
+    string Name,
+    JsPattern? Pattern,
     JsExpression? Target,
     JsExpression Right,
     JsStatement Body) : JsStatement(Span);
@@ -328,6 +446,7 @@ internal sealed record JsTryStatement(
     SliceSourceSpan Span,
     JsBlockStatement Block,
     string CatchParameter,
+    JsPattern? CatchPattern,
     JsBlockStatement? Handler,
     JsBlockStatement? Finaliser) : JsStatement(Span);
 

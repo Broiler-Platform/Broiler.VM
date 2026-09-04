@@ -649,6 +649,237 @@ internal sealed class JsEngine
         _ => value.AsObject().IsCallable ? "function" : "object",
     };
 
+    // ---- the iteration protocol ----------------------------------------------------------------
+
+    /// <summary>
+    /// The abstract operation <c>GetIterator</c>: the guest's own protocol, driven from here.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Nothing here shortcuts the protocol for a value this engine happens to recognise.</b>
+    /// Spreading an Array calls <c>Array.prototype[@@iterator]</c> and then calls the <c>next</c>
+    /// that answered, every time - because a guest may replace either, and a program that does is
+    /// entitled to see its own function run. A fast path over the dense elements would be faster
+    /// and would answer the wrong thing for exactly the programs that would notice.
+    /// </para>
+    /// <para>
+    /// <c>next</c> is read ONCE, here, and the record keeps it. The specification reads it at
+    /// <c>GetIterator</c> and calls that same function at every step.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal JsIteratorRecord GetIterator(JsValue iterable)
+    {
+        Charge(4);
+
+        if (iterable.IsNullish)
+        {
+            ThrowTypeError(Describe(iterable) + " is not iterable");
+        }
+
+        var method = GetProperty(iterable, JsRealm.IteratorKey);
+
+        if (!method.IsObject || !method.AsObject().IsCallable)
+        {
+            ThrowTypeError(Describe(iterable) + " is not iterable");
+        }
+
+        var iterator = Call(method, iterable, System.Array.Empty<JsValue>());
+
+        if (!iterator.IsObject)
+        {
+            ThrowTypeError("The result of the iterator method is not an object");
+        }
+
+        return new JsIteratorRecord(iterator, GetProperty(iterator, "next"));
+    }
+
+    /// <summary>
+    /// One step of <c>IteratorStep</c>: answers the next value, or that the iterator is finished.
+    /// </summary>
+    /// <remarks>
+    /// <b>A record whose <c>next</c> threw is marked done before the exception leaves.</b> The
+    /// specification does not close an iterator whose <c>next</c> failed - it has no reason to
+    /// believe the object is in a state that can answer <c>return</c> - and the flag is what carries
+    /// that decision to the <c>IterateClose</c> the lowering emits unconditionally.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal bool TryIterateNext(JsIteratorRecord record, out JsValue value)
+    {
+        value = JsValue.Undefined;
+
+        if (record.Done)
+        {
+            return false;
+        }
+
+        Charge(2);
+        JsValue result;
+
+        try
+        {
+            result = Call(record.Next, record.Iterator, System.Array.Empty<JsValue>());
+        }
+        catch (JsThrow)
+        {
+            record.Done = true;
+            throw;
+        }
+
+        if (!result.IsObject)
+        {
+            record.Done = true;
+            ThrowTypeError("Iterator result " + Describe(result) + " is not an object");
+        }
+
+        if (GetProperty(result, "done").ToBooleanValue())
+        {
+            record.Done = true;
+            return false;
+        }
+
+        value = GetProperty(result, "value");
+        return true;
+    }
+
+    /// <summary>
+    /// <c>IteratorClose</c> under a normal or a <c>break</c>-shaped completion.
+    /// </summary>
+    /// <remarks>
+    /// Errors from <c>return</c> propagate here, and a <c>return</c> answering a non-object is
+    /// itself a <c>TypeError</c> - both of which a guest can observe and both of which a quiet close
+    /// would swallow.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal void CloseIterator(JsIteratorRecord record)
+    {
+        if (record.Done)
+        {
+            return;
+        }
+
+        record.Done = true;
+        var method = GetProperty(record.Iterator, "return");
+
+        if (method.IsNullish)
+        {
+            return;
+        }
+
+        if (!method.IsObject || !method.AsObject().IsCallable)
+        {
+            ThrowTypeError("The iterator's return is not a function");
+        }
+
+        var result = Call(method, record.Iterator, System.Array.Empty<JsValue>());
+
+        if (!result.IsObject)
+        {
+            ThrowTypeError("The iterator's return answered " + Describe(result) + " and not an object");
+        }
+    }
+
+    /// <summary>
+    /// <c>IteratorClose</c> under a throw completion, which discards whatever <c>return</c> does.
+    /// </summary>
+    /// <remarks>
+    /// <b>The exception already in flight is the one the program is owed.</b> A <c>for … of</c>
+    /// body that throws still has to give the iterator its <c>return</c>, but replacing the body's
+    /// exception with one the clean-up raised would report the second failure and lose the first.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal void CloseIteratorQuietly(JsIteratorRecord record)
+    {
+        if (record.Done)
+        {
+            return;
+        }
+
+        record.Done = true;
+
+        try
+        {
+            var method = GetProperty(record.Iterator, "return");
+
+            if (method.IsObject && method.AsObject().IsCallable)
+            {
+                Call(method, record.Iterator, System.Array.Empty<JsValue>());
+            }
+        }
+        catch (JsThrow)
+        {
+            // Deliberately swallowed: see the remark.
+        }
+    }
+
+    /// <summary>Drains an iterable into a list, closing nothing because it ran to completion.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal void IterateInto(JsValue iterable, System.Collections.Generic.List<JsValue> into)
+    {
+        var record = GetIterator(iterable);
+
+        while (TryIterateNext(record, out var element))
+        {
+            into.Add(element);
+        }
+    }
+
+    /// <summary>Drains a record that is already open, which is what a rest element takes.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal JsArray DrainIterator(JsIteratorRecord record)
+    {
+        var rest = Realm.NewArray();
+
+        while (TryIterateNext(record, out var element))
+        {
+            rest.Push(element);
+        }
+
+        return rest;
+    }
+
+    /// <summary>
+    /// The abstract operation <c>CopyDataProperties</c>, which is what object spread is.
+    /// </summary>
+    /// <remarks>
+    /// <b>Own and enumerable, in the order the source yields them, and through the ordinary read
+    /// path.</b> Reading through the property path is what makes a getter on the source run once
+    /// and contribute its value, which is what the language says and what copying descriptors would
+    /// not do. A <c>null</c> or <c>undefined</c> source contributes nothing rather than throwing -
+    /// <c>{...null}</c> is an empty object.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal void CopyDataProperties(JsObject target, JsValue source)
+    {
+        if (source.IsNullish)
+        {
+            return;
+        }
+
+        var from = ToObject(source);
+
+        foreach (var key in from.OwnPropertyNames())
+        {
+            Charge(1);
+
+            if (!from.TryGetOwnProperty(key, out var property) || !property.Enumerable)
+            {
+                continue;
+            }
+
+            target.SetOwnProperty(
+                key,
+                JsProperty.Data(GetProperty(source, key), JsPropertyAttributes.Default));
+        }
+    }
+
     /// <summary>Runs a program's entry point and answers what it completed with.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=7EF362
     // Broiler-Human:        PENDING
@@ -676,16 +907,24 @@ internal sealed class JsEngine
         var unit = program.Functions[function.Unit];
         var environment = new JsEnvironment((int)unit.ScopeSlots, function.Environment);
 
-        var count = System.Math.Min(arguments.Length, (int)unit.ParameterCount);
-
-        for (var at = 0; at < count; at++)
+        // A UNIT THAT BINDS ITS OWN PARAMETERS GETS NO COPY AT ALL, and the slots stay EMPTY. That
+        // is not an optimisation: a default that reads a later parameter has to find a binding in
+        // its temporal dead zone, and filling the slots with `undefined` here would turn that
+        // ReferenceError into a silent `undefined`. For a simple parameter list `ParameterCount` is
+        // both the arity and the copy count and this is the whole of parameter binding.
+        if (!unit.BindsParameters)
         {
-            environment.Slots[at] = arguments[at];
-        }
+            var count = System.Math.Min(arguments.Length, (int)unit.ParameterCount);
 
-        for (var at = count; at < unit.ParameterCount; at++)
-        {
-            environment.Slots[at] = JsValue.Undefined;
+            for (var at = 0; at < count; at++)
+            {
+                environment.Slots[at] = arguments[at];
+            }
+
+            for (var at = count; at < unit.ParameterCount; at++)
+            {
+                environment.Slots[at] = JsValue.Undefined;
+            }
         }
 
         var receiver = unit.IsArrow
@@ -776,6 +1015,34 @@ internal sealed class JsEngine
 
                             pc++;
                             break;
+
+                        case JsOpcode.LoadArgument:
+                        {
+                            var at = U16(code, pc);
+
+                            stack[sp++] = at < actualArguments.Length
+                                ? actualArguments[at]
+                                : JsValue.Undefined;
+
+                            pc += 3;
+                            break;
+                        }
+
+                        case JsOpcode.RestArguments:
+                        {
+                            var from = U16(code, pc);
+                            var rest = Realm.NewArray();
+
+                            for (var at = from; at < actualArguments.Length; at++)
+                            {
+                                Charge(1);
+                                rest.Push(actualArguments[at]);
+                            }
+
+                            stack[sp++] = JsValue.Object(rest);
+                            pc += 3;
+                            break;
+                        }
 
                         case JsOpcode.LoadScoped:
                         {
@@ -998,6 +1265,49 @@ internal sealed class JsEngine
                             break;
                         }
 
+                        case JsOpcode.ArrayAppend:
+                        {
+                            var element = stack[--sp];
+                            var array = (JsArray)stack[sp - 1].AsObject();
+                            Charge(1);
+                            array.SetIndex(array.Length, element);
+                            pc++;
+                            break;
+                        }
+
+                        case JsOpcode.ArrayHoles:
+                        {
+                            var array = (JsArray)stack[sp - 1].AsObject();
+                            array.SetLength(array.Length + U16(code, pc));
+                            pc += 3;
+                            break;
+                        }
+
+                        case JsOpcode.SpreadArray:
+                        {
+                            var source = stack[--sp];
+                            var array = (JsArray)stack[sp - 1].AsObject();
+                            var values = new System.Collections.Generic.List<JsValue>();
+                            IterateInto(source, values);
+
+                            foreach (var element in values)
+                            {
+                                Charge(1);
+                                array.SetIndex(array.Length, element);
+                            }
+
+                            pc++;
+                            break;
+                        }
+
+                        case JsOpcode.SpreadObject:
+                        {
+                            var source = stack[--sp];
+                            CopyDataProperties(stack[sp - 1].AsObject(), source);
+                            pc++;
+                            break;
+                        }
+
                         case JsOpcode.DeleteProperty:
                         {
                             var target = stack[--sp];
@@ -1059,6 +1369,25 @@ internal sealed class JsEngine
                             var callee = stack[--sp];
                             stack[sp++] = Construct(callee, arguments);
                             pc += 2;
+                            break;
+                        }
+
+                        case JsOpcode.CallSpread:
+                        {
+                            var spread = ArgumentsOf(stack[--sp]);
+                            var receiver = stack[--sp];
+                            var callee = stack[--sp];
+                            stack[sp++] = Call(callee, receiver, spread);
+                            pc++;
+                            break;
+                        }
+
+                        case JsOpcode.ConstructSpread:
+                        {
+                            var spread = ArgumentsOf(stack[--sp]);
+                            var callee = stack[--sp];
+                            stack[sp++] = Construct(callee, spread);
+                            pc++;
                             break;
                         }
 
@@ -1260,6 +1589,25 @@ internal sealed class JsEngine
                             pc++;
                             break;
 
+                        case JsOpcode.RequireCoercible:
+                        {
+                            var subject = stack[sp - 1];
+
+                            if (subject.IsNullish)
+                            {
+                                var named = names[U16(code, pc)];
+
+                                ThrowTypeError(
+                                    named.Length == 0
+                                        ? "Cannot destructure " + Describe(subject)
+                                        : "Cannot destructure property '" + named + "' of " +
+                                            Describe(subject));
+                            }
+
+                            pc += 3;
+                            break;
+                        }
+
                         case JsOpcode.Jump:
                             pc = (int)U32(code, pc);
                             break;
@@ -1300,6 +1648,52 @@ internal sealed class JsEngine
                                 pc = (int)U32(code, pc);
                             }
 
+                            break;
+                        }
+
+                        case JsOpcode.IterateStart:
+                            stack[sp - 1] = JsValue.Object(GetIterator(stack[sp - 1]));
+                            pc++;
+                            break;
+
+                        case JsOpcode.IterateNext:
+                        {
+                            var record = (JsIteratorRecord)stack[--sp].AsObject();
+
+                            if (TryIterateNext(record, out var element))
+                            {
+                                stack[sp++] = element;
+                                pc += 5;
+                            }
+                            else
+                            {
+                                pc = (int)U32(code, pc);
+                            }
+
+                            break;
+                        }
+
+                        case JsOpcode.IterateRest:
+                            stack[sp - 1] = JsValue.Object(
+                                DrainIterator((JsIteratorRecord)stack[sp - 1].AsObject()));
+
+                            pc++;
+                            break;
+
+                        case JsOpcode.IterateClose:
+                        {
+                            var record = (JsIteratorRecord)stack[--sp].AsObject();
+
+                            if (code[pc + 1] == 0)
+                            {
+                                CloseIterator(record);
+                            }
+                            else
+                            {
+                                CloseIteratorQuietly(record);
+                            }
+
+                            pc += 2;
                             break;
                         }
 
@@ -1357,6 +1751,36 @@ internal sealed class JsEngine
                 pc = (int)region.Handler;
             }
         }
+    }
+
+    /// <summary>Unpacks the argument Array a spread call built into the array a call takes.</summary>
+    /// <remarks>
+    /// The Array was built by this lowering and nothing else can reach it, so the dense elements
+    /// are read directly. It is the one place in the iteration work where that is honest: the
+    /// protocol already ran, when the spread appended.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private JsValue[] ArgumentsOf(JsValue packed)
+    {
+        var array = (JsArray)packed.AsObject();
+        var count = (int)array.Length;
+
+        if (count == 0)
+        {
+            return System.Array.Empty<JsValue>();
+        }
+
+        Charge((ulong)count);
+        var arguments = new JsValue[count];
+
+        for (var at = 0; at < count; at++)
+        {
+            var element = at < array.DenseCount ? array.DenseAt(at) : JsValue.Undefined;
+            arguments[at] = element.IsEmpty ? JsValue.Undefined : element;
+        }
+
+        return arguments;
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=EAA946

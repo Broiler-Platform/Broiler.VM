@@ -1050,6 +1050,7 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.ConstantTag.value__ : System.Byte
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FormatVersion : const System.UInt32 = 2
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags.Arrow : const Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags = 2
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags.BindsParameters : const Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags = 32
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags.Constructible : const Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags = 16
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags.None : const Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags = 0
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags.ProgramBody : const Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags = 8
@@ -1085,13 +1086,17 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFunctionRow.op_Equality(Broiler.VM.Profile.JavaScript.Format.JsFunctionRow left, Broiler.VM.Profile.JavaScript.Format.JsFunctionRow right) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFunctionRow.op_Inequality(Broiler.VM.Profile.JavaScript.Format.JsFunctionRow left, Broiler.VM.Profile.JavaScript.Format.JsFunctionRow right) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Add : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 64
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ArrayAppend : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 44
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ArrayHoles : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 45
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.BitwiseAnd : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 83
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.BitwiseNot : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 73
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.BitwiseOr : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 82
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.BitwiseXor : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 84
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Call : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 49
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.CallSpread : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 53
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Closure : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 48
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Construct : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 50
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ConstructSpread : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 54
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.CopyScope : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 24
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.DeclareGlobal : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 25
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.DefineField : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 38
@@ -1113,11 +1118,16 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.In : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 90
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.InitialiseScoped : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 18
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.InstanceOf : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 89
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.IterateClose : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 105
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.IterateNext : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 103
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.IterateRest : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 104
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.IterateStart : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 102
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Jump : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 96
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.JumpIfFalse : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 97
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.JumpIfTrue : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 98
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.LessThan : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 74
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.LessThanOrEqual : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 75
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.LoadArgument : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 8
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.LoadConstant : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 5
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.LoadFalse : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 4
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.LoadGlobal : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 19
@@ -1141,6 +1151,8 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.PopScope : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 23
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.PushScope : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 22
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Remainder : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 68
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.RequireCoercible : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 92
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.RestArguments : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 9
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Return : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 51
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ReturnUndefined : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 52
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.SetIndex : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 37
@@ -1148,6 +1160,8 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ShiftLeft : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 85
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ShiftRight : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 86
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ShiftRightUnsigned : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 87
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.SpreadArray : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 46
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.SpreadObject : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 47
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.StoreGlobal : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 20
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.StoreScoped : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 17
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.StrictEquals : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 78

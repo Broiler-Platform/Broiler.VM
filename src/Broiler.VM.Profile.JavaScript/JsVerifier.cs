@@ -681,9 +681,17 @@ internal sealed class JsVerifier
         {
             var row = rows[index];
 
+            // `ParameterCount` MEANS TWO THINGS AND ONLY ONE OF THEM IS A SLOT COUNT. Without
+            // `BindsParameters` the frame copies that many arguments into slots zero upward, so it
+            // must fit in the scope; with it, no copy happens and the figure is only the arity the
+            // function reports as `length` - which a pattern with no bindings, `function f({}) {}`,
+            // makes larger than the slots.
+            var binds = ((JsFormat.FunctionFlags)row.Flags &
+                JsFormat.FunctionFlags.BindsParameters) != 0;
+
             if (row.ScopeSlots > state.DeclaredScopeSlots ||
                 row.MaxOperandStack > state.DeclaredOperandStack ||
-                row.ParameterCount > row.ScopeSlots ||
+                (!binds && row.ParameterCount > row.ScopeSlots) ||
                 row.ParameterCount > JsFormat.CeilingCallArguments)
             {
                 return Invalid(
@@ -1132,7 +1140,12 @@ internal sealed class JsVerifier
 
                     if (JsOpcodes.HasCodeTarget(opcode))
                     {
-                        var targetHeight = opcode == JsOpcode.ForInNext ? height - 1 : after;
+                        // The two stepping opcodes have a different height on the taken branch than
+                        // on the fall-through: a name or a value arrives only when there was one.
+                        var targetHeight =
+                            opcode is JsOpcode.ForInNext or JsOpcode.IterateNext
+                                ? height - 1
+                                : after;
                         var seeded = Seed(
                             unit, code, (int)operand, targetHeight, afterDepth, pending, offset);
 
@@ -1278,6 +1291,7 @@ internal sealed class JsVerifier
                 case JsOpcode.DeleteProperty:
                 case JsOpcode.DefineGetter:
                 case JsOpcode.DefineSetter:
+                case JsOpcode.RequireCoercible:
                     if (operand >= state.Constants!.Length)
                     {
                         return Invalid(

@@ -145,6 +145,22 @@ public static class JsFormat
 
         /// <summary>The unit may be used as a constructor.</summary>
         Constructible = 16,
+
+        /// <summary>
+        /// The unit binds its own parameters, so the frame copies no argument into a slot.
+        /// </summary>
+        /// <remarks>
+        /// <b>Without this flag <c>ParameterCount</c> means two things at once, and they part
+        /// company the moment a parameter list stops being simple.</b> It is the arity the function
+        /// reports as <c>length</c> - which counts nothing at or after the first default and never
+        /// counts a rest parameter - and it is how many arguments the frame copies into slots zero
+        /// upward. A default has to run code, a rest parameter has to build an Array and a pattern
+        /// has to destructure, so those units bind their parameters in their own prologue and this
+        /// flag is what tells the frame to keep its hands off. The slots then start EMPTY, which is
+        /// what makes a default reading a later parameter the <c>ReferenceError</c> the
+        /// specification says it is rather than a read of <c>undefined</c>.
+        /// </remarks>
+        BindsParameters = 32,
     }
 
     /// <summary>What an exception region does when control reaches its handler.</summary>
