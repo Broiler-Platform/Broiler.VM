@@ -708,6 +708,39 @@ everything. **`Date` still fixes the local time zone to UTC.** **`arguments` is 
 though a formal parameter of that name is now the binding rather than being overwritten by the
 object ([JSC-82](roadmap.corrections.md#jsc-82)).
 
+**A rule over names cannot see a missing method, and rule N17 is a rule over names.** N17 compares
+the set of globals the realm publishes against the set any document calls absent, in both
+directions, and it passes. It has nothing to say about a prototype missing six methods, an argument
+count that is wrong, or a method reading the array-like protocol where the language says the
+iteration protocol — and all three were true of this realm while N17 was green. What found them is
+`src/tests/differential/`: probes written from what the LANGUAGE says rather than from what this
+realm was known to have, run through the end-user host by `eng/run-differential.py` against retained
+answers and, when one is named, against a second engine. The first run found eight things wrong
+inside globals the realm has, including an `Array.from` that answered an **empty Array** for a Set —
+correct until this profile grew an iteration protocol, and neither correct nor a refusal afterwards
+([JSC-91](roadmap.corrections.md#jsc-91)). **A declared divergence is data in the answer file**, and
+all three failure directions have been watched: a case that moved against the retained answers, a
+divergence nobody declared, and a declaration for a case that has stopped diverging.
+
+**One divergence is a refusal rather than an implementation, and it is worth reading as a pattern
+rather than as a gap.** `String.prototype.normalize` exists, validates its form, answers an ASCII
+string unchanged because all four forms are provably the identity there, and **refuses anything
+else by name**. Every composition here runs in globalization-invariant mode, where the platform's
+own `String.Normalize` returns its input unchanged and reports that it is already normalized — so
+wiring the method to it would have produced the third state this profile keeps meeting: not a
+refusal and not an answer, but a wrong answer that looks like a right one. That is the same reading
+that replaced the translated regular-expression engine.
+
+**The memory ceiling is settable from the command line from 2026-09-04, and the reason is an outcome
+worse than a refusal.** Three of the four ceilings a person meets were already settable; the live-
+memory allowance was not, so the profile's default — sized for a program a person types — decided
+which workloads could be run at all. `zlib` printed its score and **then** met a `LiveBytes` ceiling,
+so the process exited non-zero on a run that produced exactly what the target asks for: a caller
+reading the exit code and a caller reading the output were told different things and neither was
+wrong ([JSC-90](roadmap.corrections.md#jsc-90)). `--live-bytes` widens what a caller may ask for and
+not what the profile permits; the default is unchanged, because a benchmark needing a gigabyte is a
+fact about the benchmark.
+
 **The refusal by name is the manifest boundary's whole enforcement, and it was leaking.** An audit
 of every excluded construct family against every syntactic position it admits found the refusals
 written where a construct usually appears, so the same construct one level deeper came back as an

@@ -1171,7 +1171,7 @@ internal sealed class JsEngine
 
     // ---- the loop ------------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=2FE391
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=64B247
     // Broiler-Human:        PENDING
     private JsValue Execute(
         JsProgram program,
@@ -1341,14 +1341,30 @@ internal sealed class JsEngine
                         }
 
                         case JsOpcode.StoreGlobal:
+                        {
+                            var target = names[U16(code, pc)];
+
+                            // STRICT CODE MAY NOT CREATE A GLOBAL BY ASSIGNING TO A NAME NOBODY
+                            // DECLARED, and that is the whole of what `"use strict"` buys a reader
+                            // of an unfamiliar program. Sloppy code creates the property, which is
+                            // what the arm below does; strict code gets the `ReferenceError` the
+                            // language gives, because the alternative — a silent global — is the
+                            // defect strict mode exists to make impossible.
+                            if (strict && !HasProperty(Realm.GlobalObject, target))
+                            {
+                                sp--;
+                                ThrowReferenceError(target + " is not defined");
+                            }
+
                             SetProperty(
                                 JsValue.Object(Realm.GlobalObject),
-                                names[U16(code, pc)],
+                                target,
                                 stack[--sp],
                                 strict);
 
                             pc += 3;
                             break;
+                        }
 
                         case JsOpcode.DeclareGlobal:
                         {
@@ -1481,10 +1497,21 @@ internal sealed class JsEngine
                         case JsOpcode.DeleteProperty:
                         {
                             var target = stack[--sp];
-                            stack[sp++] = JsValue.Boolean(
-                                !target.IsObject ||
-                                target.AsObject().DeleteOwnProperty(names[U16(code, pc)]));
+                            var key = names[U16(code, pc)];
+                            var went = !target.IsObject || target.AsObject().DeleteOwnProperty(key);
 
+                            // A REFUSED DELETE ANSWERS `false` IN SLOPPY CODE AND THROWS IN STRICT
+                            // CODE, and the pair is the same rule the assignment above follows: an
+                            // operation the object refused is reported as a value where a program
+                            // may not have asked, and as an exception where it said it wanted to
+                            // know. A `false` nobody reads is how a frozen property gets treated as
+                            // deleted by the code after it.
+                            if (!went && strict)
+                            {
+                                ThrowTypeError("Cannot delete property '" + key + "'");
+                            }
+
+                            stack[sp++] = JsValue.Boolean(went);
                             pc += 3;
                             break;
                         }

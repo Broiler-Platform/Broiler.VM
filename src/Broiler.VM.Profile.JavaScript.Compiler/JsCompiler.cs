@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   96
-// Annotated:        96/96
+// Relevant units:   97
+// Annotated:        97/97
 // Exempt:           52
-// Human-reviewed:   0/96
+// Human-reviewed:   0/97
 // IP risk:          None
 // Security risk:    High
-// Criteria:         4/4
+// Criteria:         5/5
 // Resource impact:  3/10 max
-// Unverified:       96
+// Unverified:       97
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -1220,7 +1220,7 @@ public sealed class JsCompiler
         scope = outer;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=7DF5E3
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=441DFD
     // Broiler-Human:        PENDING
     private void CompileTry(JsTryStatement guarded, int completion)
     {
@@ -1245,6 +1245,7 @@ public sealed class JsCompiler
                 new PendingRegion(tryStart, catchHandler, blockDepth, JsFormat.HandlerKind.Catch));
 
             CompileBlock(guarded.Block, completion);
+            ProtectSomething(tryStart);
             buffer.CloseRegion(tryStart, buffer.Code.Count);
             Branch(JsOpcode.Jump, afterCatch);
             Mark(catchHandler);
@@ -1283,6 +1284,7 @@ public sealed class JsCompiler
         buffer.PendingRegions.Add(
             new PendingRegion(finallyStart, rethrow, blockDepth, JsFormat.HandlerKind.Finally));
 
+        ProtectSomething(finallyStart);
         buffer.CloseRegion(finallyStart, buffer.Code.Count);
         exits.RemoveAt(exits.Count - 1);
 
@@ -1307,6 +1309,38 @@ public sealed class JsCompiler
         scope = handlerOuter;
         Emit(JsOpcode.Throw);
         Mark(end);
+    }
+
+    /// <summary>
+    /// Puts an instruction inside a protected range that would otherwise be empty.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b><c>try { } catch (e) { }</c> lowered to a region whose start equalled its end, and the
+    /// verifier refused the artifact this lowering had just produced</b> — the same shape as
+    /// [JSC-81], found the same way, by a program written to cover the surface rather than to
+    /// confirm it. The verifier is right to refuse it: a region protecting no instruction is a
+    /// region nothing can enter, and its handler is code the abstract pass would nonetheless seed
+    /// as an entry, at a height nothing establishes.
+    /// </para>
+    /// <para>
+    /// <b>So the lowering makes the range real rather than the verifier making the rule weaker.</b>
+    /// The alternative considered was to emit no region and no handler for an empty block, and it
+    /// is worse in a way that matters here: the handler's code would still be in the unit, reached
+    /// by nothing, and an instruction stream carrying code no entry seeds is how unverified code
+    /// gets into a verified artifact. A <c>Nop</c> costs one instruction in a block that had none,
+    /// and only in that block — every non-empty <c>try</c> is unchanged.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=EAD16F
+    // Broiler-Falsified-If: a region is emitted whose start offset equals its end offset
+    // Broiler-Human:        PENDING
+    private void ProtectSomething(int from)
+    {
+        if (buffer.Code.Count == from)
+        {
+            Emit(JsOpcode.Nop);
+        }
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=985B7A

@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 2197 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 2200 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 113 |
-| Code units | 4064 |
-| Relevant | 2197 |
+| Code units | 4067 |
+| Relevant | 2200 |
 | Exempt | 1867 |
-| Assessed | 2197 of 2197 (100%) |
-| Human reviewed | 0 of 2197 (0%) |
-| Unverified | 2197 |
+| Assessed | 2200 of 2200 (100%) |
+| Human reviewed | 0 of 2200 (0%) |
+| Unverified | 2200 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,7 +96,7 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 2197 |
+| HUMAN_PENDING | 2200 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -142,7 +142,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Binary/VmReadBounds.cs` | 11 | 3 | 8 | 3 | Low | Low | 0/0 |
 | `src/Broiler.VM.Binary/VmSectionFrame.cs` | 10 | 3 | 7 | 3 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` | 148 | 96 | 52 | 96 | None | High | 4/4 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` | 149 | 97 | 52 | 97 | None | High | 5/5 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` | 92 | 79 | 13 | 79 | None | High | 2/2 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsSyntax.cs` | 54 | 51 | 3 | 51 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructCensus.cs` | 7 | 7 | 0 | 7 | None | High | 3/3 |
@@ -180,7 +180,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` | 69 | 58 | 11 | 58 | Low | High | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` | 24 | 13 | 11 | 13 | Low | High | 2/2 |
 | `src/Broiler.VM.Profile.JavaScript/JsFunction.cs` | 40 | 21 | 19 | 21 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsNumberFormat.cs` | 17 | 17 | 0 | 17 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsNumberFormat.cs` | 19 | 19 | 0 | 19 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsObject.cs` | 51 | 27 | 24 | 27 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsProgram.cs` | 35 | 9 | 26 | 9 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Array.cs` | 27 | 27 | 0 | 27 | Low | Medium | 0/0 |
@@ -323,6 +323,8 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: an over-long encoding is accepted: a group past maxBits, an overflowing tail, a zero continuation
 - `Broiler.VM.VmBoundedReader.ChargeWork(ulong)` in `src/Broiler.VM.Binary/VmBoundedReader.cs` - Security=High, Spec=none cited, `04F760`, PENDING
   - Falsified if: WorkBudgetExhausted is latched for a Poll that returned false under cancellation, not exhaustion, or a charge is batched, or work accumulates past the granularity without a poll
+- `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.ProtectSomething(int)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` - Security=High, Spec=none cited, `EAD16F`, PENDING
+  - Falsified if: a region is emitted whose start offset equals its end offset
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.CompileTemplate(JsTemplateLiteral)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` - Security=High, Spec=none cited, `3E5E65`, PENDING
   - Falsified if: a substitution coerces through `valueOf` before `toString`, or a Symbol substitution does not throw
 - `Broiler.VM.Profile.JavaScript.Compiler.JsCompiler.EmitToString(JsExpression)` in `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` - Security=High, Spec=none cited, `A802C8`, PENDING
@@ -629,7 +631,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 2197 of the 2197 assessed units declare
+That is not a figure of speech. 2200 of the 2200 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

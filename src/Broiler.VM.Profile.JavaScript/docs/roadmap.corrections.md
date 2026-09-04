@@ -3821,3 +3821,111 @@ which is stated here rather than left for the next reader to rediscover.
 
 **Authority and date.** The implementation of 2026-09-04 in this checkout, the 230-case probe and the
 52-case probe over the additions, both run against the comparison engine. 2026-09-04.
+
+### JSC-92
+
+**Where:** [JSC-81](#jsc-81), which records the lowering emitting a composition of instructions the
+verifier was right to refuse, and states that the fork between *the format admits too little* and
+*the verifier rejects too much* had been drawn one level too high.
+
+**What that entry implied.** That the case was closed: the array literal's stack effect was repaired
+and the workload that found it reported a score.
+
+**What the same shape did again.** `try { } catch (e) { }` — an empty protected block — lowered to
+an exception region whose start offset **equalled** its end offset, and the verifier refused an
+artifact this lowering had just produced, at `InconsistentStructure`. Every program containing an
+empty `try` was refused whole, and nothing in the front end had a word to say about it, because
+nothing about the program is outside the manifest.
+
+**The verifier is right and the lowering is wrong, again.** A region protecting no instruction is a
+region nothing can enter, and its handler is code the abstract pass seeds as an entry at a height
+nothing establishes. So the repair puts an instruction inside the range rather than weakening the
+rule: a `Nop`, emitted only when the block lowered to nothing.
+
+**The alternative was considered and is worse.** Emitting no region and no handler would leave the
+handler's instructions in the unit reached by nothing, and **an instruction stream carrying code no
+entry seeds is how unverified code gets into a verified artifact**. A `Nop` costs one instruction in
+a block that had none; every non-empty `try` is unchanged.
+
+**What this says about the class rather than the case.** JSC-81's defect and this one are the same
+defect: a lowering that is internally inconsistent while emitting nothing either named component
+could object to on its own. Both were found by a program written to cover the surface rather than to
+confirm it, and neither by a fixture written here.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout and
+`src/tests/differential/the-statement-and-object-surface.js`, whose case 43 is the empty `try`.
+2026-09-04.
+
+### JSC-93
+
+**Where:** roadmap [section 9](roadmap.md#9-the-semantic-front-end-and-lowering)'s treatment of
+strict mode, and [JSC-80](#jsc-80), which records strictness a caller imposes not reaching the parse.
+
+**What was repaired then, and what was not.** JSC-80 made a caller's `--strict` reach the **grammar**,
+so strict-only early errors became visible. It said nothing about the *runtime* half, and two of
+those were missing.
+
+**Assigning to an undeclared name in strict code created a global.** `"use strict"; undeclared = 1`
+answered normally and put a property on the global object, where the language gives a
+`ReferenceError`. That is the single thing `"use strict"` buys a reader of an unfamiliar program,
+and this profile did not give it.
+
+**Deleting a non-configurable property in strict code answered `false`.** The object refused, the
+refusal was reported as a value, and a program that did not read the value carried on as though the
+property were gone.
+
+**What replaced it.** Both are the same rule and are now written as one: an operation the object
+refused is a value where a program may not have asked and an exception where it said it wanted to
+know.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, cases 12 and 58 of
+`src/tests/differential/the-statement-and-object-surface.js`. 2026-09-04.
+
+### JSC-94
+
+**Where:** the realm's `Object` intrinsic, and
+[section 3.2](roadmap.workloads.md#32-the-surface-that-is-absent-from-the-realm)'s reading that what
+is absent from the realm is a set of **globals**.
+
+**What was absent.** `Object.prototype.__proto__`. It is Annex B rather than the core language, and
+it is what a great deal of real code uses to read or set a prototype.
+
+**What that produced, which is the part that matters.** `o.__proto__ = null` created **an ordinary
+own property named `__proto__`**. Every later read answered what was stored, so the program saw its
+assignment take effect and the prototype never moved. Not a refusal, not an absence: a wrong answer
+that looks like a right one — the third state this profile keeps having to name.
+
+**What replaced it.** The accessor pair the specification gives, on `Object.prototype`, configurable
+and non-enumerable. The setter is a no-op rather than a throw for a non-object value, because the two
+ways of being a no-op are distinguished by the receiver and not by the argument.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, cases 59 and 60 of
+`src/tests/differential/the-statement-and-object-surface.js`. 2026-09-04.
+
+### JSC-95
+
+**Where:** `JsNumberFormat.ToRadixString`, whose own comment stated the deviation being corrected.
+
+**What the code said.** That twenty fraction digits is "past the point where a binary64 fraction
+carries information in any radix this accepts", and that stopping there keeps an irrational-looking
+expansion from running for ever.
+
+**Why the first half is false.** A digit carries `log2(radix)` bits. At radix 36 that is over five,
+so twenty digits is more than a double holds; at radix 3 it is one and a half, so fifty-three bits
+need **thirty-four** digits. `(0.1).toString(3)` was a fourteen-digit **prefix** of its own answer —
+the shape a truncation always has, and the reason a fixed digit count cannot be right across a range
+of radices.
+
+**What replaced it.** The stopping rule is the value's own precision: half the distance to the next
+representable double, scaled by the radix at each step, with digits produced while the remaining
+fraction exceeds it and a half-way case that rounds up and carries — through the fraction and, when
+it runs off the front, into the integer part. Twenty-three cases across every radix and both
+extremes of the range now agree with the comparison engine exactly.
+
+**The second half of the old comment was right and is kept**: an expansion that ran while the
+fraction was non-zero would not terminate. What replaced it is a bound that means something rather
+than a bound that was convenient.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, case 97 of
+`src/tests/differential/the-statement-and-object-surface.js` and the twenty-three-case radix probe.
+2026-09-04.

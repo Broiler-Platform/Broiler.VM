@@ -58,7 +58,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>Object</c>, <c>Object.prototype</c> and the statics on the constructor.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=12944D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=D5CB70
     // Broiler-Human:        PENDING
     private void SetupObject()
     {
@@ -94,6 +94,43 @@ internal sealed partial class JsRealm
             _ = arguments;
             return JsValue.Object(engine.ToObject(thisValue));
         });
+
+        // `__proto__` IS AN ACCESSOR ON THIS PROTOTYPE AND NOT A DATA PROPERTY OF EVERY OBJECT.
+        //
+        // It is Annex B and it is not going anywhere: `o.__proto__ = null` and
+        // `({}).__proto__ === Object.prototype` are written by real programs, and an object literal
+        // with a `__proto__` key is how a great deal of code sets a prototype. Without it, the
+        // assignment created an ORDINARY OWN PROPERTY NAMED `__proto__` - a wrong answer that looks
+        // like a right one, because every later read of `o.__proto__` returns what was stored and
+        // nothing reports that the prototype never moved.
+        //
+        // The getter and the setter are the specification's, which is why the setter answers
+        // `undefined` rather than throwing for a primitive receiver or a non-object value: the two
+        // ways to be a no-op are distinguished by the receiver, not by the argument.
+        ObjectPrototype.SetOwnProperty(
+            "__proto__",
+            JsProperty.Accessor(
+                Native("get __proto__", 0, static (engine, thisValue, arguments) =>
+                {
+                    _ = arguments;
+                    var held = engine.ToObject(thisValue).Prototype;
+                    return held is null ? JsValue.Null : JsValue.Object(held);
+                }),
+                Native("set __proto__", 1, static (engine, thisValue, arguments) =>
+                {
+                    var value = ArgOfObject(arguments, 0);
+
+                    if (!thisValue.IsObject || (!value.IsObject && value.Type != JsType.Null))
+                    {
+                        return JsValue.Undefined;
+                    }
+
+                    ObjectSetPrototype(
+                        engine, thisValue.AsObject(), value.Type == JsType.Null ? null : value.AsObject());
+
+                    return JsValue.Undefined;
+                }),
+                JsPropertyAttributes.Configurable));
 
         Method(ObjectPrototype, "hasOwnProperty", 1, static (engine, thisValue, arguments) =>
         {
