@@ -150,7 +150,7 @@ internal sealed partial class JsRealm
     private JsValue arrayIterator = JsValue.Undefined;
 
     /// <summary>Builds a realm on <paramref name="owner"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7AB57C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=ABFA90
     // Broiler-Human:        PENDING
     internal JsRealm(JsEngine owner)
     {
@@ -202,6 +202,11 @@ internal sealed partial class JsRealm
         SetupCollectionIterators();
         SetupPromise();
         SetupGlobal();
+
+        // LAST, BECAUSE IT READS `Function` BACK OFF THE GLOBAL. `%GeneratorFunction%` inherits
+        // from the `Function` constructor the way the specification says it does, and that
+        // constructor is published by SetupFunction into the global object above.
+        SetupGenerator();
     }
 
     /// <summary>The realm's global object.</summary>
@@ -402,7 +407,7 @@ internal sealed partial class JsRealm
     /// them on every closure would cost nothing and mean nothing, and it would make a reader think
     /// an ordinary function consults them.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B1F263
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7A987F
     // Broiler-Human:        PENDING
     internal JsObject CreateClosure(
         JsProgram program,
@@ -413,7 +418,14 @@ internal sealed partial class JsRealm
         JsValue lexicalNewTarget,
         JsScriptFunction? lexicalActive)
     {
-        var function = new JsScriptFunction(FunctionPrototype, program, unit, environment);
+        // A GENERATOR FUNCTION INHERITS FROM `%GeneratorFunction.prototype%` AND NOT FROM
+        // `Function.prototype`, and it is two hops rather than one to the latter. That is what
+        // makes `Object.getPrototypeOf(g).constructor.name` answer `GeneratorFunction`, and it is
+        // what `[object GeneratorFunction]` is reported through.
+        var isGenerator = program.Functions[unit].IsGenerator;
+
+        var function = new JsScriptFunction(
+            isGenerator ? GeneratorFunctionPrototype : FunctionPrototype, program, unit, environment);
 
         if (program.Functions[unit].IsArrow)
         {
@@ -421,6 +433,11 @@ internal sealed partial class JsRealm
             function.LexicalThisBinding = lexicalThisBinding;
             function.LexicalNewTarget = lexicalNewTarget;
             function.LexicalActiveFunction = lexicalActive;
+        }
+
+        if (isGenerator)
+        {
+            function.ClassName = "GeneratorFunction";
         }
 
         function.SetOwnProperty(
@@ -433,6 +450,23 @@ internal sealed partial class JsRealm
             "name",
             JsProperty.Data(
                 JsValue.String(program.Functions[unit].Name), JsPropertyAttributes.Configurable));
+
+        if (isGenerator)
+        {
+            // A GENERATOR FUNCTION'S `prototype` HAS NO `constructor` BACK-LINK, and giving it one
+            // would be the natural mistake: nothing is ever constructed from it, so there is
+            // nothing for a back-link to name. What a program reads as `g.prototype.constructor`
+            // is INHERITED from `%GeneratorPrototype%` and is an object rather than a function.
+            // The property is writable and neither enumerable nor configurable, which is the one
+            // descriptor shape a generator function's `prototype` has.
+            function.SetOwnProperty(
+                "prototype",
+                JsProperty.Data(
+                    JsValue.Object(new JsObject(GeneratorPrototype, "Generator")),
+                    JsPropertyAttributes.Writable));
+
+            return function;
+        }
 
         // A CLASS CONSTRUCTOR'S `prototype` IS NOT THIS ONE. It is built by the instruction that
         // builds the class, with the attributes the language gives it - not writable, not

@@ -1,7 +1,8 @@
 # broiler.javascript.slice diagnostic-code registry
 #
-# registry-revision: 4
-# published-at-milestone: JS-3a (revision 1), JS-3b (revision 2), JS-4 (revision 3), JSW-2 (revision 4)
+# registry-revision: 5
+# published-at-milestone: JS-3a (revision 1), JS-3b (revision 2), JS-4 (revision 3), JSW-2 (revision 4),
+#                         JSW-5 (revision 5)
 # owning-decision: JSD-0009
 # format-version: 1, 2
 # feature-manifest: broiler.javascript.slice, broiler.javascript.wide
@@ -81,9 +82,13 @@
 #
 # 1600: the structural refusals format version 2 adds. Version 1 has one frame, one flat set of
 # locals and no exception region a manifest admits; version 2 has a function table, an environment
-# model addressed by depth and slot, and regions that carry a scope depth. Each of the five is a
-# way an artifact can be wrong that version 1 has no vocabulary for, so each takes a NEW number
-# rather than borrowing one whose published meaning is about something else.
+# model addressed by depth and slot, regions that carry a scope depth, the optional surfaces an
+# artifact declares, and the one unit kind whose code may suspend. Each is a way an artifact can be
+# wrong that version 1 has no vocabulary for, so each takes a NEW number rather than borrowing one
+# whose published meaning is about something else. The last two arrived with the generator family
+# and were renumbered on the way in: the bundle that wrote them minted 1606 and 1607, which this
+# registry had already published for two of the surface refusals, and a number published once is
+# never published again for something else.
 1601|MalformedFunctionRow|core-result|InconsistentStructure|functions|corpus|wide-a-function-row-the-format-cannot-represent|3
 1602|FunctionIndexOutOfRange|core-result|InconsistentStructure|functions|corpus|wide-an-entry-point-naming-no-code-unit|3
 1603|CodeUnitRangeInvalid|core-result|InconsistentStructure|functions|corpus|wide-code-units-that-do-not-tile-the-code-section|3
@@ -92,6 +97,8 @@
 1606|DuplicateSurface|core-result|InconsistentStructure|manifest|corpus|wide-a-surface-declared-twice|4
 1607|UnknownSurface|core-result|UnknownFeature|manifest|corpus|wide-a-surface-this-build-does-not-implement|4
 1608|SurfaceOutsideComposition|core-result|UnsupportedFeatureManifest|manifest|corpus|wide-a-surface-the-composition-declined|4
+1609|YieldOutsideGenerator|core-result|SemanticValidationFailed|code|corpus|wide-a-suspension-outside-a-generator|5
+1610|GeneratorFlagsInconsistent|core-result|InconsistentStructure|functions|corpus|wide-a-generator-that-is-also-the-program-body|5
 1901|Truncated|core-result|Truncated|reader|corpus|a-truncated-payload|1
 1902|MalformedEncoding|core-result|MalformedEncoding|reader|corpus|an-overlong-variable-length-integer|1
 1903|ReaderStopped|core-result|InconsistentStructure|reader|defensive|every bounded-read status this build was compiled against has its own arm, so this one answers a status the reader does not currently have|1

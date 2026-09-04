@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   16
 // Annotated:        16/16
-// Exempt:           101
+// Exempt:           103
 // Human-reviewed:   0/16
 // IP risk:          None
 // Security risk:    Medium
@@ -38,10 +38,9 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// the jump came from.
 /// </para>
 /// <para>
-/// <b>The set is deliberately not complete JavaScript.</b> There is no generator, no
-/// <c>await</c> and no <c>with</c>; each is a construct the manifest refuses at the front end
-/// rather than an opcode the executor would have to answer for. What is here is what a program
-/// that runs has to have.
+/// <b>The set is deliberately not complete JavaScript.</b> There is no <c>await</c> and no
+/// <c>with</c>; each is a construct the manifest refuses at the front end rather than an opcode
+/// the executor would have to answer for. What is here is what a program that runs has to have.
 /// </para>
 /// <para>
 /// <b>Spread, destructuring and <c>for … of</c> ARE here, and each earned an opcode rather than a
@@ -64,8 +63,15 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// instructions that were already here, because a class is mostly an object graph and only partly
 /// a new kind of frame.
 /// </para>
+/// <para>
+/// <b>The two suspension opcodes are NOT section 6's suspension targets.</b> Section 6 of the
+/// format frames the core's own suspend-and-resume across the host boundary, which this profile's
+/// verifier refuses outright. <see cref="Yield"/> and <see cref="YieldDelegate"/> suspend one guest
+/// invocation and resume it from inside the same interpreter, never crossing that boundary - which
+/// is why they are ordinary instructions in this set and need no section of their own.
+/// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=D4A4ED
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=D5E924
 // Broiler-Human:        PENDING
 public enum JsOpcode : byte
 {
@@ -551,6 +557,35 @@ public enum JsOpcode : byte
     /// </remarks>
     IterateClose = 0x69,
 
+    // ---- suspension -------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Pop one value, suspend the frame yielding it, and push what the resumption sent.
+    /// </summary>
+    /// <remarks>
+    /// <b>Its stack effect is net zero, and the pushed value comes from OUTSIDE the unit.</b> Nothing
+    /// in the instruction stream put the resume value there - <c>next(v)</c> did, from the host side
+    /// of the generator object - so a reader tracing the code will not find its producer. It is
+    /// counted as one pop and one push anyway, because that is what the frame's operand stack does
+    /// across the suspension, and the verifier's abstract height has to agree with it at the
+    /// instruction after.
+    /// </remarks>
+    Yield = 0x6A,
+
+    /// <summary>
+    /// Pop an iterable, drive it to exhaustion yielding each value, and push the iterator's own
+    /// return value. The <c>yield*</c> operator.
+    /// </summary>
+    /// <remarks>
+    /// <b>One opcode rather than a lowered loop, because the loop has to survive an abrupt
+    /// resumption.</b> <c>return</c> and <c>throw</c> arriving while the delegation is suspended are
+    /// forwarded to the inner iterator, and a lowering would have to catch each of them at a
+    /// <see cref="Yield"/> it emitted - which the exception regions of this format cannot express
+    /// without a handler kind for "resumed abruptly". Its stack effect is one pop and one push, the
+    /// same as <see cref="Yield"/>, and for the same reason.
+    /// </remarks>
+    YieldDelegate = 0x6B,
+
     // ---- stack ------------------------------------------------------------------------------------------
 
     /// <summary>Pop one and discard it.</summary>
@@ -643,7 +678,7 @@ public static class JsOpcodes
     public const byte MemberBits = MemberIsGetter | MemberIsSetter | MemberIsEnumerable;
 
     /// <summary>Every opcode format version 2 defines, in ascending numeric order.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=8D6392
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=2F47E3
     // Broiler-Human:        PENDING
     public static readonly JsOpcode[] All =
     [
@@ -678,6 +713,7 @@ public static class JsOpcodes
         JsOpcode.Jump, JsOpcode.JumpIfFalse, JsOpcode.JumpIfTrue, JsOpcode.Throw,
         JsOpcode.ForInStart, JsOpcode.ForInNext,
         JsOpcode.IterateStart, JsOpcode.IterateNext, JsOpcode.IterateRest, JsOpcode.IterateClose,
+        JsOpcode.Yield, JsOpcode.YieldDelegate,
         JsOpcode.Pop, JsOpcode.Duplicate, JsOpcode.DuplicateTwo, JsOpcode.Swap, JsOpcode.Pick,
     ];
 
@@ -726,7 +762,7 @@ public static class JsOpcodes
     /// The operand shape of <paramref name="opcode"/>, or <see langword="null"/> when this format
     /// version does not define it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=5243D4
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=EA19B9
     // Broiler-Human:        PENDING
     public static JsOperandShape? Shape(JsOpcode opcode) => opcode switch
     {
@@ -751,6 +787,7 @@ public static class JsOpcodes
         JsOpcode.ArrayAppend or JsOpcode.SpreadArray or JsOpcode.SpreadObject or
         JsOpcode.CallSpread or JsOpcode.ConstructSpread or JsOpcode.SuperCallSpread or
         JsOpcode.IterateStart or JsOpcode.IterateRest or
+        JsOpcode.Yield or JsOpcode.YieldDelegate or
         JsOpcode.Pop or JsOpcode.Duplicate or JsOpcode.DuplicateTwo or JsOpcode.Swap
             => JsOperandShape.None,
 
@@ -786,7 +823,7 @@ public static class JsOpcodes
     /// and the verifier's abstract height is computed from them alone. A false answer means the
     /// opcode is not one this format version defines - not that its effect is unknown.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=EA49DE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=F7B3BA
     // Broiler-Human:        PENDING
     public static bool TryDescribe(JsOpcode opcode, uint operand, out int pops, out int pushes)
     {
@@ -985,6 +1022,16 @@ public static class JsOpcodes
             // with two effects is exactly what a stack-height check exists to pin down.
             case JsOpcode.ForInNext:
             case JsOpcode.IterateNext:
+                pops = 1;
+                pushes = 1;
+                return true;
+
+            // NET ZERO, AND THE PUSH HAS NO PRODUCER IN THE CODE. What a suspension pushes is what
+            // the resumption sent it, which arrived from outside the unit entirely; counting it as
+            // a push is what makes the abstract height at the following instruction equal the
+            // height at this one, which is what a reader of the lowering expects `yield` to be.
+            case JsOpcode.Yield:
+            case JsOpcode.YieldDelegate:
                 pops = 1;
                 pushes = 1;
                 return true;

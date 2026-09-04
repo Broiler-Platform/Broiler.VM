@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   18
 // Annotated:        18/18
-// Exempt:           26
+// Exempt:           27
 // Human-reviewed:   0/18
 // IP risk:          None
 // Security risk:    Medium
@@ -134,7 +134,7 @@ public static class JsFormat
     }
 
     /// <summary>The flag bits a code-unit row carries.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=633A32
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=A89F8C
     // Broiler-Human:        PENDING
     [System.Flags]
     public enum FunctionFlags : uint
@@ -197,6 +197,18 @@ public static class JsFormat
         /// specification says it is rather than a read of <c>undefined</c>.
         /// </remarks>
         BindsParameters = 128,
+
+        /// <summary>
+        /// The unit is a generator body: calling it builds a generator object rather than running
+        /// it, and it is the only kind of unit whose code may suspend.
+        /// </summary>
+        /// <remarks>
+        /// <b>It is a flag on the unit and not a property of the call site</b>, because whether an
+        /// invocation gets a heap-allocated frame has to be decidable before any of its code runs.
+        /// The verifier refuses a suspension opcode in a unit without this bit, so a frame the
+        /// executor did not allocate can never be the frame an instruction tries to suspend.
+        /// </remarks>
+        Generator = 256,
     }
 
     /// <summary>What an exception region does when control reaches its handler.</summary>

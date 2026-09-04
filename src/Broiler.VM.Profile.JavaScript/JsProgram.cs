@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   12
-// Annotated:        12/12
+// Relevant units:   13
+// Annotated:        13/13
 // Exempt:           26
-// Human-reviewed:   0/12
+// Human-reviewed:   0/13
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  2/10 max
-// Unverified:       12
+// Unverified:       13
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -117,6 +117,19 @@ internal sealed class JsCodeUnit
     // Broiler-Human:        PENDING
     internal bool BindsParameters =>
         (Flags & Format.JsFormat.FunctionFlags.BindsParameters) != 0;
+
+    /// <summary>
+    /// Whether calling the unit builds a generator object instead of running its code.
+    /// </summary>
+    /// <remarks>
+    /// <b>This bit test is the WHOLE of what the ordinary call path pays for generators
+    /// existing.</b> It reads a field the invocation had already loaded, and it decides whether the
+    /// frame lives in the interpreter's own locals - which is what every ordinary call still gets,
+    /// unchanged - or on the heap where a suspension can leave it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CF19D5
+    // Broiler-Human:        PENDING
+    internal bool IsGenerator => (Flags & Format.JsFormat.FunctionFlags.Generator) != 0;
 }
 
 /// <summary>One verified exception region.</summary>

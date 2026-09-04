@@ -586,11 +586,12 @@ internal static class Program
         Console.WriteLine();
         Console.WriteLine($"This host runs the feature manifest {JavaScriptProfile.WideManifest} by");
         Console.WriteLine("default: objects, arrays, strings, functions, closures, prototypes,");
-        Console.WriteLine("classes with super and new.target, exceptions, for-in, switch, labels and");
-        Console.WriteLine("a standard library. It admits no generator, async function, module,");
-        Console.WriteLine("destructuring, spread, template literal, for-of, class field, private");
-        Console.WriteLine("name, class static block, Proxy, Symbol, BigInt or typed array, and no");
-        Console.WriteLine("eval or Function constructor. What has been measured against a suite");
+        Console.WriteLine("classes with super and new.target, symbols, typed arrays, keyed");
+        Console.WriteLine("collections, promises, regular expressions, template literals,");
+        Console.WriteLine("destructuring, spread, for-of, generators, exceptions, for-in, switch,");
+        Console.WriteLine("labels and a standard library. It admits no async function, module,");
+        Console.WriteLine("class field, private name, class static block, generator member of a");
+        Console.WriteLine("class body, Proxy or BigInt. What has been measured against a suite");
         Console.WriteLine("is a handful of its subtrees, which measures those subtrees. Nothing here");
         Console.WriteLine("is reviewed, accepted or supported, and this host is advertised as");
         Console.WriteLine("nothing.");

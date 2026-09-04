@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   8
 // Annotated:        8/8
-// Exempt:           49
+// Exempt:           51
 // Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    High
@@ -48,7 +48,7 @@ namespace Broiler.VM.Profile.JavaScript;
 /// predicate's own record calls a worse record than one block on the vocabulary.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=FA4D44
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=3E95EC
 // Broiler-Human:        PENDING
 public enum JavaScriptDiagnosticCode
 {
@@ -232,6 +232,28 @@ public enum JavaScriptDiagnosticCode
     /// surface and registers no provider produces.
     /// </remarks>
     SurfaceOutsideComposition = 1608,
+
+    /// <summary>
+    /// A suspension instruction appears in a code unit that is not a generator body.
+    /// </summary>
+    /// <remarks>
+    /// The executor gives a generator invocation a heap-allocated frame and an ordinary one none,
+    /// so a <c>Yield</c> anywhere else would suspend a frame that does not exist. It is refused
+    /// here rather than answered there, because "the frame is null" is not a diagnosis a payload
+    /// author can act on.
+    /// </remarks>
+    YieldOutsideGenerator = 1609,
+
+    /// <summary>
+    /// A code-unit row combines the generator flag with a flag that contradicts it.
+    /// </summary>
+    /// <remarks>
+    /// A generator is neither an arrow, nor the program body, nor a constructor. Each pairing would
+    /// send the executor down a path the other flag already claimed - an arrow's <c>this</c>, the
+    /// program body's entry, or <c>new</c> - and none of them has an answer for a unit that
+    /// suspends.
+    /// </remarks>
+    GeneratorFlagsInconsistent = 1610,
 
     // ---- 1900: the bounded reader's own statuses, mapped -----------------------------------
 

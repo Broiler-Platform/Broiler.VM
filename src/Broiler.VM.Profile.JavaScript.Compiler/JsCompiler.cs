@@ -396,7 +396,7 @@ public sealed class JsCompiler
     /// TypeError in the language, and the flag is what makes it one here.
     /// </param>
     /// <param name="isDerived">Whether this is the constructor of a class with a heritage.</param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=189CF6
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=85B1E2
     // Broiler-Human:        PENDING
     private int CompileFunction(
         JsFunctionNode function,
@@ -455,6 +455,13 @@ public sealed class JsCompiler
         if (!simple)
         {
             flags |= JsFormat.FunctionFlags.BindsParameters;
+        }
+
+        // A GENERATOR IS NOT A CONSTRUCTOR, and dropping the bit is what makes `new g()` a type
+        // error from the ordinary construction path rather than a special case somewhere in it.
+        if (function.IsGenerator)
+        {
+            flags = (flags & ~JsFormat.FunctionFlags.Constructible) | JsFormat.FunctionFlags.Generator;
         }
 
         var index = units.Count;
@@ -2433,7 +2440,7 @@ public sealed class JsCompiler
 
     // ---- expressions ---------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A4B10E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F5ADEC
     // Broiler-Human:        PENDING
     private void CompileExpression(JsExpression expression)
     {
@@ -2621,6 +2628,23 @@ public sealed class JsCompiler
 
             case JsChainExpression chain:
                 CompileChain(chain);
+                break;
+
+            // `yield` LEAVES ONE VALUE WHERE IT TOOK ONE. The operand is pushed and the opcode
+            // replaces it with whatever the resumption sent, so a `yield` in the middle of an
+            // expression needs nothing around it - which is what lets it appear in an argument
+            // list, a loop condition or an object literal without the lowering knowing where it is.
+            case JsYieldExpression yielded:
+                if (yielded.Operand is null)
+                {
+                    Emit(JsOpcode.LoadUndefined);
+                }
+                else
+                {
+                    CompileExpression(yielded.Operand);
+                }
+
+                Emit(yielded.IsDelegate ? JsOpcode.YieldDelegate : JsOpcode.Yield);
                 break;
 
             case JsSequenceExpression sequence:
@@ -4858,7 +4882,7 @@ public sealed class JsCompiler
             return false;
         }
 
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DE1172
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A56453
         // Broiler-Human:        PENDING
         private static System.Collections.Generic.IEnumerable<JsNode?> Children(JsNode node)
         {
@@ -5015,6 +5039,13 @@ public sealed class JsCompiler
                         yield return inner;
                     }
 
+                    break;
+
+                // A `yield` HAS A CHILD, and leaving it out of this walk would have made
+                // `function* g() { yield arguments[0]; }` decide it does not use `arguments` - so
+                // the frame would not materialise one and the read would fail at run time.
+                case JsYieldExpression expression:
+                    yield return expression.Operand;
                     break;
 
                 case JsArrayLiteral expression:

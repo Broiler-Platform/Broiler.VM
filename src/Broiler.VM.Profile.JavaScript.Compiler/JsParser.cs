@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   92
-// Annotated:        92/92
-// Exempt:           13
-// Human-reviewed:   0/92
+// Relevant units:   93
+// Annotated:        93/93
+// Exempt:           14
+// Human-reviewed:   0/93
 // IP risk:          None
 // Security risk:    High
 // Criteria:         2/2
 // Resource impact:  3/10 max
-// Unverified:       92
+// Unverified:       93
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -29,9 +29,10 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// callee.
 /// </para>
 /// <para>
-/// <b>What it refuses, it refuses by name.</b> The wide manifest admits no generator,
+/// <b>What it refuses, it refuses by name.</b> The wide manifest admits no
 /// <c>async</c> function, module declaration, <c>with</c>, class field, private name, class static
-/// block or decorator. Each is parsed far enough to be recognised and then reported as a construct
+/// block, decorator or generator MEMBER of a class body. Each is parsed far enough to be
+/// recognised and then reported as a construct
 /// outside the manifest, at its own position - not as an unexpected token, which would send a
 /// reader looking for a typo. <c>await</c> and <c>yield</c> are not on that list and never were:
 /// they are contextual keywords, and where the goal or the strictness reserves one the answer is
@@ -54,7 +55,8 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// back as a surprise token, which the conformance runner scores as a failure and which turns a
 /// negative test expecting a <c>SyntaxError</c> into a false pass. Two things follow. The branches
 /// that recognise a still-refused construct stay ahead of the ones that now parse - <c>*</c>
-/// before a key is still a generator method where <c>...</c> in an object literal is a spread -
+/// before a key in a CLASS BODY is still a refused generator member where the same <c>*</c> in an
+/// object literal is now a generator method, and <c>...</c> in an object literal is a spread -
 /// and every new EXPRESSION POSITION the change opened has to answer the same way the old ones do:
 /// a parameter default, a pattern's default, the source of a <c>for … of</c> and the argument of a
 /// spread all reach the same primary-expression path, and a shorthand binding's key goes through
@@ -68,6 +70,19 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// above is still spelled where it was, because the conformance runner grades the manifest
 /// boundary on the diagnostic code and a refusal removed by accident is a manifest change nobody
 /// declared.
+/// </para>
+/// <para>
+/// <b>The generator family left that list on 2026-09-04 and nothing else moved onto it.</b>
+/// <c>function*</c>, <c>{ *m() {} }</c>, <c>yield</c> and <c>yield*</c> are parsed rather than
+/// refused; a generator MEMBER of a class body is not, and is still refused by name, because the
+/// class family and the generator family were admitted by two different bundles and nothing has
+/// yet written the member that is both. <c>async function*</c> is still refused and is now named
+/// as an async GENERATOR function rather than as an async one, which is a narrower name for the
+/// same code and the same position.
+/// The one thing a reader should check when reading the <c>yield</c> arms below is that a
+/// <c>yield</c> that is NOT in a generator still answers exactly what it answered before - a name
+/// in sloppy code, a reserved word in strict code - because admitting a construct must not change
+/// what an unrelated program is told.
 /// </para>
 /// <para>
 /// <b>And it refuses by name in EVERY position the construct can appear in, which is a stronger
@@ -128,6 +143,31 @@ internal sealed class JsParser
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=837D17
     // Broiler-Human:        PENDING
     private int functionDepth;
+
+    /// <summary>
+    /// Whether the parser is inside a generator's own <c>[+Yield]</c> context, where <c>yield</c>
+    /// is the operator and cannot be a name.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is true in a generator's own body and its own parameter list, and NOWHERE else.</b>
+    /// A nested ordinary function is a fresh <c>[~Yield]</c> context; so is a nested arrow, whose
+    /// concise and braced bodies the grammar both parse under <c>[~Yield]</c> even though its
+    /// PARAMETERS inherit <c>[?Yield]</c>. That is exactly the rule that makes one heap frame
+    /// enough for a suspension: the only code that can suspend a generator's frame is the
+    /// generator's own.
+    /// </para>
+    /// <para>
+    /// <b>One flag rather than two, because where <c>yield</c> is the operator it is also the
+    /// reserved word.</b> The pairing that looks necessary - an arrow inside a generator, where it
+    /// is not the operator - is not: <c>function* g() { var f = () =&gt; yield; }</c> parses in
+    /// every engine, with <c>yield</c> an ordinary identifier reference, and it is strict mode
+    /// rather than the enclosing generator that reserves the name there.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=64C71A
+    // Broiler-Human:        PENDING
+    private bool yieldIsOperator;
 
     /// <summary>Creates a parser over an already-tokenized source.</summary>
     /// <param name="stream">The tokens to read.</param>
@@ -199,7 +239,7 @@ internal sealed class JsParser
 
     // ---- statements ----------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=E9B36C
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=6D38FA
     // Broiler-Human:        PENDING
     private JsStatement ParseStatement()
     {
@@ -285,7 +325,11 @@ internal sealed class JsParser
 
                 case SliceTokenKind.Async when Peek(1).Kind == SliceTokenKind.Function &&
                     !Peek(1).PrecededByLineTerminator:
-                    return OutsideStatement(span, "an async function");
+                    return OutsideStatement(
+                        span,
+                        Peek(2).Kind == SliceTokenKind.Star
+                            ? "an async generator function"
+                            : "an async function");
 
                 // A CONTEXTUAL KEYWORD IS A LEGAL LABEL. `of: for (var x of []) ;` did not
                 // reach the `for … of` refusal at all, because `of` was not recognised as a label
@@ -748,16 +792,27 @@ internal sealed class JsParser
 
     // ---- functions -----------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=30402D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=6BE65E
     // Broiler-Human:        PENDING
     private JsFunctionNode ParseFunctionRest(SliceSourceSpan span, bool declaration)
     {
-        if (Current.Kind == SliceTokenKind.Star)
+        var isGenerator = Current.Kind == SliceTokenKind.Star;
+
+        if (isGenerator)
         {
-            Refuse(span, "a generator function");
             Advance();
         }
 
+        // THE NAME HAS ITS OWN `[Yield]` CONTEXT, AND IT IS NOT THE BODY'S. A declaration's name
+        // inherits the enclosing one, so `function* g() { function yield() {} }` is refused; an
+        // ordinary function EXPRESSION's name is `[~Yield]`, so
+        // `function* g() { (function yield() {}); }` is admitted in sloppy code and every engine
+        // runs it; and a generator expression's name is `[+Yield]`, so
+        // `function* g() { (function* yield() {}); }` is refused again. Three cases from one
+        // expression, and reading the name under the body's context collapses all three into the
+        // wrong one.
+        var outerOperator = yieldIsOperator;
+        yieldIsOperator = declaration ? outerOperator : isGenerator;
         var name = string.Empty;
 
         if (IsIdentifierName(Current.Kind))
@@ -765,13 +820,29 @@ internal sealed class JsParser
             name = Current.RawText;
             Advance();
         }
+        else if (Current.Kind is SliceTokenKind.Yield or SliceTokenKind.Await)
+        {
+            // A RESERVED WORD WHERE A NAME BELONGS IS A RESERVED WORD, not a missing name. The two
+            // answers carry different diagnostic codes, and the conformance runner grades on the
+            // code: "this declaration needs a name" for `function* g() { function yield() {} }`
+            // sends a reader looking for a name that is right there in front of them.
+            Refuse(
+                Span(),
+                SliceSourceDiagnosticCode.ReservedWordAsBinding,
+                "`" + Current.RawText + "` is not a binding name");
+
+            Advance();
+        }
         else if (declaration)
         {
             Refuse(span, SliceSourceDiagnosticCode.ExpectedToken, "a function declaration needs a name");
         }
 
+        yieldIsOperator = isGenerator;
         var parameters = ParseParameters();
-        return ParseFunctionBody(span, name, parameters, isArrow: false);
+        var body = ParseFunctionBody(span, name, parameters, isArrow: false, isGenerator);
+        yieldIsOperator = outerOperator;
+        return body;
     }
 
     /// <summary>Parses a formal parameter list, defaults, patterns and a rest parameter included.</summary>
@@ -1008,13 +1079,14 @@ internal sealed class JsParser
             : new JsTargetPattern(span, new JsIdentifier(span, BindingName()));
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B71F5D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=98F93A
     // Broiler-Human:        PENDING
     private JsFunctionNode ParseFunctionBody(
         SliceSourceSpan span,
         string name,
         System.Collections.Generic.List<JsParameter> parameters,
-        bool isArrow)
+        bool isArrow,
+        bool isGenerator = false)
     {
         var outer = strict;
         Expect(SliceTokenKind.OpenBrace, "{");
@@ -1041,7 +1113,7 @@ internal sealed class JsParser
         Expect(SliceTokenKind.CloseBrace, "}");
         var inner = strict;
         strict = outer;
-        return new JsFunctionNode(span, name, parameters, body, isArrow, inner, directives);
+        return new JsFunctionNode(span, name, parameters, body, isArrow, inner, directives, isGenerator);
     }
 
     // ---- classes -------------------------------------------------------------------------------
@@ -1267,7 +1339,7 @@ internal sealed class JsParser
         return new JsSequenceExpression(span, all);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=2C219A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=016E6A
     // Broiler-Human:        PENDING
     private JsExpression ParseAssignment(bool noIn = false)
     {
@@ -1279,6 +1351,15 @@ internal sealed class JsParser
         try
         {
             var span = Span();
+
+            // `yield` IS AN ASSIGNMENT-LEVEL PRODUCTION, so it is recognised here and its operand
+            // is parsed at the same level. Putting it in ParsePrimary would have made
+            // `yield a + b` parse as `(yield a) + b`, which is the wrong tree and a silently wrong
+            // program rather than a refusal.
+            if (yieldIsOperator && Current.Kind == SliceTokenKind.Yield)
+            {
+                return ParseYield(noIn);
+            }
 
             if (TryParseArrow(span, out var arrow))
             {
@@ -1335,6 +1416,43 @@ internal sealed class JsParser
     }
 
     /// <summary>
+    /// Parses <c>yield</c>, <c>yield expr</c> or <c>yield* expr</c>.
+    /// </summary>
+    /// <remarks>
+    /// <b>A line terminator after <c>yield</c> ends it</b>, which is a restricted production and
+    /// not automatic semicolon insertion: <c>yield \n 1;</c> is a bare <c>yield</c> followed by the
+    /// expression statement <c>1;</c>, and a parser that read across the newline would turn two
+    /// statements into one and yield the wrong value. The other terminators are the tokens that
+    /// begin no expression, which is where an operand stops being optional.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=997C18
+    // Broiler-Human:        PENDING
+    private JsExpression ParseYield(bool noIn)
+    {
+        var span = Span();
+        Advance();
+
+        // `yield [no LineTerminator here] *` IS THE PRODUCTION, so a newline before the star does
+        // not make a delegation - it makes a bare `yield` whose statement then continues with a
+        // `*` that begins no expression. That is the syntax error every engine gives, and reading
+        // across the newline instead would silently turn two statements into one delegation.
+        if (Current.Kind == SliceTokenKind.Star && !Current.PrecededByLineTerminator)
+        {
+            Advance();
+            return new JsYieldExpression(span, ParseAssignment(noIn), IsDelegate: true);
+        }
+
+        if (Current.PrecededByLineTerminator || Current.Kind is SliceTokenKind.CloseParen or
+            SliceTokenKind.CloseBracket or SliceTokenKind.CloseBrace or SliceTokenKind.Comma or
+            SliceTokenKind.Semicolon or SliceTokenKind.Colon or SliceTokenKind.EndOfSource)
+        {
+            return new JsYieldExpression(span, null, IsDelegate: false);
+        }
+
+        return new JsYieldExpression(span, ParseAssignment(noIn), IsDelegate: false);
+    }
+
+    /// <summary>
     /// Answers whether a token is a name this goal and this strictness admit as an identifier.
     /// </summary>
     /// <remarks>
@@ -1353,12 +1471,20 @@ internal sealed class JsParser
     /// has to decline, and it now passes for the reason the test names.
     /// </para>
     /// <para>
-    /// Neither can be an OPERATOR in anything this manifest admits, because it admits no async
-    /// function and no generator. So <c>await x</c> in a script is two identifiers in a row, which
-    /// is the syntax error every engine reports it as, and no refusal by name is owed for it.
+    /// <c>await</c> cannot be an OPERATOR in anything this manifest admits, because it admits no
+    /// async function. So <c>await x</c> in a script is two identifiers in a row, which is the
+    /// syntax error every engine reports it as, and no refusal by name is owed for it.
+    /// </para>
+    /// <para>
+    /// <b><c>yield</c> gained a third context on the day generators were admitted.</b> It is a name
+    /// in sloppy code, a reserved word in strict code, and a reserved word inside a generator
+    /// whatever the strictness - so the answer here is no longer strictness alone. The third case
+    /// is still a syntax error rather than a manifest refusal, for the same reason the second is:
+    /// the manifest admits generators, and it is the LANGUAGE that says a generator's own body may
+    /// not bind that name.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=937960
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=845DDE
     // Broiler-Human:        PENDING
     private bool IsIdentifierName(SliceTokenKind kind) => kind switch
     {
@@ -1366,7 +1492,7 @@ internal sealed class JsParser
             SliceTokenKind.Of or SliceTokenKind.Async or SliceTokenKind.Static or
             SliceTokenKind.Let => true,
         SliceTokenKind.Await => options.Goal != SliceGoal.Module,
-        SliceTokenKind.Yield => !strict,
+        SliceTokenKind.Yield => !strict && !yieldIsOperator,
         _ => false,
     };
 
@@ -1501,27 +1627,43 @@ internal sealed class JsParser
         return tokens[scan].Kind == SliceTokenKind.EqualsGreaterThan;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=E75ED1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=61A438
     // Broiler-Human:        PENDING
     private JsExpression ParseArrowBody(
         SliceSourceSpan span, System.Collections.Generic.List<JsParameter> parameters)
     {
-        if (Current.Kind == SliceTokenKind.OpenBrace)
+        // AN ARROW'S BODY IS `[~Yield]` EVEN INSIDE A GENERATOR, and its parameter list is NOT -
+        // which is why the flag is cleared here rather than in TryParseArrow, after the parameters
+        // have already been read. So `function* g() { var f = (yield) => 1; }` is refused for its
+        // parameter and `function* g() { var f = () => yield; }` parses, with `yield` an ordinary
+        // identifier reference - which is what every engine does, and the opposite of what a
+        // reading of "yield may only appear in the generator's own body" suggests.
+        var outerOperator = yieldIsOperator;
+        yieldIsOperator = false;
+
+        try
         {
+            if (Current.Kind == SliceTokenKind.OpenBrace)
+            {
+                return new JsFunctionExpression(
+                    span, ParseFunctionBody(span, string.Empty, parameters, isArrow: true));
+            }
+
+            var value = ParseAssignment();
+
+            var body = new System.Collections.Generic.List<JsStatement>
+            {
+                new JsReturnStatement(span, value),
+            };
+
             return new JsFunctionExpression(
-                span, ParseFunctionBody(span, string.Empty, parameters, isArrow: true));
+                span,
+                new JsFunctionNode(span, string.Empty, parameters, body, true, strict, []));
         }
-
-        var value = ParseAssignment();
-
-        var body = new System.Collections.Generic.List<JsStatement>
+        finally
         {
-            new JsReturnStatement(span, value),
-        };
-
-        return new JsFunctionExpression(
-            span,
-            new JsFunctionNode(span, string.Empty, parameters, body, true, strict, []));
+            yieldIsOperator = outerOperator;
+        }
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5BCABC
@@ -1925,7 +2067,7 @@ internal sealed class JsParser
         return arguments;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=CEFB59
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=168DD8
     // Broiler-Human:        PENDING
     private JsExpression ParsePrimary()
     {
@@ -1977,7 +2119,11 @@ internal sealed class JsParser
             // the false point the unsupported verdict exists to prevent.
             case SliceTokenKind.Async when Peek(1).Kind == SliceTokenKind.Function &&
                 !Peek(1).PrecededByLineTerminator:
-                return OutsideExpression(span, "an async function");
+                return OutsideExpression(
+                    span,
+                    Peek(2).Kind == SliceTokenKind.Star
+                        ? "an async generator function"
+                        : "an async function");
 
             case SliceTokenKind.Import when Peek(1).Kind == SliceTokenKind.OpenParen:
                 return OutsideExpression(span, "a dynamic `import()`");
@@ -1986,13 +2132,16 @@ internal sealed class JsParser
                 return OutsideExpression(span, "`import.meta`");
 
             case SliceTokenKind.Await when options.Goal != SliceGoal.Module:
-            case SliceTokenKind.Yield when !strict:
+            case SliceTokenKind.Yield when !strict && !yieldIsOperator:
                 Advance();
                 return new JsIdentifier(span, token.RawText);
 
-            // RESERVED HERE, ORDINARY THERE. Where the goal and the strictness make one of these
-            // a reserved word, the honest answer is the syntax error every engine gives and NOT a
-            // construct-outside-the-manifest refusal: the manifest is not what forbids it.
+            // RESERVED HERE, ORDINARY THERE. Where the goal, the strictness or the enclosing
+            // generator makes one of these a reserved word, the honest answer is the syntax error
+            // every engine gives and NOT a construct-outside-the-manifest refusal: the manifest is
+            // not what forbids it. A `yield` inside a generator reaches this arm from the one
+            // place that does not go through assignment level - the callee of a `new` - which is
+            // exactly where the language does not admit a yield expression either.
             case SliceTokenKind.Await:
             case SliceTokenKind.Yield:
             {
@@ -2000,7 +2149,9 @@ internal sealed class JsParser
                     span,
                     SliceSourceDiagnosticCode.ReservedWordAsBinding,
                     "`" + token.RawText + "` is a reserved word " +
-                        (token.Kind == SliceTokenKind.Await ? "in a module" : "in strict code"));
+                        (token.Kind == SliceTokenKind.Await
+                            ? "in a module"
+                            : yieldIsOperator && !strict ? "in a generator" : "in strict code"));
 
                 Advance();
                 return new JsNullLiteral(span);
@@ -2141,7 +2292,7 @@ internal sealed class JsParser
         return new JsObjectLiteral(span, entries);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B746E9
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=1F2690
     // Broiler-Human:        PENDING
     private JsObjectEntry ParseObjectEntry()
     {
@@ -2162,8 +2313,23 @@ internal sealed class JsParser
         // followed by `:`, `,`, `}` or `(`.
         if (Current.Kind == SliceTokenKind.Star)
         {
-            Refuse(span, "a generator method");
-            return new JsObjectEntry(span, JsPropertyKind.Init, string.Empty, null, new JsNullLiteral(span));
+            Advance();
+            var generatorKey = PropertyKey(out var generatorComputed);
+            var outerOperator = yieldIsOperator;
+            yieldIsOperator = true;
+            var generatorParameters = ParseParameters();
+
+            var generatorBody = ParseFunctionBody(
+                span, generatorKey, generatorParameters, isArrow: false, isGenerator: true);
+
+            yieldIsOperator = outerOperator;
+
+            return new JsObjectEntry(
+                span,
+                JsPropertyKind.Init,
+                generatorKey,
+                generatorComputed,
+                new JsFunctionExpression(span, generatorBody));
         }
 
         if (Current.Kind == SliceTokenKind.Async &&

@@ -1066,6 +1066,12 @@ internal static class JavaScriptDiagnosticCodes
     /// <summary>The artifact declares an optional surface this composition did not admit.</summary>
     internal const int SurfaceOutsideComposition = 1608;
 
+    /// <summary>A suspension instruction appears in a code unit that is not a generator body.</summary>
+    internal const int YieldOutsideGenerator = 1609;
+
+    /// <summary>A code-unit row combines the generator flag with a flag that contradicts it.</summary>
+    internal const int GeneratorFlagsInconsistent = 1610;
+
     internal const int WrongMagic = 1001;
     internal const int UnsupportedFormatVersion = 1002;
     internal const int ManifestIdTooLong = 1005;

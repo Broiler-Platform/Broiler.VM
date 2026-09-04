@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   70
-// Annotated:        70/70
+// Relevant units:   75
+// Annotated:        75/75
 // Exempt:           13
-// Human-reviewed:   0/70
+// Human-reviewed:   0/75
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         5/5
+// Criteria:         7/7
 // Resource impact:  7/10 max
-// Unverified:       70
+// Unverified:       75
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -385,8 +385,8 @@ internal sealed class JsEngine
     /// <para>
     /// <b>The figure is MEASURED and not chosen</b>: <c>eng/measure-frame-cost.py</c> bisects the
     /// published binary against a recursion with no base case and finds that this interpreter
-    /// survives 21,246 JavaScript calls on the sixty-four-megabyte stack
-    /// <see cref="JsExecution"/> declares — 3,158 bytes of native stack per call, and the same
+    /// survives 19,377 JavaScript calls on the sixty-four-megabyte stack
+    /// <see cref="JsExecution"/> declares — 3,463 bytes of native stack per call, and the same
     /// figure whether the JavaScript frame is narrow or wide, because the operand stack and the
     /// environment are heap objects rather than stack ones. A guest `throw` unwinds from the same
     /// depth, which it did not before the executor caught by FILTER rather than by
@@ -396,12 +396,18 @@ internal sealed class JsEngine
     /// </para>
     /// <para>
     /// <b>BOTH HALVES OF THAT MEASUREMENT MOVE WHEN THE INSTRUCTION SET DOES, and re-measuring is
-    /// not optional.</b> The per-call cost is the executor's own frame, and admitting spread,
-    /// destructuring and <c>for … of</c> alongside classes grew it from 1,936 bytes to 3,158 -
-    /// which put 6,000 frames past what the sixteen megabytes then declared held, so a runaway
-    /// recursion terminated the process instead of throwing. That is JSC-85 exactly, reached by
-    /// arithmetic rather than by a code change, and it is why the stack was re-measured and
-    /// re-declared rather than this bound quietly lowered.
+    /// not optional.</b> The per-call cost is the executor's own frame, which a switch sizes for
+    /// the widest live set across all of its arms, so every bundle that adds cases to the dispatch
+    /// loop grows it. Admitting spread, destructuring and <c>for … of</c> alongside classes grew it
+    /// from 1,936 bytes to 3,158 - which put 6,000 frames past what the sixteen megabytes then
+    /// declared held, so a runaway recursion terminated the process instead of throwing. That is
+    /// JSC-85 exactly, reached by arithmetic rather than by a code change, and it is why the stack
+    /// was re-measured and re-declared rather than this bound quietly lowered. Admitting the
+    /// generator family grew it again, from 3,158 bytes to 3,463 - the two suspension arms and the
+    /// heap frame they read - and the sixty-four megabytes still hold 19,377 calls, so the bound is
+    /// still under a third of the capacity and the stack did not have to move. The measurement was
+    /// re-taken anyway, because a bound that is safe by arithmetic nobody re-did is a bound nobody
+    /// knows is safe.
     /// </para>
     /// <para>
     /// <b>What a host can still do is narrow it.</b> The <c>CallDepth</c> budget is charged on every
@@ -1651,11 +1657,36 @@ internal sealed class JsEngine
     /// believe the object is in a state that can answer <c>return</c> - and the flag is what carries
     /// that decision to the <c>IterateClose</c> the lowering emits unconditionally.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=F76442
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=780D55
     // Broiler-Human:        PENDING
-    internal bool TryIterateNext(JsIteratorRecord record, out JsValue value)
+    internal bool TryIterateNext(JsIteratorRecord record, out JsValue value) =>
+        TryIterateNext(record, System.Array.Empty<JsValue>(), out value, out _);
+
+    /// <summary>
+    /// The same step, with the argument <c>next</c> is called with and the value a DONE step
+    /// carried.
+    /// </summary>
+    /// <remarks>
+    /// <b>Both extras exist for <c>yield*</c> and for nothing else, which is why they are an
+    /// overload rather than a second walk over the protocol.</b> A delegation forwards what
+    /// <c>gen.next(v)</c> sent to the inner iterator's own <c>next</c>, and what <c>yield*</c>
+    /// EVALUATES TO is the value of the step that reported done - which every other construct
+    /// discards, and which a helper that only answered "finished" could not give back. The
+    /// argument list is passed through rather than built here so that the ordinary overload calls
+    /// <c>next</c> with NO arguments, exactly as <c>IteratorNext</c> does when it has no value to
+    /// send: an iterator written in the guest can see the difference in its own
+    /// <c>arguments.length</c>.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=2C1F72
+    // Broiler-Human:        PENDING
+    internal bool TryIterateNext(
+        JsIteratorRecord record,
+        JsValue[] sent,
+        out JsValue value,
+        out JsValue completed)
     {
         value = JsValue.Undefined;
+        completed = JsValue.Undefined;
 
         if (record.Done)
         {
@@ -1667,7 +1698,7 @@ internal sealed class JsEngine
 
         try
         {
-            result = Call(record.Next, record.Iterator, System.Array.Empty<JsValue>());
+            result = Call(record.Next, record.Iterator, sent);
         }
         catch (JsThrow)
         {
@@ -1684,6 +1715,7 @@ internal sealed class JsEngine
         if (GetProperty(result, "done").ToBooleanValue())
         {
             record.Done = true;
+            completed = GetProperty(result, "value");
             return false;
         }
 
@@ -1828,7 +1860,7 @@ internal sealed class JsEngine
     }
 
     /// <summary>Runs a program's entry point and answers what it completed with.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=D16FB4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=B716FA
     // Broiler-Human:        PENDING
     internal JsValue RunEntry(JsProgram program, uint unit)
     {
@@ -1843,6 +1875,7 @@ internal sealed class JsEngine
             System.Array.Empty<JsValue>(),
             null,
             JsValue.Undefined,
+            null,
             null);
     }
 
@@ -1856,7 +1889,7 @@ internal sealed class JsEngine
     /// <param name="binding">
     /// The box a construction holds its <c>this</c> in, or <see langword="null"/> for a call.
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=1DD9C5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=C677CE
     // Broiler-Human:        PENDING
     private JsValue Invoke(
         JsScriptFunction function,
@@ -1899,6 +1932,23 @@ internal sealed class JsEngine
                         ? thisValue
                         : JsValue.Object(ToObject(thisValue));
 
+        // CALLING A GENERATOR FUNCTION RUNS NONE OF ITS BODY. The environment above is built and
+        // the parameters are bound - both are observable, and both happen at the call - and then
+        // the frame is put on the heap and handed back inside a generator object instead of being
+        // interpreted. One bit test is what an ordinary call pays for that.
+        if (unit.IsGenerator)
+        {
+            var frame = new JsFrame(program, function.Unit, environment, receiver, arguments, function);
+
+            // THE FRAME IS CHARGED IN PROPORTION TO ITS SIZE, which is the rule this engine already
+            // applies to a built-in whose work is proportional to an argument: one instruction may
+            // not buy unbounded work. A generator over a unit verified to need a deep operand stack
+            // costs more to build than one over a shallow unit, and a program that builds a million
+            // of them has spent a million times that.
+            Charge((frame.FrameBytes / 64) + 4);
+            return JsValue.Object(Realm.CreateGenerator(function, frame));
+        }
+
         // AN ARROW TAKES ALL THREE FROM WHERE IT WAS WRITTEN. It has no `this`, no `new.target`
         // and no `super` of its own, so what the call site supplies for any of them is discarded
         // here rather than being allowed to reach the frame.
@@ -1910,31 +1960,215 @@ internal sealed class JsEngine
             arguments,
             function,
             unit.IsArrow ? function.LexicalNewTarget : newTarget,
-            unit.IsArrow ? function.LexicalThisBinding : binding);
+            unit.IsArrow ? function.LexicalThisBinding : binding,
+            null);
+    }
+
+    // ---- generators ----------------------------------------------------------------------------
+
+    /// <summary>
+    /// The one entry every resumption goes through: <c>next</c>, <c>return</c> and <c>throw</c>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The state is decided before the frame is touched.</b> Four states and three methods make
+    /// twelve cases, and eleven of them answer without running a single instruction: a completed
+    /// generator answers or rethrows, a generator that has not started swallows a <c>return</c> and
+    /// rethrows a <c>throw</c> without ever entering its body, and one that is already on the
+    /// interpreter's stack is a <c>TypeError</c>. The twelfth is the resumption.
+    /// </para>
+    /// <para>
+    /// <b>A resumption is charged like a call, because it IS one - a second interpreter frame on
+    /// the same native stack.</b> Fuel covers the re-entry, so driving a generator a million steps
+    /// cannot buy a million frame switches for nothing; and the CALL-DEPTH dimension covers the
+    /// frame, which is what makes a <c>yield*</c> chain thousands deep end in a named exhaustion
+    /// rather than in a stack overflow. It is charged here and not left to the <c>next</c> call
+    /// that reached this method, because that call's frame returns as soon as the generator
+    /// suspends and this one does not: a delegation chain holds one of each per level, so counting
+    /// only the call would say a chain is half as deep as it is - and the measured difference is
+    /// the difference between an answer and a terminated process.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=984439
+    // Broiler-Falsified-If: a generator resumed while its own body is running re-enters that body, or a completed generator runs any instruction
+    // Broiler-Human:        PENDING
+    internal JsValue ResumeGenerator(JsValue receiver, JsResumeMode mode, JsValue sent, string method)
+    {
+        if (receiver.AsObjectOrNull() is not JsGenerator generator)
+        {
+            return ThrowTypeError(
+                "Generator.prototype." + method + " called on a value that is not a generator");
+        }
+
+        if (generator.State == JsGeneratorState.Executing)
+        {
+            return ThrowTypeError("Generator is already running");
+        }
+
+        if (generator.State == JsGeneratorState.Completed || generator.Frame is null)
+        {
+            return mode switch
+            {
+                JsResumeMode.Throw => throw new JsThrow(sent, Render(sent)),
+                JsResumeMode.Return => JsValue.Object(Realm.IteratorResult(sent, done: true)),
+                _ => JsValue.Object(Realm.IteratorResult(JsValue.Undefined, done: true)),
+            };
+        }
+
+        // A GENERATOR THAT HAS NOT STARTED HAS NO `try` TO RUN, so an abrupt resumption completes
+        // it where it stands. Resuming into the body first and then unwinding would run the
+        // parameter bindings' side effects a second time, which nothing in the language asks for.
+        if (generator.State == JsGeneratorState.SuspendedStart && mode != JsResumeMode.Next)
+        {
+            CompleteGenerator(generator);
+
+            return mode == JsResumeMode.Throw
+                ? throw new JsThrow(sent, Render(sent))
+                : JsValue.Object(Realm.IteratorResult(sent, done: true));
+        }
+
+        Charge(4);
+
+        // THE DEPTH IS TAKEN BEFORE THE STATE MOVES, so a resumption refused for depth leaves the
+        // generator suspended and resumable rather than half-entered. A generator that could not
+        // be resumed because the stack was full has not run any of its body, and completing it
+        // would be a stronger claim than what happened.
+        if (depth >= MaximumCallDepth ||
+            !System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack())
+        {
+            return ThrowRangeError("Maximum call stack size exceeded");
+        }
+
+        if (!meter.TryCharge(VmBudgetDimension.CallDepth, 1))
+        {
+            throw new JsAbort(JsAbortKind.Exhausted, "the call-depth ceiling was reached");
+        }
+
+        depth++;
+        var frame = generator.Frame;
+        frame.ResumeMode = mode;
+        frame.ResumeValue = sent;
+        frame.Suspended = false;
+        generator.State = JsGeneratorState.Executing;
+
+        try
+        {
+            var completed = Execute(
+                frame.Program,
+                frame.UnitIndex,
+                null,
+                frame.ThisValue,
+                frame.Arguments,
+                frame.Function,
+
+                // A GENERATOR BODY IS NEITHER AN ARROW NOR A CONSTRUCTOR - the verifier refuses
+                // both pairings - so its `new.target` is `undefined` and it has no `this` box to
+                // read through. Passing the two explicitly rather than threading them through the
+                // frame keeps the suspended state to what an instruction boundary actually needs.
+                JsValue.Undefined,
+                null,
+                frame);
+
+            if (frame.Suspended)
+            {
+                generator.State = JsGeneratorState.SuspendedYield;
+                frame.Started = true;
+                return JsValue.Object(Realm.IteratorResult(completed, done: false));
+            }
+
+            CompleteGenerator(generator);
+            return JsValue.Object(Realm.IteratorResult(completed, done: true));
+        }
+        catch (JsReturnSignal forced)
+        {
+            // THE RETURN THE `finally` BLOCKS DID NOT OVERRIDE. It reaches here having run every
+            // enclosing finaliser on the way out, which is the whole reason it travels as an
+            // exception rather than as a returned flag.
+            return JsValue.Object(Realm.IteratorResult(forced.Value, done: true));
+        }
+        finally
+        {
+            // ANY OTHER WAY OUT OF THE BODY COMPLETES THE GENERATOR - a throw the body did not
+            // catch, an allowance spent mid-instruction, a stack the runtime could not grow. The
+            // test is on the STATE rather than on the exception type, because a catch clause per
+            // type is a list that a new type is added to by forgetting: the one that got away
+            // would leave a generator reading `already running` for the rest of the program, and
+            // every later resumption of it would be a TypeError with no cause a reader could find.
+            if (generator.State == JsGeneratorState.Executing)
+            {
+                CompleteGenerator(generator);
+            }
+
+            depth--;
+            meter.ReportReleased(VmBudgetDimension.CallDepth, 1);
+        }
+    }
+
+    /// <summary>
+    /// Retires a generator: no frame, no state to resume, and the operand stack let go of.
+    /// </summary>
+    /// <remarks>
+    /// <b>Dropping the frame reference is the point and not the tidiness.</b> A completed generator
+    /// object may stay reachable for the rest of the program - somebody kept the variable - and
+    /// without this it would keep its operand-stack array, its scope chain and everything those
+    /// reach alive with it. Clearing the field is what makes exhausting a generator release what it
+    /// was holding, at the instant it is exhausted rather than at the collector's convenience.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=5D1433
+    // Broiler-Human:        PENDING
+    private static void CompleteGenerator(JsGenerator generator)
+    {
+        generator.Frame = null;
+        generator.State = JsGeneratorState.Completed;
     }
 
     // ---- the loop ------------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=4A0AAA
+    /// <summary>
+    /// The dispatch loop, over an ordinary frame or over a generator's heap-allocated one.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A <see langword="null"/> <paramref name="frame"/> is the ordinary path and it is
+    /// unchanged.</b> The operand stack, the scope chain, the height and the instruction pointer
+    /// are locals exactly as they were; the frame is read once, at entry, and never looked at again
+    /// unless the unit actually suspends. What an ordinary call now pays is that one test and the
+    /// argument that carries it.
+    /// </para>
+    /// <para>
+    /// <b>An abrupt resumption is raised at the top of the try, not at the suspension point.</b>
+    /// <c>gen.throw</c> and <c>gen.return</c> re-enter at the instruction the frame suspended at
+    /// and must be seen by whatever exception region encloses it - so the raise happens inside the
+    /// same try the dispatch loop runs in, with <c>current</c> already set to that instruction. The
+    /// existing region search then runs the same <c>catch</c> and <c>finally</c> blocks it would
+    /// have run for a throw from the instruction itself, and no unwinding is reimplemented.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=4B6DBC
     // Broiler-Human:        PENDING
     private JsValue Execute(
         JsProgram program,
         int unitIndex,
-        JsEnvironment environment,
+        JsEnvironment? environment,
         JsValue thisValue,
         JsValue[] actualArguments,
         JsScriptFunction? self,
         JsValue newTarget,
-        JsCell? thisBinding)
+        JsCell? thisBinding,
+        JsFrame? frame)
     {
         var unit = program.Functions[unitIndex];
         var code = program.Code;
         var constants = program.Constants;
         var names = program.Names;
-        var stack = new JsValue[unit.MaxOperandStack + 1];
-        var scopes = new System.Collections.Generic.List<JsEnvironment>(4) { environment };
-        var sp = 0;
-        var pc = (int)unit.CodeOffset;
+        var stack = frame is null ? new JsValue[unit.MaxOperandStack + 1] : frame.Stack;
+
+        var scopes = frame is null
+            ? new System.Collections.Generic.List<JsEnvironment>(4) { environment! }
+            : frame.Scopes;
+
+        var sp = frame is null ? 0 : frame.Sp;
+        var pc = frame is null ? (int)unit.CodeOffset : frame.Pc;
         var strict = unit.IsStrict;
         var current = pc;
         JsRegion region = default;
@@ -1945,10 +2179,40 @@ internal sealed class JsEngine
         // rather than from `self`.
         var active = self is null ? null : unit.IsArrow ? self.LexicalActiveFunction : self;
 
+        // A DELEGATION RESUMES INSIDE ITS OWN OPCODE, whatever mode it resumes in: `return` and
+        // `throw` arriving mid-`yield*` are forwarded to the inner iterator rather than raised
+        // here, so only a plain `yield` reaches either of the two arms below.
+        var abrupt = frame is { Started: true, Delegating: false } &&
+            frame.ResumeMode != JsResumeMode.Next;
+
+        // THE NORMAL RESUMPTION IS FINISHED HERE AND NOT IN THE OPCODE. The instruction that
+        // suspended has already run its pop; what re-entry owes it is the push of the sent value
+        // and the step past it, and doing that here keeps the `Yield` case a straight-line suspend.
+        if (frame is { Started: true, Delegating: false } && !abrupt)
+        {
+            stack[sp++] = frame.ResumeValue;
+            pc += JsOpcodes.InstructionWidth(JsOpcode.Yield);
+            current = pc;
+        }
+
         while (true)
         {
             try
             {
+                if (abrupt)
+                {
+                    abrupt = false;
+                    current = pc;
+                    var carried = frame!.ResumeValue;
+
+                    if (frame.ResumeMode == JsResumeMode.Throw)
+                    {
+                        throw new JsThrow(carried, Render(carried));
+                    }
+
+                    throw new JsReturnSignal(carried);
+                }
+
                 while (true)
                 {
                     current = pc;
@@ -2785,6 +3049,17 @@ internal sealed class JsEngine
                         case JsOpcode.Throw:
                         {
                             var thrown = stack[--sp];
+
+                            // THE ONE VALUE THIS INSTRUCTION DOES NOT THROW. A `finally` that a
+                            // forced return passed through re-raises what it parked, using this
+                            // instruction because the lowering has no other; a forced return
+                            // parked here comes back out as a forced return, so an outer `catch`
+                            // still never sees it.
+                            if (thrown.AsObjectOrNull() is JsForcedReturn forced)
+                            {
+                                throw new JsReturnSignal(forced.Value);
+                            }
+
                             throw new JsThrow(thrown, Render(thrown));
                         }
 
@@ -2859,6 +3134,36 @@ internal sealed class JsEngine
                             break;
                         }
 
+                        case JsOpcode.Yield:
+                        {
+                            // THE WHOLE OF SUSPENDING. The yielded value leaves on the return, the
+                            // height and the pointer stay behind in the frame, and the pointer is
+                            // left AT this instruction rather than after it - so a resumption that
+                            // arrives abruptly raises its throw or its return at a point the
+                            // enclosing exception regions actually cover. Nothing clears the
+                            // delegation flag here because nothing can have set it: a suspended
+                            // `yield*` always resumes at its own instruction, never at this one.
+                            var yielded = stack[--sp];
+                            frame!.Sp = sp;
+                            frame.Pc = pc;
+                            frame.Suspended = true;
+                            return yielded;
+                        }
+
+                        case JsOpcode.YieldDelegate:
+                        {
+                            var step = Delegate(frame!, stack, ref sp, pc);
+
+                            if (frame!.Suspended)
+                            {
+                                return step;
+                            }
+
+                            stack[sp++] = step;
+                            pc++;
+                            break;
+                        }
+
                         case JsOpcode.Pop:
                             sp--;
                             pc++;
@@ -2920,7 +3225,200 @@ internal sealed class JsEngine
                 stack[sp++] = thrown.Value;
                 pc = (int)region.Handler;
             }
+            catch (JsReturnSignal forced)
+            {
+                // A FORCED RETURN RUNS EVERY `finally` AND NO `catch`. The search skips catch
+                // regions rather than taking the innermost region of either kind, which is the one
+                // place the two completions differ; taking the innermost would let
+                // `try { yield } catch (e) {}` swallow a `gen.return()` as though somebody had
+                // thrown, and the generator would carry on running instead of ending.
+                if (!TryFindFinally(program, unitIndex, current, out var finaliser))
+                {
+                    throw;
+                }
+
+                while (scopes.Count > finaliser.ScopeDepth + 1)
+                {
+                    scopes.RemoveAt(scopes.Count - 1);
+                }
+
+                sp = (int)finaliser.StackHeight;
+                stack[sp++] = JsValue.Object(new JsForcedReturn(forced.Value));
+                pc = (int)finaliser.Handler;
+            }
         }
+    }
+
+    /// <summary>
+    /// The innermost <c>finally</c> region of <paramref name="unit"/> covering <paramref name="pc"/>.
+    /// </summary>
+    /// <remarks>
+    /// The regions of one unit are recorded innermost-first by the lowering, so the first match in
+    /// order is the innermost - the same property <see cref="TryFindHandler"/> relies on. What
+    /// differs is only that a <c>catch</c> region is passed over rather than taken.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=C8F9E6
+    // Broiler-Human:        PENDING
+    private static bool TryFindFinally(JsProgram program, int unit, int pc, out JsRegion region)
+    {
+        foreach (var candidate in program.Regions)
+        {
+            if (candidate.Unit == (uint)unit &&
+                candidate.Kind == JsFormat.HandlerKind.Finally &&
+                pc >= candidate.TryStart && pc < candidate.TryEnd)
+            {
+                region = candidate;
+                return true;
+            }
+        }
+
+        region = default;
+        return false;
+    }
+
+    /// <summary>
+    /// One turn of a <c>yield*</c>: step the inner iterator, or forward an abrupt resumption to it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is the specification's delegation loop, entered afresh at every resumption.</b> The
+    /// iterator record lives in the frame, so the loop's whole state between two resumptions is
+    /// "which record" and "still delegating" - and re-entering at the same instruction is what lets
+    /// a <c>return</c> or a <c>throw</c> that arrives mid-delegation be handed to the inner
+    /// iterator rather than raised in the outer body.
+    /// </para>
+    /// <para>
+    /// <b>The source is acquired through <see cref="GetIterator"/> and stepped through
+    /// <see cref="TryIterateNext(JsIteratorRecord, JsValue[], out JsValue, out JsValue)"/>, which
+    /// is what makes <c>yield*</c> WORK OVER ANYTHING.</b> The
+    /// operand is read for its <c>Symbol.iterator</c> exactly as a spread or a <c>for … of</c>
+    /// reads it, so an Array, a String, a Map, a Set, another generator and a plain object that
+    /// defines the Symbol itself are all delegated over by one path. Recognising the realm's own
+    /// iterables by TYPE instead - which is what a realm without a Symbol has to do - refused every
+    /// object a guest made iterable, and refused it as "not iterable", which is a claim about the
+    /// program rather than about the engine.
+    /// </para>
+    /// <para>
+    /// <b>The two missing-method cases are where an engine is most often wrong.</b> An inner
+    /// iterator with no <c>return</c> - which is every Array and String iterator - does not swallow
+    /// the outer <c>return</c>: the outer generator returns, running its own finalisers. An inner
+    /// iterator with no <c>throw</c> is closed first and then the delegation raises a
+    /// <c>TypeError</c>, so a program that throws into one is told what is missing rather than
+    /// silently getting its own exception back.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=F145EB
+    // Broiler-Falsified-If: a `return` or a `throw` that arrives while a `yield*` is suspended is not offered to the inner iterator first
+    // Broiler-Human:        PENDING
+    private JsValue Delegate(JsFrame frame, JsValue[] stack, ref int sp, int pc)
+    {
+        if (!frame.Delegating)
+        {
+            frame.Delegate = GetIterator(stack[--sp]);
+            frame.ResumeMode = JsResumeMode.Next;
+            frame.ResumeValue = JsValue.Undefined;
+        }
+
+        // THE FLAG IS CLEARED ON THE WAY IN AND SET AGAIN ONLY BY AN ACTUAL SUSPENSION, so every
+        // other way out of this method ends the delegation - including the ways that leave by
+        // throwing. Clearing it only on the paths that return normally left it set when an inner
+        // `throw` method threw and the outer body caught: the next resumption would then re-enter
+        // a delegation that no longer existed, at an instruction that was no longer a `yield*`.
+        frame.Delegating = false;
+        var record = frame.Delegate!;
+        var mode = frame.ResumeMode;
+        var sent = frame.ResumeValue;
+        frame.ResumeMode = JsResumeMode.Next;
+        frame.ResumeValue = JsValue.Undefined;
+        JsValue step;
+
+        switch (mode)
+        {
+            case JsResumeMode.Throw:
+            {
+                var thrower = GetProperty(record.Iterator, "throw");
+
+                if (!thrower.IsObject || !thrower.AsObject().IsCallable)
+                {
+                    // CLOSED UNDER A NORMAL COMPLETION AND NOT A QUIET ONE, which is what the
+                    // specification asks for here: an error the inner `return` raises while it is
+                    // being cleaned up is the error the program is owed, and only if it raises
+                    // none does the missing `throw` become the TypeError below.
+                    CloseIterator(record);
+                    return ThrowTypeError("The iterator does not provide a 'throw' method.");
+                }
+
+                step = Call(thrower, record.Iterator, [sent]);
+                break;
+            }
+
+            case JsResumeMode.Return:
+            {
+                var returner = GetProperty(record.Iterator, "return");
+
+                // AN INNER ITERATOR WITH NO `return` DOES NOT SWALLOW THE OUTER ONE. Every Array
+                // and String iterator is in this case, so it is the common one rather than the
+                // exotic one: the outer generator returns, and its own finalisers run on the way.
+                if (!returner.IsObject || !returner.AsObject().IsCallable)
+                {
+                    record.Done = true;
+                    throw new JsReturnSignal(sent);
+                }
+
+                step = Call(returner, record.Iterator, [sent]);
+
+                if (!step.IsObject)
+                {
+                    return ThrowTypeError("iterator result is not an object");
+                }
+
+                if (GetProperty(step, "done").ToBooleanValue())
+                {
+                    record.Done = true;
+                    frame.Delegate = null;
+                    throw new JsReturnSignal(GetProperty(step, "value"));
+                }
+
+                break;
+            }
+
+            default:
+            {
+                // THE ONE PATH THAT IS THE ORDINARY PROTOCOL, so it is the ordinary helper: the
+                // record's `next` is the function read once at acquisition, the sent value is
+                // forwarded as its argument, and the inner iterator's own COMPLETION VALUE is what
+                // `yield*` evaluates to - the half of delegation a loop written by hand forgets.
+                if (!TryIterateNext(record, [sent], out var element, out var completed))
+                {
+                    frame.Delegate = null;
+                    return completed;
+                }
+
+                frame.Delegating = true;
+                frame.Sp = sp;
+                frame.Pc = pc;
+                frame.Suspended = true;
+                return element;
+            }
+        }
+
+        if (!step.IsObject)
+        {
+            return ThrowTypeError("iterator result is not an object");
+        }
+
+        if (GetProperty(step, "done").ToBooleanValue())
+        {
+            record.Done = true;
+            frame.Delegate = null;
+            return GetProperty(step, "value");
+        }
+
+        frame.Delegating = true;
+        frame.Sp = sp;
+        frame.Pc = pc;
+        frame.Suspended = true;
+        return GetProperty(step, "value");
     }
 
     /// <summary>Unpacks the argument Array a spread call built into the array a call takes.</summary>

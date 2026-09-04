@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   68
-// Annotated:        68/68
+// Relevant units:   69
+// Annotated:        69/69
 // Exempt:           7
-// Human-reviewed:   0/68
+// Human-reviewed:   0/69
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       68
+// Unverified:       69
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -175,7 +175,13 @@ internal sealed record JsParameter(
 /// <param name="IsArrow">Whether this is an arrow function, which has no <c>this</c> of its own.</param>
 /// <param name="IsStrict">Whether the body is strict-mode code.</param>
 /// <param name="Directives">The directive prologue, which is where <c>use strict</c> lives.</param>
-// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=8FF338
+/// <param name="IsGenerator">
+/// Whether the body is a generator's. It is a property of the FUNCTION and not of its statements,
+/// because it decides three separate things at once: that <c>yield</c> is an operator inside it,
+/// that calling it builds a generator object rather than running it, and that it is not a
+/// constructor.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=706A89
 // Broiler-Human:        PENDING
 internal sealed record JsFunctionNode(
     SliceSourceSpan Span,
@@ -184,7 +190,21 @@ internal sealed record JsFunctionNode(
     System.Collections.Generic.IReadOnlyList<JsStatement> Body,
     bool IsArrow,
     bool IsStrict,
-    System.Collections.Generic.IReadOnlyList<JsStringLiteral> Directives) : JsNode(Span);
+    System.Collections.Generic.IReadOnlyList<JsStringLiteral> Directives,
+    bool IsGenerator = false) : JsNode(Span);
+
+/// <summary><c>yield</c>, <c>yield expr</c> or <c>yield* expr</c>.</summary>
+/// <param name="Operand">
+/// What is yielded. A <c>yield</c> with no operand yields <c>undefined</c>, and it is
+/// <see langword="null"/> here rather than a synthesised <c>undefined</c> literal so that the
+/// lowering can tell "the source wrote nothing" from "the source wrote <c>undefined</c>" - a
+/// distinction nothing needs today and one a reader of the tree would otherwise have to guess at.
+/// </param>
+/// <param name="IsDelegate">Whether this is <c>yield*</c>, which drives an inner iterator.</param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=18C438
+// Broiler-Human:        PENDING
+internal sealed record JsYieldExpression(
+    SliceSourceSpan Span, JsExpression? Operand, bool IsDelegate) : JsExpression(Span);
 
 /// <summary>A function expression.</summary>
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=E66830

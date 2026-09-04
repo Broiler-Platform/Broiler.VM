@@ -11,11 +11,12 @@ namespace Broiler.VM.Composition.JavaScript.SliceCompiler;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>Five entries, five codes, and the count is the point.</b> Version 2 adds a function table,
-/// an environment model and exception regions; each of those is a place where an artifact can be
-/// structurally wrong in a way version 1 has no vocabulary for, and the published registry binds
-/// each new code to a named entry here. A verifier that refused every version-2 artifact would
-/// satisfy none of the five, because they are distinguished by the code and not by the refusal.
+/// <b>One entry per code, and the count is the point.</b> Version 2 adds a function table, an
+/// environment model, exception regions, the optional surfaces and the one unit kind that may
+/// suspend; each of those is a place where an artifact can be structurally wrong in a way version 1
+/// has no vocabulary for, and the published registry binds each new code to a named entry here. A
+/// verifier that refused every version-2 artifact would satisfy none of them, because they are
+/// distinguished by the code and not by the refusal.
 /// </para>
 /// <para>
 /// <b>Every entry is bytes, not a host.</b> They carry the replay mode <c>wide</c>, and the only
@@ -100,6 +101,30 @@ internal static class WideCorpus
             "-",
             Artifact(surfaces: [JsSurfaces.Binary])),
 
+        // ---- two rows about the one unit kind that may suspend ---------------------------------
+        //
+        // A generator's frame is put on the heap by the EXECUTOR, from the unit's own flag, before
+        // any of its code runs. Both of these are ways an artifact can ask for a suspension the
+        // executor has not allocated a frame for, and both are refused by the verifier rather than
+        // met by a null frame in the middle of the dispatch loop: one puts the suspension in a unit
+        // that is not a generator, the other declares a unit that is a generator AND one of the
+        // three things a generator cannot also be.
+        Entry(
+            "wide-a-suspension-outside-a-generator",
+            Artifact(code: [
+                (byte)JsOpcode.LoadUndefined,
+                (byte)JsOpcode.Yield,
+                (byte)JsOpcode.Return,
+            ]),
+            "SemanticValidationFailed",
+            JavaScriptDiagnosticCodes.YieldOutsideGenerator),
+        Entry(
+            "wide-a-generator-that-is-also-the-program-body",
+            Artifact(
+                flags: JsFormat.FunctionFlags.ProgramBody | JsFormat.FunctionFlags.Generator),
+            "InconsistentStructure",
+            JavaScriptDiagnosticCodes.GeneratorFlagsInconsistent),
+
         // ---- two rows that were unreachable while one version was registered ------------------
         //
         // Both are the CALLER mislabelling the bytes, and neither could happen while the profile
@@ -179,7 +204,8 @@ internal static class WideCorpus
         byte[]? code = null,
         bool regionHandlerOutsideUnit = false,
         string? manifest = null,
-        string[]? surfaces = null)
+        string[]? surfaces = null,
+        JsFormat.FunctionFlags flags = JsFormat.FunctionFlags.ProgramBody)
     {
         var body = code ?? [(byte)JsOpcode.LoadConstant, 0x00, 0x00, (byte)JsOpcode.Return];
 
@@ -224,7 +250,7 @@ internal static class WideCorpus
                     16,
                     codeOffset,
                     (uint)body.Length,
-                    (uint)JsFormat.FunctionFlags.ProgramBody),
+                    (uint)flags),
             ])));
 
         if (surfaces is not null)

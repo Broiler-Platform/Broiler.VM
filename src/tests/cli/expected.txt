@@ -57,12 +57,12 @@ runs/a-template-literal-in-a-spread-argument.js|0|a-b-c 2
 # 2104 is the code the conformance runner grades the manifest boundary on; anything else scores a
 # negative test expecting a syntax error as a false pass.
 #
-# TWO OF THESE ROWS NAMED A FAMILY THAT IS NO LONGER OUT. The class and the template literal were
+# THREE OF THESE ROWS NAMED A FAMILY THAT IS NO LONGER OUT. The class and the template literal were
 # both outside the manifest when the parameter-default bundle was written and are inside it now,
-# so a row asserting they are refused asserts something false. They are not deleted: each moved to
-# `runs/` above, where it checks the composition the two changes make possible instead - which is
-# the position the refusal was guarding, still covered, from the other side.
-refused/a-generator-in-a-for-of-source.js|3|2104:ConstructOutsideManifest
+# and the GENERATOR left it when this bundle arrived, so a row asserting any of the three is
+# refused asserts something false. None is deleted: each moved to `runs/` above, where it checks
+# the composition the change makes possible instead - which is the position the refusal was
+# guarding, still covered, from the other side.
 refused/an-async-arrow-in-a-pattern-default.js|3|2104:ConstructOutsideManifest
 
 # AND ONE THAT IS NOT THE MANIFEST'S TO REFUSE. A shorthand's key is also its binding name, so a
@@ -196,6 +196,13 @@ runs/a-base-constructor-builds-from-new-target.js|0|Derived true true derived
 runs/a-class-member-is-not-enumerable.js|0|own falsetruetrue false falsefalsefalse
 runs/a-class-expression-binds-its-own-name.js|0|true Inner Anonymous undefined
 
+# AND THE ROW THE GENERATOR FAMILY'S ADMISSION MOVED. It was `refused/a-generator-in-a-for-of-
+# source.js`, asserting that a generator function written in a `for … of` source is refused by
+# name; the family is inside the manifest now, so the assertion is false and the file checks the
+# composition instead - a `for … of` stepping a generator, which is the seam the two bundles meet
+# at and the position the refusal was guarding.
+runs/a-generator-in-a-for-of-source.js|0|10
+
 # AND THE THREE RULES THAT ARE RUN-TIME ERRORS RATHER THAN REFUSALS. Each source is admitted
 # whole - the front end has nothing to say about any of them - and only the path taken decides.
 # Exit 1 is a program that threw.
@@ -219,6 +226,53 @@ refused/a-class-static-block.js|3|2104:ConstructOutsideManifest
 # a case it can answer.
 refused/a-super-property-outside-a-method.js|3|2101:UnexpectedToken
 refused/an-assignment-to-a-class-binding.js|3|2204:AssignmentToConstant
+
+# THE GENERATOR FAMILY, which moved from refused-by-name to admitted on 2026-09-04. Every value
+# below was taken from node before it was written here, so each row is a comparison against another
+# implementation rather than an assertion this component made about itself. The four that matter
+# most are the last four: a forced return that a `catch` must NOT see, a `finally` that yields and
+# so defers that return, a delegation that forwards a `throw` into the inner generator and then
+# refuses one an Array iterator cannot take, and a re-entry that is a TypeError rather than two
+# interpreters walking one operand stack.
+runs/a-generator-that-yields-twice.js|0|1,11,done,undefined,true
+runs/a-return-that-runs-a-finally-across-a-yield.js|0|caught=0 finalised=1 value=forced done=true
+runs/a-finally-that-yields-defers-the-return.js|0|one from the finaliser/false asked/true undefined/true
+runs/a-delegation-that-forwards-a-throw.js|0|inner caught BANG / outer got inner-return / TypeError
+runs/a-generator-that-is-already-running.js|0|TypeError then done=true
+runs/a-generator-prototype-chain.js|0|true 0 true object constructor,next,return,throw [object Generator] true
+
+# THE ONE POSITION THE TWO BUNDLES LEFT BETWEEN THEM, pinned from both sides. A `*` before a key in
+# a CLASS BODY is a generator member, which the class family and the generator family were admitted
+# by two different bundles and neither wrote - so it is refused BY NAME, at its own position, and
+# needs its own row for the reason every other class-body construct does. The same `*` in an OBJECT
+# LITERAL is a generator method that parses, lowers and runs, which is the row beside it: what the
+# manifest declines here is the class member and not the modifier.
+refused/a-generator-member-of-a-class-body.js|3|2104:ConstructOutsideManifest
+runs/a-generator-method-of-an-object-literal.js|0|11,13,15
+
+# AND A DEVIATION FROM THE LANGUAGE THE JOIN OF THE TWO BUNDLES PRODUCED, pinned exactly as the
+# dead-zone rows below are. A generator with a NON-SIMPLE parameter list carries `BindsParameters`,
+# which moves parameter binding into the unit's own prologue - and a generator's prologue is body
+# code, so a default runs at the first `next` where the specification runs it at the CALL. A
+# simple parameter list is unaffected. Node answers `before,default,called,resumed` for this
+# source; this row records what this build answers, and goes red the day it is repaired.
+runs/a-generator-default-runs-at-the-first-next.js|0|before,called,default,resumed
+
+# AND THE FAMILY'S EXHAUSTION, which is the row that would go red as a TERMINATED PROCESS rather
+# than as a wrong answer. A resumption is a second interpreter frame on the same native stack, so a
+# `yield*` chain holds two live frames per level; until the resumption was charged for its own
+# frame this file overflowed the guest stack and killed the host, which is the one outcome
+# JSC-79 exists to forbid.
+#
+# TWO ROWS AND NOT ONE, because WHICH bound answers is settled by this branch and not by the
+# generator bundle. The default call-depth ceiling sits ABOVE the engine's own measured bound
+# *(JSC-96)*, so a chain with no bottom is answered by the language's catchable `RangeError` -
+# exactly as an ordinary unbounded recursion is, in the three rows further down - and a host that
+# wants the dimension named states the ceiling and gets it. The row this bundle arrived with
+# asserted the second answer under the first row's command line, which is a claim about an
+# ordering this branch had already decided the other way.
+limits/a-delegation-chain-with-no-bottom.js|1|uncaught RangeError: Maximum call stack size exceeded
+--call-depth 100 limits/a-delegation-chain-with-no-bottom.js|5|CeilingReached on CallDepth
 
 # WHAT THIS IS AND WHAT IT IMPLEMENTS, which is the one surface a person reads before they read
 # anything else and which no row judged until 2026-09-03. Two rows rather than one, because the
