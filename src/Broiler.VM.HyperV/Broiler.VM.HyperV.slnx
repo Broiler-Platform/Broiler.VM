@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Broiler.VM.HyperV/Broiler.VM.HyperV.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/Broiler.VM.HyperV.Cli/Broiler.VM.HyperV.Cli.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Broiler.VM.HyperV.Tests/Broiler.VM.HyperV.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.HyperV</RootNamespace>
+    <AssemblyName>Broiler.VM.HyperV</AssemblyName>
+    <!-- Raw pointers into guest physical memory and unmanaged callbacks from the
+         instruction emulator both need this. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <IsAotCompatible>true</IsAotCompatible>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Description>Creates pico virtual machines on the Windows Hypervisor Platform and runs raw x86-64 machine code in them.</Description>
+    <PackageTags>broiler;hyper-v;whp;virtualization;x86-64;sandbox</PackageTags>
+    <TargetFramework>net10.0</TargetFramework>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+</Project>

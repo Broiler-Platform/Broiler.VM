@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Broiler.VM.HyperV.Cli": {
+      "commandName": "Project",
+      "commandLineArgs": "selftest"
+    }
+  }
+}

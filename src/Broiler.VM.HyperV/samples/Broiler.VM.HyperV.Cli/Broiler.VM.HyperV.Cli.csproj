@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <!-- The library is annotated as Windows-only; saying so here rather than sprinkling
+         SupportedOSPlatform over every sample keeps the platform check honest. -->
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <RootNamespace>Broiler.VM.HyperV.Cli</RootNamespace>
+    <AssemblyName>broiler-picovm</AssemblyName>
+    <IsPackable>false</IsPackable>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Broiler.VM.HyperV\Broiler.VM.HyperV.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,42 @@
+<Project>
+
+  <!--
+    This file deliberately does NOT chain to a parent Directory.Build.props, and this
+    component deliberately references no other Broiler project or package. MSBuild stops
+    at the first Directory.Build.props it finds walking up from a project, so a checkout
+    of Broiler.VM.HyperV evaluates the same properties wherever it sits on disk.
+
+    Broiler.VM.HyperV shares a name prefix with Broiler.VM but none of its code: that
+    component executes bytecode in software, this one hands machine code to the silicon
+    through the Windows Hypervisor Platform. Nothing is shared between them.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <!-- House rule, matching Broiler.VM: implicit usings stay off so every used type is
+         traceable from the source alone. -->
+    <ImplicitUsings>disable</ImplicitUsings>
+    <InvariantGlobalization>true</InvariantGlobalization>
+
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+    <!--
+      The projects stay AnyCPU, like every other Broiler component. The hypervisor API is
+      x64-only, but declaring <Platforms>x64</Platforms> here would leave the solution with no
+      project that builds the Debug|Any CPU configuration a solution defaults to, which is what
+      the IDE trips over. An AnyCPU app already runs 64-bit on 64-bit Windows, and
+      HyperVPlatform.IsAvailable reports a plain reason if it ever finds itself in a 32-bit or
+      Arm64 process, so the guard is kept where it can give a useful message.
+    -->
+
+    <Authors>Broiler contributors</Authors>
+    <Company>Broiler</Company>
+    <Copyright>Copyright (c) Broiler contributors</Copyright>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+</Project>
