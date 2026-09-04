@@ -4061,3 +4061,43 @@ it does not have. A twenty-three-case probe over the closed length, <c>Object.fr
 
 **Authority and date.** The implementation of 2026-09-04 in this checkout and cases 51 to 73 of
 `src/tests/differential/the-later-library-methods.js`. 2026-09-04.
+
+### JSC-100
+
+**Where:** [JSC-76](#jsc-76), which records the `--test262` mode arriving, and the ledger's reading
+of it: *a run over named subtrees measures those subtrees*.
+
+**What was true and insufficient.** The mode ran what a caller named, reported four verdicts, and
+scored nothing on its own. Every word of that is still right. What it could not do is the thing
+[JSW-10](roadmap.workloads.md#jsw-10--the-runs-per-manifest-whole) asks for, and the gap was not
+size: **a run could not say what it had been run under.**
+
+**Three things a transcript has to carry that this one did not.**
+
+**The manifest.** The mode had no notion of one. A run under a composition admitting every optional
+surface and a run under one declining the binary surface produced transcripts that looked identical,
+and roadmap [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s rule
+is *per manifest*. A run now states the manifest, the format version, the admitted surfaces and the
+declined ones before it scores anything, and `--decline` exercises the verification refusal that
+identity exists for.
+
+**What the `unsupported` column is made of.** A number says a manifest declined *something*. The
+column is a table now — each construct family with its count and an example, derived from the front
+end's own refusal message rather than from a list somebody maintains, so a family that falls to zero
+stops appearing and one nobody predicted still shows up.
+
+**Whether the run was whole.** A run of a subtree, a sharded run, a run `--limit` truncated and a
+merge missing a shard all used to look like a run. Each renders `coverage partial` with its reason
+now, in a field a rule can read. **A transcript of half the suite that reads as a whole-suite run is
+the failure this repository's records exist against**, and until this change nothing but a reader's
+memory stood between the two.
+
+**And one verdict was missing rather than mis-stated.** A variant that spent a budget was counted as
+a **failure**, so *we did not wait long enough* and *this engine is wrong* were the same number. It
+is a fifth verdict now, carrying its dimension, with every exhausted variant named — and a run in
+which no variant reached a verdict about the engine is a configuration failure rather than a green
+run of nothing.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the nine harness checks
+added with it, and the four-shard merge watched to equal an unsharded run over the same list.
+2026-09-04.

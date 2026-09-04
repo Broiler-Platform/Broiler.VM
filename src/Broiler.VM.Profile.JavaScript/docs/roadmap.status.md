@@ -631,7 +631,31 @@ chose.** The conformance composition gained `--test262 <root>`
 closed row pins, extracted to a scratch directory outside this repository and run from there —
 under `--test`, `--dir`, `--limit`, `--fuel` and `--wall`. **A run over named subtrees measures
 those subtrees.** Which subtrees were named is a choice somebody made, so a total from such a run
-is a fact about that choice as much as about the engine. **The runs contain failures and the log
+is a fact about that choice as much as about the engine.
+
+**From 2026-09-04 the mode can take the whole suite and can say what it was taken under, which are
+two different additions and both were missing.** A run states the **manifest**, the format version,
+the admitted optional surfaces and the declined ones before it scores anything — a transcript that
+does not say what it was run under is not evidence — and `--manifest` and `--decline` build the
+catalog through the profile's own `DescriptorAdmitting`, so a composition that declines
+`broiler.javascript.binary` refuses an artifact naming it **at verification** and the run reports
+that as `unsupported` with a named family rather than as a failure. `--shard k/n` partitions the
+file list by a stable hash, states the rule it partitioned by, and never splits a file's variants;
+`--merge` combines shard reports, and a harness check watches a four-shard merge equal an unsharded
+run over the same list row for row. `eng/run-test262.py` is the driver that hashes the checkout
+against the retained pin before spawning anything, fans the shards across processes, retains every
+shard's whole transcript and merges. **Naming neither `--test` nor `--dir` runs the whole tree.**
+
+**Three properties of the new mode are worth stating because each closes a way a run could mislead.**
+The `unsupported` column is a **table** rather than a number — each construct family with its count
+and an example path, derived from the front end's own refusal message, with no static list, so a
+family that falls to zero stops appearing. A budget exhaustion is a **fifth verdict** carrying its
+dimension and is never folded into `failed`, because *we did not wait long enough* and *this engine
+is wrong* are different findings and a column that mixes them is a column nobody can act on; a run in
+which no variant reached a verdict about the engine is a configuration failure rather than a green
+run of nothing. And a run that was sharded, limited, narrowed to a subtree, or is missing a shard
+renders `coverage partial` with the reason, **where a rule can see it**: a transcript of half the
+suite that reads as a whole-suite run is the failure these records exist against. **The runs contain failures and the log
 retains them** rather than the passing half: first failures are named per subtree, and a subtree
 whose cases failed exits non-zero. Roadmap
 [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s rule — a manifest
