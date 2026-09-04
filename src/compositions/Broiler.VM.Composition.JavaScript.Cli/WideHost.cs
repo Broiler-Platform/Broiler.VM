@@ -40,7 +40,8 @@ internal static class WideHost
         ulong? fuel,
         ulong? wallClock,
         int? maximumDepth,
-        ulong? callDepth = null)
+        ulong? callDepth = null,
+        ulong? liveBytes = null)
     {
         foreach (var file in files)
         {
@@ -87,7 +88,7 @@ internal static class WideHost
                 lines);
         }
 
-        var created = VmRuntime.Create(Catalog(), Options(fuel, wallClock, callDepth));
+        var created = VmRuntime.Create(Catalog(), Options(fuel, wallClock, callDepth, liveBytes));
 
         if (!created.TryGetRuntime(out var runtime))
         {
@@ -246,7 +247,8 @@ internal static class WideHost
     /// and their <c>print</c> reaches nowhere - which is the difference registration is supposed to
     /// make.
     /// </remarks>
-    private static VmRuntimeCreationOptions Options(ulong? fuel, ulong? wallClock, ulong? callDepth)
+    private static VmRuntimeCreationOptions Options(
+        ulong? fuel, ulong? wallClock, ulong? callDepth, ulong? liveBytes)
     {
         var ceilings = ImmutableArray.CreateBuilder<VmCeilingSpec>();
 
@@ -260,6 +262,8 @@ internal static class WideHost
                     VmCeilingSpec.Value(dimension, budget),
                 VmBudgetDimension.CallDepth when callDepth is { } frames =>
                     VmCeilingSpec.Value(dimension, frames),
+                VmBudgetDimension.LiveBytes when liveBytes is { } bytes =>
+                    VmCeilingSpec.Value(dimension, bytes),
                 _ => VmCeilingSpec.AdoptProfileDefault(dimension),
             });
         }

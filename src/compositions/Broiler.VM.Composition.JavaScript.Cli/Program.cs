@@ -110,6 +110,12 @@ internal static class Program
             return ExitCodes.Usage;
         }
 
+        if (!LiveBytes(args, out var liveBytes, out var liveBytesComplaint))
+        {
+            Console.Error.WriteLine("broiler-js: " + liveBytesComplaint);
+            return ExitCodes.Usage;
+        }
+
         var paths = new List<string>();
 
         for (var index = 0; index < args.Length; index++)
@@ -117,7 +123,8 @@ internal static class Program
             if (string.Equals(args[index], "--fuel", StringComparison.Ordinal) ||
                 string.Equals(args[index], "--wall", StringComparison.Ordinal) ||
                 string.Equals(args[index], "--max-depth", StringComparison.Ordinal) ||
-                string.Equals(args[index], "--call-depth", StringComparison.Ordinal))
+                string.Equals(args[index], "--call-depth", StringComparison.Ordinal) ||
+                string.Equals(args[index], "--live-bytes", StringComparison.Ordinal))
             {
                 index++;
                 continue;
@@ -178,14 +185,15 @@ internal static class Program
                 read.Add(SourceFiles.Read(path));
             }
 
-            var joined = WideHost.Run(read, module, checkOnly, forceStrict, fuel, wall, depth, callDepth);
+            var joined = WideHost.Run(
+                read, module, checkOnly, forceStrict, fuel, wall, depth, callDepth, liveBytes);
             Report(string.Join(' ', files), joined, single: true, all, quiet);
             return ExitCodes.For(joined.Status);
         }
 
         return Run(
-            files, module, checkOnly, all, quiet, fuel, wall, depth, callDepth, missing.Count, slice,
-            forceStrict);
+            files, module, checkOnly, all, quiet, fuel, wall, depth, callDepth, liveBytes,
+            missing.Count, slice, forceStrict);
     }
 
     /// <summary>Runs every named file and reports the worst answer any of them gave.</summary>
@@ -199,6 +207,7 @@ internal static class Program
         ulong? wall,
         int? depth,
         ulong? callDepth,
+        ulong? liveBytes,
         int missing,
         bool slice,
         bool forceStrict)
@@ -217,7 +226,8 @@ internal static class Program
 
             var result = slice
                 ? Host.Run(source, module, checkOnly, fuel, depth)
-                : WideHost.Run([source], module, checkOnly, forceStrict, fuel, wall, depth, callDepth);
+                : WideHost.Run(
+                    [source], module, checkOnly, forceStrict, fuel, wall, depth, callDepth, liveBytes);
 
             counts[result.Status] = counts.TryGetValue(result.Status, out var seen) ? seen + 1 : 1;
 
@@ -409,6 +419,44 @@ internal static class Program
         return true;
     }
 
+    /// <summary>Reads <c>--live-bytes</c>, the allowance a workload's own working set needs.</summary>
+    /// <remarks>
+    /// <b>The other three ceilings a person meets are settable and this one was not, which made it
+    /// the ceiling that decided what could be run.</b> A benchmark that allocates more than the
+    /// profile's default holds is not a program this host may not run — it is a program run under
+    /// an allowance nobody chose, and the difference shows up as a named exhaustion after a
+    /// benchmark has already printed its score. Sizing a budget is the embedder's decision in every
+    /// other dimension; there is no reason for memory to be the one an operator has to rebuild the
+    /// profile to move. The profile's hard maximum still bounds it, so this widens what a caller
+    /// may ask for and not what the profile permits.
+    /// </remarks>
+    private static bool LiveBytes(string[] args, out ulong? liveBytes, out string complaint)
+    {
+        liveBytes = null;
+        complaint = string.Empty;
+        var at = Array.IndexOf(args, "--live-bytes");
+
+        if (at < 0)
+        {
+            return true;
+        }
+
+        if (at == args.Length - 1)
+        {
+            complaint = "--live-bytes needs a number of bytes";
+            return false;
+        }
+
+        if (!ulong.TryParse(args[at + 1], out var stated) || stated == 0)
+        {
+            complaint = $"`{args[at + 1]}` is not a positive byte count";
+            return false;
+        }
+
+        liveBytes = stated;
+        return true;
+    }
+
     private static bool Fuel(string[] args, out ulong? fuel, out string complaint)
     {
         fuel = null;
@@ -445,7 +493,8 @@ internal static class Program
     private static readonly string[] Known =
     [
         "--module", "--check", "--all", "--quiet", "--fuel", "--max-depth", "--closure",
-        "--slice", "--strict", "--sweep", "--wall", "--call-depth", "--help", "--version",
+        "--slice", "--strict", "--sweep", "--wall", "--call-depth", "--live-bytes", "--help",
+        "--version",
     ];
 
     /// <summary>The closure this image actually has, read off its own loaded assemblies.</summary>
@@ -521,6 +570,7 @@ internal static class Program
         Console.WriteLine("  --quiet     do not print the completion value");
         Console.WriteLine("  --fuel <n>  the instruction allowance per run; the profile's default otherwise");
         Console.WriteLine("  --wall <ms> the wall-clock allowance per run; the profile's 10,000 ms otherwise");
+        Console.WriteLine("  --live-bytes <n> the live-memory allowance per run; the profile's default otherwise");
         Console.WriteLine("  --max-depth <n>");
         Console.WriteLine("              the nesting depth the parser admits; the parse options' 64 otherwise.");
         Console.WriteLine("              Two files of the Octane benchmark nest deeper than 64 and are refused");

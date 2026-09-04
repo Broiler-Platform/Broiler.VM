@@ -26,6 +26,7 @@
 # the question section 1 asks: does the benchmark REPORT a score, or does it meet something.
 #
 #   python3 eng/run-octane.py [--binary-directory <dir>] [--only <name>] [--fuel <n>] [--wall <ms>]
+#                             [--live-bytes <n>]
 
 import argparse
 import hashlib
@@ -114,7 +115,7 @@ def extract(fields, into):
     return into / f"octane-{fields['revision']}"
 
 
-def run(binary, checkout, name, fuel, wall):
+def run(binary, checkout, name, fuel, wall, live_bytes):
     """One benchmark, one process, through the ordinary command line."""
     files = [str(checkout / "base.js")]
     files += [str(checkout / f) for f in COMPANIONS.get(name, [f"{name}.js"])]
@@ -123,7 +124,8 @@ def run(binary, checkout, name, fuel, wall):
     # from the repository root, where it sorts after an absolute path. That is a property of the
     # host's argument handling rather than of this script, and naming it here is cheaper than
     # discovering it from a run in which the harness had not been defined yet.
-    command = [str(binary)] + files + [DRIVER, "--fuel", str(fuel), "--wall", str(wall)]
+    command = [str(binary)] + files + [
+        DRIVER, "--fuel", str(fuel), "--wall", str(wall), "--live-bytes", str(live_bytes)]
     done = subprocess.run(command, cwd=str(ROOT), capture_output=True, text=True)
     return done.returncode, (done.stdout + done.stderr).rstrip()
 
@@ -134,6 +136,14 @@ def main():
     parser.add_argument("--only", default=None)
     parser.add_argument("--fuel", type=int, default=1_000_000_000_000)
     parser.add_argument("--wall", type=int, default=3_600_000)
+
+    # THE MEMORY ALLOWANCE IS NAMED HERE RATHER THAN LEFT TO THE PROFILE, because the profile's
+    # default is sized for a program a person types and two of these benchmarks hold working sets
+    # far larger than that. A run under an allowance nobody chose reports a named exhaustion after
+    # a benchmark has already printed its score, which is the least useful of the outcomes: it is
+    # neither a score nor an absence. The figure is an allowance a caller states, not a
+    # measurement, and the profile's hard maximum still bounds it.
+    parser.add_argument("--live-bytes", type=int, default=1_000_000_000)
     arguments = parser.parse_args()
 
     binary = pathlib.Path(arguments.binary_directory) / "Broiler.VM.Composition.JavaScript.Cli"
@@ -154,7 +164,8 @@ def main():
         scored = 0
 
         for name in wanted:
-            code, output = run(binary, checkout, name, arguments.fuel, arguments.wall)
+            code, output = run(
+                binary, checkout, name, arguments.fuel, arguments.wall, arguments.live_bytes)
             print(f"--- {name} (exit {code})")
 
             for line in output.splitlines():

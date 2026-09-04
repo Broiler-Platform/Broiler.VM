@@ -3690,3 +3690,134 @@ says and which stays true however much of section 5 is built.
 
 **Authority and date.** The implementation of 2026-09-04 in this checkout and the Octane runs
 through the ordinary command line that produced the second column. 2026-09-04.
+
+### JSC-88
+
+**Where:** roadmap [section 10](roadmap.md#10-the-executor-and-the-realm)'s abstract operations, and
+the property [JSC-79](#jsc-79) and [JSC-85](#jsc-85) both exist to hold: **a refusal is an answer and
+a process termination is not one.**
+
+**What the code said.** `ToNumber` named the five primitives it converts and sent everything else
+through `ToNumber(ToPrimitive(value, "number"))`. That is the specification's own shape and it was
+right for as long as the only remaining case was an object.
+
+**What `Symbol` did to it.** `ToPrimitive` of a primitive is that primitive — it is the operation's
+first clause. So a Symbol reaching that arm converted to itself, for ever: not a hang, not a budget
+exhaustion, but a stack overflow, which is the one failure the runtime cannot turn into an exception
+and the one outcome this profile may never produce. `+Symbol()`, `Symbol() - 0`, `Math.abs(symbol)`
+and every other numeric coercion terminated the process. The suite found it three times in one
+afternoon — `built-ins/Array`, `built-ins/Symbol` and `built-ins/TypedArray` each died mid-run — and
+nothing written in this repository had.
+
+**What replaced it.** `ToNumber` refuses a Symbol **by name**, exactly as `ToString` already did,
+and the reason is the same one rather than a defensive addition: a Symbol is a key nobody can forge,
+and a key that silently became a number would be forgeable by arithmetic.
+
+**The shape of the defect is worth more than the defect.** `ToString` had the Symbol arm because
+`String(symbol)` is a case somebody thought about; `ToNumber` did not, because `Number(symbol)` is a
+case nobody writes. **A conversion table with a recursive default arm is safe only while the set of
+primitives is closed**, and JSW-6 opened it. Any future primitive — `BigInt` is the one this profile
+expects — must be given its arm in both operations at the moment the type is added, not at the
+moment a suite dies of it.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the twelve-case
+differential probe against the comparison engine, and the three test262 subtree runs that terminated
+before it and completed after. 2026-09-04.
+
+### JSC-89
+
+**Where:** [JSW-5](roadmap.workloads.md#jsw-5--the-core-language-surface-still-refused-by-name)'s
+clause that a family moves from *refused by name* to *admitted and exercised*, **and no family moves
+to refused as an unexpected token on the way**.
+
+**What the front end did.** `new.target` was admitted and parsed, and the parse **returned** it from
+the call-chain reader rather than handing it to the loop that reads member accesses and calls. So
+`new.target` alone was right and `new.target.name` was a syntax error at the `.`, reported as an
+expected-token diagnostic — a construct the language admits, refused as an unexpected token, by the
+very stage that had just admitted the family.
+
+**What replaced it.** `new.target` joins the suffix loop like any other head. It is a
+*MemberExpression* in the grammar and not a finished expression, which is what makes
+`new.target.name`, `new.target === C` and `new.target.prototype` ordinary.
+
+**Why it survived a bundle that verified the family against a comparison engine.** Every probe case
+used `new.target` bare or compared it, and none read a property off it. **A family's audit has to
+walk the syntactic positions the construct can appear in, not the ones a probe author thought of** —
+which is the audit section 4 of bundle JS-4-001 describes, and this is the second time that audit
+has been the thing that would have caught a refusal produced for the wrong reason.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout and the differential probe
+that reported `E` for `new.target.name` under the comparison engine and a syntax error here. 2026-09-04.
+
+### JSC-90
+
+**Where:** the workload roadmap's
+[JSW-10](roadmap.workloads.md#jsw-10--the-runs-per-manifest-whole), whose objective is a run over the
+Octane checkout in which **every benchmark reports a score through the ordinary command line**.
+
+**What the host offered.** Three of the four ceilings a person meets were settable from the command
+line — `--fuel`, `--wall` and, since [JSC-85](#jsc-85), `--call-depth`. The memory allowance was not,
+so the profile's default — sized for a program a person types — decided which workloads could be run
+at all.
+
+**What that produced, which is worse than a refusal.** `zlib` printed its score and *then* met a
+`LiveBytes` ceiling, so the process exited non-zero on a run that had produced exactly the thing the
+target asks for. A caller reading the exit code was told the run failed; a caller reading the output
+was told it succeeded. **Neither reading was wrong, which is what made it the least useful of the
+outcomes.**
+
+**What replaced it.** `--live-bytes <n>`, beside the other three, with the same shape and the same
+refusal for a value that is not a positive count. It widens what a **caller may ask for** and not
+what the profile permits: the profile's hard maximum still bounds it, and a composition that wants a
+smaller ceiling still gets one.
+
+**What is NOT corrected.** The default is unchanged. A benchmark needing a gigabyte is a fact about
+the benchmark, and moving the default to accommodate it would make every program this host runs pay
+for one workload's working set.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout and the `zlib` run that
+scored and then exhausted. 2026-09-04.
+
+### JSC-91
+
+**Where:** the workload roadmap's
+[section 3.2](roadmap.workloads.md#32-the-surface-that-is-absent-from-the-realm), which lists what
+is absent from the realm, and [JSW-6](roadmap.workloads.md#jsw-6--the-core-library-still-absent-from-the-realm),
+whose objective is that the core library stops being absent.
+
+**What both said.** That what the realm lacked was a set of **globals** — the keyed collections,
+`Symbol`, `Promise`, the weak references — and that a published global set checked against the
+documents closes the question. Rule N17 makes that check mechanical and it passes.
+
+**What a probe found anyway.** A global being present says nothing about the methods on its
+prototype. A 230-case differential probe against the comparison engine, written to cover the surface
+rather than to confirm it, found seven absences and one wrong answer inside globals the realm has:
+`Array.prototype.at`, `flat`, `flatMap`, `findLast`, `findLastIndex` and `copyWithin`; the four
+change-by-copy methods `toSorted`, `toReversed`, `toSpliced` and `with`; `String.fromCodePoint`,
+`String.raw` and `String.prototype.normalize`; and **`Array.from` reading only the array-like shape**,
+which had been true and correct until JSW-6 gave the realm an iteration protocol and stopped being
+either. `Array.from(new Set([1,2]))` answered an empty Array — not a refusal, an empty collection —
+and `Array.from` of a string outside the basic plane counted code units where the iterator counts
+code points.
+
+**What replaced it.** All of them, with `Array.from` consulting `Symbol.iterator` first and falling
+back to the array-like reading. The probe now differs from the comparison engine in two places and
+both are declared.
+
+**`normalize` is the interesting one, because it is a refusal rather than an implementation.** Every
+composition here runs in globalization-invariant mode, and in that mode the platform's own
+`String.Normalize` **returns the input unchanged and reports that it is already normalized**. Wiring
+the method to it would have produced a wrong answer that looks like a right one — the shape this
+profile refused for regular expressions *(JSC-75)* and still carries for `Date`. So `normalize`
+validates its form, answers an ASCII string unchanged because all four forms are provably the
+identity there, and **refuses anything else by name**, saying that the Unicode tables are not held
+by this component.
+
+**The finding worth keeping is about the rule and not about the methods.** N17 compares a set of
+NAMES. A rule over names cannot see a missing method, a wrong argument count or a method that reads
+the wrong protocol, and a reader who watched N17 pass would reasonably have concluded the library
+question was closed. **The probe is the instrument for that layer and there is no rule for it**,
+which is stated here rather than left for the next reader to rediscover.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the 230-case probe and the
+52-case probe over the additions, both run against the comparison engine. 2026-09-04.
