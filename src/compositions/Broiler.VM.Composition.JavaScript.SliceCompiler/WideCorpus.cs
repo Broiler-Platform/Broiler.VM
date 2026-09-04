@@ -101,14 +101,20 @@ internal static class WideCorpus
             "-",
             Artifact(surfaces: [JsSurfaces.Binary])),
 
-        // ---- two rows about the one unit kind that may suspend ---------------------------------
+        // ---- four rows about the two unit kinds that may suspend --------------------------------
         //
-        // A generator's frame is put on the heap by the EXECUTOR, from the unit's own flag, before
-        // any of its code runs. Both of these are ways an artifact can ask for a suspension the
-        // executor has not allocated a frame for, and both are refused by the verifier rather than
-        // met by a null frame in the middle of the dispatch loop: one puts the suspension in a unit
-        // that is not a generator, the other declares a unit that is a generator AND one of the
-        // three things a generator cannot also be.
+        // A suspendable invocation's frame is put on the heap by the EXECUTOR, from the unit's own
+        // flag, before any of its code runs. Each of these is a way an artifact can ask for a
+        // suspension the executor has not allocated a frame for, and each is refused by the
+        // verifier rather than met by a null frame in the middle of the dispatch loop: two put a
+        // suspension in a unit that is not the kind that can hold one, and two declare a unit that
+        // is that kind AND one of the things it cannot also be.
+        //
+        // TWO OPCODES AND TWO FLAGS RATHER THAN ONE OF EACH, because the two drivers are different:
+        // a `Yield` is resumed by the guest calling `next` and an `Await` by the job queue, so a
+        // unit carrying the wrong bit would be handed to a driver with no way to reach it again.
+        // The codes are separate for the same reason - an author told the wrong bit is missing
+        // looks in the wrong place.
         Entry(
             "wide-a-suspension-outside-a-generator",
             Artifact(code: [
@@ -124,6 +130,21 @@ internal static class WideCorpus
                 flags: JsFormat.FunctionFlags.ProgramBody | JsFormat.FunctionFlags.Generator),
             "InconsistentStructure",
             JavaScriptDiagnosticCodes.GeneratorFlagsInconsistent),
+        Entry(
+            "wide-an-await-outside-an-async-function",
+            Artifact(code: [
+                (byte)JsOpcode.LoadUndefined,
+                (byte)JsOpcode.Await,
+                (byte)JsOpcode.Return,
+            ]),
+            "SemanticValidationFailed",
+            JavaScriptDiagnosticCodes.AwaitOutsideAsync),
+        Entry(
+            "wide-an-async-function-that-is-also-a-generator",
+            Artifact(
+                flags: JsFormat.FunctionFlags.Async | JsFormat.FunctionFlags.Generator),
+            "InconsistentStructure",
+            JavaScriptDiagnosticCodes.AsyncFlagsInconsistent),
 
         // ---- two rows that were unreachable while one version was registered ------------------
         //

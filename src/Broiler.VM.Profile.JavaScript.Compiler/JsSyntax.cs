@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   69
-// Annotated:        69/69
+// Relevant units:   70
+// Annotated:        70/70
 // Exempt:           7
-// Human-reviewed:   0/69
+// Human-reviewed:   0/70
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       69
+// Unverified:       70
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -188,7 +188,15 @@ internal sealed record JsParameter(
 /// that calling it builds a generator object rather than running it, and that it is not a
 /// constructor.
 /// </param>
-// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=706A89
+/// <param name="IsAsync">
+/// Whether the body is an async function's. It decides the same three things one at a time - that
+/// <c>await</c> is an operator inside it, that calling it answers a promise, and that it is not a
+/// constructor - and it is INDEPENDENT of <see cref="IsArrow"/>, which
+/// <see cref="IsGenerator"/> is not: an async arrow is an ordinary thing to write and a generator
+/// arrow is not a production of the grammar. The two suspension flags are never both set, because
+/// this manifest refuses an async generator by name at the parse.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=A9F65E
 // Broiler-Human:        PENDING
 internal sealed record JsFunctionNode(
     SliceSourceSpan Span,
@@ -198,7 +206,8 @@ internal sealed record JsFunctionNode(
     bool IsArrow,
     bool IsStrict,
     System.Collections.Generic.IReadOnlyList<JsStringLiteral> Directives,
-    bool IsGenerator = false) : JsNode(Span);
+    bool IsGenerator = false,
+    bool IsAsync = false) : JsNode(Span);
 
 /// <summary><c>yield</c>, <c>yield expr</c> or <c>yield* expr</c>.</summary>
 /// <param name="Operand">
@@ -212,6 +221,18 @@ internal sealed record JsFunctionNode(
 // Broiler-Human:        PENDING
 internal sealed record JsYieldExpression(
     SliceSourceSpan Span, JsExpression? Operand, bool IsDelegate) : JsExpression(Span);
+
+/// <summary><c>await</c> applied to one operand.</summary>
+/// <param name="Operand">
+/// What is awaited. It is never <see langword="null"/>, which is the one shape difference from
+/// <see cref="JsYieldExpression"/>: <c>yield</c> with no operand is a production of the grammar and
+/// <c>await</c> with no operand is not, so a bare <c>await</c> in an async body is a missing
+/// operand rather than a node with an absent child.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=0DF175
+// Broiler-Human:        PENDING
+internal sealed record JsAwaitExpression(SliceSourceSpan Span, JsExpression Operand)
+    : JsExpression(Span);
 
 /// <summary>A function expression.</summary>
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=E66830

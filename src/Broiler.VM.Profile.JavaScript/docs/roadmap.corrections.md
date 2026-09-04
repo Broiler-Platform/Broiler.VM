@@ -4382,3 +4382,60 @@ holds. It was undocumented until the inferred name changed which name appeared i
 **Authority and date.** The implementation of 2026-09-04 in this checkout, the sweep that counted
 the eighty, and the thirty cases appended to `src/tests/differential/the-general-surface.js`.
 2026-09-04.
+
+### JSC-109
+
+**Where:** the `[Yield]` and `[Await]` grammar contexts the wide front end tracks, and the
+sub-parser `JsParser.ParseInterpolation` builds for a template substitution.
+
+**What was assumed.** That a template substitution's tokens could be parsed by a parser told the
+enclosing strictness and the enclosing function depth, and nothing else. Those were the two contexts
+that had ever mattered, because they were the two the substitution's own grammar could observe.
+
+**What was true.** A substitution inherits every parameter of the production it sits in, and two of
+them are `[Yield]` and `[Await]`. The sub-parser was built without either, so `` `x${yield 1}` ``
+inside a generator read `yield` as an identifier and answered "`1` follows the expression of a
+template substitution" — a surprise token where the language has an ordinary yield expression. The
+same hole would have swallowed every `` `x${await p}` `` the day async functions were admitted, and
+that is how it was found: by writing the case, not by auditing the parser.
+
+**What the shape of it is, and why it is worth an entry.** The hole was invisible while the
+constructs it hid were refused. `yield` was admitted before the substitution's context was, and
+nothing failed, because a program that writes a suspension inside a template is rare enough that no
+fixture had one. **A context threaded through one path and not through another is a defect that
+waits for a construct to become legal**, and the two-year-old half of it was found by the change
+that would have created the second half.
+
+**What replaced it.** The sub-parser is handed both flags, exactly as it is handed the strictness
+and the function depth, and a suspension inside a template substitution now parses in a generator
+and in an async function alike.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, and the differential
+probe over the async family, which is where the case was written. 2026-09-04.
+
+### JSC-110
+
+**Where:** [JSC-101](#jsc-101), and the figures it left recorded in `JsEngine.MaximumCallDepth`,
+`JavaScriptProfile` and `JsExecution.GuestStackBytes`.
+
+**What JSC-101 asked for, and what this is.** It asked that the per-frame cost be re-measured
+whenever the instruction set moves, because the executor's frame is sized for the widest live set
+across every arm of one switch. Admitting `async` and `await` added an arm and two locals the async
+driver carries across its own `try`, so the measurement was re-taken rather than reasoned about.
+
+**What it found.** 3,671 bytes per JavaScript call, against 3,463 before the family and 3,158 before
+the generators. The sixty-four-megabyte stack holds **18,277** calls, against 19,377 before. The
+engine's own bound is 6,000 and the call-depth maximum a host may be granted is 8,192, so the
+ordering both figures exist to guarantee still holds — the capacity is still more than twice the
+maximum a host can ask for — and neither the stack nor either bound had to move.
+
+**What is worth saying rather than the number.** An `await`'s resumption does NOT stack. A `yield*`
+chain holds one interpreter frame per level, because each resumption is nested inside the last; an
+async chain holds one at a time, because every resumption starts from the job queue with the
+previous frame already returned. So the family that grew the per-frame cost is also the family least
+able to spend it, and what an async program exhausts is `Fuel` — which is the dimension its own
+acceptance row names.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, and the bisection
+`eng/measure-frame-cost.py` performs against a build with both bounds lifted, which is the only
+arrangement that measures the stack rather than the promise. 2026-09-04.

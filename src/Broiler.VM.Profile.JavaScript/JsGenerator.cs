@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   11
-// Annotated:        11/11
-// Exempt:           26
-// Human-reviewed:   0/11
+// Relevant units:   12
+// Annotated:        12/12
+// Exempt:           32
+// Human-reviewed:   0/12
 // IP risk:          None
 // Security risk:    High
-// Criteria:         3/3
+// Criteria:         4/4
 // Resource impact:  4/10 max
-// Unverified:       11
+// Unverified:       12
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -63,19 +63,28 @@ internal enum JsResumeMode
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>Only a generator invocation ever gets one, and only one frame ever has to survive.</b>
-/// <c>yield</c> is a syntax error anywhere but in the generator's own body - not in a nested
+/// <b>A generator invocation and an async one get one, nothing else does, and only one frame ever
+/// has to survive.</b> <c>yield</c> is a syntax error anywhere but in the generator's own body and
+/// <c>await</c> is a syntax error anywhere but in the async function's own - not in a nested
 /// function, not in a nested arrow - so the frame that suspends is always the frame the dispatch
 /// loop is running at that instant. That is why this profile needs no continuations, no second
 /// thread and no transform of the body into a state machine: the loop returns, this object holds
 /// what it was holding, and the next resumption hands it all back.
 /// </para>
 /// <para>
+/// <b>The two differ in WHO resumes and in nothing this class can see.</b> A generator's frame is
+/// held by a guest-visible generator object and resumed by the guest calling <c>next</c>; an async
+/// call's frame is held by a promise reaction and resumed by the job queue. The frame is the same
+/// frame, which is the whole reason <c>await</c> cost one opcode rather than a second suspension
+/// mechanism.
+/// </para>
+/// <para>
 /// <b>What is here is exactly what an instruction boundary needs and nothing else.</b> The operand
 /// stack and its height, the instruction pointer, the chain of environments the frame is currently
-/// inside, and the three things a frame is entered with - the receiver, the actual arguments and
-/// the function object an <c>arguments</c> object names as its callee. A field that could be
-/// recomputed from the program is not here; a field that could not is.
+/// inside, and the things a frame is entered with - the receiver, the actual arguments, the
+/// function object an <c>arguments</c> object names as its callee, and for an async ARROW the
+/// <c>new.target</c> and <c>this</c> box it closed over. A field that could be recomputed from the
+/// program is not here; a field that could not is.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=4; Fingerprint=9F431B
@@ -83,8 +92,8 @@ internal enum JsResumeMode
 // Broiler-Human:        PENDING
 internal sealed class JsFrame
 {
-    /// <summary>Creates the frame of a generator invocation that has not started.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=79D229
+    /// <summary>Creates the frame of a suspendable invocation that has not started.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=D70DE1
     // Broiler-Human:        PENDING
     internal JsFrame(
         JsProgram program,
@@ -102,6 +111,12 @@ internal sealed class JsFrame
         Stack = new JsValue[program.Functions[unitIndex].MaxOperandStack + 1];
         Scopes = new System.Collections.Generic.List<JsEnvironment>(4) { environment };
         Pc = (int)program.Functions[unitIndex].CodeOffset;
+
+        // `undefined` AND NOT `default`, because the default of the value struct is EMPTY - the
+        // marker an uninitialised binding holds - and a frame that handed that to `new.target`
+        // would make `new.target` read as a temporal-dead-zone value rather than as the absence
+        // the language says an ordinary call gives it.
+        NewTarget = JsValue.Undefined;
     }
 
     /// <summary>The program the body lives in.</summary>
@@ -124,7 +139,7 @@ internal sealed class JsFrame
     // Broiler-Human:        PENDING
     internal JsValue[] Arguments { get; }
 
-    /// <summary>The generator function this is an invocation of.</summary>
+    /// <summary>The generator or async function this is an invocation of.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=558BB7
     // Broiler-Human:        PENDING
     internal JsScriptFunction Function { get; }
@@ -195,6 +210,34 @@ internal sealed class JsFrame
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=ADA5EB
     // Broiler-Human:        PENDING
     internal bool Started { get; set; }
+
+    /// <summary>
+    /// The <c>new.target</c> the frame was entered with. Always <c>undefined</c> for a generator.
+    /// </summary>
+    /// <remarks>
+    /// <b>It is here for the ASYNC ARROW and for nothing else.</b> A generator is neither an arrow
+    /// nor a constructor - the verifier refuses both pairings - so its <c>new.target</c> is
+    /// <c>undefined</c> and was passed as a literal. An async arrow is an arrow, so it reads the
+    /// <c>new.target</c> its closure recorded, and a value re-entered across a suspension has to
+    /// come from the frame rather than from the call that resumed it: the resumption is a job, and
+    /// a job knows nothing about the function that suspended.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=2B84B5
+    // Broiler-Human:        PENDING
+    internal JsValue NewTarget { get; set; }
+
+    /// <summary>
+    /// The box the frame reads <c>this</c> through, or <see langword="null"/> when it reads the
+    /// value it was entered with.
+    /// </summary>
+    /// <remarks>
+    /// The same reason as <see cref="NewTarget"/>, and the case that needs it is an async arrow
+    /// inside a DERIVED constructor: its <c>this</c> does not exist until <c>super()</c> returns,
+    /// so the arrow reads a box rather than a value and the box has to survive the suspension.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=2B35A7
+    // Broiler-Human:        PENDING
+    internal JsCell? ThisBinding { get; set; }
 
     /// <summary>
     /// What this frame costs to hold, in bytes.
@@ -323,4 +366,72 @@ internal sealed class JsGenerator : JsObject
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=560ECF
     // Broiler-Human:        PENDING
     internal JsGeneratorState State { get; set; } = JsGeneratorState.SuspendedStart;
+}
+
+/// <summary>
+/// ONE call of an async function that has not finished: the frame it will resume into, and the
+/// promise it will settle.
+/// </summary>
+/// <remarks>
+/// <para>
+/// <b>It is not an object and no guest expression can name it.</b> A generator object is
+/// guest-visible because the language says so - it is what <c>g()</c> evaluates to, and the guest
+/// drives it by calling <c>next</c>. Nothing drives an async call from the guest side: what
+/// <c>f()</c> evaluates to is the PROMISE, and the only thing that ever resumes the frame is a
+/// reaction on some other promise. So this is a plain record held by those reactions, and when the
+/// last of them has run it becomes garbage with the frame it was holding.
+/// </para>
+/// <para>
+/// <b>What bounds a suspended async call is what bounds a suspended generator, plus one thing
+/// more.</b> The frame is <see cref="JsFrame.FrameBytes"/> - an operand stack of exactly the
+/// height verification computed, so at most the format's <c>CeilingOperandStack</c> entries -
+/// charged as fuel where the call is made. The one thing more is that a suspended async call is
+/// only reachable from a reaction that is itself charged and retained when it is registered, so a
+/// program cannot accumulate suspended calls without also accumulating reactions the allowance is
+/// already counting.
+/// </para>
+/// <para>
+/// <b><see cref="Running"/> is the same guard <c>JsGeneratorState.Executing</c> is, and it is here
+/// for a case that looks impossible and is not.</b> An <c>await</c> whose operand is a thenable
+/// runs guest code - the thenable's <c>then</c> - and that code is handed this call's own
+/// <c>resolve</c>. A thenable that calls it twice, or calls it synchronously from inside the job
+/// that is already resuming this frame, would re-enter a frame the interpreter is walking. The
+/// promise machinery's own latch stops most of it; this stops the rest, and two interpreters on
+/// one operand stack is a corruption rather than a diagnosable error.
+/// </para>
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=4; Fingerprint=17AAD5
+// Broiler-Falsified-If: an async call whose body is on the interpreter's stack is resumed again, or a suspended async call is reachable from anything the allowance is not already counting
+// Broiler-Human:        PENDING
+internal sealed class JsAsyncCall
+{
+    /// <summary>Creates the record of one async call over a frame that has not run yet.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=7D1457
+    // Broiler-Human:        PENDING
+    internal JsAsyncCall(JsFrame frame, JsPromiseObject promise)
+    {
+        Frame = frame;
+        Promise = promise;
+    }
+
+    /// <summary>The suspended frame, or <see langword="null"/> once the call has settled.</summary>
+    /// <remarks>
+    /// Dropping it is the point rather than the tidiness, exactly as it is for a completed
+    /// generator: the promise this call settled may be kept for the rest of the program, and
+    /// without this it would keep the operand stack, the scope chain and everything those reach
+    /// alive with it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=5E59D5
+    // Broiler-Human:        PENDING
+    internal JsFrame? Frame { get; set; }
+
+    /// <summary>The promise the call's own <c>return</c> or <c>throw</c> settles.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=8A7CF2
+    // Broiler-Human:        PENDING
+    internal JsPromiseObject Promise { get; }
+
+    /// <summary>Whether the body is on the interpreter's stack right now.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=832C69
+    // Broiler-Human:        PENDING
+    internal bool Running { get; set; }
 }

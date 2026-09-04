@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   18
 // Annotated:        18/18
-// Exempt:           27
+// Exempt:           28
 // Human-reviewed:   0/18
 // IP risk:          None
 // Security risk:    Medium
@@ -134,7 +134,7 @@ public static class JsFormat
     }
 
     /// <summary>The flag bits a code-unit row carries.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=A89F8C
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=5140F2
     // Broiler-Human:        PENDING
     [System.Flags]
     public enum FunctionFlags : uint
@@ -209,6 +209,30 @@ public static class JsFormat
         /// executor did not allocate can never be the frame an instruction tries to suspend.
         /// </remarks>
         Generator = 256,
+
+        /// <summary>
+        /// The unit is an async function body: calling it STARTS the body and answers a promise,
+        /// and it is the only kind of unit whose code may <c>await</c>.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// <b>It is not <see cref="Generator"/> with a different driver, and the difference is
+        /// observable from the first line.</b> A generator is suspended-start: calling it runs no
+        /// instruction. An async function is not: its body runs synchronously up to the first
+        /// <c>await</c>, so <c>async function f(){ print(1); await 0; } f(); print(2)</c> prints
+        /// <c>1</c> before <c>2</c>, and a unit flagged as both would have to be one of the two.
+        /// The verifier refuses the pairing rather than choosing.
+        /// </para>
+        /// <para>
+        /// <b>It pairs with <see cref="Arrow"/> and <see cref="Generator"/> does not.</b> An async
+        /// arrow is an ordinary arrow whose body may suspend - it has no <c>this</c>,
+        /// <c>new.target</c> or <c>super</c> of its own and reads the enclosing function's - so the
+        /// frame it suspends on has to carry what an arrow's frame is entered with, which is why
+        /// the frame records a <c>new.target</c> and a <c>this</c> box that a generator's never
+        /// needs.
+        /// </para>
+        /// </remarks>
+        Async = 512,
     }
 
     /// <summary>What an exception region does when control reaches its handler.</summary>

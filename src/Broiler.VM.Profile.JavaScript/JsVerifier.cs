@@ -760,7 +760,7 @@ internal sealed class JsVerifier
         return Ok;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=743093
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=78B3BA
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome Link(
         Sections state,
@@ -829,6 +829,23 @@ internal sealed class JsVerifier
                 return Invalid(
                     VmReason.InconsistentStructure,
                     JavaScriptDiagnosticCode.GeneratorFlagsInconsistent,
+                    (ulong)index);
+            }
+
+            // AN ASYNC UNIT IS NONE OF THE OTHER THREE EITHER, AND THE ARROW IS NOT ON THE LIST.
+            // That is the whole difference from the check above: an async ARROW is an ordinary
+            // arrow whose body may suspend, and the executor enters it exactly as it enters any
+            // arrow - with the lexical `this` and `new.target` its closure recorded - so nothing
+            // about the pairing is contradictory. The generator flag IS on the list, because this
+            // profile admits no async generator and the two bits name two different drivers.
+            if ((unitFlags & JsFormat.FunctionFlags.Async) != 0 &&
+                (unitFlags & (JsFormat.FunctionFlags.Generator |
+                    JsFormat.FunctionFlags.ProgramBody |
+                    JsFormat.FunctionFlags.Constructible)) != 0)
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.AsyncFlagsInconsistent,
                     (ulong)index);
             }
 
@@ -1397,7 +1414,7 @@ internal sealed class JsVerifier
             return Ok;
         }
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=31CED7
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E090D2
         // Broiler-Human:        PENDING
         private VmVerifierOutcome Check(JsCodeUnit unit, JsOpcode opcode, uint operand, int offset)
         {
@@ -1459,6 +1476,20 @@ internal sealed class JsVerifier
                         : Invalid(
                             VmReason.SemanticValidationFailed,
                             JavaScriptDiagnosticCode.YieldOutsideGenerator,
+                            (ulong)offset);
+
+                // AND ONLY AN ASYNC BODY MAY AWAIT, checked against the OTHER flag. Two bits and
+                // two codes rather than one predicate over "may suspend", because the frame an
+                // await suspends into is resumed by the job queue and the frame a yield suspends
+                // into is resumed by the guest's own `next` - so a unit with the wrong bit would
+                // be handed to a driver that has no way to reach it again, and an author told the
+                // wrong bit is missing looks in the wrong place.
+                case JsOpcode.Await:
+                    return (unit.Flags & JsFormat.FunctionFlags.Async) != 0
+                        ? Ok
+                        : Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.AwaitOutsideAsync,
                             (ulong)offset);
 
                 case JsOpcode.PushScope:

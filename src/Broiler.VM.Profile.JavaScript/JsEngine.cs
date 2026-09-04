@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   81
-// Annotated:        81/81
+// Relevant units:   82
+// Annotated:        82/82
 // Exempt:           13
-// Human-reviewed:   0/81
+// Human-reviewed:   0/82
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         7/7
+// Criteria:         8/8
 // Resource impact:  7/10 max
-// Unverified:       81
+// Unverified:       82
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -385,8 +385,8 @@ internal sealed class JsEngine
     /// <para>
     /// <b>The figure is MEASURED and not chosen</b>: <c>eng/measure-frame-cost.py</c> bisects the
     /// published binary against a recursion with no base case and finds that this interpreter
-    /// survives 19,377 JavaScript calls on the sixty-four-megabyte stack
-    /// <see cref="JsExecution"/> declares — 3,463 bytes of native stack per call, and the same
+    /// survives 18,277 JavaScript calls on the sixty-four-megabyte stack
+    /// <see cref="JsExecution"/> declares — 3,671 bytes of native stack per call, and the same
     /// figure whether the JavaScript frame is narrow or wide, because the operand stack and the
     /// environment are heap objects rather than stack ones. A guest `throw` unwinds from the same
     /// depth, which it did not before the executor caught by FILTER rather than by
@@ -405,9 +405,21 @@ internal sealed class JsEngine
     /// was re-measured and re-declared rather than this bound quietly lowered. Admitting the
     /// generator family grew it again, from 3,158 bytes to 3,463 - the two suspension arms and the
     /// heap frame they read - and the sixty-four megabytes still hold 19,377 calls, so the bound is
-    /// still under a third of the capacity and the stack did not have to move. The measurement was
-    /// re-taken anyway, because a bound that is safe by arithmetic nobody re-did is a bound nobody
-    /// knows is safe.
+    /// still under a third of the capacity and the stack did not have to move. Admitting the ASYNC
+    /// family grew it once more, from 3,463 bytes to 3,671 - one more suspension arm and the two
+    /// locals the async driver carries across its own try - and the capacity fell from 19,377 calls
+    /// to 18,277, which is still more than twice the ceiling a host may be granted. The measurement
+    /// was re-taken each time anyway, because a bound that is safe by arithmetic nobody re-did is a
+    /// bound nobody knows is safe.
+    /// </para>
+    /// <para>
+    /// <b>An <c>await</c>'s resumption does NOT stack, which is the one thing about this family
+    /// that could have made the figure misleading.</b> A <c>yield*</c> chain holds one interpreter
+    /// frame per level because each resumption is nested inside the last; an async chain does not,
+    /// because every resumption starts from the job queue with the previous frame already returned.
+    /// So an async function awaiting for ever spends <c>Fuel</c> and never the stack, and it is the
+    /// SYNCHRONOUS part of an async body - a call before the first <c>await</c> - that this bound
+    /// governs, exactly as it governs an ordinary call.
     /// </para>
     /// <para>
     /// <b>What a host can still do is narrow it.</b> The <c>CallDepth</c> budget is charged on every
@@ -2109,7 +2121,7 @@ internal sealed class JsEngine
     /// <param name="binding">
     /// The box a construction holds its <c>this</c> in, or <see langword="null"/> for a call.
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=C677CE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=48D390
     // Broiler-Human:        PENDING
     private JsValue Invoke(
         JsScriptFunction function,
@@ -2167,6 +2179,30 @@ internal sealed class JsEngine
             // of them has spent a million times that.
             Charge((frame.FrameBytes / 64) + 4);
             return JsValue.Object(Realm.CreateGenerator(function, frame));
+        }
+
+        // CALLING AN ASYNC FUNCTION RUNS ITS BODY, HERE, NOW, ON THIS NATIVE STACK. That is the
+        // whole difference from the arm above and a program can see it on its first line:
+        // `async function f(){ print(1); await 0; } f(); print(2)` prints 1 before 2, because the
+        // body runs to its first `await` before the call returns. What the call returns is the
+        // promise, which is already made and still pending unless the body finished without
+        // awaiting at all.
+        if (unit.IsAsync)
+        {
+            var frame = new JsFrame(program, function.Unit, environment, receiver, arguments, function)
+            {
+                // AN ASYNC ARROW TAKES ITS `new.target` AND ITS `this` BOX FROM WHERE IT WAS
+                // WRITTEN, exactly as the ordinary path below does - but it has to take them onto
+                // the FRAME, because the job that resumes this frame knows nothing about the call
+                // site and cannot supply them a second time.
+                NewTarget = unit.IsArrow ? function.LexicalNewTarget : newTarget,
+                ThisBinding = unit.IsArrow ? function.LexicalThisBinding : binding,
+            };
+
+            Charge((frame.FrameBytes / 64) + 4);
+            var call = new JsAsyncCall(frame, Realm.NewAsyncPromise());
+            ResumeAsync(call, JsResumeMode.Next, JsValue.Undefined);
+            return JsValue.Object(call.Promise);
         }
 
         // AN ARROW TAKES ALL THREE FROM WHERE IT WAS WRITTEN. It has no `this`, no `new.target`
@@ -2342,6 +2378,163 @@ internal sealed class JsEngine
         generator.State = JsGeneratorState.Completed;
     }
 
+    // ---- async functions -----------------------------------------------------------------------
+
+    /// <summary>
+    /// Runs one async call's body until it suspends, returns or throws, and settles its promise
+    /// when it does either of the last two.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is the WHOLE driver, and it is called from exactly two places</b>: the call that
+    /// started the function, and the promise reaction an <c>await</c> registered. There is no
+    /// third, which is what makes "the body runs at the call and then only on a job" a property a
+    /// reader can check by looking at the callers rather than by tracing the queue.
+    /// </para>
+    /// <para>
+    /// <b>A resumption is charged like a call, because it IS one.</b> Fuel covers the re-entry so
+    /// that a program awaiting in a loop cannot buy frame switches for nothing, and the CALL-DEPTH
+    /// dimension covers the frame so that an async function awaiting another async function
+    /// thousands deep ends in a named exhaustion rather than a stack overflow. Both are the
+    /// argument <see cref="ResumeGenerator"/> already makes, and it applies here more strongly: a
+    /// job that resumes a frame which awaits again enqueues another job, so a program that awaits
+    /// for ever spends its allowance on a queue that never empties and the drain ends naming
+    /// <c>Fuel</c> — never as a hang.
+    /// </para>
+    /// <para>
+    /// <b>The exhaustion path settles nothing, deliberately.</b> When the allowance is spent
+    /// mid-body the abort travels out to the host as a contract violation, and rejecting the
+    /// promise on the way would be manufacturing a guest-visible outcome for an operation the host
+    /// is being told did not complete. The frame is dropped, so nothing is retained by a call that
+    /// can never run again.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=99B3DF
+    // Broiler-Falsified-If: an async call whose body is already on the interpreter's stack is resumed again, or a program that awaits without end is a hang rather than an exhaustion
+    // Broiler-Human:        PENDING
+    private void ResumeAsync(JsAsyncCall call, JsResumeMode mode, JsValue carried)
+    {
+        // A CALL THAT HAS NO FRAME HAS ALREADY SETTLED, and a second resumption of it is silently
+        // dropped rather than answered. It is reachable only through a thenable whose `then` calls
+        // its callback twice, which the promise machinery's own latch already stops - this is the
+        // second lock on the same door, because the cost of being wrong here is two interpreters
+        // walking one operand stack rather than a diagnosable error.
+        if (call.Frame is null || call.Running)
+        {
+            return;
+        }
+
+        // A RESUMPTION REFUSED FOR DEPTH REJECTS, WHERE A GENERATOR'S WOULD MERELY REFUSE. Nothing
+        // will ever come back to ask again: the reaction that carried this resumption has already
+        // run, so a call left suspended here is a promise pending for ever, which is the hang the
+        // whole metering model exists to prevent. It is taken before any state moves, so the
+        // rejection is the only thing that happened.
+        if (depth >= MaximumCallDepth ||
+            !System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack())
+        {
+            call.Frame = null;
+            Realm.SettleAsyncPromise(
+                this,
+                call.Promise,
+                Error("RangeError", "Maximum call stack size exceeded").Value,
+                rejected: true);
+
+            return;
+        }
+
+        Charge(4);
+
+        if (!meter.TryCharge(VmBudgetDimension.CallDepth, 1))
+        {
+            throw new JsAbort(JsAbortKind.Exhausted, "the call-depth ceiling was reached");
+        }
+
+        depth++;
+        call.Running = true;
+        var body = call.Frame;
+        body.ResumeMode = mode;
+        body.ResumeValue = carried;
+        body.Suspended = false;
+
+        // WHAT THE BODY DID, DECIDED INSIDE THE FRAME AND ACTED ON OUTSIDE IT. Settling a promise
+        // and registering an await both run guest code - a reaction handler, a `then` getter - and
+        // running that while this frame still counts against the call-depth dimension would charge
+        // a continuation for a frame that has already finished. Recording the outcome in two locals
+        // and acting after the `finally` is what keeps the accounting honest, and it is also what
+        // stops a thenable that resumes synchronously from meeting its own frame still marked
+        // running.
+        var outcome = JsValue.Undefined;
+        var settled = false;
+        var rejected = false;
+
+        try
+        {
+            var completed = Execute(
+                body.Program,
+                body.UnitIndex,
+                null,
+                body.ThisValue,
+                body.Arguments,
+                body.Function,
+                body.NewTarget,
+                body.ThisBinding,
+                body);
+
+            outcome = completed;
+
+            if (body.Suspended)
+            {
+                body.Started = true;
+            }
+            else
+            {
+                settled = true;
+                call.Frame = null;
+            }
+        }
+        catch (JsThrow thrown)
+        {
+            // THE BODY'S OWN `catch` AND `finally` HAVE ALREADY RUN by the time this is reached:
+            // an abrupt resumption is raised at the suspension point inside the dispatch loop's
+            // try, so the unit's exception regions saw it first. What arrives here is what the body
+            // did not handle, and rejecting with it is the whole of `async` error propagation.
+            outcome = thrown.Value;
+            settled = true;
+            rejected = true;
+            call.Frame = null;
+        }
+        catch
+        {
+            // AN ALLOWANCE SPENT MID-BODY SETTLES NOTHING, deliberately. The abort travels out to
+            // the host as a contract violation, and manufacturing a rejection on the way would be
+            // giving the guest an outcome for an operation the host is being told did not complete.
+            // The frame is dropped, so a call that can never run again retains nothing.
+            call.Frame = null;
+            throw;
+        }
+        finally
+        {
+            call.Running = false;
+            depth--;
+            meter.ReportReleased(VmBudgetDimension.CallDepth, 1);
+        }
+
+        if (settled)
+        {
+            Realm.SettleAsyncPromise(this, call.Promise, outcome, rejected);
+            return;
+        }
+
+        // THE AWAIT IS PERFORMED HERE AND NOT IN THE OPCODE, for the reason the `Yield` case hands
+        // its value out rather than acting on it: the opcode's whole job is to leave the frame in a
+        // resumable state, and everything that depends on WHO resumes belongs to the driver.
+        Realm.AwaitOn(
+            this,
+            outcome,
+            (engine, value, threw) => engine.ResumeAsync(
+                call, threw ? JsResumeMode.Throw : JsResumeMode.Next, value));
+    }
+
     // ---- the loop ------------------------------------------------------------------------------
 
     /// <summary>
@@ -2364,7 +2557,7 @@ internal sealed class JsEngine
     /// have run for a throw from the instruction itself, and no unwinding is reimplemented.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=CD7594
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=9292E6
     // Broiler-Human:        PENDING
     private JsValue Execute(
         JsProgram program,
@@ -2408,10 +2601,16 @@ internal sealed class JsEngine
         // THE NORMAL RESUMPTION IS FINISHED HERE AND NOT IN THE OPCODE. The instruction that
         // suspended has already run its pop; what re-entry owes it is the push of the sent value
         // and the step past it, and doing that here keeps the `Yield` case a straight-line suspend.
+        //
+        // THE STEP IS THE WIDTH OF THE INSTRUCTION ACTUALLY AT THE POINTER, not of `Yield`. The two
+        // suspensions this arm serves - `Yield` and `Await` - happen to be one byte each today, so
+        // naming one of them worked; it would have gone on working right up until a suspension with
+        // an operand was added, and then it would have resumed one byte into an instruction rather
+        // than after it. Reading the byte costs nothing and cannot be wrong.
         if (frame is { Started: true, Delegating: false } && !abrupt)
         {
             stack[sp++] = frame.ResumeValue;
-            pc += JsOpcodes.InstructionWidth(JsOpcode.Yield);
+            pc += JsOpcodes.InstructionWidth((JsOpcode)code[pc]);
             current = pc;
         }
 
@@ -3391,6 +3590,22 @@ internal sealed class JsEngine
                             frame.Pc = pc;
                             frame.Suspended = true;
                             return yielded;
+                        }
+
+                        case JsOpcode.Await:
+                        {
+                            // THE SAME SUSPEND AS `Yield`, AND THE VALUE MEANS SOMETHING ELSE ON
+                            // THE WAY OUT. What leaves on the return is what is being awaited
+                            // rather than what is being yielded, and the driver that receives it
+                            // resolves it and registers this frame's continuation. The pointer is
+                            // left AT this instruction for the same reason: a rejected await
+                            // re-enters abruptly and has to raise where the body's own exception
+                            // regions cover it.
+                            var awaited = stack[--sp];
+                            frame!.Sp = sp;
+                            frame.Pc = pc;
+                            frame.Suspended = true;
+                            return awaited;
                         }
 
                         case JsOpcode.YieldDelegate:

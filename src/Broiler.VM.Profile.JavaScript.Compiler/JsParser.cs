@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   93
-// Annotated:        93/93
-// Exempt:           14
-// Human-reviewed:   0/93
+// Relevant units:   94
+// Annotated:        94/94
+// Exempt:           15
+// Human-reviewed:   0/94
 // IP risk:          None
 // Security risk:    High
 // Criteria:         2/2
 // Resource impact:  3/10 max
-// Unverified:       93
+// Unverified:       94
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -169,6 +169,31 @@ internal sealed class JsParser
     // Broiler-Human:        PENDING
     private bool yieldIsOperator;
 
+    /// <summary>
+    /// Whether the parser is inside an async function's own <c>[+Await]</c> context, where
+    /// <c>await</c> is the operator and cannot be a name.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is the <c>yield</c> flag's twin in every respect but one, and the one is the
+    /// arrow.</b> It is true in an async function's own body and its own parameter list and nowhere
+    /// else - a nested ordinary function is a fresh <c>[~Await]</c> context, and so is a nested
+    /// ordinary arrow. But an ASYNC arrow's body is <c>[+Await]</c>, which a generator has no
+    /// counterpart for, so this flag is set by the arrow path as well as by the function path. That
+    /// is the whole reason the two flags are separate rather than one "may suspend" bit.
+    /// </para>
+    /// <para>
+    /// <b>Where <c>await</c> is NOT the operator, nothing about it changed.</b> It is an ordinary
+    /// identifier in a script and a reserved word in a module, exactly as it was before this
+    /// manifest admitted an async function, and the answer to a program that binds it outside an
+    /// async body is still the answer that program has always had. Admitting a construct must not
+    /// change what an unrelated program is told.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9D6B6E
+    // Broiler-Human:        PENDING
+    private bool awaitIsOperator;
+
     /// <summary>Creates a parser over an already-tokenized source.</summary>
     /// <param name="stream">The tokens to read.</param>
     /// <param name="parseOptions">The goal and the ceilings this parse is held to.</param>
@@ -186,18 +211,32 @@ internal sealed class JsParser
     /// only for the sub-parse of a template substitution, whose tokens are a slice of a source
     /// this parser never sees the rest of - so the nesting it sits inside has to be handed to it.
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=A0C1D5
+    /// <param name="enclosingYieldIsOperator">
+    /// Whether the enclosing parse was inside a generator's own body.
+    /// </param>
+    /// <param name="enclosingAwaitIsOperator">
+    /// <b>Whether the enclosing parse was inside an async function's own body</b>, which a
+    /// substitution's sub-parse has to be told for the same reason it has to be told the nesting
+    /// depth: <c>`x${await p}`</c> inside an async function is an await expression, and a
+    /// sub-parser that started in a fresh context read it as the identifier <c>await</c> followed
+    /// by a surprise. The <c>[Yield]</c> half beside it had the same hole and is closed with it.
+    /// </param>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F34641
     // Broiler-Human:        PENDING
     internal JsParser(
         SliceToken[] stream,
         SliceParseOptions parseOptions,
         bool forceStrict = false,
-        int enclosingFunctionDepth = 0)
+        int enclosingFunctionDepth = 0,
+        bool enclosingYieldIsOperator = false,
+        bool enclosingAwaitIsOperator = false)
     {
         tokens = stream;
         options = parseOptions;
         strict = forceStrict;
         functionDepth = enclosingFunctionDepth;
+        yieldIsOperator = enclosingYieldIsOperator;
+        awaitIsOperator = enclosingAwaitIsOperator;
     }
 
     /// <summary>Every refusal this pass produced, in source order.</summary>
@@ -239,7 +278,7 @@ internal sealed class JsParser
 
     // ---- statements ----------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=6D38FA
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7CC575
     // Broiler-Human:        PENDING
     private JsStatement ParseStatement()
     {
@@ -323,13 +362,22 @@ internal sealed class JsParser
                 case SliceTokenKind.Export:
                     return OutsideStatement(span, "a module declaration");
 
+                // AN ASYNC GENERATOR IS STILL REFUSED AND THE TEST FOR IT COMES FIRST. The two
+                // constructs begin identically and only the `*` after `function` tells them apart,
+                // so an arm that parsed on `async function` alone would have swallowed the
+                // refusal - and a family that stops being refused by name comes back as a surprise
+                // token, which is the failure the audit exists to catch.
+                case SliceTokenKind.Async when Peek(1).Kind == SliceTokenKind.Function &&
+                    !Peek(1).PrecededByLineTerminator && Peek(2).Kind == SliceTokenKind.Star:
+                    return OutsideStatement(span, "an async generator function");
+
                 case SliceTokenKind.Async when Peek(1).Kind == SliceTokenKind.Function &&
                     !Peek(1).PrecededByLineTerminator:
-                    return OutsideStatement(
-                        span,
-                        Peek(2).Kind == SliceTokenKind.Star
-                            ? "an async generator function"
-                            : "an async function");
+                    Advance();
+                    Advance();
+
+                    return new JsFunctionDeclaration(
+                        span, ParseFunctionRest(span, declaration: true, isAsync: true));
 
                 // A CONTEXTUAL KEYWORD IS A LEGAL LABEL. `of: for (var x of []) ;` did not
                 // reach the `for … of` refusal at all, because `of` was not recognised as a label
@@ -792,9 +840,10 @@ internal sealed class JsParser
 
     // ---- functions -----------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=6BE65E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=CEBED1
     // Broiler-Human:        PENDING
-    private JsFunctionNode ParseFunctionRest(SliceSourceSpan span, bool declaration)
+    private JsFunctionNode ParseFunctionRest(
+        SliceSourceSpan span, bool declaration, bool isAsync = false)
     {
         var isGenerator = Current.Kind == SliceTokenKind.Star;
 
@@ -811,8 +860,16 @@ internal sealed class JsParser
         // `function* g() { (function* yield() {}); }` is refused again. Three cases from one
         // expression, and reading the name under the body's context collapses all three into the
         // wrong one.
+        // AND THE NAME'S `[Await]` CONTEXT IS THE SAME THREE CASES, one word further along. A
+        // declaration's name inherits the enclosing context, an ordinary function expression's is
+        // `[~Await]`, and an ASYNC function expression's is `[+Await]` - so
+        // `async function f() { (async function await(){}); }` is refused and
+        // `async function f() { (function await(){}); }` is admitted, which is what every engine
+        // does and is the opposite of what "await is reserved inside an async function" suggests.
         var outerOperator = yieldIsOperator;
+        var outerAwait = awaitIsOperator;
         yieldIsOperator = declaration ? outerOperator : isGenerator;
+        awaitIsOperator = declaration ? outerAwait : isAsync;
         var name = string.Empty;
 
         if (IsIdentifierName(Current.Kind))
@@ -839,10 +896,48 @@ internal sealed class JsParser
         }
 
         yieldIsOperator = isGenerator;
-        var parameters = ParseParameters();
-        var body = ParseFunctionBody(span, name, parameters, isArrow: false, isGenerator);
+        awaitIsOperator = isAsync;
+        var body = ParseFunctionBody(span, name, ParseParameters(), isArrow: false, isGenerator, isAsync);
         yieldIsOperator = outerOperator;
+        awaitIsOperator = outerAwait;
         return body;
+    }
+
+    /// <summary>
+    /// Parses a formal parameter list in a <c>[~Await]</c> context, whatever encloses it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Every parameter list that is not an ASYNC function's own goes through this, and the
+    /// reason is not tidiness.</b> A method, an accessor and an ordinary arrow written inside an
+    /// async function all take their parameters outside the async context - the language says so
+    /// for the first two and makes an <c>await</c> in the third an early error - and a parser that
+    /// let the flag leak would have parsed <c>await x</c> there as the operator. The tree would
+    /// then carry an await expression belonging to a unit with no async flag, the lowering would
+    /// emit the instruction, and THE VERIFIER WOULD REFUSE AN ARTIFACT THIS FRONT END HAD JUST
+    /// PRODUCED - which is the failure shape roadmap section 3.4 records as the worst kind, because
+    /// it is discovered by a workload rather than by a diagnostic.
+    /// </para>
+    /// <para>
+    /// What a program written that way is told instead is the syntax error two identifiers in a row
+    /// gives, which is the category the language puts it in.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3D4BD5
+    // Broiler-Human:        PENDING
+    private System.Collections.Generic.List<JsParameter> ParseOrdinaryParameters()
+    {
+        var outerAwait = awaitIsOperator;
+        awaitIsOperator = false;
+
+        try
+        {
+            return ParseParameters();
+        }
+        finally
+        {
+            awaitIsOperator = outerAwait;
+        }
     }
 
     /// <summary>Parses a formal parameter list, defaults, patterns and a rest parameter included.</summary>
@@ -1079,16 +1174,28 @@ internal sealed class JsParser
             : new JsTargetPattern(span, new JsIdentifier(span, BindingName()));
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=98F93A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=CED958
     // Broiler-Human:        PENDING
     private JsFunctionNode ParseFunctionBody(
         SliceSourceSpan span,
         string name,
         System.Collections.Generic.List<JsParameter> parameters,
         bool isArrow,
-        bool isGenerator = false)
+        bool isGenerator = false,
+        bool isAsync = false)
     {
         var outer = strict;
+
+        // EVERY BODY DECIDES ITS OWN `[Await]` CONTEXT AND NONE OF THEM INHERITS ONE. A method, an
+        // accessor, a generator method, an ordinary nested function and an ordinary nested arrow
+        // are all `[~Await]` however deeply an async function encloses them, so the flag is set
+        // from this body's own kind here rather than left at whatever the enclosing parse had.
+        // Without this, `async function f(){ class C { m(){ await 1; } } }` would have parsed
+        // `await` as the operator and lowered an `Await` instruction into a unit carrying no async
+        // flag - which the verifier refuses, so the front end would have been producing artifacts
+        // this host then rejected.
+        var outerAwait = awaitIsOperator;
+        awaitIsOperator = isAsync;
         Expect(SliceTokenKind.OpenBrace, "{");
         var directives = ParseDirectives();
         var body = new System.Collections.Generic.List<JsStatement>();
@@ -1113,7 +1220,10 @@ internal sealed class JsParser
         Expect(SliceTokenKind.CloseBrace, "}");
         var inner = strict;
         strict = outer;
-        return new JsFunctionNode(span, name, parameters, body, isArrow, inner, directives, isGenerator);
+        awaitIsOperator = outerAwait;
+
+        return new JsFunctionNode(
+            span, name, parameters, body, isArrow, inner, directives, isGenerator, isAsync);
     }
 
     // ---- classes -------------------------------------------------------------------------------
@@ -1133,7 +1243,7 @@ internal sealed class JsParser
     /// why <c>class D extends a.b() { }</c> parses and <c>class D extends a = b { }</c> does not.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=33C27E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=FB1030
     // Broiler-Human:        PENDING
     private JsClassNode ParseClass(SliceSourceSpan span, bool declaration)
     {
@@ -1145,6 +1255,22 @@ internal sealed class JsParser
         if (IsIdentifierName(Current.Kind))
         {
             name = Current.RawText;
+            Advance();
+        }
+        else if (Current.Kind is SliceTokenKind.Yield or SliceTokenKind.Await)
+        {
+            // A RESERVED WORD WHERE A NAME BELONGS IS A RESERVED WORD, the same answer the
+            // function path already gives. `class await {}` inside an async function reached the
+            // arm below and was told a class declaration needs a name, which sends a reader
+            // looking for a name that is right there - and the conformance runner grades on the
+            // CODE, so the two answers are not interchangeable. The class body is strict code, so
+            // `yield` is always in this case here and `await` is in it whenever an async function
+            // or the module goal encloses the class.
+            Refuse(
+                Span(),
+                SliceSourceDiagnosticCode.ReservedWordAsBinding,
+                "`" + Current.RawText + "` is not a binding name");
+
             Advance();
         }
         else if (declaration)
@@ -1196,7 +1322,7 @@ internal sealed class JsParser
     /// <c>static m() { }</c> is a static method - and reading the key first would have made the
     /// second one a field called <c>static</c> followed by a surprise.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F742EF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=E0DF0D
     // Broiler-Human:        PENDING
     private JsClassMember? ParseClassMember()
     {
@@ -1225,11 +1351,31 @@ internal sealed class JsParser
             !Peek(1).PrecededByLineTerminator &&
             !IsMemberNameEnd(Peek(1).Kind))
         {
-            Refuse(
-                span,
-                Peek(1).Kind == SliceTokenKind.Star ? "an async generator method" : "an async method");
+            // AN ASYNC GENERATOR MEMBER IS STILL REFUSED AND ITS TEST COMES FIRST, for the reason
+            // the object literal's does: the two differ by one token and an arm that parsed on
+            // `async` alone would have turned a refusal into a surprise.
+            if (Peek(1).Kind == SliceTokenKind.Star)
+            {
+                Refuse(span, "an async generator method");
+                return null;
+            }
 
-            return null;
+            Advance();
+            var asyncKey = PropertyKey(out var asyncComputed);
+            var outerOperator = yieldIsOperator;
+            var outerAwait = awaitIsOperator;
+            yieldIsOperator = false;
+            awaitIsOperator = true;
+            var asyncParameters = ParseParameters();
+
+            var asyncBody = ParseFunctionBody(
+                span, asyncKey, asyncParameters, isArrow: false, isGenerator: false, isAsync: true);
+
+            yieldIsOperator = outerOperator;
+            awaitIsOperator = outerAwait;
+
+            return new JsClassMember(
+                span, JsMethodKind.Method, isStatic, asyncKey, asyncComputed, asyncBody);
         }
 
         var kind = JsMethodKind.Method;
@@ -1259,7 +1405,7 @@ internal sealed class JsParser
             return null;
         }
 
-        var parameters = ParseParameters();
+        var parameters = ParseOrdinaryParameters();
         var body = ParseFunctionBody(span, key, parameters, isArrow: false);
         return new JsClassMember(span, kind, isStatic, key, computed, body);
     }
@@ -1471,9 +1617,12 @@ internal sealed class JsParser
     /// has to decline, and it now passes for the reason the test names.
     /// </para>
     /// <para>
-    /// <c>await</c> cannot be an OPERATOR in anything this manifest admits, because it admits no
-    /// async function. So <c>await x</c> in a script is two identifiers in a row, which is the
-    /// syntax error every engine reports it as, and no refusal by name is owed for it.
+    /// <b><c>await</c> gained a third context on the day async functions were admitted</b>, and it
+    /// is the mirror of <c>yield</c>'s: a name in a script, a reserved word in a module, and a
+    /// reserved word inside an async function's own body and parameter list whatever the goal.
+    /// Outside an async body nothing moved - <c>await x</c> in a script is still two identifiers in
+    /// a row and still the syntax error every engine reports it as - because admitting a construct
+    /// must not change what an unrelated program is told.
     /// </para>
     /// <para>
     /// <b><c>yield</c> gained a third context on the day generators were admitted.</b> It is a name
@@ -1484,14 +1633,14 @@ internal sealed class JsParser
     /// not bind that name.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=845DDE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F50ACC
     // Broiler-Human:        PENDING
     private bool IsIdentifierName(SliceTokenKind kind) => kind switch
     {
         SliceTokenKind.Identifier or SliceTokenKind.Get or SliceTokenKind.Set or
             SliceTokenKind.Of or SliceTokenKind.Async or SliceTokenKind.Static or
             SliceTokenKind.Let => true,
-        SliceTokenKind.Await => options.Goal != SliceGoal.Module,
+        SliceTokenKind.Await => options.Goal != SliceGoal.Module && !awaitIsOperator,
         SliceTokenKind.Yield => !strict && !yieldIsOperator,
         _ => false,
     };
@@ -1507,21 +1656,65 @@ internal sealed class JsParser
     /// expression and allocates nothing, so a source with many parenthesised expressions costs a
     /// bracket count each and not a speculative parse.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=63C31E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=DC2432
     // Broiler-Human:        PENDING
     private bool TryParseArrow(SliceSourceSpan span, out JsExpression arrow)
     {
         arrow = null!;
 
-        // AN ASYNC ARROW IS REFUSED HERE RATHER THAN IN ParsePrimary, and the position is the
+        // AN ASYNC ARROW IS RECOGNISED HERE RATHER THAN IN ParsePrimary, and the position is the
         // point. `async(1)` is a call of a function named `async` and `{ async: 1 }` is a
         // property, both of which this manifest admits; only the `=>` that the scan below finds
-        // tells an arrow from either. Refusing on the first token would have broken two admitted
-        // programs to name one unadmitted construct.
+        // tells an arrow from either. Deciding on the first token would have broken two admitted
+        // programs to reach one construct.
         if (Current.Kind == SliceTokenKind.Async && IsAsyncArrowHead())
         {
-            arrow = OutsideExpression(span, "an async arrow function");
-            return true;
+            Advance();
+
+            // ITS PARAMETERS ARE `[+Await]` AND SO IS ITS BODY, which is the one place an arrow's
+            // context is not simply cleared: an ordinary arrow's body is `[~Yield, ~Await]`
+            // whatever encloses it, and an async arrow's is `[~Yield, +Await]` because the arrow
+            // ITSELF is what supplies the async context. `async (await) => 1` is therefore refused
+            // for its parameter, and `async () => await x` parses.
+            var outerAwait = awaitIsOperator;
+            awaitIsOperator = true;
+
+            try
+            {
+                if (Current.Kind != SliceTokenKind.OpenParen)
+                {
+                    var only = new System.Collections.Generic.List<JsParameter>
+                    {
+                        new(
+                            Span(),
+                            new JsTargetPattern(Span(), new JsIdentifier(Span(), Current.RawText)),
+                            null,
+                            IsRest: false),
+                    };
+
+                    if (!IsIdentifierName(Current.Kind))
+                    {
+                        Refuse(
+                            Span(),
+                            SliceSourceDiagnosticCode.ReservedWordAsBinding,
+                            "`" + Current.RawText + "` is not a binding name");
+                    }
+
+                    Advance();
+                    Expect(SliceTokenKind.EqualsGreaterThan, "=>");
+                    arrow = ParseArrowBody(span, only, isAsync: true);
+                    return true;
+                }
+
+                var asyncParameters = ParseParameters();
+                Expect(SliceTokenKind.EqualsGreaterThan, "=>");
+                arrow = ParseArrowBody(span, asyncParameters, isAsync: true);
+                return true;
+            }
+            finally
+            {
+                awaitIsOperator = outerAwait;
+            }
         }
 
         if (Current.Kind is SliceTokenKind.Identifier or SliceTokenKind.Get or SliceTokenKind.Set or
@@ -1572,7 +1765,7 @@ internal sealed class JsParser
             return false;
         }
 
-        var parameters = ParseParameters();
+        var parameters = ParseOrdinaryParameters();
         Expect(SliceTokenKind.EqualsGreaterThan, "=>");
         arrow = ParseArrowBody(span, parameters);
         return true;
@@ -1627,10 +1820,12 @@ internal sealed class JsParser
         return tokens[scan].Kind == SliceTokenKind.EqualsGreaterThan;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=61A438
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=613434
     // Broiler-Human:        PENDING
     private JsExpression ParseArrowBody(
-        SliceSourceSpan span, System.Collections.Generic.List<JsParameter> parameters)
+        SliceSourceSpan span,
+        System.Collections.Generic.List<JsParameter> parameters,
+        bool isAsync = false)
     {
         // AN ARROW'S BODY IS `[~Yield]` EVEN INSIDE A GENERATOR, and its parameter list is NOT -
         // which is why the flag is cleared here rather than in TryParseArrow, after the parameters
@@ -1638,15 +1833,24 @@ internal sealed class JsParser
         // parameter and `function* g() { var f = () => yield; }` parses, with `yield` an ordinary
         // identifier reference - which is what every engine does, and the opposite of what a
         // reading of "yield may only appear in the generator's own body" suggests.
+        //
+        // THE `[Await]` HALF IS NOT SYMMETRIC AND IS SET RATHER THAN CLEARED. An ordinary arrow
+        // inside an async function is `[~Await]`, so `async function f(){ var g = () => await 1; }`
+        // is the two-identifiers-in-a-row syntax error every engine gives; an ASYNC arrow is
+        // `[+Await]` whatever encloses it, because it is itself the async context.
         var outerOperator = yieldIsOperator;
+        var outerAwait = awaitIsOperator;
         yieldIsOperator = false;
+        awaitIsOperator = isAsync;
 
         try
         {
             if (Current.Kind == SliceTokenKind.OpenBrace)
             {
                 return new JsFunctionExpression(
-                    span, ParseFunctionBody(span, string.Empty, parameters, isArrow: true));
+                    span,
+                    ParseFunctionBody(
+                        span, string.Empty, parameters, isArrow: true, isGenerator: false, isAsync));
             }
 
             var value = ParseAssignment();
@@ -1658,11 +1862,13 @@ internal sealed class JsParser
 
             return new JsFunctionExpression(
                 span,
-                new JsFunctionNode(span, string.Empty, parameters, body, true, strict, []));
+                new JsFunctionNode(
+                    span, string.Empty, parameters, body, true, strict, [], false, isAsync));
         }
         finally
         {
             yieldIsOperator = outerOperator;
+            awaitIsOperator = outerAwait;
         }
     }
 
@@ -1745,11 +1951,22 @@ internal sealed class JsParser
         _ => 0,
     };
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=50D392
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=041EFB
     // Broiler-Human:        PENDING
     private JsExpression ParseUnary()
     {
         var span = Span();
+
+        // `await` IS A UNARY-LEVEL PRODUCTION AND `yield` IS AN ASSIGNMENT-LEVEL ONE, which is why
+        // the two are recognised in different methods rather than beside each other. The grammar is
+        // `await UnaryExpression`, so `await a + b` is `(await a) + b` and `await -x` is
+        // `await (-x)`; recognising it at assignment level, where `yield` lives, would have made
+        // the first of those `await (a + b)` - a silently wrong program rather than a refusal.
+        if (awaitIsOperator && Current.Kind == SliceTokenKind.Await)
+        {
+            Advance();
+            return new JsAwaitExpression(span, ParseUnary());
+        }
 
         switch (Current.Kind)
         {
@@ -2067,7 +2284,7 @@ internal sealed class JsParser
         return arguments;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=168DD8
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=AE848D
     // Broiler-Human:        PENDING
     private JsExpression ParsePrimary()
     {
@@ -2118,12 +2335,16 @@ internal sealed class JsParser
             // and a negative test expecting a `SyntaxError` at parse is scored a PASS, which is
             // the false point the unsupported verdict exists to prevent.
             case SliceTokenKind.Async when Peek(1).Kind == SliceTokenKind.Function &&
+                !Peek(1).PrecededByLineTerminator && Peek(2).Kind == SliceTokenKind.Star:
+                return OutsideExpression(span, "an async generator function");
+
+            case SliceTokenKind.Async when Peek(1).Kind == SliceTokenKind.Function &&
                 !Peek(1).PrecededByLineTerminator:
-                return OutsideExpression(
-                    span,
-                    Peek(2).Kind == SliceTokenKind.Star
-                        ? "an async generator function"
-                        : "an async function");
+                Advance();
+                Advance();
+
+                return new JsFunctionExpression(
+                    span, ParseFunctionRest(span, declaration: false, isAsync: true));
 
             case SliceTokenKind.Import when Peek(1).Kind == SliceTokenKind.OpenParen:
                 return OutsideExpression(span, "a dynamic `import()`");
@@ -2131,17 +2352,18 @@ internal sealed class JsParser
             case SliceTokenKind.Import when Peek(1).Kind == SliceTokenKind.Dot:
                 return OutsideExpression(span, "`import.meta`");
 
-            case SliceTokenKind.Await when options.Goal != SliceGoal.Module:
+            case SliceTokenKind.Await when options.Goal != SliceGoal.Module && !awaitIsOperator:
             case SliceTokenKind.Yield when !strict && !yieldIsOperator:
                 Advance();
                 return new JsIdentifier(span, token.RawText);
 
-            // RESERVED HERE, ORDINARY THERE. Where the goal, the strictness or the enclosing
-            // generator makes one of these a reserved word, the honest answer is the syntax error
-            // every engine gives and NOT a construct-outside-the-manifest refusal: the manifest is
-            // not what forbids it. A `yield` inside a generator reaches this arm from the one
-            // place that does not go through assignment level - the callee of a `new` - which is
-            // exactly where the language does not admit a yield expression either.
+            // RESERVED HERE, ORDINARY THERE. Where the goal, the strictness, the enclosing
+            // generator or the enclosing async function makes one of these a reserved word, the
+            // honest answer is the syntax error every engine gives and NOT a
+            // construct-outside-the-manifest refusal: the manifest is not what forbids it. A
+            // `yield` inside a generator and an `await` inside an async function reach this arm
+            // from the one place that does not go through unary or assignment level - the callee of
+            // a `new` - which is exactly where the language admits neither operator either.
             case SliceTokenKind.Await:
             case SliceTokenKind.Yield:
             {
@@ -2150,7 +2372,7 @@ internal sealed class JsParser
                     SliceSourceDiagnosticCode.ReservedWordAsBinding,
                     "`" + token.RawText + "` is a reserved word " +
                         (token.Kind == SliceTokenKind.Await
-                            ? "in a module"
+                            ? awaitIsOperator ? "in an async function" : "in a module"
                             : yieldIsOperator && !strict ? "in a generator" : "in strict code"));
 
                 Advance();
@@ -2292,7 +2514,7 @@ internal sealed class JsParser
         return new JsObjectLiteral(span, entries);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=EB2CCE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F08DF1
     // Broiler-Human:        PENDING
     private JsObjectEntry ParseObjectEntry()
     {
@@ -2317,7 +2539,7 @@ internal sealed class JsParser
             var generatorKey = PropertyKey(out var generatorComputed);
             var outerOperator = yieldIsOperator;
             yieldIsOperator = true;
-            var generatorParameters = ParseParameters();
+            var generatorParameters = ParseOrdinaryParameters();
 
             var generatorBody = ParseFunctionBody(
                 span, generatorKey, generatorParameters, isArrow: false, isGenerator: true);
@@ -2333,14 +2555,43 @@ internal sealed class JsParser
         }
 
         if (Current.Kind == SliceTokenKind.Async &&
+            !Peek(1).PrecededByLineTerminator &&
             Peek(1).Kind is not SliceTokenKind.Colon and not SliceTokenKind.Comma and
                 not SliceTokenKind.CloseBrace and not SliceTokenKind.OpenParen)
         {
-            Refuse(
-                span,
-                Peek(1).Kind == SliceTokenKind.Star ? "an async generator method" : "an async method");
+            // THE `*` IS TESTED BEFORE ANYTHING IS PARSED, because an async generator method is
+            // still refused by name and the two constructs differ by that one token. An arm that
+            // parsed on `async` alone would have made `{ async *m(){} }` a surprise token where a
+            // refusal belongs.
+            if (Peek(1).Kind == SliceTokenKind.Star)
+            {
+                Refuse(span, "an async generator method");
 
-            return new JsObjectEntry(span, JsPropertyKind.Init, string.Empty, null, new JsNullLiteral(span));
+                return new JsObjectEntry(
+                    span, JsPropertyKind.Init, string.Empty, null, new JsNullLiteral(span));
+            }
+
+            Advance();
+            var asyncKey = PropertyKey(out var asyncComputed);
+            var outerOperator = yieldIsOperator;
+            var outerAwait = awaitIsOperator;
+            yieldIsOperator = false;
+            awaitIsOperator = true;
+            var asyncParameters = ParseParameters();
+
+            var asyncBody = ParseFunctionBody(
+                span, asyncKey, asyncParameters, isArrow: false, isGenerator: false, isAsync: true);
+
+            yieldIsOperator = outerOperator;
+            awaitIsOperator = outerAwait;
+
+            return new JsObjectEntry(
+                span,
+                JsPropertyKind.Init,
+                asyncKey,
+                asyncComputed,
+                new JsFunctionExpression(span, asyncBody),
+                IsMethod: true);
         }
 
         if (Current.Kind is SliceTokenKind.Get or SliceTokenKind.Set &&
@@ -2350,7 +2601,7 @@ internal sealed class JsParser
             var kind = Current.Kind == SliceTokenKind.Get ? JsPropertyKind.Get : JsPropertyKind.Set;
             Advance();
             var accessorKey = PropertyKey(out var accessorComputed);
-            var parameters = ParseParameters();
+            var parameters = ParseOrdinaryParameters();
             var body = ParseFunctionBody(span, accessorKey, parameters, isArrow: false);
 
             return new JsObjectEntry(
@@ -2367,7 +2618,7 @@ internal sealed class JsParser
 
         if (Current.Kind == SliceTokenKind.OpenParen)
         {
-            var parameters = ParseParameters();
+            var parameters = ParseOrdinaryParameters();
             var body = ParseFunctionBody(span, key, parameters, isArrow: false);
 
             return new JsObjectEntry(
@@ -2791,7 +3042,7 @@ internal sealed class JsParser
     /// encloses it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F13E14
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E2FD0F
     // Broiler-Human:        PENDING
     private JsExpression ParseInterpolation(string text, int line, int column)
     {
@@ -2818,7 +3069,8 @@ internal sealed class JsParser
             stream[index] = token with { Line = moved.Line, Column = moved.Column };
         }
 
-        var inner = new JsParser(stream, options, strict, functionDepth);
+        var inner = new JsParser(
+            stream, options, strict, functionDepth, yieldIsOperator, awaitIsOperator);
         var value = inner.ParseInterpolationBody();
 
         foreach (var diagnostic in inner.Diagnostics)

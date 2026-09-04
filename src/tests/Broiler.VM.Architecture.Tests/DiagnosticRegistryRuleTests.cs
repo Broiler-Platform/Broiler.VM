@@ -47,16 +47,21 @@ public sealed class DiagnosticRegistryRuleTests
     {
         Assert.Empty(ArchitectureRules.N5(Registry, Vocabulary, SeamVocabulary, DiagnosticRegistry.Revision));
 
-        // Non-vacuous: fifty core-result codes and twenty-four embedder-seam ones,
-        // seventy-four rows, so a clean result is a comparison over two real sets rather than over an
+        // Non-vacuous: fifty-two core-result codes and twenty-four embedder-seam ones,
+        // seventy-six rows, so a clean result is a comparison over two real sets rather than over an
         // empty one. The seam half was declared and empty at revision 1 and is the half at revision
         // 2; revision 3 is the five structural refusals format version 2 adds, revision 4 the
-        // three ways an artifact's declaration of an optional surface can be wrong, and revision 5
-        // the two ways an artifact can ask for a suspension in a unit the executor gave no frame.
-        Assert.Equal(50, Vocabulary.Count);
+        // three ways an artifact's declaration of an optional surface can be wrong, revision 5
+        // the two ways an artifact can ask for a GENERATOR suspension in a unit the executor gave
+        // no frame, and revision 6 the same two for an ASYNC one. The last pair is two codes rather
+        // than a second use of the first pair because the two suspensions are resumed by different
+        // drivers - a `next` the guest calls, and a job the host drains - so a unit carrying the
+        // wrong flag would be handed to a driver with no way to reach it again, and an author told
+        // the wrong flag is missing looks in the wrong place.
+        Assert.Equal(52, Vocabulary.Count);
         Assert.Equal(24, SeamVocabulary.Count);
         Assert.Equal(Vocabulary.Count + SeamVocabulary.Count, Registry.Count);
-        Assert.Equal(5, DiagnosticRegistry.Revision);
+        Assert.Equal(6, DiagnosticRegistry.Revision);
 
         // The two vocabularies live in two assemblies that cannot see each other, so the one thing
         // no compiler could catch is a number used in both. Nothing else in the build reads both
@@ -138,19 +143,21 @@ public sealed class DiagnosticRegistryRuleTests
 
         Assert.Empty(ArchitectureRules.N7(Registry, corpus, sourceCorpus));
 
-        // Non-vacuous, and the figures that matter: forty-nine of the fifty core-result rows
+        // Non-vacuous, and the figures that matter: fifty-one of the fifty-two core-result rows
         // are reached by a retained corpus entry and one is not, which is the count rule N7 fixes
         // rather than the registry; and every one of the twenty-three embedder-seam rows JS-3b
-        // published is reached by a retained source entry, with none defensive. Twelve of the
-        // forty-nine arrived with format version 2: five refusals the version adds, three about the
-        // optional surfaces, two about the one unit kind that may suspend, and two that
-        // registering a second version and a second manifest made observable at all. The seam half has
+        // published is reached by a retained source entry, with none defensive. Fourteen of the
+        // fifty-one arrived with format version 2: five refusals the version adds, three about the
+        // optional surfaces, FOUR about the two unit kinds that may suspend - a generator and an
+        // async function, each with a suspension in the wrong unit and a flag pairing that
+        // contradicts itself - and two that registering a second version and a second manifest made
+        // observable at all. The seam half has
         // no defensive row on purpose - all three of its format-ceiling codes ARE reachable by a
         // program, and recording them as unreachable would have been recording something untrue to
         // avoid generating three sources.
         Assert.Equal(2, ArchitectureRules.DefensiveCodes.Length);
         Assert.Equal(
-            49,
+            51,
             Registry.Count(static row => row.Reachability == "corpus"));
         Assert.Equal(
             23,

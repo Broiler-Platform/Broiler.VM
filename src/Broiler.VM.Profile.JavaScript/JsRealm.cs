@@ -408,7 +408,7 @@ internal sealed partial class JsRealm
     /// them on every closure would cost nothing and mean nothing, and it would make a reader think
     /// an ordinary function consults them.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7A987F
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0BB22B
     // Broiler-Human:        PENDING
     internal JsObject CreateClosure(
         JsProgram program,
@@ -425,8 +425,19 @@ internal sealed partial class JsRealm
         // what `[object GeneratorFunction]` is reported through.
         var isGenerator = program.Functions[unit].IsGenerator;
 
+        // AN ASYNC FUNCTION INHERITS FROM `%AsyncFunction.prototype%` FOR THE SAME REASON, and an
+        // async ARROW is an async function: the two bits are independent and the prototype is
+        // decided by the async one alone, which is what makes
+        // `Object.prototype.toString.call(async () => {})` answer `[object AsyncFunction]`.
+        var isAsync = program.Functions[unit].IsAsync;
+
         var function = new JsScriptFunction(
-            isGenerator ? GeneratorFunctionPrototype : FunctionPrototype, program, unit, environment);
+            isGenerator ? GeneratorFunctionPrototype
+                : isAsync ? AsyncFunctionPrototype
+                : FunctionPrototype,
+            program,
+            unit,
+            environment);
 
         if (program.Functions[unit].IsArrow)
         {
@@ -439,6 +450,10 @@ internal sealed partial class JsRealm
         if (isGenerator)
         {
             function.ClassName = "GeneratorFunction";
+        }
+        else if (isAsync)
+        {
+            function.ClassName = "AsyncFunction";
         }
 
         function.SetOwnProperty(

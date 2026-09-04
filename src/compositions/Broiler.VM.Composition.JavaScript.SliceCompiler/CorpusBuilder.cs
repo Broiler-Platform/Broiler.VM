@@ -1072,6 +1072,12 @@ internal static class JavaScriptDiagnosticCodes
     /// <summary>A code-unit row combines the generator flag with a flag that contradicts it.</summary>
     internal const int GeneratorFlagsInconsistent = 1610;
 
+    /// <summary>An `Await` instruction appears in a code unit that is not an async function body.</summary>
+    internal const int AwaitOutsideAsync = 1611;
+
+    /// <summary>A code-unit row combines the async flag with a flag that contradicts it.</summary>
+    internal const int AsyncFlagsInconsistent = 1612;
+
     internal const int WrongMagic = 1001;
     internal const int UnsupportedFormatVersion = 1002;
     internal const int ManifestIdTooLong = 1005;
