@@ -7675,3 +7675,78 @@ from run 33964028317; and a local exercise of the new path against the published
 in which a skip that empties the selection is refused, a skip naming something that is not a
 benchmark is refused, and a run that skips `zlib` prints it as SKIPPED and reports it excluded in
 the summary. 2026-09-05.
+
+### JSC-184
+
+**Where:** the way [JSC-182](#jsc-182)'s table and [JSC-183](#jsc-183)'s reopening condition read a
+single duration as a property of a cell, and the JSW-10 bullet's count of what has been scored.
+
+**What was assumed.** That one reading characterises an identifier. Neither entry says so outright —
+JSC-182 is careful that its numbers come from one run, and JSC-180 had already noticed the same box
+scoring `richards` at 64.7 and 35.4 ninety minutes apart — but both are written to be **used** that
+way. JSC-182's headroom column ("1,258 seconds, 804, 703, and then none") invites reading the gap to
+the ceiling as a standing margin, and JSC-183's reopening condition — "a `zlib` that scores on
+`osx-x64` inside the hour" — is a condition **one run can satisfy**. If a duration moves enough
+between runs, a single scoring run reopens a decision that a second run would close again, and the
+lane would oscillate.
+
+**What was true.** A second full lane on 2026-09-05, over the same matrix, moved two cells by a
+fifth to a third and left two unmoved:
+
+| runtime identifier | `richards` | `zlib` | score | the fifteen | headroom |
+|---|---|---|---|---|---|
+| `osx-arm64` | 50.5 | 2,790s | 54.8 | 3,610s, **15 of 15** | 810s |
+| `linux-x64` | 47.1 | 2,852s | 53.6 | 3,662s, **15 of 15** | 748s |
+| `linux-arm64` | 44.8 | 2,894s | 52.8 | 3,745s, **15 of 15** | 706s |
+| `win-arm64` | 42.7 | 3,068s | 49.8 | 3,965s, **15 of 15** | 532s |
+| `win-x64` | 39.8 | **3,452s** | 44.3 | 4,405s, **15 of 15** | **148s** |
+| `osx-x64` | 18.8 | excluded | — | 2,031s, **14 of 14** | n/a |
+
+Against JSC-182's table, cell by cell: `linux-arm64`'s `zlib` moved from 2,897s to 2,894s (**0.1
+per cent**) and `osx-arm64`'s from 2,796s to 2,790s (**0.2 per cent**), while `linux-x64`'s moved
+from 2,342s to 2,852s (**21.8 per cent**) and `osx-x64`'s other fourteen benchmarks — the only part
+of that cell still comparable, since `zlib` is now excluded there — from 1,541s to 2,031s (**31.8
+per cent**). `richards` moved the same way and by similar proportions on the same cells.
+
+**What this establishes and what it does not.** It establishes that **a cell's duration is not a
+property of the cell**, and that a margin against the ceiling must be read as one sample rather
+than as a standing figure. It does **not** establish that the split follows the processor
+architecture. That is a pattern over two runs and four comparable cells, which is the same shape of
+evidence JSC-180's ratio rested on and JSC-182 withdrew; naming it as a rule here would repeat the
+error one entry after correcting it. What can be said is that two cells reproduced and two did not,
+and that nothing in these two runs tells us which group a third run would put a given cell in.
+
+**What it changes about `win-x64`.** That cell scored the whole set, and its `zlib` finished with
+**148 seconds to spare — 4.1 per cent of the ceiling**, the narrowest margin of any cell that
+scored. That is well inside the movement two other cells exhibited between these very runs. So the
+record is that `win-x64` scored `zlib` on this run, and **not** that it dependably does; a future
+full lane that fails there would be the ordinary consequence of that margin rather than a
+regression to hunt.
+
+**What is corrected and what is not.** JSC-182 and JSC-183 stand as written — this ledger appends
+and never edits — and every figure in them remains what those runs measured. What is added is the
+second reading, and one tightening: **JSC-183's reopening condition now requires repetition.** A
+single `zlib` that scores on `osx-x64` inside the hour is no longer sufficient to reopen the
+exclusion, because these two runs show that cell's remaining benchmarks moving by 31.8 per cent; it
+takes the benchmark scoring there across separate full lanes. The exclusion itself is untouched,
+and so is the reasoning behind it.
+
+**What this does not claim.** Not that anything about the engine changed between the runs — nothing
+in it did, and the second lane ran a commit whose only differences from the first were the driver's
+`--skip`, the `.exe` fallback and prose. The movement is in the runners. Nor that six identifiers
+are now all measured in the sense JSC-182 meant: `osx-x64`'s `zlib` is excluded and therefore
+unmeasured by choice, so what the second run adds is the two Windows cells, which
+[JSC-181](#jsc-181)'s defect had kept out of every previous lane. With those, **the whole set is
+scored on five of six identifiers** — `linux-x64`, `linux-arm64`, `osx-arm64`, `win-arm64` and
+`win-x64` — one of them by 4.1 per cent, and `osx-x64` scores fourteen of fifteen by decision. The
+support claims are unaffected; a lane is not an evidence bundle.
+
+**Authority and date.** Run 33968948926 of 2026-09-05, `broiler-vm (full)` on `cd52f4f`, all nine
+jobs green and all six publish cells through the workload step for the first time, read from each
+cell's own transcript: `--- zlib (exit 0, 2790s)` on `osx-arm64`, `(exit 0, 2852s)` on `linux-x64`,
+`(exit 0, 2894s)` on `linux-arm64`, `(exit 0, 3068s)` on `win-arm64` and `(exit 0, 3452s)` on
+`win-x64`, each with `# 15 of 15 benchmarks reported a score and exited zero`; and on `osx-x64`
+`# SKIPPED zlib - excluded by the caller, not attempted` with
+`# 14 of 14 benchmarks reported a score and exited zero, 1 excluded and not attempted: zlib`, that
+line appearing on no other cell. Compared against run 33964028317 on `1910c6f`, the run JSC-182
+records. 2026-09-05.
