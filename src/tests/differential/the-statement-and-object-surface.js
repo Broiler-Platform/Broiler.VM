@@ -321,3 +321,30 @@ p(function(){ class C { static *g(){ yield 1; yield 2; } } return [...C.g()].joi
 p(function(){ class C { *g(){} } return thrown(function(){ new (new C().g)(); }); });
 p(function(){ class C { get(){ return 1; } set(){ return 2; } static(){ return 3; } async(){ return 4; } } var c = new C(); return c.get() + "" + c.set() + c.static() + c.async(); });
 p(function(){ class C { get = 1; } return new C().get; });
+
+// --- a logical assignment to a property, which this front end refused by name until 2026-09-05.
+// APPENDED for the reason the numbering asks.
+p(function(){ var o = {x:0}; o.x ||= 5; return o.x; });
+p(function(){ var o = {x:1}; o.x ||= 5; return o.x; });
+p(function(){ var o = {x:1}; o.x &&= 5; return o.x; });
+p(function(){ var o = {x:0}; o.x &&= 5; return o.x; });
+p(function(){ var o = {x:null}; o.x ??= 5; return o.x; });
+p(function(){ var o = {x:0}; o.x ??= 5; return o.x; });
+p(function(){ var o = {}; return String(o.x ??= 7) + o.x; });
+p(function(){ var o = {x:0}; var r = (o.x ||= 9); return r + "," + o.x; });
+p(function(){ var o = {x:2}; var r = (o.x ||= 9); return r + "," + o.x; });
+p(function(){ var calls = 0; function f(){ calls++; return {x:0}; } f().x ||= 1; return calls; });
+p(function(){ var o = {a:{b:0}}; o.a.b ||= 3; return o.a.b; });
+p(function(){ var o = {}; var k = "key"; o[k] ||= 4; return o.key; });
+p(function(){ var o = {key:1}; var k = "key"; o[k] ||= 4; return o.key; });
+p(function(){ var o = {key:1}; var k = "key"; return (o[k] &&= 8) + "," + o.key; });
+p(function(){ var o = {key:null}; var k = "key"; return (o[k] ??= 8) + "," + o.key; });
+p(function(){ var n = 0; function key(){ n++; return "k"; } var o = {k:1}; o[key()] ||= 2; return n; });
+p(function(){ var log = []; var o = { get x(){ log.push("get"); return 1; }, set x(v){ log.push("set"); } }; o.x ||= 2; return log.join(); });
+p(function(){ var log = []; var o = { get x(){ log.push("get"); return 0; }, set x(v){ log.push("set:"+v); } }; o.x ||= 2; return log.join(); });
+p(function(){ "use strict"; var o = Object.freeze({x:0}); try { o.x ||= 1; return "no-throw"; } catch(e){ return e.name; } });
+p(function(){ "use strict"; var o = Object.freeze({x:1}); try { o.x ||= 2; return "no-throw"; } catch(e){ return e.name; } });
+p(function(){ var a = [0,1]; a[0] ||= 5; a[1] ||= 6; return a.join(); });
+p(function(){ var o = {x:0}; o.x ||= (function(){ return 3; })(); return o.x; });
+p(function(){ var o = {x:{y:0}}; o.x.y ??= 1; return o.x.y; });
+p(function(){ var o = {}; o.f ||= function(){ return 1; }; return o.f.name + o.f(); });

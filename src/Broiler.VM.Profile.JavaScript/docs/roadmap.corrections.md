@@ -4922,3 +4922,29 @@ than discovering it from a terminated process. The figures are recorded beside t
 stopped by the declared bound, and one against a build with `JsEngine.MaximumCallDepth` and both of
 the profile's call-depth maxima lifted to 400,000, which is what reports the capacity rather than the
 promise. 2026-09-05.
+
+### JSC-127
+
+**Where:** the lowering of `&&=`, `||=` and `??=`, which admitted them against a NAME and refused
+them against a property.
+
+**What the refusal said.** *"a logical assignment to a property is not admitted"* —
+`2104:ConstructOutsideManifest`, at the front end, for `o.x ||= v`.
+
+**Why it was there and why that reason had expired.** The three operators were admitted against a
+name, where the lowering is a load, a test and a store. Against a property it is not, and the
+difference is the whole of it: the reference has to be evaluated ONCE and the write has to happen
+only when the test asks for it. `f().x ||= v` calls `f` exactly once, and `o.x ||= v` over a truthy
+`o.x` performs no `[[Set]]` at all — so a setter does not run, and a read-only property does not
+throw in strict mode. The rewrite this looks like, `o.x = o.x || v`, gets both of those wrong, which
+is presumably why the refusal was written rather than the lowering.
+
+**What replaced it.** The base — and the key, when the member is computed — is evaluated once and
+kept beneath the value the test reads, and the two paths meet at one operand height, which is what
+lets the verifier check a construct whose two halves leave different things behind. Twenty-four
+cases agree with the comparison engine, including the two frozen-object cases that distinguish the
+lowerings: `o.x ||= 2` on a frozen truthy property is silent in strict mode, and on a frozen falsy
+one it is a `TypeError`.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout and the cases appended to
+`src/tests/differential/the-statement-and-object-surface.js`. 2026-09-05.

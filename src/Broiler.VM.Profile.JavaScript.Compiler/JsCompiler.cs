@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   135
-// Annotated:        135/135
+// Relevant units:   136
+// Annotated:        136/136
 // Exempt:           61
-// Human-reviewed:   0/135
+// Human-reviewed:   0/136
 // IP risk:          None
 // Security risk:    High
 // Criteria:         6/6
 // Resource impact:  3/10 max
-// Unverified:       135
+// Unverified:       136
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -4081,16 +4081,22 @@ public sealed class JsCompiler
         Emit(JsOpcode.LoadUndefined);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=94B722
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=94D203
     // Broiler-Human:        PENDING
     private void CompileLogicalAssignment(JsAssignmentExpression assignment)
     {
+        if (assignment.Target is JsMemberExpression member)
+        {
+            CompileLogicalMemberAssignment(assignment, member);
+            return;
+        }
+
         if (assignment.Target is not JsIdentifier name)
         {
             Refuse(
                 assignment.Span,
                 SliceSourceDiagnosticCode.ConstructOutsideManifest,
-                "a logical assignment to a property is not admitted");
+                "a logical assignment to a target that is neither a name nor a property is not admitted");
 
             Emit(JsOpcode.LoadUndefined);
             return;
@@ -4121,6 +4127,92 @@ public sealed class JsCompiler
         Emit(JsOpcode.Pop);
         CompileNamedValue(assignment.Value, name.Name);
         StoreName(assignment.Span, name.Name);
+        Mark(end);
+    }
+
+    /// <summary>Lowers <c>o.x ||= v</c> and its two siblings.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THE REFERENCE IS EVALUATED ONCE AND THE WRITE HAPPENS ONLY WHEN THE TEST WANTS IT.</b>
+    /// Both halves are observable: <c>f().x ||= v</c> calls <c>f</c> exactly once, and
+    /// <c>o.x ||= v</c> on a truthy <c>o.x</c> performs no <c>[[Set]]</c> at all - so a setter does
+    /// not run, and a read-only property does not throw in strict mode. Lowering this as
+    /// <c>o.x = o.x || v</c>, which is the rewrite it looks like, gets both wrong.
+    /// </para>
+    /// <para>
+    /// <b>The two paths meet at one height</b>, which is what lets the verifier check this at all:
+    /// the assigning path ends with the store's own result on the stack and the short-circuiting
+    /// path unwinds the base - and the key, when there is one - from underneath the value it read.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B4A313
+    // Broiler-Human:        PENDING
+    private void CompileLogicalMemberAssignment(
+        JsAssignmentExpression assignment, JsMemberExpression member)
+    {
+        var end = NewLabel();
+        var kept = NewLabel();
+        CompileExpression(member.Target);
+
+        if (member.Computed is not null)
+        {
+            CompileExpression(member.Computed);
+            Emit(JsOpcode.DuplicateTwo);
+            Emit(JsOpcode.GetIndex);
+        }
+        else
+        {
+            Emit(JsOpcode.Duplicate);
+            Emit(JsOpcode.GetProperty, InternedName(member.Name));
+        }
+
+        Emit(JsOpcode.Duplicate);
+
+        switch (assignment.Operator)
+        {
+            case SliceTokenKind.AmpersandAmpersand:
+                Branch(JsOpcode.JumpIfFalse, kept);
+                break;
+
+            case SliceTokenKind.BarBar:
+                Branch(JsOpcode.JumpIfTrue, kept);
+                break;
+
+            default:
+                Emit(JsOpcode.LoadNull);
+                Emit(JsOpcode.LooseEquals);
+                Emit(JsOpcode.Not);
+                Branch(JsOpcode.JumpIfTrue, kept);
+                break;
+        }
+
+        Emit(JsOpcode.Pop);
+        CompileExpression(assignment.Value);
+
+        if (member.Computed is not null)
+        {
+            Emit(JsOpcode.SetIndex);
+        }
+        else
+        {
+            Emit(JsOpcode.SetProperty, InternedName(member.Name));
+        }
+
+        Branch(JsOpcode.Jump, end);
+        Mark(kept);
+
+        // THE VALUE THAT WAS ALREADY THERE IS THE ANSWER, and what is under it is this lowering's
+        // own working: the base, and the key when the member was computed. Both are dropped here
+        // rather than left for the enclosing expression to trip over.
+        Emit(JsOpcode.Swap);
+        Emit(JsOpcode.Pop);
+
+        if (member.Computed is not null)
+        {
+            Emit(JsOpcode.Swap);
+            Emit(JsOpcode.Pop);
+        }
+
         Mark(end);
     }
 
