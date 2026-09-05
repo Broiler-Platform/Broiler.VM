@@ -5902,3 +5902,132 @@ the second half of that correction rather than a new one.
 the six `proxy-no-ownkeys-returned-keys-order.js` files of that subtree, which are what named the
 defect, and cases 135 to 141 of `src/tests/differential/the-proxy-and-its-invariants.js`.
 2026-09-05.
+
+
+### JSC-151
+
+**Where:** `JsCompiler.BindArrayPattern`, and the region rows every lowering in this compiler emits.
+
+**What was assumed.** That an exception region cannot guard an expression. The remark on the array
+pattern's lowering said so in as many words: a `for … of` body that throws closes its iterator
+because that path has a region, and a pattern *"cannot have one, because a region's handler is
+entered at a fixed operand-stack height and a pattern is applied in the middle of an expression
+whose stack is not empty."* On that reasoning the lowering declared a divergence and left the
+iterator open.
+
+**What was true.** The height is not fixed. It is a FIELD of the region row — `StackHeight` has been
+in the exception-region section since format version 1, the verifier has always seeded a handler's
+abstract entry at that height plus the one value the executor pushes, and the executor has always
+unwound to it rather than to zero. Every one of the three agreed about a mechanism no lowering had
+ever used, because until this pattern every region a lowering opened began at a statement boundary,
+where the operand stack is empty and zero is the right answer. The compiler wrote a literal `0` into
+every row it emitted. **The objection was to the constant, not to the mechanism** — and the compiler
+already tracks the operand height it would have needed, in `UnitBuffer.Height`, which is the number
+`MaximumStack` is derived from.
+
+The second half of the assumption was that the iterator record had to stay on the operand stack,
+because *"a pattern nests, so two of them can be live at once and each nesting level would need a
+slot of its own chosen at compile time."* Both halves of that sentence are true and the conclusion
+does not follow: the nesting depth is known **while the pattern is being lowered**, so each level
+declares a temporary of its own exactly as a computed member target already does, and two live
+records never share one.
+
+**What that cost.** An iterator abandoned part-way through a pattern was never given its `return`.
+The three completions the language distinguishes were all wrong together: a throw completion left it
+open, a normal completion over an unexhausted iterator left it open, and a generator's `return()`
+arriving at a `yield` inside a pattern left it open and completed the generator as though nothing
+had been abandoned.
+
+**What replaced it.** The record goes to a slot, and the pattern is wrapped in **two** regions whose
+declared height is the height the pattern began at. Two and not one because the completion decides
+how the iterator is closed: a `catch`-kind region closes it QUIETLY, discarding whatever `return`
+raises because the exception already travelling is the one the program is owed, and a
+`finally`-kind region closes it LOUDLY, letting an error from `return` through and making a
+non-object answer a `TypeError` of its own. The catch region is recorded first so a throw finds it;
+the finally region second so a forced return, which passes catch regions over, finds that one. An
+iterator that is already done is closed by neither, because `IterateClose` reads the record's own
+flag — which is why a rest element, which runs the iterator out, still closes nothing.
+
+**The other design, and why it was refused.** The executor could have closed what an exception left
+behind: when a throw unwinds to a handler at height `H`, the values in `stack[H..sp)` are exactly
+what the abandoned expression had built, `JsIteratorRecord` is a `JsObject` and so is identifiable
+at run time, and its done flag already prevents a second close. It needs no lowering at all, which
+is its whole appeal. It was refused for three reasons, in order of weight. **It has nowhere to do
+the work in the frame that unwinds without a handler**, and that is the case these tests turn on: a
+forced return with no `finally` in the frame leaves through the executor's own dispatch, where `sp`
+is a local that never reaches anybody, and buying the case back needs a filter or a catch in every
+frame — the shape whose removal that dispatch's own remark records, having killed the process at a
+guest `throw` from depth five hundred. **It moves a rule of the language into the executor**, where
+the artifact no longer says what closes an iterator and the verifier can no longer check that
+anything does. And **it grows the executor**, which is the one budget a lowering-only change leaves
+untouched: this change adds no opcode, no dispatch arm and no diagnostic, so the native frame is
+byte-for-byte what it was and the call-depth margin re-measured at 2.70× today stands unmoved.
+`eng/measure-frame-cost.py` stopped both depths at the declared bound of 5,999, as it did before.
+
+**What that cost, measured.** `test/language/expressions/assignment/dstr` went from **505 to 537 of
+640 variants** and `test/language/statements/for-of/dstr` from **1,030 to 1,062 of 1,095**; the whole
+of `test/language/statements/for-of` went from 1,294 to 1,326 of 1,436. Sixty-four variants
+recovered, none regressed. The named files are the sixteen each tree carries under both names —
+`array-elem-iter-{thrw,rtrn}-close{,-err}.js`, `array-elem-trlg-iter-list-thrw-close{,-err}.js`,
+`array-elem-trlg-iter-rest-{thrw,rtrn}-close{,-err,-null}.js`,
+`array-rest-iter-{thrw,rtrn}-close{,-err,-null}.js` and `array-rest-lref-err.js`.
+
+**`test/built-ins/Array` was measured at both ends and did not move**, at 5,276 of 6,115 variants —
+which is the check that matters for this correction, because closing an iterator that should not be
+closed is what a change of this shape gets wrong, and the Array built-ins are where a spurious
+`return` call would show.
+
+**The remark that declared the divergence is gone**, replaced by one that says what the two regions
+are for, why the height is read where it is read, and why the executor-side design was refused. A
+reader who finds this entry and the old remark would otherwise still believe the mechanism was
+unavailable.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; the sweeps of
+`test/language/expressions/assignment/dstr`, `test/language/statements/for-of` and
+`test/built-ins/Array` before and after; and cases 318 to 334 of
+`src/tests/differential/the-statement-and-object-surface.js`, every one of them measured against
+`/opt/node22/bin/node` before it was written down. 2026-09-05.
+
+### JSC-152
+
+**Where:** the same lowering, one step earlier: what an array ASSIGNMENT pattern does before it
+steps the iterator.
+
+**What was assumed.** That a destructuring assignment stores the way every other assignment in this
+compiler stores — value first, reference second. `CompileStoreTo` parks the value in a temporary and
+then evaluates the target's base and key, and the pattern called straight into it.
+
+**What was true.** `AssignmentElement` evaluates the target reference **first**, before the iterator
+is stepped at all, and it does so for every target that is not itself an object or array literal.
+The order is observable with nothing more exotic than a getter: `[ {}[f()] ] = iterable` calls `f`,
+`f` throws, and `next` is never called even once.
+
+**What that cost.** One extra `next` per element whose reference throws, which the suite counts
+directly. It was worse at a rest element, where the lowering drained the WHOLE iterator into an
+Array before evaluating the reference that was going to fail — `[...{}[f()]] = iterable` stepped an
+iterator eleven times where the language steps it none, and the same shape with one bound element
+ahead of it stepped eleven where the language steps one. These are the counts the recovered files
+assert; a lowering that closed the iterator correctly but stepped it first would still have failed
+every one of them.
+
+**What replaced it.** `PrepareTarget` evaluates the base, and then the computed key, into temporaries
+before the step; `BindPrepared` stores through them afterwards. A name and a nested pattern prepare
+nothing, and that is the language's rule rather than an optimisation — an identifier reference is
+resolved where it is stored, which is why an assignment to an undeclared name in strict code still
+fails at the store.
+
+**What it does NOT change.** An ordinary assignment `o.x = v` still evaluates its value before its
+reference. That is a divergence of the same family and it is left standing, because nothing measured
+here reaches it and correcting it touches every assignment this compiler lowers rather than the
+pattern that this entry is about.
+
+**What that cost, measured.** Not separable from [JSC-151](#jsc-151) and not measured apart from it:
+the sixty-four variants that entry names need both corrections, and neither alone recovers any of
+them. It is a separate entry because it is a separate assumption, found by reading what the
+recovered files assert about `nextCount` rather than about `returnCount`.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the same sweeps
+[JSC-151](#jsc-151) names, and cases 318 to 321 and 333 of
+`src/tests/differential/the-statement-and-object-surface.js` — the four that count `next` and the one
+that counts a computed key's evaluations — measured against `/opt/node22/bin/node` before they were
+written down. 2026-09-05.
