@@ -46,6 +46,23 @@ All three directions have been watched: doctoring a probe so this build answers 
 the case against the retained file; removing a `#diverges` line reports the case as undeclared;
 adding one for a case that agrees reports it as stale.
 
+## What is here
+
+Each probe is a surface, and the file's name says which. A probe is APPENDED to and never
+renumbered: a case number is how a divergence is named, so inserting one would silently move every
+declaration that points at another.
+
+| Probe | What it covers |
+|---|---|
+| `the-general-surface.js` | The realm as a whole: coercion, the globals, the error objects, the `Object` statics, function objects, the Array, and the name a function takes from what it is bound to |
+| `the-statement-and-object-surface.js` | Hoisting and closure capture, labels, `switch`, `try` in every combination, property descriptors and own-key order, accessors, `this`, holes, number formatting, strict mode, the class body, and the two members of an object literal that are not property definitions |
+| `the-later-library-methods.js` | The keyed collections and their set operations, the views, `JSON`, the promise as a value, and the members the language added after the first pass over each of them |
+| `the-json-date-and-regexp-surface.js` | The pattern protocol, the matcher, the instant, and the number at its edges |
+| `the-seam-between-generators-and-the-rest.js` | Where the suspension machinery meets everything merged beside it |
+| `the-async-family.js` | `async` functions and `await`: what runs synchronously, what a turn is, and how a rejection travels |
+| `the-settling-of-promises.js` | The combinators over the receiver, the capability every static builds through, and the turn a reaction runs on |
+| `the-with-statement.js` | The object environment record, and the names a `with` body resolves through it |
+
 ## Running them
 
 ```bash
