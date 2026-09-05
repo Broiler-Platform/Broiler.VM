@@ -348,3 +348,18 @@ p(function(){ var a = [0,1]; a[0] ||= 5; a[1] ||= 6; return a.join(); });
 p(function(){ var o = {x:0}; o.x ||= (function(){ return 3; })(); return o.x; });
 p(function(){ var o = {x:{y:0}}; o.x.y ??= 1; return o.x.y; });
 p(function(){ var o = {}; o.f ||= function(){ return 1; }; return o.f.name + o.f(); });
+
+// --- the two early errors this front end did not make: a numeric separator that is not between two
+// digits, and a regular-expression literal whose pattern is not one. Each is asked through an
+// INDIRECT eval - `(0, eval)(s)` - because a source file carrying one would not compile and the
+// probe would answer nothing at all, and because a direct eval is a construct this manifest refuses.
+p(function(){ return 1_000_000 + "," + 0x1_0 + "," + 0b1_1 + "," + 0o1_7; });
+p(function(){ return 1_0.5_5e1_0; });
+p(function(){ try { return (0, eval)("1__0"); } catch(e){ return e.name; } });
+p(function(){ try { return (0, eval)("1_"); } catch(e){ return e.name; } });
+p(function(){ try { return (0, eval)("0x_1"); } catch(e){ return e.name; } });
+p(function(){ try { return (0, eval)("0_1"); } catch(e){ return e.name; } });
+p(function(){ try { return (0, eval)("1e_5"); } catch(e){ return e.name; } });
+p(function(){ try { return (0, eval)("/(/"); } catch(e){ return e.name; } });
+p(function(){ try { return (0, eval)("if (false) { /(/; }"); } catch(e){ return e.name; } });
+p(function(){ try { return String((0, eval)("/a(b)c/").test("abc")); } catch(e){ return e.name; } });

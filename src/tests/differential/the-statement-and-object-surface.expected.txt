@@ -276,3 +276,13 @@
 272 3
 273 0
 274 "1"
+275 "1000000,16,3,15"
+276 105500000000
+277 "SyntaxError"
+278 "SyntaxError"
+279 "SyntaxError"
+280 "SyntaxError"
+281 "SyntaxError"
+282 "SyntaxError"
+283 "SyntaxError"
+284 "true"

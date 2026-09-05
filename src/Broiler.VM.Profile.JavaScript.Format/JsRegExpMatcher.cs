@@ -15,7 +15,7 @@
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
-namespace Broiler.VM.Profile.JavaScript;
+namespace Broiler.VM.Profile.JavaScript.Format;
 
 /// <summary>How much work a running match has done, handed to whatever owns the meter.</summary>
 /// <remarks>
@@ -26,9 +26,9 @@ namespace Broiler.VM.Profile.JavaScript;
 /// assembly has, and that method is what raises the abort when the allowance is gone - which is why
 /// nothing here inspects a return value, and why every instruction dispatched is counted.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=B784C6
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=DA4792
 // Broiler-Human:        PENDING
-internal delegate void JsRegExpCharge(ulong units);
+public delegate void JsRegExpCharge(ulong units);
 
 /// <summary>A pattern the parser refused, carrying the reason the language would report.</summary>
 /// <remarks>
@@ -36,14 +36,14 @@ internal delegate void JsRegExpCharge(ulong units);
 /// engine: it knows what is wrong with the text and not which realm is asking, and the caller that
 /// does know turns this into the <c>SyntaxError</c> the guest sees.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=BD494E
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CA7F0D
 // Broiler-Human:        PENDING
-internal sealed class JsRegExpSyntaxError : System.Exception
+public sealed class JsRegExpSyntaxError : System.Exception
 {
     /// <summary>Creates a refusal carrying <paramref name="message"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F1AB47
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B2964E
     // Broiler-Human:        PENDING
-    internal JsRegExpSyntaxError(string message)
+    public JsRegExpSyntaxError(string message)
         : base(message)
     {
     }
@@ -57,14 +57,14 @@ internal sealed class JsRegExpSyntaxError : System.Exception
 /// <see cref="JsRegExpMatcher"/>'s remarks and reached only by a pattern that was going to be
 /// refused anyway; the caller reports this as a resource exhaustion the guest cannot catch.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=880EA2
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8C9815
 // Broiler-Human:        PENDING
-internal sealed class JsRegExpOverflowError : System.Exception
+public sealed class JsRegExpOverflowError : System.Exception
 {
     /// <summary>Creates an overflow carrying <paramref name="message"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=94F856
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0F6000
     // Broiler-Human:        PENDING
-    internal JsRegExpOverflowError(string message)
+    public JsRegExpOverflowError(string message)
         : base(message)
     {
     }
@@ -460,48 +460,48 @@ internal sealed class JsRegExpCharSet
 /// matched text, and because a group that matched nothing and a group that did not participate are
 /// then told apart by a comparison rather than by a null check on a string.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1C3AB7
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F65BA9
 // Broiler-Human:        PENDING
-internal sealed class JsRegExpMatch
+public sealed class JsRegExpMatch
 {
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=5B9EE1
     // Broiler-Human:        PENDING
     private readonly int[] slots;
 
     /// <summary>Creates a match over a slot array the runner has finished with.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=B80C07
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=EE9268
     // Broiler-Human:        PENDING
-    internal JsRegExpMatch(int[] captured) => slots = captured;
+    public JsRegExpMatch(int[] captured) => slots = captured;
 
     /// <summary>Where the whole match begins.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=522C62
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=4CC766
     // Broiler-Human:        PENDING
-    internal int Index => slots[0];
+    public int Index => slots[0];
 
     /// <summary>One past where the whole match ends.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F1E9E9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=93C476
     // Broiler-Human:        PENDING
-    internal int End => slots[1];
+    public int End => slots[1];
 
     /// <summary>How many code units the whole match covers.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=5159FE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=3ED11E
     // Broiler-Human:        PENDING
-    internal int Length => slots[1] - slots[0];
+    public int Length => slots[1] - slots[0];
 
     /// <summary>How many capture groups the pattern declared.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1B44AF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F7103B
     // Broiler-Human:        PENDING
-    internal int CaptureCount => (slots.Length / 2) - 1;
+    public int CaptureCount => (slots.Length / 2) - 1;
 
     /// <summary>Whether the numbered group took part in this match.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=68DD0E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=D1D216
     // Broiler-Human:        PENDING
-    internal bool Participated(int group) => slots[group * 2] >= 0 && slots[(group * 2) + 1] >= 0;
+    public bool Participated(int group) => slots[group * 2] >= 0 && slots[(group * 2) + 1] >= 0;
 
     /// <summary>The text the numbered group matched.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=B835E3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=02A248
     // Broiler-Human:        PENDING
-    internal string TextOf(string input, int group) =>
+    public string TextOf(string input, int group) =>
         input.Substring(slots[group * 2], slots[(group * 2) + 1] - slots[group * 2]);
 }
 
@@ -549,10 +549,10 @@ internal sealed class JsRegExpMatch
 /// <see cref="JsRegExpCase"/> states the cost of.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=FD2409
+// Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=008C58
 // Broiler-Falsified-If: a pattern's nesting depth or an input's length drives the CLR stack this matcher uses
 // Broiler-Human:        PENDING
-internal sealed class JsRegExpMatcher
+public sealed class JsRegExpMatcher
 {
     /// <summary>How deeply a pattern may nest groups before the parser refuses it.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=ABF9A7
@@ -686,44 +686,44 @@ internal sealed class JsRegExpMatcher
     }
 
     /// <summary>How many capture groups the pattern declared.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=CE5256
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=3080AD
     // Broiler-Human:        PENDING
-    internal int CaptureCount { get; }
+    public int CaptureCount { get; }
 
     /// <summary>Whether <c>i</c> was set.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=E728A2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=D134A5
     // Broiler-Human:        PENDING
-    internal bool IgnoreCase { get; }
+    public bool IgnoreCase { get; }
 
     /// <summary>Whether <c>m</c> was set.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=65CEE8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=B0BB65
     // Broiler-Human:        PENDING
-    internal bool Multiline { get; }
+    public bool Multiline { get; }
 
     /// <summary>Whether <c>s</c> was set.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=F47481
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=F12FD2
     // Broiler-Human:        PENDING
-    internal bool DotAll { get; }
+    public bool DotAll { get; }
 
     /// <summary>Whether <c>u</c> was set.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=224DE1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=EFFA4D
     // Broiler-Human:        PENDING
-    internal bool Unicode { get; }
+    public bool Unicode { get; }
 
     /// <summary>Whether any group in the pattern was given a name.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=99DE1D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=497053
     // Broiler-Human:        PENDING
-    internal bool HasGroupNames { get; }
+    public bool HasGroupNames { get; }
 
     /// <summary>The name of the numbered group, or <see langword="null"/> when it has none.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=4DFE52
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=71214C
     // Broiler-Human:        PENDING
-    internal string? NameOf(int group) => group < groupNames.Length ? groupNames[group] : null;
+    public string? NameOf(int group) => group < groupNames.Length ? groupNames[group] : null;
 
     /// <summary>The number of the group carrying <paramref name="name"/>, or <c>-1</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=8AD358
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=3FEF4E
     // Broiler-Human:        PENDING
-    internal int NumberOf(string name)
+    public int NumberOf(string name)
     {
         for (var at = 1; at < groupNames.Length; at++)
         {
@@ -737,9 +737,9 @@ internal sealed class JsRegExpMatcher
     }
 
     /// <summary>Parses and lowers one pattern, or refuses it.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=52468E
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=EA42CF
     // Broiler-Human:        PENDING
-    internal static JsRegExpMatcher Compile(
+    public static JsRegExpMatcher Compile(
         string source, bool ignoreCase, bool multiline, bool dotAll, bool unicode)
     {
         var parser = new Parser(source, unicode, dotAll, ignoreCase);
@@ -769,9 +769,9 @@ internal sealed class JsRegExpMatcher
     /// which is what the flag is for and what an emulation over a forward-searching engine cannot
     /// give.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=3346A7
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=6; Fingerprint=F50CA4
     // Broiler-Human:        PENDING
-    internal JsRegExpMatch? Match(string input, int start, bool anchored, JsRegExpCharge? charge)
+    public JsRegExpMatch? Match(string input, int start, bool anchored, JsRegExpCharge? charge)
     {
         if (start < 0 || start > input.Length)
         {
@@ -819,9 +819,9 @@ internal sealed class JsRegExpMatcher
     }
 
     /// <summary>The specification's <c>AdvanceStringIndex</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=5E4C98
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=6; Fingerprint=0160BE
     // Broiler-Human:        PENDING
-    internal static int Advance(string input, int index, bool unicode)
+    public static int Advance(string input, int index, bool unicode)
     {
         if (unicode &&
             index + 1 < input.Length &&

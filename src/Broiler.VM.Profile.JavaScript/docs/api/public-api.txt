@@ -1242,6 +1242,30 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOperandShape.U8 : const Broiler.VM.Profile.JavaScript.Format.JsOperandShape = 1
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOperandShape.U8U16 : const Broiler.VM.Profile.JavaScript.Format.JsOperandShape = 4
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOperandShape.value__ : System.Byte
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpCharge..ctor(System.Object object, System.IntPtr method) : void
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpCharge.BeginInvoke(System.UInt64 units, System.AsyncCallback callback, System.Object object) : virtual System.IAsyncResult
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpCharge.EndInvoke(System.IAsyncResult result) : virtual System.Void
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpCharge.Invoke(System.UInt64 units) : virtual System.Void
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatch..ctor(System.Int32[] captured) : void
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatch.CaptureCount : System.Int32 { get; }
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatch.End : System.Int32 { get; }
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatch.Index : System.Int32 { get; }
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatch.Length : System.Int32 { get; }
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatch.Participated(System.Int32 group) : System.Boolean
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatch.TextOf(System.String input, System.Int32 group) : System.String
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatcher.Advance(System.String input, System.Int32 index, System.Boolean unicode) : static System.Int32
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatcher.CaptureCount : System.Int32 { get; }
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatcher.Compile(System.String source, System.Boolean ignoreCase, System.Boolean multiline, System.Boolean dotAll, System.Boolean unicode) : static Broiler.VM.Profile.JavaScript.Format.JsRegExpMatcher
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatcher.DotAll : System.Boolean { get; }
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatcher.HasGroupNames : System.Boolean { get; }
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatcher.IgnoreCase : System.Boolean { get; }
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatcher.Match(System.String input, System.Int32 start, System.Boolean anchored, Broiler.VM.Profile.JavaScript.Format.JsRegExpCharge charge) : Broiler.VM.Profile.JavaScript.Format.JsRegExpMatch
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatcher.Multiline : System.Boolean { get; }
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatcher.NameOf(System.Int32 group) : System.String
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatcher.NumberOf(System.String name) : System.Int32
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatcher.Unicode : System.Boolean { get; }
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpOverflowError..ctor(System.String message) : void
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpSyntaxError..ctor(System.String message) : void
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.All : static readonly System.String[]
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.Binary : const System.String = "broiler.javascript.binary"
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.BinaryGlobals : static readonly System.String[]
@@ -1338,4 +1362,9 @@ type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.J
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode : enum
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcodes : static class
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOperandShape : enum
+type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpCharge : sealed class System.MulticastDelegate
+type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatch : sealed class
+type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpMatcher : sealed class
+type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpOverflowError : sealed class System.Exception
+type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsRegExpSyntaxError : sealed class System.Exception
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces : static class

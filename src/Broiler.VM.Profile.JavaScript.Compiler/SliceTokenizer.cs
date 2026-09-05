@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   38
-// Annotated:        38/38
+// Relevant units:   40
+// Annotated:        40/40
 // Exempt:           100
-// Human-reviewed:   0/38
+// Human-reviewed:   0/40
 // IP risk:          None
 // Security risk:    High
 // Criteria:         22/18
 // Resource impact:  2/10 max
-// Unverified:       38
+// Unverified:       40
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -883,7 +883,7 @@ public sealed class SliceTokenizer
     /// on strictness, strictness is the validator's, and a tokenizer that knew about strictness
     /// would be the ambient parse state this component removed.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=2E13A6
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=801F07
     // Broiler-Falsified-If: the value this produces differs from the language's MV for the same literal text
     // Broiler-Human:        PENDING
     private SliceToken ReadNumericLiteral(int startLine, int startColumn, bool sawNewline)
@@ -907,6 +907,12 @@ public sealed class SliceTokenizer
             if (index == digitsStart)
             {
                 return RefuseNumeric(start, startLine, startColumn, "a radix prefix with no digits");
+            }
+
+            if (!SeparatorsAreBetweenDigits(source[digitsStart..index], radix))
+            {
+                return RefuseNumeric(
+                    start, startLine, startColumn, "a numeric separator that is not between two digits");
             }
 
             value = 0;
@@ -950,6 +956,17 @@ public sealed class SliceTokenizer
                     while (index < source.Length && char.IsAsciiDigit(source[index]))
                     {
                         index++;
+                    }
+
+                    // A LEGACY OCTAL MAY NOT CARRY A SEPARATOR AT ALL, which is the one place the
+                    // rule is about the literal's KIND rather than about where the underscore sits:
+                    // `0_1` is not a legacy octal with a separator in it, it is a syntax error, and
+                    // the language says so in order not to grow the shape it is trying to retire.
+                    if (index < source.Length && source[index] == '_')
+                    {
+                        return RefuseNumeric(
+                            start, startLine, startColumn,
+                            "a numeric separator in a legacy octal literal");
                     }
 
                     value = 0;
@@ -1004,6 +1021,25 @@ public sealed class SliceTokenizer
 
             if (text.Contains('_', System.StringComparison.Ordinal))
             {
+                // `0_1` IS NOT A DECIMAL WITH A SEPARATOR IN IT. A literal beginning with a zero
+                // and continuing with a digit is the legacy octal shape, and the language refuses a
+                // separator there outright rather than growing a form it is trying to retire - so
+                // the test is on the SHAPE and is made before the placement rule below, which
+                // `0_1` would otherwise satisfy.
+                if (text.Length > 1 && text[0] == '0' && (char.IsAsciiDigit(text[1]) || text[1] == '_'))
+                {
+                    return RefuseNumeric(
+                        start, startLine, startColumn,
+                        "a numeric separator in a legacy octal literal");
+                }
+
+                if (!SeparatorsAreBetweenDigits(text, 10))
+                {
+                    return RefuseNumeric(
+                        start, startLine, startColumn,
+                        "a numeric separator that is not between two digits");
+                }
+
                 text = text.Replace("_", string.Empty, System.StringComparison.Ordinal);
             }
 
@@ -1837,6 +1873,50 @@ public sealed class SliceTokenizer
     // Broiler-Human:        PENDING
     private static bool IsOtherIdentifierContinue(char c) =>
         c is '\u00b7' or '\u0387' or '\u19da' || (c >= '\u1369' && c <= '\u1371');
+
+    /// <summary>Whether every separator in a numeric literal sits between two digits.</summary>
+    /// <remarks>
+    /// <b>THE SEPARATOR IS NOT A CHARACTER THE LITERAL MAY CONTAIN, it is a character that may sit
+    /// BETWEEN TWO DIGITS.</b> `1__0`, `1_`, `_1`, `0x_1` and `1_.5` are each a syntax error, and
+    /// this tokenizer stripped every underscore and parsed what was left - so all five were numbers.
+    /// A literal a person is most likely to write by accident is exactly the one the rule exists to
+    /// catch.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=AF6BD8
+    // Broiler-Human:        PENDING
+    private static bool SeparatorsAreBetweenDigits(System.ReadOnlySpan<char> text, int radix)
+    {
+        for (var at = 0; at < text.Length; at++)
+        {
+            if (text[at] != '_')
+            {
+                continue;
+            }
+
+            if (at == 0 || at + 1 >= text.Length)
+            {
+                return false;
+            }
+
+            if (!IsPlainDigit(text[at - 1], radix) || !IsPlainDigit(text[at + 1], radix))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>A digit of the radix, which is what a separator has to sit between.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=B29B95
+    // Broiler-Human:        PENDING
+    private static bool IsPlainDigit(char c, int radix) => radix switch
+    {
+        2 => c is '0' or '1',
+        8 => c is >= '0' and <= '7',
+        16 => char.IsAsciiHexDigit(c),
+        _ => char.IsAsciiDigit(c),
+    };
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=F0264A
     // Broiler-Human:        PENDING

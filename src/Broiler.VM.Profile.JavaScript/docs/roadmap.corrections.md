@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap — corrections and rejections
 
-**Last updated:** 2026-09-04
+**Last updated:** 2026-09-05
 
 **This file is part of the [Broiler.VM.Profile.JavaScript roadmap](roadmap.md)**, which
 [names every file](roadmap.md#how-this-roadmap-is-split). It carries no numbered section of the
@@ -5087,3 +5087,50 @@ a Number is a `TypeError` — and the walk stops at that element and closes the 
 `test/built-ins/Function` and `test/built-ins/Math` before and after, and the seventeen cases
 appended to `src/tests/differential/the-later-library-methods.js`, ten of which are declared
 divergences because the comparison engine predates the two members. 2026-09-05.
+
+### JSC-132
+
+**Where:** the tokenizer's numeric literal, and the front end's treatment of a regular expression
+literal — both of which accepted text the language rejects before it ever runs.
+
+**What was assumed.** That a literal is a value the front end reads and hands on, and that whether
+its text is well formed is a question the runtime answers when the value is built.
+
+**What was true of both.** *An early error is not a late error that arrives sooner.* It is a
+different observable: a script containing one produces **no side effect at all**, because it is
+never evaluated. `try { eval("var x = /(/;") } catch (e) {}` leaves no `x` and no output; a build
+that constructs the pattern at the point the literal is reached has already run everything above it.
+The suite tests exactly that shape — a `negative: { phase: parse }` file is a file that must not run
+— and neither of these two was answering it.
+
+**The pattern.** `/(/`, `/a{2,1}/`, `/[z-a]/` and `/\p{Nonsense}/u` are each a `SyntaxError` at parse
+time. This build compiled a literal into a `RegExp` construction and left the pattern for the
+matcher to reject at run time, so all four ran the program above them first. The front end now
+compiles the pattern while it is compiling the literal and **discards the result**: the compilation
+is performed for its refusal, not for its output, because the value the guest gets must still be
+built by the same constructor the guest could have called itself. That required the matcher to be
+visible to the compiler, and it was in the profile assembly, which the compiler must not reference —
+so `JsRegExpMatcher` moved to `Broiler.VM.Profile.JavaScript.Format`, where the tokenizer and the
+realm can both see it. It became public rather than internal-visible because **rule A10 of
+[ADR 0001](decisions/0001-what-this-component-is.md) forbids `InternalsVisibleTo` in a product
+project**; a type two assemblies need is a type with a surface, and pretending otherwise is what that
+rule exists to stop.
+
+**The separator.** `1_000_000` is a number and `1__0`, `1_`, `_1`, `0x_1` and `1e_5` are each a
+syntax error. This tokenizer stripped every underscore and parsed what was left, so **all five were
+numbers**. The rule is not that a numeric literal may contain underscores; it is that an underscore
+may sit *between two digits of the literal's own radix* — checked per radix, before the digits are
+folded into a value. `0_1` is refused for a second reason and refused first: a leading zero followed
+by a digit is the legacy octal shape, and the language declines to grow a form it is retiring, so the
+test is on the literal's kind and is made ahead of the placement rule that `0_1` would otherwise
+satisfy.
+
+**Measured, on the pinned suite.** `test/language/literals` went from 516 of 1,037 variants to
+**944**; `test/built-ins/RegExp` from 1,660 of 3,743 to **1,986**. Eleven cases were appended to
+`src/tests/differential/the-statement-and-object-surface.js`, each using an indirect `eval` because
+this manifest refuses a direct one — which is itself the reason a probe can ask a parse-time question
+at all.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the sweeps of
+`test/language/literals` and `test/built-ins/RegExp` before and after, and the comparison against
+the second engine for every separator form named above. 2026-09-05.

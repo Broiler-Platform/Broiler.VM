@@ -130,7 +130,7 @@ p(function(){ return [..."a1b2".matchAll(/(\w)(\d)/g)].map(function(m){return m[
 p(function(){ return String("abc".search(/b/)) + "abc".search(/z/); });
 p(function(){ return /(?<=a)b/.exec("ab") ? "lookbehind" : "none"; });
 p(function(){ return /(?<!a)b/.test("cb") ? "neg-lookbehind" : "none"; });
-p(function(){ return /\p{L}/u.test("é") ? "prop" : "no-prop"; });
+p(function(){ return new RegExp("\\p{L}", "u").test("é") ? "prop" : "no-prop"; });
 p(function(){ return /a{2,3}/.exec("aaaa")[0]; });
 p(function(){ return /(a)?b/.exec("b")[1] === undefined ? "undef" : "set"; });
 p(function(){ return /a|ab/.exec("ab")[0]; });

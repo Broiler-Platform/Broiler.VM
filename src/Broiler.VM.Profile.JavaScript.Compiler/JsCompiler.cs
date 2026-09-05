@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   136
-// Annotated:        136/136
+// Relevant units:   137
+// Annotated:        137/137
 // Exempt:           61
-// Human-reviewed:   0/136
+// Human-reviewed:   0/137
 // IP risk:          None
 // Security risk:    High
 // Criteria:         6/6
 // Resource impact:  3/10 max
-// Unverified:       136
+// Unverified:       137
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -2571,7 +2571,7 @@ public sealed class JsCompiler
 
     // ---- expressions ---------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D135F4
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C49E4D
     // Broiler-Human:        PENDING
     private void CompileExpression(JsExpression expression)
     {
@@ -2604,10 +2604,7 @@ public sealed class JsCompiler
                 break;
 
             case JsRegExpLiteral pattern:
-                Emit(JsOpcode.LoadGlobal, InternedName("RegExp"));
-                Emit(JsOpcode.LoadConstant, StringConstant(pattern.Pattern));
-                Emit(JsOpcode.LoadConstant, StringConstant(pattern.Flags));
-                Emit(JsOpcode.Construct, (byte)2);
+                CompileRegExpLiteral(pattern);
                 break;
 
             case JsArrayLiteral array:
@@ -4214,6 +4211,51 @@ public sealed class JsCompiler
         }
 
         Mark(end);
+    }
+
+    /// <summary>Lowers a regular-expression literal, refusing a pattern that is not one.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A LITERAL'S PATTERN IS CHECKED HERE AND NOT WHERE IT RUNS, because the language makes it
+    /// an EARLY error.</b> <c>/(/ </c> is a program that does not parse, in the same way that
+    /// <c>var = 1</c> is; a front end that emitted it and let the constructor refuse it at run time
+    /// answered the right kind of error at the wrong time, and a program that never reached the
+    /// literal - one behind a `false` branch, which is how the pinned suite writes these - was
+    /// accepted outright.
+    /// </para>
+    /// <para>
+    /// <b>The check is the matcher's own and not a second opinion.</b> The pattern grammar lives in
+    /// the format assembly, which both this front end and the executor read, precisely so that the
+    /// two cannot disagree about what a pattern is: a front end with its own idea of the grammar
+    /// would either refuse a pattern the executor runs or emit one it cannot.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C7D37D
+    // Broiler-Human:        PENDING
+    private void CompileRegExpLiteral(JsRegExpLiteral pattern)
+    {
+        try
+        {
+            // THE FLAGS ARE READ THE WAY THE MATCHER READS THEM and not re-validated here: a flag
+            // this front end does not know is refused by the tokenizer that read the literal, and
+            // the four the matcher takes are the four that change what the pattern MEANS.
+            _ = JsRegExpMatcher.Compile(
+                pattern.Pattern,
+                pattern.Flags.Contains('i', System.StringComparison.Ordinal),
+                pattern.Flags.Contains('m', System.StringComparison.Ordinal),
+                pattern.Flags.Contains('s', System.StringComparison.Ordinal),
+                pattern.Flags.Contains('u', System.StringComparison.Ordinal) ||
+                    pattern.Flags.Contains('v', System.StringComparison.Ordinal));
+        }
+        catch (JsRegExpSyntaxError failure)
+        {
+            Refuse(pattern.Span, SliceSourceDiagnosticCode.UnexpectedToken, failure.Message);
+        }
+
+        Emit(JsOpcode.LoadGlobal, InternedName("RegExp"));
+        Emit(JsOpcode.LoadConstant, StringConstant(pattern.Pattern));
+        Emit(JsOpcode.LoadConstant, StringConstant(pattern.Flags));
+        Emit(JsOpcode.Construct, (byte)2);
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=75497B

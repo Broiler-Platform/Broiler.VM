@@ -17,6 +17,8 @@
 
 namespace Broiler.VM.Profile.JavaScript;
 
+using Broiler.VM.Profile.JavaScript.Format;
+
 /// <summary>
 /// The <c>RegExp</c> intrinsic, its prototype, and the four <c>String.prototype</c> methods that
 /// take one.
