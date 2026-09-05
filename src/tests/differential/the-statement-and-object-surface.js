@@ -414,6 +414,59 @@ p(function(){ try { var b = null; var k = { toString: function(){ throw new Rang
 p(function(){ try { var b = undefined; var k = { toString: function(){ throw new RangeError("key"); } }; b[k] = 1; return "no-throw"; } catch(e){ return e.name; } });
 p(function(){ var seen = 0; try { var b = null; var k = { toString: function(){ seen = 1; return "x"; } }; return String(b[k]); } catch(e){ return "threw:" + seen; } });
 
+// --- WHAT AN ARRAY PATTERN OWES THE ITERATOR IT OPENED. A pattern abandoned part-way closes the
+// iterator it was reading, and the completion that abandoned it decides how: a throw completion
+// discards whatever `return` does, and every other one lets an error from `return` through and
+// makes a non-object answer a TypeError of its own. An iterator that already said it was done, and
+// one a rest element ran out, are owed nothing. Recorded with JSC-180, which closed the divergence
+// this lowering used to declare.
+function __counting(onReturn) {
+  var s = { next: 0, ret: 0, self: null, args: -1 };
+  var iterator = {
+    next: function () { s.next += 1; return { done: s.next > 10 }; },
+    return: function () {
+      s.ret += 1; s.self = this; s.args = arguments.length;
+      return onReturn ? onReturn() : {};
+    }
+  };
+  s.iterable = {};
+  s.iterable[Symbol.iterator] = function () { return iterator; };
+  s.iterator = iterator;
+  return s;
+}
+function __boom() { throw new TypeError("boom"); }
+
+// An element's target reference is evaluated BEFORE the iterator is stepped, so a reference that
+// throws never calls `next` - and the iterator it never stepped is still closed.
+p(function(){ var s = __counting(); try { 0, [ {}[__boom()] ] = s.iterable; } catch(e){} return s.next + "," + s.ret; });
+p(function(){ var s = __counting(); try { 0, [ {}[__boom()] , ] = s.iterable; } catch(e){} return s.next + "," + s.ret; });
+p(function(){ var s = __counting(); try { 0, [ ...{}[__boom()] ] = s.iterable; } catch(e){} return s.next + "," + s.ret; });
+p(function(){ var s = __counting(); var a; try { 0, [ a, ...{}[__boom()] ] = s.iterable; } catch(e){} return s.next + "," + s.ret; });
+// `return` is called with no arguments, on the iterator itself.
+p(function(){ var s = __counting(); try { 0, [ {}[__boom()] ] = s.iterable; } catch(e){} return (s.self === s.iterator) + "," + s.args; });
+// A throw completion swallows what `return` raises: the exception already travelling is the answer.
+p(function(){ var s = __counting(function(){ throw new RangeError("swallowed"); }); try { 0, [ {}[__boom()] ] = s.iterable; return "no-throw"; } catch(e){ return e.name + "," + s.ret; } });
+// A binding pattern owes the same close, and a default that throws is how it gets abandoned.
+p(function(){ var s = __counting(); try { var [ q = __boom() ] = s.iterable; } catch(e){} return s.next + "," + s.ret; });
+// A nested pattern over a value that is not iterable abandons the outer one.
+p(function(){ var s = __counting(); try { var [ [ r ] ] = s.iterable; } catch(e){} return s.next + "," + s.ret; });
+// An iterator that already reported done is not asked for its `return`.
+p(function(){ var c = 0; var it = {}; it[Symbol.iterator] = function(){ return { next: function(){ return { done: true }; }, return: function(){ c += 1; return {}; } }; }; try { var [ u = __boom() ] = it; } catch(e){} return c; });
+// A rest element runs the iterator out, so the pattern that contains it closes nothing.
+p(function(){ var c = 0; var it = {}; it[Symbol.iterator] = function(){ var i = 0; return { next: function(){ i += 1; return i > 2 ? { done: true } : { done: false, value: i }; }, return: function(){ c += 1; return {}; } }; }; var rest; 0, [ ...rest ] = it; return rest.join("") + "," + c; });
+// A NORMAL completion over an iterator that is not done closes it loudly: an error from `return`
+// propagates, and a `return` answering a non-object is a TypeError.
+p(function(){ var s = __counting(function(){ throw new RangeError("loud"); }); var b; try { 0, [ b ] = s.iterable; return "no-throw"; } catch(e){ return e.name + "," + s.ret; } });
+p(function(){ var s = __counting(function(){ return null; }); var c; try { 0, [ c ] = s.iterable; return "no-throw"; } catch(e){ return e.name + "," + s.ret; } });
+// A FORCED RETURN through a pattern - `gen.return()` arriving at a `yield` inside one - closes it
+// the same loud way, and the pattern's own statement never completes.
+p(function(){ var s = __counting(); var hit = 0; function* g(){ var d; var o = [ d, ...{}[yield] ] = s.iterable; hit += 1; return o; } var i = g(); i.next(); var r = i.return(9); return r.value + "," + r.done + "," + hit + "," + s.next + "," + s.ret; });
+p(function(){ var s = __counting(function(){ throw new RangeError("on return"); }); function* g(){ var e; return [ e, ...{}[yield] ] = s.iterable; } var i = g(); i.next(); try { i.return(1); return "no-throw"; } catch(e){ return e.name + "," + s.ret; } });
+p(function(){ var s = __counting(function(){ return null; }); function* g(){ var f; return [ f, ...{}[yield] ] = s.iterable; } var i = g(); i.next(); try { i.return(1); return "no-throw"; } catch(e){ return e.name + "," + s.ret; } });
+// A computed reference in a pattern evaluates its key ONCE, and stores what the iterator gave.
+p(function(){ var n = 0; var sink = {}; function k(){ n += 1; return "k"; } 0, [ sink[k()] ] = [ 42 ]; return sink.k + "," + n; });
+// Two live records, one nesting inside the other, each closed by its own pattern.
+p(function(){ var inner = 0, outer = 0; var iv = {}; iv[Symbol.iterator] = function(){ return { next: function(){ return { done: false, value: 1 }; }, return: function(){ inner += 1; return {}; } }; }; var ov = {}; ov[Symbol.iterator] = function(){ return { next: function(){ return { done: false, value: iv }; }, return: function(){ outer += 1; return {}; } }; }; var [ [ z ] ] = ov; return z + "," + inner + "," + outer; });
 // --- the early errors about DECLARED NAMES, which are what one declarative scope may hold. Every
 // case is asked through an indirect eval, because a probe file that wrote one of them directly
 // would not compile at all. `ok` means the source was accepted; anything else is the error's name.

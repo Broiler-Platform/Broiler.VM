@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 2574 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 2629 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -78,13 +78,13 @@ date, any annotation is malformed or any generated artefact is stale.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 119 |
-| Code units | 4681 |
-| Relevant | 2574 |
-| Exempt | 2107 |
-| Assessed | 2574 of 2574 (100%) |
-| Human reviewed | 0 of 2574 (0%) |
-| Unverified | 2574 |
+| Files scanned | 121 |
+| Code units | 4751 |
+| Relevant | 2629 |
+| Exempt | 2122 |
+| Assessed | 2629 of 2629 (100%) |
+| Human reviewed | 0 of 2629 (0%) |
+| Unverified | 2629 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 2574 |
+| HUMAN_PENDING | 2629 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 2107 |
+| EXEMPT | 2122 |
 
 ## 5. Aliases In The Tree
 
@@ -142,7 +142,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Binary/VmReadBounds.cs` | 11 | 3 | 8 | 3 | Low | Low | 0/0 |
 | `src/Broiler.VM.Binary/VmSectionFrame.cs` | 10 | 3 | 7 | 3 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` | 244 | 162 | 82 | 162 | None | High | 6/6 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` | 249 | 166 | 83 | 166 | None | High | 7/6 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` | 158 | 141 | 17 | 141 | None | High | 2/2 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsSyntax.cs` | 91 | 78 | 13 | 78 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructCensus.cs` | 7 | 7 | 0 | 7 | None | High | 3/3 |
@@ -178,15 +178,16 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsArray.cs` | 19 | 14 | 5 | 14 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsBinary.cs` | 51 | 31 | 20 | 31 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsCollections.cs` | 87 | 51 | 36 | 51 | Low | High | 1/1 |
-| `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` | 125 | 111 | 14 | 111 | Low | High | 15/15 |
+| `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` | 126 | 112 | 14 | 112 | Low | High | 15/15 |
 | `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` | 24 | 13 | 11 | 13 | Low | High | 2/2 |
-| `src/Broiler.VM.Profile.JavaScript/JsFunction.cs` | 55 | 25 | 30 | 25 | Low | High | 1/1 |
+| `src/Broiler.VM.Profile.JavaScript/JsFunction.cs` | 56 | 26 | 30 | 26 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JsGenerator.cs` | 67 | 17 | 50 | 17 | None | High | 5/5 |
 | `src/Broiler.VM.Profile.JavaScript/JsModule.cs` | 38 | 13 | 25 | 13 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsNumberFormat.cs` | 19 | 19 | 0 | 19 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsObject.cs` | 55 | 30 | 25 | 30 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsObject.cs` | 59 | 31 | 28 | 31 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsProgram.cs` | 44 | 16 | 28 | 16 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.Array.cs` | 29 | 29 | 0 | 29 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsProxy.cs` | 44 | 37 | 7 | 37 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Array.cs` | 30 | 30 | 0 | 30 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.AsyncGenerator.cs` | 19 | 14 | 5 | 14 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Binary.cs` | 33 | 28 | 5 | 28 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Boolean.cs` | 4 | 4 | 0 | 4 | Low | Low | 0/0 |
@@ -202,10 +203,11 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Lexical.cs` | 10 | 5 | 5 | 5 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Math.cs` | 19 | 18 | 1 | 18 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Number.cs` | 24 | 24 | 0 | 24 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.Object.cs` | 36 | 21 | 15 | 21 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Object.cs` | 40 | 25 | 15 | 25 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Promise.cs` | 34 | 28 | 6 | 28 | Low | High | 2/2 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.Proxy.cs` | 8 | 6 | 2 | 6 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Reflect.cs` | 6 | 6 | 0 | 6 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs` | 47 | 39 | 8 | 39 | Medium | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.RegExp.cs` | 49 | 39 | 10 | 39 | Medium | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.String.cs` | 15 | 15 | 0 | 15 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Symbol.cs` | 29 | 10 | 19 | 10 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.cs` | 37 | 18 | 19 | 18 | Low | Medium | 0/0 |
@@ -683,7 +685,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 2574 of the 2574 assessed units declare
+That is not a figure of speech. 2629 of the 2629 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

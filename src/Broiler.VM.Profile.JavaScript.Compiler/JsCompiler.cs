@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   162
-// Annotated:        162/162
-// Exempt:           82
-// Human-reviewed:   0/162
+// Relevant units:   166
+// Annotated:        166/166
+// Exempt:           83
+// Human-reviewed:   0/166
 // IP risk:          None
 // Security risk:    High
-// Criteria:         6/6
+// Criteria:         7/6
 // Resource impact:  3/10 max
-// Unverified:       162
+// Unverified:       166
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -475,7 +475,7 @@ public sealed class JsCompiler
 
     // ---- assembly ------------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DA3432
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F8DFF1
     // Broiler-Human:        PENDING
     private byte[] Assemble()
     {
@@ -540,7 +540,7 @@ public sealed class JsCompiler
                     region.TryEnd + bases[index],
                     region.Handler + bases[index],
                     region.ScopeDepth,
-                    0,
+                    region.StackHeight,
                     region.Kind));
             }
 
@@ -1745,12 +1745,41 @@ public sealed class JsCompiler
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <b>The iterator record stays on the operand stack for the whole pattern.</b> A slot would
-    /// have been the safer-looking choice - it is what <c>for … in</c> does - but a pattern nests,
-    /// so two of them can be live at once and each nesting level would need a slot of its own
-    /// chosen at compile time. The stack already nests correctly, and nothing here branches out of
-    /// the pattern, so the only join is the one <c>IterateNext</c> makes and it is balanced by hand
-    /// below.
+    /// <b>The iterator record lives in a slot, and the pattern is guarded by two exception regions
+    /// that close it.</b> The record was on the operand stack until [JSC-151], because the stack
+    /// nests where a slot chosen at compile time appeared not to - and the appearance was wrong.
+    /// The nesting depth of a pattern is known while it is being lowered, so each nesting level
+    /// declares a temporary of its own exactly as a computed member target already does, and two
+    /// live records never share one.
+    /// </para>
+    /// <para>
+    /// <b>The regions are what close the iterator when a completion abandons the pattern, and their
+    /// handlers are entered at the height the pattern began at rather than at zero.</b> A region row
+    /// has carried its own entry height since format version 1 and the verifier has always seeded
+    /// the handler at that height plus the one value the executor pushes; only the lowering wrote
+    /// zero, because until this pattern every region a lowering opened began at a statement
+    /// boundary. So a region CAN guard an expression, and the objection this remark used to record
+    /// - that a handler is entered at a fixed height and a pattern is applied where the stack is not
+    /// empty - was an objection to the constant, not to the mechanism.
+    /// </para>
+    /// <para>
+    /// <b>Two regions and not one, because the completion decides how the iterator is closed.</b>
+    /// The language closes under a throw completion QUIETLY - whatever <c>return</c> does is
+    /// discarded, because the exception already travelling is the one the program is owed - and
+    /// closes under every other abrupt completion loudly, where an error from <c>return</c>
+    /// propagates and a <c>return</c> that answers a non-object is itself a <c>TypeError</c>. The
+    /// only other completion that reaches a pattern is the forced return a generator's
+    /// <c>return()</c> raises at a <c>yield</c> inside it, and a <c>finally</c>-kind region is what
+    /// catches that. The catch region is recorded FIRST so that a throw finds it, and the finally
+    /// region second so that a forced return, which passes catch regions over, finds that one.
+    /// </para>
+    /// <para>
+    /// <b>An element's target reference is evaluated BEFORE the iterator is stepped</b>, which is
+    /// the order the language states and the reverse of the order an assignment uses everywhere
+    /// else. <c>[ {}[f()] ] = iterable</c> calls <c>f</c> and never calls <c>next</c>, and a
+    /// lowering that stepped first would have called <c>next</c> once before finding out that the
+    /// reference throws. It matters most at a rest element, where stepping first drains the whole
+    /// iterator before the reference gets a chance to fail.
     /// </para>
     /// <para>
     /// <b>An exhausted iterator supplies <c>undefined</c> rather than ending the pattern</b>, which
@@ -1758,27 +1787,51 @@ public sealed class JsCompiler
     /// lets <c>[a = 1] = []</c> take its default.
     /// </para>
     /// <para>
-    /// <b>ONE DECLARED DIVERGENCE: an exception raised part-way through a pattern does not close
-    /// the iterator, and the specification says it should.</b> A <c>for … of</c> body that throws
-    /// does close it - that path has an exception region - and this one cannot have one, because a
-    /// region's handler is entered at a fixed operand-stack height and a pattern is applied in the
-    /// middle of an expression whose stack is not empty. What it costs is visible only to an
-    /// iterator whose <c>return</c> is observable AND a pattern element whose default throws, and
-    /// what it would cost to close is a spill of every live operand to slots at every pattern.
+    /// <b>Letting the executor close what an exception left on the operand stack was the design
+    /// refused.</b> It needed no lowering at all: the values between a handler's height and the
+    /// live top are exactly what the abandoned expression had built, and an iterator record among
+    /// them is identifiable at run time. It was refused for three reasons. It gives the frame that
+    /// unwinds WITHOUT a handler nowhere to do the work - which is the case the generator tests
+    /// turn on, since a forced return with no <c>finally</c> in the frame leaves through the
+    /// executor's own dispatch - and buying that case back needs a filter or a catch in every
+    /// frame, which is the shape that killed the process at depth and that the dispatch's own
+    /// remark records. It moves a rule of the LANGUAGE into the executor, where the artifact no
+    /// longer says what closes and the verifier can no longer check it. And it grows the executor,
+    /// which is the one budget a lowering-only change leaves alone.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C9DF85
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3BECA4
+    // Broiler-Falsified-If: a pattern leaves an iterator that is not done unclosed on any completion
     // Broiler-Human:        PENDING
     private void BindArrayPattern(JsArrayPattern pattern, BindMode mode)
     {
+        var owner = FunctionScope();
+        var record = owner.Declare("#iterator" + owner.SlotCount, constant: false);
+
         Emit(JsOpcode.IterateStart);
+        EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, record);
+
+        // THE HEIGHT IS READ HERE AND NOT AT THE FIRST ELEMENT, because this is the height the
+        // handlers unwind to: everything the pattern pushes above it is what the abandoned
+        // completion was holding, and the executor discards exactly that.
+        var height = buffer.Height;
+        var guarded = buffer.Code.Count;
+        var raised = NewLabel();
+        var forced = NewLabel();
+
+        buffer.PendingRegions.Add(
+            new PendingRegion(guarded, forced, blockDepth, JsFormat.HandlerKind.Finally, height));
+
+        buffer.PendingRegions.Add(
+            new PendingRegion(guarded, raised, blockDepth, JsFormat.HandlerKind.Catch, height));
 
         foreach (var element in pattern.Elements)
         {
+            var prepared = PrepareTarget(element?.Target, mode);
             var exhausted = NewLabel();
             var ready = NewLabel();
 
-            Emit(JsOpcode.Duplicate);
+            EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, record);
             Branch(JsOpcode.IterateNext, exhausted);
             Branch(JsOpcode.Jump, ready);
             Mark(exhausted);
@@ -1794,20 +1847,157 @@ public sealed class JsCompiler
             }
 
             ApplyDefault(element.Default, InferredFrom(element.Target));
-            BindPattern(element.Target, mode);
+            BindPrepared(element.Target, mode, prepared);
         }
 
         if (pattern.Rest is not null)
         {
-            Emit(JsOpcode.Duplicate);
+            var prepared = PrepareTarget(pattern.Rest, mode);
+            EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, record);
             Emit(JsOpcode.IterateRest);
-            BindPattern(pattern.Rest, mode);
+            BindPrepared(pattern.Rest, mode, prepared);
         }
+
+        // `var [] = x` protects nothing, and a region whose start equals its end is one the
+        // verifier refuses and nothing could enter.
+        ProtectSomething(guarded);
+
+        // The catch region is closed first because `CloseRegion` closes the most recently ADDED,
+        // and the executor takes the first region in that order whose range covers the throw.
+        buffer.CloseRegion(guarded, buffer.Code.Count);
+        buffer.CloseRegion(guarded, buffer.Code.Count);
 
         // A pattern that stopped before the iterator did owes it a `return`, and one that ran the
         // iterator out does not. The opcode reads the record's own done flag rather than being told
         // which case this is, so a rest element and an exhausted iterator both make it a no-op.
+        EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, record);
         Emit(JsOpcode.IterateClose, (byte)0);
+
+        var after = NewLabel();
+        Branch(JsOpcode.Jump, after);
+
+        // Both handlers are entered with one value where the pattern's own operands were: the
+        // thrown value, or the parked forced return. `Throw` re-raises either as what it was.
+        Mark(raised);
+        EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, record);
+        Emit(JsOpcode.IterateClose, (byte)1);
+        Emit(JsOpcode.Throw);
+
+        Mark(forced);
+        EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, record);
+        Emit(JsOpcode.IterateClose, (byte)0);
+        Emit(JsOpcode.Throw);
+
+        Mark(after);
+
+        // THE STRAIGHT-LINE PASS WALKED THROUGH TWO HANDLERS IT CANNOT REACH, each entered at a
+        // height nothing before it establishes, so the model it carries here is not the height the
+        // code arriving by the jump actually has.
+        buffer.Rejoin(height);
+    }
+
+    /// <summary>
+    /// What evaluating an assignment pattern's target reference ahead of the value produced.
+    /// </summary>
+    /// <param name="Holds">Whether anything was evaluated, which only an assignment ever does.</param>
+    /// <param name="Base">The slot holding the object the reference reads through.</param>
+    /// <param name="Key">The slot holding a computed key, or -1 where the key is not computed.</param>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=04C660
+    // Broiler-Human:        PENDING
+    private readonly record struct PreparedTarget(bool Holds, int Base, int Key);
+
+    /// <summary>
+    /// Evaluates an assignment pattern element's target reference, before the iterator is stepped.
+    /// </summary>
+    /// <remarks>
+    /// <b>A name and a nested pattern evaluate nothing, and the language says so rather than this
+    /// being an optimisation.</b> The step that evaluates the target is stated only for a target
+    /// that is neither an object nor an array literal, and an identifier reference is resolved
+    /// where it is STORED - which is why an assignment to an undeclared name in strict code still
+    /// fails at the store and not here.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3105F1
+    // Broiler-Human:        PENDING
+    private PreparedTarget PrepareTarget(JsPattern? target, BindMode mode)
+    {
+        if (mode != BindMode.Assign || target is not JsTargetPattern leaf)
+        {
+            return default;
+        }
+
+        switch (leaf.Target)
+        {
+            case JsPrivateMemberExpression privateAccess:
+                return new PreparedTarget(true, Spill(privateAccess.Target), -1);
+
+            case JsMemberExpression member when member.Computed is null:
+                return new PreparedTarget(true, Spill(member.Target), -1);
+
+            case JsMemberExpression member:
+            {
+                // THE ORDER OF THESE TWO IS THE LANGUAGE'S. A computed member reference evaluates
+                // its base before its key, and both before anything the value needs.
+                var basis = Spill(member.Target);
+                return new PreparedTarget(true, basis, Spill(member.Computed!));
+            }
+
+            default:
+                return default;
+        }
+    }
+
+    /// <summary>Compiles one expression and parks its value in a temporary of the function.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=64DEAE
+    // Broiler-Human:        PENDING
+    private int Spill(JsExpression expression)
+    {
+        var owner = FunctionScope();
+        var slot = owner.Declare("#held" + owner.SlotCount, constant: false);
+        CompileExpression(expression);
+        EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, slot);
+        return slot;
+    }
+
+    /// <summary>
+    /// Stores the value on top of the stack through a reference already evaluated, and consumes it.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3E2685
+    // Broiler-Human:        PENDING
+    private void BindPrepared(JsPattern target, BindMode mode, in PreparedTarget prepared)
+    {
+        if (!prepared.Holds)
+        {
+            BindPattern(target, mode);
+            return;
+        }
+
+        var leaf = (JsTargetPattern)target;
+        var owner = FunctionScope();
+        var held = owner.Declare("#held" + owner.SlotCount, constant: false);
+        EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, held);
+        EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, prepared.Base);
+
+        switch (leaf.Target)
+        {
+            case JsPrivateMemberExpression privateAccess:
+                EmitPrivateName(privateAccess.Span, privateAccess.Name);
+                EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, held);
+                Emit(JsOpcode.StorePrivate);
+                break;
+
+            case JsMemberExpression member when member.Computed is null:
+                EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, held);
+                Emit(JsOpcode.SetProperty, InternedName(member.Name));
+                break;
+
+            default:
+                EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, prepared.Key);
+                EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, held);
+                Emit(JsOpcode.SetIndex);
+                break;
+        }
+
+        Emit(JsOpcode.Pop);
     }
 
     /// <summary>Destructures by reading properties, which is what an object pattern is.</summary>
@@ -7003,15 +7193,31 @@ public sealed class JsCompiler
         // Broiler-Human:        PENDING
         internal int BodyUnit { get; set; }
     }
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=18DE55
+    /// <summary>A region whose range is still being emitted.</summary>
+    /// <param name="StackHeight">
+    /// The operand height the handler is entered at, under the one value the executor pushes. It is
+    /// zero for every region a STATEMENT opens, because a statement boundary is the one place the
+    /// operand stack is reliably empty, and it is the height at the pattern for the two regions an
+    /// array pattern opens - which is the whole of what lets a region guard an expression.
+    /// </param>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=342CD5
     // Broiler-Human:        PENDING
     private readonly record struct PendingRegion(
-        int TryStart, Label Handler, int ScopeDepth, JsFormat.HandlerKind Kind);
+        int TryStart,
+        Label Handler,
+        int ScopeDepth,
+        JsFormat.HandlerKind Kind,
+        int StackHeight = 0);
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1E79DA
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=075549
     // Broiler-Human:        PENDING
     private sealed class ClosedRegion(
-        uint tryStart, uint tryEnd, Label handler, uint scopeDepth, JsFormat.HandlerKind kind)
+        uint tryStart,
+        uint tryEnd,
+        Label handler,
+        uint scopeDepth,
+        JsFormat.HandlerKind kind,
+        uint stackHeight)
     {
         // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=61A751
         // Broiler-Human:        PENDING
@@ -7036,6 +7242,11 @@ public sealed class JsCompiler
         // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1F1D54
         // Broiler-Human:        PENDING
         internal JsFormat.HandlerKind Kind { get; } = kind;
+
+        /// <summary>The operand height the handler is entered at, under the value pushed there.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=695B57
+        // Broiler-Human:        PENDING
+        internal uint StackHeight { get; } = stackHeight;
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3F0624
@@ -7142,7 +7353,7 @@ public sealed class JsCompiler
             MaximumStack = System.Math.Max(MaximumStack, Height + 24);
         }
 
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=78C1AF
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=AB5325
         // Broiler-Human:        PENDING
         internal void CloseRegion(int tryStart, int tryEnd)
         {
@@ -7161,7 +7372,8 @@ public sealed class JsCompiler
                     (uint)tryEnd,
                     pending.Handler,
                     (uint)pending.ScopeDepth,
-                    pending.Kind));
+                    pending.Kind,
+                    (uint)pending.StackHeight));
 
                 return;
             }

@@ -5622,6 +5622,418 @@ whose answers were taken from the comparison engine before they were written dow
 
 ---
 
+### JSC-145
+
+**Where:** `THIRD_PARTY_NOTICES.md`, whose ingestion table named two pieces of third-party material
+and not the third, and rule N13's list of suite directories, which named one of the two the notice
+file's mechanism sentence would have to be true of.
+
+**What the plan said, and what was done instead.** The notice file states an obligation in its own
+words: *a component that ingests or copies third-party source confirms this scoping, or amends this
+file, in the change that introduces the material.* The retained Octane workload — 37 files of
+BSD 3-Clause JavaScript, archived at `src/tests/octane/pins/` on 2026-09-04 under the workload
+roadmap's last stage — was committed with its upstream licence beside it and **without the notice
+entry the same paragraph asks for**. The pin's own README cites the stage that asked for the
+archive; nothing cited the obligation the archive triggers.
+
+**What was true, and why it is not merely a missing row.** The mechanism sentence the notice file
+writes for the conformance suite — *no project file names the suite directory, and rule N13 asserts
+it* — **was not true of this material**, because N13's list held `tests/conformance` alone. Writing
+the row without the list entry would have published a claim about a rule that was not making it,
+which is the failure mode the whole file is arranged to avoid. So the list gained `tests/octane`
+first, and the row follows it.
+
+**The confirmation is recorded as owed rather than supplied.** The row's third column reads
+`not yet confirmed`, because the confirmation is a release-facing statement a person makes and this
+change is not a person making it. The two rows above it carry a date and a named co-signature; this
+one carries the reason it does not.
+
+**Authority and date.** The notice file's own obligation paragraph, the pin at
+`src/tests/octane/pins/octane.pin` and the licence retained beside it, and rule N13 as it now
+stands, which passes with the second directory in its list and would report a violation for a
+project file naming either. 2026-09-05.
+
+---
+
+### JSC-146
+
+**Where:** `JsRealm.Reflect.cs`, and specifically the paragraph of its own header remark that read
+*"What is absent is `Proxy`, and the two are usually met together. … Nothing here assumes an ordinary
+object in a way that would have to change."*
+
+**What was assumed.** That a namespace whose members are named after the internal methods was
+therefore written in terms of them, so an object that answers those methods differently would need
+nothing here.
+
+**What was true.** Four of the thirteen members were written in terms of an ordinary object's
+STORAGE rather than in terms of its internal method, and each of the four is a different way for the
+same assumption to fail.
+
+- **`ownKeys` read the two key tables separately.** `[[OwnPropertyKeys]]` is one internal method and
+  this asked for the String keys and then the Symbol keys — which for a Proxy is the `ownKeys` trap
+  called **twice**, visibly, with nothing to make the two answers agree.
+- **`preventExtensions` assigned instead of asking.** Its whole body was `target.Extensible = false;
+  return JsValue.True`, which is right for an object that cannot refuse and is a false report for
+  one that can. A refusing trap got `true`.
+- **`setPrototypeOf` ran `OrdinarySetPrototypeOf`'s three tests inline** — already-the-same,
+  non-extensible, cyclic — against an object entitled to define its own `[[SetPrototypeOf]]`. Two of
+  the three also read the proxy's prototype and its extensibility, which is two trap calls the
+  language never asks for at that point.
+- **`defineProperty` validated the descriptor against the proxy** before reaching the trap that
+  decides, for the same reason and at the same cost.
+
+**What that cost, measured.** `test/built-ins/Reflect` scored **286 of 306 variants**, and every one
+of the twenty failures was a Proxy case: thirteen `return-abrupt-from-result.js` files that assert a
+trap's exception propagates, `preventExtensions/return-boolean-from-proxy-object.js`, and their
+strict twins. The entry is not "these could not run for want of `Proxy`": with `Proxy` present and
+these four members unchanged they would have gone on failing, which is what makes this a defect in
+existing code rather than a gap. The subtree is now **306 of 306**.
+
+**What replaced it.** Each member at its own site. `ownKeys` asks `JsObject.OwnKeys`, a new virtual
+that is the concatenation for an ordinary object and one trap call for a proxy.
+`preventExtensions` returns what the operation answered. `setPrototypeOf` and
+`Object.setPrototypeOf` now share one `ObjectSetPrototypeOrdinary`, which answers the boolean the
+specification gives it and which `Object.setPrototypeOf` turns into the two `TypeError`s it owes —
+the copy of the cycle walk that stood in `Reflect` for want of a shared body is gone.
+`defineProperty` asks a proxy directly and returns its `false` rather than catching a `TypeError` it
+should never have provoked.
+
+**One thing the paragraph got right is worth keeping.** The other nine members needed nothing,
+because they were already written through the engine's own property paths — which is the arrangement
+the paragraph was describing, and it was true of most of the file.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the sweep of
+`test/built-ins/Reflect` before and after, and the cases of
+`src/tests/differential/the-proxy-and-its-invariants.js`. 2026-09-05.
+
+### JSC-147
+
+**Where:** the realm, which had no `Proxy` — the last named absence in the `absent-globals` block of
+[the status ledger](roadmap.status.md) besides `BigInt` and the two typed arrays that depend on it.
+
+**What was assumed by everything that had to change to admit it.** That the object model's virtual
+methods answer about an object's own storage, cheaply, without running anything.
+
+**What was true.** A Proxy answers them with guest code. That is the whole difficulty, and it decides
+the shape of the implementation: thirteen internal methods, every one of which may call a function
+the program wrote, which may throw, may re-enter, may itself be a Proxy, and **may lie**.
+
+**Where each trap is invoked, and why there.** The decision was taken once per internal method rather
+than once for all of them, because the language does not put them in one place.
+
+- **Nine are `JsObject` virtuals**, because for those the specification's internal method and this
+  profile's own-property operation are the same operation: `[[GetOwnProperty]]` over both key kinds,
+  `[[DefineOwnProperty]]` over both, `[[Delete]]` over both, `[[OwnPropertyKeys]]`,
+  `[[GetPrototypeOf]]`, `[[SetPrototypeOf]]`, `[[IsExtensible]]` and `[[PreventExtensions]]`.
+  Overriding them means every existing caller — `Object.keys`, `JSON.stringify`, `for…in`, the
+  spread of an object literal, all of `Reflect` — traps without being told about proxies at all.
+  `Prototype` and `Extensible` became virtual for this, and the storage behind them moved from an
+  auto-property to a field so that `base` still has somewhere ordinary to keep an answer, and so that
+  the constructor can write the field rather than call an override before the derived type is built.
+- **Five are invoked from `JsEngine`**: `[[Get]]`, `[[Set]]`, `[[HasProperty]]`, `[[Call]]` and
+  `[[Construct]]`. These are operations over a WHOLE prototype chain or a whole call, and the walk
+  belongs to the engine. The test is inside each walk's loop rather than before it, because a proxy
+  is as likely to be somebody's prototype as to be the object a program named — and once the walk
+  reaches one, the trap decides the rest of it, including whether a prototype is consulted at all.
+- **The proxy holds its realm**, because those nine virtuals have no engine parameter to pass one
+  through, and adding one would have changed the signature of every property operation in the profile
+  for the sake of one object kind.
+
+**The invariants are most of the work and all of the value.** A proxy that forwarded each trap's
+answer without checking passes every easy test. What it breaks is everything downstream that had
+already looked at the target: a `get` trap may not report a value other than the target's
+non-configurable, non-writable one, nor a value at all for a non-configurable accessor with no
+getter; `getOwnPropertyDescriptor` may not report a non-configurable property the target does not
+have, nor an existing non-configurable one as absent, nor a writable one as non-writable and
+non-configurable; `ownKeys` must include every non-configurable own key, may not repeat a key, and on
+a non-extensible target must report exactly the target's set; `isExtensible` must simply agree, which
+makes it the one trap with no freedom at all; `preventExtensions` may not report a success the target
+did not take; and `defineProperty`, `has`, `set` and `deleteProperty` each have their own. **The
+duplicate check in `ownKeys` is ordered first on purpose**: every check after it removes keys from a
+working copy of the trap's list, and a repeated key would let one target key satisfy two removals,
+which is a way to hide a real one.
+
+**What that cost, measured.** `test/built-ins/Proxy` scored **0 of 606 variants** and now scores
+**533**. Every one of the 73 that remain fails on `$262.createRealm`, which this profile does not
+have and which roadmap [section 13](roadmap.md#13-realms-agents-and-the-host-boundary) owns: each is
+the `-realm.js` twin of a case whose single-realm form passes. That is the ceiling for this subtree
+until this profile creates nested realms, and no invariant is behind it.
+
+**What a Proxy made the rest of the realm say** is [JSC-148](#jsc-148), [JSC-149](#jsc-149) and
+[JSC-150](#jsc-150). The Proxy suite is unusually good at finding that class of defect, because a
+trap is a way to ask an operation what it is really doing.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the sweeps of
+`test/built-ins/Proxy`, `test/built-ins/Reflect` and `test/built-ins/Object` before and after, and
+the 154 cases of `src/tests/differential/the-proxy-and-its-invariants.js`, every one of which agrees
+with `/opt/node22/bin/node` and none of which is a declared divergence. 2026-09-05.
+
+### JSC-148
+
+**Where:** three exotic objects that project an own property instead of storing one —
+`JsArray`'s `length`, a String wrapper's `length` and its character indices, and a RegExp's
+`lastIndex` — and the `DeleteIndex` opcode.
+
+**What was assumed.** That an override which answers `TryGetOwnProperty` for a synthesised property
+has made that property real.
+
+**What was true.** `JsObject.DeleteOwnProperty` answers **`true` for every key it does not find**,
+which is correct — deleting an absent property succeeds — and is exactly wrong for a property that is
+present but not in the map it searches. All three of these are non-configurable, so:
+
+- **`delete [].length` answered `true`** and deleted nothing; in strict code it answered `true` where
+  the language owes a `TypeError`.
+- **`delete new String("str").length` and `delete new String("str")[0]`** did the same.
+- **A frozen Array's element did the same.** `Object.freeze` moves an element out of the dense store
+  into the ordinary map, leaving a hole; the delete saw an index inside the dense range, cleared the
+  hole again and answered `true`. `TryGetOwnProperty` beside it already fell through to the map for
+  exactly this case and said so in a comment.
+
+**And the refusal had nowhere to go anyway.** `delete a.x` reported a refusal as a `TypeError` in
+strict code and **`delete a[k]` did not** — the `DeleteIndex` opcode never consulted the mode — so
+the two spellings of one operation gave different answers, and code after a refused computed delete
+went on as though the property were gone.
+
+**`lastIndex` is the other half of the same shape.** It is projected from a field, so
+`Object.defineProperty(re, "lastIndex", { writable: false })` was accepted, changed nothing, and the
+property went on reporting itself writable and going on being written — which is what
+`Object.freeze` on a RegExp did too. It now carries a writability bit of its own, in the same shape
+`JsArray` already uses for `length`, and the `exec` protocol's two writes are the specification's
+`Set(R, "lastIndex", …, true)` and throw where the property is closed.
+
+**What that cost, measured.** These are the last failures of `test/built-ins/Proxy` outside the
+realm-gated set. `test/built-ins/String` went from **2,271 to 2,273 of 2,441** and
+`test/built-ins/RegExp` from **1,660 to 1,678 of 3,743**. Both subtrees were measured again after
+[JSC-149](#jsc-149) and [JSC-150](#jsc-150) and neither moved further, so both figures are this
+entry's and `Proxy`'s alone. `test/built-ins/Array` went from **5,232 to 5,276 of 6,115**, summed
+over the run's eight shards because the merged report was written in neither run — a shard of that
+subtree ends by raising an unhandled `EncoderFallbackException` out of the harness while rendering
+a case that builds an astral character, which is a defect in the harness rather than in the
+profile, is present at the base commit as well, and is not this bundle's to fix.
+
+**What replaced it.** A refusal at each of the four projections, a hole test in the Array delete, and
+the mode check in `DeleteIndex`. The message there does not re-coerce the key, because a Symbol has
+no `ToString` and naming it would replace the refusal being reported with a different `TypeError`
+about the report.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the sweeps of
+`test/built-ins/Proxy`, `test/built-ins/RegExp` and `test/built-ins/String` before and after, and
+cases 125 to 134 of `src/tests/differential/the-proxy-and-its-invariants.js`, each of which was taken
+from `/opt/node22/bin/node` before it was written down. 2026-09-05.
+
+### JSC-149
+
+**Where:** `Array.isArray`, and the three other places that asked the same question by asking a
+different one.
+
+**What was assumed.** That `IsArray(v)` is `v is JsArray`.
+
+**What was true.** It is a predicate about the object at the END of a chain of proxies, and the
+language branches on it in four places that must all agree: `Array.isArray` itself,
+`Array.prototype.concat`'s spreading, `Array.prototype.flat`'s descent, and `JSON.stringify`'s choice
+between a list and an object.
+
+**And `Object.prototype.toString` asks it too**, which is where the same assumption produced a
+second wrong answer of its own. A proxy first carried its TARGET's class name, so
+`Object.prototype.toString.call(new Proxy(new Date(), {}))` answered `[object Date]`. It is not a
+Date: the tag comes from internal SLOTS and a proxy has none of the ones that make one, so the
+language asks it exactly two questions — is it callable, is it an Array — and gives it one of three
+tags. `ClassName` is now virtual for that, and a proxy derives it on each read rather than at
+creation, because `IsArray` may throw for a proxy over an already-revoked proxy and the
+specification puts that refusal at the `toString` call.
+
+**What that cost, measured.** `Array.isArray(new Proxy([], {}))` answered `false`.
+`[].concat(new Proxy([1, 2], {}))` appended the proxy whole and had length 1 where the language gives
+2. And **`JSON.stringify(new Proxy([1, 2], {}))` produced `{"0":1,"1":2}`** — valid JSON of the wrong
+shape, which is the worst kind of wrong answer a serialiser can give, because nothing downstream
+fails on it. Three of the four were found by the differential probe against `/opt/node22/bin/node`
+rather than by the suite.
+
+**What replaced it.** One `ArrayIsArray` that walks through proxies and refuses a revoked one, and
+four callers of it. `SerializeJSONArray` now reads its length as a PROPERTY — which is
+`LengthOfArrayLike`, what the specification says, and the only way to ask a proxy how long it is.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, and cases 98 to 106 and
+147 to 154 of `src/tests/differential/the-proxy-and-its-invariants.js` — the `Array.isArray` cases,
+the `JSON.stringify` cases, `concat`, `Array.from`, `Object.assign` and the eight tag cases — every
+one of them measured against `/opt/node22/bin/node` before it was written down. 2026-09-05.
+
+### JSC-150
+
+**Where:** the `Object` statics that walk an object's own keys — `freeze`, `seal`, `isFrozen`,
+`isSealed`, `getOwnPropertyDescriptors`, `assign`, and the shared body behind `defineProperties` and
+`create`.
+
+**What was assumed.** That `OwnPropertyNames()` is an object's own keys.
+
+**What was true.** It is half of them. The Symbol-keyed table is separate storage —
+`JsObject` explains at length why, and the reasons are good — but `[[OwnPropertyKeys]]` is **one**
+internal method, and every static that means to walk an object completely has to ask for both. Each
+of these asked for one, and the branch that would have asked for the other was written at none of the
+seven sites.
+
+**What that cost.** A Symbol-keyed property survived `Object.freeze` writable and configurable, and
+`Object.isFrozen` agreed the object was frozen — because it asked the same half-question. So an
+object keeping state under a Symbol was never frozen by either, and nothing said so. `Object.assign`
+silently dropped every Symbol-keyed property, which is how a great deal of code copies an object.
+`Object.getOwnPropertyDescriptors`, whose plural is the only thing distinguishing it from its
+singular, answered the descriptors of half the object. And `Object.create(p, { [Symbol()]: … })`
+returned the object having defined nothing.
+
+**What that cost, measured.** `test/built-ins/Object` went from **6,511 to 6,656 of 6,802 variants**
+over the whole of this work, and the subtree was measured again between the two rounds to divide it:
+**99 of the 145 recovered variants are `Proxy` existing** (with [JSC-146](#jsc-146) and
+[JSC-148](#jsc-148)), and **46 are this entry and [JSC-149](#jsc-149)**. Nothing in the subtree
+regressed. The named files are the six `proxy-no-ownkeys-returned-keys-order.js`,
+`freeze/frozen-object-contains-symbol-properties-{,non-}strict.js`,
+`getOwnPropertyDescriptors/symbols-included.js` and `assign/strings-and-symbol-order.js`.
+
+**What replaced it.** `JsObject.OwnKeys`, the virtual added for `[[OwnPropertyKeys]]`, and two
+key-agnostic helpers beside the statics so the branch is written once rather than seven times.
+
+**Two dead predicates went with it.** `ObjectShadowsDenseSlot` had no caller at all;
+`ObjectIsUnattributable` had two, and its entire body was `return false` — a question whose answer
+had become "nothing" when an earlier correction let an Array's `length` carry attributes after all,
+leaving behind a named predicate that read as though it still excluded something. Removing them is
+the second half of that correction rather than a new one.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the sweep of
+`test/built-ins/Object` before and after (and once between the two rounds, to divide the movement),
+the six `proxy-no-ownkeys-returned-keys-order.js` files of that subtree, which are what named the
+defect, and cases 135 to 141 of `src/tests/differential/the-proxy-and-its-invariants.js`.
+2026-09-05.
+
+
+### JSC-151
+
+**Where:** `JsCompiler.BindArrayPattern`, and the region rows every lowering in this compiler emits.
+
+**What was assumed.** That an exception region cannot guard an expression. The remark on the array
+pattern's lowering said so in as many words: a `for … of` body that throws closes its iterator
+because that path has a region, and a pattern *"cannot have one, because a region's handler is
+entered at a fixed operand-stack height and a pattern is applied in the middle of an expression
+whose stack is not empty."* On that reasoning the lowering declared a divergence and left the
+iterator open.
+
+**What was true.** The height is not fixed. It is a FIELD of the region row — `StackHeight` has been
+in the exception-region section since format version 1, the verifier has always seeded a handler's
+abstract entry at that height plus the one value the executor pushes, and the executor has always
+unwound to it rather than to zero. Every one of the three agreed about a mechanism no lowering had
+ever used, because until this pattern every region a lowering opened began at a statement boundary,
+where the operand stack is empty and zero is the right answer. The compiler wrote a literal `0` into
+every row it emitted. **The objection was to the constant, not to the mechanism** — and the compiler
+already tracks the operand height it would have needed, in `UnitBuffer.Height`, which is the number
+`MaximumStack` is derived from.
+
+The second half of the assumption was that the iterator record had to stay on the operand stack,
+because *"a pattern nests, so two of them can be live at once and each nesting level would need a
+slot of its own chosen at compile time."* Both halves of that sentence are true and the conclusion
+does not follow: the nesting depth is known **while the pattern is being lowered**, so each level
+declares a temporary of its own exactly as a computed member target already does, and two live
+records never share one.
+
+**What that cost.** An iterator abandoned part-way through a pattern was never given its `return`.
+The three completions the language distinguishes were all wrong together: a throw completion left it
+open, a normal completion over an unexhausted iterator left it open, and a generator's `return()`
+arriving at a `yield` inside a pattern left it open and completed the generator as though nothing
+had been abandoned.
+
+**What replaced it.** The record goes to a slot, and the pattern is wrapped in **two** regions whose
+declared height is the height the pattern began at. Two and not one because the completion decides
+how the iterator is closed: a `catch`-kind region closes it QUIETLY, discarding whatever `return`
+raises because the exception already travelling is the one the program is owed, and a
+`finally`-kind region closes it LOUDLY, letting an error from `return` through and making a
+non-object answer a `TypeError` of its own. The catch region is recorded first so a throw finds it;
+the finally region second so a forced return, which passes catch regions over, finds that one. An
+iterator that is already done is closed by neither, because `IterateClose` reads the record's own
+flag — which is why a rest element, which runs the iterator out, still closes nothing.
+
+**The other design, and why it was refused.** The executor could have closed what an exception left
+behind: when a throw unwinds to a handler at height `H`, the values in `stack[H..sp)` are exactly
+what the abandoned expression had built, `JsIteratorRecord` is a `JsObject` and so is identifiable
+at run time, and its done flag already prevents a second close. It needs no lowering at all, which
+is its whole appeal. It was refused for three reasons, in order of weight. **It has nowhere to do
+the work in the frame that unwinds without a handler**, and that is the case these tests turn on: a
+forced return with no `finally` in the frame leaves through the executor's own dispatch, where `sp`
+is a local that never reaches anybody, and buying the case back needs a filter or a catch in every
+frame — the shape whose removal that dispatch's own remark records, having killed the process at a
+guest `throw` from depth five hundred. **It moves a rule of the language into the executor**, where
+the artifact no longer says what closes an iterator and the verifier can no longer check that
+anything does. And **it grows the executor**, which is the one budget a lowering-only change leaves
+untouched: this change adds no opcode, no dispatch arm and no diagnostic, so the native frame is
+byte-for-byte what it was and the call-depth margin re-measured at 2.70× today stands unmoved.
+`eng/measure-frame-cost.py` stopped both depths at the declared bound of 5,999, as it did before.
+
+**What that cost, measured.** `test/language/expressions/assignment/dstr` went from **505 to 537 of
+640 variants** and `test/language/statements/for-of/dstr` from **1,030 to 1,062 of 1,095**; the whole
+of `test/language/statements/for-of` went from 1,294 to 1,326 of 1,436. Sixty-four variants
+recovered, none regressed. The named files are the sixteen each tree carries under both names —
+`array-elem-iter-{thrw,rtrn}-close{,-err}.js`, `array-elem-trlg-iter-list-thrw-close{,-err}.js`,
+`array-elem-trlg-iter-rest-{thrw,rtrn}-close{,-err,-null}.js`,
+`array-rest-iter-{thrw,rtrn}-close{,-err,-null}.js` and `array-rest-lref-err.js`.
+
+**`test/built-ins/Array` was measured at both ends and did not move**, at 5,276 of 6,115 variants —
+which is the check that matters for this correction, because closing an iterator that should not be
+closed is what a change of this shape gets wrong, and the Array built-ins are where a spurious
+`return` call would show.
+
+**The remark that declared the divergence is gone**, replaced by one that says what the two regions
+are for, why the height is read where it is read, and why the executor-side design was refused. A
+reader who finds this entry and the old remark would otherwise still believe the mechanism was
+unavailable.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; the sweeps of
+`test/language/expressions/assignment/dstr`, `test/language/statements/for-of` and
+`test/built-ins/Array` before and after; and cases 318 to 334 of
+`src/tests/differential/the-statement-and-object-surface.js`, every one of them measured against
+`/opt/node22/bin/node` before it was written down. 2026-09-05.
+
+### JSC-152
+
+**Where:** the same lowering, one step earlier: what an array ASSIGNMENT pattern does before it
+steps the iterator.
+
+**What was assumed.** That a destructuring assignment stores the way every other assignment in this
+compiler stores — value first, reference second. `CompileStoreTo` parks the value in a temporary and
+then evaluates the target's base and key, and the pattern called straight into it.
+
+**What was true.** `AssignmentElement` evaluates the target reference **first**, before the iterator
+is stepped at all, and it does so for every target that is not itself an object or array literal.
+The order is observable with nothing more exotic than a getter: `[ {}[f()] ] = iterable` calls `f`,
+`f` throws, and `next` is never called even once.
+
+**What that cost.** One extra `next` per element whose reference throws, which the suite counts
+directly. It was worse at a rest element, where the lowering drained the WHOLE iterator into an
+Array before evaluating the reference that was going to fail — `[...{}[f()]] = iterable` stepped an
+iterator eleven times where the language steps it none, and the same shape with one bound element
+ahead of it stepped eleven where the language steps one. These are the counts the recovered files
+assert; a lowering that closed the iterator correctly but stepped it first would still have failed
+every one of them.
+
+**What replaced it.** `PrepareTarget` evaluates the base, and then the computed key, into temporaries
+before the step; `BindPrepared` stores through them afterwards. A name and a nested pattern prepare
+nothing, and that is the language's rule rather than an optimisation — an identifier reference is
+resolved where it is stored, which is why an assignment to an undeclared name in strict code still
+fails at the store.
+
+**What it does NOT change.** An ordinary assignment `o.x = v` still evaluates its value before its
+reference. That is a divergence of the same family and it is left standing, because nothing measured
+here reaches it and correcting it touches every assignment this compiler lowers rather than the
+pattern that this entry is about.
+
+**What that cost, measured.** Not separable from [JSC-151](#jsc-151) and not measured apart from it:
+the sixty-four variants that entry names need both corrections, and neither alone recovers any of
+them. It is a separate entry because it is a separate assumption, found by reading what the
+recovered files assert about `nextCount` rather than about `returnCount`.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the same sweeps
+[JSC-151](#jsc-151) names, and cases 318 to 321 and 333 of
+`src/tests/differential/the-statement-and-object-surface.js` — the four that count `next` and the one
+that counts a computed key's evaluations — measured against `/opt/node22/bin/node` before they were
+written down. 2026-09-05.
+
+---
+
 ### JSC-160
 
 **Where:** the wide front end's parse of every declarative scope — `JsParser.Parse`,

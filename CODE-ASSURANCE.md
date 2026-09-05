@@ -13,14 +13,14 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 119 |
-| Files carrying an annotation | 119 |
-| Code units | 4681 |
-| Relevant | 2574 |
-| Exempt by predicate | 2107 |
-| Annotated | 2574 of 2574 (100%) |
-| Human reviewed | 0 of 2574 (0%) |
-| Unverified | 2574 |
+| Files scanned | 121 |
+| Files carrying an annotation | 121 |
+| Code units | 4751 |
+| Relevant | 2629 |
+| Exempt by predicate | 2122 |
+| Annotated | 2629 of 2629 (100%) |
+| Human reviewed | 0 of 2629 (0%) |
+| Unverified | 2629 |
 
 ## Review states
 
@@ -28,19 +28,19 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 2574 |
+| HUMAN_PENDING | 2629 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 2107 |
+| EXEMPT | 2122 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
-| None | 1015 |
-| Low | 2092 |
-| Medium | 87 |
+| None | 1020 |
+| Low | 2155 |
+| Medium | 89 |
 | High | 0 |
 | Unknown | 0 |
 | *not annotated* | 0 |
@@ -51,7 +51,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | None | 5 |
 | Low | 656 |
-| Medium | 2327 |
+| Medium | 2397 |
 | High | 206 |
 | Critical | 0 |
 | *not annotated* | 0 |
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.9 / 10 |
-| Units scored | 2574 |
+| Units scored | 2629 |
 
 ## High-security review areas
 
@@ -277,7 +277,7 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 254 |
+| Units carrying a criterion | 255 |
 | Units required to carry one | 206 |
 | Required and missing | 0 |
 
@@ -305,13 +305,13 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 709 |
+| TrivialPropertyOrAccessor | 714 |
 | ParameterAssigningConstructor | 82 |
-| TrivialExpressionBodiedMember | 29 |
+| TrivialExpressionBodiedMember | 32 |
 | CompilerSuppliedRecordOrEnumMember | 4 |
 | DelegatingOverrideOrOperator | 102 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 329 |
+| FieldDeclaringStorage | 336 |
 | EnumMemberOfADeclaredVocabulary | 852 |
 | DeclaredInSource | 0 |
 
@@ -332,7 +332,7 @@ No unit in this component states a per-unit exemption.
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-4681 of them, exempt and relevant alike - with the fingerprint of its declaration.
+4751 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
@@ -340,7 +340,7 @@ this component has moved off `PENDING`. What the manifest adds is that a unit th
 predicate treats as trivial is no longer invisible: a semantic change to one moves a value
 in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
 
-Beside the units it lists **every covered file** - 119 of them - with a
+Beside the units it lists **every covered file** - 121 of them - with a
 fingerprint over the complete token stream of its compilation unit. A unit entry exists only
 for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an
 `[assembly: ...]` attribute is a member of nothing and can be in no unit at all.
