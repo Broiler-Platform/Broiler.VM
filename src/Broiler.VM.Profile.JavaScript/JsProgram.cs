@@ -188,7 +188,9 @@ internal sealed class JsProgram : IVmVerifiedState
         JsCodeUnit[] functions,
         JsRegion[] regions,
         JsEntry[] entries,
-        int positionRowCount)
+        int positionRowCount,
+        JsModuleRecord[]? modules = null,
+        JsBinding[]? importBindings = null)
     {
         Constants = constants;
         Names = names;
@@ -197,6 +199,47 @@ internal sealed class JsProgram : IVmVerifiedState
         Regions = regions;
         Entries = entries;
         PositionRowCount = positionRowCount;
+        Modules = modules ?? [];
+        ImportBindings = importBindings ?? [];
+        ModuleOfUnit = MapUnits(Modules, functions.Length);
+    }
+
+    /// <summary>The module records, empty when the artifact carries none.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal JsModuleRecord[] Modules { get; }
+
+    /// <summary>
+    /// Every import entry of the artifact, resolved to the binding it reads.
+    /// </summary>
+    /// <remarks>
+    /// The table is the artifact's rather than each module's, because an import read carries an
+    /// index into it and the executor must be able to follow that index without first working out
+    /// which module the running code unit belongs to.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal JsBinding[] ImportBindings { get; }
+
+    /// <summary>Which module each code unit belongs to, or -1 for a unit that is not a module.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal int[] ModuleOfUnit { get; }
+
+    /// <summary>Indexes the module bodies by code unit, so an invocation can recognise one.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private static int[] MapUnits(JsModuleRecord[] modules, int unitCount)
+    {
+        var map = new int[unitCount];
+        System.Array.Fill(map, -1);
+
+        for (var index = 0; index < modules.Length; index++)
+        {
+            map[modules[index].BodyUnit] = index;
+        }
+
+        return map;
     }
 
     /// <summary>The constant pool, as values.</summary>

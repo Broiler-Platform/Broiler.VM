@@ -75,6 +75,70 @@ public static class JavaScriptProfile
     public static VmFeatureManifestId WideManifest { get; } =
         VmFeatureManifestId.Parse("broiler.javascript.wide");
 
+    /// <summary>The module goal's feature manifest.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A third identity rather than a wider second one, and it is the one a composition can
+    /// decline.</b> A module carries a question a script does not - what a specifier names - and
+    /// the answer is the host's rather than this profile's. So the surface is a separate identity,
+    /// exactly as roadmap section 6 makes <c>broiler.javascript.dynamic</c> one, and declining it
+    /// is a thing a composition does by registering nothing rather than by passing a flag.
+    /// </para>
+    /// <para>
+    /// <b>Declining is registering no resolver, and there is no second switch.</b> Two switches
+    /// that must agree is a defect waiting to be written: a composition that declared the surface
+    /// and registered no resolver, or the reverse, would be in a state nobody could act on. The
+    /// registration is the admission, and <see cref="ResolveCapability"/> is what is registered.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-Falsified-If: a module artifact verifies in a composition that registered no module resolver
+    // Broiler-Human:        PENDING
+    public static VmFeatureManifestId ModulesManifest { get; } =
+        VmFeatureManifestId.Parse(Format.JsFormat.ModulesManifestId);
+
+    /// <summary>
+    /// The host capability a composition registers to say that module resolution is its own.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The profile reads no file and follows no specifier, and this is the seam that keeps it
+    /// that way.</b> A module artifact arrives with its graph already whole: every module the root
+    /// can reach is in the artifact under the key the composition resolved it to, and a request is
+    /// matched against those keys by exact comparison. Turning <c>"./b.mjs"</c> into a key is the
+    /// composition's act, performed before the artifact existed, in whatever way that composition's
+    /// deployment calls for - a file path, a URL, a name in a bundle, a table.
+    /// </para>
+    /// <para>
+    /// <b>So what is registered is a RULING, not a door the guest reaches through.</b> Linking hands
+    /// the host one request - the referring module's key, the specifier as the source wrote it, and
+    /// the key the artifact says it resolves to, separated by NULs - and the host answers
+    /// <c>Completed</c> when that is how it resolves the specifier and <c>Refused</c> when it is
+    /// not. The profile therefore never derives a key: it can only be told that one it was handed
+    /// is right, so a graph resolved by somebody else's rules is refused by the composition that
+    /// would have to run it.
+    /// </para>
+    /// <para>
+    /// <b>Why a confirmation rather than an answer.</b> A capability answering with bytes would have
+    /// to hand back a reference this profile could dereference, and the contract's opaque reference
+    /// is deliberately not dereferenceable - which is the right decision and not an obstacle to work
+    /// around. A ruling needs no such channel and gives the composition the same authority: nothing
+    /// this profile does with a request survives the host saying no.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=TBF
+    // Broiler-Falsified-If: this profile opens a file, follows a specifier, or resolves a module request without asking the host
+    // Broiler-Human:        PENDING
+    public static VmHostCapabilityDescriptor ResolveCapability { get; } =
+        new(
+            VmCapabilityId.Parse("broiler.javascript.resolve"),
+            version: 1,
+            VmCapabilitySignatureId.FromCanonicalDescription("(bytes)->unit"),
+            VmCapabilityKind.Value,
+            VmCapabilityReentrancy.NonReentrant,
+            VmCapabilityThreadAffinity.CallerThread,
+            VmExceptionTranslation.TerminateOperation);
+
     /// <summary>The kind ID stamped on a completion value.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C9902C
     // Broiler-Human:        PENDING
@@ -99,6 +163,11 @@ public static class JavaScriptProfile
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A9FBB7
     // Broiler-Human:        PENDING
     public const int WriteBindingIndex = 0;
+
+    /// <summary>The binding index a module request is put to the composition through.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    public const int ResolveBindingIndex = 1;
 
     /// <summary>
     /// The one host capability this profile imports: write one run of UTF-8 text.
@@ -202,7 +271,8 @@ public static class JavaScriptProfile
             descriptorRevision: 1,
             supportedFormatVersions: new VmFormatVersionRange(
                 JavaScriptFormat.MinimumFormatVersion, Format.JsFormat.FormatVersion),
-            acceptedFeatureManifests: ImmutableArray.Create(SliceManifest, WideManifest),
+            acceptedFeatureManifests: ImmutableArray.Create(
+                SliceManifest, WideManifest, ModulesManifest),
             verifier: new JavaScriptVerifier(Id, SliceManifest),
             executorFactory: environment => new JavaScriptExecutor(Id, environment),
             artifactRepresentationKind: VmArtifactRepresentationKind.Decoded,
@@ -226,8 +296,13 @@ public static class JavaScriptProfile
             // The slice imports nothing and still does; what changed is that a surface with a
             // `print` exists, and a `print` that reached the console without the composition
             // registering anything would be the ambient surface the capability table forbids.
+            // TWO OPTIONAL IMPORTS, and the second is what a composition declines the module
+            // surface by leaving out. It is Optional for the same reason the first is: a
+            // composition that registers neither still creates a runtime and still runs scripts.
+            // What it does not get is a module artifact past verification.
             hostCapabilityDescriptors: ImmutableArray.Create(
-                new VmCapabilityImport(WriteCapability, VmCapabilityImportKind.Optional)),
+                new VmCapabilityImport(WriteCapability, VmCapabilityImportKind.Optional),
+                new VmCapabilityImport(ResolveCapability, VmCapabilityImportKind.Optional)),
 
             // No `eval`, no Function constructor, no dynamic import. The `broiler.javascript.dynamic`
             // manifest is a separate identity precisely so a composition can decline exactly this

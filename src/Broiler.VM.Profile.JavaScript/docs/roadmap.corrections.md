@@ -3425,3 +3425,135 @@ that everything knowable is checked.
 variant `test/language/future-reserved-words/yield-strict.js`, whose movement in both directions is
 in [Bundle JS-4-001](evidence/js-4-001/README.md).
 
+---
+
+### JSC-111
+
+**Where:** the wide surface's lowering — `JsCompiler.StoreName` — and the row of the published
+registry that makes `2204:AssignmentToConstant` an **embedder-seam** code, which is a claim that no
+assignment to a constant ever becomes bytes.
+
+**What the plan said.** That an assignment to an immutable binding is an early error. The seam half
+of [the diagnostic registry](diagnostics/registry.txt) has carried `AssignmentToConstant` since
+revision 2, a retained source entry is refused with it, and the source corpus's own remark says a
+front end that accepted `const x = 1; x = 2;` would be a front end whose `const` means nothing.
+
+**What was true.** **The language makes it a run-time `TypeError`.** `const x = 1; x = 2;` parses,
+compiles and runs, and the failure happens when the assignment executes. Every engine does this,
+and it is not a nicety: it is what makes `assert.throws(TypeError, function () { x = 1; })` a
+program — a program the conformance suite writes repeatedly, because that is the only way to observe
+the rule the specification states. Refusing it at the front end said this manifest does not admit an
+assignment, when what it does not admit is the assignment **succeeding**.
+
+**What that cost, measured.** Seven cases of `test/language/module-code` in the pinned suite were
+scored `fail` with the front end's own refusal as the reason — `instn-iee-bndng-fun`,
+`instn-iee-bndng-var`, `instn-named-bndng-fun`, `instn-named-bndng-trlng-comma`,
+`instn-named-bndng-var`, `instn-star-binding` and `instn-local-bndng-const`. Six of the seven are
+about an **imported** binding and would have been introduced by this stage had it copied the rule;
+the seventh is about `const` and had been failing for as long as the wide surface has had one. The
+cost outside the suite is a program shape this host could not run at all: the ordinary way to test
+that a binding is immutable.
+
+**How it was found.** By writing the immutable-import rule the same way, and then reading what the
+module subtree said about it. The suite is emphatic where a person's intuition is not: seven tests
+disagreed in the same words, and the seventh named `const` rather than an import — which is what
+turned "my new rule is wrong" into "the rule it was copied from is wrong too".
+
+**What replaced it.** One opcode, `ThrowImmutable`, which pops a value and throws a `TypeError`
+naming the binding. An assignment to a constant or to an import lowers to a duplicate and that
+instruction, so the expression still has its value and the store never happens. **It is deliberately
+not terminal**: it always throws, but reachability is a property of the instruction stream, and
+marking it terminal would make the return after an assignment at the end of a function body
+unreachable code and refuse a correct program.
+
+**What this does NOT change, stated because a reader would reasonably assume it did.** The slice
+front end still refuses the assignment at compile time, its retained source entry still records
+`2204`, and the registry row is untouched. The slice's manifest has no exceptions and no `try`, so a
+run-time `TypeError` there would be an unconditional failure with no way to observe it; the two
+front ends genuinely differ, and the code stays reachable through the one that still emits it.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, and the seven cases of
+`test/language/module-code` named above, whose verdicts moved from `fail` to `pass` in the run this
+stage records. 2026-09-05.
+
+---
+
+### JSC-112
+
+**Where:** rule N16's first clause, `N16_Two_Versions_And_Two_Manifests_Are_Declared_Together`, in
+the architecture rule register.
+
+**What was assumed.** That a format version and a feature manifest move together — the rule's name
+says "two versions and two manifests", and its body asserted the descriptor's accepted set by
+matching the literal text `ImmutableArray.Create(SliceManifest, WideManifest)`. Reading the accepted
+set as a **pair** is the assumption, and matching its source text is what froze it.
+
+**What was true.** They are two axes. A manifest names a **surface** and a format version names an
+**encoding**, and the module goal is a surface that needed no new encoding: a module artifact is a
+version-2 artifact with one more section, read by the same reader, at the same version number. So
+the accepted set grew to three while the version range stayed where it was — which is exactly the
+case a rule written as a pair cannot express.
+
+**What that cost, measured.** One rule failure on a change the rule exists to permit, and nothing
+else: the clause is a text match, so it went red on the descriptor's third entry without any claim
+of the rule being false. The cost is what the failure would have taught a reader — that a third
+manifest is a thing this component does not do — which is the opposite of what
+[section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted) says.
+
+**What replaced it.** The clause asserts each manifest by its own parse expression and the accepted
+set by its tail, so a fourth identity extends it rather than breaking it, and the version-range
+assertion is untouched. The rule's name is kept: it is registered under it, and renaming a
+registered rule to describe one of its clauses better is a worse trade than a remark saying what the
+clause now covers.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout — the profile descriptor's
+accepted-manifest set read against the rule that asserts it; 2026-09-05.
+
+---
+
+### JSC-113
+
+**Where:** [the workload roadmap](roadmap.workloads.md#jsw-8--the-module-goal)'s JSW-8 exit gate:
+"a cyclic import terminates with a named diagnostic rather than by exhausting a budget".
+
+**What the plan said.** Read plainly, that a cyclic import is a thing this profile answers with a
+named refusal. The contrast the sentence draws is with a budget exhaustion, which is the failure
+mode of a resolver that follows specifiers without a module map, and the clause is right to name
+that as the outcome to avoid.
+
+**What was true.** **A cycle in the module graph is ordinary, and a correct implementation runs
+it.** `a` importing `b` while `b` imports `a` is a legal program every engine evaluates: the module
+map stops the second visit, the bodies are evaluated in the order a depth-first walk leaves them,
+and what a module of the cycle observes about the other is the temporal dead zone. Refusing every
+cycle in order to satisfy the sentence would have refused a program family the pinned suite has a
+subtree for, and would have been a conformance exclusion adopted to make a gate read true.
+
+**What is genuinely a cycle with no answer** is a cycle in an export **resolution** — `a`
+re-exporting a name from `b` while `b` re-exports the same name from `a` — which names a binding
+that exists nowhere, and which a resolver following the chain would walk until something ran out.
+That is the case the gate's contrast is about, and it is the one that takes the named diagnostic.
+
+**What that cost, measured.** Nothing was built wrong, because the distinction was drawn before the
+linker was written. What it would have cost is stated instead, since that is the decision this entry
+records: the `test/language/module-code` subtree of the pinned suite contains cyclic-import cases
+that pass in this checkout and would each have been a refusal.
+
+**What replaced it.** Two mechanisms, and both are exercised. Evaluation marks a module as under way
+**before** walking its requests, so the module that closes a cycle finds its starting point already
+running and returns — which is what makes an ordinary cycle terminate at all. Export resolution
+carries the (module, name) pairs it has visited and answers `1618:ModuleExportCircular` on
+re-entry, at verification, before anything runs. The retained corpus holds one entry for each, and
+the command-line acceptance table holds a row for each — a graph cycle that reaches a value and a
+resolution cycle refused by that code.
+
+**And one exclusion this stage adds by name.** `broiler.javascript.modules` admits **no top-level
+`await`**. [Decision JSD-0002](decisions/0002-feature-manifest-allocation.md) allocated it to this
+identity "where declared", and it is not declared: settling a promise needs the job queue JSW-7
+owns, and this profile has none. Every `await` a module can contain is a top-level one, because the
+manifest admits no `async` function — so it is refused by name, as a construct outside the manifest,
+and the day a queue exists that refusal is what has to move.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the
+`test/language/module-code` run this stage records, and the acceptance rows
+`modules/cycle-a.mjs` and `modules/circular-a.mjs`. 2026-09-05.
+

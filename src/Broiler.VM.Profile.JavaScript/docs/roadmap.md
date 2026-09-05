@@ -753,7 +753,7 @@ never silently widened:
 |---|---|---|
 | `broiler.javascript.slice` | Numbers, arithmetic, comparison, local variables, structured control flow. No objects, no strings, no functions, no property access. **Deliberately not JavaScript anyone would ship** — its purpose is to close the whole contract loop against about two thousand readable lines. | JS-1 |
 | `broiler.javascript.core` | The language surface: objects, prototypes, properties, closures, functions, classes, exceptions, iteration, destructuring, strict mode, and the core standard library. | JS-5 opens it; increments extend it |
-| `broiler.javascript.modules` | Module records, live bindings, import and export forms, and — where declared — top-level await. | JS-7 |
+| `broiler.javascript.modules` | Module records, live bindings, import and export forms, and — where declared — top-level await. **Top-level `await` is not declared** and is refused by name: settling a promise needs the job queue JSW-7 owns *(corrected: JSC-113)*. | JS-7 |
 | `broiler.javascript.dynamic` | `eval`, the `Function` constructor, and dynamic `import()`. Separate because a composition that registers no artifact provider must be able to decline exactly this and say so. | JS-8 |
 | `broiler.javascript.regexp` | Regular expressions, over the from-scratch matcher. | JS-6, or excluded with a published failure |
 | `broiler.javascript.intl` | Internationalization. | Deferred; excluded by name until it has a run |
@@ -763,6 +763,20 @@ never silently widened:
 the slice and narrower than `broiler.javascript.core`. The three rules above bind it like any
 other, and the first of them — a manifest with no retained run of its own is not accepted — is
 unmet for it *(corrected: JSC-70)*.
+
+**A manifest and a format version are two axes, and `broiler.javascript.modules` is what shows
+it.** The module surface is admitted at format version 2, by the same reader, with one section
+added; nothing about the encoding moved. So this profile accepts three manifests across two format
+versions, and a rule that read the accepted set as a pair had to be widened rather than the surface
+narrowed *(corrected: JSC-112)*.
+
+**How a composition declines the module surface, since it is the first identity anything declines.**
+It registers no module resolver. Resolution — turning a specifier into the identity of a module — is
+the host's decision and never this profile's, so the profile imports an optional host capability for
+it and the registration IS the admission: a composition that registers nothing has declined, and a
+module artifact it is handed is refused **at verification** with `1619:ModuleResolverAbsent` rather
+than at its first import. There is deliberately no second switch to keep in agreement with the
+registration.
 
 ### Where the language is deliberately underspecified, and why a manifest has to say so
 

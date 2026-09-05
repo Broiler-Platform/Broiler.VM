@@ -220,9 +220,13 @@ internal sealed class JsParser
                 case SliceTokenKind.Class:
                     return OutsideStatement(span, "a class declaration");
 
-                case SliceTokenKind.Import:
+                // A DYNAMIC `import()` AND `import.meta` ARE EXPRESSIONS AND REACH THIS POSITION.
+                // Both are refused by name below, in ParsePrimary, and sending them into the
+                // declaration parser here would report a missing brace instead of the construct.
+                case SliceTokenKind.Import when Peek(1).Kind is not SliceTokenKind.OpenParen
+                    and not SliceTokenKind.Dot:
                 case SliceTokenKind.Export:
-                    return OutsideStatement(span, "a module declaration");
+                    return ModuleItem(span);
 
                 case SliceTokenKind.Async when Peek(1).Kind == SliceTokenKind.Function &&
                     !Peek(1).PrecededByLineTerminator:
@@ -282,6 +286,490 @@ internal sealed class JsParser
         }
 
         return directives;
+    }
+
+    // ---- the module goal's declarations ---------------------------------------------------------
+
+    /// <summary>
+    /// The synthetic name a default export is bound to when the source gives it none.
+    /// </summary>
+    /// <remarks>
+    /// It carries characters no identifier may contain, so it can never collide with a name the
+    /// source declares - which matters because <c>export default 1 + 1</c> and
+    /// <c>export default function f() {}</c> both bind a module slot, and only the second names it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal const string DefaultBindingName = "*default*";
+
+    /// <summary>The export name a bare <c>export * from</c> is recorded under.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal const string StarName = "*";
+
+    /// <summary>
+    /// Parses a module declaration where one may appear, and refuses one where it may not.
+    /// </summary>
+    /// <remarks>
+    /// <b>A module declaration is a MODULE ITEM and not a statement, and the difference is a
+    /// position rather than a spelling.</b> <c>() =&gt; { export default null; }</c> is a syntax
+    /// error in every engine, because the grammar admits an export only at a module's top level -
+    /// and a parser that recognised the declaration wherever a statement may stand accepted it,
+    /// leaving the lowering to refuse a construct it had no way to place. That refusal named the
+    /// manifest, which was wrong twice over: the manifest admits the declaration, and a conformance
+    /// case expecting a syntax error was scored as a construct nobody implements.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private JsStatement ModuleItem(SliceSourceSpan span)
+    {
+        if (depth <= 1)
+        {
+            return Current.Kind == SliceTokenKind.Export
+                ? ParseExportDeclaration(span)
+                : ParseImportDeclaration(span);
+        }
+
+        Refuse(
+            span,
+            SliceSourceDiagnosticCode.UnexpectedToken,
+            "`" + Describe(Current) + "` may appear only at a module's top level");
+
+        Advance();
+        return new JsEmptyStatement(span);
+    }
+
+    /// <summary>Parses an <c>import</c> declaration in every form the grammar has.</summary>
+    /// <remarks>
+    /// <b>The bindingless form is a form and not a degenerate case.</b> <c>import "./m.mjs";</c>
+    /// requests a module for what evaluating it does and binds nothing, so a parser that required a
+    /// clause would refuse a program the language admits - and the request still has to reach the
+    /// module record, because the whole point of the statement is that the module is evaluated.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private JsStatement ParseImportDeclaration(SliceSourceSpan span)
+    {
+        if (!RequireModuleGoal(span, "import"))
+        {
+            return new JsEmptyStatement(span);
+        }
+
+        Advance();
+        var specifiers = new System.Collections.Generic.List<JsImportSpecifier>();
+
+        if (Current.Kind == SliceTokenKind.StringLiteral)
+        {
+            var only = Current.StringValue;
+            Advance();
+            Semicolon();
+            return new JsImportDeclaration(span, only, specifiers);
+        }
+
+        if (IsIdentifierName(Current.Kind))
+        {
+            var at = Span();
+            specifiers.Add(new JsImportSpecifier(at, "default", BindingName(), Namespace: false));
+
+            if (Current.Kind == SliceTokenKind.Comma)
+            {
+                Advance();
+                ParseImportClause(specifiers);
+            }
+        }
+        else
+        {
+            ParseImportClause(specifiers);
+        }
+
+        ExpectContextual("from");
+        var from = ModuleSpecifier();
+
+        if (!Attributes(span))
+        {
+            return new JsEmptyStatement(span);
+        }
+
+        Semicolon();
+        return new JsImportDeclaration(span, from, specifiers);
+    }
+
+    /// <summary>
+    /// Refuses an import-attribute clause by name, rather than as a token nobody expected.
+    /// </summary>
+    /// <remarks>
+    /// <c>import x from './m' with { type: 'json' }</c> is a construct this manifest does not admit,
+    /// and its whole point is to change what the host loads - which is the composition's decision,
+    /// so admitting it would mean carrying an assertion this profile has no way to honour. Naming
+    /// it is what keeps the case out of both columns instead of reporting a missing semicolon.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private bool Attributes(SliceSourceSpan span)
+    {
+        if (Current.Kind != SliceTokenKind.With && !IsContextual("assert"))
+        {
+            return true;
+        }
+
+        Refuse(span, "an import attribute clause");
+        Advance();
+        return false;
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void ParseImportClause(
+        System.Collections.Generic.List<JsImportSpecifier> specifiers)
+    {
+        if (Current.Kind == SliceTokenKind.Star)
+        {
+            var at = Span();
+            Advance();
+            ExpectContextual("as");
+            specifiers.Add(new JsImportSpecifier(at, string.Empty, BindingName(), Namespace: true));
+            return;
+        }
+
+        Expect(SliceTokenKind.OpenBrace, "{");
+
+        while (Current.Kind != SliceTokenKind.CloseBrace &&
+            Current.Kind != SliceTokenKind.EndOfSource &&
+            diagnostics.Count == 0)
+        {
+            var at = Span();
+            var imported = ModuleExportName();
+            var local = imported;
+
+            if (IsContextual("as"))
+            {
+                Advance();
+                local = BindingName();
+            }
+
+            specifiers.Add(new JsImportSpecifier(at, imported, local, Namespace: false));
+
+            if (Current.Kind != SliceTokenKind.Comma)
+            {
+                break;
+            }
+
+            Advance();
+        }
+
+        Expect(SliceTokenKind.CloseBrace, "}");
+    }
+
+    /// <summary>Parses an <c>export</c> declaration in every form the grammar has.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private JsStatement ParseExportDeclaration(SliceSourceSpan span)
+    {
+        if (!RequireModuleGoal(span, "export"))
+        {
+            return new JsEmptyStatement(span);
+        }
+
+        Advance();
+
+        return Current.Kind switch
+        {
+            SliceTokenKind.Star => ParseExportAll(span),
+            SliceTokenKind.OpenBrace => ParseExportClause(span),
+            SliceTokenKind.Default => ParseExportDefault(span),
+            _ => ParseExportDeclared(span),
+        };
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private JsStatement ParseExportAll(SliceSourceSpan span)
+    {
+        Advance();
+        var specifiers = new System.Collections.Generic.List<JsExportSpecifier>();
+
+        if (IsContextual("as"))
+        {
+            var at = Span();
+            Advance();
+            specifiers.Add(new JsExportSpecifier(at, StarName, ModuleExportName()));
+        }
+
+        ExpectContextual("from");
+        var from = ModuleSpecifier();
+
+        if (!Attributes(span))
+        {
+            return new JsEmptyStatement(span);
+        }
+
+        Semicolon();
+        return new JsExportDeclaration(span, JsExportKind.All, from, specifiers, null, null);
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private JsStatement ParseExportClause(SliceSourceSpan span)
+    {
+        Advance();
+        var specifiers = new System.Collections.Generic.List<JsExportSpecifier>();
+
+        while (Current.Kind != SliceTokenKind.CloseBrace &&
+            Current.Kind != SliceTokenKind.EndOfSource &&
+            diagnostics.Count == 0)
+        {
+            var at = Span();
+            var local = ModuleExportName();
+            var exported = local;
+
+            if (IsContextual("as"))
+            {
+                Advance();
+                exported = ModuleExportName();
+            }
+
+            specifiers.Add(new JsExportSpecifier(at, local, exported));
+
+            if (Current.Kind != SliceTokenKind.Comma)
+            {
+                break;
+            }
+
+            Advance();
+        }
+
+        Expect(SliceTokenKind.CloseBrace, "}");
+        var from = string.Empty;
+
+        if (IsContextual("from"))
+        {
+            Advance();
+            from = ModuleSpecifier();
+
+            if (!Attributes(span))
+            {
+                return new JsEmptyStatement(span);
+            }
+        }
+
+        Semicolon();
+        return new JsExportDeclaration(span, JsExportKind.Named, from, specifiers, null, null);
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private JsStatement ParseExportDefault(SliceSourceSpan span)
+    {
+        Advance();
+
+        if (Current.Kind == SliceTokenKind.Class)
+        {
+            return OutsideStatement(span, "a class declaration");
+        }
+
+        if (Current.Kind == SliceTokenKind.Async && Peek(1).Kind == SliceTokenKind.Function &&
+            !Peek(1).PrecededByLineTerminator)
+        {
+            return OutsideStatement(span, "an async function");
+        }
+
+        var specifiers = new System.Collections.Generic.List<JsExportSpecifier>();
+
+        // A NAMED DEFAULT-EXPORTED FUNCTION IS ALSO AN ORDINARY DECLARATION. `export default
+        // function f() {}` binds `f` in the module and publishes it as `default`, so the name the
+        // export reads from is the function's own where it has one. Only the anonymous form needs
+        // the synthetic name, and giving the named form one too would leave `f` unbound.
+        if (Current.Kind == SliceTokenKind.Function)
+        {
+            var at = Span();
+            Advance();
+            var function = ParseFunctionRest(at, declaration: false);
+
+            // AN ANONYMOUS DEFAULT-EXPORTED FUNCTION IS NAMED `default`, which the language says
+            // and which a program can observe through the function's own `name`. The binding it is
+            // held in is named that too; `default` is a reserved word, so no source can reference
+            // it and no collision with a name somebody wrote is possible.
+            if (function.Name.Length == 0)
+            {
+                function = function with { Name = "default" };
+            }
+
+            specifiers.Add(new JsExportSpecifier(span, function.Name, "default"));
+
+            return new JsExportDeclaration(
+                span,
+                JsExportKind.Default,
+                string.Empty,
+                specifiers,
+                new JsFunctionDeclaration(at, function),
+                null);
+        }
+
+        var value = ParseAssignment();
+        Semicolon();
+        specifiers.Add(new JsExportSpecifier(span, DefaultBindingName, "default"));
+
+        return new JsExportDeclaration(
+            span, JsExportKind.Default, string.Empty, specifiers, null, value);
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private JsStatement ParseExportDeclared(SliceSourceSpan span)
+    {
+        var specifiers = new System.Collections.Generic.List<JsExportSpecifier>();
+
+        switch (Current.Kind)
+        {
+            case SliceTokenKind.Class:
+                return OutsideStatement(span, "a class declaration");
+
+            case SliceTokenKind.Async when Peek(1).Kind == SliceTokenKind.Function &&
+                !Peek(1).PrecededByLineTerminator:
+                return OutsideStatement(span, "an async function");
+
+            case SliceTokenKind.Function:
+            {
+                var at = Span();
+                Advance();
+                var function = ParseFunctionRest(at, declaration: true);
+                specifiers.Add(new JsExportSpecifier(at, function.Name, function.Name));
+
+                return new JsExportDeclaration(
+                    span,
+                    JsExportKind.Declaration,
+                    string.Empty,
+                    specifiers,
+                    new JsFunctionDeclaration(at, function),
+                    null);
+            }
+
+            case SliceTokenKind.Var:
+            case SliceTokenKind.Let:
+            case SliceTokenKind.Const:
+            {
+                var at = Span();
+                var declaration = ParseVariableStatement();
+
+                foreach (var declarator in declaration.Declarators)
+                {
+                    specifiers.Add(new JsExportSpecifier(at, declarator.Name, declarator.Name));
+                }
+
+                return new JsExportDeclaration(
+                    span, JsExportKind.Declaration, string.Empty, specifiers, declaration, null);
+            }
+
+            default:
+                Refuse(
+                    span,
+                    SliceSourceDiagnosticCode.UnexpectedToken,
+                    "`" + Describe(Current) + "` begins no export declaration");
+
+                Advance();
+                return new JsEmptyStatement(span);
+        }
+    }
+
+    /// <summary>
+    /// Refuses a module declaration in source presented as a script, and says which it was.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private bool RequireModuleGoal(SliceSourceSpan span, string what)
+    {
+        if (options.Goal == SliceGoal.Module)
+        {
+            return true;
+        }
+
+        Refuse(
+            span,
+            SliceSourceDiagnosticCode.ModuleDeclarationOutsideModuleGoal,
+            "`" + what + "` is a module declaration and this source was presented as a script");
+
+        Advance();
+        return false;
+    }
+
+    /// <summary>
+    /// Reads a name an <c>import</c> or <c>export</c> clause may use on either side of <c>as</c>.
+    /// </summary>
+    /// <remarks>
+    /// <b>It is an IdentifierName and not an Identifier</b>, so <c>export { x as default }</c> and
+    /// <c>import { default as d }</c> parse - a reserved word is a perfectly good export name and
+    /// only the LOCAL side of a binding has to be a name the goal admits as an identifier. The
+    /// string form is admitted too, because <c>export { x as "a b" }</c> is in the grammar.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private string ModuleExportName()
+    {
+        if (Current.Kind == SliceTokenKind.StringLiteral)
+        {
+            var text = Current.StringValue;
+            Advance();
+            return text;
+        }
+
+        if (Current.Kind is SliceTokenKind.Identifier or SliceTokenKind.ReservedWord ||
+            Current.RawText.Length != 0 && char.IsLetter(Current.RawText[0]))
+        {
+            return MemberName();
+        }
+
+        Refuse(
+            Span(),
+            SliceSourceDiagnosticCode.UnexpectedToken,
+            "`" + Describe(Current) + "` is not an export name");
+
+        Advance();
+        return "#invalid";
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private string ModuleSpecifier()
+    {
+        if (Current.Kind == SliceTokenKind.StringLiteral)
+        {
+            var text = Current.StringValue;
+            Advance();
+            return text;
+        }
+
+        Refuse(
+            Span(),
+            SliceSourceDiagnosticCode.ExpectedToken,
+            "a module specifier was expected and `" + Describe(Current) + "` was found");
+
+        Advance();
+        return string.Empty;
+    }
+
+    /// <summary>Whether the current token is the contextual keyword <paramref name="word"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private bool IsContextual(string word) =>
+        Current.Kind is SliceTokenKind.Identifier or SliceTokenKind.Of or SliceTokenKind.Get or
+            SliceTokenKind.Set or SliceTokenKind.Async or SliceTokenKind.Static or
+            SliceTokenKind.Let &&
+        string.Equals(Current.RawText, word, System.StringComparison.Ordinal);
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void ExpectContextual(string word)
+    {
+        if (IsContextual(word))
+        {
+            Advance();
+            return;
+        }
+
+        Refuse(
+            Span(),
+            SliceSourceDiagnosticCode.ExpectedToken,
+            "`" + word + "` was expected and `" + Describe(Current) + "` was found");
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=E472A5
@@ -1346,17 +1834,24 @@ internal sealed class JsParser
                 Advance();
                 return new JsIdentifier(span, token.RawText);
 
-            // RESERVED HERE, ORDINARY THERE. Where the goal and the strictness make one of these
-            // a reserved word, the honest answer is the syntax error every engine gives and NOT a
-            // construct-outside-the-manifest refusal: the manifest is not what forbids it.
+            // TOP-LEVEL `await` IS REFUSED BY NAME AND NOT AS A RESERVED WORD, because in a module
+            // it is a construct this profile does not implement rather than a word the goal
+            // forbids. There is no async function in this manifest, so every `await` operator a
+            // module can contain is a top-level one; settling it needs the job queue JSW-7 owns,
+            // and until that exists a refusal by name is what keeps the case out of both columns
+            // instead of scoring a false pass on a test expecting a SyntaxError.
             case SliceTokenKind.Await:
+                return OutsideExpression(span, "top-level `await`");
+
+            // RESERVED HERE, ORDINARY THERE. Where the strictness makes `yield` a reserved word,
+            // the honest answer is the syntax error every engine gives and NOT a
+            // construct-outside-the-manifest refusal: the manifest is not what forbids it.
             case SliceTokenKind.Yield:
             {
                 Refuse(
                     span,
                     SliceSourceDiagnosticCode.ReservedWordAsBinding,
-                    "`" + token.RawText + "` is a reserved word " +
-                        (token.Kind == SliceTokenKind.Await ? "in a module" : "in strict code"));
+                    "`" + token.RawText + "` is a reserved word in strict code");
 
                 Advance();
                 return new JsNullLiteral(span);

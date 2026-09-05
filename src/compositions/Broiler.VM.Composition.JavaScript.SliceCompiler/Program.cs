@@ -220,6 +220,20 @@ internal static class Program
                 .Append(retain ? "file" : "generated").Append(Eol);
         }
 
+        // THE MODULE GOAL'S SOURCES ARE RETAINED IN THE SAME MANIFEST AND COMPILED BY ANOTHER
+        // FRONT END. One manifest is what the registry's seam half is bound to, so a second file
+        // would have left three published codes with no retained source; which compiler answers a
+        // row is a property of the row and not of the file it lives in.
+        foreach (var program in SliceSourcePrograms.RefusedModules)
+        {
+            var text = Normalise(program.Source);
+            File.WriteAllText(Path.Combine(refused, program.Name + ".js"), text);
+
+            manifest.Append("refused|").Append(program.Name).Append('|')
+                .Append(Sha256(System.Text.Encoding.UTF8.GetBytes(text))).Append('|')
+                .Append(program.Code).Append("|file").Append(Eol);
+        }
+
         File.WriteAllText(Path.Combine(root, "source.manifest"), manifest.ToString());
     }
 

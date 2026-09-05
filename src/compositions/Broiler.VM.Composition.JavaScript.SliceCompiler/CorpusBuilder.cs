@@ -354,6 +354,12 @@ internal static class CorpusBuilder
         // manifest with one integrity check over it. The mode column is what says which format a
         // row's bytes are.
         ..WideCorpus.Build(),
+
+        // ---- the module goal: a graph rather than a table --------------------------------------
+        //
+        // Spliced in for the reason the version-2 rows are: one manifest, one integrity check. Two
+        // of these rows vary the COMPOSITION rather than the bytes, which their mode column says.
+        ..ModuleCorpus.Build(),
     ];
 
     private static CorpusEntry Ok(string name, byte[] bytes, string completion) =>
@@ -1056,6 +1062,30 @@ internal static class JavaScriptDiagnosticCodes
 
     /// <summary>An exception region states a range, a handler or a kind this format refuses.</summary>
     internal const int MalformedExceptionRegion = 1605;
+
+    /// <summary>Module records under a manifest that does not admit them.</summary>
+    internal const int ModuleSectionOutsideManifest = 1613;
+
+    /// <summary>A module record states an index, a count or a slot this format refuses.</summary>
+    internal const int MalformedModuleRow = 1614;
+
+    /// <summary>A module requests a key no module of the artifact carries.</summary>
+    internal const int ModuleRequestUnresolved = 1615;
+
+    /// <summary>An import or a re-export names an export the exporting module does not have.</summary>
+    internal const int ModuleExportNotFound = 1616;
+
+    /// <summary>Two star re-exports supply one name from different bindings.</summary>
+    internal const int ModuleExportAmbiguous = 1617;
+
+    /// <summary>Resolving an export re-entered the module and name it started from.</summary>
+    internal const int ModuleExportCircular = 1618;
+
+    /// <summary>The composition registered no module resolver and so declined the surface.</summary>
+    internal const int ModuleResolverAbsent = 1619;
+
+    /// <summary>The artifact names the module manifest and declares no module records.</summary>
+    internal const int ModuleSectionMissing = 1620;
 
     internal const int WrongMagic = 1001;
     internal const int UnsupportedFormatVersion = 1002;

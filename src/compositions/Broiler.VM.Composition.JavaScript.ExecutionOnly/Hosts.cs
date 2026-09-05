@@ -72,6 +72,21 @@ internal static class Hosts
                 VmCallerIdentity.FromCanonicalIdentity("js-execution-only://corpus"));
         }
 
+        // THE TWO MODULE MODES SHARE ONE DESCRIPTOR AND DIFFER IN THE HOST. Both present a
+        // module artifact under the module manifest; what separates them is whether the runtime
+        // registered a resolver, which is how a composition admits or declines the surface. A
+        // second descriptor would have made the row about the bytes, and the row it exists for is
+        // about the composition.
+        if (mode.StartsWith(ModuleMode, StringComparison.Ordinal))
+        {
+            return new VmArtifactDescriptor(
+                JavaScriptProfile.Id,
+                Broiler.VM.Profile.JavaScript.Format.JsFormat.FormatVersion,
+                JavaScriptProfile.ModulesManifest,
+                default,
+                VmCallerIdentity.FromCanonicalIdentity("js-execution-only://corpus"));
+        }
+
         // THE WIDE MODE IS A DESCRIPTOR AND NOTHING ELSE. The bytes of a version-2 entry are
         // version-2 bytes; what this mode changes is which format version and manifest the caller
         // says they are, because a descriptor that said version 1 would be refused for the
@@ -124,6 +139,15 @@ internal static class Hosts
     /// dimension and the scope the answer named, which is what the gate asks of it.
     /// </para>
     /// </remarks>
+    /// <summary>The prefix both module replay modes share.</summary>
+    internal const string ModuleMode = "modules";
+
+    /// <summary>The module mode that registers a resolver, and so admits the surface.</summary>
+    internal const string ModuleAdmittedMode = "modules";
+
+    /// <summary>The module mode that registers none, and so declines it.</summary>
+    internal const string ModuleDeclinedMode = "modules-declined";
+
     internal static readonly (string Mode, VmBudgetDimension Dimension, ulong Value)[] TightModes =
     [
         // One section, which every artifact of this format exceeds: the four required sections
@@ -184,6 +208,20 @@ internal static class Hosts
             ceilings.Add(VmCeilingSpec.AdoptProfileDefault(dimension));
         }
 
+        var capabilities = ImmutableArray.CreateBuilder<VmCapabilityRegistration>();
+
+        // REGISTERING THE RESOLVER IS THE ONE THING THAT SEPARATES THE TWO MODULE MODES, and it is
+        // registered for exactly one of them. A resolution rule of "the key the artifact states is
+        // the key I resolve to" is what this replay's producer used to bundle the graph, so this
+        // host confirms every request; the declining mode registers nothing and its artifact is
+        // refused at verification, which is the row that exists to show that.
+        if (string.Equals(mode, ModuleAdmittedMode, StringComparison.Ordinal))
+        {
+            capabilities.Add(VmCapabilityRegistration.Value(
+                JavaScriptProfile.ResolveCapability,
+                Confirm));
+        }
+
         return new VmRuntimeCreationOptions(
             aggregateBudget: null,
             ceilings: ceilings.ToImmutable(),
@@ -191,6 +229,24 @@ internal static class Hosts
             maxLiveSuspendedOperations: 1,
             guestLoadBounds: VmGuestLoadBoundsSpec.AdoptProfileMaxima,
             externalSuspension: VmExternalSuspensionMode.Disabled,
-            capabilities: ImmutableArray<VmCapabilityRegistration>.Empty);
+            capabilities: capabilities.ToImmutable());
+    }
+
+    /// <summary>
+    /// This replay's module resolution: the key the request already carries.
+    /// </summary>
+    /// <remarks>
+    /// The retained module entries are bundled by a producer whose keys are the names it gave each
+    /// module, so this host's rule is the same one - and a request carrying any other key is
+    /// refused, which is what makes the confirmation a check rather than a formality.
+    /// </remarks>
+    private static VmHostCallOutcome Confirm(VmBytes argument, out VmOpaqueRef result)
+    {
+        result = default;
+        var parts = System.Text.Encoding.UTF8.GetString(argument.Span).Split('\0');
+
+        return parts.Length == 3 && parts[2].Length != 0
+            ? VmHostCallOutcome.Completed
+            : VmHostCallOutcome.Refused;
     }
 }

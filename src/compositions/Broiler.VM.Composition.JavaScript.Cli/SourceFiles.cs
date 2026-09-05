@@ -33,6 +33,23 @@ internal static class SourceFiles
     /// <summary>The extension this host recognises when it sweeps a directory.</summary>
     private const string Extension = ".js";
 
+    /// <summary>
+    /// The extension that makes a file a module without the option being passed.
+    /// </summary>
+    /// <remarks>
+    /// <b>The goal is a property of how a source is PRESENTED, and a file name is one way of
+    /// presenting it.</b> The same characters are a legal script and a legal module with different
+    /// meanings - <c>this</c> at the top level, whether a declaration reaches the global object,
+    /// whether <c>await</c> is a name - so something has to say which, and it cannot be the text.
+    /// The option says it explicitly; this extension says it by convention, the way every host that
+    /// reads files from a disk has settled on.
+    /// </remarks>
+    internal const string ModuleExtension = ".mjs";
+
+    /// <summary>Whether this path is presented as a module by its name alone.</summary>
+    internal static bool IsModulePath(string path) =>
+        path.EndsWith(ModuleExtension, StringComparison.Ordinal);
+
     /// <summary>A decoder that refuses rather than substituting.</summary>
     /// <remarks>
     /// <c>throwOnInvalidBytes</c> is the whole point. <see cref="Encoding.UTF8"/> replaces bad
@@ -66,6 +83,9 @@ internal static class SourceFiles
             if (Directory.Exists(path))
             {
                 found.AddRange(Directory.EnumerateFiles(path, "*" + Extension, SearchOption.AllDirectories));
+                found.AddRange(
+                    Directory.EnumerateFiles(path, "*" + ModuleExtension, SearchOption.AllDirectories));
+
                 continue;
             }
 

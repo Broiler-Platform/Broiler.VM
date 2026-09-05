@@ -277,6 +277,46 @@ public enum JsOpcode : byte
     /// </remarks>
     ForInNext = 0x65,
 
+    // ---- modules ----------------------------------------------------------------------------
+
+    /// <summary>
+    /// Push the value of import entry <c>u16</c> of this artifact's import table.
+    /// </summary>
+    /// <remarks>
+    /// <b>AN IMPORT IS NOT A SLOT AND COPYING IT INTO ONE WOULD BE WRONG.</b> An imported binding
+    /// is an indirection onto a slot of the EXPORTING module's environment, so a write that module
+    /// makes after this module was evaluated has to be visible here - which is what the language
+    /// calls a live binding and what a copy at instantiation time silently breaks. So the read goes
+    /// through the artifact's import table to the exporting environment on every access, and an
+    /// import has no slot of its own to be stale.
+    /// <para>
+    /// The operand indexes the artifact-wide table rather than the current module's, so the
+    /// executor never has to know which module a code unit belongs to; the verifier resolves every
+    /// entry to an environment and a slot before anything runs, so this instruction performs no
+    /// resolution at all.
+    /// </para>
+    /// </remarks>
+    LoadImport = 0x6D,
+
+    /// <summary>
+    /// Pop one value and throw a <c>TypeError</c> naming the immutable binding constant <c>u16</c>.
+    /// </summary>
+    /// <remarks>
+    /// <b>ASSIGNING TO AN IMMUTABLE BINDING IS A RUN-TIME FAILURE AND NOT AN EARLY ERROR</b>, which
+    /// is the fact this instruction exists to express. <c>const x = 1; x = 2;</c> and a write to an
+    /// imported binding are both <c>TypeError</c> at the moment the assignment runs, so a program
+    /// that guards one with <c>try</c> - which the conformance suite does, repeatedly - is a program
+    /// that must compile and run. Refusing it at the front end scored those tests as refusals of a
+    /// construct the manifest admits perfectly well.
+    /// <para>
+    /// <b>It is NOT terminal, and that is deliberate rather than an oversight.</b> It always throws,
+    /// so nothing after it runs - but the verifier's reachability is a property of the instruction
+    /// stream, and marking it terminal would make the return that follows an assignment at the end
+    /// of a function body unreachable code and refuse a correct program.
+    /// </para>
+    /// </remarks>
+    ThrowImmutable = 0x6E,
+
     // ---- stack ------------------------------------------------------------------------------------------
 
     /// <summary>Pop one and discard it.</summary>
@@ -359,6 +399,7 @@ public static class JsOpcodes
         JsOpcode.TypeOf, JsOpcode.InstanceOf, JsOpcode.In, JsOpcode.Void,
         JsOpcode.Jump, JsOpcode.JumpIfFalse, JsOpcode.JumpIfTrue, JsOpcode.Throw,
         JsOpcode.ForInStart, JsOpcode.ForInNext,
+        JsOpcode.LoadImport, JsOpcode.ThrowImmutable,
         JsOpcode.Pop, JsOpcode.Duplicate, JsOpcode.DuplicateTwo, JsOpcode.Swap, JsOpcode.Pick,
     ];
 
@@ -438,7 +479,7 @@ public static class JsOpcodes
         JsOpcode.NewArray or
         JsOpcode.GetProperty or JsOpcode.SetProperty or JsOpcode.DefineField or
         JsOpcode.DeleteProperty or JsOpcode.DefineGetter or JsOpcode.DefineSetter or
-        JsOpcode.Closure
+        JsOpcode.Closure or JsOpcode.LoadImport or JsOpcode.ThrowImmutable
             => JsOperandShape.U16,
 
         JsOpcode.Jump or JsOpcode.JumpIfFalse or JsOpcode.JumpIfTrue or JsOpcode.ForInNext
@@ -486,6 +527,7 @@ public static class JsOpcodes
             case JsOpcode.LoadGlobalOrUndefined:
             case JsOpcode.NewObject:
             case JsOpcode.Closure:
+            case JsOpcode.LoadImport:
             case JsOpcode.Duplicate:
             case JsOpcode.Pick:
                 pushes = 1;
@@ -498,6 +540,7 @@ public static class JsOpcodes
             case JsOpcode.StoreScoped:
             case JsOpcode.InitialiseScoped:
             case JsOpcode.StoreGlobal:
+            case JsOpcode.ThrowImmutable:
             case JsOpcode.Pop:
             case JsOpcode.Throw:
             case JsOpcode.Return:

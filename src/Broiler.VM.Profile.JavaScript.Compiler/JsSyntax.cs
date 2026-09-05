@@ -369,6 +369,79 @@ internal sealed record JsDebuggerStatement(SliceSourceSpan Span) : JsStatement(S
 internal sealed record JsFunctionDeclaration(SliceSourceSpan Span, JsFunctionNode Function)
     : JsStatement(Span);
 
+/// <summary>One binding an <c>import</c> declaration introduces.</summary>
+/// <param name="Span">Where the specifier begins.</param>
+/// <param name="Imported">
+/// The name the exporting module publishes. It is <c>default</c> for a default import, and is
+/// unread when <paramref name="Namespace"/> is set.
+/// </param>
+/// <param name="Local">The name this module binds it to.</param>
+/// <param name="Namespace">Whether the binding is the requested module's namespace object.</param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
+// Broiler-Human:        PENDING
+internal sealed record JsImportSpecifier(
+    SliceSourceSpan Span, string Imported, string Local, bool Namespace) : JsNode(Span);
+
+/// <summary>
+/// An <c>import</c> declaration, in every form: default, named, namespace, and bindingless.
+/// </summary>
+/// <param name="Specifier">The module specifier as the source wrote it, unresolved.</param>
+/// <param name="Specifiers">
+/// The bindings introduced, which is empty for <c>import "./m.mjs";</c> - a form that requests a
+/// module for its effects and binds nothing.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
+// Broiler-Human:        PENDING
+internal sealed record JsImportDeclaration(
+    SliceSourceSpan Span,
+    string Specifier,
+    System.Collections.Generic.IReadOnlyList<JsImportSpecifier> Specifiers) : JsStatement(Span);
+
+/// <summary>Which of the four shapes an <c>export</c> declaration has.</summary>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
+// Broiler-Human:        PENDING
+internal enum JsExportKind
+{
+    /// <summary>A braced clause, with or without a <c>from</c>.</summary>
+    Named = 0,
+
+    /// <summary>A declaration exported where it is declared.</summary>
+    Declaration = 1,
+
+    /// <summary><c>export default</c>, of an expression or of a declaration.</summary>
+    Default = 2,
+
+    /// <summary><c>export * from</c>, with or without an <c>as</c>.</summary>
+    All = 3,
+}
+
+/// <summary>One name an <c>export</c> declaration publishes.</summary>
+/// <param name="Local">
+/// The name it is published FROM: a binding of this module, or - in a re-export - a name of the
+/// requested module.
+/// </param>
+/// <param name="Exported">The name it is published AS.</param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
+// Broiler-Human:        PENDING
+internal sealed record JsExportSpecifier(SliceSourceSpan Span, string Local, string Exported)
+    : JsNode(Span);
+
+/// <summary>An <c>export</c> declaration, in every form.</summary>
+/// <param name="Kind">Which of the four shapes this is.</param>
+/// <param name="From">The module specifier of a re-export, empty when there is none.</param>
+/// <param name="Specifiers">The names published, which is empty for a bare <c>export * from</c>.</param>
+/// <param name="Declaration">The declaration exported in place, when there is one.</param>
+/// <param name="Default">The expression of an <c>export default</c> of an expression.</param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=TBF
+// Broiler-Human:        PENDING
+internal sealed record JsExportDeclaration(
+    SliceSourceSpan Span,
+    JsExportKind Kind,
+    string From,
+    System.Collections.Generic.IReadOnlyList<JsExportSpecifier> Specifiers,
+    JsStatement? Declaration,
+    JsExpression? Default) : JsStatement(Span);
+
 /// <summary>A whole program: a directive prologue and a statement list.</summary>
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=5F7C89
 // Broiler-Human:        PENDING

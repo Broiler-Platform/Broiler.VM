@@ -127,3 +127,46 @@ hashbang/on-the-second-line.js|3|2102:ExpectedToken
 # passed in both states and judged nothing.
 --version|0|manifest broiler.javascript.wide
 --version|0|docs/specification/ecma-262-es2026-spec.html
+
+# ---- the module goal ---------------------------------------------------------------------------
+#
+# A `.mjs` FILE IS A MODULE WITHOUT THE OPTION, which is the first row's whole point: the goal is a
+# property of how a source is presented, and a file name is one of the two ways this host lets a
+# caller present it. The second row passes the option over a file the extension would not have
+# claimed, so neither way is the only way.
+modules/a-live-binding.mjs|0|44
+--module modules/lib.mjs|0|undefined
+
+# A CYCLE IN THE GRAPH RUNS AND A CYCLE IN AN EXPORT RESOLUTION DOES NOT, and the pair is what
+# makes the second row a claim rather than a coincidence. `cycle-a` and `cycle-b` request each
+# other and reach a value, because every module's declarations are initialised before any body is
+# evaluated; `circular-a` and `circular-b` re-export a name from each other, which names a binding
+# that exists nowhere - and it is refused by NAME at verification rather than by walking the cycle
+# until an allowance runs out. 1618 going missing from that row is the failure this pins.
+modules/cycle-a.mjs|0|21
+modules/circular-a.mjs|4|1618
+
+# TWO STAR RE-EXPORTS SUPPLYING ONE NAME FROM TWO BINDINGS resolve to neither, and the refusal is
+# the link stage's rather than the parser's - which is why its code is a verification code.
+modules/ambiguous.mjs|4|1617
+
+# AN IMPORT BINDING IS IMMUTABLE AND THE FAILURE IS AT RUN TIME. The language makes assignment to
+# one a `TypeError` when it runs, not a syntax error when it is read, so the program has to compile
+# and reach its own `catch` - and this row is what would catch a front end that refused it early.
+modules/an-assignment-to-an-import.mjs|0|TypeError
+
+# `import` IN A SCRIPT IS A SYNTAX ERROR AND NOT A MANIFEST REFUSAL, and the distinction is what
+# the conformance runner grades on: a manifest refusal is scored `unsupported` and kept out of both
+# columns, so scoring this one that way would decline a test this profile can answer.
+modules/an-import-in-a-script.js|3|2401:ModuleDeclarationOutsideModuleGoal
+
+# TOP-LEVEL `await` IS REFUSED BY NAME, because settling a promise needs a job queue this profile
+# does not have. The row moves the day one exists, which is the point of naming it rather than
+# letting the construct come back as an unexpected token.
+modules/top-level-await.mjs|3|top-level `await`
+
+# AND A SPECIFIER THIS COMPOSITION DOES NOT RESOLVE IS THIS COMPOSITION'S REFUSAL. Resolving a bare
+# name means a package layout, a search path and a manifest format, and this host has none of the
+# three; a search that quietly found nothing would report a missing file, which names the symptom
+# rather than the decision.
+modules/a-bare-specifier.mjs|6|this host resolves only a specifier

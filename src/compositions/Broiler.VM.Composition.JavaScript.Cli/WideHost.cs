@@ -56,9 +56,28 @@ internal static class WideHost
             : module ? SliceParseOptions.Module : SliceParseOptions.Script;
 
         var scripts = new List<JsScriptUnit>(files.Count);
+        var modules = new List<JsModuleUnit>();
 
         for (var index = 0; index < files.Count; index++)
         {
+            // THE LAST FILE IS THE ONE THAT MAY BE A MODULE, and the ones before it are its realm.
+            // That is what a shell does with `broiler-js harness.js main.mjs`: the earlier files are
+            // scripts evaluated in order, and the module graph is rooted at what was asked for. A
+            // module in the middle of the list would be a graph whose evaluation order the argument
+            // order decided, which is not an order anybody could state.
+            if (module && index == files.Count - 1)
+            {
+                var loaded = ModuleGraph.Load(files[index].Path);
+
+                if (loaded.Failure.Length != 0)
+                {
+                    return new RunResult(RunStatus.Unreadable, string.Empty, loaded.Failure, []);
+                }
+
+                modules.AddRange(loaded.Modules);
+                continue;
+            }
+
             scripts.Add(new JsScriptUnit(
                 "script" + index.ToString(System.Globalization.CultureInfo.InvariantCulture),
                 files[index].Text,
@@ -66,7 +85,7 @@ internal static class WideHost
                 forceStrict));
         }
 
-        var compiled = JsCompiler.Compile(scripts);
+        var compiled = JsCompiler.Compile(scripts, modules);
 
         if (!compiled.Succeeded || compiled.Artifact is null)
         {
@@ -99,16 +118,20 @@ internal static class WideHost
 
         using (runtime)
         {
-            return Run(runtime, compiled.Artifact, scripts.Count, checkOnly);
+            return Run(runtime, compiled.Artifact, scripts.Count, modules.Count != 0, checkOnly);
         }
     }
 
-    private static RunResult Run(VmRuntime runtime, byte[] artifact, int count, bool checkOnly)
+    private static RunResult Run(
+        VmRuntime runtime, byte[] artifact, int count, bool hasModules, bool checkOnly)
     {
+        // THE DESCRIPTOR NAMES THE MANIFEST THE ARTIFACT NAMES. A module artifact carries module
+        // records and says so in its own header; presenting it under the wide manifest would be
+        // refused for the mismatch, which is the caller's mistake rather than the payload's.
         var descriptor = new VmArtifactDescriptor(
             JavaScriptProfile.Id,
             Broiler.VM.Profile.JavaScript.Format.JsFormat.FormatVersion,
-            JavaScriptProfile.WideManifest,
+            hasModules ? JavaScriptProfile.ModulesManifest : JavaScriptProfile.WideManifest,
             default,
             VmCallerIdentity.FromCanonicalIdentity(Caller));
 
@@ -164,9 +187,17 @@ internal static class WideHost
 
         var value = string.Empty;
 
-        for (var index = 0; index < count; index++)
+        for (var index = 0; index <= count; index++)
         {
-            var name = "script" + index.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            if (index == count && !hasModules)
+            {
+                break;
+            }
+
+            var name = index == count
+                ? JsCompiler.ModuleEntry
+                : "script" + index.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
             var request = new VmInvocationRequest(
                 new VmUtf8Text(System.Text.Encoding.UTF8.GetBytes(name)));
 
@@ -252,6 +283,13 @@ internal static class WideHost
             JavaScriptProfile.WriteCapability,
             Write));
 
+        // REGISTERING THE RESOLVER IS THIS COMPOSITION ADMITTING THE MODULE SURFACE. There is no
+        // second switch: a sibling root that wants no modules registers nothing here and every
+        // module artifact it is handed is refused at verification, by name, before it runs.
+        capabilities.Add(VmCapabilityRegistration.Value(
+            JavaScriptProfile.ResolveCapability,
+            Resolve));
+
         return new VmRuntimeCreationOptions(
             aggregateBudget: null,
             ceilings: ceilings.ToImmutable(),
@@ -262,11 +300,28 @@ internal static class WideHost
             capabilities: capabilities.ToImmutable());
     }
 
-    /// <summary>The one host capability this root registers: write a line to standard output.</summary>
+    /// <summary>The first host capability this root registers: write a line to standard output.</summary>
     private static VmHostCallOutcome Write(VmBytes argument, out VmOpaqueRef result)
     {
         result = default;
         Console.Out.WriteLine(System.Text.Encoding.UTF8.GetString(argument.Span));
         return VmHostCallOutcome.Completed;
+    }
+
+    /// <summary>
+    /// The second: rule on whether a module request resolves the way this composition resolves it.
+    /// </summary>
+    /// <remarks>
+    /// <c>Refused</c> is a policy answer and not a failure of the call, which is exactly what it
+    /// means here: the artifact was resolved by rules that are not this host's, and this host
+    /// declines to evaluate it.
+    /// </remarks>
+    private static VmHostCallOutcome Resolve(VmBytes argument, out VmOpaqueRef result)
+    {
+        result = default;
+
+        return ModuleGraph.Confirms(argument.Span)
+            ? VmHostCallOutcome.Completed
+            : VmHostCallOutcome.Refused;
     }
 }

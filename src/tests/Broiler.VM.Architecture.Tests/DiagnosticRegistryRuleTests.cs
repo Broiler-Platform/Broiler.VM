@@ -47,14 +47,16 @@ public sealed class DiagnosticRegistryRuleTests
     {
         Assert.Empty(ArchitectureRules.N5(Registry, Vocabulary, SeamVocabulary, DiagnosticRegistry.Revision));
 
-        // Non-vacuous: forty-five core-result codes and twenty-four embedder-seam ones,
-        // sixty-nine rows, so a clean result is a comparison over two real sets rather than over an
-        // empty one. The seam half was declared and empty at revision 1 and is the half at revision
-        // 2; revision 3 is the five structural refusals format version 2 adds.
-        Assert.Equal(45, Vocabulary.Count);
-        Assert.Equal(24, SeamVocabulary.Count);
+        // Non-vacuous: fifty-three core-result codes and twenty-seven embedder-seam ones, eighty
+        // rows, so a clean result is a comparison over two real sets rather than over an empty one.
+        // The seam half was declared and empty at revision 1 and is the half at revision 2;
+        // revision 3 is the five structural refusals format version 2 adds, and revision 4 is the
+        // module goal - eight ways a module GRAPH can be wrong, which no single row can state, and
+        // three early errors about source presented as a module.
+        Assert.Equal(53, Vocabulary.Count);
+        Assert.Equal(27, SeamVocabulary.Count);
         Assert.Equal(Vocabulary.Count + SeamVocabulary.Count, Registry.Count);
-        Assert.Equal(3, DiagnosticRegistry.Revision);
+        Assert.Equal(4, DiagnosticRegistry.Revision);
 
         // The two vocabularies live in two assemblies that cannot see each other, so the one thing
         // no compiler could catch is a number used in both. Nothing else in the build reads both
@@ -136,21 +138,20 @@ public sealed class DiagnosticRegistryRuleTests
 
         Assert.Empty(ArchitectureRules.N7(Registry, corpus, sourceCorpus));
 
-        // Non-vacuous, and the figures that matter: forty-four of the forty-five core-result rows
+        // Non-vacuous, and the figures that matter: fifty-two of the fifty-three core-result rows
         // are reached by a retained corpus entry and one is not, which is the count rule N7 fixes
-        // rather than the registry; and every one of the twenty-two embedder-seam rows JS-3b
-        // published is reached by a retained source entry, with none defensive. Seven of the
-        // forty-four arrived with format version 2: five refusals the version adds, and two that
-        // registering a second version and a second manifest made observable at all. The seam half has
-        // no defensive row on purpose - all three of its format-ceiling codes ARE reachable by a
-        // program, and recording them as unreachable would have been recording something untrue to
-        // avoid generating three sources.
+        // rather than the registry; and every embedder-seam row but one is reached by a retained
+        // source entry. Seven of the fifty-two arrived with format version 2 and eight with the
+        // module goal, and two of those eight vary the COMPOSITION rather than the bytes - a
+        // module artifact a composition declined is a well-formed artifact, so the entry that
+        // reaches it differs in its host. The seam half has one defensive row and it is not a
+        // format-ceiling one: all three of those ARE reachable by a program.
         Assert.Equal(2, ArchitectureRules.DefensiveCodes.Length);
         Assert.Equal(
-            44,
+            52,
             Registry.Count(static row => row.Reachability == "corpus"));
         Assert.Equal(
-            23,
+            26,
             Registry.Count(static row => row.Reachability == "source"));
         // One seam row is defensive, and which one is the finding: the operand-stack ceiling
         // cannot be reached through this front end, because the parse depth bound refuses at about

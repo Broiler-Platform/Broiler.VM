@@ -101,3 +101,12 @@ wide-an-exception-handler-outside-its-code-unit|dad806325a80adae048856eb7a9b445a
 wide-a-version-1-artifact-announced-as-version-2|4a871c79683bcd1c0192ed7cfd50d4d8a9caf59d62f8071e9776188fee5d8156|wide|InvalidArtifact|DescriptorMismatch|1003|-|-|-|-
 wide-a-slice-manifest-announced-as-the-wide-one|820f00f2877b8bebc95b8ec462f6fa6c9aade306bf7de8eb32b9d48f065fcd2d|wide|InvalidArtifact|DescriptorMismatch|1006|-|-|-|-
 wide-a-method-called-through-a-property|a97116d8e18904eae5b1b9f31511a94bad92f2b0c3bbebbf62a1f90a42b308d9|wide|Normal|NormalCompleted|0|7|-|-|-
+modules-a-module-section-the-manifest-excludes|724561b458ae46f0c63ff735529b6662bf3e43e414f63cd78d29d8e25a5f7e7a|wide|InvalidArtifact|UnknownFeature|1613|-|-|-|-
+modules-a-module-row-the-format-cannot-represent|fc1bb140884e3b206bae37b01efab647fff8e1dd735247b4698e9b34ed68f318|modules|InvalidArtifact|InconsistentStructure|1614|-|-|-|-
+modules-a-request-naming-no-module|1bebba91c8ca762f912fb16a50a89799c44e82cda5b94e53adb8a61d5b2aab48|modules|InvalidArtifact|InconsistentStructure|1615|-|-|-|-
+modules-an-import-of-a-name-nothing-exports|2ec4b8e35960034afde30591808a64853f46dc1b13adaabc75af9367b44f5efb|modules|InvalidArtifact|InconsistentStructure|1616|-|-|-|-
+modules-a-name-two-star-re-exports-supply|6a4c50c8d710433b75ec648df86636a0e5d9c58f147d0078bda4ddf2692e5080|modules|InvalidArtifact|InconsistentStructure|1617|-|-|-|-
+modules-a-cyclic-export-resolution|c8aa1d05dcb5e08974968e3433811cd9c38abd4ccef18cb05c8c4ab827765b91|modules|InvalidArtifact|InconsistentStructure|1618|-|-|-|-
+modules-a-module-artifact-a-composition-declined|34569ce536e381492e2a3e9a1210eedcf7ed4caccd595b58e0a1a1e92c097eeb|modules-declined|InvalidArtifact|UnsupportedFeatureManifest|1619|-|-|-|-
+modules-the-module-manifest-with-no-module-records|429932dc3d25056a247a0ebb03db5725eada75df67c0145775629a339bf439b3|modules|InvalidArtifact|InconsistentStructure|1620|-|-|-|-
+modules-a-live-binding-read-after-a-write|5d0762235fc47db3d921cb846bde0ba43ce8a297d8c3e33095d6fe44ade122eb|modules|Normal|NormalCompleted|0|3|-|-|-

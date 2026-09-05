@@ -90,6 +90,34 @@ public static class JsFormat
 
         /// <summary>The code units: one row per function, plus row zero for the program body.</summary>
         Functions = 8,
+
+        /// <summary>The module records. Admitted by <c>broiler.javascript.modules</c> alone.</summary>
+        Modules = 9,
+    }
+
+    /// <summary>The feature manifest the module goal is admitted under.</summary>
+    /// <remarks>
+    /// <b>A THIRD IDENTITY RATHER THAN A WIDER SECOND ONE</b>, for the reason the wide manifest is
+    /// not a wider slice: a module carries a resolution question a script does not, and a
+    /// composition has to be able to answer that question separately from whether it admits objects
+    /// and closures. The format version is version 2 either way - a module artifact is a version-2
+    /// artifact with one more section - so the two identities share a reader and differ only in
+    /// which sections that reader admits.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    public const string ModulesManifestId = "broiler.javascript.modules";
+
+    /// <summary>What one import entry binds its local name to.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    public enum ImportKind : byte
+    {
+        /// <summary>One exported name of the requested module: <c>import { a } from …</c>.</summary>
+        Named = 0,
+
+        /// <summary>The requested module's namespace object: <c>import * as ns from …</c>.</summary>
+        Namespace = 1,
     }
 
     /// <summary>The constant-pool entry tags version 2 reads.</summary>
@@ -219,4 +247,35 @@ public static class JsFormat
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=817566
     // Broiler-Human:        PENDING
     public const uint CeilingCodeBytes = 67_108_864;
+
+    /// <summary>The most module records one artifact may declare.</summary>
+    /// <remarks>
+    /// A module graph is resolved whole at verification, and export resolution walks it, so this
+    /// ceiling bounds a walk rather than a table. It is stated here and not derived from the
+    /// function ceiling because a module and a code unit are not the same thing: every module has a
+    /// code unit and most code units are not modules.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    public const uint CeilingModules = 4_096;
+
+    /// <summary>The most modules one module may request.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    public const uint CeilingModuleRequests = 4_096;
+
+    /// <summary>The most import entries one artifact may declare.</summary>
+    /// <remarks>
+    /// <b>The bound is the operand width and is stated anyway.</b> An import read carries a
+    /// <c>u16</c> index into the artifact-wide import table, so 65 536 is what the encoding can
+    /// say - and a bound that happens to equal a field width is a bound nobody checked.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    public const uint CeilingImportEntries = 65_536;
+
+    /// <summary>The most export entries of one kind one module may declare.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    public const uint CeilingExportEntries = 65_536;
 }

@@ -33,6 +33,40 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 public sealed record JsScriptUnit(
     string Name, string Text, SliceParseOptions Options, bool ForceStrict = false);
 
+/// <summary>One source text to compile into a module record of the same artifact.</summary>
+/// <param name="Key">
+/// <b>The key the COMPOSITION resolved, not the specifier the source wrote.</b> Turning
+/// <c>"./b.mjs"</c> into the identity of a module is a host decision - a file path, a URL, a name in
+/// a bundle - and this component takes no part in it. What arrives here is the composition's
+/// answer, and a request in one module is matched against it by exact comparison and nothing else.
+/// </param>
+/// <param name="Text">The source.</param>
+/// <param name="Options">
+/// The parse options. The goal is checked rather than assumed: a module compiled under the script
+/// goal would refuse its own <c>import</c>.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+// Broiler-Human:        PENDING
+public sealed record JsModuleUnit(
+    string Key,
+    string Text,
+    SliceParseOptions Options,
+    System.Collections.Generic.IReadOnlyList<JsResolvedRequest>? Requests = null);
+
+/// <summary>One specifier a module names, and the key the composition resolved it to.</summary>
+/// <param name="Specifier">The specifier as the source wrote it, unchanged.</param>
+/// <param name="Key">The key of the module it names.</param>
+/// <remarks>
+/// <b>Both halves are carried into the artifact and neither is derivable from the other here.</b>
+/// The specifier is what the composition is later asked to rule on, and the key is what the module
+/// records are matched by; a producer that carried only the key would leave the running host unable
+/// to ask whether the resolution was its own, and one that carried only the specifier would be
+/// asking this component to resolve it.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+// Broiler-Human:        PENDING
+public sealed record JsResolvedRequest(string Specifier, string Key);
+
 /// <summary>What compiling a set of scripts produced.</summary>
 /// <param name="Succeeded">Whether an artifact was produced.</param>
 /// <param name="Artifact">The bytes, or <see langword="null"/> when the source was refused.</param>
@@ -99,6 +133,28 @@ public sealed class JsCompiler
     // Broiler-Human:        PENDING
     private readonly System.Collections.Generic.List<(string Name, uint Unit)> entries = [];
 
+    /// <summary>The module records built so far, in declaration order.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private readonly System.Collections.Generic.List<ModuleBuild> built = [];
+
+    /// <summary>
+    /// Every import entry of the artifact, in the order the modules declare them.
+    /// </summary>
+    /// <remarks>
+    /// <b>One table for the artifact rather than one per module</b>, because the index is what an
+    /// import read carries and the executor must not have to know which module a code unit belongs
+    /// to before it can read the operand.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private readonly System.Collections.Generic.List<JsImportEntryRow> importEntries = [];
+
+    /// <summary>The module being lowered, or <see langword="null"/> outside one.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private ModuleBuild? module;
+
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=237FC7
     // Broiler-Human:        PENDING
     private UnitBuffer buffer = null!;
@@ -127,30 +183,109 @@ public sealed class JsCompiler
     public static JsCompilation Compile(System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts)
     {
         var compiler = new JsCompiler();
-        return compiler.Run(scripts);
+        return compiler.Run(scripts, []);
+    }
+
+    /// <summary>What one source text requests, so a composition can resolve and load it.</summary>
+    /// <param name="Succeeded">Whether the source parsed.</param>
+    /// <param name="Specifiers">Every module specifier the source names, in source order.</param>
+    /// <param name="Diagnostics">Every refusal, when it did not.</param>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    public sealed record JsModuleRequests(
+        bool Succeeded,
+        System.Collections.Generic.IReadOnlyList<string> Specifiers,
+        System.Collections.Generic.IReadOnlyList<SliceSourceDiagnostic> Diagnostics);
+
+    /// <summary>
+    /// Answers what one module requests, without lowering it and without loading anything.
+    /// </summary>
+    /// <remarks>
+    /// <b>This is the seam a composition walks a module graph through.</b> Following a specifier is
+    /// the host's act - it is the thing that touches a filesystem, a URL scheme or a table - and
+    /// this component neither performs it nor knows how it is performed. What the front end can
+    /// answer, and the host cannot without a parser, is which specifiers a source names; so it
+    /// answers that and stops.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    public static JsModuleRequests Requests(string text, SliceParseOptions options)
+    {
+        var compiler = new JsCompiler();
+
+        if (!compiler.TryParse(text, options, forceStrict: true, out var program))
+        {
+            return new JsModuleRequests(false, [], compiler.diagnostics);
+        }
+
+        var specifiers = new System.Collections.Generic.List<string>();
+
+        foreach (var statement in program.Body)
+        {
+            var specifier = statement switch
+            {
+                JsImportDeclaration import => import.Specifier,
+                JsExportDeclaration exported => exported.From,
+                _ => string.Empty,
+            };
+
+            if (specifier.Length != 0 && !specifiers.Contains(specifier))
+            {
+                specifiers.Add(specifier);
+            }
+        }
+
+        return new JsModuleRequests(true, specifiers, compiler.diagnostics);
+    }
+
+    /// <summary>The entry point a module artifact's root module is invoked by.</summary>
+    /// <remarks>
+    /// <b>One entry point for a graph, and not one per module.</b> A module is not something a host
+    /// calls: it is linked and evaluated as part of a graph, and evaluating one out of order is
+    /// exactly the thing the specification's post-order is for. So the artifact names the root and
+    /// nothing else, and every other module is reached through a request.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    public const string ModuleEntry = "module";
+
+    /// <summary>
+    /// Compiles a module graph, with any scripts that share its realm, into one artifact.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The scripts come first and they are still scripts.</b> A conformance run evaluates
+    /// <c>assert.js</c> and <c>sta.js</c> in the realm a module test runs in, and those are Script
+    /// sources: they declare globals, they are not strict, and folding them into the module goal
+    /// would change what they mean. So one artifact carries both, each under its own goal, and the
+    /// host invokes them in order.
+    /// </para>
+    /// <para>
+    /// <b>The first module is the root</b> and the rest are reached from it. A module the root
+    /// cannot reach is still verified - it is in the artifact and its bytes must be sound - and is
+    /// never evaluated, which is what the specification says of a module nothing requests.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    public static JsCompilation Compile(
+        System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts,
+        System.Collections.Generic.IReadOnlyList<JsModuleUnit> modules)
+    {
+        var compiler = new JsCompiler();
+        return compiler.Run(scripts, modules);
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E1BE6C
     // Broiler-Human:        PENDING
-    private JsCompilation Run(System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts)
+    private JsCompilation Run(
+        System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts,
+        System.Collections.Generic.IReadOnlyList<JsModuleUnit> modules)
     {
         foreach (var script in scripts)
         {
-            var tokenizer = new SliceTokenizer(script.Text);
-            var tokens = tokenizer.Tokenize();
-
-            if (tokenizer.Diagnostics.Count != 0)
+            if (!TryParse(script.Text, script.Options, script.ForceStrict, out var program))
             {
-                diagnostics.AddRange(tokenizer.Diagnostics);
-                return new JsCompilation(false, null, diagnostics);
-            }
-
-            var parser = new JsParser(tokens, script.Options, script.ForceStrict);
-            var program = parser.Parse();
-
-            if (parser.Diagnostics.Count != 0)
-            {
-                diagnostics.AddRange(parser.Diagnostics);
                 return new JsCompilation(false, null, diagnostics);
             }
 
@@ -164,7 +299,66 @@ public sealed class JsCompiler
             entries.Add((script.Name, (uint)unit));
         }
 
+        for (var index = 0; index < modules.Count; index++)
+        {
+            var module = modules[index];
+
+            if (module.Options.Goal != SliceGoal.Module)
+            {
+                Refuse(
+                    default,
+                    SliceSourceDiagnosticCode.ModuleDeclarationOutsideModuleGoal,
+                    "the module `" + module.Key + "` was presented under the script goal");
+
+                return new JsCompilation(false, null, diagnostics);
+            }
+
+            if (!TryParse(module.Text, module.Options, forceStrict: true, out var program))
+            {
+                return new JsCompilation(false, null, diagnostics);
+            }
+
+            CompileModule(program, module);
+
+            if (diagnostics.Count != 0)
+            {
+                return new JsCompilation(false, null, diagnostics);
+            }
+        }
+
+        if (built.Count != 0)
+        {
+            entries.Add((ModuleEntry, (uint)built[0].BodyUnit));
+        }
+
         return new JsCompilation(true, Assemble(), diagnostics);
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private bool TryParse(
+        string text, SliceParseOptions options, bool forceStrict, out JsProgramNode program)
+    {
+        program = null!;
+        var tokenizer = new SliceTokenizer(text);
+        var tokens = tokenizer.Tokenize();
+
+        if (tokenizer.Diagnostics.Count != 0)
+        {
+            diagnostics.AddRange(tokenizer.Diagnostics);
+            return false;
+        }
+
+        var parser = new JsParser(tokens, options, forceStrict);
+        program = parser.Parse();
+
+        if (parser.Diagnostics.Count == 0)
+        {
+            return true;
+        }
+
+        diagnostics.AddRange(parser.Diagnostics);
+        return false;
     }
 
     // ---- assembly ------------------------------------------------------------------------------
@@ -173,6 +367,13 @@ public sealed class JsCompiler
     // Broiler-Human:        PENDING
     private byte[] Assemble()
     {
+        // THE MODULE ROWS ARE BUILT BEFORE THE POOL IS SNAPSHOTTED, and the order is not
+        // cosmetic. A row names its module's key and every specifier it requests as CONSTANTS, so
+        // building the rows interns names; doing it after the constant section had been encoded
+        // left every one of those names past the end of the pool the artifact carries, and the
+        // verifier refused the first module row of every module artifact this host produced.
+        var moduleRows = built.Count == 0 ? [] : ModuleRows();
+
         var code = new System.Collections.Generic.List<byte>();
         var rows = new System.Collections.Generic.List<JsFunctionRow>();
         var regions = new System.Collections.Generic.List<JsExceptionRegionRow>();
@@ -269,7 +470,52 @@ public sealed class JsCompiler
             (JavaScriptFormat.SectionKind)JsFormat.SectionKind.Functions,
             JsArtifactWriter.Functions(rows.ToArray())));
 
-        return JsArtifactWriter.Write(JsFormat.ManifestId, sections.ToArray());
+        if (built.Count == 0)
+        {
+            return JsArtifactWriter.Write(JsFormat.ManifestId, sections.ToArray());
+        }
+
+        sections.Add(new JavaScriptArtifactWriter.Section(
+            (JavaScriptFormat.SectionKind)JsFormat.SectionKind.Modules,
+            JsArtifactWriter.Modules(moduleRows)));
+
+        // THE MANIFEST FOLLOWS THE SECTION AND NOT AN OPTION SOMEBODY PASSED. An artifact carrying
+        // module records is a module artifact, and one that named the wide manifest while carrying
+        // them would be asking a composition that declined the module surface to run modules.
+        return JsArtifactWriter.Write(JsFormat.ModulesManifestId, sections.ToArray());
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private JsModuleRow[] ModuleRows()
+    {
+        var rows = new JsModuleRow[built.Count];
+
+        for (var index = 0; index < built.Count; index++)
+        {
+            var build = built[index];
+            var specifiers = new uint[build.Requests.Count];
+            var requests = new uint[build.Requests.Count];
+
+            for (var request = 0; request < requests.Length; request++)
+            {
+                specifiers[request] = InternedName(build.Requests[request]);
+                requests[request] = InternedName(build.RequestKeys[request]);
+            }
+
+            rows[index] = new JsModuleRow(
+                InternedName(build.Key),
+                (uint)build.BodyUnit,
+                (uint)build.InitialiserUnit,
+                specifiers,
+                requests,
+                build.ImportRows.ToArray(),
+                build.LocalExports.ToArray(),
+                build.IndirectExports.ToArray(),
+                build.StarExports.ToArray());
+        }
+
+        return rows;
     }
 
     // ---- units ---------------------------------------------------------------------------------
@@ -369,6 +615,521 @@ public sealed class JsCompiler
         blockDepth = outerDepth;
         strict = outerStrict;
         return index;
+    }
+
+    // ---- modules -------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Lowers one module: its declarations, its two code units and its record.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A module gets TWO code units and a script gets one, and the second is not a
+    /// convenience.</b> The specification initialises a module's environment - <c>var</c> bindings
+    /// to <c>undefined</c> and function declarations to their closures - for EVERY module in the
+    /// graph before ANY module is evaluated. With no cycle in the graph the difference is invisible,
+    /// because a dependency is evaluated before its dependent anyway. With a cycle it is the whole
+    /// behaviour: the module that runs first calls a function of the module that has not run, and
+    /// that call has to work. Doing the initialisation in the body's own prologue would make it a
+    /// binding in the temporal dead zone instead, and a legal cyclic program would throw.
+    /// </para>
+    /// <para>
+    /// <b>Module-level bindings are SLOTS and not properties of the global object</b>, which is
+    /// where this differs most from the script lowering above. A module's declarations are not
+    /// visible to the next script, exporting one has to name a slot the exporting environment keeps
+    /// for the lifetime of the instance, and <c>globalThis.x</c> must not see it.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void CompileModule(JsProgramNode program, JsModuleUnit unit)
+    {
+        var key = unit.Key;
+
+        foreach (var existing in built)
+        {
+            if (string.Equals(existing.Key, key, System.StringComparison.Ordinal))
+            {
+                Refuse(
+                    program.Span,
+                    SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+                    "two modules were presented under the key `" + key + "`");
+
+                return;
+            }
+        }
+
+        var build = new ModuleBuild(key, new Scope(ScopeKind.Module, null)) { Unit = unit };
+        built.Add(build);
+
+        var outerStrict = strict;
+        var outerScope = scope;
+        var outerBuffer = buffer;
+        var outerDepth = blockDepth;
+        var outerModule = module;
+
+        strict = true;
+        module = build;
+        scope = build.Scope;
+        blockDepth = 0;
+
+        DeclareImports(program.Body, build);
+        var variables = DeclareModuleBindings(program.Body, build);
+        DeclareExports(program.Body, build);
+
+        build.InitialiserUnit = EmitModuleInitialiser(program, build, variables);
+        build.BodyUnit = EmitModuleBody(program, build);
+
+        units[build.InitialiserUnit].SlotCount = build.Scope.SlotCount;
+        units[build.BodyUnit].SlotCount = build.Scope.SlotCount;
+
+        if (build.Scope.SlotCount > MaximumSlots)
+        {
+            Refuse(
+                program.Span,
+                SliceSourceDiagnosticCode.TooManyLocals,
+                "the module `" + key + "` declares too many bindings");
+        }
+
+        strict = outerStrict;
+        scope = outerScope;
+        buffer = outerBuffer;
+        blockDepth = outerDepth;
+        module = outerModule;
+    }
+
+    /// <summary>
+    /// Records this module's requests and import entries, and binds the local names to them.
+    /// </summary>
+    /// <remarks>
+    /// <b>No slot is declared for an import.</b> An imported name is an indirection onto the
+    /// exporting module's slot, so giving it one here would create the copy that makes a live
+    /// binding stale - see <see cref="JsOpcode.LoadImport"/>.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void DeclareImports(
+        System.Collections.Generic.IReadOnlyList<JsStatement> body, ModuleBuild build)
+    {
+        foreach (var statement in body)
+        {
+            switch (statement)
+            {
+                case JsImportDeclaration import:
+                {
+                    var request = RequestIndex(build, import.Specifier);
+
+                    foreach (var specifier in import.Specifiers)
+                    {
+                        if (build.Imports.ContainsKey(specifier.Local))
+                        {
+                            Refuse(
+                                specifier.Span,
+                                SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+                                "`" + specifier.Local + "` is imported twice");
+
+                            continue;
+                        }
+
+                        var row = new JsImportEntryRow(
+                            request,
+                            specifier.Namespace ? 0u : InternedName(specifier.Imported),
+                            specifier.Namespace
+                                ? JsFormat.ImportKind.Namespace
+                                : JsFormat.ImportKind.Named);
+
+                        build.Imports[specifier.Local] = importEntries.Count;
+                        importEntries.Add(row);
+                        build.ImportRows.Add(row);
+                    }
+
+                    break;
+                }
+
+                case JsExportDeclaration exported when exported.From.Length != 0:
+                    RequestIndex(build, exported.From);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private uint RequestIndex(ModuleBuild build, string specifier)
+    {
+        for (var index = 0; index < build.Requests.Count; index++)
+        {
+            if (string.Equals(build.Requests[index], specifier, System.StringComparison.Ordinal))
+            {
+                return (uint)index;
+            }
+        }
+
+        build.Requests.Add(specifier);
+        build.RequestKeys.Add(Resolved(build, specifier));
+        return (uint)(build.Requests.Count - 1);
+    }
+
+    /// <summary>
+    /// The key the composition resolved a specifier to, or the specifier itself when it named none.
+    /// </summary>
+    /// <remarks>
+    /// <b>An unresolved specifier is recorded verbatim rather than refused here, and the artifact is
+    /// then refused by the verifier.</b> Resolution is not this component's, so a specifier with no
+    /// resolution is a producer that did not finish its own job - and the honest place to say so is
+    /// the pass that looks at the whole graph, which answers that the request names no module the
+    /// artifact carries. Inventing a source diagnostic for it would blame the program for something
+    /// its text cannot express.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private static string Resolved(ModuleBuild build, string specifier)
+    {
+        if (build.Unit?.Requests is { } requests)
+        {
+            foreach (var request in requests)
+            {
+                if (string.Equals(request.Specifier, specifier, System.StringComparison.Ordinal))
+                {
+                    return request.Key;
+                }
+            }
+        }
+
+        return specifier;
+    }
+
+    /// <summary>
+    /// Declares every slot the module's own environment holds, before any code is emitted.
+    /// </summary>
+    /// <remarks>
+    /// The <c>var</c> names are answered so the initialiser can set them to <c>undefined</c>; the
+    /// lexical ones are declared and left uninitialised, which is the temporal dead zone and is what
+    /// an importer that reads too early has to meet.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private System.Collections.Generic.List<string> DeclareModuleBindings(
+        System.Collections.Generic.IReadOnlyList<JsStatement> body, ModuleBuild build)
+    {
+        var names = new System.Collections.Generic.List<string>();
+        var functions = new System.Collections.Generic.List<JsFunctionNode>();
+        var lexical = new System.Collections.Generic.List<string>();
+        CollectVarScope(Unwrapped(body), names, functions, lexical);
+
+        foreach (var name in names)
+        {
+            Declared(build, name, constant: false);
+        }
+
+        // A SECOND FUNCTION DECLARATION OF ONE NAME IS AN ERROR IN A MODULE AND NOT IN A SCRIPT.
+        // A script's top level lets the later declaration win, because a script's declarations are
+        // properties of the global object; a module's are lexical, and lexical names may be
+        // declared once. The two goals genuinely differ, so this check is here and not shared.
+        var declaredFunctions = new System.Collections.Generic.HashSet<string>(
+            System.StringComparer.Ordinal);
+
+        foreach (var function in functions)
+        {
+            build.Functions.Add(function);
+
+            if (!declaredFunctions.Add(function.Name))
+            {
+                Refuse(
+                    function.Span,
+                    SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+                    "`" + function.Name + "` is declared twice at this module's top level");
+            }
+
+            Declared(build, function.Name, constant: false);
+        }
+
+        var declaredLexically = new System.Collections.Generic.HashSet<string>(
+            declaredFunctions, System.StringComparer.Ordinal);
+
+        foreach (var statement in Unwrapped(body))
+        {
+            if (statement is not JsVariableStatement variable ||
+                variable.Kind == SliceDeclarationKind.Var)
+            {
+                continue;
+            }
+
+            foreach (var declarator in variable.Declarators)
+            {
+                if (!declaredLexically.Add(declarator.Name))
+                {
+                    Refuse(
+                        declarator.Span,
+                        SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+                        "`" + declarator.Name + "` is declared twice at this module's top level");
+                }
+
+                if (names.Contains(declarator.Name))
+                {
+                    Refuse(
+                        declarator.Span,
+                        SliceSourceDiagnosticCode.VarAndLexicalCollision,
+                        "`" + declarator.Name + "` is declared both as a `var` and lexically");
+                }
+
+                Declared(
+                    build, declarator.Name, variable.Kind == SliceDeclarationKind.Const);
+            }
+        }
+
+        _ = lexical;
+
+        // `export default <expression>` binds a slot with a name no source can write, so nothing
+        // it collides with can be declared and no collision check is owed for it.
+        foreach (var statement in body)
+        {
+            if (statement is JsExportDeclaration { Kind: JsExportKind.Default, Default: not null })
+            {
+                build.Scope.Declare(JsParser.DefaultBindingName, constant: false);
+            }
+        }
+
+        return names;
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void Declared(ModuleBuild build, string name, bool constant)
+    {
+        if (name.Length == 0)
+        {
+            return;
+        }
+
+        if (build.Imports.ContainsKey(name))
+        {
+            Refuse(
+                default,
+                SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+                "`" + name + "` is both imported and declared in this module");
+
+            return;
+        }
+
+        build.Scope.Declare(name, constant);
+    }
+
+    /// <summary>Records what the module publishes, and refuses a name it publishes twice.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void DeclareExports(
+        System.Collections.Generic.IReadOnlyList<JsStatement> body, ModuleBuild build)
+    {
+        foreach (var statement in body)
+        {
+            if (statement is not JsExportDeclaration exported)
+            {
+                continue;
+            }
+
+            if (exported.Kind == JsExportKind.All && exported.Specifiers.Count == 0)
+            {
+                build.StarExports.Add(RequestIndex(build, exported.From));
+                continue;
+            }
+
+            foreach (var specifier in exported.Specifiers)
+            {
+                if (!build.ExportNames.Add(specifier.Exported))
+                {
+                    Refuse(
+                        specifier.Span,
+                        SliceSourceDiagnosticCode.DuplicateExportName,
+                        "`" + specifier.Exported + "` is exported twice");
+
+                    continue;
+                }
+
+                if (exported.From.Length != 0)
+                {
+                    var request = RequestIndex(build, exported.From);
+
+                    build.IndirectExports.Add(
+                        new JsIndirectExportRow(
+                            InternedName(specifier.Exported),
+                            request,
+                            specifier.Local == JsParser.StarName
+                                ? 0u
+                                : InternedName(specifier.Local),
+                            specifier.Local == JsParser.StarName
+                                ? JsFormat.ImportKind.Namespace
+                                : JsFormat.ImportKind.Named));
+
+                    continue;
+                }
+
+                // RE-EXPORTING AN IMPORT IS AN INDIRECT EXPORT AND NOT A LOCAL ONE. `import { a }
+                // from './m'; export { a };` publishes the binding of the OTHER module, and
+                // copying its value into a slot of this one would be the stale copy again - so it
+                // is recorded as the indirection it is and resolved with the graph.
+                if (build.Imports.TryGetValue(specifier.Local, out var entry))
+                {
+                    var row = importEntries[entry];
+
+                    build.IndirectExports.Add(
+                        new JsIndirectExportRow(
+                            InternedName(specifier.Exported),
+                            row.RequestIndex,
+                            row.NameConstant,
+                            row.Kind));
+
+                    continue;
+                }
+
+                if (!build.Scope.TryGet(specifier.Local, out var slot, out _))
+                {
+                    Refuse(
+                        specifier.Span,
+                        SliceSourceDiagnosticCode.ExportNameNotDeclared,
+                        "`" + specifier.Local + "` is exported and this module declares no such binding");
+
+                    continue;
+                }
+
+                build.LocalExports.Add(
+                    new JsLocalExportRow(InternedName(specifier.Exported), (uint)slot));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Emits the unit that initialises the module's environment before anything is evaluated.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private int EmitModuleInitialiser(
+        JsProgramNode program,
+        ModuleBuild build,
+        System.Collections.Generic.List<string> variables)
+    {
+        var index = units.Count;
+        buffer = new UnitBuffer(0, JsFormat.FunctionFlags.ProgramBody | JsFormat.FunctionFlags.Strict);
+        units.Add(buffer);
+        Position(program.Span);
+
+        foreach (var name in variables)
+        {
+            if (!build.Scope.TryGet(name, out var slot, out _))
+            {
+                continue;
+            }
+
+            Emit(JsOpcode.LoadUndefined);
+            EmitScoped(JsOpcode.InitialiseScoped, 0, slot);
+        }
+
+        foreach (var function in build.Functions)
+        {
+            if (!build.Scope.TryGet(function.Name, out var slot, out _))
+            {
+                continue;
+            }
+
+            Emit(JsOpcode.Closure, (ushort)CompileFunction(function));
+            EmitScoped(JsOpcode.InitialiseScoped, 0, slot);
+        }
+
+        Emit(JsOpcode.ReturnUndefined);
+        return index;
+    }
+
+    /// <summary>Emits the module's body, which is its statements minus the declarations.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private int EmitModuleBody(JsProgramNode program, ModuleBuild build)
+    {
+        var index = units.Count;
+        buffer = new UnitBuffer(0, JsFormat.FunctionFlags.ProgramBody | JsFormat.FunctionFlags.Strict);
+        units.Add(buffer);
+
+        var completion = build.Scope.Declare("#completion", constant: false);
+        Emit(JsOpcode.LoadUndefined);
+        EmitScoped(JsOpcode.InitialiseScoped, 0, completion);
+
+        foreach (var statement in program.Body)
+        {
+            switch (statement)
+            {
+                // An `import` declaration has no run-time behaviour of its own: the request is in
+                // the record and the binding is an indirection. A `function` declaration was
+                // already given its closure by the initialiser.
+                case JsImportDeclaration:
+                case JsFunctionDeclaration:
+                    break;
+
+                case JsExportDeclaration { Declaration: JsFunctionDeclaration }:
+                case JsExportDeclaration { Kind: JsExportKind.Named }:
+                case JsExportDeclaration { Kind: JsExportKind.All }:
+                    break;
+
+                case JsExportDeclaration { Declaration: { } declared }:
+                    CompileStatement(declared, completion);
+                    break;
+
+                case JsExportDeclaration { Kind: JsExportKind.Default, Default: { } value }:
+                {
+                    // AN ANONYMOUS FUNCTION EXPORTED AS THE DEFAULT IS NAMED `default`, which the
+                    // language states as a step of the export's own evaluation rather than as a
+                    // property of the function - so the name has to be applied here, where the
+                    // export is, and not in the general lowering of a function expression.
+                    CompileExpression(
+                        value is JsFunctionExpression { Function.Name.Length: 0 } anonymous
+                            ? anonymous with
+                            {
+                                Function = anonymous.Function with { Name = "default" },
+                            }
+                            : value);
+
+                    EmitScoped(
+                        JsOpcode.InitialiseScoped,
+                        0,
+                        build.Scope.SlotOf(JsParser.DefaultBindingName));
+
+                    break;
+                }
+
+                default:
+                    CompileStatement(statement, completion);
+                    break;
+            }
+        }
+
+        EmitScoped(JsOpcode.LoadScoped, 0, completion);
+        Emit(JsOpcode.Return);
+        return index;
+    }
+
+    /// <summary>
+    /// A statement list with each exported declaration replaced by the declaration itself.
+    /// </summary>
+    /// <remarks>
+    /// The collectors that find <c>var</c> names, function declarations and lexical names are the
+    /// script lowering's and know nothing about <c>export</c>. Unwrapping here rather than teaching
+    /// each of them the module goal keeps one answer to what a declaration is.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private static System.Collections.Generic.List<JsStatement> Unwrapped(
+        System.Collections.Generic.IReadOnlyList<JsStatement> body)
+    {
+        var flattened = new System.Collections.Generic.List<JsStatement>(body.Count);
+
+        foreach (var statement in body)
+        {
+            flattened.Add(
+                statement is JsExportDeclaration { Declaration: { } declared } ? declared : statement);
+        }
+
+        return flattened;
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3FFD44
@@ -764,6 +1525,9 @@ public sealed class JsCompiler
                 continue;
             }
 
+            // A MODULE'S TOP LEVEL IS NOT A SCRIPT'S. The branch below writes a global, which is
+            // right for a script and wrong for a module: a module's declarations are slots of its
+            // own environment, so lowering falls through to the slot paths beneath.
             if (scope.Kind == ScopeKind.Program && blockDepth == 0)
             {
                 if (declarator.Initialiser is null)
@@ -1653,7 +2417,14 @@ public sealed class JsCompiler
     {
         switch (unary.Operator)
         {
-            case SliceTokenKind.Typeof when unary.Operand is JsIdentifier name && !Resolvable(name.Name):
+            // `typeof` OF AN IMPORT IS NOT `typeof` OF AN UNDECLARED NAME. The form below exists so
+            // that asking about a name nothing declares answers `"undefined"` instead of throwing;
+            // an imported binding IS declared, so a read of one before its module initialised it is
+            // the dead-zone `ReferenceError` the language gives - and answering `"undefined"` here
+            // would have hidden exactly the case a cyclic import produces.
+            case SliceTokenKind.Typeof when unary.Operand is JsIdentifier name &&
+                !Resolvable(name.Name) &&
+                (module is null || !module.Imports.ContainsKey(name.Name)):
                 Emit(JsOpcode.LoadGlobalOrUndefined, InternedName(name.Name));
                 Emit(JsOpcode.TypeOf);
                 return;
@@ -2055,6 +2826,16 @@ public sealed class JsCompiler
             return;
         }
 
+        // AN IMPORT IS CONSULTED AFTER THE SCOPES AND BEFORE THE GLOBAL, and that order is the
+        // shadowing rule. A nearer declaration of the same name wins - a function may declare a
+        // local called `a` while the module imports an `a` - and a name that is neither is still a
+        // global, because a module's code sees the realm's globals like any other code.
+        if (module is { } current && current.Imports.TryGetValue(name, out var entry))
+        {
+            Emit(JsOpcode.LoadImport, (ushort)entry);
+            return;
+        }
+
         Emit(JsOpcode.LoadGlobal, InternedName(name));
     }
 
@@ -2064,16 +2845,31 @@ public sealed class JsCompiler
     {
         if (TryResolve(name, out var hops, out var slot, out var constant))
         {
+            // A WRITE TO A CONSTANT COMPILES AND THROWS, and until 2026-09-04 it was refused at the
+            // front end instead. The language makes it a run-time `TypeError`, which is why
+            // `assert.throws(TypeError, function () { x = 1; })` is a program every engine runs -
+            // and refusing it said this manifest does not admit an assignment, when what it does
+            // not admit is the assignment SUCCEEDING.
             if (constant)
             {
-                Refuse(
-                    span,
-                    SliceSourceDiagnosticCode.AssignmentToConstant,
-                    "`" + name + "` is a constant binding");
+                Emit(JsOpcode.Duplicate);
+                Emit(JsOpcode.ThrowImmutable, InternedName(name));
+                return;
             }
 
             Emit(JsOpcode.Duplicate);
             EmitScoped(JsOpcode.StoreScoped, (byte)hops, slot);
+            return;
+        }
+
+        // AN IMPORTED BINDING IS IMMUTABLE, and a write to one fails the same way a write to a
+        // constant does: at the moment it runs, with a `TypeError`. It is not an early error, and
+        // the conformance suite is emphatic about it - a whole family of its module tests wraps the
+        // assignment in `assert.throws(TypeError, ...)`, which needs the program to compile.
+        if (module is { } current && current.Imports.ContainsKey(name))
+        {
+            Emit(JsOpcode.Duplicate);
+            Emit(JsOpcode.ThrowImmutable, InternedName(name));
             return;
         }
 
@@ -2321,6 +3117,88 @@ public sealed class JsCompiler
         Program,
         Function,
         Block,
+
+        /// <summary>
+        /// A module's own environment, which is a scope of SLOTS rather than of globals.
+        /// </summary>
+        /// <remarks>
+        /// It is a kind of its own and not <see cref="Program"/> with a flag, because every place
+        /// that asks the question asks it about the top level: a script's top-level declaration is
+        /// a property of the global object and a module's is a slot nothing outside the module can
+        /// name.
+        /// </remarks>
+        Module,
+    }
+
+    /// <summary>What lowering one module has established so far.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private sealed class ModuleBuild(string key, Scope environment)
+    {
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal string Key { get; } = key;
+
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal Scope Scope { get; } = environment;
+
+        /// <summary>The module specifiers this module requests, in source order.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal System.Collections.Generic.List<string> Requests { get; } = [];
+
+        /// <summary>The key each request resolved to, parallel to <see cref="Requests"/>.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal System.Collections.Generic.List<string> RequestKeys { get; } = [];
+
+        /// <summary>The unit this module was presented as, which carries its resolutions.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal JsModuleUnit? Unit { get; init; }
+
+        /// <summary>Each imported local name, and its index in the artifact's import table.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal System.Collections.Generic.Dictionary<string, int> Imports { get; } =
+            new(System.StringComparer.Ordinal);
+
+        /// <summary>This module's import entries, in the order the artifact writes them.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal System.Collections.Generic.List<JsImportEntryRow> ImportRows { get; } = [];
+
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal System.Collections.Generic.List<JsLocalExportRow> LocalExports { get; } = [];
+
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal System.Collections.Generic.List<JsIndirectExportRow> IndirectExports { get; } = [];
+
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal System.Collections.Generic.List<uint> StarExports { get; } = [];
+
+        /// <summary>Every name this module publishes, so a second use of one is an early error.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal System.Collections.Generic.HashSet<string> ExportNames { get; } =
+            new(System.StringComparer.Ordinal);
+
+        /// <summary>The function declarations the initialiser gives their closures.</summary>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal System.Collections.Generic.List<JsFunctionNode> Functions { get; } = [];
+
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal int InitialiserUnit { get; set; }
+
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal int BodyUnit { get; set; }
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3336D6

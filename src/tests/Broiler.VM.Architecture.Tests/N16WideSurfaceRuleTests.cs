@@ -45,7 +45,13 @@ public sealed class N16WideSurfaceRuleTests
     private const string SecondPassPath =
         "src/Broiler.VM.Profile.JavaScript/JsVerifier.cs";
 
-    /// <summary>The descriptor declares both manifests and a range that spans both versions.</summary>
+    /// <summary>The descriptor declares every manifest and a range that spans both versions.</summary>
+    /// <remarks>
+    /// The module goal added a THIRD manifest at the same format version, which is the case this
+    /// clause has to keep admitting: a manifest and a format version are not the same axis, and a
+    /// rule that read the accepted set as a pair would have refused the surface that grew without
+    /// the version moving.
+    /// </remarks>
     [Fact]
     public void N16_Two_Versions_And_Two_Manifests_Are_Declared_Together()
     {
@@ -62,7 +68,12 @@ public sealed class N16WideSurfaceRuleTests
             System.StringComparison.Ordinal);
 
         Assert.Contains(
-            "ImmutableArray.Create(SliceManifest, WideManifest)",
+            "VmFeatureManifestId.Parse(Format.JsFormat.ModulesManifestId)",
+            text,
+            System.StringComparison.Ordinal);
+
+        Assert.Contains(
+            "SliceManifest, WideManifest, ModulesManifest)",
             text,
             System.StringComparison.Ordinal);
 

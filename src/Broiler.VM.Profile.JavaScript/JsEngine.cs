@@ -654,6 +654,11 @@ internal sealed class JsEngine
     // Broiler-Human:        PENDING
     internal JsValue RunEntry(JsProgram program, uint unit)
     {
+        if (program.ModuleOfUnit[(int)unit] is var moduleIndex and >= 0)
+        {
+            return RunModuleGraph(program, moduleIndex);
+        }
+
         var code = program.Functions[(int)unit];
         var environment = new JsEnvironment((int)code.ScopeSlots, null);
 
@@ -664,6 +669,157 @@ internal sealed class JsEngine
             JsValue.Object(Realm.GlobalObject),
             System.Array.Empty<JsValue>(),
             null);
+    }
+
+    // ---- modules -------------------------------------------------------------------------------
+
+    /// <summary>The module instances of this realm, created the first time a module is entered.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private JsModuleInstance[]? modules;
+
+    /// <summary>
+    /// Links and evaluates the graph rooted at one module, and answers what its body completed with.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Three phases, and the order is the specification's rather than a convenience.</b> Every
+    /// module's environment is created, then every module's declarations are initialised, then the
+    /// bodies are evaluated in the order a depth-first walk from the root leaves them. Collapsing
+    /// the second phase into the third is the change that breaks a legal cyclic program: the module
+    /// that runs first calls a function of the one that has not, and that function has to already
+    /// exist.
+    /// </para>
+    /// <para>
+    /// <b>Linking happens once per realm and evaluation happens once per module.</b> A second
+    /// invocation of the root entry point answers what the first completed with rather than running
+    /// the graph again, which is what the language says of a module that is already evaluated.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=TBF
+    // Broiler-Falsified-If: a module body runs twice in one realm, or a module body runs before every module's declarations are initialised
+    // Broiler-Human:        PENDING
+    private JsValue RunModuleGraph(JsProgram program, int root)
+    {
+        if (modules is null)
+        {
+            modules = new JsModuleInstance[program.Modules.Length];
+
+            for (var index = 0; index < modules.Length; index++)
+            {
+                var record = program.Modules[index];
+                var slots = (int)program.Functions[(int)record.BodyUnit].ScopeSlots;
+                modules[index] = new JsModuleInstance(new JsEnvironment(slots, null));
+            }
+
+            for (var index = 0; index < modules.Length; index++)
+            {
+                modules[index].Namespace =
+                    new JsModuleNamespace(program.Modules[index], modules, this);
+            }
+
+            Confirm(program);
+
+            for (var index = 0; index < modules.Length; index++)
+            {
+                Charge(FuelPerInstruction);
+
+                Execute(
+                    program,
+                    (int)program.Modules[index].InitialiserUnit,
+                    modules[index].Environment,
+                    JsValue.Undefined,
+                    System.Array.Empty<JsValue>(),
+                    null);
+
+                modules[index].State = JsModuleState.Initialised;
+            }
+        }
+
+        Evaluate(program, root);
+        return modules[root].Completion;
+    }
+
+    /// <summary>
+    /// Puts every module request to the composition, and refuses a graph it resolves differently.
+    /// </summary>
+    /// <remarks>
+    /// <b>The profile never derives a key and this is why it does not have to.</b> The artifact
+    /// states what its producer resolved each specifier to; this asks the composition whether that
+    /// is its own answer, one request at a time, and a <c>Refused</c> ends the run by name. So a
+    /// graph bundled under one host's resolution rules cannot be evaluated under another's, and no
+    /// filesystem, URL scheme or search path is known to this component at all.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=TBF
+    // Broiler-Falsified-If: a module request is honoured without the composition being asked, or a refusal is treated as an answer
+    // Broiler-Human:        PENDING
+    private void Confirm(JsProgram program)
+    {
+        if (capabilities is null ||
+            capabilities.BindingCount <= JavaScriptProfile.ResolveBindingIndex ||
+            !capabilities.IsBound(JavaScriptProfile.ResolveBindingIndex))
+        {
+            ThrowTypeError("this composition provides no module resolver");
+            return;
+        }
+
+        foreach (var record in program.Modules)
+        {
+            for (var index = 0; index < record.Requests.Length; index++)
+            {
+                Charge(FuelPerInstruction);
+                var target = program.Modules[record.Requests[index]];
+
+                var request = System.Text.Encoding.UTF8.GetBytes(
+                    record.Key + "\0" + record.RequestSpecifiers[index] + "\0" + target.Key);
+
+                var outcome = capabilities.InvokeBytes(
+                    JavaScriptProfile.ResolveBindingIndex, new VmBytes(request), out _);
+
+                if (outcome != VmHostCallOutcome.Completed)
+                {
+                    ThrowTypeError(
+                        "this composition does not resolve '" + record.RequestSpecifiers[index] +
+                        "' from '" + record.Key + "' to '" + target.Key + "'");
+                }
+            }
+        }
+    }
+
+    /// <summary>Evaluates one module after its requests, and at most once.</summary>
+    /// <remarks>
+    /// <b>The state is set to <c>Evaluating</c> BEFORE the requests are walked</b>, and that one
+    /// line is what makes a cyclic import terminate: the module that closes the cycle finds its
+    /// starting point already under way and returns rather than descending into it again.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void Evaluate(JsProgram program, int index)
+    {
+        var instance = modules![index];
+
+        if (instance.State is JsModuleState.Evaluating or JsModuleState.Evaluated)
+        {
+            return;
+        }
+
+        instance.State = JsModuleState.Evaluating;
+        var record = program.Modules[index];
+
+        foreach (var request in record.Requests)
+        {
+            Evaluate(program, request);
+        }
+
+        instance.Completion = Execute(
+            program,
+            (int)record.BodyUnit,
+            instance.Environment,
+            JsValue.Undefined,
+            System.Array.Empty<JsValue>(),
+            null);
+
+        instance.State = JsModuleState.Evaluated;
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=ECD444
@@ -775,6 +931,24 @@ internal sealed class JsEngine
                                 Realm.CreateArguments(actualArguments, self));
 
                             pc++;
+                            break;
+
+                        // AN IMPORT READ GOES TO THE EXPORTING ENVIRONMENT EVERY TIME. Nothing is
+                        // cached here and nothing may be: a live binding is one whose later value
+                        // is seen, so the only correct read is the one that happens now.
+                        case JsOpcode.LoadImport:
+                        {
+                            stack[sp++] = JsModuleNamespace.Read(
+                                program.ImportBindings[U16(code, pc)], modules!, this);
+
+                            pc += 3;
+                            break;
+                        }
+
+                        case JsOpcode.ThrowImmutable:
+                            ThrowTypeError(
+                                "Assignment to constant variable '" + names[U16(code, pc)] + "'");
+
                             break;
 
                         case JsOpcode.LoadScoped:

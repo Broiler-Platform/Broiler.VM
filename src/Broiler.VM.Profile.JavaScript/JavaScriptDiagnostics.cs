@@ -213,6 +213,66 @@ public enum JavaScriptDiagnosticCode
     /// <summary>An exception region states a range, a handler or a kind this format refuses.</summary>
     MalformedExceptionRegion = 1605,
 
+    // ---- 1613: the module goal ---------------------------------------------------------------
+    //
+    // The numbers start above the block format version 2's structural refusals occupy, and they
+    // leave the intervening ones unused rather than packing them: a module refusal is a different
+    // KIND of refusal from a malformed row - it is about a graph rather than about a table - and a
+    // reader holding one of these numbers should not have to know which of two milestones minted
+    // the neighbouring one to tell them apart.
+
+    /// <summary>
+    /// The artifact declares module records under a manifest that does not admit them.
+    /// </summary>
+    ModuleSectionOutsideManifest = 1613,
+
+    /// <summary>A module record states an index, a count or a slot this format refuses.</summary>
+    MalformedModuleRow = 1614,
+
+    /// <summary>A module requests a key no module of this artifact carries.</summary>
+    /// <remarks>
+    /// <b>Resolution happened before the bytes were written and this is the check that it was
+    /// complete.</b> The composition turns a specifier into a key and supplies the module under
+    /// that key; an artifact whose request matches no key is one whose producer resolved a
+    /// specifier and then did not carry what it resolved to, which no amount of executing would
+    /// discover any earlier.
+    /// </remarks>
+    ModuleRequestUnresolved = 1615,
+
+    /// <summary>An import or a re-export names an export the exporting module does not have.</summary>
+    ModuleExportNotFound = 1616,
+
+    /// <summary>Two star re-exports supply the same name from different bindings.</summary>
+    ModuleExportAmbiguous = 1617,
+
+    /// <summary>
+    /// Resolving an export re-entered the module and name it started from: a cyclic import.
+    /// </summary>
+    /// <remarks>
+    /// <b>This is what a cyclic import costs, and it costs a named refusal rather than a budget.</b>
+    /// A cycle in the module GRAPH is ordinary and runs; a cycle in an export RESOLUTION -
+    /// <c>a</c> re-exporting a name from <c>b</c> while <c>b</c> re-exports it from <c>a</c> -
+    /// names a binding that exists nowhere, and a resolver that followed it would walk the cycle
+    /// until an allowance ran out. The walk carries the pairs it has visited and refuses on
+    /// re-entry, so the answer is this code and never an exhaustion.
+    /// </remarks>
+    ModuleExportCircular = 1618,
+
+    /// <summary>
+    /// The composition registered no module resolver, so it does not admit a module artifact.
+    /// </summary>
+    /// <remarks>
+    /// <b>It is refused at VERIFICATION and not at the first import.</b> Roadmap section 6 makes an
+    /// optional surface a thing a composition can decline and be told about before anything runs,
+    /// and module resolution is the host's - so a composition that registered no resolver has
+    /// declined the surface, and answering that with a run-time error would be answering it after
+    /// the artifact was admitted.
+    /// </remarks>
+    ModuleResolverAbsent = 1619,
+
+    /// <summary>The artifact names the module manifest and declares no module records.</summary>
+    ModuleSectionMissing = 1620,
+
     // ---- 1900: the bounded reader's own statuses, mapped -----------------------------------
 
     /// <summary>The payload ended inside a value the reader was part-way through.</summary>

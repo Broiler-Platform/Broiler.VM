@@ -106,7 +106,7 @@ internal sealed class JsVerifier
                 reader.Position);
         }
 
-        var manifest = ReadManifest(in descriptor, ref reader);
+        var manifest = ReadManifest(in descriptor, ref reader, state);
 
         if (manifest.Category != VmOutcome.Normal)
         {
@@ -146,13 +146,13 @@ internal sealed class JsVerifier
             return VmVerifierOutcome.Cancellation();
         }
 
-        return Link(state, adapter, cancellationToken);
+        return Link(state, adapter, context, cancellationToken);
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BB9BC8
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome ReadManifest(
-        in VmArtifactDescriptor descriptor, ref VmBoundedReader reader)
+        in VmArtifactDescriptor descriptor, ref VmBoundedReader reader, Sections state)
     {
         if (!reader.TryReadVarUInt32(out var length))
         {
@@ -186,6 +186,12 @@ internal sealed class JsVerifier
                 reader.Position);
         }
 
+        if (string.Equals(text, JsFormat.ModulesManifestId, System.StringComparison.Ordinal))
+        {
+            state.IsModuleArtifact = true;
+            return Ok;
+        }
+
         if (!string.Equals(text, JsFormat.ManifestId, System.StringComparison.Ordinal))
         {
             return Invalid(
@@ -194,7 +200,7 @@ internal sealed class JsVerifier
                 reader.Position);
         }
 
-        return VmVerifierOutcome.Verified(EmptyState.Instance, VmArtifactSharing.Shareable);
+        return Ok;
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4E4B50
@@ -217,7 +223,7 @@ internal sealed class JsVerifier
             return FromReader(ref reader, reader.Position);
         }
 
-        if (kind is < 1 or > 8)
+        if (kind is < 1 or > 9)
         {
             return Invalid(
                 VmReason.UnknownFeature, JavaScriptDiagnosticCode.UnknownSectionKind, at);
@@ -244,6 +250,7 @@ internal sealed class JsVerifier
             JsFormat.SectionKind.ExceptionRegions => ReadRegions(ref reader, state),
             JsFormat.SectionKind.Positions => ReadPositions(ref reader, state),
             JsFormat.SectionKind.Functions => ReadFunctions(ref reader, state),
+            JsFormat.SectionKind.Modules => ReadModules(ref reader, adapter, state),
             _ => Invalid(
                 VmReason.UnknownFeature,
                 JavaScriptDiagnosticCode.SuspensionTargetOutsideManifest,
@@ -658,11 +665,220 @@ internal sealed class JsVerifier
         return Ok;
     }
 
+    /// <summary>Reads the module records exactly as the payload declares them.</summary>
+    /// <remarks>
+    /// <b>Nothing is resolved here.</b> This pass answers only whether the bytes are a sequence of
+    /// module rows; what a request names and what an export resolves to are questions about the
+    /// whole graph, and asking them one row at a time would mean asking them against rows that had
+    /// not been read yet.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome ReadModules(
+        ref VmBoundedReader reader, JavaScriptReadAdapter adapter, Sections state)
+    {
+        if (!state.IsModuleArtifact)
+        {
+            return Invalid(
+                VmReason.UnknownFeature,
+                JavaScriptDiagnosticCode.ModuleSectionOutsideManifest,
+                reader.Position);
+        }
+
+        if (!reader.TryReadDeclaredCount(out var count))
+        {
+            return FromReader(ref reader, reader.Position);
+        }
+
+        if (count == 0 || count > JsFormat.CeilingModules)
+        {
+            return Invalid(
+                VmReason.InconsistentStructure,
+                JavaScriptDiagnosticCode.MalformedModuleRow,
+                reader.Position);
+        }
+
+        var rows = new JsModuleRow[count];
+        var imports = 0L;
+
+        for (var index = 0u; index < count; index++)
+        {
+            if (!adapter.Poll())
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.ReaderStopped,
+                    reader.Position);
+            }
+
+            if (!reader.TryReadVarUInt32(out var key) ||
+                !reader.TryReadVarUInt32(out var unit) ||
+                !reader.TryReadVarUInt32(out var initialiser))
+            {
+                return FromReader(ref reader, reader.Position);
+            }
+
+            if (!reader.TryReadDeclaredCount(out var requestCount) ||
+                requestCount > JsFormat.CeilingModuleRequests)
+            {
+                return FromReader(ref reader, reader.Position);
+            }
+
+            var specifiers = new uint[requestCount];
+            var requests = new uint[requestCount];
+
+            for (var request = 0u; request < requestCount; request++)
+            {
+                if (!reader.TryReadVarUInt32(out specifiers[request]) ||
+                    !reader.TryReadVarUInt32(out requests[request]))
+                {
+                    return FromReader(ref reader, reader.Position);
+                }
+            }
+
+            if (!reader.TryReadDeclaredCount(out var importCount) ||
+                importCount > JsFormat.CeilingImportEntries)
+            {
+                return FromReader(ref reader, reader.Position);
+            }
+
+            var importRows = new JsImportEntryRow[importCount];
+
+            for (var entry = 0u; entry < importCount; entry++)
+            {
+                if (!reader.TryReadVarUInt32(out var request) ||
+                    !reader.TryReadVarUInt32(out var name) ||
+                    !reader.TryReadByte(out var kind))
+                {
+                    return FromReader(ref reader, reader.Position);
+                }
+
+                if (kind > (byte)JsFormat.ImportKind.Namespace)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        reader.Position);
+                }
+
+                importRows[entry] = new JsImportEntryRow(request, name, (JsFormat.ImportKind)kind);
+            }
+
+            imports += importRows.Length;
+
+            if (imports > JsFormat.CeilingImportEntries)
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.MalformedModuleRow,
+                    reader.Position);
+            }
+
+            if (!reader.TryReadDeclaredCount(out var localCount) ||
+                localCount > JsFormat.CeilingExportEntries)
+            {
+                return FromReader(ref reader, reader.Position);
+            }
+
+            var locals = new JsLocalExportRow[localCount];
+
+            for (var entry = 0u; entry < localCount; entry++)
+            {
+                if (!reader.TryReadVarUInt32(out var name) || !reader.TryReadVarUInt32(out var slot))
+                {
+                    return FromReader(ref reader, reader.Position);
+                }
+
+                locals[entry] = new JsLocalExportRow(name, slot);
+            }
+
+            if (!reader.TryReadDeclaredCount(out var indirectCount) ||
+                indirectCount > JsFormat.CeilingExportEntries)
+            {
+                return FromReader(ref reader, reader.Position);
+            }
+
+            var indirects = new JsIndirectExportRow[indirectCount];
+
+            for (var entry = 0u; entry < indirectCount; entry++)
+            {
+                if (!reader.TryReadVarUInt32(out var name) ||
+                    !reader.TryReadVarUInt32(out var request) ||
+                    !reader.TryReadVarUInt32(out var importName) ||
+                    !reader.TryReadByte(out var kind))
+                {
+                    return FromReader(ref reader, reader.Position);
+                }
+
+                if (kind > (byte)JsFormat.ImportKind.Namespace)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        reader.Position);
+                }
+
+                indirects[entry] =
+                    new JsIndirectExportRow(name, request, importName, (JsFormat.ImportKind)kind);
+            }
+
+            if (!TryReadKeys(ref reader, JsFormat.CeilingModuleRequests, out var stars))
+            {
+                return stars is null
+                    ? FromReader(ref reader, reader.Position)
+                    : Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        reader.Position);
+            }
+
+            rows[index] = new JsModuleRow(
+                key, unit, initialiser, specifiers, requests, importRows, locals, indirects, stars!);
+        }
+
+        state.ModuleRows = rows;
+        state.ImportCount = (int)imports;
+        return Ok;
+    }
+
+    /// <summary>Reads a counted run of unsigned integers, refusing one past a ceiling.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private static bool TryReadKeys(ref VmBoundedReader reader, uint ceiling, out uint[]? values)
+    {
+        values = null;
+
+        if (!reader.TryReadDeclaredCount(out var count))
+        {
+            return false;
+        }
+
+        if (count > ceiling)
+        {
+            values = [];
+            return false;
+        }
+
+        var read = new uint[count];
+
+        for (var index = 0u; index < count; index++)
+        {
+            if (!reader.TryReadVarUInt32(out read[index]))
+            {
+                return false;
+            }
+        }
+
+        values = read;
+        return true;
+    }
+
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9A3477
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome Link(
         Sections state,
         JavaScriptReadAdapter adapter,
+        IVmVerificationContext context,
         System.Threading.CancellationToken cancellationToken)
     {
         if (!state.SawLimits || !state.SawConstants || !state.SawCode ||
@@ -794,6 +1010,19 @@ internal sealed class JsVerifier
             }
         }
 
+        var modules = System.Array.Empty<JsModuleRecord>();
+        var bindings = System.Array.Empty<JsBinding>();
+
+        if (state.IsModuleArtifact)
+        {
+            var linked = LinkModules(state, units, context, adapter, out modules, out bindings);
+
+            if (linked.Category != VmOutcome.Normal)
+            {
+                return linked;
+            }
+        }
+
         var program = new JsProgram(
             state.Constants!,
             state.Names!,
@@ -801,9 +1030,630 @@ internal sealed class JsVerifier
             units,
             state.Regions,
             state.Entries,
-            state.PositionRows);
+            state.PositionRows,
+            modules,
+            bindings);
 
         return VmVerifierOutcome.Verified(program, VmArtifactSharing.Shareable);
+    }
+
+    /// <summary>
+    /// Turns declared module rows into a linked graph, executing nothing.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The whole of module linking happens here, before the artifact is admitted.</b> Which
+    /// module a request names, which slot of which module an imported name reads, whether two star
+    /// re-exports supply the same name from different bindings, and whether an export resolution
+    /// walks a cycle - all four are decidable from the rows alone, and answering them at the first
+    /// import would mean an artifact that verified and then failed on its second instruction.
+    /// </para>
+    /// <para>
+    /// <b>The resolution is a fixed point rather than a recursion, and the reason is the stack.</b>
+    /// A recursive <c>ResolveExport</c> is the specification's shape and would nest once per link in
+    /// a re-export chain, which an artifact controls; verification runs on the caller's thread, and
+    /// this component's own rule is that a payload never chooses how deep the host recurses. So
+    /// each module's export table is filled by repeated passes that stop when a pass changes
+    /// nothing, and what is still unresolved afterwards is classified by a walk with a visited set.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=TBF
+    // Broiler-Falsified-If: linking recurses to a depth the payload chooses, or a cyclic export resolution is answered by spending an allowance
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome LinkModules(
+        Sections state,
+        JsCodeUnit[] units,
+        IVmVerificationContext context,
+        JavaScriptReadAdapter adapter,
+        out JsModuleRecord[] modules,
+        out JsBinding[] bindings)
+    {
+        modules = [];
+        bindings = [];
+
+        // THE COMPOSITION'S DECLINE IS CHECKED FIRST AND ON ITS OWN. A composition that registered
+        // no resolver has declined the module surface, and every refusal below would be a remark
+        // about an artifact it was never going to run.
+        if (!context.TryGetCapabilityDescriptor(
+                JavaScriptProfile.ResolveCapability.CapabilityId,
+                JavaScriptProfile.ResolveCapability.Version,
+                out _))
+        {
+            return Invalid(
+                VmReason.UnsupportedFeatureManifest,
+                JavaScriptDiagnosticCode.ModuleResolverAbsent,
+                0);
+        }
+
+        if (state.ModuleRows is not { Length: > 0 } rows)
+        {
+            return Invalid(
+                VmReason.InconsistentStructure, JavaScriptDiagnosticCode.ModuleSectionMissing, 0);
+        }
+
+        var names = state.Names!;
+        var keys = new string[rows.Length];
+
+        for (var index = 0; index < rows.Length; index++)
+        {
+            var row = rows[index];
+
+            if (row.KeyConstant >= names.Length || names[row.KeyConstant].Length == 0 ||
+                row.UnitIndex >= units.Length || row.InitialiserUnitIndex >= units.Length)
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.MalformedModuleRow,
+                    (ulong)index);
+            }
+
+            keys[index] = names[row.KeyConstant];
+
+            for (var earlier = 0; earlier < index; earlier++)
+            {
+                if (string.Equals(keys[earlier], keys[index], System.StringComparison.Ordinal))
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        (ulong)index);
+                }
+            }
+        }
+
+        var requests = new int[rows.Length][];
+
+        for (var index = 0; index < rows.Length; index++)
+        {
+            var row = rows[index];
+            requests[index] = new int[row.RequestKeyConstants.Length];
+
+            for (var request = 0; request < row.RequestKeyConstants.Length; request++)
+            {
+                var constant = row.RequestKeyConstants[request];
+
+                if (constant >= names.Length ||
+                    row.RequestSpecifierConstants[request] >= names.Length ||
+                    names[row.RequestSpecifierConstants[request]].Length == 0)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        (ulong)index);
+                }
+
+                var found = -1;
+
+                for (var candidate = 0; candidate < keys.Length; candidate++)
+                {
+                    if (string.Equals(keys[candidate], names[constant], System.StringComparison.Ordinal))
+                    {
+                        found = candidate;
+                        break;
+                    }
+                }
+
+                if (found < 0)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.ModuleRequestUnresolved,
+                        (ulong)index);
+                }
+
+                requests[index][request] = found;
+            }
+        }
+
+        var tables = new System.Collections.Generic.Dictionary<string, ExportEntry>[rows.Length];
+        var seeded = Seed(rows, requests, units, names, tables);
+
+        if (seeded.Category != VmOutcome.Normal)
+        {
+            return seeded;
+        }
+
+        Settle(rows, requests, tables, adapter);
+
+        var classified = Classify(rows, requests, tables);
+
+        if (classified.Category != VmOutcome.Normal)
+        {
+            return classified;
+        }
+
+        // A RE-EXPORT IS CHECKED WHETHER OR NOT ANYTHING IMPORTS IT. `export { x } from './m'`
+        // where `m` exports no `x` is a link failure of THIS module, and a graph in which nothing
+        // happened to import that name would otherwise have verified with a re-export naming
+        // nothing - which is the case a whole family of the conformance suite is about.
+        for (var index = 0; index < rows.Length; index++)
+        {
+            foreach (var indirect in rows[index].IndirectExports)
+            {
+                var published = names[indirect.NameConstant];
+
+                if (!tables[index].TryGetValue(published, out var entry))
+                {
+                    continue;
+                }
+
+                if (entry.State == ExportState.NotFound)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.ModuleExportNotFound,
+                        (ulong)index);
+                }
+
+                if (entry.State == ExportState.Ambiguous)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.ModuleExportAmbiguous,
+                        (ulong)index);
+                }
+            }
+        }
+
+        var records = new JsModuleRecord[rows.Length];
+        var table = new System.Collections.Generic.List<JsBinding>(state.ImportCount);
+
+        for (var index = 0; index < rows.Length; index++)
+        {
+            var row = rows[index];
+            var exported = new System.Collections.Generic.List<string>(tables[index].Count);
+
+            foreach (var pair in tables[index])
+            {
+                if (pair.Value.State == ExportState.Resolved)
+                {
+                    exported.Add(pair.Key);
+                }
+            }
+
+            exported.Sort(System.StringComparer.Ordinal);
+            var exportBindings = new JsBinding[exported.Count];
+
+            for (var name = 0; name < exported.Count; name++)
+            {
+                exportBindings[name] = tables[index][exported[name]].Binding;
+            }
+
+            var specifiers = new string[row.RequestSpecifierConstants.Length];
+
+            for (var request = 0; request < specifiers.Length; request++)
+            {
+                specifiers[request] = names[row.RequestSpecifierConstants[request]];
+            }
+
+            records[index] = new JsModuleRecord(
+                keys[index],
+                row.UnitIndex,
+                row.InitialiserUnitIndex,
+                specifiers,
+                requests[index],
+                exported.ToArray(),
+                exportBindings);
+        }
+
+        for (var index = 0; index < rows.Length; index++)
+        {
+            foreach (var entry in rows[index].Imports)
+            {
+                if (entry.RequestIndex >= requests[index].Length)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        (ulong)index);
+                }
+
+                var target = requests[index][entry.RequestIndex];
+
+                if (entry.Kind == JsFormat.ImportKind.Namespace)
+                {
+                    if (entry.NameConstant != 0)
+                    {
+                        return Invalid(
+                            VmReason.InconsistentStructure,
+                            JavaScriptDiagnosticCode.MalformedModuleRow,
+                            (ulong)index);
+                    }
+
+                    table.Add(new JsBinding(target, 0, JsBindingKind.Namespace, keys[target]));
+                    continue;
+                }
+
+                if (entry.NameConstant >= names.Length)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        (ulong)index);
+                }
+
+                var wanted = names[entry.NameConstant];
+
+                if (!tables[target].TryGetValue(wanted, out var found) ||
+                    found.State == ExportState.NotFound)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.ModuleExportNotFound,
+                        (ulong)index);
+                }
+
+                if (found.State == ExportState.Ambiguous)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.ModuleExportAmbiguous,
+                        (ulong)index);
+                }
+
+                table.Add(found.Binding);
+            }
+        }
+
+        if (table.Count != state.ImportCount)
+        {
+            return Invalid(
+                VmReason.InconsistentStructure, JavaScriptDiagnosticCode.MalformedModuleRow, 0);
+        }
+
+        modules = records;
+        bindings = table.ToArray();
+        return Ok;
+    }
+
+    /// <summary>Fills each module's table with what its own rows state, before any propagation.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome Seed(
+        JsModuleRow[] rows,
+        int[][] requests,
+        JsCodeUnit[] units,
+        string[] names,
+        System.Collections.Generic.Dictionary<string, ExportEntry>[] tables)
+    {
+        for (var index = 0; index < rows.Length; index++)
+        {
+            var row = rows[index];
+            var table = new System.Collections.Generic.Dictionary<string, ExportEntry>(
+                System.StringComparer.Ordinal);
+
+            tables[index] = table;
+
+            foreach (var local in row.LocalExports)
+            {
+                if (local.NameConstant >= names.Length ||
+                    local.Slot >= units[row.UnitIndex].ScopeSlots)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        (ulong)index);
+                }
+
+                var name = names[local.NameConstant];
+
+                if (!table.TryAdd(
+                        name,
+                        new ExportEntry
+                        {
+                            State = ExportState.Resolved,
+                            Binding = new JsBinding(index, (int)local.Slot, JsBindingKind.Slot, name),
+                        }))
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        (ulong)index);
+                }
+            }
+
+            foreach (var indirect in row.IndirectExports)
+            {
+                if (indirect.NameConstant >= names.Length ||
+                    indirect.RequestIndex >= requests[index].Length)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        (ulong)index);
+                }
+
+                var target = requests[index][indirect.RequestIndex];
+                var name = names[indirect.NameConstant];
+
+                var entry = indirect.Kind == JsFormat.ImportKind.Namespace
+                    ? new ExportEntry
+                    {
+                        State = ExportState.Resolved,
+                        Binding = new JsBinding(
+                            target, 0, JsBindingKind.Namespace, name),
+                    }
+                    : new ExportEntry
+                    {
+                        State = ExportState.Pending,
+                        TargetModule = target,
+                        TargetName = indirect.ImportNameConstant < names.Length
+                            ? names[indirect.ImportNameConstant]
+                            : string.Empty,
+                    };
+
+                if (indirect.Kind == JsFormat.ImportKind.Namespace
+                    ? indirect.ImportNameConstant != 0
+                    : entry.TargetName.Length == 0)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        (ulong)index);
+                }
+
+                if (!table.TryAdd(name, entry))
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        (ulong)index);
+                }
+            }
+
+            foreach (var star in row.StarExportRequests)
+            {
+                if (star >= requests[index].Length)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        (ulong)index);
+                }
+            }
+        }
+
+        return Ok;
+    }
+
+    /// <summary>
+    /// Propagates re-exports until a pass changes nothing, or until every module has had a turn.
+    /// </summary>
+    /// <remarks>
+    /// The pass count is bounded by the module count because a chain of re-exports can be no longer
+    /// than the graph; a cycle changes nothing after its first pass and stops the loop early, which
+    /// is why a cyclic artifact costs a pass rather than an allowance.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private static void Settle(
+        JsModuleRow[] rows,
+        int[][] requests,
+        System.Collections.Generic.Dictionary<string, ExportEntry>[] tables,
+        JavaScriptReadAdapter adapter)
+    {
+        for (var pass = 0; pass <= rows.Length; pass++)
+        {
+            var changed = false;
+
+            for (var index = 0; index < rows.Length; index++)
+            {
+                if (!adapter.TryChargeWork((ulong)tables[index].Count + 1))
+                {
+                    return;
+                }
+
+                foreach (var name in Keys(tables[index]))
+                {
+                    var entry = tables[index][name];
+
+                    if (entry.State != ExportState.Pending ||
+                        !tables[entry.TargetModule].TryGetValue(entry.TargetName, out var found) ||
+                        found.State == ExportState.Pending)
+                    {
+                        continue;
+                    }
+
+                    tables[index][name] = new ExportEntry
+                    {
+                        State = found.State,
+                        Binding = found.Binding,
+                        TargetModule = entry.TargetModule,
+                        TargetName = entry.TargetName,
+                    };
+
+                    changed = true;
+                }
+
+                foreach (var star in rows[index].StarExportRequests)
+                {
+                    var target = requests[index][star];
+
+                    foreach (var name in Keys(tables[target]))
+                    {
+                        // `default` IS NOT RE-EXPORTED BY A STAR, which is the one asymmetry in the
+                        // form: `export * from './m'` republishes what `m` names and not what `m`
+                        // is, so a default export stays reachable only through `m` itself.
+                        if (string.Equals(name, "default", System.StringComparison.Ordinal) ||
+                            tables[target][name].State != ExportState.Resolved)
+                        {
+                            continue;
+                        }
+
+                        var supplied = tables[target][name].Binding;
+
+                        if (!tables[index].TryGetValue(name, out var existing))
+                        {
+                            tables[index][name] = new ExportEntry
+                            {
+                                State = ExportState.Resolved,
+                                Binding = supplied,
+                                FromStar = true,
+                            };
+
+                            changed = true;
+                            continue;
+                        }
+
+                        // TWO STARS SUPPLYING ONE NAME IS AMBIGUOUS AND TWO SUPPLYING ONE BINDING IS
+                        // NOT. A diamond in which both paths reach the same slot of the same module
+                        // names one binding, and the language admits it; two different slots name
+                        // two, and no read of that name could pick one.
+                        if (existing.FromStar &&
+                            existing.State == ExportState.Resolved &&
+                            (existing.Binding.Module != supplied.Module ||
+                                existing.Binding.Slot != supplied.Slot ||
+                                existing.Binding.Kind != supplied.Kind))
+                        {
+                            tables[index][name] = new ExportEntry
+                            {
+                                State = ExportState.Ambiguous,
+                                FromStar = true,
+                            };
+
+                            changed = true;
+                        }
+                    }
+                }
+            }
+
+            if (!changed)
+            {
+                return;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Decides what every still-unresolved re-export is: a cycle, or a name nothing exports.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome Classify(
+        JsModuleRow[] rows,
+        int[][] requests,
+        System.Collections.Generic.Dictionary<string, ExportEntry>[] tables)
+    {
+        _ = requests;
+
+        for (var index = 0; index < rows.Length; index++)
+        {
+            foreach (var name in Keys(tables[index]))
+            {
+                if (tables[index][name].State != ExportState.Pending)
+                {
+                    continue;
+                }
+
+                var seen = new System.Collections.Generic.HashSet<(int Module, string Name)>();
+                var module = index;
+                var wanted = name;
+
+                while (true)
+                {
+                    if (!seen.Add((module, wanted)))
+                    {
+                        return Invalid(
+                            VmReason.InconsistentStructure,
+                            JavaScriptDiagnosticCode.ModuleExportCircular,
+                            (ulong)index);
+                    }
+
+                    if (!tables[module].TryGetValue(wanted, out var entry))
+                    {
+                        tables[index][name] = new ExportEntry { State = ExportState.NotFound };
+                        break;
+                    }
+
+                    if (entry.State != ExportState.Pending)
+                    {
+                        tables[index][name] = entry;
+                        break;
+                    }
+
+                    module = entry.TargetModule;
+                    wanted = entry.TargetName;
+                }
+            }
+        }
+
+        return Ok;
+    }
+
+    /// <summary>A snapshot of a table's keys, so a pass may write the table while walking it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private static string[] Keys(
+        System.Collections.Generic.Dictionary<string, ExportEntry> table)
+    {
+        var keys = new string[table.Count];
+        table.Keys.CopyTo(keys, 0);
+        return keys;
+    }
+
+    /// <summary>How far one exported name has got towards naming a binding.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private enum ExportState
+    {
+        /// <summary>It re-exports a name whose own resolution is not settled yet.</summary>
+        Pending = 0,
+
+        /// <summary>It names one binding.</summary>
+        Resolved = 1,
+
+        /// <summary>Two star re-exports supply it from different bindings.</summary>
+        Ambiguous = 2,
+
+        /// <summary>Nothing in the graph exports it.</summary>
+        NotFound = 3,
+    }
+
+    /// <summary>One row of a module's export table while it is being settled.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private readonly struct ExportEntry
+    {
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal ExportState State { get; init; }
+
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal JsBinding Binding { get; init; }
+
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal int TargetModule { get; init; }
+
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal string TargetName { get; init; }
+
+        /// <summary>Whether a star re-export supplied it, which is what makes ambiguity possible.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal bool FromStar { get; init; }
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=658F98
@@ -933,6 +1783,21 @@ internal sealed class JsVerifier
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=56B6A0
         // Broiler-Human:        PENDING
         internal bool SawFunctions { get; set; }
+
+        /// <summary>Whether the payload names the module manifest.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal bool IsModuleArtifact { get; set; }
+
+        /// <summary>The module rows as the payload declares them, before any resolution.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal JsModuleRow[]? ModuleRows { get; set; }
+
+        /// <summary>How many import entries the module rows declare between them.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal int ImportCount { get; set; }
     }
 
     /// <summary>
@@ -1278,6 +2143,7 @@ internal sealed class JsVerifier
                 case JsOpcode.DeleteProperty:
                 case JsOpcode.DefineGetter:
                 case JsOpcode.DefineSetter:
+                case JsOpcode.ThrowImmutable:
                     if (operand >= state.Constants!.Length)
                     {
                         return Invalid(
@@ -1302,6 +2168,17 @@ internal sealed class JsVerifier
                         : Invalid(
                             VmReason.InconsistentStructure,
                             JavaScriptDiagnosticCode.FunctionIndexOutOfRange,
+                            (ulong)offset);
+
+                // AN IMPORT READ IN AN ARTIFACT WITH NO IMPORTS IS REFUSED BY THE SAME CHECK.
+                // The table is empty there, so every operand is out of range and the instruction
+                // is unreachable without a further rule about which units may contain it.
+                case JsOpcode.LoadImport:
+                    return operand < state.ImportCount
+                        ? Ok
+                        : Invalid(
+                            VmReason.InconsistentStructure,
+                            JavaScriptDiagnosticCode.MalformedModuleRow,
                             (ulong)offset);
 
                 case JsOpcode.PushScope:

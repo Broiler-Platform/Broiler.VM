@@ -105,16 +105,6 @@ internal static class Test262Run
 
         var flags = new HashSet<string>(frontmatter.Flags, StringComparer.Ordinal);
 
-        if (flags.Contains("module"))
-        {
-            return
-            [
-                new Test262Outcome(
-                    relativePath, "-", Test262Verdict.Skipped,
-                    "this manifest admits no module goal"),
-            ];
-        }
-
         if (flags.Contains("CanBlockIsFalse"))
         {
             return
@@ -125,20 +115,16 @@ internal static class Test262Run
             ];
         }
 
-        if (frontmatter.Negative is { } negative &&
-            string.Equals(negative.Phase, "resolution", StringComparison.Ordinal))
-        {
-            return
-            [
-                new Test262Outcome(
-                    relativePath, "-", Test262Verdict.Skipped,
-                    "a resolution-phase negative needs modules"),
-            ];
-        }
-
         var variants = new List<string>(2);
 
-        if (flags.Contains("raw"))
+        // A MODULE HAS NO SLOPPY VARIANT AND NO STRICT ONE EITHER. Module code is strict by its
+        // goal symbol, so running the two variants would run the same program twice and count it
+        // twice - which is why the suite's own metadata never asks for both on a module test.
+        if (flags.Contains("module"))
+        {
+            variants.Add("module");
+        }
+        else if (flags.Contains("raw"))
         {
             variants.Add("raw");
         }
@@ -178,6 +164,7 @@ internal static class Test262Run
         ulong wallClock)
     {
         var scripts = new List<JsScriptUnit>();
+        var modules = new List<JsModuleUnit>();
         var options = SliceParseOptions.Script;
 
         if (!string.Equals(variant, "raw", StringComparison.Ordinal))
@@ -203,11 +190,35 @@ internal static class Test262Run
             }
         }
 
-        var strict = string.Equals(variant, "strict", StringComparison.Ordinal);
-        scripts.Add(new JsScriptUnit("test", text, options, strict));
-
-        var compiled = JsCompiler.Compile(scripts);
         var negative = frontmatter.Negative;
+
+        if (string.Equals(variant, "module", StringComparison.Ordinal))
+        {
+            var graph = Test262Modules.Load(
+                Path.Combine(suiteRoot, relativePath.Replace('/', Path.DirectorySeparatorChar)), text);
+
+            if (graph.Failure.Length != 0)
+            {
+                // A SPECIFIER THAT NAMES NOTHING IS WHAT A RESOLUTION-PHASE NEGATIVE ASKS FOR.
+                // Reporting it as a harness failure would score a test that did exactly what it
+                // declared it would as a failure of the engine.
+                return negative is not null &&
+                    string.Equals(negative.Phase, "resolution", StringComparison.Ordinal)
+                    ? new Test262Outcome(
+                        relativePath, variant, Test262Verdict.Passed, "unresolved: " + graph.Failure)
+                    : new Test262Outcome(
+                        relativePath, variant, Test262Verdict.Failed, graph.Failure);
+            }
+
+            modules.AddRange(graph.Modules);
+        }
+        else
+        {
+            var strict = string.Equals(variant, "strict", StringComparison.Ordinal);
+            scripts.Add(new JsScriptUnit("test", text, options, strict));
+        }
+
+        var compiled = JsCompiler.Compile(scripts, modules);
 
         if (!compiled.Succeeded)
         {
@@ -222,8 +233,14 @@ internal static class Test262Run
                     relativePath, variant, Test262Verdict.Unsupported, first.ToString());
             }
 
+            // A MODULE'S EARLY ERRORS ARE DECLARED UNDER TWO PHASES AND BOTH REACH THE FRONT END.
+            // A duplicate export name is a `parse` negative in some tests and a `resolution` one in
+            // others, because a specification early error and a link-time failure are one thing to
+            // the source and two to the loader; this front end refuses both before an artifact
+            // exists, so both phases are satisfied by a refusal here.
             if (negative is not null &&
-                string.Equals(negative.Phase, "parse", StringComparison.Ordinal) &&
+                (string.Equals(negative.Phase, "parse", StringComparison.Ordinal) ||
+                    string.Equals(negative.Phase, "resolution", StringComparison.Ordinal)) &&
                 string.Equals(negative.Type, "SyntaxError", StringComparison.Ordinal))
             {
                 return new Test262Outcome(
@@ -249,7 +266,15 @@ internal static class Test262Run
         using (runtime)
         {
             return Judge(
-                runtime, compiled.Artifact!, scripts, relativePath, variant, negative, flags, printed);
+                runtime,
+            compiled.Artifact!,
+            scripts,
+            modules.Count != 0,
+            relativePath,
+            variant,
+            negative,
+            flags,
+            printed);
         }
     }
 
@@ -257,6 +282,7 @@ internal static class Test262Run
         VmRuntime runtime,
         byte[] artifact,
         List<JsScriptUnit> scripts,
+        bool hasModules,
         string relativePath,
         string variant,
         Test262Negative? negative,
@@ -266,7 +292,7 @@ internal static class Test262Run
         var descriptor = new VmArtifactDescriptor(
             JavaScriptProfile.Id,
             Broiler.VM.Profile.JavaScript.Format.JsFormat.FormatVersion,
-            JavaScriptProfile.WideManifest,
+            hasModules ? JavaScriptProfile.ModulesManifest : JavaScriptProfile.WideManifest,
             default,
             VmCallerIdentity.FromCanonicalIdentity(Caller));
 
@@ -274,9 +300,24 @@ internal static class Test262Run
 
         if (!verified.TryGetArtifact(out var handle))
         {
+            // LINKING A MODULE GRAPH IS THIS PROFILE'S `resolution` PHASE, and a refusal there is
+            // what a resolution-phase negative expects. The codes are the module ones alone: a
+            // refusal for any other reason is still a failure of this engine and is scored as one.
+            if (negative is not null &&
+                string.Equals(negative.Phase, "resolution", StringComparison.Ordinal) &&
+                verified.Diagnostics.ProfileDiagnosticCode is >= 1615 and <= 1618)
+            {
+                return new Test262Outcome(
+                    relativePath, variant, Test262Verdict.Passed,
+                    "refused at link: " + verified.Diagnostics.ProfileDiagnosticCode.ToString(
+                        System.Globalization.CultureInfo.InvariantCulture));
+            }
+
             return new Test262Outcome(
                 relativePath, variant, Test262Verdict.Failed,
-                $"the verifier refused an artifact this runner produced: {verified.Outcome}/{verified.Reason}");
+                $"the verifier refused an artifact this runner produced: {verified.Outcome}/{verified.Reason} " +
+                verified.Diagnostics.ProfileDiagnosticCode.ToString(
+                    System.Globalization.CultureInfo.InvariantCulture));
         }
 
         var instantiated = runtime.Instantiate(handle, CancellationToken.None);
@@ -288,13 +329,17 @@ internal static class Test262Run
                 $"the artifact would not instantiate: {instantiated.Outcome}/{instantiated.Reason}");
         }
 
-        for (var index = 0; index < scripts.Count; index++)
+        var invocations = scripts.Count + (hasModules ? 1 : 0);
+
+        for (var index = 0; index < invocations; index++)
         {
+            var name = index < scripts.Count ? scripts[index].Name : JsCompiler.ModuleEntry;
+
             var request = new VmInvocationRequest(
-                new VmUtf8Text(System.Text.Encoding.UTF8.GetBytes(scripts[index].Name)));
+                new VmUtf8Text(System.Text.Encoding.UTF8.GetBytes(name)));
 
             var result = instance.Invoke(in request, CancellationToken.None);
-            var isTest = index == scripts.Count - 1;
+            var isTest = index == invocations - 1;
 
             if (result.Outcome == VmOutcome.ResourceExhaustion)
             {
@@ -438,6 +483,18 @@ internal static class Test262Run
                 result = default;
                 printed.Add(System.Text.Encoding.UTF8.GetString(argument.Span));
                 return VmHostCallOutcome.Completed;
+            }));
+
+        // THIS HARNESS ADMITS THE MODULE SURFACE, and registering the resolver is how it says so.
+        capabilities.Add(VmCapabilityRegistration.Value(
+            JavaScriptProfile.ResolveCapability,
+            (VmBytes argument, out VmOpaqueRef result) =>
+            {
+                result = default;
+
+                return Test262Modules.Confirms(argument.Span)
+                    ? VmHostCallOutcome.Completed
+                    : VmHostCallOutcome.Refused;
             }));
 
         return new VmRuntimeCreationOptions(

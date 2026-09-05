@@ -158,6 +158,38 @@ public enum SliceSourceDiagnosticCode
 
     /// <summary>The program needs a deeper operand stack than the format admits.</summary>
     OperandStackTooDeep = 2303,
+
+    // ---- 2400: the module goal's early errors ----------------------------------------------
+    //
+    // A NEW BLOCK RATHER THAN A CONTINUATION OF 2200, and the reason is what the numbers are for.
+    // Every one of these is an error about a MODULE, which is a goal symbol the front end did not
+    // have when 2201 through 2210 were minted; a reader holding one of these numbers should be
+    // able to tell from the number alone that the source was presented as a module, because that
+    // is the fact that makes the rejection make sense.
+
+    /// <summary>An <c>import</c> or <c>export</c> declaration in source presented as a script.</summary>
+    /// <remarks>
+    /// <b>This is a syntax error and NOT a construct outside the manifest, and until the module
+    /// goal existed it was the other one.</b> The distinction is what the conformance runner grades
+    /// on: a manifest refusal is scored <c>unsupported</c> and kept out of both columns, and a
+    /// script containing <c>import</c> is a program every engine rejects - so scoring it
+    /// <c>unsupported</c> would have declined a test this profile can answer. The manifest admits
+    /// the declaration; this goal does not.
+    /// </remarks>
+    ModuleDeclarationOutsideModuleGoal = 2401,
+
+    /// <summary>One module publishes the same export name twice.</summary>
+    DuplicateExportName = 2402,
+
+    /// <summary>An export clause names a binding the module does not declare.</summary>
+    /// <remarks>
+    /// <c>export { a };</c> with no <c>a</c> in the module is an early error rather than a run-time
+    /// <c>ReferenceError</c>, because the clause names a BINDING and not an expression - there is
+    /// no evaluation in which it could come to exist. A re-export - <c>export { a } from './m'</c> -
+    /// names a binding of the OTHER module and never reaches this code; whether that name exists
+    /// there is settled at verification, where the whole graph is present.
+    /// </remarks>
+    ExportNameNotDeclared = 2403,
 }
 
 /// <summary>One refusal of source text: a code, a message, and where in the source it happened.</summary>
