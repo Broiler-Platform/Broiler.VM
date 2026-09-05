@@ -301,13 +301,14 @@ refused/a-with-in-a-class-body.js|3|2101:UnexpectedToken
 refused/a-declaration-as-the-body-of-a-with.js|3|2101:UnexpectedToken
 --module refused/a-declaration-as-the-body-of-a-with.js|3|the `with` statement is a syntax error in strict code
 
-# AND A DEVIATION FROM THE LANGUAGE THE JOIN OF THE TWO BUNDLES PRODUCED, pinned exactly as the
-# dead-zone rows below are. A generator with a NON-SIMPLE parameter list carries `BindsParameters`,
-# which moves parameter binding into the unit's own prologue - and a generator's prologue is body
-# code, so a default runs at the first `next` where the specification runs it at the CALL. A
-# simple parameter list is unaffected. Node answers `before,default,called,resumed` for this
-# source; this row records what this build answers, and goes red the day it is repaired.
-runs/a-generator-default-runs-at-the-first-next.js|0|before,called,default,resumed
+# AND THE DEVIATION THE JOIN OF THE TWO BUNDLES PRODUCED, WHICH THIS ROW WAS PINNED TO OUTLIVE. A
+# generator with a NON-SIMPLE parameter list carries `BindsParameters`, which moves parameter
+# binding into the unit's own prologue - and a generator's prologue used to be body code, so a
+# default ran at the first `next` where the specification runs it at the CALL. The prologue and the
+# body are now two runs of one instruction stream parted by the `EnterBody` seam, so this row now
+# records the language's own answer and agrees with the comparison engine, which the row it
+# replaces did not *(corrected: JSC-159)*.
+runs/a-generator-default-runs-at-the-call.js|0|before,default,called,resumed
 
 # AND THE FAMILY'S EXHAUSTION, which is the row that would go red as a TERMINATED PROCESS rather
 # than as a wrong answer. A resumption is a second interpreter frame on the same native stack, so a

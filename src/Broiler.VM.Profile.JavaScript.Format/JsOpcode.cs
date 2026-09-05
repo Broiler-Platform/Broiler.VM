@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   23
 // Annotated:        23/23
-// Exempt:           124
+// Exempt:           125
 // Human-reviewed:   0/23
 // IP risk:          None
 // Security risk:    Medium
@@ -98,7 +98,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// queue the host drains.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=CD604C
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=A59F63
 // Broiler-Human:        PENDING
 public enum JsOpcode : byte
 {
@@ -1048,6 +1048,43 @@ public enum JsOpcode : byte
     /// </para>
     /// </remarks>
     DeleteGlobalBinding = 0x82,
+
+    // ---- the seam between a parameter list and a body ----------------------------------------------------
+
+    /// <summary>
+    /// End the parameter-binding prologue: fall through into the body, or, in a generator entered
+    /// only to bind its parameters, leave the frame suspended here.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It exists because a generator's parameter list is bound at the CALL and its body is not,
+    /// and a unit that binds its own parameters has both in one instruction stream.</b> A simple
+    /// parameter list is copied into slots by the frame, so there is nothing to run and no seam to
+    /// mark; anything else - a default, a rest parameter, a pattern - is CODE, and code emitted at
+    /// the top of a generator's unit would not run until the first <c>next</c>. The language says
+    /// otherwise: <c>EvaluateGeneratorBody</c> performs <c>FunctionDeclarationInstantiation</c>
+    /// before it creates the generator object, so
+    /// <c>function* g([x = boom()]) {}; g([undefined])</c> throws at the call and never yields an
+    /// object to resume. This instruction is where that call stops.
+    /// </para>
+    /// <para>
+    /// <b>It is a seam and not a suspension, which is why it carries no value and pops nothing.</b>
+    /// <see cref="Yield"/> hands a value out and expects one back; this hands nothing out, is
+    /// reached at an operand stack of zero, and the resumption that follows it is the FIRST entry
+    /// into the body rather than a re-entry - so the frame it leaves behind is a generator in the
+    /// specification's <c>suspendedStart</c> state, which a <c>return</c> completes and a
+    /// <c>throw</c> rethrows without running a single instruction of the body.
+    /// </para>
+    /// <para>
+    /// <b>In every other run of the same unit it is a no-op, and that is the point.</b> One unit
+    /// holds one instruction stream; a generator's body is entered twice as often as it is called
+    /// only in the sense that the call runs the part before this instruction and the first
+    /// resumption runs the part after. An ordinary call of a unit that is not a generator walks
+    /// straight through, which costs one dispatch and one fuel unit and keeps the prologue from
+    /// being emitted twice or lowered into a unit of its own.
+    /// </para>
+    /// </remarks>
+    EnterBody = 0x83,
 }
 
 /// <summary>The operand shape that follows an opcode byte.</summary>
@@ -1200,7 +1237,7 @@ public static class JsOpcodes
         ElementIsMethod | ElementIsGetter | ElementIsSetter;
 
     /// <summary>Every opcode format version 2 defines, in ascending numeric order.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=4DE284
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=7C4F01
     // Broiler-Human:        PENDING
     public static readonly JsOpcode[] All =
     [
@@ -1247,6 +1284,7 @@ public static class JsOpcodes
         JsOpcode.Pop, JsOpcode.Duplicate, JsOpcode.DuplicateTwo, JsOpcode.Swap, JsOpcode.Pick,
         JsOpcode.DeclareGlobalLet, JsOpcode.DeclareGlobalConst, JsOpcode.InitialiseGlobalLexical,
         JsOpcode.DeleteGlobalBinding,
+        JsOpcode.EnterBody,
     ];
 
     /// <summary>Whether <paramref name="value"/> is an opcode format version 2 defines.</summary>
@@ -1295,7 +1333,7 @@ public static class JsOpcodes
     /// The operand shape of <paramref name="opcode"/>, or <see langword="null"/> when this format
     /// version does not define it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=338D43
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=470F86
     // Broiler-Human:        PENDING
     public static JsOperandShape? Shape(JsOpcode opcode) => opcode switch
     {
@@ -1325,7 +1363,8 @@ public static class JsOpcodes
         JsOpcode.IterateStartAsync or JsOpcode.IterateNextAsync or JsOpcode.IterateCloseCheck or
         JsOpcode.LoadPrivate or JsOpcode.StorePrivate or JsOpcode.HasPrivate or
         JsOpcode.RunStaticElements or
-        JsOpcode.Pop or JsOpcode.Duplicate or JsOpcode.DuplicateTwo or JsOpcode.Swap
+        JsOpcode.Pop or JsOpcode.Duplicate or JsOpcode.DuplicateTwo or JsOpcode.Swap or
+        JsOpcode.EnterBody
             => JsOperandShape.None,
 
         JsOpcode.Call or JsOpcode.CallEval or JsOpcode.Construct or JsOpcode.Pick or
@@ -1371,7 +1410,7 @@ public static class JsOpcodes
     /// and the verifier's abstract height is computed from them alone. A false answer means the
     /// opcode is not one this format version defines - not that its effect is unknown.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=3A5CC1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=44B59E
     // Broiler-Human:        PENDING
     public static bool TryDescribe(JsOpcode opcode, uint operand, out int pops, out int pushes)
     {
@@ -1388,6 +1427,12 @@ public static class JsOpcodes
             case JsOpcode.DeclareGlobalLet:
             case JsOpcode.DeclareGlobalConst:
             case JsOpcode.ArrayHoles:
+
+            // THE SEAM MOVES NO OPERAND, which is what lets one unit carry a prologue that runs at
+            // the call and a body that runs at the first resumption: the abstract height either
+            // side of it is the same height, so the frame the call leaves suspended is at exactly
+            // the height the pass computed for the instruction the resumption enters at.
+            case JsOpcode.EnterBody:
                 return true;
 
             case JsOpcode.LoadUndefined:

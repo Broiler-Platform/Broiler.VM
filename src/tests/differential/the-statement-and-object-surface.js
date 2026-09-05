@@ -573,3 +573,29 @@ p(function(){ try { (0, eval)("var shA = { bre\\u0061k } = { break: 42 };"); ret
 p(function(){ try { (0, eval)("var shB = { l\\u0065t } = { let: 42 };"); return "ok"; } catch(e){ return e.name; } });
 p(function(){ try { (0, eval)("var shC = { br\\u0065ak = 1 } = {};"); return "ok"; } catch(e){ return e.name; } });
 p(function(){ try { (0, eval)("var shD = { async } = { async: 1 };"); return "ok"; } catch(e){ return e.name; } });
+
+
+// --- an object assignment pattern evaluates its targets before it reads what feeds them
+//
+// The half of the family JSC-152 left standing, closed by JSC-221. An ARRAY pattern's targets were
+// already prepared ahead of the step; an OBJECT pattern's were not, so a property with a getter on
+// it ran before the reference the getter's value was about to be stored through.
+p(function(){ var o = {}, s = ""; function k(){ s += "k"; return "z"; } var src = { get a(){ s += "g"; return 1; } }; 0, ({ a: o[k()] } = src); return s + ":" + o.z; });
+p(function(){ var o = {}, s = ""; function ka(){ s += "A"; return "p"; } function kb(){ s += "B"; return "q"; } var src = { get a(){ s += "a"; return 1; }, get b(){ s += "b"; return 2; } }; 0, ({ a: o[ka()], b: o[kb()] } = src); return s; });
+// A rest target's reference is evaluated before the rest object exists to copy into.
+p(function(){ var o = {}, s = ""; function k(){ s += "k"; return "z"; } var src = { get a(){ s += "g"; return 1; } }; 0, ({ ...o[k()] } = src); return s; });
+// A target whose base throws means the property is never read at all.
+p(function(){ var s = ""; var src = { get a(){ s += "g"; return 1; } }; try { 0, ({ a: (function(){ s += "b"; throw new TypeError("no base"); })().x } = src); } catch(e){ s += ":" + e.name; } return s; });
+// The pattern's own computed key runs before the target reference, and both before the read.
+p(function(){ var o = {}, s = ""; function pk(){ s += "P"; return "a"; } function tk(){ s += "T"; return "z"; } var src = { get a(){ s += "g"; return 1; } }; 0, ({ [pk()]: o[tk()] } = src); return s + ":" + o.z; });
+// A computed key is still evaluated exactly once, with a target that prepares and one that does not.
+p(function(){ var o = {}, n = 0; function pk(){ n += 1; return "a"; } 0, ({ [pk()]: o.z } = { a: 7 }); return o.z + "," + n; });
+p(function(){ var o = {}, n = 0; function pk(){ n += 1; return "a"; } var v; 0, ({ [pk()]: v } = { a: 7 }); return v + "," + n; });
+// A rest beside a computed key excludes the key it read, and reads that key's expression once.
+p(function(){ var o = {}, n = 0; function pk(){ n += 1; return "a"; } 0, ({ [pk()]: o.y, ...o.z } = { a: 1, b: 2 }); return o.y + "," + JSON.stringify(o.z) + "," + n; });
+// A nested pattern is not a reference and evaluates nothing ahead of the read.
+p(function(){ var o = {}, s = ""; var src = { get a(){ s += "g"; return { b: 1 }; } }; 0, ({ a: { b: o.z } } = src); return s + ":" + o.z; });
+// A declaration pattern has no reference to evaluate, so its order is unchanged by any of this.
+p(function(){ var s = ""; var src = { get a(){ s += "g"; return 1; } }; var { a: v } = src; return s + ":" + v; });
+// The value of the assignment is the source, whichever shape the target took.
+p(function(){ var o = {}; var src = { a: 1 }; return (({ a: o.z } = src) === src) + "," + o.z; });

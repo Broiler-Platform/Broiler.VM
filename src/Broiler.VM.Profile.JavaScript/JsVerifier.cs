@@ -2353,7 +2353,7 @@ internal sealed class JsVerifier
             return Ok;
         }
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=461B3E
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=CF1779
         // Broiler-Human:        PENDING
         private VmVerifierOutcome Check(JsCodeUnit unit, JsOpcode opcode, uint operand, int offset)
         {
@@ -2445,6 +2445,23 @@ internal sealed class JsVerifier
                 // artifact that yields anywhere else is refused here rather than met by a null
                 // frame in the middle of the dispatch loop.
                 case JsOpcode.Yield:
+                    return (unit.Flags & JsFormat.FunctionFlags.Generator) != 0
+                        ? Ok
+                        : Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.YieldOutsideGenerator,
+                            (ulong)offset);
+
+                // AND ONLY A GENERATOR BODY MAY BE ENTERED IN TWO PIECES. The seam is checked
+                // against the same flag as `Yield` and carries the same diagnostic, because it is
+                // the same fact about the executor: the frame a call leaves suspended at this
+                // instruction is the heap frame the generator arm allocated, and a unit without the
+                // bit is entered on the native stack by a call that has nowhere to leave one. In a
+                // unit that HAS the bit and does not bind its own parameters the instruction is
+                // reachable and harmless - the executor never runs the prologue phase there and
+                // walks straight through it - so the flag it is refused outside of is the only
+                // flag it is checked against.
+                case JsOpcode.EnterBody:
                     return (unit.Flags & JsFormat.FunctionFlags.Generator) != 0
                         ? Ok
                         : Invalid(

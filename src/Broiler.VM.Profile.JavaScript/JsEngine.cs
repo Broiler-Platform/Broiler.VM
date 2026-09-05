@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   112
-// Annotated:        112/112
+// Relevant units:   113
+// Annotated:        113/113
 // Exempt:           14
-// Human-reviewed:   0/112
+// Human-reviewed:   0/113
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         15/15
+// Criteria:         16/16
 // Resource impact:  7/10 max
-// Unverified:       112
+// Unverified:       113
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -2929,7 +2929,7 @@ internal sealed class JsEngine
     /// <param name="binding">
     /// The box a construction holds its <c>this</c> in, or <see langword="null"/> for a call.
     /// </param>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=C7B2C6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=B03C11
     // Broiler-Human:        PENDING
     private JsValue Invoke(
         JsScriptFunction function,
@@ -2977,11 +2977,18 @@ internal sealed class JsEngine
         // generator object rather than a promise: a call of one starts nothing, and the first
         // `next` is what puts the body on the interpreter's stack - which is the generator's half
         // of the pair. Everything asynchronous about it is on the other side of that `next`.
+        //
+        // ITS PARAMETER LIST IS BOUND AT THE CALL LIKE A PLAIN GENERATOR'S AND NOT LIKE AN ASYNC
+        // FUNCTION'S. `EvaluateAsyncGeneratorBody` performs `FunctionDeclarationInstantiation` with
+        // a `?` and then creates the object, so a default that throws throws SYNCHRONOUSLY and
+        // there is no promise for it to reject - which is the opposite of the async arm below,
+        // where the promise is made first and a failing default settles it *(corrected: JSC-159)*.
         if (unit.IsGenerator && unit.IsAsync)
         {
             var body = new JsFrame(program, function.Unit, environment, receiver, arguments, function);
 
             Charge((body.FrameBytes / 64) + 4);
+            BindParameters(program, unit, function, body, receiver, arguments);
             return JsValue.Object(Realm.CreateAsyncGenerator(function, body));
         }
 
@@ -2999,6 +3006,7 @@ internal sealed class JsEngine
             // costs more to build than one over a shallow unit, and a program that builds a million
             // of them has spent a million times that.
             Charge((frame.FrameBytes / 64) + 4);
+            BindParameters(program, unit, function, frame, receiver, arguments);
             return JsValue.Object(Realm.CreateGenerator(function, frame));
         }
 
@@ -3039,6 +3047,96 @@ internal sealed class JsEngine
             unit.IsArrow ? function.LexicalNewTarget : newTarget,
             unit.IsArrow ? function.LexicalThisBinding : binding,
             null);
+    }
+
+    /// <summary>
+    /// Runs a generator's parameter-binding prologue, at the call, and leaves the frame at the
+    /// first instruction of its body.
+    /// </summary>
+    /// <param name="program">The program the unit lives in.</param>
+    /// <param name="unit">The unit being entered.</param>
+    /// <param name="function">The closure the call named.</param>
+    /// <param name="frame">The heap frame the generator object will hold.</param>
+    /// <param name="receiver">The receiver the body will see as <c>this</c>.</param>
+    /// <param name="arguments">The actual arguments the prologue binds.</param>
+    /// <remarks>
+    /// <para>
+    /// <b>Binding a parameter list is not part of a generator's body and never was, and the
+    /// difference is visible on the first line of a program.</b> The specification runs
+    /// <c>FunctionDeclarationInstantiation</c> before it creates the generator object, so
+    /// <c>function* g([x = boom()]) {}; g([undefined])</c> throws where it is written - there is no
+    /// generator to resume and no <c>next</c> for the failure to wait for. This engine ran the
+    /// binding as the first instructions of the body instead, which for a generator meant the first
+    /// <c>next</c>, and every destructuring parameter of every generator template in the
+    /// conformance suite reported its error one call too late *(corrected: JSC-159)*.
+    /// </para>
+    /// <para>
+    /// <b>Only a unit that BINDS its own parameters pays for this, and that is the same bit the
+    /// frame already tests.</b> A simple parameter list is copied into slots by the caller above
+    /// with no code at all, so there is nothing here to run and the entry is skipped: a generator
+    /// over a simple list costs exactly what it cost before.
+    /// </para>
+    /// <para>
+    /// <b>It is the ORDINARY dispatch loop over the ordinary frame, stopped by an instruction.</b>
+    /// The alternative was a second interpreter, or a code unit of its own for the prologue - which
+    /// would have needed a second set of slots, a second operand stack and a second set of
+    /// exception regions to hold the same scope. What this needs instead is one flag on the frame
+    /// and one seam in the stream, and the verifier checks the seam exactly as it checks a
+    /// <c>yield</c>.
+    /// </para>
+    /// <para>
+    /// <b>A prologue that ends anywhere but at the seam is an artifact this checkout cannot
+    /// produce</b>, and it is refused rather than handed on: the frame would otherwise reach the
+    /// generator object pointing at a suspension it has not started, which the first resumption
+    /// would re-enter at an operand height the abstract pass never computed for it.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=E1EDFC
+    // Broiler-Falsified-If: a generator over a non-simple parameter list reports a binding failure at its first resumption rather than at its call
+    // Broiler-Human:        PENDING
+    private void BindParameters(
+        JsProgram program,
+        JsCodeUnit unit,
+        JsScriptFunction function,
+        JsFrame frame,
+        JsValue receiver,
+        JsValue[] arguments)
+    {
+        if (!unit.BindsParameters)
+        {
+            return;
+        }
+
+        frame.BindingParameters = true;
+
+        // A GENERATOR BODY IS NEITHER AN ARROW NOR A CONSTRUCTOR - the verifier refuses both
+        // pairings - so the two the resumption paths pass as literals are passed as literals here.
+        _ = Execute(
+            program,
+            frame.UnitIndex,
+            null,
+            receiver,
+            arguments,
+            function,
+            JsValue.Undefined,
+            null,
+            frame);
+
+        if (frame.BindingParameters)
+        {
+            frame.BindingParameters = false;
+
+            throw new JsAbort(
+                JsAbortKind.InternalDefect,
+                "a parameter-binding prologue did not reach the body it belongs to");
+        }
+
+        // THE FRAME IS NOT SUSPENDED IN THE SENSE THE DRIVERS MEAN. It stopped, and the state it
+        // stopped in is `suspendedStart`: nothing has been yielded, `Started` is still false, and
+        // the first resumption is the first entry into the body rather than a re-entry into an
+        // instruction. Clearing the flag here keeps the two resumption paths reading it as they
+        // already do.
+        frame.Suspended = false;
     }
 
     // ---- generators ----------------------------------------------------------------------------
@@ -3779,7 +3877,7 @@ internal sealed class JsEngine
     /// have run for a throw from the instruction itself, and no unwinding is reimplemented.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=605A6B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=0DA955
     // Broiler-Human:        PENDING
     private JsValue Execute(
         JsProgram program,
@@ -5034,6 +5132,36 @@ internal sealed class JsEngine
                             ThrowTypeError(
                                 "Assignment to constant variable '" + names[U16(code, pc)] + "'");
 
+                            break;
+
+                        // THE SEAM BETWEEN THE PARAMETER LIST AND THE BODY, WHICH ONLY ONE OF THE
+                        // TWO ENTRIES STOPS AT. A generator whose unit binds its own parameters is
+                        // entered here by the CALL, which has just run the defaults, the rest
+                        // parameter and the patterns; it leaves the frame pointing at the first
+                        // instruction of the body and hands it to the generator object, which is
+                        // the specification's `suspendedStart`. Every other run - the first `next`,
+                        // an ordinary call of a unit that is not a generator at all - walks
+                        // straight through for one dispatch.
+                        case JsOpcode.EnterBody:
+                            if (frame is { BindingParameters: true })
+                            {
+                                // THE POINTER IS LEFT PAST THIS INSTRUCTION AND NOT AT IT, which is
+                                // the opposite of what `Yield` does and for the opposite reason:
+                                // a yield is RE-ENTERED so that an abrupt resumption raises inside
+                                // the regions covering it, and this is not re-entered at all. The
+                                // resumption that follows is the first entry into the body, and
+                                // `Started` stays false so that it neither pushes a sent value nor
+                                // raises one - a `return` or a `throw` arriving before it completes
+                                // the generator without running any of the body, which is what the
+                                // language says about a generator that has not started.
+                                frame.BindingParameters = false;
+                                frame.Sp = sp;
+                                frame.Pc = pc + 1;
+                                frame.Suspended = true;
+                                return JsValue.Undefined;
+                            }
+
+                            pc++;
                             break;
 
                         case JsOpcode.Await:

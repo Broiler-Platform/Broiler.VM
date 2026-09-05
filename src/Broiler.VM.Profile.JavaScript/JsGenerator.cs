@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   17
 // Annotated:        17/17
-// Exempt:           50
+// Exempt:           51
 // Human-reviewed:   0/17
 // IP risk:          None
 // Security risk:    High
@@ -276,6 +276,31 @@ internal sealed class JsFrame
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=ADA5EB
     // Broiler-Human:        PENDING
     internal bool Started { get; set; }
+
+    /// <summary>
+    /// Whether the dispatch loop is running this frame's parameter-binding prologue rather than
+    /// its body, and must stop at the seam.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is set for exactly one entry into the loop and cleared by the seam that ends it.</b>
+    /// A generator over a unit that binds its own parameters is entered twice before it yields
+    /// anything - once by the CALL, which runs the defaults, the rest parameter and the patterns
+    /// and stops at <c>EnterBody</c>, and once by the first <c>next</c>, which starts the body.
+    /// Both entries run the same instruction stream over the same frame, and this is the only
+    /// thing that tells them apart.
+    /// </para>
+    /// <para>
+    /// <b>A prologue that does not reach the seam leaves this set, and the caller reads it as the
+    /// artifact being malformed rather than as anything to recover from.</b> The lowering emits the
+    /// seam in every generator unit that binds its parameters and emits no suspension before it, so
+    /// the only way to arrive at the end of a prologue run with this still true is an artifact
+    /// nothing in this checkout produced.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=DBFABE
+    // Broiler-Human:        PENDING
+    internal bool BindingParameters { get; set; }
 
     /// <summary>
     /// The <c>new.target</c> the frame was entered with. Always <c>undefined</c> for a generator.

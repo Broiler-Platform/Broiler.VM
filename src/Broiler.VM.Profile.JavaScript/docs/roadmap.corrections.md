@@ -6320,3 +6320,173 @@ to **empty**. `test/language/global-code` carries the other two and went from 49
 **Authority and date.** The implementation of 2026-09-05 in this checkout, the sweep either side of
 it, and one acceptance row pinning the new code against the block-scoped shape
 [JSC-111](#jsc-111) records. 2026-09-05.
+
+---
+
+### JSC-159
+
+**Where:** [JSC-103](#jsc-103), which recorded this deviation rather than repairing it and said the
+reason was the format; and `JsEngine.Invoke`'s two generator arms, whose remark said in as many
+words that *the parameters are bound — both are observable, and both happen at the call*.
+
+**What was assumed.** That a generator's frame is built, its parameters bound, and the frame then
+handed to a generator object without a single instruction running — one sentence covering both
+halves of the entry. The sentence was true of the arm it was written on: for a SIMPLE parameter list
+the frame copies arguments into slots and there is no code at all.
+
+**What was true.** It held only for a simple list. A parameter list with a default, a rest parameter
+or a pattern cannot be copied — a default is an expression, a rest parameter is an Array, a pattern
+is a destructuring — so the unit carries `BindsParameters` and the whole of the binding is emitted as
+the first instructions of its own body. A generator's body does not run until the first `next`, so
+the binding did not either: `function* g([x = boom()]) {}` answered a generator object for
+`g([undefined])` and threw from `it.next()` instead of from the call. **The language runs the
+binding at the call and says so twice**: `EvaluateGeneratorBody` and `EvaluateAsyncGeneratorBody`
+each perform `FunctionDeclarationInstantiation` before `OrdinaryCreateFromConstructor`, the first
+with a `?` and the second with a `?`, so a failing default throws where it is written and there is
+no generator object for anything to be thrown out of later.
+
+**The three suspendable arms were checked separately and only two of them were wrong**, which is why
+this entry names two. A sync generator and an ASYNC generator each throw at the call. An async
+FUNCTION does not: `EvaluateAsyncFunctionBody` makes the promise capability FIRST and rejects it with
+whatever the instantiation raised, so `(async function ([x]) {})(undefined)` answers a rejected
+promise and throws nothing — which is what this engine already did, by running the body synchronously
+to its first `await` and settling on the way out. Assuming the three were one rule would have made
+that arm wrong in the other direction.
+
+**What replaced it.** One opcode, `EnterBody` (`0x83`), which is the SEAM between a unit's parameter
+list and its body, and one flag on the heap frame that says which of the two a given entry into the
+dispatch loop is running. The lowering emits the seam immediately after the parameter binding and
+only in a generator unit — the one kind of unit whose two halves run at two different times — and
+the engine's generator arms enter the loop once at the call with the flag set, which stops at the
+seam and leaves the frame pointing at the first instruction of the body. The first `next` starts
+there. `Started` stays false across that entry, so a `return` or a `throw` arriving before it still
+completes the generator without running any of the body, which is the specification's
+`suspendedStart` and is what `ResumeGenerator`'s existing state check already answered.
+
+**[JSC-103](#jsc-103) was right that this is a format change and wrong about which one.** It said the
+code unit would have to *declare where its prologue ends*, which is a field on the function row: a
+second number the reader parses, the writer emits, the verifier bounds against the code range, and
+every artifact of format version 2 carries whether it has a prologue or not. An INSTRUCTION says the
+same thing where the thing is, costs a byte in the units that have one and nothing in the units that
+do not, and is checked by the pass that already checks every other opcode against the unit's flags.
+That is the difference between the reading that entry recorded and this one.
+
+**One instruction stream and not two, which is the decision rather than the detail.** A code unit of
+its own for the prologue was the obvious alternative and it was refused: the prologue and the body
+share one scope, one set of slots and one set of exception regions, so a second unit would have had
+to duplicate all three and agree with the first about every one of them, and a disagreement would be
+a verifier refusal of an artifact this compiler had just produced. A second interpreter over the same
+frame was refused for the same reason in smaller: it is a second place that knows what every opcode
+does. What the seam costs instead is one dispatch and one fuel unit, paid only by a generator that
+binds its own parameters, and paid once per call.
+
+**The verifier checks it exactly as it checks a `yield`.** `EnterBody` is legal only in a unit
+carrying `Generator`, refused with `1609:YieldOutsideGenerator` — the same code, because it is the
+same fact about the executor: the frame this instruction suspends is the heap frame the generator arm
+allocated, and a unit without the bit is entered on the native stack by a call that has nowhere to
+leave one. It moves no operand, so the abstract height either side of the seam is the same height and
+the frame the call leaves behind is at exactly the height the pass computed for the instruction the
+resumption enters at. **A prologue that never reaches the seam is refused at the point it would have
+been handed on** rather than being allowed to reach a generator object: the flag is still set, and a
+frame stopped at a suspension it has not started would be re-entered at a height nothing computed
+for it.
+
+**What that cost, measured.** **1,582 variants across the nine trees measured at both ends, and not
+one regressed.** The seven `dstr` trees the failure was concentrated in account for 1,560 of them:
+`test/language/statements/class/dstr` and `test/language/expressions/class/dstr` each went from
+**3,424 to 3,840 of 3,840** — every remaining failure in both trees; `test/language/expressions/object/dstr`
+from **908 to 1,116 of 1,122**; `test/language/expressions/async-generator/dstr` from **536 to 744 of
+744**; and `test/language/statements/generators/dstr`, `test/language/statements/async-generator/dstr`
+and `test/language/expressions/generators/dstr` each from **268 to 372 of 372**. Every one of those
+variants is a generator or async-generator template and no plain-function template was among them,
+which is what identified the cause before a line was changed. Outside the `dstr` subtrees,
+`test/language/statements/generators` went from **373 to 485 of 510** and
+`test/language/expressions/async-generator` from **926 to 1,148 of 1,212**, the extra twenty-two being
+`dflt-params-abrupt`, `dflt-params-ref-later`, `dflt-params-ref-self`,
+`generator-created-after-decl-inst` and the three `named-` variants of the first three —
+files that assert this order directly rather than through a template.
+
+**`test/built-ins/Array` was measured at both ends and did not move**, at 5,276 of 6,115 variants,
+which is the regression cover that matters: moving when a generator's frame is created is exactly
+the kind of change that breaks iteration that used to work.
+
+**The call-depth margin was re-measured because this adds a dispatch arm**, by the procedure
+[JSC-139](#jsc-139) describes — `JsEngine.MaximumCallDepth` and the profile's declared call-depth
+maximum lifted in a build of no one's, the bisection taken, the lift reverted. The same bisection
+reports **20,201 calls before and 20,136 after** on the ninety-six-megabyte guest stack: **2.47 times
+the grantable ceiling of 8,192 before and 2.46 after**, sixteen bytes of native frame for the arm.
+Both are below the **2.70** [JSC-139](#jsc-139) recorded and both were taken here, on this machine,
+minutes apart — so what moved between that entry and this one is not this change, and the pair of
+figures rather than the difference from a figure taken elsewhere is what this entry stands on. The
+published binary stops both depths at the declared bound of 5,999, as it did before.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; the sweeps of the nine
+trees above before and after; and cases 114 to 127 of
+`src/tests/differential/the-seam-between-generators-and-the-rest.js`, every one of them measured
+against `/opt/node22/bin/node` before it was written down. The CLI acceptance row that pinned the
+deviation — `runs/a-generator-default-runs-at-the-first-next.js`, whose own header said it *goes red
+the day that is repaired* — went red and was moved deliberately, to
+`runs/a-generator-default-runs-at-the-call.js` and to the answer the comparison engine gives.
+2026-09-05.
+
+### JSC-160
+
+**Where:** [JSC-152](#jsc-152)'s closing paragraph, which left a divergence standing and named it
+wrongly.
+
+**What was assumed.** That *an ordinary assignment `o.x = v` still evaluates its value before its
+reference*, and that correcting it would touch every assignment form this compiler lowers.
+
+**What was true.** `o.x = v` was never wrong. `CompileAssignment`'s simple-`=` arm compiles the
+member's base, then its computed key, then the value, and has since the unit was written:
+`f().x = g()` calls `f` before `g`, a base that throws never runs the value, and a computed key that
+throws never runs it either. Fifteen ordering cases over the member, identifier, super, private,
+compound, logical, `for…of`-head and chained forms were put through both engines and every one of them
+already agreed. **The divergence was real and it was somewhere else.** An OBJECT assignment pattern
+reads the property that feeds a target before it evaluates the target's reference:
+`({ a: o[k()] } = src)` read `src.a` and then called `k`, where
+`KeyedDestructuringAssignmentEvaluation` evaluates the target first and the `GetV` second. The rest
+property had the same shape one step larger — `({ ...o[k()] } = src)` ran `CopyDataProperties` over
+the whole source before evaluating the reference the result was about to be stored through.
+
+**What replaced it.** `BindObjectPattern` prepares each property's target with the same
+`PrepareTarget`/`BindPrepared` pair [JSC-151](#jsc-151) built for the array pattern, and prepares the
+rest target before the rest object exists. A pattern's own computed key is parked in a temporary
+first, so that the three run in the order the language states them: the property name, then the
+target reference, then the read. **The key is parked only where there is a reference to put between
+it and the read** — a name and a nested pattern evaluate nothing, which is every shorthand property
+and every plain `{ a: x }` — so the common shapes cost no slot and emit what they emitted before.
+
+**Nothing in `CompileAssignment` moved, and that is the refusal this entry records.** The risk of the
+correction as [JSC-152](#jsc-152) described it was that changing the order changes what is on the
+operand stack at the store, so every assignment form would have to be re-checked and the compound and
+logical forms — which already evaluate the reference first — must not be disturbed. That risk belongs
+to a change to `CompileAssignment`, and measuring showed no such change was owed: the arm was already
+right. The change that WAS owed is confined to one method's assignment arm and reuses machinery that
+already existed.
+
+**What that cost, measured.** **Nothing the pinned suite counts.**
+`test/language/expressions/assignment/dstr` was measured at both ends at **537 of 640 variants**,
+`test/language/statements/for-of/dstr` at **1,062 of 1,095** and the whole of
+`test/language/statements/for-of` at **1,326 of 1,436** — the figures [JSC-151](#jsc-151) recorded,
+unmoved in either direction. The suite has files that assert an object pattern's target IS evaluated
+and none that assert WHEN, so the correction is carried by the differential probe rather than by a
+suite figure. It is recorded here rather than declined because the divergence is real, it is
+reachable with a getter and no error at all, and it is the half of a family the ledger already says
+was left open.
+
+**One divergence in the same neighbourhood is NOT closed here and is not this correction's.** A rest
+property builds its object by copying every own enumerable property of the source and then deleting
+the ones the pattern named, so a getter on an excluded property runs and its value is thrown away —
+`({ a: x, ...rest } = src)` invokes `src`'s `a` getter twice where the language invokes it once.
+Closing it needs `CopyDataProperties` to take an exclusion set, which is an operand this format's
+`SpreadObject` does not have; it is a format change rather than a lowering change, and it is not the
+ordering defect this entry is about.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; the sweeps of
+`test/language/expressions/assignment/dstr`, `test/language/statements/for-of/dstr` and
+`test/language/statements/for-of` before and after; fifteen ordering cases over every assignment form
+this compiler lowers, run against `/opt/node22/bin/node` to establish that
+[JSC-152](#jsc-152)'s reading was wrong before anything was changed; and cases 335 to 345 of
+`src/tests/differential/the-statement-and-object-surface.js`, every one of them measured against the
+same engine before it was written down. 2026-09-05.
