@@ -113,6 +113,25 @@ internal static class Test262Command
             }
         }
 
+        // THE SUITE SAYS WHICH OF ITS FLAGS NAME PROPOSALS, and this command reads that where the
+        // ingested-dialect command already did. Two selection paths that disagreed about what is
+        // scored would make the same checkout answer two different numbers.
+        var features = SuiteFeatures.Read(
+            Path.Combine(suiteRoot, SuiteFeatures.FileName), out var featureComplaints);
+
+        foreach (var complaint in featureComplaints)
+        {
+            Console.WriteLine("FAIL " + complaint);
+        }
+
+        if (featureComplaints.Count != 0)
+        {
+            Console.WriteLine(
+                "broiler-js-conformance: the suite's feature list is not readable; nothing was scored");
+
+            return ExitCodes.HarnessDefect;
+        }
+
         var fuel = Number(args, "--fuel", DefaultFuel);
         var wallClock = Number(args, "--wall", DefaultWallClock);
 
@@ -126,6 +145,11 @@ internal static class Test262Command
             " thisShard=" + Count(mine.Count));
 
         Console.WriteLine(
+            $"features {SuiteFeatures.FileName} declares {features.Proposed.Count} proposed, " +
+            $"{features.Standard.Count} standard and {features.TestHarness.Count} test-harness " +
+            "flags; a test claiming a proposed one is skipped");
+
+        Console.WriteLine(
             "allowance fuel=" + fuel.ToString(CultureInfo.InvariantCulture) +
             " wallClockMs=" + wallClock.ToString(CultureInfo.InvariantCulture) + " per variant");
 
@@ -133,7 +157,8 @@ internal static class Test262Command
 
         foreach (var relative in mine)
         {
-            foreach (var outcome in Test262Run.RunOne(suiteRoot, relative, manifest, fuel, wallClock))
+            foreach (var outcome in Test262Run.RunOne(
+                suiteRoot, relative, manifest, fuel, wallClock, features.Proposed))
             {
                 results.Add(outcome);
 

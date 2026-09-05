@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 116 |
 | Files carrying an annotation | 116 |
-| Code units | 4328 |
-| Relevant | 2364 |
-| Exempt by predicate | 1964 |
-| Annotated | 2364 of 2364 (100%) |
-| Human reviewed | 0 of 2364 (0%) |
-| Unverified | 2364 |
+| Code units | 4339 |
+| Relevant | 2374 |
+| Exempt by predicate | 1965 |
+| Annotated | 2374 of 2374 (100%) |
+| Human reviewed | 0 of 2374 (0%) |
+| Unverified | 2374 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 2364 |
+| HUMAN_PENDING | 2374 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 1964 |
+| EXEMPT | 1965 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
 | None | 858 |
-| Low | 1960 |
+| Low | 1971 |
 | Medium | 82 |
 | High | 0 |
 | Unknown | 0 |
@@ -51,7 +51,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | None | 5 |
 | Low | 645 |
-| Medium | 2055 |
+| Medium | 2066 |
 | High | 195 |
 | Critical | 0 |
 | *not annotated* | 0 |
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.8 / 10 |
-| Units scored | 2364 |
+| Units scored | 2374 |
 
 ## High-security review areas
 
@@ -294,8 +294,8 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 638 |
-| ParameterAssigningConstructor | 82 |
+| TrivialPropertyOrAccessor | 640 |
+| ParameterAssigningConstructor | 81 |
 | TrivialExpressionBodiedMember | 29 |
 | CompilerSuppliedRecordOrEnumMember | 4 |
 | DelegatingOverrideOrOperator | 102 |
@@ -321,7 +321,7 @@ No unit in this component states a per-unit exemption.
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-4328 of them, exempt and relevant alike - with the fingerprint of its declaration.
+4339 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in

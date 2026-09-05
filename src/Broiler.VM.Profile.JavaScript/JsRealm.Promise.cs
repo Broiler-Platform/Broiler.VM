@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   21
-// Annotated:        21/21
+// Relevant units:   28
+// Annotated:        28/28
 // Exempt:           6
-// Human-reviewed:   0/21
+// Human-reviewed:   0/28
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         2/2
 // Resource impact:  4/10 max
-// Unverified:       21
+// Unverified:       28
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -141,17 +141,42 @@ internal sealed partial class JsRealm
     }
 
     /// <summary><c>then</c>, <c>catch</c> and <c>finally</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E50BFF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=6CCEA2
     // Broiler-Human:        PENDING
     private void SetupPromiseReactions()
     {
+        PromisePrototype.SetOwnSymbol(
+            ToStringTagSymbol,
+            JsProperty.Data(JsValue.String("Promise"), JsPropertyAttributes.Configurable));
+
+
+        // THE RESULT IS BUILT BY THE SPECIES AND NOT BY THIS REALM'S `Promise`. A subclass that
+        // declares `static get [Symbol.species]` decides what `p.then(f)` answers, which is the one
+        // hook the language gives a library that wants its own promise type to survive a chain.
+        // Where the species IS the intrinsic - which is nearly always - the internal path is taken
+        // and no guest constructor runs.
         Method(PromisePrototype, "then", 2, (engine, thisValue, arguments) =>
-            JsValue.Object(
-                PromiseThen(
-                    engine,
-                    PromiseThisPromise(engine, thisValue, "then"),
-                    ArgOfPromise(arguments, 0),
-                    ArgOfPromise(arguments, 1))));
+        {
+            var promise = PromiseThisPromise(engine, thisValue, "then");
+            var species = PromiseSpeciesOf(engine, thisValue);
+            var onFulfil = ArgOfPromise(arguments, 0);
+            var onReject = ArgOfPromise(arguments, 1);
+
+            if (ReferenceEquals(species.AsObjectOrNull(), PromiseConstructor))
+            {
+                return JsValue.Object(PromiseThen(engine, promise, onFulfil, onReject));
+            }
+
+            var capability = PromiseCapability(engine, species);
+
+            PromiseAttach(
+                engine,
+                promise,
+                new JsPromiseReaction(capability.Resolve, capability.Reject, onFulfil, true),
+                new JsPromiseReaction(capability.Resolve, capability.Reject, onReject, false));
+
+            return capability.Promise;
+        });
 
         // `catch` AND `finally` GO BACK THROUGH THE RECEIVER'S OWN `then` RATHER THAN CALLING THE
         // INTERNAL ONE. The specification defines both by Invoke(promise, "then", ...), so a
@@ -182,31 +207,37 @@ internal sealed partial class JsRealm
             // settlement with its own rejection. Anything simpler - calling `f` and ignoring what
             // it gave back - makes `finally` useless for the one thing it exists for, which is
             // releasing a resource before the value moves on.
+            // THE SPECIES IS READ ONCE, HERE, and the handlers resolve through it. `finally` is
+            // defined in terms of `PromiseResolve(C, result)`, so a subclass sees its own
+            // constructor asked for the intermediate promise - which is what the suite counts when
+            // it counts how many promises a `finally` built.
+            var species = PromiseSpeciesOf(engine, thisValue);
+
             var pass = Native("", 1, (inner, ignored, passed) =>
             {
                 var value = ArgOfPromise(passed, 0);
                 var produced = inner.Call(onFinally, JsValue.Undefined, []);
+                var waited = PromiseResolveThrough(inner, species, produced);
 
-                return JsValue.Object(
-                    PromiseThen(
-                        inner,
-                        PromiseResolveValue(inner, produced),
-                        JsValue.Object(Native("", 0, (deeper, alsoIgnored, none) => value)),
-                        JsValue.Undefined));
+                return inner.Call(
+                    inner.GetProperty(waited, "then"),
+                    waited,
+                    [JsValue.Object(Native("", 0, (deeper, alsoIgnored, none) => value))]);
             });
 
             var rethrow = Native("", 1, (inner, ignored, passed) =>
             {
                 var reason = ArgOfPromise(passed, 0);
                 var produced = inner.Call(onFinally, JsValue.Undefined, []);
+                var waited = PromiseResolveThrough(inner, species, produced);
 
-                return JsValue.Object(
-                    PromiseThen(
-                        inner,
-                        PromiseResolveValue(inner, produced),
+                return inner.Call(
+                    inner.GetProperty(waited, "then"),
+                    waited,
+                    [
                         JsValue.Object(Native("", 0, (deeper, alsoIgnored, none) =>
                             throw new JsThrow(reason, deeper.Render(reason)))),
-                        JsValue.Undefined));
+                    ]);
             });
 
             return engine.Call(
@@ -215,38 +246,87 @@ internal sealed partial class JsRealm
     }
 
     /// <summary><c>resolve</c>, <c>reject</c>, <c>all</c>, <c>allSettled</c>, <c>race</c>, <c>any</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=5A97C5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=3B9906
     // Broiler-Human:        PENDING
     private void SetupPromiseCombinators()
     {
+        // THE RECEIVER IS THE CONSTRUCTOR, in these two and in the four below. `Promise.resolve`
+        // called on a subclass answers an instance of the subclass, and called on something that is
+        // not a constructor is a TypeError rather than a Promise - which is the difference between
+        // a static that is inherited and one that is merely reachable.
         Method(PromiseConstructor, "resolve", 1, (engine, thisValue, arguments) =>
-            JsValue.Object(PromiseResolveValue(engine, ArgOfPromise(arguments, 0))));
+            PromiseResolveThrough(engine, thisValue, ArgOfPromise(arguments, 0)));
 
         Method(PromiseConstructor, "reject", 1, (engine, thisValue, arguments) =>
         {
-            var promise = new JsPromiseObject(PromisePrototype);
-            PromiseSettle(engine, promise, ArgOfPromise(arguments, 0), JsPromiseState.Rejected);
-            return JsValue.Object(promise);
+            var capability = PromiseCapability(engine, thisValue);
+            engine.Call(capability.Reject, JsValue.Undefined, [ArgOfPromise(arguments, 0)]);
+            return capability.Promise;
+        });
+
+        // `try` RUNS ITS ARGUMENT NOW AND WRAPS WHATEVER HAPPENS, which is the one combinator that
+        // takes a function rather than a list: it exists so that a synchronous throw and an
+        // asynchronous rejection reach the same `catch`, without the caller writing the
+        // `new Promise(r => r(f()))` dance that does it by accident.
+        Method(PromiseConstructor, "try", 1, (engine, thisValue, arguments) =>
+        {
+            var capability = PromiseCapability(engine, thisValue);
+            var callback = ArgOfPromise(arguments, 0);
+            var rest = arguments.Length > 1 ? arguments[1..] : System.Array.Empty<JsValue>();
+
+            try
+            {
+                if (!callback.IsObject || !callback.AsObject().IsCallable)
+                {
+                    throw engine.Error("TypeError", "Promise.try: the argument is not a function");
+                }
+
+                engine.Call(
+                    capability.Resolve,
+                    JsValue.Undefined,
+                    [engine.Call(callback, JsValue.Undefined, rest)]);
+            }
+            catch (JsThrow thrown)
+            {
+                engine.Call(capability.Reject, JsValue.Undefined, [thrown.Value]);
+            }
+
+            return capability.Promise;
+        });
+
+        // THE CAPABILITY, HANDED TO THE PROGRAM. Before this existed a program that wanted to
+        // settle a promise from outside wrote `let r; const p = new Promise(x => r = x)`, which
+        // works and reads like a trick; this is the same three values with a name.
+        Method(PromiseConstructor, "withResolvers", 0, (engine, thisValue, arguments) =>
+        {
+            _ = arguments;
+            var capability = PromiseCapability(engine, thisValue);
+            var record = new JsObject(ObjectPrototype);
+
+            record.DefineOrdinary("promise", capability.Promise);
+            record.DefineOrdinary("resolve", capability.Resolve);
+            record.DefineOrdinary("reject", capability.Reject);
+            return JsValue.Object(record);
         });
 
         // `all` RESOLVES WITH A DENSE ARRAY IN THE INPUT'S ORDER AND NOT IN SETTLEMENT ORDER, which
         // is why the slots are reserved before any element is waited on: the index a value belongs
         // at is decided when the walk reaches it and not when its promise settles.
         Method(PromiseConstructor, "all", 1, (engine, thisValue, arguments) =>
-            PromiseCombine(engine, ArgOfPromise(arguments, 0), JsPromiseCombination.All));
+            PromiseCombine(engine, thisValue, ArgOfPromise(arguments, 0), JsPromiseCombination.All));
 
         Method(PromiseConstructor, "allSettled", 1, (engine, thisValue, arguments) =>
-            PromiseCombine(engine, ArgOfPromise(arguments, 0), JsPromiseCombination.AllSettled));
+            PromiseCombine(engine, thisValue, ArgOfPromise(arguments, 0), JsPromiseCombination.AllSettled));
 
         // `race` OVER AN EMPTY ARRAY IS PENDING FOR EVER, and that is correct rather than an
         // oversight: there is no first settlement to adopt, so there is nothing the result could
         // settle to. `any` over an empty array rejects instead, because "none of them succeeded" is
         // a fact an empty set does establish.
         Method(PromiseConstructor, "race", 1, (engine, thisValue, arguments) =>
-            PromiseCombine(engine, ArgOfPromise(arguments, 0), JsPromiseCombination.Race));
+            PromiseCombine(engine, thisValue, ArgOfPromise(arguments, 0), JsPromiseCombination.Race));
 
         Method(PromiseConstructor, "any", 1, (engine, thisValue, arguments) =>
-            PromiseCombine(engine, ArgOfPromise(arguments, 0), JsPromiseCombination.Any));
+            PromiseCombine(engine, thisValue, ArgOfPromise(arguments, 0), JsPromiseCombination.Any));
     }
 
     /// <summary>Reads argument <paramref name="at"/>, which may not have been supplied.</summary>
@@ -263,6 +343,157 @@ internal sealed partial class JsRealm
         thisValue.AsObjectOrNull() as JsPromiseObject ??
             throw engine.Error(
                 "TypeError", "Promise.prototype." + method + " called on an incompatible receiver");
+
+    /// <summary>The specification's <c>SpeciesConstructor(promise, %Promise%)</c>.</summary>
+    /// <remarks>
+    /// <b>Two reads and two defaults.</b> A receiver with no <c>constructor</c> answers the
+    /// intrinsic, and a constructor whose <c>Symbol.species</c> is <c>null</c> or <c>undefined</c>
+    /// answers the intrinsic too - so an object that has deliberately opted out gets the ordinary
+    /// promise rather than an error. Anything else must be a constructor, because the next thing
+    /// that happens to it is a <c>new</c>.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=1B9F23
+    // Broiler-Human:        PENDING
+    private JsValue PromiseSpeciesOf(JsEngine engine, JsValue receiver)
+    {
+        var constructor = engine.GetProperty(receiver, "constructor");
+
+        if (constructor.Type == JsType.Undefined)
+        {
+            return JsValue.Object(PromiseConstructor);
+        }
+
+        if (!constructor.IsObject)
+        {
+            throw engine.Error("TypeError", "the receiver's `constructor` is not an object");
+        }
+
+        var species = engine.GetSymbol(constructor, SpeciesSymbol);
+
+        if (species.IsNullish)
+        {
+            return JsValue.Object(PromiseConstructor);
+        }
+
+        if (!species.IsObject || !species.AsObject().IsConstructor)
+        {
+            throw engine.Error("TypeError", "the species is not a constructor");
+        }
+
+        return species;
+    }
+
+    /// <summary>Attaches a pair of reactions, scheduling at once when the promise has settled.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E5B145
+    // Broiler-Human:        PENDING
+    private void PromiseAttach(
+        JsEngine engine,
+        JsPromiseObject promise,
+        JsPromiseReaction whenFulfilled,
+        JsPromiseReaction whenRejected)
+    {
+        engine.Charge(2);
+
+        switch (promise.State)
+        {
+            case JsPromiseState.Pending:
+                promise.FulfilReactions.Add(whenFulfilled);
+                promise.RejectReactions.Add(whenRejected);
+                engine.Retain(PromiseReactionBytes);
+                break;
+
+            case JsPromiseState.Fulfilled:
+                PromiseSchedule(engine, whenFulfilled, promise.Result);
+                break;
+
+            default:
+                PromiseSchedule(engine, whenRejected, promise.Result);
+                break;
+        }
+    }
+
+    /// <summary>A promise and the two functions that settle it, as the language pairs them.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=609421
+    // Broiler-Human:        PENDING
+    private readonly record struct JsPromiseCapability(JsValue Promise, JsValue Resolve, JsValue Reject);
+
+    /// <summary>The specification's <c>NewPromiseCapability</c>, over any constructor.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Every static on <c>Promise</c> builds its answer through THIS and not through the
+    /// intrinsic.</b> The receiver decides what is constructed - <c>Promise.all.call(C, xs)</c>
+    /// answers a <c>C</c> - which is what makes the combinators inheritable by a subclass and what
+    /// the pinned suite spends a large part of its Promise subtree checking. Reaching for
+    /// <c>%Promise%</c> instead would answer the right VALUE with the wrong object, which is the
+    /// kind of wrong that only shows up in somebody else's library.
+    /// </para>
+    /// <para>
+    /// <b>The executor is called synchronously by the constructor and its two arguments are
+    /// captured here.</b> A constructor that does not call it, or calls it twice, or hands it
+    /// something that is not callable, is a <c>TypeError</c> - which is the check that makes a
+    /// broken subclass fail at the point it broke rather than at the settlement nobody can trace
+    /// back.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=55A6B9
+    // Broiler-Human:        PENDING
+    private JsPromiseCapability PromiseCapability(JsEngine engine, JsValue constructor)
+    {
+        if (!constructor.IsObject || !constructor.AsObject().IsConstructor)
+        {
+            throw engine.Error("TypeError", "PromiseCapability requires a constructor");
+        }
+
+        var resolve = JsValue.Undefined;
+        var reject = JsValue.Undefined;
+
+        var executor = Native("", 2, (inner, thisValue, arguments) =>
+        {
+            _ = thisValue;
+
+            if (resolve.Type != JsType.Undefined || reject.Type != JsType.Undefined)
+            {
+                return inner.ThrowTypeError("the promise capability has already been settled");
+            }
+
+            resolve = ArgOfPromise(arguments, 0);
+            reject = ArgOfPromise(arguments, 1);
+            return JsValue.Undefined;
+        });
+
+        engine.Retain(PromiseReactionBytes);
+        var promise = engine.Construct(constructor, [JsValue.Object(executor)], constructor);
+
+        if (!resolve.IsObject || !resolve.AsObject().IsCallable ||
+            !reject.IsObject || !reject.AsObject().IsCallable)
+        {
+            throw engine.Error("TypeError", "the promise constructor did not supply both resolvers");
+        }
+
+        return new JsPromiseCapability(promise, resolve, reject);
+    }
+
+    /// <summary>The specification's <c>PromiseResolve</c>, over any constructor.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=AE4023
+    // Broiler-Human:        PENDING
+    private JsValue PromiseResolveThrough(JsEngine engine, JsValue constructor, JsValue value)
+    {
+        // AN ALREADY-PROMISE OF THE SAME CONSTRUCTOR IS ANSWERED AS ITSELF, which is the identity
+        // `Promise.resolve(p) === p` every program relies on. The test is on the value's own
+        // `constructor` property rather than on its shape, because that is what the language reads
+        // and a program may have changed it.
+        if (value.AsObjectOrNull() is JsPromiseObject &&
+            engine.GetProperty(value, "constructor").IsObject &&
+            ReferenceEquals(
+                engine.GetProperty(value, "constructor").AsObject(), constructor.AsObjectOrNull()))
+        {
+            return value;
+        }
+
+        var capability = PromiseCapability(engine, constructor);
+        engine.Call(capability.Resolve, JsValue.Undefined, [value]);
+        return capability.Promise;
+    }
 
     /// <summary>
     /// Builds the <c>resolve</c>/<c>reject</c> pair for <paramref name="promise"/>, sharing one
@@ -460,7 +691,7 @@ internal sealed partial class JsRealm
     /// <c>p.then(null).then(f)</c> reach <c>f</c> and <c>p.catch(g)</c> forward a fulfilment past
     /// <c>g</c> untouched.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=7EC4E4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=6E50D5
     // Broiler-Human:        PENDING
     private void PromiseRun(JsEngine engine, JsPromiseReaction reaction, JsValue argument)
     {
@@ -470,11 +701,11 @@ internal sealed partial class JsRealm
         {
             if (reaction.OnFulfil)
             {
-                PromiseResolveWith(engine, reaction.Derived, argument);
+                PromiseReactionResolve(engine, reaction, argument);
             }
             else
             {
-                PromiseSettle(engine, reaction.Derived, argument, JsPromiseState.Rejected);
+                PromiseReactionReject(engine, reaction, argument);
             }
 
             return;
@@ -482,13 +713,43 @@ internal sealed partial class JsRealm
 
         try
         {
-            var produced = engine.Call(handler, JsValue.Undefined, [argument]);
-            PromiseResolveWith(engine, reaction.Derived, produced);
+            PromiseReactionResolve(
+                engine, reaction, engine.Call(handler, JsValue.Undefined, [argument]));
         }
         catch (JsThrow thrown)
         {
-            PromiseSettle(engine, reaction.Derived, thrown.Value, JsPromiseState.Rejected);
+            PromiseReactionReject(engine, reaction, thrown.Value);
         }
+    }
+
+    /// <summary>Settles what a reaction owes, whichever of the two shapes it holds.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=9BEC4D
+    // Broiler-Human:        PENDING
+    private void PromiseReactionResolve(
+        JsEngine engine, JsPromiseReaction reaction, JsValue value)
+    {
+        if (reaction.Derived is { } derived)
+        {
+            PromiseResolveWith(engine, derived, value);
+            return;
+        }
+
+        engine.Call(reaction.Resolve, JsValue.Undefined, [value]);
+    }
+
+    /// <summary>The rejecting half of the same.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=F9E827
+    // Broiler-Human:        PENDING
+    private void PromiseReactionReject(
+        JsEngine engine, JsPromiseReaction reaction, JsValue reason)
+    {
+        if (reaction.Derived is { } derived)
+        {
+            PromiseSettle(engine, derived, reason, JsPromiseState.Rejected);
+            return;
+        }
+
+        engine.Call(reaction.Reject, JsValue.Undefined, [reason]);
     }
 
     /// <summary>
@@ -576,32 +837,63 @@ internal sealed partial class JsRealm
     /// write <c>Promise.all(x).catch(h)</c> without also wrapping the call in a <c>try</c>.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=470C14
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=B41595
     // Broiler-Human:        PENDING
-    private JsValue PromiseCombine(JsEngine engine, JsValue source, JsPromiseCombination shape)
+    private JsValue PromiseCombine(
+        JsEngine engine, JsValue constructor, JsValue source, JsPromiseCombination shape)
     {
-        var result = new JsPromiseObject(PromisePrototype);
+        // THE CAPABILITY IS BUILT BEFORE ANYTHING CAN GO WRONG, and a failure to build it THROWS
+        // where every later failure rejects. That asymmetry is the specification's: without a
+        // capability there is no promise to reject with, so there is nothing to answer but an
+        // exception.
+        var capability = PromiseCapability(engine, constructor);
 
         try
         {
-            var items = CollectionElements(engine, source);
-            var collected = NewArray();
-            var remaining = items.Count + 1;
+            // THE ELEMENTS ARE RESOLVED THROUGH THE RECEIVER'S OWN `resolve` and waited on through
+            // each element's own `then`, both read as properties and called as functions. A program
+            // that overrides either sees its override used, and the suite counts those calls.
+            var promiseResolve = engine.GetProperty(constructor, "resolve");
 
-            for (var at = 0; at < items.Count; at++)
+            if (!promiseResolve.IsObject || !promiseResolve.AsObject().IsCallable)
             {
-                engine.Charge(2);
-                collected.Push(JsValue.Undefined);
+                throw engine.Error("TypeError", "the constructor's `resolve` is not a function");
             }
 
-            for (var at = 0; at < items.Count; at++)
+            var collected = NewArray();
+            var remaining = 1;
+            var reached = 0;
+
+            // ONE ELEMENT AT A TIME, and the iterator is CLOSED if anything in the body throws.
+            // Reading the whole iterable first never returns over an iterator that does not end,
+            // and the pinned suite's `invoke-then-error-close` family is exactly that: an infinite
+            // iterator whose walk is supposed to stop at the first element whose `then` throws.
+            CollectionEach(engine, source, item =>
             {
-                var slot = (uint)at;
-                var element = PromiseResolveValue(engine, items[at]);
+                var slot = (uint)reached;
+                reached++;
+                remaining++;
+                engine.Charge(2);
+                collected.Push(JsValue.Undefined);
+                var element = engine.Call(promiseResolve, constructor, [item]);
+
+                // ONE ELEMENT SETTLES ONCE, however many times its `then` calls back. A thenable
+                // may call its `onFulfilled` twice - the language does not stop it - and without a
+                // latch the second call decrements the counter again and settles the result while
+                // elements are still outstanding. The latch is per element and shared by that
+                // element's two handlers, which is what makes a fulfil after a reject a no-op too.
+                var settled = new JsPromiseLatch();
 
                 var onFulfil = Native("", 1, (inner, thisValue, arguments) =>
                 {
                     var value = ArgOfPromise(arguments, 0);
+
+                    if (settled.Latched)
+                    {
+                        return JsValue.Undefined;
+                    }
+
+                    settled.Latched = true;
 
                     switch (shape)
                     {
@@ -611,11 +903,10 @@ internal sealed partial class JsRealm
 
                             if (remaining == 0)
                             {
-                                PromiseSettle(
-                                    inner,
-                                    result,
-                                    JsValue.Object(collected),
-                                    JsPromiseState.Fulfilled);
+                                inner.Call(
+                                    capability.Resolve,
+                                    JsValue.Undefined,
+                                    [JsValue.Object(collected)]);
                             }
 
                             break;
@@ -626,17 +917,16 @@ internal sealed partial class JsRealm
 
                             if (remaining == 0)
                             {
-                                PromiseSettle(
-                                    inner,
-                                    result,
-                                    JsValue.Object(collected),
-                                    JsPromiseState.Fulfilled);
+                                inner.Call(
+                                    capability.Resolve,
+                                    JsValue.Undefined,
+                                    [JsValue.Object(collected)]);
                             }
 
                             break;
 
                         default:
-                            PromiseSettle(inner, result, value, JsPromiseState.Fulfilled);
+                            inner.Call(capability.Resolve, JsValue.Undefined, [value]);
                             break;
                     }
 
@@ -647,6 +937,13 @@ internal sealed partial class JsRealm
                 {
                     var reason = ArgOfPromise(arguments, 0);
 
+                    if (settled.Latched)
+                    {
+                        return JsValue.Undefined;
+                    }
+
+                    settled.Latched = true;
+
                     switch (shape)
                     {
                         case JsPromiseCombination.AllSettled:
@@ -655,11 +952,10 @@ internal sealed partial class JsRealm
 
                             if (remaining == 0)
                             {
-                                PromiseSettle(
-                                    inner,
-                                    result,
-                                    JsValue.Object(collected),
-                                    JsPromiseState.Fulfilled);
+                                inner.Call(
+                                    capability.Resolve,
+                                    JsValue.Undefined,
+                                    [JsValue.Object(collected)]);
                             }
 
                             break;
@@ -670,25 +966,44 @@ internal sealed partial class JsRealm
 
                             if (remaining == 0)
                             {
-                                PromiseSettle(
-                                    inner,
-                                    result,
-                                    PromiseAggregate(collected),
-                                    JsPromiseState.Rejected);
+                                inner.Call(
+                                    capability.Reject,
+                                    JsValue.Undefined,
+                                    [PromiseAggregate(inner, collected)]);
                             }
 
                             break;
 
                         default:
-                            PromiseSettle(inner, result, reason, JsPromiseState.Rejected);
+                            inner.Call(capability.Reject, JsValue.Undefined, [reason]);
                             break;
                     }
 
                     return JsValue.Undefined;
                 });
 
-                _ = PromiseThen(engine, element, JsValue.Object(onFulfil), JsValue.Object(onReject));
-            }
+                var then = engine.GetProperty(element, "then");
+
+                if (!then.IsObject || !then.AsObject().IsCallable)
+                {
+                    throw engine.Error("TypeError", "an element's `then` is not a function");
+                }
+
+                // `all` AND `race` HAND EVERY ELEMENT THE CAPABILITY'S OWN `reject`, one function
+                // object for the whole call, and `race` hands them its `resolve` too. That is
+                // observable - a test collects the handlers and compares them - and it follows from
+                // the algorithm rather than being a saving: there is nothing per-element for those
+                // sides to remember, so the specification passes the capability's function itself.
+                var rejectSide = shape is JsPromiseCombination.All or JsPromiseCombination.Race
+                    ? capability.Reject
+                    : JsValue.Object(onReject);
+
+                var fulfilSide = shape == JsPromiseCombination.Race
+                    ? capability.Resolve
+                    : JsValue.Object(onFulfil);
+
+                _ = engine.Call(then, element, [fulfilSide, rejectSide]);
+            });
 
             remaining--;
 
@@ -698,14 +1013,14 @@ internal sealed partial class JsRealm
                 {
                     case JsPromiseCombination.All:
                     case JsPromiseCombination.AllSettled:
-                        PromiseSettle(
-                            engine, result, JsValue.Object(collected), JsPromiseState.Fulfilled);
+                        engine.Call(
+                            capability.Resolve, JsValue.Undefined, [JsValue.Object(collected)]);
 
                         break;
 
                     case JsPromiseCombination.Any:
-                        PromiseSettle(
-                            engine, result, PromiseAggregate(collected), JsPromiseState.Rejected);
+                        engine.Call(
+                            capability.Reject, JsValue.Undefined, [PromiseAggregate(engine, collected)]);
 
                         break;
 
@@ -716,10 +1031,12 @@ internal sealed partial class JsRealm
         }
         catch (JsThrow thrown)
         {
-            PromiseSettle(engine, result, thrown.Value, JsPromiseState.Rejected);
+            // `IfAbruptRejectPromise`: a combinator always ANSWERS a promise, so a caller may write
+            // `Promise.all(x).catch(h)` without also wrapping the call in a `try`.
+            engine.Call(capability.Reject, JsValue.Undefined, [thrown.Value]);
         }
 
-        return JsValue.Object(result);
+        return capability.Promise;
     }
 
     /// <summary>One <c>allSettled</c> record.</summary>
@@ -749,16 +1066,20 @@ internal sealed partial class JsRealm
     /// <c>JsRealm.Error.cs</c> rather than here, where it would be a second, divergent Error
     /// hierarchy built by the promise code.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=D365AF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=DA11DE
     // Broiler-Human:        PENDING
-    private JsValue PromiseAggregate(JsArray errors)
+    private JsValue PromiseAggregate(JsEngine engine, JsArray errors)
     {
-        var error = new JsObject(ErrorPrototype, "Error");
+        // THE REAL CONSTRUCTOR AND NOT AN OBJECT SHAPED LIKE ONE. This built an ordinary error
+        // carrying the three properties, because the realm had no `AggregateError` when it was
+        // written; a program testing `error instanceof AggregateError` - which is the whole point
+        // of the type - got false, and `Object.getPrototypeOf(error)` answered `Error.prototype`.
+        var constructor = ErrorConstructors["AggregateError"];
 
-        error.DefineBuiltIn("name", JsValue.String("AggregateError"));
-        error.DefineBuiltIn("message", JsValue.String("All promises were rejected"));
-        error.DefineBuiltIn("errors", JsValue.Object(errors));
-        return JsValue.Object(error);
+        return engine.Construct(
+            JsValue.Object(constructor),
+            [JsValue.Object(errors), JsValue.String("All promises were rejected")],
+            JsValue.Object(constructor));
     }
 
     // ---- what an async function needs from this file ------------------------------------------

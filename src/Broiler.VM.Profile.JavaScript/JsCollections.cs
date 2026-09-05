@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   49
-// Annotated:        49/49
-// Exempt:           35
-// Human-reviewed:   0/49
+// Relevant units:   51
+// Annotated:        51/51
+// Exempt:           36
+// Human-reviewed:   0/51
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         1/1
 // Resource impact:  4/10 max
-// Unverified:       49
+// Unverified:       51
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -775,19 +775,50 @@ internal enum JsPromiseState : byte
 internal sealed class JsPromiseReaction
 {
     /// <summary>Records one half of a <c>then</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=F8FDBE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=F7A876
     // Broiler-Human:        PENDING
     internal JsPromiseReaction(JsPromiseObject derived, JsValue handler, bool onFulfil)
     {
         Derived = derived;
         Handler = handler;
         OnFulfil = onFulfil;
+        Resolve = JsValue.Undefined;
+        Reject = JsValue.Undefined;
     }
 
-    /// <summary>The promise this reaction's outcome settles.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=E8477F
+    /// <summary>Records one half of a <c>then</c> whose result is somebody else's promise.</summary>
+    /// <remarks>
+    /// <b>A <c>then</c> on a SUBCLASS answers an instance of the subclass</b>, built by that
+    /// constructor and settled through the two functions it handed its executor - so this reaction
+    /// has no promise of its own to settle and holds the pair instead. The ordinary case, where the
+    /// species is the intrinsic, keeps the promise: it costs one object rather than three and needs
+    /// no guest call to settle.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=8A6A22
     // Broiler-Human:        PENDING
-    internal JsPromiseObject Derived { get; }
+    internal JsPromiseReaction(JsValue resolve, JsValue reject, JsValue handler, bool onFulfil)
+    {
+        Derived = null;
+        Handler = handler;
+        OnFulfil = onFulfil;
+        Resolve = resolve;
+        Reject = reject;
+    }
+
+    /// <summary>The promise this reaction's outcome settles, when it settles one directly.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=CF536E
+    // Broiler-Human:        PENDING
+    internal JsPromiseObject? Derived { get; }
+
+    /// <summary>The capability's <c>resolve</c>, when the result is not this realm's own promise.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=60D3F9
+    // Broiler-Human:        PENDING
+    internal JsValue Resolve { get; }
+
+    /// <summary>The capability's <c>reject</c>, under the same condition.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=0FDCDE
+    // Broiler-Human:        PENDING
+    internal JsValue Reject { get; }
 
     /// <summary>The handler, or a non-callable value meaning "pass through".</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=428C8F

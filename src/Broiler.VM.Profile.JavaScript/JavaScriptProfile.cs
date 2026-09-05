@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   16
-// Annotated:        16/16
+// Relevant units:   17
+// Annotated:        17/17
 // Exempt:           8
-// Human-reviewed:   0/16
+// Human-reviewed:   0/17
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         6/6
 // Resource impact:  3/10 max
-// Unverified:       16
+// Unverified:       17
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -44,6 +44,18 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 public static class JavaScriptProfile
 {
+    /// <summary>The entry-point name a host invokes to run the jobs a program left owed.</summary>
+    /// <remarks>
+    /// <b>The profile never chooses when to drain and a host always does</b>, so the name is part of
+    /// the profile's surface rather than a convention each host restates. A host that invokes it
+    /// runs every due job on the guest stack; one that never does runs none, and a program whose
+    /// only remaining work was a promise reaction ends with that work undone - which is a decision
+    /// an embedder makes, not one this profile makes for it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=AE7B50
+    // Broiler-Human:        PENDING
+    public const string DrainEntryPoint = "#drain-jobs";
+
     /// <summary>This profile's identity.</summary>
     /// <remarks>
     /// The first label <c>broiler</c> is reserved and pairs with a <c>Broiler.*</c> package

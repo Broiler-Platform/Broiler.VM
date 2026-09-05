@@ -1816,7 +1816,7 @@ internal sealed class JsEngine
         return joined;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=DC0CB5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=27144B
     // Broiler-Human:        PENDING
     private string Describe(JsValue value) => value.Type switch
     {
@@ -1825,7 +1825,15 @@ internal sealed class JsEngine
         JsType.String => "\"" + value.AsString() + "\"",
         JsType.Number => JsNumberFormat.ToJsString(value.AsNumber()),
         JsType.Boolean => value.AsBoolean() ? "true" : "false",
-        _ => value.AsObject().IsCallable ? "function" : "object",
+
+        // A SYMBOL NEEDS ITS OWN ARM AND THE DEFAULT WAS NOT ONE. This described anything that was
+        // not one of the five above by asking it whether it was callable, which reads the value as
+        // an OBJECT - and a Symbol is not one. So `Symbol()()` - a call of a Symbol, which every
+        // engine answers with a TypeError - reached this while building that very TypeError's
+        // message, failed the cast, and ended the whole invocation as a contract violation: an
+        // internal fault, uncatchable, in place of the language's own error.
+        JsType.Symbol => value.AsSymbol().ToString(),
+        _ => value.IsObject && value.AsObject().IsCallable ? "function" : "object",
     };
 
     // ---- the iteration protocol ----------------------------------------------------------------

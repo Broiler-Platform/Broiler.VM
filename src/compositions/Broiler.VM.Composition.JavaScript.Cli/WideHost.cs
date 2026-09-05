@@ -174,7 +174,7 @@ internal static class WideHost
             // a shell does and what makes `Promise.resolve(1).then(print)` print before the process
             // ends. A host that wanted a drain between scripts would ask between them instead.
             var name = index == count
-                ? "#drain-jobs"
+                ? JavaScriptProfile.DrainEntryPoint
                 : "script" + index.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
             var request = new VmInvocationRequest(

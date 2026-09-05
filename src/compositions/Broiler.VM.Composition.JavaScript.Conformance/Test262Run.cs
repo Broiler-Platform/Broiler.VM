@@ -119,7 +119,8 @@ internal static class Test262Run
         string relativePath,
         Test262Manifest manifest,
         ulong fuel,
-        ulong wallClock)
+        ulong wallClock,
+        IReadOnlySet<string>? proposed = null)
     {
         var full = Path.Combine(suiteRoot, relativePath.Replace('/', Path.DirectorySeparatorChar));
 
@@ -146,6 +147,28 @@ internal static class Test262Run
         }
 
         var flags = new HashSet<string>(frontmatter.Flags, StringComparer.Ordinal);
+
+        // A TEST ABOUT A PROPOSAL IS NOT A TEST ABOUT THE EDITION. The suite's own `features.txt`
+        // separates proposed flags from standard ones and says in its prose that the proposed ones
+        // exist so consumers may omit them; a run that scored them would report an engine as
+        // failing the language over constructs no published edition contains, and would report a
+        // PASS as conformance the same way. It is skipped rather than dropped, because a figure
+        // nobody can see is one nobody can check.
+        if (proposed is not null)
+        {
+            foreach (var feature in frontmatter.Features)
+            {
+                if (proposed.Contains(feature))
+                {
+                    return
+                    [
+                        new Test262Outcome(
+                            relativePath, "-", Test262Verdict.Skipped,
+                            "the test claims the proposed feature `" + feature + "`"),
+                    ];
+                }
+            }
+        }
 
         if (flags.Contains("module"))
         {
@@ -478,6 +501,34 @@ internal static class Test262Run
             }
         }
 
+        // THE JOBS ARE THE REST OF THE PROGRAM, AND AN ASYNCHRONOUS TEST HAS NOT FINISHED UNTIL
+        // THEY HAVE RUN. test262's asynchronous tests call `$DONE` from a promise reaction, so the
+        // line this runner reads its verdict off is printed by a JOB and not by the script; a run
+        // that invoked the scripts and stopped saw no completion and reported the absence of a
+        // queue, which stopped being true the day one was built. The drain point is the host's to
+        // choose and this one chooses the same point the end-user host does: after the last script.
+        if (manifest.IsWide)
+        {
+            var drain = new VmInvocationRequest(
+                new VmUtf8Text(System.Text.Encoding.UTF8.GetBytes(JavaScriptProfile.DrainEntryPoint)));
+
+            var drained = instance.Invoke(in drain, CancellationToken.None);
+
+            if (drained.Outcome == VmOutcome.ResourceExhaustion)
+            {
+                return Spent(relativePath, variant, drained.Diagnostics, "draining the job queue");
+            }
+
+            // A JOB THAT THREW IS THE PROGRAM THROWING, and it is reported as such rather than as a
+            // missing completion: an unhandled rejection reaching the drain is what a test asserting
+            // one is about, and calling it "printed no completion" would name the symptom.
+            if (TryUncaught(in drained, manifest, out _, out var thrown))
+            {
+                return new Test262Outcome(
+                    relativePath, variant, Test262Verdict.Failed, "a job threw: " + thrown);
+            }
+        }
+
         if (negative is not null)
         {
             return new Test262Outcome(
@@ -503,7 +554,7 @@ internal static class Test262Run
 
             return new Test262Outcome(
                 relativePath, variant, Test262Verdict.Failed,
-                "an asynchronous test printed no completion, and this profile has no job queue");
+                "an asynchronous test printed no completion, and the job queue is drained");
         }
 
         return new Test262Outcome(relativePath, variant, Test262Verdict.Passed, string.Empty);

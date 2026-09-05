@@ -4699,3 +4699,70 @@ does.
 
 **Authority and date.** The implementation of 2026-09-04 in this checkout and the
 `set-like-class-order` cases of the pinned suite, which are what the trace comes from. 2026-09-04.
+
+### JSC-120
+
+**Where:** the conformance harness's `--test262` command, and every whole-suite figure it has ever
+produced.
+
+**Two things it did not do, and both moved the numbers.**
+
+**It never drained the job queue.** test262's asynchronous tests call `$DONE` from a promise
+reaction, so the line the runner reads its verdict off is printed by a JOB and not by the script. The
+runner invoked the scripts and stopped, saw no completion, and reported *"an asynchronous test
+printed no completion, and this profile has no job queue"* — a sentence that was true when it was
+written and stopped being true the day JSW-7 built one. **710 variants of `built-ins/Promise` alone**
+were scored as failures for a queue nobody asked to run. The drain point is the host's to choose;
+this one now chooses where the end-user host chooses, after the last script.
+
+**It scored tests about proposals.** The suite's own `features.txt` separates proposed flags from
+standard ones and says in its prose that the proposed ones exist so consumers may omit them. The
+ingested-dialect command reads that file and excludes them; this command did not, so a run reported
+an engine as failing the language over constructs no published edition contains — and would have
+reported a PASS as conformance the same way. Two selection paths that disagree about what is scored
+make one checkout answer two different numbers.
+
+**Neither is a defect in the engine, and that is the point.** A harness that under-reports is worse
+than one that over-reports, because the work it invents is work somebody does.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout and the
+`test/built-ins/Promise` sweeps either side of it. 2026-09-05.
+
+### JSC-121
+
+**Where:** `Promise` — its statics, its `then`, its `finally`, and what they build their answers
+with.
+
+**What was assumed.** That a promise this realm answers with is a promise this realm made.
+
+**What was true.** Every static on `Promise` builds its answer through `NewPromiseCapability(this)`,
+so the RECEIVER decides what is constructed: `Promise.all.call(C, xs)` answers a `C`, and
+`Promise.resolve` called on something that is not a constructor is a `TypeError` rather than a
+promise. `then` builds its result through `SpeciesConstructor(this, %Promise%)`, which is the one
+hook a library has to make its own promise type survive a chain. This realm reached for its own
+constructor everywhere, so the combinators were reachable from a subclass and useless to one.
+
+**Five smaller things were wrong in the same place, each observable.** The combinators walked their
+argument by collecting it first — so an infinite iterator whose walk should stop at the first `then`
+that throws never stopped. Each element's handlers had no latch, so a thenable calling its
+`onFulfilled` twice counted twice and settled a result while elements were still outstanding.
+`Promise.all` and `race` build one handler per element where the language passes the capability's
+own function to every element — which a test can see by comparing the two it was handed.
+`Promise.any` rejected with an object SHAPED like an `AggregateError`, because the realm had none
+when it was written. And `Promise.withResolvers`, `Promise.try` and
+`Promise.prototype[Symbol.toStringTag]` were absent.
+
+**What that cost, measured.** `test/built-ins/Promise` scored **250 of 1,348 variants** before this
+work and **1,268 of 1,311** after it, with nothing exhausted; the six that remain name `Proxy`,
+a nested realm, or one thenable-identity rule.
+
+**A crash was found on the way and is the reason this entry names `JsEngine` too.**
+`Describe` — which builds the message of *"… is not a function"* — asked any value that was not one
+of five primitives whether it was callable, which reads it as an OBJECT. A **Symbol** is not one, so
+`Symbol()()` failed the cast while building the very `TypeError` it was about, and ended the whole
+invocation as `ProfileFault/ProfileContractViolation`: an internal fault, uncatchable, in place of
+the language's own error.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the sweeps of
+`test/built-ins/Promise` before and after, and the twenty-seven cases retained as
+`src/tests/differential/the-settling-of-promises.js`. 2026-09-05.
