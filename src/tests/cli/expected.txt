@@ -515,3 +515,24 @@ modules/circular-a.mjs|4|1618
 modules/ambiguous.mjs|4|1617
 modules/an-import-in-a-script.js|3|2401:ModuleDeclarationOutsideModuleGoal
 modules/a-bare-specifier.mjs|6|resolves only a specifier that begins with
+
+# WHAT A MODULE GOAL OWES BEYOND THE STATIC FORMS, and the first two rows are the two routes a
+# dynamic import has rather than two spellings of one. The `.mjs` row imports a module its own
+# artifact already carries, so the specifier is one this composition resolved before the bytes were
+# written and the namespace that arrives is the instance the static import got - the counter it
+# reads is the one this file has been incrementing. The `.js` row is a SCRIPT, whose artifact
+# carries no module record at all, so the specifier is put to the artifact provider and comes back
+# as a separate verified artifact; the guest cannot tell which route it took, which is the point.
+modules/a-dynamic-import.mjs|0|same true 3
+modules/a-dynamic-import-from-a-script.js|0|loaded 40 1
+modules/a-dynamic-import-of-nothing.mjs|0|rejected true
+modules/an-import-meta.mjs|0|object true null kept
+modules/a-default-async-generator.mjs|0|first awaited false
+
+# And the two refusals the same work adds, neither of which is a construct outside the manifest.
+# `import.meta` in a script is a SYNTAX error - the manifest admits it and the goal does not - and
+# an import attribute is a LOAD refusal: the clause parsed, and what no composition of this profile
+# has is a loader for a module of a type. Refusing either against the manifest would have said this
+# front end cannot read the grammar, which it can.
+modules/an-import-meta-in-a-script.js|3|2404:ImportMetaOutsideModuleGoal
+modules/an-import-attribute.mjs|3|2405:UnsupportedImportAttribute

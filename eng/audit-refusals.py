@@ -32,9 +32,12 @@ BINARY = os.path.join(
 
 REFUSAL = "2104:ConstructOutsideManifest"
 
-# (name, source, expectation)
+# (name, source, expectation) or (name, source, expectation, "module")
 #   "admitted"             the host must not answer 2104 anywhere in its output
 #   "refused:<construct>"  the host must answer 2104 naming exactly that construct
+#   a fourth field of "module" reads the source under the module goal rather than the script goal,
+#   which is the only way to audit a position that exists only in a module - `import.meta` and
+#   `export default` among them. It writes a `.mjs`, because that is how this host is told.
 CASES = [
     # ---- class fields, in every position a field can be written ------------------------------
     ("field bare", "class C { x; }", "admitted"),
@@ -196,15 +199,97 @@ CASES = [
     ("for await inside a try", "async function f(xs) { try { for await (const x of xs) { x; } } "
      "finally { 1; } }", "admitted"),
 
+    # ---- a dynamic `import()`, in every position a call expression may stand ------------------
+    #
+    # IT IS A CALL EXPRESSION AND THE POSITIONS ARE THE ONES A CALL HAS, which is what makes this
+    # list worth writing out: the production was refused by name at the primary level, so a reader
+    # who checked `import('x')` at statement position learned nothing about `x ? import('a') : 0`.
+    ("dynamic import as a statement", "import('./m.mjs');", "admitted"),
+    ("dynamic import as an initialiser", "var p = import('./m.mjs');", "admitted"),
+    ("dynamic import with a computed specifier", "var s = './m'; import(s + '.mjs');", "admitted"),
+    ("dynamic import with a template specifier", "import(`./m.mjs`);", "admitted"),
+    ("dynamic import with an attributes argument",
+     "import('./m.mjs', { with: {} });", "admitted"),
+    ("dynamic import with a trailing comma after the attributes",
+     "import('./m.mjs', {},);", "admitted"),
+    ("dynamic import followed by a member access", "import('./m.mjs').then;", "admitted"),
+    ("dynamic import followed by a call", "import('./m.mjs').then(function (n) { return n; });",
+     "admitted"),
+    ("dynamic import followed by an index", "import('./m.mjs')['then'];", "admitted"),
+    ("dynamic import in a conditional", "0 ? import('./a.mjs') : import('./b.mjs');", "admitted"),
+    ("dynamic import in an array literal", "[import('./m.mjs')];", "admitted"),
+    ("dynamic import in an object literal", "var o = { p: import('./m.mjs') };", "admitted"),
+    ("dynamic import as a call argument", "function f(x) { return x; } f(import('./m.mjs'));",
+     "admitted"),
+    ("dynamic import in an arrow body", "var f = () => import('./m.mjs');", "admitted"),
+    ("dynamic import in a parameter default", "function f(p = import('./m.mjs')) { return p; }",
+     "admitted"),
+    ("dynamic import in a generator body", "function* g() { yield import('./m.mjs'); }",
+     "admitted"),
+    ("dynamic import awaited in an async function",
+     "async function f() { return await import('./m.mjs'); }", "admitted"),
+    ("dynamic import in an async generator body",
+     "async function* g() { yield await import('./m.mjs'); }", "admitted"),
+    ("dynamic import in a class field initialiser", "class C { p = import('./m.mjs'); }",
+     "admitted"),
+    ("dynamic import in a class static block", "class C { static { import('./m.mjs'); } }",
+     "admitted"),
+    ("dynamic import in a template substitution", "`${import('./m.mjs')}`;", "admitted"),
+    ("dynamic import in a for head", "for (var p = import('./m.mjs'); false; ) { break; }",
+     "admitted"),
+    ("dynamic import inside a try", "try { import('./m.mjs'); } finally { 1; }", "admitted"),
+    ("dynamic import in a nested function", "function f() { return function () "
+     "{ return import('./m.mjs'); }; }", "admitted"),
+    ("dynamic import of a dynamic import's result",
+     "import('./m.mjs').then(function () { return import('./n.mjs'); });", "admitted"),
+    ("dynamic import in a module", "import('./m.mjs');", "admitted", "module"),
+    ("dynamic import at a module's top level under await",
+     "await import('./m.mjs');", "admitted", "module"),
+
+    # ---- `import.meta`, in every position it may stand inside a module ------------------------
+    ("import.meta as a statement", "import.meta;", "admitted", "module"),
+    ("import.meta as an initialiser", "const m = import.meta;", "admitted", "module"),
+    ("import.meta followed by a member access", "import.meta.url;", "admitted", "module"),
+    ("import.meta followed by an index", "import.meta['url'];", "admitted", "module"),
+    ("import.meta assigned to", "import.meta.here = 1;", "admitted", "module"),
+    ("import.meta in a function of a module",
+     "function f() { return import.meta; } f();", "admitted", "module"),
+    ("import.meta in an arrow of a module", "const f = () => import.meta; f();",
+     "admitted", "module"),
+    ("import.meta in a class field of a module", "class C { m = import.meta; } new C();",
+     "admitted", "module"),
+    ("import.meta as a dynamic import's specifier", "import(import.meta);", "admitted", "module"),
+
+    # ---- an import attribute clause, which parses wherever a specifier may carry one -----------
+    #
+    # EVERY ONE OF THESE IS ADMITTED AS SYNTAX, which is the distinction the audit exists to hold:
+    # the answer must not be 2104, because 2104 says the front end does not read the grammar - and
+    # it does. What no composition can do is HONOUR an attribute, and that is a different code.
+    ("import attribute clause, empty", "import './m.mjs' with {};", "admitted", "module"),
+    ("import attribute clause on a re-export",
+     "export * from './m.mjs' with {};", "admitted", "module"),
+    ("import attribute clause on a named re-export",
+     "export { a } from './m.mjs' with {};", "admitted", "module"),
+    ("import attribute clause in a dynamic import",
+     "import('./m.mjs', { with: {} });", "admitted"),
+
+    # ---- an async generator as a module's default export ---------------------------------------
+    ("async generator as a default export",
+     "export default async function* () { yield 1; }", "admitted", "module"),
+    ("named async generator as a default export",
+     "export default async function* g() { yield 1; }", "admitted", "module"),
+    ("async generator as a named declaration export",
+     "export async function* g() { yield 1; }", "admitted", "module"),
+
     # ---- what stays refused, in every position it can appear in --------------------------------
     ("decorator on a class", "@dec class C {}", "refused:a decorator"),
     ("decorator on a class member", "class C { @dec m() {} }", "refused:a decorator"),
 ]
 
 
-def answer(binary, source, directory):
+def answer(binary, source, directory, module=False):
     """What the host says about one source, both streams together."""
-    path = os.path.join(directory, "case.js")
+    path = os.path.join(directory, "case.mjs" if module else "case.js")
     io.open(path, "w", encoding="utf-8", newline="\n").write(source + "\n")
     done = subprocess.run([binary, path], capture_output=True, text=True)
     return (done.stdout + done.stderr).strip()
@@ -242,8 +327,11 @@ def main():
     complaints = []
 
     with tempfile.TemporaryDirectory(prefix="broiler-audit-") as directory:
-        for name, source, expected in CASES:
-            given = answer(options.binary, source, directory)
+        for case in CASES:
+            name, source, expected = case[0], case[1], case[2]
+            given = answer(
+                options.binary, source, directory,
+                module=len(case) > 3 and case[3] == "module")
             complaint = judge(name, source, expected, given)
 
             if complaint is not None:

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   166
-// Annotated:        166/166
-// Exempt:           83
-// Human-reviewed:   0/166
+// Relevant units:   167
+// Annotated:        167/167
+// Exempt:           84
+// Human-reviewed:   0/167
 // IP risk:          None
 // Security risk:    High
 // Criteria:         7/6
 // Resource impact:  3/10 max
-// Unverified:       166
+// Unverified:       167
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -28,10 +28,22 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// harness's strict variant is exactly this, and it is a flag rather than a text edit because
 /// prepending a directive changes the source positions every diagnostic reports.
 /// </param>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4443B7
+/// <param name="Referrer">
+/// <b>What a dynamic <c>import()</c> written in this script is resolved against.</b> A module has a
+/// key the composition resolved it to and needs no second identity; a script is a text a host
+/// handed over, so a relative specifier inside one means whatever the host says it means, and this
+/// is where the host says it. It is empty for a script the host does not place, which is not an
+/// error: a specifier a resolver can answer without a referrer still resolves, and one it cannot
+/// is refused at run time by the resolver rather than here.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=138114
 // Broiler-Human:        PENDING
 public sealed record JsScriptUnit(
-    string Name, string Text, SliceParseOptions Options, bool ForceStrict = false);
+    string Name,
+    string Text,
+    SliceParseOptions Options,
+    bool ForceStrict = false,
+    string Referrer = "");
 
 /// <summary>One source text to compile into a module record of the same artifact.</summary>
 /// <param name="Key">
@@ -193,6 +205,20 @@ public sealed class JsCompiler
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=12B4BB
     // Broiler-Human:        PENDING
     private ModuleBuild? module;
+
+    /// <summary>
+    /// What a dynamic import written in the SCRIPT being lowered is resolved against.
+    /// </summary>
+    /// <remarks>
+    /// <b>A module is its own referrer and a script has to be told what it is.</b> A module carries
+    /// the key the composition resolved it to, so <c>import('./m')</c> inside one is resolved
+    /// against that key without anybody being asked. A script has no key of its own - it is a text
+    /// a host handed over - so the host says what a relative specifier in it means, and a host that
+    /// says nothing gets the empty referrer its own resolver will have to make sense of.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=FAA825
+    // Broiler-Human:        PENDING
+    private string scriptReferrer = string.Empty;
 
     /// <summary>Whether the module being lowered has an <c>await</c> at its own top level.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6F207B
@@ -373,7 +399,7 @@ public sealed class JsCompiler
     }
 
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=13553B
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E0B865
     // Broiler-Human:        PENDING
     private JsCompilation Run(
         System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts,
@@ -399,7 +425,9 @@ public sealed class JsCompiler
                 return new JsCompilation(false, null, diagnostics);
             }
 
+            scriptReferrer = script.Referrer;
             var unit = CompileProgram(program, script.ForceStrict);
+            scriptReferrer = string.Empty;
 
             if (diagnostics.Count != 0)
             {
@@ -977,7 +1005,7 @@ public sealed class JsCompiler
     /// exporting module's slot, so giving it one here would create the copy that makes a live
     /// binding stale - see <see cref="JsOpcode.LoadImport"/>.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=78D914
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=317262
     // Broiler-Human:        PENDING
     private void DeclareImports(
         System.Collections.Generic.IReadOnlyList<JsStatement> body, ModuleBuild build)
@@ -988,6 +1016,7 @@ public sealed class JsCompiler
             {
                 case JsImportDeclaration import:
                 {
+                    RefuseAttributes(import.Span, import.Attributes);
                     var request = RequestIndex(build, import.Specifier);
 
                     foreach (var specifier in import.Specifiers)
@@ -1018,6 +1047,7 @@ public sealed class JsCompiler
                 }
 
                 case JsExportDeclaration exported when exported.From.Length != 0:
+                    RefuseAttributes(exported.Span, exported.Attributes);
                     RequestIndex(build, exported.From);
                     break;
 
@@ -1025,6 +1055,48 @@ public sealed class JsCompiler
                     break;
             }
         }
+    }
+
+    /// <summary>Declines an import attribute this host has no loader for.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The clause is admitted and the ATTRIBUTE is declined, and the two are different
+    /// answers.</b> An attribute changes what the host LOADS - a JSON module is a module whose
+    /// default export is a parsed document rather than an evaluated program - and no composition of
+    /// this profile has a loader for one. Refusing the syntax said the grammar was outside the
+    /// manifest, which was false and which put every one of these cases in a column reserved for
+    /// constructs this front end does not read.
+    /// </para>
+    /// <para>
+    /// <b>A static import loads at COMPILE time here, which is why this is the honest place.</b>
+    /// The graph is resolved before the artifact's bytes are written: a specifier becomes a key and
+    /// the artifact carries the module the key names. So an attribute the loader cannot honour is
+    /// discovered at exactly the moment an unresolvable specifier is, and a refusal here is a
+    /// refusal of the LOAD rather than of the text. The dynamic form loads at run time and refuses
+    /// the same attribute there, by rejecting the promise it has already answered with.
+    /// </para>
+    /// <para>
+    /// <b>An empty clause is not an attribute.</b> <c>with { }</c> asks nothing of the host, so
+    /// there is nothing for a host to be unable to honour, and refusing it would be refusing a
+    /// spelling.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D03510
+    // Broiler-Human:        PENDING
+    private void RefuseAttributes(
+        SliceSourceSpan span,
+        System.Collections.Generic.IReadOnlyList<JsImportAttribute>? attributes)
+    {
+        if (attributes is null || attributes.Count == 0)
+        {
+            return;
+        }
+
+        Refuse(
+            span,
+            SliceSourceDiagnosticCode.UnsupportedImportAttribute,
+            "no composition of this profile can honour the import attribute `" +
+                attributes[0].Key + "`, so the module this clause decorates cannot be loaded");
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C59449
@@ -3841,7 +3913,7 @@ public sealed class JsCompiler
 
     // ---- expressions ---------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6F386E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=46C2AC
     // Broiler-Human:        PENDING
     private void CompileExpression(JsExpression expression)
     {
@@ -3990,6 +4062,44 @@ public sealed class JsCompiler
 
             case JsCallExpression call:
                 CompileCall(call);
+                break;
+
+            // A DYNAMIC IMPORT DECLARES THE DYNAMIC SURFACE HERE AND THE MODULE SURFACE NOWHERE.
+            // The specifier is a VALUE, so whether the module it names is one this artifact already
+            // carries is not known until the call runs; a call that finds it is answered from the
+            // artifact and one that does not puts the specifier to the mediator, which is the same
+            // door `eval` goes through and the same surface. The module surface is declared by
+            // CARRYING RECORDS and by nothing else - a script may write `import()` and carries none
+            // - so this call site cannot declare it without making an artifact say it holds a graph
+            // it does not hold.
+            case JsImportCall imported:
+                CompileExpression(imported.Specifier);
+
+                if (imported.Options is null)
+                {
+                    Emit(JsOpcode.LoadUndefined);
+                }
+                else
+                {
+                    CompileExpression(imported.Options);
+                }
+
+                surfaces.Add(JsSurfaces.Dynamic);
+                Emit(JsOpcode.ImportCall, InternedName(module?.Key ?? scriptReferrer));
+                break;
+
+            case JsImportMeta meta:
+                if (module is null)
+                {
+                    Refuse(
+                        meta.Span,
+                        SliceSourceDiagnosticCode.ImportMetaOutsideModuleGoal,
+                        "`import.meta` is only admitted inside a module");
+
+                    break;
+                }
+
+                Emit(JsOpcode.ImportMeta, (ushort)built.IndexOf(module));
                 break;
 
             case JsNewExpression construction:
@@ -7440,7 +7550,7 @@ public sealed class JsCompiler
             return false;
         }
 
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2E101D
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4ADB4C
         // Broiler-Human:        PENDING
         private static System.Collections.Generic.IEnumerable<JsNode?> Children(JsNode node)
         {
@@ -7617,6 +7727,19 @@ public sealed class JsCompiler
                 // time inside a construct that has nothing to do with `arguments`.
                 case JsAwaitExpression expression:
                     yield return expression.Operand;
+                    break;
+
+                // AND SO DOES A DYNAMIC IMPORT, in both of its arguments: `import(arguments[0])` is
+                // as much a mention as any other, and a walk that stopped at the call would leave
+                // the enclosing function with no `arguments` object for it to read.
+                case JsImportCall expression:
+                    yield return expression.Specifier;
+
+                    if (expression.Options is not null)
+                    {
+                        yield return expression.Options;
+                    }
+
                     break;
 
                 case JsArrayLiteral expression:

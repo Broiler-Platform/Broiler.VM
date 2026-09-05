@@ -19,6 +19,7 @@ import * as reExported from "./modules/re-exports.mjs";
 import { observed, fromFirst } from "./modules/cycle-first.mjs";
 import { deadZone, fromSecond } from "./modules/cycle-second.mjs";
 import { settled } from "./modules/awaits.mjs";
+import defaultAsyncGenerator, { named as namedAsyncGenerator } from "./modules/async-generators.mjs";
 
 var __n = 0;
 function t(f) { try { var v = f(); return typeof v === "string" ? JSON.stringify(v) : String(v); } catch (e) { return e.name; } }
@@ -94,3 +95,96 @@ var order = "before";
 Promise.resolve().then(function () { order = "job-ran"; });
 await null;
 p(function () { return order; });
+
+// --- `import.meta`, which is the module's own object and nobody else's
+//
+// The two engines populate it differently, and that is the HOST's business rather than the
+// language's. What the language fixes is that it is an ordinary extensible object with no
+// prototype, that both evaluations of it in one module answer the same object, and that a guest
+// may add to it and take away again. The cases below ask only those; what a host puts in it is
+// asked once and declared.
+p(function () { return typeof import.meta; });
+p(function () { return Object.getPrototypeOf(import.meta); });
+p(function () { return import.meta === import.meta; });
+p(function () { return Object.isExtensible(import.meta); });
+p(function () { import.meta.probe = "mine"; return import.meta.probe; });
+p(function () { return delete import.meta.probe; });
+p(function () { return Object.keys(import.meta).length; });
+
+// --- a dynamic import, which answers a PROMISE of the module a specifier names
+p(function () { return import("./modules/counter.mjs") instanceof Promise; });
+p(function () { return import("./modules/counter.mjs") === import("./modules/counter.mjs"); });
+
+var dynamic = await import("./modules/counter.mjs");
+p(function () { return dynamic.frozen; });
+p(function () { return dynamic.default; });
+p(function () { return dynamic === everything; });
+p(function () { return Object.prototype.toString.call(dynamic); });
+
+// A SECOND CALL IS THE SAME MODULE AND NOT A SECOND ONE, which is the whole of what a module
+// registry is for: the namespace is the same object the static import got, and the counter it
+// reads is the one the static import has been incrementing.
+var again = await import("./modules/counter.mjs");
+p(function () { return again === dynamic; });
+p(function () { return again.counter === everything.counter; });
+
+// A COMPUTED SPECIFIER IS THE ORDINARY CASE AND NOT A CURIOSITY. Nothing resolved these before the
+// program ran, so they are the ones no bundler could have answered in advance.
+//
+// EVERY CASE BELOW AWAITS OUTSIDE ITS CALLBACK, and that is a rule of the probe rather than a
+// preference: `p` takes an ordinary function and prints what it RETURNS, so a callback that
+// answered a promise would have every one of these read `[object Promise]` in both engines and
+// compare equal while measuring nothing.
+var half = "./modules/";
+var rest = "counter.mjs";
+var joined = await import(half + rest);
+p(function () { return joined === dynamic; });
+
+var coerced = await import({ toString: function () { return "./modules/counter.mjs"; } });
+p(function () { return coerced === dynamic; });
+
+// A module nothing can find is a REJECTION and not a throw, which is what makes a dynamic import
+// catchable in the ordinary way.
+var missing = await import("./modules/nowhere.mjs").then(
+  function () { return "resolved"; }, function () { return "rejected"; });
+p(function () { return missing; });
+p(function () { var caught = "not-yet"; import("./modules/nowhere.mjs").catch(function () { caught = "caught"; }); return caught; });
+
+// And a specifier that will not coerce rejects with what the coercion threw.
+var uncoercible = await import({ toString: function () { throw new RangeError("no"); } }).then(
+  function () { return "resolved"; }, function (e) { return e.name; });
+p(function () { return uncoercible; });
+
+// An empty attributes clause asks nothing of a host, so it loads; an attribute asks for a KIND of
+// module, and neither engine here has a loader for the one asked.
+var noOptions = await import("./modules/counter.mjs", {});
+p(function () { return noOptions === dynamic; });
+
+var emptyClause = await import("./modules/counter.mjs", { with: {} });
+p(function () { return emptyClause === dynamic; });
+
+var jsonType = await import("./modules/counter.mjs", { with: { type: "json" } }).then(
+  function () { return "resolved"; }, function () { return "rejected"; });
+p(function () { return jsonType; });
+
+// The second argument's SHAPE is the language's rule and is settled before any attribute is: these
+// three reject for three different reasons and none of them is "no loader for that type".
+var optionsNull = await import("./modules/counter.mjs", null).then(
+  function () { return "resolved"; }, function (e) { return e.name; });
+p(function () { return optionsNull; });
+
+var withNotAnObject = await import("./modules/counter.mjs", { with: 1 }).then(
+  function () { return "resolved"; }, function (e) { return e.name; });
+p(function () { return withNotAnObject; });
+
+var valueNotAString = await import("./modules/counter.mjs", { with: { type: 1 } }).then(
+  function () { return "resolved"; }, function (e) { return e.name; });
+p(function () { return valueNotAString; });
+
+// --- an async generator as a module's default export, which is the one `export default` form that
+// stayed refused after the family itself was admitted.
+var fromDefault = await defaultAsyncGenerator().next();
+p(function () { return fromDefault.value + "," + fromDefault.done; });
+
+var fromNamed = await namedAsyncGenerator().next();
+p(function () { return fromNamed.value + "," + fromNamed.done; });

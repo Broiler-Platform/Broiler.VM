@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   8
 // Annotated:        8/8
-// Exempt:           63
+// Exempt:           64
 // Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    High
@@ -48,7 +48,7 @@ namespace Broiler.VM.Profile.JavaScript;
 /// predicate's own record calls a worse record than one block on the vocabulary.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=1CB4EF
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B91296
 // Broiler-Human:        PENDING
 public enum JavaScriptDiagnosticCode
 {
@@ -354,6 +354,22 @@ public enum JavaScriptDiagnosticCode
 
     /// <summary>The artifact declares the module surface and carries no module records.</summary>
     ModuleSectionMissing = 1620,
+
+    /// <summary>
+    /// A dynamic <c>import()</c> or an <c>import.meta</c> appears in an artifact that declared no
+    /// surface for it.
+    /// </summary>
+    /// <remarks>
+    /// <b>A dynamic import is the one construct that names TWO surfaces, and this is the code for
+    /// either half being absent.</b> It answers a module namespace object, which is the module
+    /// surface's subject, and it may put a specifier to the mediator for a module the artifact does
+    /// not carry, which is the dynamic surface's — so an artifact holding the instruction must have
+    /// declared both, and one that declared neither would have bought a host round trip with an
+    /// opcode. <c>import.meta</c> names the module surface alone, because it reaches no mediator.
+    /// A composition that DECLINED either surface never reaches this code: its artifact was refused
+    /// where the surfaces were read, with <see cref="SurfaceOutsideComposition"/>.
+    /// </remarks>
+    ImportCallOutsideManifest = 1622,
 
     /// <summary>
     /// An asynchronous iteration step appears in a code unit whose flags say nothing may await.

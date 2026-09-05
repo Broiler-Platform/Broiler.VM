@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   124
-// Annotated:        124/124
+// Relevant units:   126
+// Annotated:        126/126
 // Exempt:           17
-// Human-reviewed:   0/124
+// Human-reviewed:   0/126
 // IP risk:          None
 // Security risk:    High
 // Criteria:         2/2
 // Resource impact:  3/10 max
-// Unverified:       124
+// Unverified:       126
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -520,7 +520,7 @@ internal sealed class JsParser
     /// clause would refuse a program the language admits - and the request still has to reach the
     /// module record, because the whole point of the statement is that the module is evaluated.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5C44D2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B18689
     // Broiler-Human:        PENDING
     private JsStatement ParseImportDeclaration(SliceSourceSpan span)
     {
@@ -558,37 +558,114 @@ internal sealed class JsParser
 
         ExpectContextual("from");
         var from = ModuleSpecifier();
-
-        if (!Attributes(span))
-        {
-            return new JsEmptyStatement(span);
-        }
-
+        var attributes = Attributes();
         Semicolon();
-        return new JsImportDeclaration(span, from, specifiers);
+        return new JsImportDeclaration(span, from, specifiers, attributes);
     }
 
     /// <summary>
-    /// Refuses an import-attribute clause by name, rather than as a token nobody expected.
+    /// Parses an import-attribute clause, with the two early errors the grammar states.
     /// </summary>
     /// <remarks>
-    /// <c>import x from './m' with { type: 'json' }</c> is a construct this manifest does not admit,
-    /// and its whole point is to change what the host loads - which is the composition's decision,
-    /// so admitting it would mean carrying an assertion this profile has no way to honour. Naming
-    /// it is what keeps the case out of both columns instead of reporting a missing semicolon.
+    /// <para>
+    /// <b>Parsing the clause and honouring an attribute are two different questions, and this
+    /// answers only the first.</b> <c>import x from './m' with { type: 'json' }</c> is a program
+    /// the grammar admits whatever a host can load, so refusing it as a construct outside the
+    /// manifest said something false: the syntax is not what this profile declines. What it
+    /// declines is the ATTRIBUTE, and the lowering says so where the module's loading requirements
+    /// are settled — which for a static import is before a byte of the artifact is written.
+    /// </para>
+    /// <para>
+    /// <b>Both early errors are the grammar's rather than this host's.</b> An attribute value must
+    /// be a string literal, because the clause is read before anything is evaluated and an
+    /// expression there would be a value nobody could have computed yet; and a key may not be
+    /// written twice, because the clause is a map and a duplicate is a program that means two
+    /// things. Neither is about what a host can load.
+    /// </para>
+    /// <para>
+    /// <b>The legacy <c>assert</c> spelling is not accepted at all</b>, and that is a
+    /// straightforward reading of the edition this front end is written against: the keyword was
+    /// removed, so <c>assert</c> after a specifier is an identifier where the grammar expects a
+    /// semicolon, which is the ordinary syntax error and not a refusal of a surface.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=246F5D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9B9E2E
     // Broiler-Human:        PENDING
-    private bool Attributes(SliceSourceSpan span)
+    private System.Collections.Generic.List<JsImportAttribute> Attributes()
     {
-        if (Current.Kind != SliceTokenKind.With && !IsContextual("assert"))
+        var attributes = new System.Collections.Generic.List<JsImportAttribute>();
+
+        if (Current.Kind != SliceTokenKind.With)
         {
-            return true;
+            return attributes;
         }
 
-        Refuse(span, "an import attribute clause");
         Advance();
-        return false;
+        Expect(SliceTokenKind.OpenBrace, "{");
+
+        while (Current.Kind != SliceTokenKind.CloseBrace &&
+            Current.Kind != SliceTokenKind.EndOfSource &&
+            diagnostics.Count == 0)
+        {
+            var at = Span();
+
+            // THE KEY IS AN IdentifierName AND NOT AN Identifier, which is the same rule an export
+            // name obeys and for the same reason: nothing binds it, so a reserved word is a
+            // perfectly good attribute name. The string form is in the grammar beside it.
+            if (Current.Kind != SliceTokenKind.StringLiteral &&
+                (Current.RawText.Length == 0 || !char.IsLetter(Current.RawText[0])))
+            {
+                Refuse(
+                    at,
+                    SliceSourceDiagnosticCode.ExpectedToken,
+                    "an import attribute is named by an identifier or by a string");
+
+                break;
+            }
+
+            var key = Current.Kind == SliceTokenKind.StringLiteral
+                ? Current.StringValue
+                : Current.RawText;
+
+            Advance();
+            Expect(SliceTokenKind.Colon, ":");
+
+            if (Current.Kind != SliceTokenKind.StringLiteral)
+            {
+                Refuse(
+                    Span(),
+                    SliceSourceDiagnosticCode.ExpectedToken,
+                    "an import attribute's value is a string literal");
+
+                break;
+            }
+
+            foreach (var earlier in attributes)
+            {
+                if (string.Equals(earlier.Key, key, System.StringComparison.Ordinal))
+                {
+                    Refuse(
+                        at,
+                        SliceSourceDiagnosticCode.DuplicateExportName,
+                        "the import attribute `" + key + "` is given twice");
+
+                    break;
+                }
+            }
+
+            attributes.Add(new JsImportAttribute(at, key, Current.StringValue));
+            Advance();
+
+            if (Current.Kind != SliceTokenKind.Comma)
+            {
+                break;
+            }
+
+            Advance();
+        }
+
+        Expect(SliceTokenKind.CloseBrace, "}");
+        return attributes;
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=48B6E3
@@ -655,7 +732,7 @@ internal sealed class JsParser
         };
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=65AEE6
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=DF31CB
     // Broiler-Human:        PENDING
     private JsStatement ParseExportAll(SliceSourceSpan span)
     {
@@ -671,17 +748,14 @@ internal sealed class JsParser
 
         ExpectContextual("from");
         var from = ModuleSpecifier();
-
-        if (!Attributes(span))
-        {
-            return new JsEmptyStatement(span);
-        }
-
+        var attributes = Attributes();
         Semicolon();
-        return new JsExportDeclaration(span, JsExportKind.All, from, specifiers, null, null);
+
+        return new JsExportDeclaration(
+            span, JsExportKind.All, from, specifiers, null, null, attributes);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=70C4AF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=E39779
     // Broiler-Human:        PENDING
     private JsStatement ParseExportClause(SliceSourceSpan span)
     {
@@ -714,23 +788,22 @@ internal sealed class JsParser
 
         Expect(SliceTokenKind.CloseBrace, "}");
         var from = string.Empty;
+        System.Collections.Generic.List<JsImportAttribute>? attributes = null;
 
         if (IsContextual("from"))
         {
             Advance();
             from = ModuleSpecifier();
-
-            if (!Attributes(span))
-            {
-                return new JsEmptyStatement(span);
-            }
+            attributes = Attributes();
         }
 
         Semicolon();
-        return new JsExportDeclaration(span, JsExportKind.Named, from, specifiers, null, null);
+
+        return new JsExportDeclaration(
+            span, JsExportKind.Named, from, specifiers, null, null, attributes);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=037CE3
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=46D14A
     // Broiler-Human:        PENDING
     private JsStatement ParseExportDefault(SliceSourceSpan span)
     {
@@ -764,12 +837,11 @@ internal sealed class JsParser
                 null);
         }
 
-        if (Current.Kind == SliceTokenKind.Async && Peek(1).Kind == SliceTokenKind.Function &&
-            !Peek(1).PrecededByLineTerminator && Peek(2).Kind == SliceTokenKind.Star)
-        {
-            return OutsideStatement(span, "an async generator function");
-        }
-
+        // ONE ARM FOR BOTH, WHERE THERE WERE TWO. `export default async function* () {}` was
+        // refused by a case that tested for the `*` ahead of this one, and it was refused after the
+        // async generator itself had been admitted everywhere else — a gap in `export default`
+        // rather than in the family. `ParseFunctionRest` reads the `*` exactly as it does for
+        // `function*`, so the two constructs differ in one bit of the node and in no branch here.
         if (Current.Kind == SliceTokenKind.Async && Peek(1).Kind == SliceTokenKind.Function &&
             !Peek(1).PrecededByLineTerminator)
         {
@@ -878,7 +950,7 @@ internal sealed class JsParser
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=637B22
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=4D6FDD
     // Broiler-Human:        PENDING
     private JsStatement ParseExportDeclared(SliceSourceSpan span)
     {
@@ -901,10 +973,8 @@ internal sealed class JsParser
                     null);
             }
 
-            case SliceTokenKind.Async when Peek(1).Kind == SliceTokenKind.Function &&
-                !Peek(1).PrecededByLineTerminator && Peek(2).Kind == SliceTokenKind.Star:
-                return OutsideStatement(span, "an async generator function");
-
+            // AND THE SAME ONE ARM HERE. `export async function* g() {}` is the declaration form of
+            // what the line above admits, and it was refused by the same superseded case.
             case SliceTokenKind.Async when Peek(1).Kind == SliceTokenKind.Function &&
                 !Peek(1).PrecededByLineTerminator:
             {
@@ -3324,6 +3394,105 @@ internal sealed class JsParser
         }
     }
 
+    /// <summary>Parses a dynamic <c>import()</c>, which is a call and not a reference.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is admitted under both goals, and that is the difference between it and every static
+    /// import form.</b> <c>import x from './m'</c> declares a binding of a module and is a module
+    /// declaration; <c>import('./m')</c> declares nothing, answers a promise, and is a
+    /// <c>CallExpression</c> a script may write as freely as a module may. So there is no
+    /// <see cref="RequireModuleGoal"/> here, deliberately.
+    /// </para>
+    /// <para>
+    /// <b>The arguments are <c>AssignmentExpression</c>s and not an argument list</b>, which is the
+    /// whole reason this is parsed here rather than left to the call loop. Two consequences the
+    /// suite tests directly: a spread is not admitted, because <c>import(...args)</c> has no
+    /// production; and a trailing comma after the second argument is, because the grammar writes
+    /// one in. There is no third argument.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=63C76E
+    // Broiler-Human:        PENDING
+    private JsExpression ParseImportCall(SliceSourceSpan span)
+    {
+        Advance();
+        Expect(SliceTokenKind.OpenParen, "(");
+
+        if (Current.Kind == SliceTokenKind.CloseParen)
+        {
+            Refuse(
+                Span(),
+                SliceSourceDiagnosticCode.UnexpectedToken,
+                "a dynamic `import()` needs a module specifier");
+
+            Advance();
+            return new JsNullLiteral(span);
+        }
+
+        var specifier = ParseAssignment();
+        JsExpression? options = null;
+
+        if (Current.Kind == SliceTokenKind.Comma)
+        {
+            Advance();
+
+            if (Current.Kind != SliceTokenKind.CloseParen)
+            {
+                options = ParseAssignment();
+
+                if (Current.Kind == SliceTokenKind.Comma)
+                {
+                    Advance();
+                }
+            }
+        }
+
+        Expect(SliceTokenKind.CloseParen, ")");
+        return new JsImportCall(span, specifier, options);
+    }
+
+    /// <summary>Parses the <c>import.meta</c> meta-property.</summary>
+    /// <remarks>
+    /// <b>It is admitted only in a module, and the refusal says which rule that is.</b> A script
+    /// has no module record for a host to have populated, so <c>import.meta</c> there is a syntax
+    /// error in every engine rather than a value that happens to be empty — and it is refused with
+    /// the module-goal code rather than as a construct outside the manifest, because the manifest
+    /// is not what forbids it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D5F63F
+    // Broiler-Human:        PENDING
+    private JsExpression ParseImportMeta(SliceSourceSpan span)
+    {
+        Advance();
+        Advance();
+
+        if (!string.Equals(Current.RawText, "meta", System.StringComparison.Ordinal))
+        {
+            Refuse(
+                Span(),
+                SliceSourceDiagnosticCode.UnexpectedToken,
+                "`import.` is followed by `meta` and by nothing else");
+
+            Advance();
+            return new JsNullLiteral(span);
+        }
+
+        Advance();
+
+        if (options.Goal != SliceGoal.Module)
+        {
+            Refuse(
+                span,
+                SliceSourceDiagnosticCode.ImportMetaOutsideModuleGoal,
+                "`import.meta` names a module's own metadata and this source was presented as " +
+                    "a script");
+
+            return new JsNullLiteral(span);
+        }
+
+        return new JsImportMeta(span);
+    }
+
     /// <summary>Parses <c>new.target</c>, having already consumed the <c>new</c>.</summary>
     /// <remarks>
     /// <b>It is admitted only where the grammar admits it.</b> <c>new.target</c> at the top level
@@ -3364,11 +3533,28 @@ internal sealed class JsParser
     }
 
     /// <summary>Parses the callee of a <c>new</c>, which stops before the argument list.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=C4724A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=571CC1
     // Broiler-Human:        PENDING
     private JsExpression ParseMemberOnly()
     {
         var span = Span();
+
+        // `new import('')` HAS NO PRODUCTION AND IS NOT MERELY A CONSTRUCTOR THAT WILL THROW. A
+        // `new` takes a MemberExpression and `ImportCall` is a CallExpression, so the grammar stops
+        // here rather than at the missing `[[Construct]]` — which is why the suite expects a parse
+        // error and not a `TypeError`. `new (import(''))` is a different program: the parentheses
+        // make it a PrimaryExpression, it parses, and it throws when it runs.
+        if (Current.Kind == SliceTokenKind.Import && Peek(1).Kind == SliceTokenKind.OpenParen)
+        {
+            Refuse(
+                span,
+                SliceSourceDiagnosticCode.UnexpectedToken,
+                "a dynamic `import()` is a call expression and `new` takes a member expression");
+
+            Advance();
+            return new JsNullLiteral(span);
+        }
+
         var current = Current.Kind == SliceTokenKind.New ? ParseCallChain() : ParsePrimary();
 
         while (true)
@@ -3437,7 +3623,7 @@ internal sealed class JsParser
         return arguments;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=84FFDF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=6BF3A7
     // Broiler-Human:        PENDING
     private JsExpression ParsePrimary()
     {
@@ -3496,10 +3682,10 @@ internal sealed class JsParser
                     span, ParseFunctionRest(span, declaration: false, isAsync: true));
 
             case SliceTokenKind.Import when Peek(1).Kind == SliceTokenKind.OpenParen:
-                return OutsideExpression(span, "a dynamic `import()`");
+                return ParseImportCall(span);
 
             case SliceTokenKind.Import when Peek(1).Kind == SliceTokenKind.Dot:
-                return OutsideExpression(span, "`import.meta`");
+                return ParseImportMeta(span);
 
             case SliceTokenKind.Await when options.Goal != SliceGoal.Module && !awaitIsOperator:
             case SliceTokenKind.Yield when !strict && !yieldIsOperator:

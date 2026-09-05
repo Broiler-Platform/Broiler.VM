@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   3
 // Annotated:        3/3
-// Exempt:           27
+// Exempt:           29
 // Human-reviewed:   0/3
 // IP risk:          None
 // Security risk:    Medium
@@ -44,7 +44,7 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// dated it.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=4D12A5
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=212A90
 // Broiler-Human:        PENDING
 public enum SliceSourceDiagnosticCode
 {
@@ -209,6 +209,37 @@ public enum SliceSourceDiagnosticCode
     /// there is settled at verification, where the whole graph is present.
     /// </remarks>
     ExportNameNotDeclared = 2403,
+
+    /// <summary><c>import.meta</c> in source presented as a script.</summary>
+    /// <remarks>
+    /// <b>It is a sibling of <see cref="ModuleDeclarationOutsideModuleGoal"/> and not the same
+    /// code, because <c>import.meta</c> is not a declaration.</b> It declares nothing, binds
+    /// nothing and requests nothing; what makes it a module's is that its value IS the module
+    /// record's own metadata, so a script has no object for it to answer with rather than an empty
+    /// one. Giving it the declaration code would have told a reader to look for an import
+    /// statement that is not there.
+    /// </remarks>
+    ImportMetaOutsideModuleGoal = 2404,
+
+    /// <summary>A static import carries an attribute this host cannot honour.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The clause parsed and the ATTRIBUTE is what is declined, which is the distinction this
+    /// code exists to draw.</b> Until it existed, <c>import x from './m' with { type: 'json' }</c>
+    /// was refused as a construct outside the manifest — which said the SYNTAX was not admitted,
+    /// and that was false: the grammar is ordinary and this front end reads it. What no composition
+    /// of this profile can do is load a module of a type it has no loader for, and that is a fact
+    /// about loading rather than about parsing.
+    /// </para>
+    /// <para>
+    /// <b>It is refused here because for a STATIC import this host loads here.</b> The module graph
+    /// of an artifact is resolved before a byte of it is written — a specifier becomes a key and
+    /// the artifact carries what the key names — so an attribute the loader cannot honour is
+    /// discovered at the same moment an unresolvable specifier is. The DYNAMIC form loads at run
+    /// time, and refuses the same attribute there, by rejecting the promise it answered with.
+    /// </para>
+    /// </remarks>
+    UnsupportedImportAttribute = 2405,
 }
 
 /// <summary>One refusal of source text: a code, a message, and where in the source it happened.</summary>

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   112
-// Annotated:        112/112
-// Exempt:           14
-// Human-reviewed:   0/112
+// Relevant units:   119
+// Annotated:        119/119
+// Exempt:           15
+// Human-reviewed:   0/119
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         15/15
+// Criteria:         20/20
 // Resource impact:  7/10 max
-// Unverified:       112
+// Unverified:       119
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -2647,10 +2647,51 @@ internal sealed class JsEngine
 
     // ---- modules -------------------------------------------------------------------------------
 
-    /// <summary>The module instances of this realm, created the first time a module is entered.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=3D208B
+    /// <summary>
+    /// The module instances of this realm, one array per artifact, created when its first module is
+    /// entered.
+    /// </summary>
+    /// <remarks>
+    /// <b>One realm may hold the modules of several artifacts, and a dynamic import is why.</b> A
+    /// specifier the artifact carries no module for is put to the mediator, which answers with a
+    /// SEPARATE verified artifact carrying its own records — so the instances of a realm are no
+    /// longer indexable by a single array, and an import read has to reach the instances of the
+    /// artifact the reading code unit belongs to. Keying on the program is what makes an instance
+    /// index mean the same thing in both.
+    /// <para>
+    /// The key is the verified program's IDENTITY, which is what the default comparer gives here: a
+    /// program is a reference type that defines no equality of its own, and two artifacts with
+    /// identical bytes are still two artifacts, verified separately and holding separate records.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=7465D6
     // Broiler-Human:        PENDING
-    private JsModuleInstance[]? modules;
+    private readonly System.Collections.Generic.Dictionary<JsProgram, JsModuleInstance[]> graphs =
+        new();
+
+    /// <summary>
+    /// Every module this realm has instantiated, by the key its artifact resolved it to.
+    /// </summary>
+    /// <remarks>
+    /// <b>THIS IS WHAT MAKES A MODULE ONE MODULE, and the language is emphatic about it.</b>
+    /// <c>import('./m')</c> twice answers the same namespace object, and so does
+    /// <c>import('./m')</c> in a program that also wrote <c>import x from './m'</c> — one module
+    /// record, one environment, one evaluation. Without a registry across artifacts, a specifier
+    /// answered by the mediator would have built a second instance of a module the realm already
+    /// had, with its own slots, and a program could then observe two values of one exported
+    /// <c>let</c>.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=9CFED6
+    // Broiler-Falsified-If: two instances of one module key exist in one realm
+    // Broiler-Human:        PENDING
+    private readonly System.Collections.Generic.Dictionary<string, JsModuleInstance> instanced =
+        new(System.StringComparer.Ordinal);
+
+    /// <summary>The instances of one artifact's modules, instantiating them if it has not.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=870296
+    // Broiler-Human:        PENDING
+    private JsModuleInstance[] Graph(JsProgram program) =>
+        graphs.TryGetValue(program, out var instances) ? instances : Instantiate(program);
 
     /// <summary>
     /// Links and evaluates the graph rooted at one module, and answers what its body completed with.
@@ -2670,53 +2711,94 @@ internal sealed class JsEngine
     /// the graph again, which is what the language says of a module that is already evaluated.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=7F9904
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=6350BB
     // Broiler-Falsified-If: a module body runs twice in one realm, or a module body runs before every module's declarations are initialised
     // Broiler-Human:        PENDING
-    private JsValue RunModuleGraph(JsProgram program, int root)
+    private JsValue RunModuleGraph(JsProgram program, int root) =>
+        Evaluated(program, root).Completion;
+
+    /// <summary>Links and evaluates the graph rooted at one module, and answers its instance.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=3D2BD8
+    // Broiler-Falsified-If: a module body runs twice in one realm
+    // Broiler-Human:        PENDING
+    private JsModuleInstance Evaluated(JsProgram program, int root)
     {
-        if (modules is null)
+        var instances = Graph(program);
+        var order = new System.Collections.Generic.List<int>(program.Modules.Length);
+        Order(program, instances, root, order);
+        Step(program, instances, order, 0);
+        return instances[root];
+    }
+
+    /// <summary>Creates every module of one artifact and initialises its declarations.</summary>
+    /// <remarks>
+    /// <b>A module the realm already holds under its key is ADOPTED rather than rebuilt.</b> An
+    /// artifact answered by the mediator normally carries the module that was asked for and every
+    /// module that one requests, and some of those are ordinarily already instanced — the artifact
+    /// the importer is written in carried them. Building fresh ones would give the realm two
+    /// environments for one module; taking the ones it has is what makes the second artifact a
+    /// second VIEW of a graph rather than a second graph.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=A1564F
+    // Broiler-Falsified-If: a module body runs before every module of its artifact has its declarations initialised
+    // Broiler-Human:        PENDING
+    private JsModuleInstance[] Instantiate(JsProgram program)
+    {
+        var instances = new JsModuleInstance[program.Modules.Length];
+        var fresh = new bool[instances.Length];
+
+        for (var index = 0; index < instances.Length; index++)
         {
-            modules = new JsModuleInstance[program.Modules.Length];
+            var record = program.Modules[index];
 
-            for (var index = 0; index < modules.Length; index++)
+            if (instanced.TryGetValue(record.Key, out var existing))
             {
-                var record = program.Modules[index];
-                var slots = (int)program.Functions[(int)record.BodyUnit].ScopeSlots;
-                modules[index] = new JsModuleInstance(new JsEnvironment(slots, null));
+                instances[index] = existing;
+                continue;
             }
 
-            for (var index = 0; index < modules.Length; index++)
+            var slots = (int)program.Functions[(int)record.BodyUnit].ScopeSlots;
+            instances[index] = new JsModuleInstance(new JsEnvironment(slots, null));
+            instanced[record.Key] = instances[index];
+            fresh[index] = true;
+        }
+
+        for (var index = 0; index < instances.Length; index++)
+        {
+            if (fresh[index])
             {
-                modules[index].Namespace =
-                    new JsModuleNamespace(program.Modules[index], modules, this);
-            }
-
-            Confirm(program);
-
-            for (var index = 0; index < modules.Length; index++)
-            {
-                Charge(FuelPerInstruction);
-
-                Execute(
-                    program,
-                    (int)program.Modules[index].InitialiserUnit,
-                    modules[index].Environment,
-                    JsValue.Undefined,
-                    System.Array.Empty<JsValue>(),
-                    null,
-                    JsValue.Undefined,
-                    null,
-                    null);
-
-                modules[index].State = JsModuleState.Initialised;
+                instances[index].Namespace =
+                    new JsModuleNamespace(program.Modules[index], instances, this);
             }
         }
 
-        var order = new System.Collections.Generic.List<int>(program.Modules.Length);
-        Order(program, root, order);
-        Step(program, order, 0);
-        return modules[root].Completion;
+        graphs[program] = instances;
+        Confirm(program);
+
+        for (var index = 0; index < instances.Length; index++)
+        {
+            if (!fresh[index])
+            {
+                continue;
+            }
+
+            Charge(FuelPerInstruction);
+
+            Execute(
+                program,
+                (int)program.Modules[index].InitialiserUnit,
+                instances[index].Environment,
+                JsValue.Undefined,
+                System.Array.Empty<JsValue>(),
+                null,
+                JsValue.Undefined,
+                null,
+                null);
+
+            instances[index].State = JsModuleState.Initialised;
+        }
+
+        return instances;
     }
 
     /// <summary>
@@ -2735,11 +2817,15 @@ internal sealed class JsEngine
     /// cyclic import terminate here.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=8D99CC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=DCE14A
     // Broiler-Human:        PENDING
-    private void Order(JsProgram program, int index, System.Collections.Generic.List<int> order)
+    private void Order(
+        JsProgram program,
+        JsModuleInstance[] instances,
+        int index,
+        System.Collections.Generic.List<int> order)
     {
-        var instance = modules![index];
+        var instance = instances[index];
 
         if (instance.State is JsModuleState.Ordered or JsModuleState.Evaluating or
             JsModuleState.Evaluated)
@@ -2752,7 +2838,7 @@ internal sealed class JsEngine
 
         foreach (var request in program.Modules[index].Requests)
         {
-            Order(program, request, order);
+            Order(program, instances, request, order);
         }
 
         order.Add(index);
@@ -2768,15 +2854,19 @@ internal sealed class JsEngine
     /// top-level <c>await</c> exists to give. Nothing here drains the queue: the host does that, at
     /// a point the host chooses, exactly as it does for any other asynchronous program.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=F0048D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=3C8278
     // Broiler-Falsified-If: a module body runs before a module it requested has finished awaiting
     // Broiler-Human:        PENDING
-    private void Step(JsProgram program, System.Collections.Generic.List<int> order, int at)
+    private void Step(
+        JsProgram program,
+        JsModuleInstance[] instances,
+        System.Collections.Generic.List<int> order,
+        int at)
     {
         for (var position = at; position < order.Count; position++)
         {
             var index = order[position];
-            var instance = modules![index];
+            var instance = instances[index];
 
             if (instance.State == JsModuleState.Evaluated)
             {
@@ -2827,7 +2917,7 @@ internal sealed class JsEngine
                         throw new JsThrow(value, engine.Render(value));
                     }
 
-                    engine.Step(program, order, resume);
+                    engine.Step(program, instances, order, resume);
                 });
 
             return;
@@ -2918,6 +3008,245 @@ internal sealed class JsEngine
             }
         }
     }
+
+    // ---- the dynamic import ---------------------------------------------------------------------
+
+    /// <summary>
+    /// Answers the promise of the module <paramref name="specifier"/> names from
+    /// <paramref name="referrer"/>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A DYNAMIC IMPORT IS TWO ROUTES AND THE ARTIFACT'S OWN MODULES ARE THE FAST ONE.</b> A
+    /// specifier the referring module already requested statically names a module this artifact
+    /// carries, whose key the composition confirmed at link and whose instance this realm may
+    /// already hold — so that call is answered with no host round trip at all, and it is answered
+    /// with the SAME instance the static import got, which is the identity the language requires.
+    /// Every other specifier is a value nobody resolved before the bytes were written, so it goes
+    /// to the mediator: the referrer and the specifier become the request payload, the composition's
+    /// provider answers with a verified artifact carrying the module the pair names, and this realm
+    /// links and evaluates that artifact's graph beside its own.
+    /// </para>
+    /// <para>
+    /// <b>Neither route compiles anything here, which is the point of having the second one.</b>
+    /// <c>import(x + y)</c> is a specifier no compiler saw; answering it means somebody has to turn
+    /// a specifier into bytes at run time, and in this profile that somebody is never this
+    /// component. It is the same door <c>eval</c> goes through, distinguished by the payload's
+    /// first byte — see <see cref="JsFormat.ModuleRequestMark"/> — and it is gated by the same
+    /// surface, which is why an artifact containing a dynamic import declares
+    /// <c>broiler.javascript.dynamic</c> whether or not any particular call reaches the mediator.
+    /// </para>
+    /// <para>
+    /// <b>Three refusals a reader will meet and must not confuse.</b> A composition that DECLINED
+    /// the dynamic surface never gets here: its artifact was refused at verification, as an invalid
+    /// artifact the guest never sees. A composition that admits the surface and registers NO
+    /// provider gets here and is refused at run time, by a rejection the guest may catch. And a
+    /// composition whose provider cannot answer for this specifier is refused at run time too, by a
+    /// different rejection naming the specifier. That is the same three-way distinction
+    /// <see cref="Evaluate"/> draws for <c>eval</c>, and this joins it rather than inventing a
+    /// fourth shape.
+    /// </para>
+    /// <para>
+    /// <b>Nothing here throws.</b> Every failure — a specifier that will not coerce, an attribute
+    /// nothing honours, a module nothing can find, a module whose body threw — settles the promise
+    /// as a rejection, because a production that answers a promise and sometimes throws is one no
+    /// <c>catch</c> can be written against.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=FBD9F7
+    // Broiler-Falsified-If: this throws instead of rejecting, or a specifier reaches bytes without passing through the mediator or the artifact's own records
+    // Broiler-Human:        PENDING
+    internal JsValue DynamicImport(
+        JsProgram program, string referrer, JsValue specifierValue, JsValue optionsValue)
+    {
+        var promise = Realm.NewAsyncPromise();
+        Charge(FuelPerInstruction);
+
+        try
+        {
+            // THE SPECIFIER IS COERCED BEFORE THE OPTIONS ARE READ, which is the specification's
+            // order and is observable: `import({toString(){throw a}}, {get with(){throw b}})`
+            // rejects with `a`.
+            var specifier = ToStringValue(specifierValue);
+            RequireHonourableAttributes(optionsValue);
+            var instance = ImportedModule(program, referrer, specifier);
+
+            Realm.SettleAsyncPromise(
+                this, promise, JsValue.Object(instance.Namespace!), rejected: false);
+        }
+        catch (JsThrow thrown)
+        {
+            Realm.SettleAsyncPromise(this, promise, thrown.Value, rejected: true);
+        }
+
+        return JsValue.Object(promise);
+    }
+
+    /// <summary>
+    /// Reads a dynamic import's second argument, and declines every attribute it carries.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The shape is checked in full before the attributes are declined</b>, and that order is
+    /// what a conformance suite grades: <c>import('./m', null)</c> and
+    /// <c>import('./m', {with: 1})</c> and <c>import('./m', {with: {type: 1}})</c> are three
+    /// different programs and the language rejects each of them for its own reason, none of which
+    /// is "this host has no loader for that type". A host that declined the whole argument on sight
+    /// would answer all three the same way and would be right about none.
+    /// </para>
+    /// <para>
+    /// <b>And then every attribute is declined, because no composition of this profile has a loader
+    /// for one.</b> An attribute says what KIND of thing the specifier names — a JSON document, a
+    /// text file — and answering that is the loader's job; the static form of the same clause is
+    /// declined by the front end, where a static import is loaded, and this is the same refusal at
+    /// the moment a dynamic import is loaded.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=D9090F
+    // Broiler-Human:        PENDING
+    private void RequireHonourableAttributes(JsValue options)
+    {
+        if (options.Type == JsType.Undefined)
+        {
+            return;
+        }
+
+        if (!options.IsObject)
+        {
+            ThrowTypeError("the second argument of import() is an object or undefined");
+        }
+
+        var attributes = GetProperty(options, "with");
+
+        if (attributes.Type == JsType.Undefined)
+        {
+            return;
+        }
+
+        if (!attributes.IsObject)
+        {
+            ThrowTypeError("the `with` property of an import options object is an object");
+        }
+
+        var carrier = attributes.AsObject();
+        var declined = string.Empty;
+
+        foreach (var key in carrier.OwnPropertyNames())
+        {
+            Charge(1);
+
+            if (!carrier.TryGetOwnProperty(key, out var property) || !property.Enumerable)
+            {
+                continue;
+            }
+
+            if (!GetProperty(attributes, key).IsString)
+            {
+                ThrowTypeError("the import attribute `" + key + "` is not a string");
+            }
+
+            if (declined.Length == 0)
+            {
+                declined = key;
+            }
+        }
+
+        if (declined.Length != 0)
+        {
+            ThrowTypeError(
+                "no composition of this profile can honour the import attribute `" + declined +
+                "`, so the module this call names cannot be loaded");
+        }
+    }
+
+    /// <summary>Finds or loads the module one specifier names from one referrer.</summary>
+    /// <remarks>
+    /// <b>A module this realm already holds is never loaded a second time</b>, and the two routes
+    /// meet at that rule rather than each keeping their own answer. The fast path finds it through
+    /// the referring module's own request table; the mediator's answer is matched against the keys
+    /// this realm has already instanced, so an artifact that arrives carrying a module the realm
+    /// has is a second VIEW of that module and not a second copy of it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=FF2EDC
+    // Broiler-Falsified-If: one module key is evaluated twice in one realm
+    // Broiler-Human:        PENDING
+    private JsModuleInstance ImportedModule(JsProgram program, string referrer, string specifier)
+    {
+        foreach (var record in program.Modules)
+        {
+            if (!string.Equals(record.Key, referrer, System.StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            for (var index = 0; index < record.RequestSpecifiers.Length; index++)
+            {
+                Charge(1);
+
+                if (string.Equals(
+                    record.RequestSpecifiers[index], specifier, System.StringComparison.Ordinal))
+                {
+                    return Evaluated(program, record.Requests[index]);
+                }
+            }
+
+            break;
+        }
+
+        if (Loader is null)
+        {
+            ThrowTypeError(
+                "this composition registered no artifact provider, so '" + specifier +
+                "' cannot be loaded");
+        }
+
+        var payload = JsFormat.ModuleRequest(referrer, specifier);
+        Charge(1 + (ulong)payload.Length);
+
+        var request = new VmArtifactRequest(
+            JavaScriptProfile.Id,
+            default,
+            default,
+            1,
+            default,
+            cancellation,
+            new VmBytes(payload));
+
+        var loaded = Loader!.RequestLoad(in request);
+
+        if (loaded.Outcome != VmOutcome.Normal || !loaded.TryGetArtifact(out var artifact))
+        {
+            throw Error(
+                "TypeError",
+                "the module '" + specifier + "' could not be loaded from '" + referrer + "': " +
+                    loaded.Outcome.ToString() + "/" + loaded.Reason.ToString());
+        }
+
+        if (!artifact.TryGetState(out var state) || state is not JsProgram loadedProgram)
+        {
+            ThrowTypeError("the artifact provider answered with a foreign program");
+            return null!;
+        }
+
+        if (!loadedProgram.TryFindEntry(ModuleEntryName, out var unit) ||
+            loadedProgram.ModuleOfUnit[(int)unit] is var root and < 0)
+        {
+            ThrowTypeError(
+                "the artifact answered for '" + specifier + "' carries no module graph");
+        }
+
+        return Evaluated(loadedProgram, loadedProgram.ModuleOfUnit[(int)unit]);
+    }
+
+    /// <summary>The entry point a module artifact names its root module by.</summary>
+    /// <remarks>
+    /// It is a constant of the FORMAT rather than of the compiler that happens to produce one: a
+    /// mediator's answer is bytes this profile did not write, and the name it is read back by has
+    /// to be a rule both sides can be held to.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F84B52
+    // Broiler-Human:        PENDING
+    private const string ModuleEntryName = "module";
 
     /// <summary>Enters one bytecode function's frame.</summary>
     /// <param name="function">The closure being entered.</param>
@@ -3779,7 +4108,7 @@ internal sealed class JsEngine
     /// have run for a throw from the instruction itself, and no unwinding is reimplemented.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=605A6B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=0D51CE
     // Broiler-Human:        PENDING
     private JsValue Execute(
         JsProgram program,
@@ -5025,7 +5354,7 @@ internal sealed class JsEngine
                         // is seen, so the only correct read is the one that happens now.
                         case JsOpcode.LoadImport:
                             stack[sp++] = JsModuleNamespace.Read(
-                                program.ImportBindings[U16(code, pc)], modules!, this);
+                                program.ImportBindings[U16(code, pc)], Graph(program), this);
 
                             pc += 3;
                             break;
@@ -5035,6 +5364,42 @@ internal sealed class JsEngine
                                 "Assignment to constant variable '" + names[U16(code, pc)] + "'");
 
                             break;
+
+                        // A DYNAMIC IMPORT LEAVES A PROMISE WHERE IT TOOK TWO VALUES, AND NEVER
+                        // THROWS. Everything that can go wrong past this point - a specifier that
+                        // will not coerce, an attribute nothing honours, a module nothing can find,
+                        // a module whose body threw - reaches the guest as a rejection, because
+                        // that is the one thing the language guarantees about this production.
+                        case JsOpcode.ImportCall:
+                        {
+                            var options = stack[--sp];
+                            var specifier = stack[--sp];
+
+                            stack[sp++] = DynamicImport(
+                                program, names[U16(code, pc)], specifier, options);
+
+                            pc += 3;
+                            break;
+                        }
+
+                        // AND `import.meta` LEAVES THE ONE OBJECT THE MODULE HAS, built the first
+                        // time it is asked for. Building it in the module's initialiser instead
+                        // would have made an object for every module of every graph, whether or not
+                        // a line of the module ever mentions it.
+                        case JsOpcode.ImportMeta:
+                        {
+                            var instance = Graph(program)[U16(code, pc)];
+
+                            if (instance.Meta is null)
+                            {
+                                Charge(FuelPerInstruction);
+                                instance.Meta = new JsObject(prototype: null);
+                            }
+
+                            stack[sp++] = JsValue.Object(instance.Meta);
+                            pc += 3;
+                            break;
+                        }
 
                         case JsOpcode.Await:
                         {

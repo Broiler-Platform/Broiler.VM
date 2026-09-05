@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   40
-// Annotated:        40/40
+// Relevant units:   41
+// Annotated:        41/41
 // Exempt:           32
-// Human-reviewed:   0/40
+// Human-reviewed:   0/41
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         1/1
 // Resource impact:  3/10 max
-// Unverified:       40
+// Unverified:       41
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -1996,6 +1996,26 @@ internal sealed class JsVerifier
             return false;
         }
 
+        /// <summary>Whether the artifact declared the dynamic surface beside its manifest.</summary>
+        /// <remarks>
+        /// A program declares this by reading one of the names the surface owns, and — since a
+        /// dynamic <c>import()</c> may reach the mediator — by containing one of those.
+        /// </remarks>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=8EEDB8
+        // Broiler-Human:        PENDING
+        internal bool DeclaresDynamic()
+        {
+            foreach (var surface in Surfaces)
+            {
+                if (string.Equals(surface, JsSurfaces.Dynamic, System.StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4F7CE5
         // Broiler-Human:        PENDING
         internal bool SawLimits { get; set; }
@@ -2353,7 +2373,7 @@ internal sealed class JsVerifier
             return Ok;
         }
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=461B3E
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F5D815
         // Broiler-Human:        PENDING
         private VmVerifierOutcome Check(JsCodeUnit unit, JsOpcode opcode, uint operand, int offset)
         {
@@ -2426,6 +2446,61 @@ internal sealed class JsVerifier
                 // is unreachable without a further rule about which units may contain it.
                 case JsOpcode.LoadImport:
                     return operand < state.ImportCount
+                        ? Ok
+                        : Invalid(
+                            VmReason.InconsistentStructure,
+                            JavaScriptDiagnosticCode.MalformedModuleRow,
+                            (ulong)offset);
+
+                // A DYNAMIC IMPORT NAMES THE DYNAMIC SURFACE, AND ONLY THAT ONE. Its specifier is a
+                // value, so whether it names a module this artifact carries is not decidable here;
+                // a call that finds one is answered from the artifact and a call that does not puts
+                // the specifier to the mediator, which is the door `eval` goes through. So the
+                // instruction is checked against the surface that door belongs to. The MODULE
+                // surface is declared by carrying records and a script that writes `import()`
+                // carries none - checking this instruction against it would refuse a program the
+                // composition admits. A composition that declined the dynamic surface never reaches
+                // this code: its artifact was refused where the surfaces were read, with
+                // SurfaceOutsideComposition. What is left for here is an artifact that reached the
+                // instruction without declaring it, which is a program buying a host round trip
+                // with an opcode instead of with a declaration.
+                case JsOpcode.ImportCall:
+                    if (!state.DeclaresDynamic())
+                    {
+                        return Invalid(
+                            VmReason.UnknownFeature,
+                            JavaScriptDiagnosticCode.ImportCallOutsideManifest,
+                            (ulong)offset);
+                    }
+
+                    if (operand >= state.Constants!.Length)
+                    {
+                        return Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.ConstantIndexOutOfRange,
+                            (ulong)offset);
+                    }
+
+                    return NamesAName(operand)
+                        ? Ok
+                        : Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.ConstantIndexOutOfRange,
+                            (ulong)offset);
+
+                // AND `import.meta` NAMES ONE, because it is a module's own metadata and a script
+                // has none. The operand indexes the module records rather than the constants, so
+                // an artifact with no records has no valid operand for it at all.
+                case JsOpcode.ImportMeta:
+                    if (!state.DeclaresModules())
+                    {
+                        return Invalid(
+                            VmReason.UnknownFeature,
+                            JavaScriptDiagnosticCode.ImportCallOutsideManifest,
+                            (ulong)offset);
+                    }
+
+                    return state.ModuleRows is not null && operand < state.ModuleRows.Length
                         ? Ok
                         : Invalid(
                             VmReason.InconsistentStructure,

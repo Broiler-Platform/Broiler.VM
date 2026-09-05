@@ -85,7 +85,7 @@ public static class SliceSourcePrograms
     /// goal does not - and the whole reason that code exists is to keep the two apart.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=DCB5D1
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=C3A6FF
     // Broiler-Falsified-If: any program here is refused with a code other than the one recorded beside it
     // Broiler-Human:        PENDING
     public static SliceRefusedSource[] RefusedModules =>
@@ -105,6 +105,26 @@ public static class SliceSourcePrograms
             "refuse-an-export-of-a-name-nothing-declares",
             "export { nowhere };",
             SliceSourceDiagnosticCode.ExportNameNotDeclared)
+        {
+            Options = SliceParseOptions.Module,
+        },
+
+        // THIS ONE IS A SCRIPT FOR THE SAME REASON THE FIRST IS. `import.meta` is a module's own
+        // metadata, so a script has no object for it to answer with - and the code says which of
+        // the two module refusals it is, because a reader given the declaration's code would go
+        // looking for an import statement that is not there.
+        new(
+            "refuse-an-import-meta-in-a-script",
+            "const where = import.meta;\nwhere",
+            SliceSourceDiagnosticCode.ImportMetaOutsideModuleGoal),
+
+        // AND THIS ONE IS A MODULE WHOSE SYNTAX IS PERFECTLY ORDINARY. The clause parses; what is
+        // refused is the ATTRIBUTE, because no composition of this profile has a loader for a
+        // module of a type - and for a static import, loading is what this front end does.
+        new(
+            "refuse-an-import-attribute-nothing-can-honour",
+            "import value from \"./data.json\" with { type: \"json\" };\nvalue",
+            SliceSourceDiagnosticCode.UnsupportedImportAttribute)
         {
             Options = SliceParseOptions.Module,
         },

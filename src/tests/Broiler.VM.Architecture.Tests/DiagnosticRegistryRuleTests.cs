@@ -47,8 +47,8 @@ public sealed class DiagnosticRegistryRuleTests
     {
         Assert.Empty(ArchitectureRules.N5(Registry, Vocabulary, SeamVocabulary, DiagnosticRegistry.Revision));
 
-        // Non-vacuous: fifty-three core-result codes and twenty-four embedder-seam ones,
-        // seventy-seven rows, so a clean result is a comparison over two real sets rather than over
+        // Non-vacuous: sixty-three core-result codes and twenty-nine embedder-seam ones,
+        // ninety-two rows, so a clean result is a comparison over two real sets rather than over
         // an empty one. The seam half was declared and empty at revision 1 and is the half at
         // revision 2; revision 3 is the five structural refusals format version 2 adds, revision 4
         // the three ways an artifact's declaration of an optional surface can be wrong, revision 5
@@ -87,10 +87,23 @@ public sealed class DiagnosticRegistryRuleTests
         // diagnose. THE SEAM HALF DID NOT GROW WITH IT: `for await` outside a body that may await
         // is a language error rather than a manifest refusal, so it reaches the existing
         // unexpected-token code, and the async generator itself is admitted rather than refused.
-        Assert.Equal(62, Vocabulary.Count);
-        Assert.Equal(27, SeamVocabulary.Count);
+        //
+        // Revision 10 is the dynamic import, and it grows both halves by one and two. The core code
+        // is for the instruction, and it is the first optional surface an artifact can reach
+        // WITHOUT reading a name or carrying a section: `eval` is a global and a module graph is a
+        // section, so both of those declarations follow from something already in the bytes, and an
+        // `ImportCall` is neither - an artifact could have written one while declaring nothing and
+        // bought a host round trip with an opcode. The two seam codes are the two questions a
+        // module goal is asked outside its own declarations: `import.meta` in a script, which is a
+        // sibling of the module-declaration code rather than a second use of it because
+        // `import.meta` declares nothing; and an import attribute nothing can honour, which is
+        // where the front end says that the CLAUSE parses and the ATTRIBUTE is what is declined -
+        // a distinction that did not exist while the whole clause was refused as a construct
+        // outside the manifest.
+        Assert.Equal(63, Vocabulary.Count);
+        Assert.Equal(29, SeamVocabulary.Count);
         Assert.Equal(Vocabulary.Count + SeamVocabulary.Count, Registry.Count);
-        Assert.Equal(9, DiagnosticRegistry.Revision);
+        Assert.Equal(10, DiagnosticRegistry.Revision);
 
         // The two vocabularies live in two assemblies that cannot see each other, so the one thing
         // no compiler could catch is a number used in both. Nothing else in the build reads both
@@ -197,10 +210,10 @@ public sealed class DiagnosticRegistryRuleTests
         // sequence being complete.
         Assert.Equal(2, ArchitectureRules.DefensiveCodes.Length);
         Assert.Equal(
-            61,
+            62,
             Registry.Count(static row => row.Reachability == "corpus"));
         Assert.Equal(
-            26,
+            28,
             Registry.Count(static row => row.Reachability == "source"));
         // One seam row is defensive, and which one is the finding: the operand-stack ceiling
         // cannot be reached through this front end, because the parse depth bound refuses at about

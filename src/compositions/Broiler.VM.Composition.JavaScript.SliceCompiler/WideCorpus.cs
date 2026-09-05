@@ -189,6 +189,26 @@ internal static class WideCorpus
             "InconsistentStructure",
             JavaScriptDiagnosticCodes.ClassElementFlagsInconsistent),
 
+        // ---- one row about the instruction that names a surface without being a name ------------
+        //
+        // A DYNAMIC IMPORT IS THE ONLY OPTIONAL SURFACE AN ARTIFACT CAN REACH WITHOUT READING A
+        // NAME OR CARRYING A SECTION. `eval` is a global, so a program inside the dynamic surface
+        // is one that reads a name and the declaration follows from the read; a module graph is a
+        // section, so an artifact inside the module surface is one that carries records. An
+        // `ImportCall` is neither - it is an instruction - and an artifact could therefore have
+        // written one while declaring nothing at all, and bought a host round trip with an opcode.
+        // This is that artifact, and the code says which of the two declarations it is missing.
+        Entry(
+            "wide-an-import-call-with-no-surface-declared",
+            Artifact(code: [
+                (byte)JsOpcode.LoadUndefined,
+                (byte)JsOpcode.LoadUndefined,
+                (byte)JsOpcode.ImportCall, 0x00, 0x00,
+                (byte)JsOpcode.Return,
+            ]),
+            "UnknownFeature",
+            JavaScriptDiagnosticCodes.ImportCallOutsideManifest),
+
         // ---- two rows that were unreachable while one version was registered ------------------
         //
         // Both are the CALLER mislabelling the bytes, and neither could happen while the profile

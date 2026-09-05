@@ -5,6 +5,8 @@ using Broiler.VM;
 using Broiler.VM.Profile.JavaScript;
 using Broiler.VM.Profile.JavaScript.Compiler;
 
+using Broiler.VM.Profile.JavaScript.Format;
+
 namespace Broiler.VM.Composition.JavaScript.Conformance;
 
 /// <summary>
@@ -48,6 +50,17 @@ internal sealed class SourceProvider(VmFeatureManifestId manifest, uint formatVe
             return VmArtifactProviderAnswer.NotFound(VmReason.ProviderArtifactNotFound);
         }
 
+        // TWO QUESTIONS THROUGH ONE DOOR, AND THE PAYLOAD SAYS WHICH. `eval` asks for the program a
+        // String is; a dynamic `import()` asks for the module a specifier names from a referrer,
+        // and marks its payload so. The suite reaches the second in a thousand variants, most of
+        // them scripts, and every one of them with a specifier no compilation of the test file
+        // could have resolved in advance.
+        if (JsFormat.TryReadModuleRequest(
+            request.RequestPayload.Span, out var referrer, out var specifier))
+        {
+            return Module(referrer, specifier);
+        }
+
         string source;
 
         try
@@ -70,6 +83,34 @@ internal sealed class SourceProvider(VmFeatureManifestId manifest, uint formatVe
             return VmArtifactProviderAnswer.Refused(VmReason.SemanticValidationFailed);
         }
 
+        return Answered(compiled.Artifact);
+    }
+
+    /// <summary>Answers a request for the module one specifier names from one referrer.</summary>
+    /// <remarks>
+    /// <b>A specifier that resolves to nothing is NOT FOUND and a graph that will not compile is
+    /// REFUSED</b>, and a whole family of the suite asks for the first of those on purpose - a
+    /// dynamic import of a file that is not there is a rejected promise and not a harness failure.
+    /// </remarks>
+    private VmArtifactProviderAnswer Module(string referrer, string specifier)
+    {
+        var graph = Test262Modules.LoadFor(referrer, specifier);
+
+        if (graph.Failure.Length != 0)
+        {
+            return VmArtifactProviderAnswer.NotFound(VmReason.ProviderArtifactNotFound);
+        }
+
+        var compiled = JsCompiler.Compile([], graph.Modules);
+
+        return compiled.Succeeded && compiled.Artifact is not null
+            ? Answered(compiled.Artifact)
+            : VmArtifactProviderAnswer.Refused(VmReason.SemanticValidationFailed);
+    }
+
+    /// <summary>Wraps compiled bytes in the descriptor the requesting program was verified at.</summary>
+    private VmArtifactProviderAnswer Answered(byte[] artifact)
+    {
         var descriptor = new VmArtifactDescriptor(
             JavaScriptProfile.Id,
             formatVersion,
@@ -77,6 +118,6 @@ internal sealed class SourceProvider(VmFeatureManifestId manifest, uint formatVe
             default,
             VmCallerIdentity.FromCanonicalIdentity("broiler-js-conformance://source-provider"));
 
-        return VmArtifactProviderAnswer.Provided(in descriptor, compiled.Artifact);
+        return VmArtifactProviderAnswer.Provided(in descriptor, artifact);
     }
 }

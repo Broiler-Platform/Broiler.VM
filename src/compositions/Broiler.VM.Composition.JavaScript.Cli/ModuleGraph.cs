@@ -115,6 +115,32 @@ internal static class ModuleGraph
     }
 
     /// <summary>
+    /// Loads the graph rooted at what one specifier names from one referrer.
+    /// </summary>
+    /// <remarks>
+    /// <b>This is what a dynamic <c>import()</c> asks this composition for, and it is the same
+    /// resolution rule the static graph is walked by.</b> The specifier is a value the guest
+    /// computed rather than a literal a compiler saw, so nothing about it has been resolved before
+    /// now — but resolving it is still this host's decision and still means the same thing, which
+    /// is why it goes through <see cref="TryResolve"/> and then through <see cref="Load"/> rather
+    /// than through a second reading of what a specifier is.
+    /// </remarks>
+    internal static Loaded LoadFor(string referrer, string specifier)
+    {
+        if (!TryResolve(referrer, specifier, out var resolved))
+        {
+            return new Loaded(
+                [],
+                $"`{referrer}` requests `{specifier}`, and this host resolves only a specifier " +
+                "that begins with `./`, `../` or `/`");
+        }
+
+        return File.Exists(resolved)
+            ? Load(resolved)
+            : new Loaded([], $"there is no file at `{resolved}`");
+    }
+
+    /// <summary>
     /// Answers one resolution request the profile put to this composition.
     /// </summary>
     /// <remarks>

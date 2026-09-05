@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   13
 // Annotated:        13/13
-// Exempt:           25
+// Exempt:           26
 // Human-reviewed:   0/13
 // IP risk:          Low
 // Security risk:    Medium
@@ -173,6 +173,19 @@ internal sealed class JsModuleInstance(JsEnvironment environment)
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=62D6FD
     // Broiler-Human:        PENDING
     internal JsValue Completion { get; set; } = JsValue.Undefined;
+
+    /// <summary>The module's <c>import.meta</c> object, built the first time it is asked for.</summary>
+    /// <remarks>
+    /// <b>It lives on the INSTANCE and not on the record, which is the whole of what the language
+    /// says about it.</b> Two evaluations of <c>import.meta</c> in one module answer the same
+    /// object, so a guest may hang a value on it in one function and read it back in another; a
+    /// fresh object per evaluation would make every such program silently answer
+    /// <c>undefined</c>. The record is shared by every realm that runs the artifact and the
+    /// instance is not, which is also why two realms running one module get two of these.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5719BF
+    // Broiler-Human:        PENDING
+    internal JsObject? Meta { get; set; }
 }
 
 /// <summary>

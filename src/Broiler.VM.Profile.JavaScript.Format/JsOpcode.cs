@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   23
 // Annotated:        23/23
-// Exempt:           124
+// Exempt:           126
 // Human-reviewed:   0/23
 // IP risk:          None
 // Security risk:    Medium
@@ -98,7 +98,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// queue the host drains.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=CD604C
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=BDE443
 // Broiler-Human:        PENDING
 public enum JsOpcode : byte
 {
@@ -1048,6 +1048,52 @@ public enum JsOpcode : byte
     /// </para>
     /// </remarks>
     DeleteGlobalBinding = 0x82,
+
+    /// <summary>
+    /// Pop an attributes value and a specifier, and push the promise of the module the specifier
+    /// names from the referrer that constant <c>u16</c> holds.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>IT ANSWERS A PROMISE AND THEREFORE NEVER THROWS.</b> Every way this can go wrong — a
+    /// specifier that will not coerce to a String, an attributes argument that is not an object, an
+    /// attribute nothing can honour, a module that cannot be found, a module whose body threw — is
+    /// a REJECTION of the promise it pushed. An instruction that threw for the first of those and
+    /// rejected for the rest would make `import(x).catch(f)` catch some of them and not others,
+    /// which is exactly the distinction the language removes.
+    /// </para>
+    /// <para>
+    /// <b>The operand is the REFERRER and not the specifier.</b> The specifier is a value and is
+    /// on the stack; what the instruction cannot get from the stack is which module or script wrote
+    /// it, and that is what a relative specifier is resolved against. It is a constant rather than
+    /// a module index because a dynamic import is admitted in a script as well, and a script has no
+    /// module record to be indexed by.
+    /// </para>
+    /// <para>
+    /// <b>Two arguments, always, and the second is <c>undefined</c> where the source wrote none.</b>
+    /// The stack effect of an instruction may not depend on how the source spelled it, so the
+    /// lowering pushes the missing attributes argument rather than the executor guessing whether
+    /// one is there.
+    /// </para>
+    /// </remarks>
+    ImportCall = 0x83,
+
+    /// <summary>
+    /// Push the <c>import.meta</c> object of module <c>u16</c> of this artifact's module records.
+    /// </summary>
+    /// <remarks>
+    /// <b>IT IS THE SAME OBJECT ON EVERY EVALUATION AND THAT IS THE WHOLE OF IT.</b> The object is
+    /// ordinary, extensible and initially empty here, so a guest may add to it and read back what
+    /// it added — from another function, from another turn of the job queue, from a module that
+    /// imported this one. That only means anything if the second evaluation of <c>import.meta</c>
+    /// answers the first one's object, so it is held on the module INSTANCE and built once.
+    /// <para>
+    /// The operand is a module index rather than a key constant, because unlike
+    /// <see cref="ImportCall"/> this production is admitted only inside a module and the module it
+    /// belongs to is fixed when the code unit is lowered.
+    /// </para>
+    /// </remarks>
+    ImportMeta = 0x84,
 }
 
 /// <summary>The operand shape that follows an opcode byte.</summary>
@@ -1200,7 +1246,7 @@ public static class JsOpcodes
         ElementIsMethod | ElementIsGetter | ElementIsSetter;
 
     /// <summary>Every opcode format version 2 defines, in ascending numeric order.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=4DE284
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=D8D842
     // Broiler-Human:        PENDING
     public static readonly JsOpcode[] All =
     [
@@ -1247,6 +1293,7 @@ public static class JsOpcodes
         JsOpcode.Pop, JsOpcode.Duplicate, JsOpcode.DuplicateTwo, JsOpcode.Swap, JsOpcode.Pick,
         JsOpcode.DeclareGlobalLet, JsOpcode.DeclareGlobalConst, JsOpcode.InitialiseGlobalLexical,
         JsOpcode.DeleteGlobalBinding,
+        JsOpcode.ImportCall, JsOpcode.ImportMeta,
     ];
 
     /// <summary>Whether <paramref name="value"/> is an opcode format version 2 defines.</summary>
@@ -1295,7 +1342,7 @@ public static class JsOpcodes
     /// The operand shape of <paramref name="opcode"/>, or <see langword="null"/> when this format
     /// version does not define it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=338D43
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=D042A0
     // Broiler-Human:        PENDING
     public static JsOperandShape? Shape(JsOpcode opcode) => opcode switch
     {
@@ -1344,7 +1391,8 @@ public static class JsOpcodes
         JsOpcode.NewPrivateName or
         JsOpcode.LoadImport or JsOpcode.ThrowImmutable or
         JsOpcode.DeclareGlobalLet or JsOpcode.DeclareGlobalConst or
-        JsOpcode.InitialiseGlobalLexical or JsOpcode.DeleteGlobalBinding
+        JsOpcode.InitialiseGlobalLexical or JsOpcode.DeleteGlobalBinding or
+        JsOpcode.ImportCall or JsOpcode.ImportMeta
             => JsOperandShape.U16,
 
         JsOpcode.Jump or JsOpcode.JumpIfFalse or JsOpcode.JumpIfTrue or
@@ -1371,7 +1419,7 @@ public static class JsOpcodes
     /// and the verifier's abstract height is computed from them alone. A false answer means the
     /// opcode is not one this format version defines - not that its effect is unknown.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=3A5CC1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=0CF91C
     // Broiler-Human:        PENDING
     public static bool TryDescribe(JsOpcode opcode, uint operand, out int pops, out int pushes)
     {
@@ -1406,6 +1454,7 @@ public static class JsOpcodes
             case JsOpcode.NewObject:
             case JsOpcode.Closure:
             case JsOpcode.LoadImport:
+            case JsOpcode.ImportMeta:
             case JsOpcode.Duplicate:
             case JsOpcode.Pick:
             case JsOpcode.SuperCallForwarded:
@@ -1571,6 +1620,13 @@ public static class JsOpcodes
                 return true;
 
             case JsOpcode.ConstructSpread:
+                pops = 2;
+                pushes = 1;
+                return true;
+
+            // THE ATTRIBUTES ARGUMENT IS ALWAYS ON THE STACK, whether or not the source wrote one,
+            // so this has a fixed effect where a call has one that varies with its argument count.
+            case JsOpcode.ImportCall:
                 pops = 2;
                 pushes = 1;
                 return true;
