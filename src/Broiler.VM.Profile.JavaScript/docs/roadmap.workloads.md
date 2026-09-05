@@ -455,11 +455,15 @@ the act that would turn a stage into a milestone with a ledger row.
   *([JSC-180](roadmap.corrections.md#jsc-180))*. The per-benchmark allowance is the profile's own
   `WallClock` maximum rather than a figure the lane chose, because an hour is the most any
   composition of this profile may be granted — so a benchmark that meets it has met **this
-  engine's ceiling**, which is a finding rather than a bound to move. **The exclusions are that no
-  identifier but the Linux one has scored the whole conformance suite, that no identifier scores
-  the whole Octane set on the push path, and that `zlib` has no known duration on any machine here
-  — it meets that ceiling on the one it was measured on, and whether it fits inside the hour on a
-  runner is what the first full lane answers.**
+  engine's ceiling**, which is a finding rather than a bound to move. On 2026-09-05 the first full
+  lane measured what that allowance is actually for: **`zlib` scores on a runner** — 2,342 seconds
+  on `linux-x64` and 2,796 on `osx-arm64`, both inside the hour — and it is 78 per cent of the whole
+  run, the other fourteen together being 655 seconds *([JSC-182](roadmap.corrections.md#jsc-182))*.
+  The headroom against the ceiling is about 21 minutes and about 13, and it is the figure to watch,
+  because an hour is already the most this profile may be granted.
+  **The exclusions are that no identifier but the Linux one has scored the whole conformance suite,
+  and that no identifier scores the whole Octane set on the push path** — the quick lane's six do
+  not include `zlib`, so the set is scored whole only where the full lane runs.
 - **The whole-suite runs are retained per manifest**, under
   [section 4's evidence contract](roadmap.status.md#4-required-evidence-bundle), with the harness's
   five verdicts reported rather than four — a variant that spent an allowance is neither a pass, a

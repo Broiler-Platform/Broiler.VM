@@ -7554,3 +7554,57 @@ which is further than either cell has ever reached.
 while `linux-x64`, `linux-arm64`, `osx-arm64` and `osx-x64` proceeded into it; and a local
 reproduction against a directory holding only `Broiler.VM.Composition.JavaScript.Cli.exe`, which
 the driver failed to resolve before the change and resolves after it. 2026-09-05.
+
+### JSC-182
+
+**Where:** [JSC-180](#jsc-180)'s extrapolation of what `zlib` would cost on a runner, the sentence
+in the lane step that carried it, and the JSW-10 bullet that said the answer was unknown.
+
+**What was assumed.** That a speed ratio measured on one benchmark bounds another. `zlib` met the
+profile's `WallClock` ceiling of 3,600s on the machine this branch was developed on — under the JIT
+build and again on the published Native AOT image — so no duration for it could be obtained there.
+What could be obtained was a ratio: `richards` scored **32.0** on that AOT image on that machine and
+**46.3** on `ubuntu-latest`. JSC-180 divided the ceiling by that 1.45 and concluded that a runner
+"needs somewhere **above forty-one minutes**" for `zlib`, offering it as a lower bound on the
+grounds that the numerator was itself a bound.
+
+**What was true.** The reasoning is sound only if the ratio transfers, and it does not. **`zlib`
+scores on a runner in 2,342 seconds — 39 minutes and 2 seconds — which is BELOW the stated lower
+bound.** The two benchmarks do not stress the same machinery, so `richards` measures nothing about
+`zlib`: the ratio `zlib` actually exhibits between that machine and `ubuntu-latest` is at least
+**1.54**, since the numerator is a bound rather than a figure. A one-benchmark ratio is an
+illustration and never a bound, and the entry should have said so.
+
+**What the run measured.** The first full lane, dispatched deliberately on 2026-09-05:
+
+| runtime identifier | `zlib` | score | the fifteen |
+|---|---|---|---|
+| `linux-x64` | 2,342s | 65.2 | 2,997s, 15 of 15 |
+| `osx-arm64` | 2,796s | 54.6 | 3,651s, 15 of 15 |
+| `linux-arm64` | not read | — | 15 of 15, workload step 69m34s |
+| `osx-x64` | not read | — | still running when this was written |
+
+**So the ceiling holds, and `zlib` is what the allowance is for.** It is 78 per cent of the whole
+Octane run on `linux-x64` — the other fourteen together are 655 seconds — and the headroom against
+the ceiling is about 21 minutes there and about 13 on `osx-arm64`. **That headroom is the figure a
+future reader should watch**, because it is the one this profile cannot buy more of: an hour is
+already the maximum `JavaScriptProfile.Maxima()` permits, so a cell that grows past it produces a
+finding rather than a bound to raise.
+
+**What is corrected and what is not.** JSC-180 stands as written — this ledger appends and never
+edits — and its other figures are unaffected: the ceiling is still the profile's, the 23m28s is
+still what fifteen benchmarks cost on a publish cell, and the observation that the same box scored
+`richards` at 64.7 and 35.4 ninety minutes apart is still the reason no duration here travels. What
+is withdrawn is the **forty-one-minute lower bound** and the method that produced it. The lane step
+comment and the JSW-10 bullet, which both said the answer was not known, now carry the measurement.
+
+**What this does not claim.** Not that `zlib` scores on every claimed identifier. The two Windows
+cells never reached the workload step in this run — [JSC-181](#jsc-181) records why — so `win-x64`
+and `win-arm64` have still never executed it, and the exclusion the roadmap states is unchanged: no
+identifier scores the whole Octane set on the push path, because the quick lane's six do not
+include `zlib`.
+
+**Authority and date.** Run 33964028317 of 2026-09-05, `broiler-vm (full)` on `1910c6f`: the
+`linux-x64` cell's `--- zlib (exit 0, 2342s)` and `# 15 of 15 benchmarks reported a score and
+exited zero`, the `osx-arm64` cell's `--- zlib (exit 0, 2796s)` and the same fifteen-of-fifteen
+line, and the `linux-arm64` cell's workload step completing green. 2026-09-05.
