@@ -1742,8 +1742,18 @@ def main():
 
     corpus = os.path.join(ROOT, arguments.corpus)
 
+    # THE ANSWER `compositions` ALREADY COMPUTED, READ RATHER THAN DISCARDED. It publishes each
+    # composition root in three modes and runs it, and it has always tracked whether every one of
+    # those runs exited zero - and this call has always thrown that away. So a published image
+    # whose run FAILED was written into `publish-and-run.log` beside every image whose run passed,
+    # the bundle was retained, and the collection reported success. Bundle JSW-10-001 was retained
+    # that way: its transcript carries four `threw` rows and a non-zero exit from the end-user
+    # host's sweep, and the first thing to notice was a CI publish job. A gate whose result nobody
+    # reads is a log.
+    published = True
+
     if not arguments.skip_publish:
-        compositions(arguments, out, corpus)
+        published = compositions(arguments, out, corpus)
 
     skipped = 0
 
@@ -1792,17 +1802,32 @@ def main():
 
     print(f"collected {arguments.bundle} into {arguments.out}")
 
+    # BOTH COMPLAINTS ARE PRINTED, not the first of them. A collection that failed two ways and
+    # reported one would send a reader to fix that one and re-run for the other.
+    complaints = []
+
+    if not published:
+        # Same shape as the skipped-control complaint and for the same reason: everything is
+        # written, and the exit code is what stops a failed publish-and-run from being read as one
+        # that passed. Which of the runs failed is in `publish-and-run.log`, named with its exit
+        # code, rather than summarised here.
+        complaints.append(
+            "broiler-js-evidence: a published image did not publish, did not run clean, or "
+            "composed a different catalog than another mode. The bundle is retained and its "
+            "publish-and-run transcript is NOT a clean one.")
+
     if skipped:
         # Everything is written; the exit code is what stops a skipped control from being read as
         # a control that passed. The JS-3a collection found this the hard way: a refactor moved an
         # anchor, the log said SKIPPED, and nothing else did.
-        print(
+        complaints.append(
             f"broiler-js-evidence: {skipped} control(s) SKIPPED because their anchors have moved. "
             "The bundle is retained and is NOT a complete control matrix.")
 
-        return 1
+    for complaint in complaints:
+        print(complaint)
 
-    return 0
+    return 1 if complaints else 0
 
 
 if __name__ == "__main__":

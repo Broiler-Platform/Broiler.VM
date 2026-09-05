@@ -7,6 +7,10 @@
 // a stable ordinal order rather than the order they were typed, which is what makes two transcripts
 // of one command comparable - so a pair of scripts whose point is their ORDER has to carry it in
 // the names.
+//
+// THIS FILE IS NOT A PROGRAM BY ITSELF, which is why it sits under `one-realm/` and not under
+// `runs/`. `trace` is declared by the first script; run alone - as a sweep over a directory runs
+// every file it finds, each in a realm of its own - this one can only throw.
 trace.push("second-script-ended");
 
 Promise.resolve().then(function () {

@@ -208,9 +208,29 @@ runs/a-generator-in-a-for-of-source.js|0|10
 # AND THE THREE RULES THAT ARE RUN-TIME ERRORS RATHER THAN REFUSALS. Each source is admitted
 # whole - the front end has nothing to say about any of them - and only the path taken decides.
 # Exit 1 is a program that threw.
-runs/a-derived-constructor-that-never-calls-super.js|1|uncaught ReferenceError
-runs/a-this-read-before-super-returns.js|1|uncaught ReferenceError
-runs/a-class-called-without-new.js|1|cannot be invoked without 'new'
+#
+# THEY SIT UNDER `threw/` AND NOT UNDER `runs/`, and the directory is the assertion. `runs/` is
+# swept whole by a lane step and by the row below it, and that sweep answers with the worst status
+# any file gave: a program that ends in an uncaught throw belongs to a different family than one
+# that produces a value, and filing it with the second would have turned a green sweep red for a
+# reason that is not a defect. The lane found that, and the row below is what keeps the two
+# families from drifting back together.
+threw/a-derived-constructor-that-never-calls-super.js|1|uncaught ReferenceError
+threw/a-this-read-before-super-returns.js|1|uncaught ReferenceError
+threw/a-class-called-without-new.js|1|cannot be invoked without 'new'
+
+# THE TWO SWEEPS, WHICH ARE THE ROWS THIS TABLE DID NOT HAVE. Every row above names files, and a
+# row that names files can only ever judge the host one command line at a time - which is how this
+# table was run locally while the lane ran `<binary> src/tests/cli/runs`, a whole DIRECTORY in one
+# invocation, and got a different answer. The two are not the same command: a sweep gives each file
+# its own realm and answers with the worst status any of them gave, so a fixture that throws by
+# design and a fixture that is half a pair both turn it red. That went unseen until a publish job
+# failed, because nothing local ran the sweep. These two rows are that gap closed.
+#
+# The counts are pinned rather than left open. A sweep that silently stopped reading half the tree
+# would still exit 0, and a row asserting only the exit code would pass over it.
+runs|0|# Completed: 88
+threw|1|# Faulted: 3
 
 # THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
 # below was taken from the comparison engine at /opt/node22/bin/node BEFORE it was written here, so
@@ -448,7 +468,12 @@ runs/an-async-arrow-in-a-pattern-default.js|0|from-the-default,from-the-array [o
 # `resumed-at-the-drain` before `second-script-ended`, which is the behaviour no embedder could
 # reason about. The two files are named so they sort in the order they run, because this host
 # expands its arguments into a stable ordinal order rather than the order they were typed.
-runs/a-first-script-that-leaves-a-job-owed.js runs/a-second-script-the-owed-job-outlives.js|0|suspended-in-the-first-script,first-script-ended,second-script-ended,resumed-at-the-drain
+#
+# THEY SIT UNDER `one-realm/` AND NOT UNDER `runs/` for the same reason the three rows above moved.
+# Neither file is a program by itself: the second reads a binding the first declares, so a sweep
+# that gave each file its own realm - which is what a sweep is for - would report the second as an
+# uncaught `ReferenceError` and be right to. The directory says the two are one program.
+one-realm/a-first-script-that-leaves-a-job-owed.js one-realm/a-second-script-the-owed-job-outlives.js|0|suspended-in-the-first-script,first-script-ended,second-script-ended,resumed-at-the-drain
 
 # A REJECTION NOBODY HANDLED IS SILENT AND THE DRAIN CONTINUES. The silence is a stated deviation -
 # this profile has no host hook a rejection report could reach, and the comparison engine prints one

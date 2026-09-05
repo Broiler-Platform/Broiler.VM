@@ -7374,3 +7374,52 @@ same attribute where the language does, by rejecting the promise.
 failure reproduced locally before the change and the same command scoring after it, and the two
 floors — the pinned suite's and the ingest-shape suite's — holding on the run that follows.
 2026-09-05.
+
+### JSC-179
+
+**Where:** `src/tests/cli/runs`, the directory the lane hands to the end-user host whole, and the
+five fixtures JSW-5 and JSW-7 filed there — three that end in an uncaught throw by design and a
+pair of scripts that are one program between them.
+
+**What was assumed.** That `src/tests/cli/runs` is where a fixture for the end-user host goes, and
+that a fixture is judged by the row naming it in `src/tests/cli/expected.txt`. Both readings are in
+the tree: `refused/`, `limits/`, `dead-zone/` and `unreachable/` each hold a family the host answers
+differently, and every one of the 185 rows in the acceptance table names files.
+
+**What was true.** **The directory is itself an assertion, and one no row was making.** A path
+naming a directory is *swept* — a fresh realm per file, a row per file, and an exit code that is the
+worst status any of them gave — and the lane has a step that sweeps this one out of the published
+Native AOT image: `"$binary" src/tests/cli/runs`. Three fixtures whose point is an uncaught throw
+and a second script that reads a binding its partner declares make that sweep exit 1, correctly and
+for four different reasons, none of them a defect in the engine.
+
+**Nothing local ran that command.** `eng/run-cli-acceptance.py` runs one command line per row with
+a declared exit code, so the three throwing fixtures passed there as exit 1 and the script pair
+passed there as one command naming both files. 185 of 185 rows answered as declared on the same
+commit whose sweep exited 1. The collector ran the sweep and recorded it — bundle JSW-10-001's
+`publish-and-run.log` carries the four `threw` rows and the non-zero exit, three times over, once
+per publish mode — and **discarded the answer**: `compositions()` computes whether every published
+image ran clean and `main` called it without reading the result. So the gate that would have caught
+this was already written, already run, and already right; nobody read it. It was found by the
+`quick / publish and run (linux-x64)` job.
+
+**What replaced it.** Two things, and the second is the one that matters. The five fixtures moved to
+directories that state what they are — `threw/` for the three that end in an uncaught throw, beside
+`refused/` and `limits/` which are the other two families that do not produce a value, and
+`one-realm/` for the pair, whose second file is not a program by itself. And the acceptance table
+gained the two rows it never had: `runs|0|# Completed: 88` and `threw|1|# Faulted: 3`, each naming a
+DIRECTORY rather than files, so the command the lane runs is now a command the local suite runs.
+The counts are pinned because a sweep that silently stopped reading half a tree would still exit 0.
+`compositions()`'s answer is now read, and a collection whose publish-and-run transcript is not
+clean retains the bundle and exits non-zero, the same shape the skipped-control complaint beside it
+already used.
+
+**What this does not claim.** Not that the three fixtures were in the wrong place as evidence — each
+still asserts what it asserted, on the same exit code and the same message, from its new path. What
+was wrong is that a directory carrying a contract had no row asserting the contract, so the only
+thing that could enforce it was a lane step nobody could run locally.
+
+**Authority and date.** The `quick / publish and run (linux-x64)` job of 2026-09-05 on `bd07aa7`
+that reported `# Faulted: 4`, the same sweep reproduced locally before the move and answering
+`# 88 files / # Completed: 88` after it, and 187 of 187 acceptance rows on the run that follows.
+2026-09-05.

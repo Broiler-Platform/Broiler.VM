@@ -343,8 +343,9 @@ the act that would turn a stage into a milestone with a ledger row.
   block, a private name in every form the grammar gives it (a field, a method, a getter, a setter,
   each of those `static` as well, `this.#x`, `o.#x`, `o?.#x`, `#x in o`, and a private access as a
   destructuring target), and a generator member of a class body. Each is exercised by fixtures under
-  `src/tests/cli/runs` and by cases in the retained differential probe, whose answers were taken from
-  the comparison engine before they were written down.
+  `src/tests/cli` — `runs/` for the ones that produce a value and `threw/` for the three whose point
+  is an uncaught throw — and by cases in the retained differential probe, whose answers were taken
+  from the comparison engine before they were written down.
 - **And, on 2026-09-05, the ASYNC GENERATOR and `for await`, which the paragraph this replaces left
   refused.** `async function*` as a declaration and as an expression, an async generator method of an
   object literal and of a class body — `static`, private, computed and Symbol-keyed — `await` and
