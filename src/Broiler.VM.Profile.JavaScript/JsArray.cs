@@ -328,11 +328,27 @@ internal sealed class JsArray : JsObject
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7DDAF3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=45912A
     // Broiler-Human:        PENDING
     internal override bool DeleteOwnProperty(string key)
     {
-        if (IsArrayIndex(key, out var at) && at < elements.Count)
+        // `length` IS AN OWN PROPERTY THAT IS NEVER CONFIGURABLE, so deleting it is always a
+        // refusal - and it had to be refused HERE because it is not in the map the base searches,
+        // which answers `true` for every key it does not find. Without this `delete [].length`
+        // answered `true`, having deleted nothing, and in strict code answered `true` where the
+        // language owes a `TypeError`.
+        if (string.Equals(key, "length", System.StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        // A HOLE FALLS THROUGH TO THE ORDINARY MAP, exactly as the read above does and for exactly
+        // the same reason: a vacated slot is a property the array moved out of the dense store
+        // because it was given attributes the store cannot carry. Clearing the slot and answering
+        // `true` for one of those reported the deletion of a FROZEN element, and left it in place -
+        // so `delete frozen[0]` said `true` in sloppy code, threw nothing in strict code, and the
+        // element read back afterwards.
+        if (IsArrayIndex(key, out var at) && at < elements.Count && !elements[(int)at].IsEmpty)
         {
             elements[(int)at] = JsValue.Empty;
             return true;

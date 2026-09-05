@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   25
-// Annotated:        25/25
+// Relevant units:   26
+// Annotated:        26/26
 // Exempt:           30
-// Human-reviewed:   0/25
+// Human-reviewed:   0/26
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         1/1
 // Resource impact:  2/10 max
-// Unverified:       25
+// Unverified:       26
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -512,6 +512,32 @@ internal sealed class JsPrimitiveWrapper : JsObject
         }
 
         return base.TryGetOwnProperty(key, out property);
+    }
+
+    /// <summary>Removes one own property, refusing the ones a String wrapper synthesises.</summary>
+    /// <remarks>
+    /// <b>They are not in the map the base searches, and the base answers <see langword="true"/> for
+    /// every key it does not find</b> - so without this, deleting <c>length</c> or a character index
+    /// off a <c>new String("str")</c> reported success and deleted nothing, and the descriptor still
+    /// answered afterwards. Both are non-configurable, so the honest answer is a refusal, which in
+    /// strict code is the <c>TypeError</c> the language owes.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=B68C64
+    // Broiler-Human:        PENDING
+    internal override bool DeleteOwnProperty(string key)
+    {
+        if (Primitive.IsString)
+        {
+            var text = Primitive.AsString();
+
+            if (string.Equals(key, "length", System.StringComparison.Ordinal) ||
+                (IsArrayIndex(key, out var at) && at < text.Length))
+            {
+                return false;
+            }
+        }
+
+        return base.DeleteOwnProperty(key);
     }
 
     /// <inheritdoc/>

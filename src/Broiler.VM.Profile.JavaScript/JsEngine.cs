@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   111
-// Annotated:        111/111
+// Relevant units:   112
+// Annotated:        112/112
 // Exempt:           14
-// Human-reviewed:   0/111
+// Human-reviewed:   0/112
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         15/15
 // Resource impact:  7/10 max
-// Unverified:       111
+// Unverified:       112
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -808,7 +808,7 @@ internal sealed class JsEngine
         return start is null ? JsValue.Undefined : Lookup(start, key, baseValue);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=F27834
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=AAD480
     // Broiler-Human:        PENDING
     private JsValue Lookup(JsObject start, string key, JsValue receiver)
     {
@@ -816,6 +816,17 @@ internal sealed class JsEngine
 
         while (current is not null)
         {
+            // A PROXY SWALLOWS THE REST OF THE WALK RATHER THAN ANSWERING ONE LINK OF IT. `[[Get]]`
+            // on a proxy is a whole operation - the `get` trap decides everything, including
+            // whether a prototype is consulted at all - so continuing the loop past it would run
+            // the trap for the own property and then walk the TARGET's chain behind its back. The
+            // test is inside the loop because a proxy is just as likely to be somebody's
+            // prototype as it is to be the object a program named.
+            if (current is JsProxy proxy)
+            {
+                return proxy.ProxyGet(JsValue.String(key), receiver);
+            }
+
             if (current.TryGetOwnProperty(key, out var property))
             {
                 if (!property.IsAccessor)
@@ -835,7 +846,7 @@ internal sealed class JsEngine
     }
 
     /// <summary>Writes a property on any value.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=B5FA6D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=02C33F
     // Broiler-Human:        PENDING
     internal void SetProperty(JsValue baseValue, string key, JsValue value, bool strict)
     {
@@ -907,6 +918,19 @@ internal sealed class JsEngine
 
         while (current is not null)
         {
+            // A PROXY ANSWERS `[[Set]]` WHOLE, and the refusal it reports is turned into the
+            // language's own two answers here: `false` is silent in sloppy code and a TypeError in
+            // strict code, which is the rule every other refusal on this path already follows.
+            if (current is JsProxy proxy)
+            {
+                if (!proxy.ProxySet(JsValue.String(key), value, baseValue) && strict)
+                {
+                    ThrowTypeError("Cannot assign to read only property '" + key + "'");
+                }
+
+                return;
+            }
+
             if (current.TryGetOwnProperty(key, out var property))
             {
                 if (property.IsAccessor)
@@ -1037,7 +1061,7 @@ internal sealed class JsEngine
     }
 
     /// <summary>The same read for a Symbol-keyed property.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=1E9870
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=3B5B79
     // Broiler-Human:        PENDING
     internal JsValue GetSymbolWithReceiver(JsObject target, JsSymbol key, JsValue receiver)
     {
@@ -1045,6 +1069,12 @@ internal sealed class JsEngine
 
         while (current is not null)
         {
+            // THE SAME WHOLE-OPERATION RULE THE STRING WALK OBEYS, and for the same reason.
+            if (current is JsProxy proxy)
+            {
+                return proxy.ProxyGet(JsValue.Symbol(key), receiver);
+            }
+
             if (current.TryGetOwnSymbol(key, out var property))
             {
                 if (!property.IsAccessor)
@@ -1078,7 +1108,7 @@ internal sealed class JsEngine
     /// call that does not name a receiver, which is nearly all of them.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=701115
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=2593E6
     // Broiler-Human:        PENDING
     internal bool SetWithReceiver(JsObject target, string key, JsValue value, JsValue receiver)
     {
@@ -1102,6 +1132,12 @@ internal sealed class JsEngine
 
         while (current is not null)
         {
+            // THE SAME WHOLE-OPERATION RULE, with the boolean this member already answers in.
+            if (current is JsProxy proxy)
+            {
+                return proxy.ProxySet(JsValue.String(key), value, receiver);
+            }
+
             if (current.TryGetOwnProperty(key, out var property))
             {
                 if (property.IsAccessor)
@@ -1130,7 +1166,7 @@ internal sealed class JsEngine
     }
 
     /// <summary>The same write for a Symbol-keyed property.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=2E77B3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=033448
     // Broiler-Human:        PENDING
     internal bool SetSymbolWithReceiver(JsObject target, JsSymbol key, JsValue value, JsValue receiver)
     {
@@ -1138,6 +1174,12 @@ internal sealed class JsEngine
 
         while (current is not null)
         {
+            // THE SAME WHOLE-OPERATION RULE, with the boolean this member already answers in.
+            if (current is JsProxy proxy)
+            {
+                return proxy.ProxySet(JsValue.Symbol(key), value, receiver);
+            }
+
             if (current.TryGetOwnSymbol(key, out var property))
             {
                 if (property.IsAccessor)
@@ -1900,7 +1942,7 @@ internal sealed class JsEngine
     }
 
     /// <summary>The <c>in</c> operator's lookup: does any object in the chain have the key.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=806916
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=D089CD
     // Broiler-Human:        PENDING
     internal bool HasProperty(JsObject start, string key)
     {
@@ -1928,6 +1970,14 @@ internal sealed class JsEngine
 
         while (current is not null)
         {
+            // A PROXY ANSWERS `in` WHOLE. The `has` trap is asked about the chain as well as the
+            // object, so a walk that continued past it would ask the target the question the trap
+            // has already answered.
+            if (current is JsProxy proxy)
+            {
+                return proxy.ProxyHas(JsValue.String(key));
+            }
+
             if (current.TryGetOwnProperty(key, out _))
             {
                 return true;
@@ -1942,7 +1992,7 @@ internal sealed class JsEngine
     // ---- calling -------------------------------------------------------------------------------
 
     /// <summary>Calls <paramref name="callee"/>, whatever kind of callable it is.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=BD3102
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=C222F2
     // Broiler-Human:        PENDING
     internal JsValue Call(JsValue callee, JsValue thisValue, JsValue[] arguments)
     {
@@ -2004,6 +2054,14 @@ internal sealed class JsEngine
         {
             switch (callee.AsObject())
             {
+                // THE PROXY CASE IS FIRST BECAUSE IT IS NOT A FUNCTION. It has no bytecode and no
+                // delegate; what it has is an `apply` trap, or a target to forward to. Reaching it
+                // through this switch rather than at the call site is what makes every route into a
+                // call - a call expression, `Function.prototype.call`, a comparator handed to
+                // `sort`, an iterator's `next` - trap alike.
+                case JsProxy proxy:
+                    return proxy.ProxyCall(thisValue, arguments);
+
                 case JsNativeFunction native:
                     return native.Call(this, thisValue, arguments);
 
@@ -2058,7 +2116,7 @@ internal sealed class JsEngine
     /// language promises rather than a half-built object.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=920947
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=DCDFD8
     // Broiler-Human:        PENDING
     internal JsValue Construct(JsValue callee, JsValue[] arguments, JsValue newTarget)
     {
@@ -2069,6 +2127,15 @@ internal sealed class JsEngine
 
         Charge(8);
         var target = callee.AsObject();
+
+        // THE `new.target` GOES THROUGH UNCHANGED AND IS NOT REPLACED BY THE PROXY. A `construct`
+        // trap is handed whatever the construction named, which is what lets a proxied base class
+        // build an instance of a derived one; substituting the proxy would make every such instance
+        // an instance of the proxy's own target.
+        if (target is JsProxy proxied)
+        {
+            return proxied.ProxyConstruct(arguments, newTarget);
+        }
 
         if (target is JsNativeFunction native)
         {
@@ -6010,7 +6077,7 @@ internal sealed class JsEngine
     /// the storage is a separate table, and a String key and a Symbol key can never collide, so
     /// there is nothing for the two walks to agree about.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=3D0E68
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=DCEDE5
     // Broiler-Human:        PENDING
     internal JsValue GetSymbol(JsValue baseValue, JsSymbol key)
     {
@@ -6025,6 +6092,12 @@ internal sealed class JsEngine
 
         while (current is not null)
         {
+            // THE SAME WHOLE-OPERATION RULE THE STRING WALK OBEYS, and for the same reason.
+            if (current is JsProxy proxy)
+            {
+                return proxy.ProxyGet(JsValue.Symbol(key), baseValue);
+            }
+
             if (current.TryGetOwnSymbol(key, out var property))
             {
                 if (!property.IsAccessor)
@@ -6044,7 +6117,7 @@ internal sealed class JsEngine
     }
 
     /// <summary>Writes a Symbol-keyed property.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=96CCA5
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=5F0900
     // Broiler-Human:        PENDING
     internal void SetSymbol(JsValue baseValue, JsSymbol key, JsValue value, bool strict)
     {
@@ -6062,6 +6135,17 @@ internal sealed class JsEngine
 
         while (current is not null)
         {
+            // THE SAME WHOLE-OPERATION RULE THE STRING WRITE OBEYS, refusal and mode included.
+            if (current is JsProxy proxy)
+            {
+                if (!proxy.ProxySet(JsValue.Symbol(key), value, baseValue) && strict)
+                {
+                    ThrowTypeError("Cannot assign to a read only Symbol-keyed property");
+                }
+
+                return;
+            }
+
             if (current.TryGetOwnSymbol(key, out var property))
             {
                 if (property.IsAccessor)
@@ -6105,7 +6189,7 @@ internal sealed class JsEngine
     }
 
     /// <summary>Whether a Symbol-keyed property is reachable from <paramref name="start"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=D5C766
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=49964F
     // Broiler-Human:        PENDING
     internal bool HasSymbol(JsObject start, JsSymbol key)
     {
@@ -6113,6 +6197,12 @@ internal sealed class JsEngine
 
         while (current is not null)
         {
+            // THE SAME WHOLE-OPERATION RULE THE STRING WALK OBEYS, and for the same reason.
+            if (current is JsProxy proxy)
+            {
+                return proxy.ProxyHas(JsValue.Symbol(key));
+            }
+
             if (current.TryGetOwnSymbol(key, out _))
             {
                 return true;
@@ -6190,6 +6280,51 @@ internal sealed class JsEngine
         }
 
         SetProperty(target, ToPropertyKey(key), value, strict);
+    }
+
+    /// <summary>
+    /// The specification's <c>CreateListFromArrayLike</c> narrowed to the two kinds of property key.
+    /// </summary>
+    /// <remarks>
+    /// <b>An array-like and not an iterable</b>, which is the same choice <c>Reflect.apply</c> makes
+    /// and for the same reason: the specification says so, and a handler returning a Set would be
+    /// returning something with no <c>length</c>. <b>The element check is not politeness either</b> —
+    /// every caller of this treats what comes back as an own key, and a Number in the list would
+    /// become a key nothing on the target could ever match, so an <c>ownKeys</c> trap that answered
+    /// <c>[0]</c> would silently report a property called neither <c>0</c> nor anything else.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=DE8552
+    // Broiler-Human:        PENDING
+    internal System.Collections.Generic.List<JsValue> ProxyKeyList(JsValue list)
+    {
+        if (!list.IsObject)
+        {
+            ThrowTypeError("the 'ownKeys' trap answered a value that is not an object");
+        }
+
+        var length = JsValue.ToInteger(ToNumber(GetProperty(list, "length")));
+
+        if (length > JsRealm.ReflectArgumentCeiling)
+        {
+            ThrowRangeError("the 'ownKeys' trap answered a list longer than this profile admits");
+        }
+
+        var collected = new System.Collections.Generic.List<JsValue>();
+
+        for (var at = 0; at < length; at++)
+        {
+            Charge(1);
+            var element = GetIndexed(list, JsValue.Number(at));
+
+            if (!element.IsSymbol && element.Type != JsType.String)
+            {
+                ThrowTypeError("the 'ownKeys' trap answered a key that is neither a String nor a Symbol");
+            }
+
+            collected.Add(element);
+        }
+
+        return collected;
     }
 
     /// <summary>Renders a thrown value for a host that has to describe it in one line.</summary>

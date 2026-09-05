@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   29
-// Annotated:        29/29
+// Relevant units:   30
+// Annotated:        30/30
 // Exempt:           0
-// Human-reviewed:   0/29
+// Human-reviewed:   0/30
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  4/10 max
-// Unverified:       29
+// Unverified:       30
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -43,7 +43,7 @@ namespace Broiler.VM.Profile.JavaScript;
 internal sealed partial class JsRealm
 {
     /// <summary>Builds <c>Array</c>, its statics and <c>Array.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=11210D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FFA376
     // Broiler-Human:        PENDING
     private void SetupArray()
     {
@@ -51,7 +51,7 @@ internal sealed partial class JsRealm
         SpeciesGetter(constructor);
 
         Method(constructor, "isArray", 1, (engine, thisValue, arguments) =>
-            JsValue.Boolean(ArgOfArray(arguments, 0).AsObjectOrNull() is JsArray));
+            JsValue.Boolean(ArrayIsArray(engine, ArgOfArray(arguments, 0).AsObjectOrNull())));
 
         Method(constructor, "of", 0, (engine, thisValue, arguments) =>
         {
@@ -479,7 +479,7 @@ internal sealed partial class JsRealm
     /// - an explicit worklist - would be immune to that, and would also make the mapper's argument
     /// order harder to keep right for no behaviour a program can see.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=F0A93A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=1C5C6C
     // Broiler-Human:        PENDING
     private static void ArrayFlattenInto(
         JsEngine engine,
@@ -507,7 +507,8 @@ internal sealed partial class JsRealm
                 element = engine.Call(mapper, thisArg, [element, JsValue.Number(at), source]);
             }
 
-            if (depth > 0 && element.AsObjectOrNull() is JsArray)
+            // THE SAME `IsArray` THE SPREAD USES, and it looks through a Proxy for the same reason.
+            if (depth > 0 && ArrayIsArray(engine, element.AsObjectOrNull()))
             {
                 ArrayFlattenInto(
                     engine, element, depth - 1, into, JsValue.Undefined, JsValue.Undefined);
@@ -1337,6 +1338,35 @@ internal sealed partial class JsRealm
     private static JsValue ArgOfArray(JsValue[] arguments, int at) =>
         at < arguments.Length ? arguments[at] : JsValue.Undefined;
 
+    /// <summary>The specification's <c>IsArray</c>, which looks THROUGH a Proxy.</summary>
+    /// <remarks>
+    /// <b>It is not a type test, and treating it as one is what made <c>Array.isArray</c> answer
+    /// <c>false</c> for a proxy over an Array.</b> The predicate is about the target at the end of a
+    /// chain of proxies, because a proxy over an Array must behave as an Array everywhere the
+    /// language branches on this — <c>Array.prototype.concat</c>'s flattening,
+    /// <c>Object.prototype.toString</c>'s tag, and <c>JSON.stringify</c>'s choice between a list and
+    /// an object all ask it. A revoked proxy has no target to look through and is the one input this
+    /// refuses rather than answering <c>false</c> about.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=40A5B4
+    // Broiler-Human:        PENDING
+    private static bool ArrayIsArray(JsEngine engine, JsObject? value)
+    {
+        while (value is JsProxy proxy)
+        {
+            engine.Charge(1);
+
+            if (proxy.Target is null)
+            {
+                engine.ThrowTypeError("Array.isArray called on a revoked Proxy");
+            }
+
+            value = proxy.Target;
+        }
+
+        return value is JsArray;
+    }
+
     /// <summary>The receiver an <c>Array.prototype</c> method operates on.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=63CD90
     // Broiler-Human:        PENDING
@@ -1471,7 +1501,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Appends one <c>concat</c> operand, spreading it when it is an Array.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=383E99
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B93F5A
     // Broiler-Human:        PENDING
     private static double ArrayConcatOne(
         JsEngine engine, JsValue result, double at, JsValue item)
@@ -1479,8 +1509,10 @@ internal sealed partial class JsRealm
         engine.Charge(1);
 
         // ONLY A REAL ARRAY SPREADS. An array-like with a length is appended whole, which is what
-        // makes [].concat(arguments) a one-element Array in every engine.
-        if (item.AsObjectOrNull() is JsArray)
+        // makes [].concat(arguments) a one-element Array in every engine. The predicate looks
+        // THROUGH a Proxy, because a proxy over an Array is an Array for this purpose - a type test
+        // here appended one whole proxy where the language spreads its elements.
+        if (ArrayIsArray(engine, item.AsObjectOrNull()))
         {
             var length = ArrayLengthOf(engine, item);
 
