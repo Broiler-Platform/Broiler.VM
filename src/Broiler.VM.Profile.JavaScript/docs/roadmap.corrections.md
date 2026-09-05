@@ -7331,3 +7331,46 @@ correct answer while every relevant unit is `HUMAN_PENDING`.
 **Authority and date.** Bundle JSW-10-001, retained on 2026-09-05, and the clauses of each gate its
 sections demonstrate; the ledger's update rule 1, which is what makes a stale row a defect rather
 than an omission. 2026-09-05.
+
+---
+
+### JSC-178
+
+**Where:** the conformance harness's classification of a source refusal —
+`LanguageErrors.Classify` and the `Classified` set beside it — and the five seam codes the module
+goal and the dynamic import minted without rows there.
+
+**What was assumed.** That minting a seam diagnostic is a change to the front end and to the
+registry. Both were done: each of the five carries a registry row, a corpus entry that reaches it,
+and a declaration whose remark says what the language does about it.
+
+**What was true.** **The conformance harness classifies a refusal before it may score one**, and
+that map is a third place, in the composition rather than in the profile. A code with no row there
+is *unclassified*, which the harness treats as a divergence so that it under-reports rather than
+inventing a pass — and its own self-check then fails, because a silent under-report is a defect too.
+So the harness refused to score anything at all: `the harness's own checks failed; nothing was
+scored`.
+
+**Nothing this programme ran locally could have caught it.** The build, the whole test suite, the
+differential probes, the acceptance table and the refusal audit all passed on the same commit; the
+whole-suite runs retained in [bundle JSW-10-001](evidence/jsw-10-001/README.md) passed too, because
+`eng/run-test262.py` drives the harness's `--test262` mode and the check that failed belongs to the
+INGESTED dialect's self-check, which only the lane runs. **It was found by CI, on the first run of
+the branch**, in all three jobs that touch the harness.
+
+**What replaced it.** Four of the five are early errors of a MODULE — a script containing `import`,
+a duplicate export name, an export clause naming a binding the module does not declare, and
+`import.meta` in a script — and each is scorable, because a conformance file asserting a parse-phase
+`SyntaxError` over one of those shapes asserts exactly what this front end answers. **The fifth is
+not.** An unsupported import attribute is *a fact about loading rather than about parsing*, which
+that code's own declaration says in those words: the clause parses and the grammar is ordinary, and
+what no composition of this profile can do is load a module of a type it has no loader for. The
+language fails the load rather than the parse, so the refusal is the right kind of answer at the
+wrong time and may not satisfy a test declaring a parse-phase error — the same reading
+`AssignmentToConstant` and `UnresolvableIdentifier` already carry, and the dynamic form refuses the
+same attribute where the language does, by rejecting the promise.
+
+**Authority and date.** The three CI jobs of 2026-09-05 that reported the same unclassified set, the
+failure reproduced locally before the change and the same command scoring after it, and the two
+floors — the pinned suite's and the ingest-shape suite's — holding on the run that follows.
+2026-09-05.
