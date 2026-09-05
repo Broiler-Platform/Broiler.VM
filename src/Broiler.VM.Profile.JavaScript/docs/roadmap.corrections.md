@@ -3445,14 +3445,19 @@ program — a program the conformance suite writes repeatedly, because that is t
 the rule the specification states. Refusing it at the front end said this manifest does not admit an
 assignment, when what it does not admit is the assignment **succeeding**.
 
-**What that cost, measured.** Seven cases of `test/language/module-code` in the pinned suite were
-scored `fail` with the front end's own refusal as the reason — `instn-iee-bndng-fun`,
-`instn-iee-bndng-var`, `instn-named-bndng-fun`, `instn-named-bndng-trlng-comma`,
-`instn-named-bndng-var`, `instn-star-binding` and `instn-local-bndng-const`. Six of the seven are
-about an **imported** binding and would have been introduced by this stage had it copied the rule;
-the seventh is about `const` and had been failing for as long as the wide surface has had one. The
-cost outside the suite is a program shape this host could not run at all: the ordinary way to test
-that a binding is immutable.
+**What that cost, measured.** `test/language/statements/const` of the pinned suite — a subtree that
+has nothing to do with modules and that this checkout could already run — went from **42 passing and
+33 failing to 46 passing and 29 failing** on this repair alone, with no case moving the other way.
+Four cases had been failing for as long as the wide surface has had a `const`, and every one of them
+is the same shape: `assert.throws(TypeError, function () { x = 1; })`.
+
+Seven further cases of `test/language/module-code` were scored `fail` with the front end's own
+refusal as the reason — `instn-iee-bndng-fun`, `instn-iee-bndng-var`, `instn-named-bndng-fun`,
+`instn-named-bndng-trlng-comma`, `instn-named-bndng-var`, `instn-star-binding` and
+`instn-local-bndng-const`. Six of those are about an **imported** binding and would have been
+introduced by this stage had it copied the rule; the seventh is the `const` one again. The cost
+outside the suite is a program shape this host could not run at all: the ordinary way to test that a
+binding is immutable.
 
 **How it was found.** By writing the immutable-import rule the same way, and then reading what the
 module subtree said about it. The suite is emphatic where a person's intuition is not: seven tests
@@ -3472,9 +3477,9 @@ front end still refuses the assignment at compile time, its retained source entr
 run-time `TypeError` there would be an unconditional failure with no way to observe it; the two
 front ends genuinely differ, and the code stays reachable through the one that still emits it.
 
-**Authority and date.** The implementation of 2026-09-05 in this checkout, and the seven cases of
-`test/language/module-code` named above, whose verdicts moved from `fail` to `pass` in the run this
-stage records. 2026-09-05.
+**Authority and date.** The implementation of 2026-09-05 in this checkout, and two runs of the
+pinned suite at `ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e` taken either side of the repair — one over
+`test/language/statements/const` and one over `test/language/module-code`. 2026-09-05.
 
 ---
 
