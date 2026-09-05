@@ -941,7 +941,7 @@ public sealed class ReviewRecordRuleTests
         // a file appearing in a product assembly fails here until someone decides whether it is
         // covered, and the number records that the decision was made.
         //
-        // The workload programme added sixteen, each for a reason the number should carry: the
+        // The workload programme added seventeen, each for a reason the number should carry: the
         // optional-surface names and the four files of the binary surface and its realm setup; the
         // dynamic surface's realm setup; the regular-expression matcher, which the front end needs
         // in order to refuse an invalid pattern where the literal is written and which therefore
@@ -958,7 +958,13 @@ public sealed class ReviewRecordRuleTests
         // synchronous iterator into an asynchronous one. It is a file of its own for the reason the
         // synchronous generator's realm setup is: it is reached by walking up from a value rather
         // than from any global, and putting it in the global setup would have hidden that.
-        Assert.Equal(118, AssuranceSources.Files.Count);
+        //
+        // The seventeenth is the global LEXICAL environment: the bindings a script-level `let`,
+        // `const` or `class` makes, which are not properties of the global object and outlive the
+        // script that declared them. It is a file of its own because the distinction it draws is
+        // the entire reason it exists - a table beside the global object rather than a set of
+        // properties with a flag on them.
+        Assert.Equal(119, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

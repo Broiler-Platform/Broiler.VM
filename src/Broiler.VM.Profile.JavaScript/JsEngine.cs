@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   110
-// Annotated:        110/110
+// Relevant units:   111
+// Annotated:        111/111
 // Exempt:           14
-// Human-reviewed:   0/110
+// Human-reviewed:   0/111
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         15/15
 // Resource impact:  7/10 max
-// Unverified:       110
+// Unverified:       111
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -2236,6 +2236,25 @@ internal sealed class JsEngine
         return joined;
     }
 
+    /// <summary>Reads a global lexical binding, or refuses because it is in its dead zone.</summary>
+    /// <remarks>
+    /// <b>The dead zone is a state and the refusal is what makes it observable.</b> A binding that
+    /// has been declared and not yet initialised holds nothing, and the language says a read of one
+    /// is a <c>ReferenceError</c> naming it - which is the whole difference between a script-level
+    /// <c>let</c> and the <c>var</c> whose read before the declaration answers <c>undefined</c>.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=630988
+    // Broiler-Human:        PENDING
+    private JsValue ReadLexical(string name, JsLexicalBinding binding)
+    {
+        if (!binding.Initialised)
+        {
+            ThrowReferenceError("cannot access " + name + " before its declaration");
+        }
+
+        return binding.Value;
+    }
+
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=CD987E
     // Broiler-Human:        PENDING
     internal string Describe(JsValue value) => value.Type switch
@@ -3693,7 +3712,7 @@ internal sealed class JsEngine
     /// have run for a throw from the instruction itself, and no unwinding is reimplemented.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=764FB2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=557FC2
     // Broiler-Human:        PENDING
     private JsValue Execute(
         JsProgram program,
@@ -3924,6 +3943,16 @@ internal sealed class JsEngine
                         {
                             var name = names[U16(code, pc)];
 
+                            // THE DECLARATIVE HALF IS ASKED FIRST, which is the order the global
+                            // environment record has and the reason `let Array = 1` at script level
+                            // shadows the intrinsic rather than replacing it.
+                            if (Realm.HasLexicals && Realm.TryLexical(name, out var bound))
+                            {
+                                stack[sp++] = ReadLexical(name, bound);
+                                pc += 3;
+                                break;
+                            }
+
                             if (!HasProperty(Realm.GlobalObject, name))
                             {
                                 ThrowReferenceError(name + " is not defined");
@@ -3938,6 +3967,17 @@ internal sealed class JsEngine
                         {
                             var name = names[U16(code, pc)];
 
+                            // `typeof x` ANSWERS FOR A NAME NOBODY DECLARED AND THROWS FOR ONE IN
+                            // ITS DEAD ZONE, which is the one place the two halves answer
+                            // differently for the same shape of question: the property half has no
+                            // dead zone to be in, and this half does.
+                            if (Realm.HasLexicals && Realm.TryLexical(name, out var bound))
+                            {
+                                stack[sp++] = ReadLexical(name, bound);
+                                pc += 3;
+                                break;
+                            }
+
                             stack[sp++] = HasProperty(Realm.GlobalObject, name)
                                 ? GetProperty(JsValue.Object(Realm.GlobalObject), name)
                                 : JsValue.Undefined;
@@ -3949,6 +3989,31 @@ internal sealed class JsEngine
                         case JsOpcode.StoreGlobal:
                         {
                             var target = names[U16(code, pc)];
+
+                            if (Realm.HasLexicals && Realm.TryLexical(target, out var bound))
+                            {
+                                var written = stack[--sp];
+
+                                if (!bound.Initialised)
+                                {
+                                    ThrowReferenceError(
+                                        "cannot access " + target + " before its declaration");
+                                }
+
+                                // AN ASSIGNMENT TO A `const` IS A `TypeError` WHEREVER IT IS
+                                // WRITTEN, and the check is on the binding rather than on the
+                                // store: a function closed over the name, a later script, and a
+                                // `with` body that did not shadow it all arrive here.
+                                if (!bound.Mutable)
+                                {
+                                    throw Error(
+                                        "TypeError", "assignment to constant variable " + target);
+                                }
+
+                                bound.Value = written;
+                                pc += 3;
+                                break;
+                            }
 
                             // STRICT CODE MAY NOT CREATE A GLOBAL BY ASSIGNING TO A NAME NOBODY
                             // DECLARED, and that is the whole of what `"use strict"` buys a reader
@@ -3968,6 +4033,33 @@ internal sealed class JsEngine
                                 stack[--sp],
                                 strict);
 
+                            pc += 3;
+                            break;
+                        }
+
+                        case JsOpcode.DeclareGlobalLet:
+                            Realm.DeclareLexical(names[U16(code, pc)], mutable: true);
+                            pc += 3;
+                            break;
+
+                        case JsOpcode.DeclareGlobalConst:
+                            Realm.DeclareLexical(names[U16(code, pc)], mutable: false);
+                            pc += 3;
+                            break;
+
+                        case JsOpcode.InitialiseGlobalLexical:
+                        {
+                            var name = names[U16(code, pc)];
+
+                            if (!Realm.TryLexical(name, out var bound))
+                            {
+                                throw new JsAbort(
+                                    JsAbortKind.InternalDefect,
+                                    "a lexical initialiser named no binding");
+                            }
+
+                            bound.Value = stack[--sp];
+                            bound.Initialised = true;
                             pc += 3;
                             break;
                         }

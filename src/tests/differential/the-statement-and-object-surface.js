@@ -363,3 +363,24 @@ p(function(){ try { return (0, eval)("1e_5"); } catch(e){ return e.name; } });
 p(function(){ try { return (0, eval)("/(/"); } catch(e){ return e.name; } });
 p(function(){ try { return (0, eval)("if (false) { /(/; }"); } catch(e){ return e.name; } });
 p(function(){ try { return String((0, eval)("/a(b)c/").test("abc")); } catch(e){ return e.name; } });
+
+// --- the global LEXICAL environment, which is not the global object. Every case here is asked
+// through an INDIRECT eval for one reason: a probe is one script, and a script-level `let` written
+// in this file would be in scope for every case below it. `(0, eval)(s)` evaluates in the global
+// scope, which is exactly where the question is about.
+p(function(){ (0, eval)("var glvar = 1;"); return typeof Object.getOwnPropertyDescriptor(globalThis, "glvar"); });
+p(function(){ (0, eval)("let gllet = 1;"); return typeof Object.getOwnPropertyDescriptor(globalThis, "gllet"); });
+p(function(){ (0, eval)("const glconst = 1;"); return typeof Object.getOwnPropertyDescriptor(globalThis, "glconst"); });
+p(function(){ (0, eval)("class GlClass {}"); return typeof Object.getOwnPropertyDescriptor(globalThis, "GlClass"); });
+p(function(){ return (0, eval)("let gl1 = 4; gl1"); });
+p(function(){ try { return (0, eval)("gl2; let gl2;"); } catch(e){ return e.name; } });
+p(function(){ try { return (0, eval)("gl3 = 1; let gl3;"); } catch(e){ return e.name; } });
+p(function(){ try { return (0, eval)("let gl4 = gl4 + 1;"); } catch(e){ return e.name; } });
+p(function(){ try { return (0, eval)("const gl5 = 1; gl5 = 2;"); } catch(e){ return e.name; } });
+p(function(){ (0, eval)("const gl6 = 1;"); try { return (0, eval)("gl6 = 2;"); } catch(e){ return e.name; } });
+p(function(){ (0, eval)("const gl7 = 1;"); return (0, eval)("gl7"); });
+p(function(){ (0, eval)("let gl8;"); return String((0, eval)("gl8")); });
+p(function(){ (0, eval)("let gl9 = 1;"); (0, eval)("function readsGl9(){ return gl9; }"); return (0, eval)("gl9 = 2; readsGl9()"); });
+p(function(){ (0, eval)("let glA = 1;"); return (0, eval)("typeof glA"); });
+p(function(){ return (0, eval)("typeof notDeclaredAnywhereAtAll"); });
+p(function(){ (0, eval)("const glB = 1;"); var keys = Object.getOwnPropertyNames(globalThis); return String(keys.indexOf("glB") < 0); });

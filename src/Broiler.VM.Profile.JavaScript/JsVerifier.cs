@@ -2353,7 +2353,7 @@ internal sealed class JsVerifier
             return Ok;
         }
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0481FB
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=830B7B
         // Broiler-Human:        PENDING
         private VmVerifierOutcome Check(JsCodeUnit unit, JsOpcode opcode, uint operand, int offset)
         {
@@ -2379,6 +2379,9 @@ internal sealed class JsVerifier
                 case JsOpcode.DefineSetter:
                 case JsOpcode.RequireCoercible:
                 case JsOpcode.ThrowImmutable:
+                case JsOpcode.DeclareGlobalLet:
+                case JsOpcode.DeclareGlobalConst:
+                case JsOpcode.InitialiseGlobalLexical:
                     if (operand >= state.Constants!.Length)
                     {
                         return Invalid(

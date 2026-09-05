@@ -777,14 +777,16 @@ was invisible in the variant that exists to test it
 ([JSC-80](roadmap.corrections.md#jsc-80)). What is NOT claimed is exhaustiveness - an audit over
 families somebody enumerated is not a proof, and a family nobody named is a leak nobody looked for.
 
-**A fourth divergence is about scoping rather than about a library surface, and it is the one most
-likely to be read as a defect in something else.** **Script-level `let` and `const` become
-properties of the global object** rather than bindings of a separate global lexical environment,
-and the observable difference is that **a read before the declaration answers `undefined` instead
-of throwing**. A reader who saw the temporal dead zone repaired on 2026-09-03
-([JSC-62](roadmap.corrections.md#jsc-62)) must not read that repair as reaching this: it made a
-read before initialisation throw where the binding is a binding, and a script-level `let` here is a
-property.
+**A fourth divergence was about scoping rather than about a library surface, and it was closed on
+2026-09-05.** Until then **script-level `let` and `const` became properties of the global object**
+rather than bindings of a separate global lexical environment, so a read before the declaration
+answered `undefined` instead of throwing, `globalThis` showed them, and an assignment to a
+script-level `const` silently succeeded. The realm now carries the declarative half of the global
+environment record beside its global object, and all three answers are the language's
+*(recorded as [JSC-142](roadmap.corrections.md#jsc-142))*. **One narrower deviation remains in its
+place**, stated where the old one was: a re-declaration of a name the lexical half already carries
+REPLACES the binding where the language raises a `SyntaxError` before the script runs, because the
+same lowering serves evaluated source, which the language gives a lexical environment of its own.
 
 **The suite found one defect of the kind it exists to find, the repair for it was wrong in a way
 only a measurement could show, and both are recorded rather than quietly fixed.** Three subtrees of

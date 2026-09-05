@@ -5472,3 +5472,66 @@ this bundle happened to trip over.
 **Authority and date.** The implementation of 2026-09-05 in this checkout, the witness
 `for (var x = 1 of []) ;` run through the published binary, and the subtree run that names the six.
 2026-09-05.
+
+---
+
+### JSC-142
+
+**Where:** the fourth divergence of the [ledger's section 2](roadmap.status.md#2-what-the-runs-found),
+the remark at the head of `JsCompiler` that declared it, and the three `dead-zone/` rows of
+`src/tests/cli/expected.txt` that pinned it so the day it moved would be a day something went red.
+
+**What the plan said.** That a script-level `let` and `const` may be properties of the global object
+rather than bindings of a separate global lexical environment, that the observable difference is a
+read before the declaration answering `undefined` instead of throwing, and that **nothing this
+profile is built to run depends on either**.
+
+**What was true.** The difference is not one answer, it is three, and the third is the one that
+makes the deviation a defect rather than a simplification:
+
+- **`globalThis` shows them.** `const x = 1; Object.getOwnPropertyDescriptor(globalThis, "x")`
+  answered a descriptor where every engine answers `undefined`, and `for … in` over the global
+  object enumerated them.
+- **There is no dead zone.** A read before the declaration answered `undefined`. The temporal dead
+  zone was repaired for every other lexical binding on 2026-09-03
+  *([JSC-62](#jsc-62))*, and the repair could not reach this one because a property has no
+  uninitialised state to be in.
+- **A `const` was not constant.** `const c = 1; c = 9;` answered `9`. The assignment reached
+  `StoreGlobal`, which writes a property, and the immutability lived in the compiler's slot table —
+  which a script-level name never enters. The correction that made a `const` reassignment a
+  run-time `TypeError` rather than an early error *([JSC-133](#jsc-133))* said every path through
+  the store emits `ThrowImmutable`; at script level there was no path to emit it on, and the
+  sibling stage that found this *([JSC-140](#jsc-140))* recorded it against the binding model
+  rather than repairing it.
+
+**What replaced it.** The realm carries **the declarative half of the global environment record**
+beside its global object: a table of bindings, each with a mutability and an initialised state, in
+`JsRealm.Lexical.cs`. Three instructions reach it — `DeclareGlobalLet`, `DeclareGlobalConst` and
+`InitialiseGlobalLexical` — and `LoadGlobal`, `LoadGlobalOrUndefined` and `StoreGlobal` ask it
+before they ask the object, which is the order the specification's global environment record has
+and the reason a script-level `let Array` shadows the intrinsic rather than replacing it.
+
+**It is the REALM's and not the unit's, and that is the whole design.** A slot in the declaring
+script's frame would have been simpler and is what this profile does for every other lexical
+binding, and it cannot work here: a conformance run evaluates its harness files as separate scripts
+in one realm, seven of the pinned suite's harness files publish a helper with a top-level `const`,
+and a binding in the declaring frame would be gone before the test that reads it ran.
+
+**One narrower deviation is left in its place, and it is stated rather than removed.** A
+re-declaration REPLACES the binding where the language raises a `SyntaxError` before the script
+runs. The same lowering serves evaluated source — the dynamic surface hands a String to the
+composition's provider and gets a program back, compiled as a script — and the language gives eval
+code a lexical environment of its own that is discarded afterwards, so a second
+`(0, eval)("let x = 1")` is a program and not an error. Replacing is right for that caller and
+lenient for the other; refusing would be right for one and wrong for the other.
+
+**Measured, on the pinned suite.** `test/language/global-code` went from 45 of 75 variants to
+**49**, `test/language/statements/const` from 248 of 271 to **254**, and
+`test/language/statements/let` from 241 of 287 to **249**. The three `dead-zone/` command lines that
+pinned the deviation now answer `1|ReferenceError`, which is what the same three files under
+`--slice` have always answered: the two manifests stopped disagreeing about the language.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the three subtree sweeps
+before and after, the comparison against the second engine for each of the three answers above, and
+the acceptance table's own dead-zone block, whose comment recorded in advance that these rows would
+have to be moved deliberately. 2026-09-05.

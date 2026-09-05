@@ -4,7 +4,6 @@
 #diverges 201 the upsert pair is ES2026 and the comparison engine predates it: this build has `Map.prototype.getOrInsert` and `getOrInsertComputed` and that engine answers `absent`, which is the one direction of divergence where the pinned suite rather than the comparison is the oracle
 #diverges 202 the upsert pair is ES2026 and the comparison engine predates it: this build has `Map.prototype.getOrInsert` and `getOrInsertComputed` and that engine answers `absent`, which is the one direction of divergence where the pinned suite rather than the comparison is the oracle
 #diverges 203 the upsert pair is ES2026 and the comparison engine predates it: this build has `Map.prototype.getOrInsert` and `getOrInsertComputed` and that engine answers `absent`, which is the one direction of divergence where the pinned suite rather than the comparison is the oracle
-#diverges 36 Math.cbrt is implementation-approximated and the platform's differs by one unit in the last place for a non-perfect cube
 #diverges 254 `Math.f16round` is ES2026 and the comparison engine predates it: this build has the member and that engine answers a TypeError about calling `undefined`
 #diverges 255 the same: this build has the member and that engine answers a TypeError about calling `undefined`
 #diverges 256 `Math.sumPrecise` is ES2026 and the comparison engine predates it: this build has the member and that engine answers a TypeError about calling `undefined`
@@ -15,6 +14,7 @@
 #diverges 261 the same: this build has the member and that engine answers a TypeError about calling `undefined`
 #diverges 263 the same: this build has the member and that engine answers a TypeError about calling `undefined`
 #diverges 265 the same, and this is the case that needs the exact final rounding rather than a loop of additions: this build has the member and that engine answers a TypeError about calling `undefined`
+#diverges 36 Math.cbrt is implementation-approximated and the platform's differs by one unit in the last place for a non-perfect cube
 1 1
 2 "1,2"
 3 1

@@ -161,15 +161,17 @@ dead-code/a-break-inside-an-if-does-not-end-the-block.js|0|2
 --slice dead-zone/a-write-before-the-initialiser.js|1|ReferenceError
 --slice dead-zone/a-read-inside-its-own-initialiser.js|1|ReferenceError
 
-# AND THE WIDE MANIFEST DOES NOT HAVE THE DEAD ZONE, which is a DEVIATION FROM THE LANGUAGE and is
-# pinned here so it is a checked fact rather than a sentence in a document. Script-level `let` and
-# `const` become properties of the global object rather than bindings of a separate global lexical
-# environment, and a property that has not been assigned yet reads `undefined` instead of throwing.
-# These three rows go red the day that is repaired, which is the point of pinning them: the repair
-# has to move them deliberately, exactly as JSC-62's repair moved the three rows above.
-dead-zone/a-read-before-the-initialiser.js|0|undefined
-dead-zone/a-write-before-the-initialiser.js|0|1
-dead-zone/a-read-inside-its-own-initialiser.js|0|undefined
+# AND THE WIDE MANIFEST HAS IT TOO, as of 2026-09-05. These three rows read `0|undefined`,
+# `0|1` and `0|undefined` until then: a script-level `let` was a property of the global object,
+# and a property that has not been assigned yet reads `undefined` instead of throwing. They were
+# pinned as a DEVIATION so that the repair would have to move them deliberately, and it did -
+# script-level lexical declarations are bindings of the realm's global lexical environment now, so
+# the wide manifest answers what the slice manifest above it always answered and what the language
+# says. Keeping both blocks is the point: they pin that ONE surface stopped diverging rather than
+# that a check was moved.
+dead-zone/a-read-before-the-initialiser.js|1|ReferenceError
+dead-zone/a-write-before-the-initialiser.js|1|ReferenceError
+dead-zone/a-read-inside-its-own-initialiser.js|1|ReferenceError
 
 # And the two that must NOT throw. A `var` is initialised when its scope is entered, so reading one
 # early is `undefined`; and a lexical binding after its initialiser is unremarkable. A dead-zone

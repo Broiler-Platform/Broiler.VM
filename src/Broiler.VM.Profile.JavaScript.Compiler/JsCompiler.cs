@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   159
-// Annotated:        159/159
-// Exempt:           81
-// Human-reviewed:   0/159
+// Relevant units:   160
+// Annotated:        160/160
+// Exempt:           82
+// Human-reviewed:   0/160
 // IP risk:          None
 // Security risk:    High
 // Criteria:         6/6
 // Resource impact:  3/10 max
-// Unverified:       159
+// Unverified:       160
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -91,10 +91,12 @@ public sealed record JsCompilation(
 /// host invokes them in order against a single instance, and the instance is the realm.
 /// </para>
 /// <para>
-/// <b>Every binding is resolved statically.</b> A name reaches either a (depth, slot) pair in an
-/// environment or a property of the global object, and the decision is made here rather than at
-/// run time. Script-level <c>var</c> and function declarations are global properties, which is
-/// what the specification says and what makes one script's declarations visible to the next.
+/// <b>Every binding is resolved statically.</b> A name reaches a (depth, slot) pair in an
+/// environment, a binding of the realm's global lexical environment, or a property of the global
+/// object, and the decision is made here rather than at run time. Script-level <c>var</c> and
+/// function declarations are global properties and script-level <c>let</c>, <c>const</c> and
+/// <c>class</c> are lexical bindings, which is what the specification says and what makes one
+/// script's declarations visible to the next either way.
 /// </para>
 /// <para>
 /// <b><c>with</c> is the one construct that suspends that, and it suspends it for exactly the names
@@ -110,11 +112,14 @@ public sealed record JsCompilation(
 /// the one that was already here.
 /// </para>
 /// <para>
-/// <b>One declared deviation, stated where it is made.</b> Script-level <c>let</c> and
-/// <c>const</c> also become global properties rather than bindings of a separate global lexical
-/// environment. The observable difference is that a read before the declaration answers
-/// <c>undefined</c> instead of throwing, and that <c>globalThis.x</c> sees them. Nothing this
-/// profile is built to run depends on either.
+/// <b>Script-level <c>let</c> and <c>const</c> are bindings of the realm's global LEXICAL
+/// environment, which is not the global object.</b> They were global properties until 2026-09-05,
+/// and the deviation is corrected rather than merely narrowed: a read before the declaration is
+/// the <c>ReferenceError</c> the dead zone owes, an assignment to a script-level <c>const</c> is a
+/// <c>TypeError</c> wherever it is written, and <c>globalThis</c> does not show either. The
+/// bindings are the REALM's and not the unit's, because a conformance run's harness files publish
+/// helpers with <c>const</c> from scripts of their own and the test that reads them is a later
+/// script in the same realm.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C4927F
@@ -132,6 +137,21 @@ public sealed class JsCompiler
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=BFC91C
     // Broiler-Human:        PENDING
     private readonly System.Collections.Generic.List<byte[]> constants = [];
+
+    /// <summary>
+    /// The names the script being lowered declares lexically at its top level, and whether each is
+    /// immutable.
+    /// </summary>
+    /// <remarks>
+    /// <b>It is the one thing the initialisation sites cannot see from where they stand.</b> A
+    /// script-level lexical declaration is hoisted into the realm's global lexical environment
+    /// before the first statement runs, and the statement that writes its value is compiled much
+    /// later, in a method that knows only a name and a value; without this it could not tell that
+    /// name apart from a <c>var</c>'s, which is a write to the global OBJECT and not to a binding.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1F02DD
+    // Broiler-Human:        PENDING
+    private readonly System.Collections.Generic.Dictionary<string, bool> programLexicals = [];
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8CF226
     // Broiler-Human:        PENDING
@@ -1561,8 +1581,9 @@ public sealed class JsCompiler
 
     /// <summary>Declares every name a binding pattern introduces, before any of it is emitted.</summary>
     /// <remarks>
-    /// At script top level nothing is declared here: a declaration there becomes a property of the
-    /// global object, and a slot with the same name would shadow it for the rest of the unit.
+    /// At script top level nothing is declared here: a declaration there becomes a binding of the
+    /// realm's global lexical environment, or a property of the global object when it is a
+    /// <c>var</c>, and a slot with the same name would shadow both for the rest of the unit.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=BD3639
     // Broiler-Human:        PENDING
@@ -1672,7 +1693,7 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DCCAF0
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=EF721D
     // Broiler-Human:        PENDING
     private void BindLeaf(JsExpression target, BindMode mode)
     {
@@ -1703,7 +1724,12 @@ public sealed class JsCompiler
 
         if (scope.Kind == ScopeKind.Program && blockDepth == 0)
         {
-            Emit(JsOpcode.StoreGlobal, InternedName(name.Name));
+            Emit(
+                programLexicals.ContainsKey(name.Name)
+                    ? JsOpcode.InitialiseGlobalLexical
+                    : JsOpcode.StoreGlobal,
+                InternedName(name.Name));
+
             return;
         }
 
@@ -1877,7 +1903,7 @@ public sealed class JsCompiler
 
     // ---- hoisting ------------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1114B8
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=09C42C
     // Broiler-Human:        PENDING
     private void HoistProgram(System.Collections.Generic.IReadOnlyList<JsStatement> body)
     {
@@ -1908,14 +1934,23 @@ public sealed class JsCompiler
             Emit(JsOpcode.StoreGlobal, InternedName(function.Name));
         }
 
-        // Script-level `let` and `const` are global properties here; the class remark records the
-        // deviation. Declaring them up front is what makes a later script see them.
-        var lexicalNames = new System.Collections.Generic.List<string>();
-        CollectLexical(body, lexicalNames);
+        // A SCRIPT-LEVEL `let`, `const` OR `class` IS NOT A PROPERTY OF THE GLOBAL OBJECT, and
+        // until 2026-09-05 it was one. The three instructions below create bindings of the realm's
+        // global LEXICAL environment instead, which is what makes `globalThis.x` not see one, a
+        // read before the declaration a `ReferenceError` rather than `undefined`, and an assignment
+        // to a script-level `const` a `TypeError` rather than a silent write.
+        //
+        // THE WHOLE SET IS DECLARED BEFORE THE FIRST STATEMENT RUNS, which is what puts every one
+        // of them in its dead zone for exactly the span the language says: from the top of the
+        // script to its own initialiser.
+        programLexicals.Clear();
+        CollectLexicalKinds(body, programLexicals);
 
-        foreach (var name in lexicalNames)
+        foreach (var pair in programLexicals)
         {
-            Emit(JsOpcode.DeclareGlobal, InternedName(name));
+            Emit(
+                pair.Value ? JsOpcode.DeclareGlobalConst : JsOpcode.DeclareGlobalLet,
+                InternedName(pair.Key));
         }
     }
 
@@ -2089,6 +2124,47 @@ public sealed class JsCompiler
 
                 default:
                     break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Every name a script's top level declares lexically, and whether the declaration is immutable.
+    /// </summary>
+    /// <remarks>
+    /// The same walk <see cref="CollectLexical"/> makes, keeping the one fact that walk discards:
+    /// a <c>const</c> and a <c>let</c> are the same KIND of binding and only one of them admits an
+    /// assignment, and at script level nothing downstream can recover which it was from a name.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B2A71D
+    // Broiler-Human:        PENDING
+    private static void CollectLexicalKinds(
+        System.Collections.Generic.IReadOnlyList<JsStatement> body,
+        System.Collections.Generic.Dictionary<string, bool> kinds)
+    {
+        foreach (var statement in body)
+        {
+            if (statement is JsVariableStatement variable && variable.Kind != SliceDeclarationKind.Var)
+            {
+                var names = new System.Collections.Generic.List<string>();
+
+                foreach (var declarator in variable.Declarators)
+                {
+                    CollectDeclaratorNames(declarator, names);
+                }
+
+                foreach (var name in names)
+                {
+                    kinds[name] = variable.Kind == SliceDeclarationKind.Const;
+                }
+            }
+
+            // A CLASS BINDING IS MUTABLE, which reads like a detail and is the reason `class C {}`
+            // followed by `C = 1` is a program: the binding a class declaration makes is a `let`
+            // and not a `const`, and only the binding inside the class's own body is immutable.
+            if (statement is JsClassDeclaration declaration && declaration.Class.Name.Length != 0)
+            {
+                kinds[declaration.Class.Name] = false;
             }
         }
     }
@@ -2389,7 +2465,7 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C72096
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=AB7555
     // Broiler-Human:        PENDING
     private void CompileVariable(JsVariableStatement variable)
     {
@@ -2437,6 +2513,26 @@ public sealed class JsCompiler
 
             if (scope.Kind == ScopeKind.Program && blockDepth == 0)
             {
+                // `let x;` STILL HAS TO RUN. A `var` with no initialiser writes nothing, because
+                // hoisting already made the property and `undefined` is what it holds; a lexical
+                // binding with no initialiser is in its dead zone until the declaration is REACHED,
+                // and what reaches it is this instruction. Skipping it would leave `let x;` in a
+                // dead zone for the rest of the program.
+                if (programLexicals.ContainsKey(declarator.Name))
+                {
+                    if (declarator.Initialiser is null)
+                    {
+                        Emit(JsOpcode.LoadUndefined);
+                    }
+                    else
+                    {
+                        CompileNamedValue(declarator.Initialiser, declarator.Name);
+                    }
+
+                    Emit(JsOpcode.InitialiseGlobalLexical, InternedName(declarator.Name));
+                    continue;
+                }
+
                 if (declarator.Initialiser is null)
                 {
                     continue;
@@ -3885,7 +3981,7 @@ public sealed class JsCompiler
     /// constant <c>C</c> that only the class body can see - which is why <c>C = 1</c> after the
     /// declaration is fine and <c>C = 1</c> inside a method is not.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=7BB8C3
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=38B06E
     // Broiler-Human:        PENDING
     private void CompileClassDeclaration(JsClassDeclaration declaration)
     {
@@ -3894,7 +3990,12 @@ public sealed class JsCompiler
 
         if (scope.Kind == ScopeKind.Program && blockDepth == 0)
         {
-            Emit(JsOpcode.StoreGlobal, InternedName(name));
+            Emit(
+                programLexicals.ContainsKey(name)
+                    ? JsOpcode.InitialiseGlobalLexical
+                    : JsOpcode.StoreGlobal,
+                InternedName(name));
+
             return;
         }
 
@@ -6511,8 +6612,8 @@ public sealed class JsCompiler
         /// <remarks>
         /// It is a kind of its own and not <see cref="Program"/> with a flag, because every place
         /// that asks the question asks it about the top level: a script's top-level declaration is
-        /// a property of the global object and a module's is a slot nothing outside the module can
-        /// name.
+        /// a property of the global object or a binding of the realm's lexical half, and a module's
+        /// is a slot nothing outside the module can name.
         /// </remarks>
         Module,
 

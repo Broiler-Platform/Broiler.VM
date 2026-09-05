@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   23
 // Annotated:        23/23
-// Exempt:           120
+// Exempt:           123
 // Human-reviewed:   0/23
 // IP risk:          None
 // Security risk:    Medium
@@ -98,7 +98,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// queue the host drains.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=722FF1
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=E28925
 // Broiler-Human:        PENDING
 public enum JsOpcode : byte
 {
@@ -977,6 +977,53 @@ public enum JsOpcode : byte
 
     /// <summary>Push a copy of the value <c>u8</c> places below the top.</summary>
     Pick = 0x74,
+
+    // ---- the global lexical environment -----------------------------------------------------------------
+
+    /// <summary>
+    /// Create the name constant <c>u16</c> as an uninitialised mutable binding of the realm's
+    /// global lexical environment.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The global lexical environment is not the global object, and these three instructions
+    /// exist because that is a difference a program can see.</b> <see cref="DeclareGlobal"/> is the
+    /// <c>var</c> half: it creates a PROPERTY, which <c>globalThis</c> shows, <c>delete</c> may
+    /// remove, and a read before the declaration answers <c>undefined</c> for. A script-level
+    /// <c>let</c>, <c>const</c> or <c>class</c> is a BINDING beside that object, invisible to
+    /// <c>globalThis</c>, and a read of one before its declaration is a <c>ReferenceError</c>.
+    /// </para>
+    /// <para>
+    /// <b>It is the realm's and not the unit's, which is the whole reason it is not a slot.</b> A
+    /// script-level lexical outlives the script that declared it: a conformance run evaluates its
+    /// harness files as separate scripts in one realm and several of them publish a helper with
+    /// <c>const</c>, so a binding in the unit's own frame would be gone before the test that reads
+    /// it ran.
+    /// </para>
+    /// </remarks>
+    DeclareGlobalLet = 0x7F,
+
+    /// <summary>
+    /// Create the name constant <c>u16</c> as an uninitialised IMMUTABLE binding of the realm's
+    /// global lexical environment.
+    /// </summary>
+    /// <remarks>
+    /// The mutability is a property of the binding rather than of the store, which is what makes an
+    /// assignment from anywhere - another script, a function closed over the name, a <c>with</c>
+    /// body that did not shadow it - the same <c>TypeError</c>.
+    /// </remarks>
+    DeclareGlobalConst = 0x80,
+
+    /// <summary>
+    /// Pop a value and initialise the global lexical binding named by constant <c>u16</c> with it.
+    /// </summary>
+    /// <remarks>
+    /// Separate from <see cref="StoreGlobal"/> because it is the one write an IMMUTABLE binding
+    /// admits, and separate from <see cref="DeclareGlobalLet"/> because the declaration happens
+    /// before the first statement of the script and the initialisation happens where the
+    /// declaration is written - which is exactly the gap the temporal dead zone occupies.
+    /// </remarks>
+    InitialiseGlobalLexical = 0x81,
 }
 
 /// <summary>The operand shape that follows an opcode byte.</summary>
@@ -1129,7 +1176,7 @@ public static class JsOpcodes
         ElementIsMethod | ElementIsGetter | ElementIsSetter;
 
     /// <summary>Every opcode format version 2 defines, in ascending numeric order.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=1D5DAD
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=D95E87
     // Broiler-Human:        PENDING
     public static readonly JsOpcode[] All =
     [
@@ -1174,6 +1221,7 @@ public static class JsOpcodes
         JsOpcode.LoadPrivate, JsOpcode.StorePrivate, JsOpcode.HasPrivate,
         JsOpcode.RunStaticElements,
         JsOpcode.Pop, JsOpcode.Duplicate, JsOpcode.DuplicateTwo, JsOpcode.Swap, JsOpcode.Pick,
+        JsOpcode.DeclareGlobalLet, JsOpcode.DeclareGlobalConst, JsOpcode.InitialiseGlobalLexical,
     ];
 
     /// <summary>Whether <paramref name="value"/> is an opcode format version 2 defines.</summary>
@@ -1222,7 +1270,7 @@ public static class JsOpcodes
     /// The operand shape of <paramref name="opcode"/>, or <see langword="null"/> when this format
     /// version does not define it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=340453
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B0A4BC
     // Broiler-Human:        PENDING
     public static JsOperandShape? Shape(JsOpcode opcode) => opcode switch
     {
@@ -1269,7 +1317,9 @@ public static class JsOpcodes
         JsOpcode.Closure or
         JsOpcode.LoadArgument or JsOpcode.RestArguments or JsOpcode.RequireCoercible or
         JsOpcode.NewPrivateName or
-        JsOpcode.LoadImport or JsOpcode.ThrowImmutable
+        JsOpcode.LoadImport or JsOpcode.ThrowImmutable or
+        JsOpcode.DeclareGlobalLet or JsOpcode.DeclareGlobalConst or
+        JsOpcode.InitialiseGlobalLexical
             => JsOperandShape.U16,
 
         JsOpcode.Jump or JsOpcode.JumpIfFalse or JsOpcode.JumpIfTrue or
@@ -1296,7 +1346,7 @@ public static class JsOpcodes
     /// and the verifier's abstract height is computed from them alone. A false answer means the
     /// opcode is not one this format version defines - not that its effect is unknown.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=693C53
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=3ADC1F
     // Broiler-Human:        PENDING
     public static bool TryDescribe(JsOpcode opcode, uint operand, out int pops, out int pushes)
     {
@@ -1310,6 +1360,8 @@ public static class JsOpcodes
             case JsOpcode.PushScope:
             case JsOpcode.CopyScope:
             case JsOpcode.DeclareGlobal:
+            case JsOpcode.DeclareGlobalLet:
+            case JsOpcode.DeclareGlobalConst:
             case JsOpcode.ArrayHoles:
                 return true;
 
@@ -1343,6 +1395,7 @@ public static class JsOpcodes
             case JsOpcode.StoreScoped:
             case JsOpcode.InitialiseScoped:
             case JsOpcode.StoreGlobal:
+            case JsOpcode.InitialiseGlobalLexical:
             case JsOpcode.ThrowImmutable:
             case JsOpcode.Pop:
             case JsOpcode.PushObjectScope:

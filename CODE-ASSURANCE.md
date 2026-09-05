@@ -13,14 +13,14 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 118 |
-| Files carrying an annotation | 118 |
-| Code units | 4643 |
-| Relevant | 2546 |
-| Exempt by predicate | 2097 |
-| Annotated | 2546 of 2546 (100%) |
-| Human reviewed | 0 of 2546 (0%) |
-| Unverified | 2546 |
+| Files scanned | 119 |
+| Files carrying an annotation | 119 |
+| Code units | 4659 |
+| Relevant | 2553 |
+| Exempt by predicate | 2106 |
+| Annotated | 2553 of 2553 (100%) |
+| Human reviewed | 0 of 2553 (0%) |
+| Unverified | 2553 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 2546 |
+| HUMAN_PENDING | 2553 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 2097 |
+| EXEMPT | 2106 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
-| None | 982 |
-| Low | 2091 |
+| None | 994 |
+| Low | 2092 |
 | Medium | 87 |
 | High | 0 |
 | Unknown | 0 |
@@ -51,7 +51,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | None | 5 |
 | Low | 653 |
-| Medium | 2296 |
+| Medium | 2309 |
 | High | 206 |
 | Critical | 0 |
 | *not annotated* | 0 |
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.9 / 10 |
-| Units scored | 2546 |
+| Units scored | 2553 |
 
 ## High-security review areas
 
@@ -305,14 +305,14 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 706 |
-| ParameterAssigningConstructor | 81 |
+| TrivialPropertyOrAccessor | 709 |
+| ParameterAssigningConstructor | 82 |
 | TrivialExpressionBodiedMember | 29 |
 | CompilerSuppliedRecordOrEnumMember | 4 |
 | DelegatingOverrideOrOperator | 102 |
 | InsideAssemblyMarker | 0 |
-| FieldDeclaringStorage | 327 |
-| EnumMemberOfADeclaredVocabulary | 848 |
+| FieldDeclaringStorage | 329 |
+| EnumMemberOfADeclaredVocabulary | 851 |
 | DeclaredInSource | 0 |
 
 ## Per-unit exemptions
@@ -332,7 +332,7 @@ No unit in this component states a per-unit exemption.
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-4643 of them, exempt and relevant alike - with the fingerprint of its declaration.
+4659 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
@@ -340,7 +340,7 @@ this component has moved off `PENDING`. What the manifest adds is that a unit th
 predicate treats as trivial is no longer invisible: a semantic change to one moves a value
 in a generated file the gate compares byte for byte. Rule J7 holds the manifest to the tree.
 
-Beside the units it lists **every covered file** - 118 of them - with a
+Beside the units it lists **every covered file** - 119 of them - with a
 fingerprint over the complete token stream of its compilation unit. A unit entry exists only
 for a declaration kind the scanner enumerates, and an enumeration is a whitelist: an
 `[assembly: ...]` attribute is a member of nothing and can be in no unit at all.
