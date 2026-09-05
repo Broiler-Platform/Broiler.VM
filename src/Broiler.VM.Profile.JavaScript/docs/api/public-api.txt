@@ -1252,6 +1252,7 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Divide : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 67
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Duplicate : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 113
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.DuplicateTwo : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 114
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.EnterBody : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 131
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Exponent : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 69
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ForInNext : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 101
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ForInStart : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 100

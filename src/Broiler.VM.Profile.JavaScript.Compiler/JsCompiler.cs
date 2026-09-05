@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   166
-// Annotated:        166/166
+// Relevant units:   167
+// Annotated:        167/167
 // Exempt:           83
-// Human-reviewed:   0/166
+// Human-reviewed:   0/167
 // IP risk:          None
 // Security risk:    High
 // Criteria:         7/6
 // Resource impact:  3/10 max
-// Unverified:       166
+// Unverified:       167
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -714,7 +714,7 @@ public sealed class JsCompiler
     /// TypeError in the language, and the flag is what makes it one here.
     /// </param>
     /// <param name="isDerived">Whether this is the constructor of a class with a heritage.</param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8C2CEB
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=CB02A9
     // Broiler-Human:        PENDING
     private int CompileFunction(
         JsFunctionNode function,
@@ -863,6 +863,23 @@ public sealed class JsCompiler
         if (!simple)
         {
             CompileParameters(function.Parameters);
+
+            // THE SEAM IS EMITTED FOR A GENERATOR AND FOR NOTHING ELSE, because a generator is the
+            // only unit whose parameter list and whose body run at two different times. The
+            // language binds the list at the CALL - `EvaluateGeneratorBody` and
+            // `EvaluateAsyncGeneratorBody` both perform function declaration instantiation before
+            // they create the object - and everything above this instruction is that binding.
+            //
+            // AN ASYNC FUNCTION IS DELIBERATELY NOT ON THE LIST, and it is the one arm of the three
+            // that was already right. Its promise is made BEFORE the binding runs, so a default
+            // that throws rejects the promise the call already answered with rather than throwing
+            // at the call - which is what this engine's async arm already does by running the body
+            // synchronously to its first `await`. Marking the seam there would have bought nothing
+            // and cost one dispatch on every async call *(corrected: JSC-220)*.
+            if (function.IsGenerator)
+            {
+                Emit(JsOpcode.EnterBody);
+            }
         }
 
         HoistFunction(function.Body);
@@ -1916,16 +1933,16 @@ public sealed class JsCompiler
     /// where it is STORED - which is why an assignment to an undeclared name in strict code still
     /// fails at the store and not here.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3105F1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=14277C
     // Broiler-Human:        PENDING
     private PreparedTarget PrepareTarget(JsPattern? target, BindMode mode)
     {
-        if (mode != BindMode.Assign || target is not JsTargetPattern leaf)
+        if (!PreparesTarget(target, mode))
         {
             return default;
         }
 
-        switch (leaf.Target)
+        switch (((JsTargetPattern)target!).Target)
         {
             case JsPrivateMemberExpression privateAccess:
                 return new PreparedTarget(true, Spill(privateAccess.Target), -1);
@@ -1945,6 +1962,24 @@ public sealed class JsCompiler
                 return default;
         }
     }
+
+    /// <summary>
+    /// Whether this pattern's target is a reference the language evaluates ahead of the value.
+    /// </summary>
+    /// <remarks>
+    /// It is asked twice for one property of an object assignment pattern - once to decide whether
+    /// the pattern's own computed key has to be parked in a temporary, and once by
+    /// <see cref="PrepareTarget"/> - and the two must give the same answer, which is why it is a
+    /// predicate rather than the same three cases written out again.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4988A7
+    // Broiler-Human:        PENDING
+    private static bool PreparesTarget(JsPattern? target, BindMode mode) =>
+        mode == BindMode.Assign &&
+        target is JsTargetPattern
+        {
+            Target: JsMemberExpression or JsPrivateMemberExpression,
+        };
 
     /// <summary>Compiles one expression and parks its value in a temporary of the function.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=64DEAE
@@ -2013,8 +2048,18 @@ public sealed class JsCompiler
     /// A key object whose <c>toString</c> has a side effect therefore runs it twice. Converting
     /// once would need an opcode whose only job is <c>ToPropertyKey</c>.
     /// </para>
+    /// <para>
+    /// <b>AN ASSIGNMENT PATTERN PREPARES EVERY TARGET REFERENCE BEFORE IT READS THE PROPERTY THAT
+    /// FEEDS IT, and a declaration pattern prepares nothing</b>, which is not a symmetry this
+    /// lowering chose. <c>KeyedDestructuringAssignmentEvaluation</c> evaluates the target - and
+    /// only a target that is neither an object nor an array literal - BEFORE the <c>GetV</c> that
+    /// supplies its value, so <c>({ a: o[k()] } = src)</c> calls <c>k</c> before it reads
+    /// <c>src.a</c> and <c>({ ...o[k()] } = src)</c> calls it before <c>CopyDataProperties</c> runs
+    /// at all. A declaration has no reference to evaluate: it initialises a binding, and the
+    /// binding is found where it is written *(corrected: JSC-221)*.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=816DF2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5A65F9
     // Broiler-Human:        PENDING
     private void BindObjectPattern(JsObjectPattern pattern, BindMode mode)
     {
@@ -2027,11 +2072,39 @@ public sealed class JsCompiler
 
         foreach (var property in pattern.Properties)
         {
+            // A COMPUTED KEY IS PARKED BEFORE THE TARGET IS PREPARED, and both happen before the
+            // source is read. `PropertyName` is step 1 of the property's own evaluation and the
+            // target is step 1 of the element's, so the two run in this order and the `GetV`
+            // between them runs after both. Parking is what makes that possible at all: the key
+            // used to be pushed on top of the source object, which is where the read needs it and
+            // nowhere near where a reference evaluated before it could sit.
+            //
+            // ONLY WHERE THERE IS A REFERENCE TO PUT BETWEEN THEM. A name and a nested pattern
+            // evaluate nothing, so for them the key still goes straight onto the stack and this
+            // costs no slot - which is every shorthand property and every plain `{ a: x }`.
+            var held = -1;
+
+            if (PreparesTarget(property.Value.Target, mode) && property.Computed is not null)
+            {
+                held = Spill(property.Computed);
+
+                if (pattern.Rest is not null)
+                {
+                    excluded.Add(held);
+                }
+            }
+
+            var prepared = PrepareTarget(property.Value.Target, mode);
             Emit(JsOpcode.Duplicate);
 
             if (property.Computed is null)
             {
                 Emit(JsOpcode.GetProperty, InternedName(property.Key));
+            }
+            else if (held >= 0)
+            {
+                EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, held);
+                Emit(JsOpcode.GetIndex);
             }
             else
             {
@@ -2054,7 +2127,7 @@ public sealed class JsCompiler
             }
 
             ApplyDefault(property.Value.Default, InferredFrom(property.Value.Target));
-            BindPattern(property.Value.Target, mode);
+            BindPrepared(property.Value.Target, mode, prepared);
         }
 
         if (pattern.Rest is null)
@@ -2062,6 +2135,12 @@ public sealed class JsCompiler
             Emit(JsOpcode.Pop);
             return;
         }
+
+        // THE REST TARGET IS PREPARED BEFORE THE REST OBJECT EXISTS, because
+        // `RestDestructuringAssignmentEvaluation` evaluates it first and only then performs
+        // `CopyDataProperties`. A source with a getter on it makes the difference visible without
+        // any error at all: the getter must run after `k` in `({ ...o[k()] } = src)`.
+        var restTarget = PrepareTarget(pattern.Rest, mode);
 
         Emit(JsOpcode.NewObject);
         Emit(JsOpcode.Pick, (byte)1);
@@ -2087,7 +2166,7 @@ public sealed class JsCompiler
             Emit(JsOpcode.Pop);
         }
 
-        BindPattern(pattern.Rest, mode);
+        BindPrepared(pattern.Rest, mode, restTarget);
         Emit(JsOpcode.Pop);
     }
 

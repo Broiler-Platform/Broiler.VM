@@ -453,3 +453,68 @@ say(tag`x${[...small()][0]}y`);
 say(typeof small + "," + typeof small());
 say(small instanceof Function);
 say(small() instanceof small);
+
+// ---- the parameter list is bound at the CALL, and the body is not ------------------------------
+//
+// The seam this file is named for runs through a generator's own entry as well: a parameter list
+// that has to run code - a default, a rest parameter, a pattern - is `FunctionDeclarationInstantiation`
+// and belongs to the CALL, while the body belongs to the first `next`. Recorded with JSC-220.
+
+function* patterned([x]) { yield x; }
+say(fails(function () { return patterned(undefined); }));
+say(fails(function () { return patterned([7]).next().value; }));
+
+var order = "";
+function* defaulted(a = (order += "d", 1)) { order += "b"; yield a; }
+var pending = defaulted();
+order += "m";
+pending.next();
+say(order);
+
+// A generator whose parameter binding threw yields no object to resume.
+var threw = "none";
+function* boomed(a = (function () { throw new RangeError("param"); })()) { yield 1; }
+try { boomed(); } catch (e) { threw = e.name; }
+say(threw);
+
+// A pattern steps its iterator at the call, not at the first resumption.
+var steps = 0;
+var counted = {};
+counted[Symbol.iterator] = function () {
+  return { next: function () { steps += 1; return { value: steps, done: steps > 2 }; } };
+};
+function* pair([p, q]) { yield p + q; }
+var held = pair(counted);
+say(steps + "," + held.next().value);
+
+// A generator that has not started swallows `return` and rethrows `throw`, and its binding already ran.
+var ranBinding = 0;
+function* watched([w] = (ranBinding += 1, [5])) { ranBinding += 10; yield w; }
+var early = watched();
+var returned = early.return(3);
+say(ranBinding + "," + returned.value + "," + returned.done);
+say(fails(function () { return watched().throw(new RangeError("early")); }));
+
+// An ASYNC generator binds at the call too, and an async FUNCTION does not: its promise exists
+// first, so a failing default settles that promise instead of throwing where it was written.
+say(fails(function () { return (async function* ([y]) { yield y; })(undefined); }));
+say(fails(function () { return typeof (async function ([z]) { return z; })(undefined).catch(function () {}); }));
+
+// A generator over a SIMPLE parameter list still runs none of its body at the call.
+var plain = "";
+function* simple(a) { plain += "b"; yield a; }
+var idle = simple(1);
+plain += "m";
+say(plain + "," + idle.next().value);
+
+// The whole of a generator's ordinary behaviour survives the split.
+function* whole({ a } = { a: 10 }) { var s = yield a; yield s * 2; return "end"; }
+var w = whole();
+say(w.next().value + "," + w.next(3).value + "," + w.next().value + "," + w.next().done);
+
+// A method's parameter list is bound at the call in each of the three places one can be written.
+var methods = { *m([k]) { yield k; } };
+say(fails(function () { return methods.m(undefined); }));
+class Holder { *m([k]) { yield k; } static *s({ k }) { yield k; } }
+say(fails(function () { return new Holder().m(undefined); }));
+say(fails(function () { return Holder.s(undefined); }));

@@ -114,3 +114,17 @@
 111 function,object
 112 true
 113 true
+114 TypeError
+115 no-throw:7
+116 dmb
+117 RangeError
+118 2,3
+119 1,3,true
+120 RangeError
+121 TypeError
+122 no-throw:object
+123 m,1
+124 10,6,end,true
+125 TypeError
+126 TypeError
+127 TypeError

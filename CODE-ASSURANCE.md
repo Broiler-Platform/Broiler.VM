@@ -15,12 +15,12 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Files scanned | 121 |
 | Files carrying an annotation | 121 |
-| Code units | 4734 |
-| Relevant | 2612 |
-| Exempt by predicate | 2122 |
-| Annotated | 2612 of 2612 (100%) |
-| Human reviewed | 0 of 2612 (0%) |
-| Unverified | 2612 |
+| Code units | 4738 |
+| Relevant | 2614 |
+| Exempt by predicate | 2124 |
+| Annotated | 2614 of 2614 (100%) |
+| Human reviewed | 0 of 2614 (0%) |
+| Unverified | 2614 |
 
 ## Review states
 
@@ -28,18 +28,18 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 2612 |
+| HUMAN_PENDING | 2614 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 2122 |
+| EXEMPT | 2124 |
 
 ## IP risk
 
 | Value | Units |
 |---|---:|
-| None | 1003 |
-| Low | 2155 |
+| None | 1005 |
+| Low | 2156 |
 | Medium | 89 |
 | High | 0 |
 | Unknown | 0 |
@@ -51,8 +51,8 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | None | 5 |
 | Low | 653 |
-| Medium | 2383 |
-| High | 206 |
+| Medium | 2385 |
+| High | 207 |
 | Critical | 0 |
 | *not annotated* | 0 |
 
@@ -62,7 +62,7 @@ figures below are the measurement of how far from that claim the component is.
 |---|---:|
 | Maximum | 8 / 10 |
 | Average over annotated units | 1.9 / 10 |
-| Units scored | 2612 |
+| Units scored | 2614 |
 
 ## High-security review areas
 
@@ -240,6 +240,7 @@ figures below are the measurement of how far from that claim the component is.
 - `Broiler.VM.Profile.JavaScript.JsEngine.RunModuleGraph(JsProgram, int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.Step(JsProgram, System.Collections.Generic.List<int>, int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.Confirm(JsProgram)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.BindParameters(JsProgram, JsCodeUnit, JsScriptFunction, JsFrame, JsValue, JsValue[])` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.ResumeGenerator(JsValue, JsResumeMode, JsValue, string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.ResumeAsync(JsAsyncCall, JsResumeMode, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
 - `Broiler.VM.Profile.JavaScript.JsEngine.EnqueueAsyncGenerator(JsValue, JsResumeMode, JsValue, string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, human line PENDING
@@ -277,8 +278,8 @@ figures below are the measurement of how far from that claim the component is.
 
 | Metric | Value |
 |---|---:|
-| Units carrying a criterion | 255 |
-| Units required to carry one | 206 |
+| Units carrying a criterion | 256 |
+| Units required to carry one | 207 |
 | Required and missing | 0 |
 
 A `Broiler-Falsified-If:` line states, at the declaration, the observation that would make
@@ -305,14 +306,14 @@ that the rule is reviewable in one place rather than in several hundred.
 
 | Case | Units |
 |---|---:|
-| TrivialPropertyOrAccessor | 714 |
+| TrivialPropertyOrAccessor | 715 |
 | ParameterAssigningConstructor | 82 |
 | TrivialExpressionBodiedMember | 32 |
 | CompilerSuppliedRecordOrEnumMember | 4 |
 | DelegatingOverrideOrOperator | 102 |
 | InsideAssemblyMarker | 0 |
 | FieldDeclaringStorage | 336 |
-| EnumMemberOfADeclaredVocabulary | 852 |
+| EnumMemberOfADeclaredVocabulary | 853 |
 | DeclaredInSource | 0 |
 
 ## Per-unit exemptions
@@ -332,7 +333,7 @@ No unit in this component states a per-unit exemption.
 ## Change detection
 
 `assurance.manifest.json` lists **every** code unit in the three product assemblies -
-4734 of them, exempt and relevant alike - with the fingerprint of its declaration.
+4738 of them, exempt and relevant alike - with the fingerprint of its declaration.
 This manifest is a change-detection record, not a review. A unit listed there is watched, not reviewed:
 the entry records what the declaration's tokens hashed to when the generator last ran, and
 nothing else. Exempt units still need no annotation and carry none, and no human line in
