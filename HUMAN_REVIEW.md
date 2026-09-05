@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 2510 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 2546 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -78,13 +78,13 @@ date, any annotation is malformed or any generated artefact is stale.
 
 | Metric | Value |
 |---|---:|
-| Files scanned | 117 |
-| Code units | 4577 |
-| Relevant | 2510 |
-| Exempt | 2067 |
-| Assessed | 2510 of 2510 (100%) |
-| Human reviewed | 0 of 2510 (0%) |
-| Unverified | 2510 |
+| Files scanned | 118 |
+| Code units | 4643 |
+| Relevant | 2546 |
+| Exempt | 2097 |
+| Assessed | 2546 of 2546 (100%) |
+| Human reviewed | 0 of 2546 (0%) |
+| Unverified | 2546 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 2510 |
+| HUMAN_PENDING | 2546 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 2067 |
+| EXEMPT | 2097 |
 
 ## 5. Aliases In The Tree
 
@@ -142,8 +142,8 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Binary/VmReadBounds.cs` | 11 | 3 | 8 | 3 | Low | Low | 0/0 |
 | `src/Broiler.VM.Binary/VmSectionFrame.cs` | 10 | 3 | 7 | 3 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` | 236 | 156 | 80 | 156 | None | High | 6/6 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` | 137 | 120 | 17 | 120 | None | High | 2/2 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` | 240 | 159 | 81 | 159 | None | High | 6/6 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` | 139 | 122 | 17 | 122 | None | High | 2/2 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/JsSyntax.cs` | 91 | 78 | 13 | 78 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructCensus.cs` | 7 | 7 | 0 | 7 | None | High | 3/3 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructs.cs` | 61 | 6 | 55 | 6 | None | High | 4/4 |
@@ -164,11 +164,11 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptOpcode.cs` | 40 | 10 | 30 | 10 | None | High | 5/5 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsArtifactWriter.cs` | 29 | 29 | 0 | 29 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsFormat.cs` | 56 | 25 | 31 | 25 | None | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript.Format/JsOpcode.cs` | 138 | 23 | 115 | 23 | None | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsOpcode.cs` | 143 | 23 | 120 | 23 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsRegExpMatcher.cs` | 213 | 120 | 93 | 120 | Medium | Medium | 1/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsSurfaces.cs` | 9 | 9 | 0 | 9 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JavaScriptDiagnostics.cs` | 70 | 8 | 62 | 8 | Low | High | 1/1 |
+| `src/Broiler.VM.Profile.JavaScript/JavaScriptDiagnostics.cs` | 71 | 8 | 63 | 8 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptExecutor.cs` | 35 | 18 | 17 | 18 | Low | High | 6/6 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptLanguageEdition.cs` | 13 | 13 | 0 | 13 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptPosition.cs` | 10 | 6 | 4 | 6 | None | Medium | 1/0 |
@@ -178,15 +178,16 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsArray.cs` | 19 | 14 | 5 | 14 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsBinary.cs` | 51 | 31 | 20 | 31 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsCollections.cs` | 87 | 51 | 36 | 51 | Low | High | 1/1 |
-| `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` | 112 | 98 | 14 | 98 | Low | High | 12/12 |
+| `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` | 124 | 110 | 14 | 110 | Low | High | 15/15 |
 | `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` | 24 | 13 | 11 | 13 | Low | High | 2/2 |
 | `src/Broiler.VM.Profile.JavaScript/JsFunction.cs` | 55 | 25 | 30 | 25 | Low | High | 1/1 |
-| `src/Broiler.VM.Profile.JavaScript/JsGenerator.cs` | 44 | 12 | 32 | 12 | None | High | 4/4 |
+| `src/Broiler.VM.Profile.JavaScript/JsGenerator.cs` | 67 | 17 | 50 | 17 | None | High | 5/5 |
 | `src/Broiler.VM.Profile.JavaScript/JsModule.cs` | 38 | 13 | 25 | 13 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsNumberFormat.cs` | 19 | 19 | 0 | 19 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsObject.cs` | 55 | 30 | 25 | 30 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsProgram.cs` | 44 | 16 | 28 | 16 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Array.cs` | 29 | 29 | 0 | 29 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsRealm.AsyncGenerator.cs` | 19 | 14 | 5 | 14 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Binary.cs` | 33 | 28 | 5 | 28 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Boolean.cs` | 4 | 4 | 0 | 4 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.CollectionIterators.cs` | 4 | 4 | 0 | 4 | Low | Medium | 0/0 |
@@ -599,8 +600,14 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a generator resumed while its own body is running re-enters that body, or a completed generator runs any instruction
 - `Broiler.VM.Profile.JavaScript.JsEngine.ResumeAsync(JsAsyncCall, JsResumeMode, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `99B3DF`, PENDING
   - Falsified if: an async call whose body is already on the interpreter's stack is resumed again, or a program that awaits without end is a hang rather than an exhaustion
-- `Broiler.VM.Profile.JavaScript.JsEngine.Delegate(JsFrame, JsValue[], ref int, int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `F0AF03`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.EnqueueAsyncGenerator(JsValue, JsResumeMode, JsValue, string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `CB6E30`, PENDING
+  - Falsified if: a call of `next`, `return` or `throw` on an async generator answers anything but a promise, or two calls made before the first settles are answered out of order
+- `Broiler.VM.Profile.JavaScript.JsEngine.ResumeAsyncGenerator(JsAsyncGenerator, JsResumeMode, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `30F939`, PENDING
+  - Falsified if: an async generator whose body is on the interpreter's stack is resumed again, or an `await` inside an async generator body settles a request the way a `yield` does
+- `Broiler.VM.Profile.JavaScript.JsEngine.Delegate(JsFrame, JsValue[], ref int, int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `E53DC7`, PENDING
   - Falsified if: a `return` or a `throw` that arrives while a `yield*` is suspended is not offered to the inner iterator first
+- `Broiler.VM.Profile.JavaScript.JsEngine.DelegateAsync(JsFrame, JsValue[], ref int, int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `197F48`, PENDING
+  - Falsified if: an inner step of an async `yield*` reaches the outer body unawaited, or a `return` or a `throw` that arrives while one is suspended is not offered to the inner iterator first
 - `Broiler.VM.Profile.JavaScript.JsEngine.ResolveName(System.Collections.Generic.List<JsEnvironment>, int, string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `1AC0F4`, PENDING
   - Falsified if: this walk answers with anything but an object a `PushObjectScope` placed on the chain
 - `Broiler.VM.Profile.JavaScript.JsInstance.Environment` in `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` - Security=High, Spec=none cited, `1C7767`, PENDING
@@ -617,6 +624,10 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a generator whose body is on the interpreter's stack can be resumed again, or a completed generator runs any part of its body
 - `Broiler.VM.Profile.JavaScript.JsAsyncCall` in `src/Broiler.VM.Profile.JavaScript/JsGenerator.cs` - Security=High, Spec=none cited, `17AAD5`, PENDING
   - Falsified if: an async call whose body is on the interpreter's stack is resumed again, or a suspended async call is reachable from anything the allowance is not already counting
+- `Broiler.VM.Profile.JavaScript.JsAsyncGenerator` in `src/Broiler.VM.Profile.JavaScript/JsGenerator.cs` - Security=High, Spec=none cited, `F8D803`, PENDING
+  - Falsified if: two requests made before the first settles are answered out of order, or a request reaches a body that is already on the interpreter's stack
+- `Broiler.VM.Profile.JavaScript.JsRealm.GetAsyncIterator(JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsRealm.AsyncGenerator.cs` - Security=High, Spec=none cited, `EFF362`, PENDING
+  - Falsified if: a `for await` over an object carrying `Symbol.asyncIterator` reaches the synchronous wrapper, or one over an Array of promises answers the promises rather than their values
 - `Broiler.VM.Profile.JavaScript.JsRealm` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Dynamic.cs` - Security=High, Spec=none cited, `60DD8D`, PENDING
   - Falsified if: anything in this file is built into a realm whose composition did not admit broiler.javascript.dynamic
 - `Broiler.VM.Profile.JavaScript.JsRealm.EvalIntrinsic` in `src/Broiler.VM.Profile.JavaScript/JsRealm.Dynamic.cs` - Security=High, Spec=none cited, `D093DD`, PENDING
@@ -671,7 +682,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 2510 of the 2510 assessed units declare
+That is not a figure of speech. 2546 of the 2546 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

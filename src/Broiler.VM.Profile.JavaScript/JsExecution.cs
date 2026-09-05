@@ -309,7 +309,7 @@ internal static class JsExecution
     /// so no meter, no ceiling and no probe can report it after the fact.
     /// </para>
     /// <para>
-    /// <b>Sixty-four megabytes is MEASURED against the declared ceiling and not chosen.</b>
+    /// <b>Ninety-six megabytes is MEASURED against the declared ceiling and not chosen.</b>
     /// <c>eng/measure-frame-cost.py</c> bisects the published binary and reports how deep a
     /// recursion this stack holds; dividing the stack by that depth gives the cost of one guest
     /// call, which after the async family and <c>with</c> joined the instruction set is
@@ -318,13 +318,25 @@ internal static class JsExecution
     /// megabytes held 5,278 calls, which is BELOW
     /// <see cref="JsEngine.MaximumCallDepth"/>, so a runaway recursion reached the stack before it
     /// reached the bound and terminated the process - which is JSC-85 exactly, and is the failure
-    /// this figure exists to prevent. Sixty-four megabytes holds 16,478 — it held 17,963 until the
-    /// class body's six dispatch arms took the executor's own frame to 4,073 bytes
-    /// <i>(JSC-126)</i> — which is more than
-    /// twice the call-depth maximum the descriptor lets a host grant, and leaves the room the
-    /// built-ins that recurse in C# without going through a call need - a comparison function
-    /// driving a sort, a cycle-free walk of a deep object in JSON - along with the stack a host has
-    /// already used before it reached this profile.
+    /// this figure exists to prevent.
+    /// </para>
+    /// <para>
+    /// <b>THIS FIGURE MOVED, and what moved it is the only reason it ever should.</b> Sixty-four
+    /// megabytes held 17,963 calls until the class body's six dispatch arms took the executor's own
+    /// frame to 4,073 bytes and the capacity to 16,478 <i>(JSC-126)</i>, which was 2.01 times the
+    /// call-depth maximum the descriptor lets a host grant - the narrowest that margin had ever
+    /// been. Asynchronous iteration added five more arms and took the frame to <b>4,551</b> bytes,
+    /// at which sixty-four megabytes holds <b>14,737</b> calls: 1.80 times the grantable ceiling,
+    /// BELOW the factor of two, and therefore a stack that no longer keeps the ordering the ceiling
+    /// depends on. Ninety-six megabytes holds <b>22,122</b>, which is 2.70 times that ceiling and
+    /// 3.69 times <see cref="JsEngine.MaximumCallDepth"/>. Both figures are measured on a build with
+    /// the engine's bound and the profile's call-depth maximum lifted, because a bisection that
+    /// stops at a declared bound reports the promise and not the capacity <i>(JSC-139)</i>.
+    /// </para>
+    /// <para>
+    /// The room this leaves is what it always left: the built-ins that recurse in C# without going
+    /// through a call - a comparison function driving a sort, a cycle-free walk of a deep object in
+    /// JSON - along with the stack a host has already used before it reached this profile.
     /// </para>
     /// <para>
     /// <b>The figure is a ceiling on ADDRESS SPACE and not on memory.</b> A thread's stack is
@@ -340,9 +352,9 @@ internal static class JsExecution
     /// previous one did.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=B651DF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=525EF4
     // Broiler-Human:        PENDING
-    private const int GuestStackBytes = 64 * 1024 * 1024;
+    private const int GuestStackBytes = 96 * 1024 * 1024;
 
     /// <summary>Runs one entry point on a thread whose stack this profile declared.</summary>
     /// <remarks>

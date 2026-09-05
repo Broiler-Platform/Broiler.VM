@@ -1,8 +1,8 @@
 # broiler.javascript.slice diagnostic-code registry
 #
-# registry-revision: 8
+# registry-revision: 9
 # published-at-milestone: JS-3a (revision 1), JS-3b (revision 2), JS-4 (revision 3), JSW-2 (revision 4),
-#                         JSW-5 (revisions 5, 6 and 7), JSW-8 (revision 8)
+#                         JSW-5 (revisions 5, 6, 7 and 9), JSW-8 (revision 8)
 # owning-decision: JSD-0009
 # format-version: 1, 2
 # feature-manifest: broiler.javascript.slice, broiler.javascript.wide
@@ -103,7 +103,7 @@
 1609|YieldOutsideGenerator|core-result|SemanticValidationFailed|code|corpus|wide-a-suspension-outside-a-generator|5
 1610|GeneratorFlagsInconsistent|core-result|InconsistentStructure|functions|corpus|wide-a-generator-that-is-also-the-program-body|5
 1611|AwaitOutsideAsync|core-result|SemanticValidationFailed|code|corpus|wide-an-await-outside-an-async-function|6
-1612|AsyncFlagsInconsistent|core-result|InconsistentStructure|functions|corpus|wide-an-async-function-that-is-also-a-generator|6
+1612|AsyncFlagsInconsistent|core-result|InconsistentStructure|functions|corpus|wide-an-async-function-that-is-also-the-program-body|6
 1613|ModuleSectionOutsideManifest|core-result|UnknownFeature|modules|corpus|modules-a-module-section-no-surface-declares|8
 1614|MalformedModuleRow|core-result|InconsistentStructure|modules|corpus|modules-a-module-row-the-format-cannot-represent|8
 1615|ModuleRequestUnresolved|core-result|InconsistentStructure|modules|corpus|modules-a-request-naming-no-module|8
@@ -113,6 +113,7 @@
 1619|ModuleResolverAbsent|core-result|UnsupportedFeatureManifest|modules|corpus|modules-a-module-artifact-with-no-resolver|8
 1620|ModuleSectionMissing|core-result|InconsistentStructure|modules|corpus|modules-the-module-surface-with-no-module-records|8
 1621|ClassElementFlagsInconsistent|core-result|InconsistentStructure|code|corpus|wide-a-class-element-whose-flags-contradict|7
+1630|AsyncIterationOutsideAsync|core-result|SemanticValidationFailed|code|corpus|wide-an-async-iteration-step-outside-an-async-function|9
 1901|Truncated|core-result|Truncated|reader|corpus|a-truncated-payload|1
 1902|MalformedEncoding|core-result|MalformedEncoding|reader|corpus|an-overlong-variable-length-integer|1
 1903|ReaderStopped|core-result|InconsistentStructure|reader|defensive|every bounded-read status this build was compiled against has its own arm, so this one answers a status the reader does not currently have|1

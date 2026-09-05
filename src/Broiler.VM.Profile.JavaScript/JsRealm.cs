@@ -461,7 +461,7 @@ internal sealed partial class JsRealm
     /// them on every closure would cost nothing and mean nothing, and it would make a reader think
     /// an ordinary function consults them.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0BB22B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4F06CE
     // Broiler-Human:        PENDING
     internal JsObject CreateClosure(
         JsProgram program,
@@ -484,8 +484,17 @@ internal sealed partial class JsRealm
         // `Object.prototype.toString.call(async () => {})` answer `[object AsyncFunction]`.
         var isAsync = program.Functions[unit].IsAsync;
 
+        // AN ASYNC GENERATOR FUNCTION IS NEITHER OF THE OTHER TWO AND INHERITS FROM NEITHER. The
+        // two bits are independent and their conjunction names a third intrinsic, so the test for
+        // it comes FIRST: an arm that asked `isGenerator` alone would have given
+        // `async function* () {}` the SYNCHRONOUS generator's prototype, and
+        // `Object.getPrototypeOf(g).constructor.name` would have answered `GeneratorFunction` for a
+        // function whose calls answer async generators.
+        var isAsyncGenerator = isGenerator && isAsync;
+
         var function = new JsScriptFunction(
-            isGenerator ? GeneratorFunctionPrototype
+            isAsyncGenerator ? AsyncGeneratorFunctionPrototype
+                : isGenerator ? GeneratorFunctionPrototype
                 : isAsync ? AsyncFunctionPrototype
                 : FunctionPrototype,
             program,
@@ -500,7 +509,11 @@ internal sealed partial class JsRealm
             function.LexicalActiveFunction = lexicalActive;
         }
 
-        if (isGenerator)
+        if (isAsyncGenerator)
+        {
+            function.ClassName = "AsyncGeneratorFunction";
+        }
+        else if (isGenerator)
         {
             function.ClassName = "GeneratorFunction";
         }
@@ -519,6 +532,20 @@ internal sealed partial class JsRealm
             "name",
             JsProperty.Data(
                 JsValue.String(program.Functions[unit].Name), JsPropertyAttributes.Configurable));
+
+        if (isAsyncGenerator)
+        {
+            // THE SAME DESCRIPTOR AND A DIFFERENT PROTOTYPE, which is the whole of the difference
+            // between the two kinds here: writable, not enumerable, not configurable, and no
+            // `constructor` back-link, because nothing is ever constructed from it either.
+            function.SetOwnProperty(
+                "prototype",
+                JsProperty.Data(
+                    JsValue.Object(new JsObject(AsyncGeneratorPrototype, "AsyncGenerator")),
+                    JsPropertyAttributes.Writable));
+
+            return function;
+        }
 
         if (isGenerator)
         {

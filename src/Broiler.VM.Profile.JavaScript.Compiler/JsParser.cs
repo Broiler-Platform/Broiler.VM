@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   120
-// Annotated:        120/120
+// Relevant units:   122
+// Annotated:        122/122
 // Exempt:           17
-// Human-reviewed:   0/120
+// Human-reviewed:   0/122
 // IP risk:          None
 // Security risk:    High
 // Criteria:         2/2
 // Resource impact:  3/10 max
-// Unverified:       120
+// Unverified:       122
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -309,7 +309,7 @@ internal sealed class JsParser
 
     // ---- statements ----------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3EB6B2
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=867C65
     // Broiler-Human:        PENDING
     private JsStatement ParseStatement()
     {
@@ -340,10 +340,7 @@ internal sealed class JsParser
                 // invalid assignment target rather than as the destructuring pattern it is. The
                 // declaration path refuses the pattern by name, which is the answer this manifest
                 // owes. `let` followed by anything else stays an identifier, which it is.
-                case SliceTokenKind.Let when Peek(1).Kind is SliceTokenKind.Identifier or
-                    SliceTokenKind.Let or SliceTokenKind.Get or SliceTokenKind.Set or
-                    SliceTokenKind.Of or SliceTokenKind.Async or SliceTokenKind.Static or
-                    SliceTokenKind.OpenBracket or SliceTokenKind.OpenBrace:
+                case SliceTokenKind.Let when BeginsLetDeclaration():
                     return ParseVariableStatement();
 
                 case SliceTokenKind.If:
@@ -397,15 +394,10 @@ internal sealed class JsParser
                 case SliceTokenKind.Export:
                     return ModuleItem(span);
 
-                // AN ASYNC GENERATOR IS STILL REFUSED AND THE TEST FOR IT COMES FIRST. The two
-                // constructs begin identically and only the `*` after `function` tells them apart,
-                // so an arm that parsed on `async function` alone would have swallowed the
-                // refusal - and a family that stops being refused by name comes back as a surprise
-                // token, which is the failure the audit exists to catch.
-                case SliceTokenKind.Async when Peek(1).Kind == SliceTokenKind.Function &&
-                    !Peek(1).PrecededByLineTerminator && Peek(2).Kind == SliceTokenKind.Star:
-                    return OutsideStatement(span, "an async generator function");
-
+                // ONE ARM FOR BOTH, WHERE THERE WERE TWO. An async generator was refused here by a
+                // case that tested for the `*` before this one; it is admitted now, and the `*` is
+                // read by `ParseFunctionRest` exactly as it is for `function*` - so the two
+                // constructs differ in one bit of the node rather than in a branch of the parser.
                 case SliceTokenKind.Async when Peek(1).Kind == SliceTokenKind.Function &&
                     !Peek(1).PrecededByLineTerminator:
                     Advance();
@@ -1222,7 +1214,7 @@ internal sealed class JsParser
     /// enclosing scope is the object environment record would have nowhere to put its slot.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=422A12
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=061AA1
     // Broiler-Human:        PENDING
     private JsStatement ParseWith()
     {
@@ -1245,10 +1237,7 @@ internal sealed class JsParser
 
         if (Current.Kind is SliceTokenKind.Function or SliceTokenKind.Class or
                 SliceTokenKind.Const ||
-            (Current.Kind == SliceTokenKind.Let && Peek(1).Kind is SliceTokenKind.Identifier or
-                SliceTokenKind.Let or SliceTokenKind.Get or SliceTokenKind.Set or
-                SliceTokenKind.Of or SliceTokenKind.Async or SliceTokenKind.Static or
-                SliceTokenKind.OpenBracket or SliceTokenKind.OpenBrace))
+            (Current.Kind == SliceTokenKind.Let && BeginsLetDeclaration()))
         {
             Refuse(
                 Span(),
@@ -1293,18 +1282,37 @@ internal sealed class JsParser
         return new JsDoWhileStatement(span, body, test);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=986E89
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D29F46
     // Broiler-Human:        PENDING
     private JsStatement ParseFor()
     {
         var span = Span();
         Advance();
 
-        // `for await` is refused before the parenthesis, because after it the head reads as an
-        // ordinary one and the diagnostic would name whatever token followed `await` instead.
+        // `for await` IS READ HERE AND CARRIED TO THE `of`, and only an `of` head may have it. The
+        // token is consumed before the parenthesis because after it the head reads as an ordinary
+        // one; what the flag then decides is which iteration protocol the lowering drives.
+        var isAwait = false;
+
         if (Current.Kind == SliceTokenKind.Await)
         {
-            return OutsideStatement(span, "`for await`");
+            // AND IT IS AN EARLY ERROR OUTSIDE A BODY THAT MAY AWAIT, not a manifest refusal. The
+            // manifest admits `for await`; a program that writes one in an ordinary function is
+            // wrong about the LANGUAGE, exactly as a bare `await` there is - and the conformance
+            // runner grades the two codes differently, so answering `2104` would take every
+            // negative test for this out of both columns.
+            if (!awaitIsOperator)
+            {
+                Refuse(
+                    span,
+                    SliceSourceDiagnosticCode.UnexpectedToken,
+                    "`for await` is only admitted inside an async function or an async generator");
+
+                return new JsEmptyStatement(span);
+            }
+
+            isAwait = true;
+            Advance();
         }
 
         Expect(SliceTokenKind.OpenParen, "(");
@@ -1316,10 +1324,7 @@ internal sealed class JsParser
             Advance();
         }
         else if (Current.Kind is SliceTokenKind.Var or SliceTokenKind.Const ||
-            (Current.Kind == SliceTokenKind.Let && Peek(1).Kind is SliceTokenKind.Identifier or
-                SliceTokenKind.Let or SliceTokenKind.Get or SliceTokenKind.Set or
-                SliceTokenKind.Of or SliceTokenKind.Async or SliceTokenKind.Static or
-                SliceTokenKind.OpenBracket or SliceTokenKind.OpenBrace))
+            (Current.Kind == SliceTokenKind.Let && BeginsLetDeclaration()))
         {
             var headSpan = Span();
             var kind = Current.Kind switch
@@ -1342,10 +1347,19 @@ internal sealed class JsParser
                 var source = isOf ? ParseAssignment() : ParseExpression();
                 Expect(SliceTokenKind.CloseParen, ")");
 
+                // AN `in` HEAD WITH `for await` IN FRONT OF IT IS NOT A LOOP THE LANGUAGE HAS.
+                // The production is `for await ( … of … )` and nothing else, so a `for await (x in
+                // o)` is refused rather than quietly iterating property names asynchronously - and
+                // it is refused as a language error, because the manifest is not what forbids it.
+                if (isAwait && !isOf)
+                {
+                    return AwaitOnlyIterates(span);
+                }
+
                 return isOf
                     ? new JsForOfStatement(
                         span, kind, declarators[0].Name, declarators[0].Pattern, null, source,
-                        ParseStatement())
+                        ParseStatement(), isAwait)
                     : new JsForInStatement(
                         span, kind, declarators[0].Name, declarators[0].Pattern, null, source,
                         ParseStatement());
@@ -1375,9 +1389,14 @@ internal sealed class JsParser
                 var source = isOf ? ParseAssignment() : ParseExpression();
                 Expect(SliceTokenKind.CloseParen, ")");
 
+                if (isAwait && !isOf)
+                {
+                    return AwaitOnlyIterates(span);
+                }
+
                 return isOf
                     ? new JsForOfStatement(
-                        span, null, string.Empty, pattern, head, source, ParseStatement())
+                        span, null, string.Empty, pattern, head, source, ParseStatement(), isAwait)
                     : new JsForInStatement(
                         span, null, string.Empty, pattern, head, source, ParseStatement());
             }
@@ -1402,7 +1421,29 @@ internal sealed class JsParser
         }
 
         Expect(SliceTokenKind.CloseParen, ")");
+
+        // A THREE-PART HEAD WITH `for await` IN FRONT OF IT IS NOT A LOOP EITHER, for the same
+        // reason, and it is the case a reader is likeliest to write by accident: `for await (let i
+        // = 0; ; )` reads as an ordinary counted loop right up to the point where nothing awaits.
+        if (isAwait)
+        {
+            return AwaitOnlyIterates(span);
+        }
+
         return new JsForStatement(span, initialiser, test, update, ParseStatement());
+    }
+
+    /// <summary>What a <c>for await</c> over a head that is not an <c>of</c> head is told.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=0D2333
+    // Broiler-Human:        PENDING
+    private JsStatement AwaitOnlyIterates(SliceSourceSpan span)
+    {
+        Refuse(
+            span,
+            SliceSourceDiagnosticCode.UnexpectedToken,
+            "`for await` is only a production with an `of` head");
+
+        return new JsEmptyStatement(span);
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=BB6569
@@ -2172,7 +2213,7 @@ internal sealed class JsParser
     /// <c>static m() { }</c> is a static method - and reading the key first would have made the
     /// second one a field called <c>static</c> followed by a surprise.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=0AFF84
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=2E52A4
     // Broiler-Human:        PENDING
     private JsClassMember? ParseClassMember()
     {
@@ -2205,15 +2246,10 @@ internal sealed class JsParser
 
         if (Current.Kind == SliceTokenKind.Star)
         {
-            // AN ASYNC GENERATOR METHOD IS STILL REFUSED, and it is refused HERE rather than on the
-            // `async` above because the two differ by exactly this token: an arm that refused on
-            // `async` alone would have taken every ordinary async method with it.
-            if (isAsync)
-            {
-                Refuse(span, "an async generator method");
-                return null;
-            }
-
+            // THE TWO MODIFIERS COMBINE, AND THE ONE THAT REFUSED THE COMBINATION IS GONE. An
+            // `async *m() {}` member sets both bits and reaches the same body parse every other
+            // member does; what it changes is the `[Yield]` and `[Await]` contexts of the parameter
+            // list and the body, which are set from the two bits a few lines below.
             isGenerator = true;
             Advance();
         }
@@ -2646,6 +2682,32 @@ internal sealed class JsParser
         SliceTokenKind.Yield => !strict && !yieldIsOperator,
         _ => false,
     };
+
+    /// <summary>
+    /// Whether the <c>let</c> at the cursor begins a DECLARATION rather than being an identifier.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The three places that asked this asked it with a hard-coded token list, and the list was
+    /// short by two.</b> <c>yield</c> and <c>await</c> are ordinary binding names where the
+    /// enclosing context does not make them operators, so <c>let yield = 4;</c> in sloppy
+    /// non-generator code is a lexical declaration every engine runs - and this parser answered
+    /// "`;` was expected and `yield` was found", because `let` fell through to the identifier arm
+    /// and the name after it became the surprise. It is a refusal of a correct program, and the
+    /// conformance runner scores that as a failure rather than as anything the manifest declines.
+    /// </para>
+    /// <para>
+    /// <b>So the question is asked of <see cref="IsIdentifierName"/>, which already knows both
+    /// context rules</b>, plus the two bracket tokens a destructuring declaration begins with. One
+    /// predicate rather than three copies is also what stops the next name added to the identifier
+    /// set from being added to two of the three.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3A6447
+    // Broiler-Human:        PENDING
+    private bool BeginsLetDeclaration() =>
+        IsIdentifierName(Peek(1).Kind) ||
+        Peek(1).Kind is SliceTokenKind.OpenBracket or SliceTokenKind.OpenBrace;
 
     /// <summary>
     /// Recognises an arrow function, which the grammar cannot see coming from its first token.
@@ -3323,7 +3385,7 @@ internal sealed class JsParser
         return arguments;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=51A06E
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=84FFDF
     // Broiler-Human:        PENDING
     private JsExpression ParsePrimary()
     {
@@ -3373,10 +3435,6 @@ internal sealed class JsParser
             // DIAGNOSTIC CODE, so a construct refused under any other code is scored a failure -
             // and a negative test expecting a `SyntaxError` at parse is scored a PASS, which is
             // the false point the unsupported verdict exists to prevent.
-            case SliceTokenKind.Async when Peek(1).Kind == SliceTokenKind.Function &&
-                !Peek(1).PrecededByLineTerminator && Peek(2).Kind == SliceTokenKind.Star:
-                return OutsideExpression(span, "an async generator function");
-
             case SliceTokenKind.Async when Peek(1).Kind == SliceTokenKind.Function &&
                 !Peek(1).PrecededByLineTerminator:
                 Advance();
@@ -3561,7 +3619,7 @@ internal sealed class JsParser
         return new JsObjectLiteral(span, entries);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F08DF1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D13385
     // Broiler-Human:        PENDING
     private JsObjectEntry ParseObjectEntry()
     {
@@ -3606,28 +3664,28 @@ internal sealed class JsParser
             Peek(1).Kind is not SliceTokenKind.Colon and not SliceTokenKind.Comma and
                 not SliceTokenKind.CloseBrace and not SliceTokenKind.OpenParen)
         {
-            // THE `*` IS TESTED BEFORE ANYTHING IS PARSED, because an async generator method is
-            // still refused by name and the two constructs differ by that one token. An arm that
-            // parsed on `async` alone would have made `{ async *m(){} }` a surprise token where a
-            // refusal belongs.
-            if (Peek(1).Kind == SliceTokenKind.Star)
-            {
-                Refuse(span, "an async generator method");
+            Advance();
 
-                return new JsObjectEntry(
-                    span, JsPropertyKind.Init, string.Empty, null, new JsNullLiteral(span));
+            // THE `*` IS READ HERE AND SETS BOTH BITS. An async generator method's parameter list
+            // and body are `[+Yield, +Await]` where an ordinary async method's are `[~Yield,
+            // +Await]`, so the flag has to be known before either is parsed - which is why it is
+            // read at this point rather than by whatever parses the member.
+            var asyncIsGenerator = Current.Kind == SliceTokenKind.Star;
+
+            if (asyncIsGenerator)
+            {
+                Advance();
             }
 
-            Advance();
             var asyncKey = PropertyKey(out var asyncComputed);
             var outerOperator = yieldIsOperator;
             var outerAwait = awaitIsOperator;
-            yieldIsOperator = false;
+            yieldIsOperator = asyncIsGenerator;
             awaitIsOperator = true;
             var asyncParameters = ParseParameters();
 
             var asyncBody = ParseFunctionBody(
-                span, asyncKey, asyncParameters, isArrow: false, isGenerator: false, isAsync: true);
+                span, asyncKey, asyncParameters, isArrow: false, asyncIsGenerator, isAsync: true);
 
             yieldIsOperator = outerOperator;
             awaitIsOperator = outerAwait;

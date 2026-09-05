@@ -941,7 +941,7 @@ public sealed class ReviewRecordRuleTests
         // a file appearing in a product assembly fails here until someone decides whether it is
         // covered, and the number records that the decision was made.
         //
-        // The workload programme added fifteen, each for a reason the number should carry: the
+        // The workload programme added sixteen, each for a reason the number should carry: the
         // optional-surface names and the four files of the binary surface and its realm setup; the
         // dynamic surface's realm setup; the regular-expression matcher, which the front end needs
         // in order to refuse an invalid pattern where the literal is written and which therefore
@@ -951,7 +951,14 @@ public sealed class ReviewRecordRuleTests
         // prototypes; the `Reflect` namespace; and the module record. Each is covered for the same
         // reason every other product file is, which is that it compiles into an assembly this
         // component builds.
-        Assert.Equal(117, AssuranceSources.Files.Count);
+        //
+        // The sixteenth is the ASYNCHRONOUS half of the iteration protocol: the intrinsics an async
+        // generator and a `for await` reach - `%AsyncIteratorPrototype%`,
+        // `%AsyncGeneratorPrototype%`, `%AsyncGeneratorFunction%` and the wrapper that turns a
+        // synchronous iterator into an asynchronous one. It is a file of its own for the reason the
+        // synchronous generator's realm setup is: it is reached by walking up from a value rather
+        // than from any global, and putting it in the global setup would have hidden that.
+        Assert.Equal(118, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

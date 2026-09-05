@@ -1000,7 +1000,7 @@ internal sealed class JsVerifier
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=846BC6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6008E4
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome Link(
         Sections state,
@@ -1073,12 +1073,16 @@ internal sealed class JsVerifier
                     (ulong)index);
             }
 
-            // AN ASYNC UNIT IS NONE OF THE OTHER THREE EITHER, AND THE ARROW IS NOT ON THE LIST.
-            // That is the whole difference from the check above: an async ARROW is an ordinary
-            // arrow whose body may suspend, and the executor enters it exactly as it enters any
-            // arrow - with the lexical `this` and `new.target` its closure recorded - so nothing
-            // about the pairing is contradictory. The generator flag IS on the list, because this
-            // profile admits no async generator and the two bits name two different drivers.
+            // AN ASYNC UNIT IS NOT A CONSTRUCTOR, AND NEITHER THE ARROW NOR THE GENERATOR IS ON
+            // THE LIST. The arrow never was: an async ARROW is an ordinary arrow whose body may
+            // suspend, and the executor enters it exactly as it enters any arrow - with the
+            // lexical `this` and `new.target` its closure recorded. The GENERATOR was, and dropping
+            // it is what admitted the async generator: the pair does not ask the executor to choose
+            // between the generator driver and the async one, it names a THIRD driver whose caller
+            // pulls with `next` and whose body settles the promise that pull answered.
+            // `Generator | Arrow` stays refused by the check above, which is what keeps the one
+            // combination the grammar has no production for out.
+            //
             // A MODULE BODY IS THE ONE PROGRAM BODY THAT MAY BE ASYNC, and until the module goal
             // existed no program body could be. `ProgramBody | Async` was refused here because the
             // only program bodies were scripts, which have no driver and no caller to hand a
@@ -1087,8 +1091,7 @@ internal sealed class JsVerifier
             // admitted exactly for a unit the module records name as a body, and refused everywhere
             // else, which is what keeps a script from claiming a driver nothing would supply.
             if ((unitFlags & JsFormat.FunctionFlags.Async) != 0 &&
-                ((unitFlags & (JsFormat.FunctionFlags.Generator |
-                    JsFormat.FunctionFlags.Constructible)) != 0 ||
+                ((unitFlags & JsFormat.FunctionFlags.Constructible) != 0 ||
                     ((unitFlags & JsFormat.FunctionFlags.ProgramBody) != 0 &&
                         !IsModuleBody(state, (uint)index))))
             {
@@ -2033,7 +2036,7 @@ internal sealed class JsVerifier
         // Broiler-Human:        PENDING
         private int[] depths = [];
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B99CD9
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D37B36
         // Broiler-Human:        PENDING
         internal VmVerifierOutcome Walk(int index)
         {
@@ -2217,12 +2220,18 @@ internal sealed class JsVerifier
 
                     if (JsOpcodes.HasCodeTarget(opcode))
                     {
-                        // The two stepping opcodes have a different height on the taken branch than
-                        // on the fall-through: a name or a value arrives only when there was one.
-                        var targetHeight =
-                            opcode is JsOpcode.ForInNext or JsOpcode.IterateNext
-                                ? height - 1
-                                : after;
+                        // The four stepping opcodes have a different height on the taken branch than
+                        // on the fall-through: a name, a value or a close result arrives only when
+                        // there was one. `IterateAwaitStep` is two below rather than one, because
+                        // it consumes the awaited step AND the record the step was taken from -
+                        // and on the taken branch neither is replaced.
+                        var targetHeight = opcode switch
+                        {
+                            JsOpcode.ForInNext or JsOpcode.IterateNext or
+                                JsOpcode.IterateCloseAsync => height - 1,
+                            JsOpcode.IterateAwaitStep => height - 2,
+                            _ => after,
+                        };
                         var seeded = Seed(
                             unit, code, (int)operand, targetHeight, afterDepth, pending, offset);
 
@@ -2344,7 +2353,7 @@ internal sealed class JsVerifier
             return Ok;
         }
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=AAE0A9
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0481FB
         // Broiler-Human:        PENDING
         private VmVerifierOutcome Check(JsCodeUnit unit, JsOpcode opcode, uint operand, int offset)
         {
@@ -2432,12 +2441,42 @@ internal sealed class JsVerifier
                 // artifact that yields anywhere else is refused here rather than met by a null
                 // frame in the middle of the dispatch loop.
                 case JsOpcode.Yield:
+                    return (unit.Flags & JsFormat.FunctionFlags.Generator) != 0
+                        ? Ok
+                        : Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.YieldOutsideGenerator,
+                            (ulong)offset);
+
+                // A DELEGATION IS CHECKED AGAINST THE GENERATOR FLAG AND NOTHING ELSE, exactly as
+                // `Yield` is. The executor picks between two delegation loops on the ASYNC flag -
+                // the synchronous one runs between two yields inside one entry into the dispatch
+                // loop, the asynchronous one awaits every inner step and re-enters this instruction
+                // to continue - and both are driven by a frame this flag already guarantees.
                 case JsOpcode.YieldDelegate:
                     return (unit.Flags & JsFormat.FunctionFlags.Generator) != 0
                         ? Ok
                         : Invalid(
                             VmReason.SemanticValidationFailed,
                             JavaScriptDiagnosticCode.YieldOutsideGenerator,
+                            (ulong)offset);
+
+                // THE `for await` HEAD IS CHECKED AGAINST THE FLAG ITS OWN `Await` IS CHECKED
+                // AGAINST. Four of the five instructions would run perfectly well in an ordinary
+                // function - each is a call on an iterator - and the answer would be a promise
+                // nobody ever resolved rather than an error anybody could diagnose. Refusing the
+                // whole sequence here is what makes "a `for await` head belongs to a body that may
+                // await" a property of the format rather than of the lowering that emits one.
+                case JsOpcode.IterateStartAsync:
+                case JsOpcode.IterateNextAsync:
+                case JsOpcode.IterateAwaitStep:
+                case JsOpcode.IterateCloseAsync:
+                case JsOpcode.IterateCloseCheck:
+                    return (unit.Flags & JsFormat.FunctionFlags.Async) != 0
+                        ? Ok
+                        : Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.AsyncIterationOutsideAsync,
                             (ulong)offset);
 
                 // AND ONLY AN ASYNC BODY MAY AWAIT, checked against the OTHER flag. Two bits and

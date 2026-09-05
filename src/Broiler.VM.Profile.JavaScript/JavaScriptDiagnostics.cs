@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   8
 // Annotated:        8/8
-// Exempt:           62
+// Exempt:           63
 // Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    High
@@ -48,7 +48,7 @@ namespace Broiler.VM.Profile.JavaScript;
 /// predicate's own record calls a worse record than one block on the vocabulary.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=4E0E55
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=1CB4EF
 // Broiler-Human:        PENDING
 public enum JavaScriptDiagnosticCode
 {
@@ -271,12 +271,12 @@ public enum JavaScriptDiagnosticCode
     /// A code-unit row combines the async flag with a flag that contradicts it.
     /// </summary>
     /// <remarks>
-    /// An async function is neither the program body, nor a constructor, nor a generator. The
-    /// third is the one worth stating: this profile admits no async generator, and a unit claiming
-    /// both bits would be asking the executor to pick a driver - suspended-start with a caller
-    /// pulling it, or running-start with the job queue pushing it - where the format offers no way
-    /// to say which. An async ARROW is not on the list, because an arrow with a suspendable body
-    /// is exactly what <c>async () =&gt; { await x; }</c> is.
+    /// An async function is neither the program body nor a constructor. THE GENERATOR FLAG IS NOT
+    /// ON THE LIST AND WAS, and dropping it is what admitted the async generator: a unit carrying
+    /// both bits is not asking the executor to choose between two drivers - it names a THIRD, whose
+    /// caller pulls with <c>next</c> and whose body settles the promise that pull answered. An
+    /// async ARROW is not on the list either, because an arrow with a suspendable body is exactly
+    /// what <c>async () =&gt; { await x; }</c> is.
     /// </remarks>
     AsyncFlagsInconsistent = 1612,
 
@@ -354,6 +354,20 @@ public enum JavaScriptDiagnosticCode
 
     /// <summary>The artifact declares the module surface and carries no module records.</summary>
     ModuleSectionMissing = 1620,
+
+    /// <summary>
+    /// An asynchronous iteration step appears in a code unit whose flags say nothing may await.
+    /// </summary>
+    /// <remarks>
+    /// <b>The five instructions of a <c>for await</c> head are a sequence with an <c>Await</c>
+    /// inside it, and only the <c>Await</c> would otherwise be refused.</b> An artifact that wrote
+    /// the other four into an ordinary function would run: each of them is an ordinary call on an
+    /// iterator, and the answer would be a promise nobody resolved rather than a diagnosable error.
+    /// Refusing the whole sequence against the same flag the <c>Await</c> is checked against is what
+    /// makes "a <c>for await</c> head belongs to an async body" a property of the FORMAT rather than
+    /// of the lowering that happens to produce one.
+    /// </remarks>
+    AsyncIterationOutsideAsync = 1630,
 
     // ---- 1900: the bounded reader's own statuses, mapped -----------------------------------
 

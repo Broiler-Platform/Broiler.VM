@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   156
-// Annotated:        156/156
-// Exempt:           80
-// Human-reviewed:   0/156
+// Relevant units:   159
+// Annotated:        159/159
+// Exempt:           81
+// Human-reviewed:   0/159
 // IP risk:          None
 // Security risk:    High
 // Criteria:         6/6
 // Resource impact:  3/10 max
-// Unverified:       156
+// Unverified:       159
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -2819,7 +2819,7 @@ public sealed class JsCompiler
     /// reproduced defect in the language.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D396B1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=ACE79E
     // Broiler-Human:        PENDING
     private void CompileForOf(JsForOfStatement loop, int completion, string label)
     {
@@ -2839,7 +2839,13 @@ public sealed class JsCompiler
         }
 
         CompileExpression(loop.Right);
-        Emit(JsOpcode.IterateStart);
+
+        // `for await` READS `Symbol.asyncIterator` AND FALLS BACK, and the falling back is the
+        // operation rather than a courtesy: an Array has no `Symbol.asyncIterator`, so a loop that
+        // refused anything without one would refuse `for await (const x of [p, q])`, which is the
+        // case the statement exists for. What the fall-back builds awaits each VALUE, which is the
+        // whole difference between iterating promises and iterating what they resolve to.
+        Emit(loop.IsAwait ? JsOpcode.IterateStartAsync : JsOpcode.IterateStart);
 
         if (lexical)
         {
@@ -2880,11 +2886,27 @@ public sealed class JsCompiler
             Break = NewLabel(),
             Continue = NewLabel(),
             IteratorSlot = record,
+            IteratorIsAsync = loop.IsAwait,
         };
 
         Mark(top);
         EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, record);
-        Branch(JsOpcode.IterateNext, exit.Break!);
+
+        // THE STEP IS THREE INSTRUCTIONS WHERE THE SYNCHRONOUS ONE IS ONE, and the middle one is a
+        // suspension. `next` is called, what it answered is awaited, and only then is the answer
+        // asked whether it is done - so the record stays on the stack under the awaited value and
+        // the pair is consumed together. Folding the three into one instruction would have needed
+        // an instruction that suspends in the middle of itself.
+        if (loop.IsAwait)
+        {
+            Emit(JsOpcode.IterateNextAsync);
+            Emit(JsOpcode.Await);
+            Branch(JsOpcode.IterateAwaitStep, exit.Break!);
+        }
+        else
+        {
+            Branch(JsOpcode.IterateNext, exit.Break!);
+        }
 
         if (lexical)
         {
@@ -2942,10 +2964,101 @@ public sealed class JsCompiler
         // depth before it lands here. It closes quietly and rethrows: an error the iterator's
         // `return` raises must not replace the one already travelling.
         Mark(unwind);
-        EmitScoped(JsOpcode.LoadScoped, (byte)outerDepth, record);
-        Emit(JsOpcode.IterateClose, (byte)1);
-        Emit(JsOpcode.Throw);
+
+        if (loop.IsAwait)
+        {
+            CompileAsyncUnwind(record, outerDepth);
+        }
+        else
+        {
+            EmitScoped(JsOpcode.LoadScoped, (byte)outerDepth, record);
+            Emit(JsOpcode.IterateClose, (byte)1);
+            Emit(JsOpcode.Throw);
+        }
+
         Mark(after);
+    }
+
+    /// <summary>
+    /// The <c>for await</c> handler: park the exception, close asynchronously, re-raise it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The exception is parked in a slot because the close SUSPENDS, and a value the operand
+    /// stack holds is not what a re-entry finds.</b> The synchronous handler keeps the thrown value
+    /// under the record and throws it three instructions later; here the close awaits, so the frame
+    /// leaves and comes back at a height the handler no longer controls. A slot of the function's
+    /// own environment is where every other value that has to outlive a jump already lives.
+    /// </para>
+    /// <para>
+    /// <b>The close is wrapped in a region that SWALLOWS, and the swallowing is the specification's
+    /// own.</b> <c>AsyncIteratorClose</c> under a throw completion reads <c>return</c>, calls it,
+    /// awaits what it answered - and then discards every failure of those three, because the
+    /// exception already travelling is the one the program is owed. Emitting a region rather than a
+    /// quiet variant of <c>Await</c> is what keeps the suspension one opcode: the swallowing is
+    /// control flow, and this format already expresses control flow.
+    /// </para>
+    /// <para>
+    /// <b>The value check is NOT emitted here.</b> A <c>return</c> answering a primitive is a
+    /// <c>TypeError</c> under a normal completion and is discarded under this one, which is why
+    /// <c>IterateCloseCheck</c> appears on the <c>break</c> and <c>return</c> paths and not on this
+    /// one.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2D2442
+    // Broiler-Human:        PENDING
+    private void CompileAsyncUnwind(int record, int outerDepth)
+    {
+        var owner = FunctionScope();
+        var parked = owner.Declare("#forawait" + owner.SlotCount, constant: false);
+        EmitScoped(JsOpcode.InitialiseScoped, (byte)outerDepth, parked);
+
+        var guarded = buffer.Code.Count;
+        var swallow = NewLabel();
+        var closed = NewLabel();
+        var rethrow = NewLabel();
+
+        buffer.PendingRegions.Add(
+            new PendingRegion(guarded, swallow, outerDepth, JsFormat.HandlerKind.Catch));
+
+        EmitScoped(JsOpcode.LoadScoped, (byte)outerDepth, record);
+        Branch(JsOpcode.IterateCloseAsync, closed);
+        Emit(JsOpcode.Await);
+        Emit(JsOpcode.Pop);
+        Mark(closed);
+        buffer.CloseRegion(guarded, buffer.Code.Count);
+        Branch(JsOpcode.Jump, rethrow);
+
+        // THE HANDLER IS ENTERED WITH THE SWALLOWED VALUE AND NOTHING ELSE, at the height every
+        // handler of this format is entered at, and it discards it. What is re-raised below is the
+        // value that was parked, which is the exception the loop body actually threw.
+        Mark(swallow);
+        buffer.Rejoin(1);
+        Emit(JsOpcode.Pop);
+        Mark(rethrow);
+        EmitScoped(JsOpcode.LoadScoped, (byte)outerDepth, parked);
+        Emit(JsOpcode.Throw);
+    }
+
+    /// <summary>
+    /// <c>AsyncIteratorClose</c> under a normal or <c>break</c>-shaped completion, inline.
+    /// </summary>
+    /// <remarks>
+    /// <b>Every failure propagates here, where the handler above discards them all.</b> That is the
+    /// one difference between the two closes and it is the specification's: a <c>break</c> out of a
+    /// <c>for await</c> whose iterator's <c>return</c> rejects rejects the enclosing async
+    /// function, and a <c>throw</c> out of the same loop does not.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=36BF98
+    // Broiler-Human:        PENDING
+    private void CompileAsyncClose(int record)
+    {
+        var closed = NewLabel();
+        EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, record);
+        Branch(JsOpcode.IterateCloseAsync, closed);
+        Emit(JsOpcode.Await);
+        Emit(JsOpcode.IterateCloseCheck);
+        Mark(closed);
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E0BD37
@@ -3155,7 +3268,7 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=48CDC4
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=654A6B
     // Broiler-Human:        PENDING
     private void CompileReturn(JsReturnStatement returned)
     {
@@ -3204,6 +3317,7 @@ public sealed class JsCompiler
             }
 
             CompileExpression(returned.Value);
+            AwaitTheReturnedValue();
             Emit(JsOpcode.Return);
             return;
         }
@@ -3223,6 +3337,7 @@ public sealed class JsCompiler
         else
         {
             CompileExpression(returned.Value);
+            AwaitTheReturnedValue();
         }
 
         EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, slot);
@@ -3241,12 +3356,49 @@ public sealed class JsCompiler
         scope = savedScope;
     }
 
+    /// <summary>
+    /// Awaits what a <c>return</c> is carrying, in the one body kind where the language does.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is the ASYNC GENERATOR and not the async function, and the asymmetry is the
+    /// language's.</b> <c>ReturnStatement : return Expression</c> awaits its value when
+    /// <c>GetGeneratorKind()</c> is <c>async</c>, and that answer is <c>async</c> only inside an
+    /// async generator: an ordinary async function has no generator component at all. So
+    /// <c>async function* g() { return Promise.resolve(1); }</c> completes with <c>1</c> where
+    /// <c>async function f() { return Promise.resolve(1); }</c> completes with the promise - and the
+    /// second is invisible, because the promise the CALL answered adopts it either way.
+    /// </para>
+    /// <para>
+    /// <b>The await happens before the unwinding and not after it</b>, because it belongs to the
+    /// evaluation of the return statement rather than to the completion travelling out. A
+    /// <c>finally</c> that observes the world therefore sees it after the value has settled, which
+    /// is the same ordering <c>gen.return(p)</c> has for the same reason.
+    /// </para>
+    /// <para>
+    /// A <c>return</c> with no expression is not on this path at all: it completes with
+    /// <c>undefined</c>, which the language does not await and which has nothing to wait for.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3768F5
+    // Broiler-Human:        PENDING
+    private void AwaitTheReturnedValue()
+    {
+        const JsFormat.FunctionFlags both =
+            JsFormat.FunctionFlags.Async | JsFormat.FunctionFlags.Generator;
+
+        if ((buffer.Flags & both) == both)
+        {
+            Emit(JsOpcode.Await);
+        }
+    }
+
     /// <summary>Runs one enclosing exit's finaliser, or closes its iterator, on the way out.</summary>
     /// <remarks>
     /// The scopes between here and the exit are discarded first, because a finaliser's body and an
     /// iterator's slot are both addressed relative to the depth the exit was created at.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=750D67
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D7F0F6
     // Broiler-Human:        PENDING
     private void Unwind(Exit exit)
     {
@@ -3270,6 +3422,13 @@ public sealed class JsCompiler
         }
 
         Unwrap(exit.Depth);
+
+        if (exit.IteratorIsAsync)
+        {
+            CompileAsyncClose(exit.IteratorSlot);
+            return;
+        }
+
         EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, exit.IteratorSlot);
         Emit(JsOpcode.IterateClose, (byte)0);
     }
@@ -3299,7 +3458,7 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=ABD988
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6C86B0
     // Broiler-Human:        PENDING
     private void CompileJumpOut(SliceSourceSpan span, string label, bool wantsContinue)
     {
@@ -3378,8 +3537,15 @@ public sealed class JsCompiler
         // iterator would end the loop it was asked to keep going.
         if (!wantsContinue && target.IteratorSlot >= 0)
         {
-            EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, target.IteratorSlot);
-            Emit(JsOpcode.IterateClose, (byte)0);
+            if (target.IteratorIsAsync)
+            {
+                CompileAsyncClose(target.IteratorSlot);
+            }
+            else
+            {
+                EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, target.IteratorSlot);
+                Emit(JsOpcode.IterateClose, (byte)0);
+            }
         }
 
         Branch(JsOpcode.Jump, wantsContinue ? target.Continue! : target.Break!);
@@ -3389,7 +3555,7 @@ public sealed class JsCompiler
 
     // ---- expressions ---------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C49E4D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6F386E
     // Broiler-Human:        PENDING
     private void CompileExpression(JsExpression expression)
     {
@@ -3606,7 +3772,26 @@ public sealed class JsCompiler
                     CompileExpression(yielded.Operand);
                 }
 
-                Emit(yielded.IsDelegate ? JsOpcode.YieldDelegate : JsOpcode.Yield);
+                // A `yield` IN AN ASYNC GENERATOR AWAITS ITS OPERAND FIRST, and it is two
+                // instructions rather than a mode on one because the awaiting is a SUSPENSION with
+                // its own resumption. `Yield(v)` in the specification is
+                // `AsyncGeneratorYield(? Await(v))` when the generator is async - so
+                // `yield Promise.resolve(1)` hands the consumer `1` and not the promise, which is
+                // the single most visible difference between the two kinds of generator. The
+                // `Await` leaves what it resolved on the stack and the `Yield` takes it from there,
+                // so the pair needs no temporary and no new opcode.
+                if (yielded.IsDelegate)
+                {
+                    Emit(JsOpcode.YieldDelegate);
+                    break;
+                }
+
+                if ((buffer.Flags & JsFormat.FunctionFlags.Async) != 0)
+                {
+                    Emit(JsOpcode.Await);
+                }
+
+                Emit(JsOpcode.Yield);
                 break;
 
             // `await` LEAVES ONE VALUE WHERE IT TOOK ONE, exactly as `yield` does, so it needs
@@ -6409,6 +6594,21 @@ public sealed class JsCompiler
         // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=39F68C
         // Broiler-Human:        PENDING
         internal int IteratorSlot { get; init; } = -1;
+
+        /// <summary>
+        /// Whether the iterator in <see cref="IteratorSlot"/> is an ASYNC one.
+        /// </summary>
+        /// <remarks>
+        /// <b>The close is a different sequence and not a different operand.</b> A synchronous
+        /// close is one instruction; an asynchronous one calls <c>return</c>, awaits what it
+        /// answered and then requires it to be an object — three instructions with a suspension in
+        /// the middle — and it skips all three when there is no <c>return</c> to call. Every exit
+        /// that owes a close has to know which, and the exit record is the one thing all four of
+        /// them already consult.
+        /// </remarks>
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D82625
+        // Broiler-Human:        PENDING
+        internal bool IteratorIsAsync { get; init; }
 
         /// <summary>
         /// Whether this finaliser's body is being emitted right now.

@@ -66,7 +66,7 @@ internal sealed partial class JsRealm
     internal JsObject GeneratorFunctionPrototype { get; private set; } = null!;
 
     /// <summary>Builds the generator intrinsics on top of the realm's own iteration protocol.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=5AA967
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=16F3AD
     // Broiler-Human:        PENDING
     private void SetupGenerator()
     {
@@ -137,6 +137,7 @@ internal sealed partial class JsRealm
             JsProperty.Data(JsValue.Object(constructor), JsPropertyAttributes.Configurable));
 
         SetupAsyncFunction();
+        SetupAsyncGenerator();
     }
 
     /// <summary><c>%AsyncFunction.prototype%</c>: what every async function inherits from.</summary>

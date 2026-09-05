@@ -588,6 +588,16 @@ public static class JavaScriptProfile
         // - fields, static blocks, private names and a generator member - took it to 4,073 bytes
         // and 16,478 calls, which is 2.01 times this row: the ordering the row exists to guarantee
         // still holds, and the margin is now the narrowest it has been *(JSC-126)*.
+        //
+        // AND ADMITTING ASYNCHRONOUS ITERATION TOOK IT BELOW TWO, which is the first time this row
+        // has been the thing that moved rather than the thing that survived. Five more dispatch
+        // arms took the per-call cost to 4,551 bytes and the capacity on sixty-four megabytes to
+        // 14,737 calls - 1.80 times this row, so a program granted this maximum could have reached
+        // the stack before it reached the ceiling. The GUEST STACK was raised to ninety-six
+        // megabytes and the capacity re-measured at 22,122 calls, which is 2.70 times this row
+        // *(JSC-139)*. This row did not move: a ceiling a host may be granted is a policy figure,
+        // and lowering it to fit a stack would be answering a question about the machine with a
+        // change to what a program is allowed to do.
         values[(int)VmBudgetDimension.CallDepth] = 8_192;
         values[(int)VmBudgetDimension.VerifierWork] = 1_099_511_627_776;
         values[(int)VmBudgetDimension.ArtifactBytes] = 536_870_912;

@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   23
 // Annotated:        23/23
-// Exempt:           115
+// Exempt:           120
 // Human-reviewed:   0/23
 // IP risk:          None
 // Security risk:    Medium
@@ -98,7 +98,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// queue the host drains.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=E2DD6C
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=722FF1
 // Broiler-Human:        PENDING
 public enum JsOpcode : byte
 {
@@ -880,6 +880,87 @@ public enum JsOpcode : byte
     /// </remarks>
     RunStaticElements = 0x79,
 
+    // ---- asynchronous iteration -------------------------------------------------------------------------
+    //
+    // FIVE INSTRUCTIONS AND NOT ONE, BECAUSE AN `await` HAS TO STAND BETWEEN THEM. A `for await`
+    // head calls `next`, awaits what it answered, and only then asks whether the iteration is done -
+    // and the await is a SUSPENSION, which leaves the dispatch loop entirely. A single instruction
+    // that did the whole step would have had to suspend in the middle of itself, which this
+    // profile's one frame cannot express; splitting at each suspension point is what lets the
+    // existing `Await` do the awaiting and the frame come back at an instruction boundary.
+
+    /// <summary>
+    /// Pop an iterable; push the iterator record <c>GetIterator(obj, ~async~)</c> answers with.
+    /// </summary>
+    /// <remarks>
+    /// <b>It is a separate opcode from <see cref="IterateStart"/> rather than an operand on it,
+    /// because the two read different Symbols and one of them may build an object.</b> This reads
+    /// <c>Symbol.asyncIterator</c> and, when the value has none, wraps the SYNCHRONOUS iterator in
+    /// an <c>%AsyncFromSyncIteratorPrototype%</c> object so that every value the wrapper answers has
+    /// already been awaited. A flag on <see cref="IterateStart"/> would have made one instruction
+    /// able to allocate or not depending on a byte, which is exactly the kind of instruction a
+    /// reader of the lowering mis-reads.
+    /// </remarks>
+    IterateStartAsync = 0x7A,
+
+    /// <summary>
+    /// Read the async iterator record on top; push what its <c>next</c> answered, unawaited.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>What it pushes is the RAW answer and not a value</b>: an async iterator's <c>next</c>
+    /// answers a promise, and the instruction that follows this one is the <see cref="Await"/> that
+    /// resolves it. Nothing here reads <c>done</c> or <c>value</c>, because neither exists yet.
+    /// </para>
+    /// <para>
+    /// <b>THE RECORD STAYS UNDERNEATH, and that is what carries it across the suspension.</b>
+    /// <see cref="IterateAwaitStep"/> needs it - a step that has a value un-marks the record so that
+    /// an abrupt exit from the body closes it - and the frame's operand stack is exactly where a
+    /// value survives an <c>await</c>. Popping it here and re-reading it from the loop's slot would
+    /// have worked and would have said, wrongly, that the record and the step are unrelated.
+    /// </para>
+    /// </remarks>
+    IterateNextAsync = 0x7B,
+
+    /// <summary>
+    /// Pop an awaited iteration result and the record under it; push the result's <c>value</c>, or
+    /// jump to <c>u32</c> when it is done.
+    /// </summary>
+    /// <remarks>
+    /// The two-effect shape <see cref="IterateNext"/> has, one value wider: it consumes two and
+    /// leaves one on the fall-through and none on the branch, so the target is TWO below this
+    /// instruction's height. A result that is not an object is a <c>TypeError</c> here rather than a
+    /// silent completion, which is what the specification asks of a <c>for await</c> head whose
+    /// iterator answered a primitive.
+    /// </remarks>
+    IterateAwaitStep = 0x7C,
+
+    /// <summary>
+    /// Pop an async iterator record; push what its <c>return</c> answered, or jump to <c>u32</c>
+    /// when there was nothing to call.
+    /// </summary>
+    /// <remarks>
+    /// <b>The jump is what keeps an iterator with no <c>return</c> from spending a turn of the job
+    /// queue.</b> <c>AsyncIteratorClose</c> awaits the result of <c>return</c> and returns
+    /// immediately when there is no <c>return</c> to call - so a lowering that awaited
+    /// unconditionally would have added a microtask tick to every <c>break</c> out of a
+    /// <c>for await</c> over an iterator that defines none, which a program interleaving with
+    /// <c>then</c> can count.
+    /// </remarks>
+    IterateCloseAsync = 0x7D,
+
+    /// <summary>
+    /// Pop an awaited close result and require it to be an object.
+    /// </summary>
+    /// <remarks>
+    /// It is the last step of <c>AsyncIteratorClose</c> under a normal or <c>break</c>-shaped
+    /// completion, and it is a separate instruction because the value it checks arrives from the
+    /// <see cref="Await"/> before it rather than from the close. Under a THROW completion the
+    /// lowering does not emit it at all: the specification discards everything the close did,
+    /// including this check, because the exception already in flight is the one the program is owed.
+    /// </remarks>
+    IterateCloseCheck = 0x7E,
+
     // ---- stack ------------------------------------------------------------------------------------------
 
     /// <summary>Pop one and discard it.</summary>
@@ -1048,7 +1129,7 @@ public static class JsOpcodes
         ElementIsMethod | ElementIsGetter | ElementIsSetter;
 
     /// <summary>Every opcode format version 2 defines, in ascending numeric order.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=7BF5E0
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=1D5DAD
     // Broiler-Human:        PENDING
     public static readonly JsOpcode[] All =
     [
@@ -1087,6 +1168,8 @@ public static class JsOpcodes
         JsOpcode.IterateStart, JsOpcode.IterateNext, JsOpcode.IterateRest, JsOpcode.IterateClose,
         JsOpcode.Yield, JsOpcode.YieldDelegate, JsOpcode.Await,
         JsOpcode.LoadImport, JsOpcode.ThrowImmutable,
+        JsOpcode.IterateStartAsync, JsOpcode.IterateNextAsync, JsOpcode.IterateAwaitStep,
+        JsOpcode.IterateCloseAsync, JsOpcode.IterateCloseCheck,
         JsOpcode.DefineClassElement, JsOpcode.NewPrivateName,
         JsOpcode.LoadPrivate, JsOpcode.StorePrivate, JsOpcode.HasPrivate,
         JsOpcode.RunStaticElements,
@@ -1125,12 +1208,13 @@ public static class JsOpcodes
     };
 
     /// <summary>Whether this opcode's <c>u32</c> operand is a code offset the verifier must check.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=1C6036
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=227EC2
     // Broiler-Human:        PENDING
     public static bool HasCodeTarget(JsOpcode opcode) => opcode switch
     {
         JsOpcode.Jump or JsOpcode.JumpIfFalse or JsOpcode.JumpIfTrue or
-        JsOpcode.ForInNext or JsOpcode.IterateNext => true,
+        JsOpcode.ForInNext or JsOpcode.IterateNext or
+        JsOpcode.IterateAwaitStep or JsOpcode.IterateCloseAsync => true,
         _ => false,
     };
 
@@ -1138,7 +1222,7 @@ public static class JsOpcodes
     /// The operand shape of <paramref name="opcode"/>, or <see langword="null"/> when this format
     /// version does not define it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=1B2128
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=340453
     // Broiler-Human:        PENDING
     public static JsOperandShape? Shape(JsOpcode opcode) => opcode switch
     {
@@ -1165,6 +1249,7 @@ public static class JsOpcodes
         JsOpcode.SetPrototypeLiteral or
         JsOpcode.IterateStart or JsOpcode.IterateRest or
         JsOpcode.Yield or JsOpcode.YieldDelegate or JsOpcode.Await or
+        JsOpcode.IterateStartAsync or JsOpcode.IterateNextAsync or JsOpcode.IterateCloseCheck or
         JsOpcode.LoadPrivate or JsOpcode.StorePrivate or JsOpcode.HasPrivate or
         JsOpcode.RunStaticElements or
         JsOpcode.Pop or JsOpcode.Duplicate or JsOpcode.DuplicateTwo or JsOpcode.Swap
@@ -1188,7 +1273,8 @@ public static class JsOpcodes
             => JsOperandShape.U16,
 
         JsOpcode.Jump or JsOpcode.JumpIfFalse or JsOpcode.JumpIfTrue or
-        JsOpcode.ForInNext or JsOpcode.IterateNext
+        JsOpcode.ForInNext or JsOpcode.IterateNext or
+        JsOpcode.IterateAwaitStep or JsOpcode.IterateCloseAsync
             => JsOperandShape.U32,
 
         // `ResolveName` shares the shape the three slot instructions use, and for the same reason:
@@ -1210,7 +1296,7 @@ public static class JsOpcodes
     /// and the verifier's abstract height is computed from them alone. A false answer means the
     /// opcode is not one this format version defines - not that its effect is unknown.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=D72A29
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=693C53
     // Broiler-Human:        PENDING
     public static bool TryDescribe(JsOpcode opcode, uint operand, out int pops, out int pushes)
     {
@@ -1265,6 +1351,7 @@ public static class JsOpcodes
             case JsOpcode.JumpIfFalse:
             case JsOpcode.JumpIfTrue:
             case JsOpcode.IterateClose:
+            case JsOpcode.IterateCloseCheck:
                 pops = 1;
                 return true;
 
@@ -1300,7 +1387,15 @@ public static class JsOpcodes
             case JsOpcode.RequireCoercible:
             case JsOpcode.IterateStart:
             case JsOpcode.IterateRest:
+            case JsOpcode.IterateStartAsync:
                 pops = 1;
+                pushes = 1;
+                return true;
+
+            // THE RECORD UNDERNEATH STAYS, exactly as the object under DefineField does, because
+            // the instruction that consumes the awaited step needs it and an `await` stands
+            // between the two.
+            case JsOpcode.IterateNextAsync:
                 pushes = 1;
                 return true;
 
@@ -1414,7 +1509,20 @@ public static class JsOpcodes
             // with two effects is exactly what a stack-height check exists to pin down.
             case JsOpcode.ForInNext:
             case JsOpcode.IterateNext:
+
+            // THE SAME TWO-EFFECT SHAPE, reached when there was no `return` to call: nothing
+            // arrives on the taken branch, so the target is one below this instruction's height.
+            case JsOpcode.IterateCloseAsync:
                 pops = 1;
+                pushes = 1;
+                return true;
+
+            // AND THE SAME SHAPE ONE VALUE WIDER. It consumes the awaited step AND the record the
+            // step was taken from, so its target is TWO below rather than one - which is a rule the
+            // verifier applies at the target, because one instruction with two effects is exactly
+            // what a stack-height check exists to pin down.
+            case JsOpcode.IterateAwaitStep:
+                pops = 2;
                 pushes = 1;
                 return true;
 

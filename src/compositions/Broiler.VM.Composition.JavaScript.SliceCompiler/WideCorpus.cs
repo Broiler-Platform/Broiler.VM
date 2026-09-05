@@ -139,12 +139,34 @@ internal static class WideCorpus
             ]),
             "SemanticValidationFailed",
             JavaScriptDiagnosticCodes.AwaitOutsideAsync),
+        // THIS ROW USED TO PAIR `Async` WITH `Generator`, AND THAT PAIRING IS NOW THE ASYNC
+        // GENERATOR. The combination names a third driver rather than a contradiction, so the row
+        // pairs `Async` with the flag that still contradicts it: a unit cannot be both an async
+        // function and the program body, because the program body is entered by the host and there
+        // is no promise for it to answer with.
         Entry(
-            "wide-an-async-function-that-is-also-a-generator",
+            "wide-an-async-function-that-is-also-the-program-body",
             Artifact(
-                flags: JsFormat.FunctionFlags.Async | JsFormat.FunctionFlags.Generator),
+                flags: JsFormat.FunctionFlags.Async | JsFormat.FunctionFlags.ProgramBody),
             "InconsistentStructure",
             JavaScriptDiagnosticCodes.AsyncFlagsInconsistent),
+
+        // ---- one row about the `for await` head, which is five instructions and one flag --------
+        //
+        // FOUR OF THE FIVE WOULD RUN PERFECTLY WELL IN AN ORDINARY FUNCTION - each is a call on an
+        // iterator - and the answer would be a promise nobody ever resolved rather than an error
+        // anybody could diagnose. Only the `Await` between them carries the async flag's own check,
+        // so the sequence is refused against the same flag: a `for await` head belongs to a body
+        // that may await, and this is where the FORMAT says so rather than the lowering.
+        Entry(
+            "wide-an-async-iteration-step-outside-an-async-function",
+            Artifact(code: [
+                (byte)JsOpcode.LoadUndefined,
+                (byte)JsOpcode.IterateStartAsync,
+                (byte)JsOpcode.Return,
+            ]),
+            "SemanticValidationFailed",
+            JavaScriptDiagnosticCodes.AsyncIterationOutsideAsync),
 
         // ---- one row about the class body's own operand bits ------------------------------------
         //

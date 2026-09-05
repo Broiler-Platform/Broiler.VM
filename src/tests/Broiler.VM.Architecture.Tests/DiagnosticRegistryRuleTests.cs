@@ -78,10 +78,19 @@ public sealed class DiagnosticRegistryRuleTests
         // had no reachability the registry admits, is what changed here rather than what held: the
         // retained SOURCE corpus now carries module-goal entries too, so those three rows are
         // reached by a named source the same way every other seam row is.
-        Assert.Equal(61, Vocabulary.Count);
+        //
+        // Revision 9 is ONE code again, and it is about a SEQUENCE rather than a single
+        // instruction: a `for await` head is five instructions with an `Await` standing between
+        // them, and only the `Await` carried the async flag's own check. The other four would have
+        // run perfectly well in an ordinary function - each is a call on an iterator - and the
+        // answer would have been a promise nobody ever resolved rather than an error anybody could
+        // diagnose. THE SEAM HALF DID NOT GROW WITH IT: `for await` outside a body that may await
+        // is a language error rather than a manifest refusal, so it reaches the existing
+        // unexpected-token code, and the async generator itself is admitted rather than refused.
+        Assert.Equal(62, Vocabulary.Count);
         Assert.Equal(27, SeamVocabulary.Count);
         Assert.Equal(Vocabulary.Count + SeamVocabulary.Count, Registry.Count);
-        Assert.Equal(8, DiagnosticRegistry.Revision);
+        Assert.Equal(9, DiagnosticRegistry.Revision);
 
         // The two vocabularies live in two assemblies that cannot see each other, so the one thing
         // no compiler could catch is a number used in both. Nothing else in the build reads both
@@ -163,27 +172,32 @@ public sealed class DiagnosticRegistryRuleTests
 
         Assert.Empty(ArchitectureRules.N7(Registry, corpus, sourceCorpus));
 
-        // Non-vacuous, and the figures that matter: sixty of the sixty-one core-result rows are
-        // reached by a retained corpus entry and one is not, which is the count rule N7 fixes
+        // Non-vacuous, and the figures that matter: sixty-one of the sixty-two core-result rows
+        // are reached by a retained corpus entry and one is not, which is the count rule N7 fixes
         // rather than the registry; and every one of the twenty-six embedder-seam rows that is not
-        // defensive is reached by a retained source entry. Twenty-three of the sixty arrived with
-        // format version 2: five refusals the version adds, three about the optional surfaces,
+        // defensive is reached by a retained source entry. Twenty-four of the sixty-one arrived
+        // with format version 2: five refusals the version adds, three about the optional surfaces,
         // FOUR about the two unit kinds that may suspend - a generator and an async function, each
         // with a suspension in the wrong unit and a flag pairing that contradicts itself - ONE
         // about the class body's own operand bits, whose six flags have rules between them that a
-        // combination can break without any single bit being unknown, EIGHT about linking a module
-        // graph, and two that registering a second version and a second manifest made observable
-        // at all. The seam half has no defensive row beyond the one below on purpose - its
-        // format-ceiling codes ARE reachable by a program, and recording them as unreachable would
-        // have been recording something untrue to avoid generating three sources.
+        // combination can break without any single bit being unknown, ONE about the `for await`
+        // head, EIGHT about linking a module graph, and two that registering a second version and a
+        // second manifest made observable at all. The seam half has no defensive row beyond the one
+        // below on purpose - its format-ceiling codes ARE reachable by a program, and recording them
+        // as unreachable would have been recording something untrue to avoid generating three
+        // sources.
         //
         // TWO OF THE EIGHT MODULE ROWS ARE REACHED BY VARYING THE HOST AND NOT THE BYTES, which is
         // a shape only the exhaustion rows had before: a composition that registers no module
         // resolver refuses a perfectly well-formed artifact, so the entry that pins that refusal
         // carries a replay mode of its own rather than malformed bytes.
+        //
+        // The `for await` row's own entry is one of the head's five instructions in a unit that may
+        // not await - which is enough, because the refusal is on the unit's flag and not on the
+        // sequence being complete.
         Assert.Equal(2, ArchitectureRules.DefensiveCodes.Length);
         Assert.Equal(
-            60,
+            61,
             Registry.Count(static row => row.Reachability == "corpus"));
         Assert.Equal(
             26,
