@@ -461,12 +461,15 @@ the act that would turn a stage into a milestone with a ledger row.
   slowest cell of the matrix, **it meets the ceiling and does not score at all**
   *([JSC-182](roadmap.corrections.md#jsc-182))*. `zlib` is 78 per cent of the whole run, so it is
   what reaches the ceiling first everywhere; the headroom is 1,258 seconds, 804, 703, and then none.
-  **The exclusions are that no identifier but the Linux one has scored the whole conformance suite,
-  that no identifier scores the whole Octane set on the push path, and that `osx-x64` does not score
-  `zlib` at all.** Whether the lane may go on claiming the whole set on every identifier, or must
-  state that last one as a named exclusion, is a decision about what this component CLAIMS and is
-  recorded open rather than taken. The quick lane's six do not include `zlib`, so the set is
-  attempted whole only where the full lane runs.
+  **`zlib` is therefore excluded on `osx-x64` by name** *([JSC-183](roadmap.corrections.md#jsc-183))*
+  — an exclusion rather than a larger allowance, because an hour is already the largest allowance
+  this profile permits — and the driver prints it as skipped before it runs anything and again in
+  its summary, so no transcript reports fourteen as though it were fifteen. **The exclusions are
+  that no identifier but the Linux one has scored the whole conformance suite, that no identifier
+  scores the whole Octane set on the push path — the quick lane's six do not include `zlib` — and
+  that `osx-x64` scores fourteen of the fifteen. The set is scored WHOLE on three identifiers**:
+  `linux-x64`, `linux-arm64` and `osx-arm64`. The two Windows cells have never executed the step
+  at all *([JSC-181](roadmap.corrections.md#jsc-181))*.
 - **The whole-suite runs are retained per manifest**, under
   [section 4's evidence contract](roadmap.status.md#4-required-evidence-bundle), with the harness's
   five verdicts reported rather than four — a variant that spent an allowance is neither a pass, a

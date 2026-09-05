@@ -7625,3 +7625,53 @@ each cell's own transcript: `--- zlib (exit 0, 2342s)` on `linux-x64`, `(exit 0,
 score and exited zero`; and on `osx-x64` `--- zlib (exit 5, 3600s)` with
 `the program did not settle within its allowance: AllowanceExhausted on WallClock` and
 `# 14 of 15 benchmarks reported a score and exited zero`. 2026-09-05.
+
+### JSC-183
+
+**Where:** the workload step's Octane selection on `osx-x64`, and the decision
+[JSC-182](#jsc-182) recorded open.
+
+**What was open.** `zlib` does not score on `osx-x64`. That cell met the profile's `WallClock`
+ceiling at 3,600s and reported 14 of 15, while `linux-x64` scored the benchmark at 2,342s,
+`osx-arm64` at 2,796s and `linux-arm64` at 2,897s. JSC-182 established that this is a **finding
+rather than a bound to raise** — an hour is what `JavaScriptProfile.Maxima()` permits, so there is
+no larger allowance to move to — and left the consequence to a person: either the full lane stands
+red on that cell every Monday, or the benchmark is excluded there by name.
+
+**What was decided, and by whom.** **The exclusion is stated.** The decision is the repository
+owner's, taken on 2026-09-05 in the session that ran the lane, on a recommendation this component
+made in these terms: a lane that is always red on the same cell is a lane nobody reads, and an
+exclusion that carries its measurement is more honest than a red somebody has learned to skip past.
+Nothing about the engine changed and no figure moved; what changed is what the lane ATTEMPTS on one
+runtime identifier.
+
+**What replaced it.** `eng/run-octane.py` gains `--skip`, and the step passes `--skip zlib` on
+`osx-x64` alone. Three properties make it an exclusion rather than a quiet reduction:
+
+- **It is named twice in every run that uses it** — once as `# SKIPPED zlib` before anything runs,
+  and again in the summary as `N of M ... 1 excluded and not attempted: zlib`. A ratio over a
+  shrunken denominator reads exactly like a complete run, and `14 of 14` and `14 of 15` are one
+  keystroke apart.
+- **Skipping everything is refused.** A run of no benchmarks would report `0 of 0 ... exited zero`
+  and exit ZERO, which is a green step over a question nobody asked. An exclusion is a decision
+  about one benchmark and never a way to turn the workload off.
+- **It is keyed on the runtime identifier**, so the other five cells still attempt the set whole.
+  A skip that spread to every cell would retire the benchmark rather than exclude it.
+
+**What this costs, stated rather than buried.** The whole Octane set is now scored on **four** of
+six identifiers rather than five: `linux-x64`, `linux-arm64` and `osx-arm64` have scored it, the
+two Windows cells have never executed the step at all — [JSC-181](#jsc-181)'s defect stopped them,
+and the fix has not been through a full lane since — and `osx-x64` scores fourteen of fifteen by
+decision. **The roadmap's exclusion list says exactly that**, and no support claim moves: a lane is
+not an evidence bundle, and `docs/support.md` is fed by retained collections.
+
+**What would reopen it.** A `zlib` that scores on `osx-x64` inside the hour — a faster runner image,
+or an engine that spends less on it — makes the exclusion unnecessary, and the duration the driver
+prints on every other cell is what a reader would notice it from. The exclusion is not a claim that
+the benchmark CANNOT run there, only that on the image and runner measured on 2026-09-05 it did not.
+
+**Authority and date.** The owner's decision of 2026-09-05, on the measurements JSC-182 records
+from run 33964028317; and a local exercise of the new path against the published Native AOT image,
+in which a skip that empties the selection is refused, a skip naming something that is not a
+benchmark is refused, and a run that skips `zlib` prints it as SKIPPED and reports it excluded in
+the summary. 2026-09-05.

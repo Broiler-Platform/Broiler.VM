@@ -440,6 +440,7 @@ jobs:
         # and the habit is what stops the next input from being one.
         env:
           OCTANE_BENCHMARKS: ${{ inputs.octane-benchmarks }}
+          OCTANE_RID: ${{ matrix.rid }}
         run: |
           set -euo pipefail
           py=python3
@@ -458,6 +459,28 @@ jobs:
           for name in $OCTANE_BENCHMARKS; do
             set -- "$@" --only "$name"
           done
+
+          # THE ONE NAMED EXCLUSION, AND THE MEASUREMENT THAT PRODUCED IT.
+          #
+          # `zlib` does not score on `osx-x64`. The first full lane ran the whole set on four cells
+          # and that one reported `AllowanceExhausted on WallClock` at 3,600s with 14 of 15, while
+          # `linux-x64` scored it at 2,342s, `osx-arm64` at 2,796s and `linux-arm64` at 2,897s. The
+          # headroom against the ceiling runs 1,258s, 804s, 703s, and then none: `osx-x64` is about
+          # 2.4 times slower than `linux-x64` on `richards` (24.7 to 59.5), and `zlib` is 78 per
+          # cent of the whole run, so it is the benchmark that reaches the ceiling first everywhere
+          # and the first cell to run out of room is the slowest one.
+          #
+          # IT IS AN EXCLUSION RATHER THAN A LARGER ALLOWANCE BECAUSE THERE IS NO LARGER ALLOWANCE.
+          # An hour is what `JavaScriptProfile.Maxima()` permits, so the alternative to naming this
+          # was a full lane red on one cell every Monday - and a lane that is always red on the same
+          # cell is a lane nobody reads. What is excluded is one BENCHMARK on one RUNTIME
+          # IDENTIFIER, stated here the way the conformance step states its own, and the driver
+          # prints it as SKIPPED before it runs anything and again in the summary, so no transcript
+          # can report fourteen as though it were fifteen. JSC-183 carries the decision and whose it
+          # was; the other five cells still run the set whole.
+          case "$OCTANE_RID" in
+            osx-x64) set -- "$@" --skip zlib ;;
+          esac
 
           # THE WALL IS THE PROFILE'S OWN HARD MAXIMUM, WHICH IS WHY IT IS NOT A NUMBER SOMEBODY
           # PICKED. `JavaScriptProfile.Maxima()` sets `WallClock` at 3,600,000 ms and calls it a
@@ -487,9 +510,8 @@ jobs:
           # number, and on this one the distinction is not rhetorical: an hour is already the
           # maximum the profile permits, so there is nothing to raise it to. What `osx-x64` says is
           # that this engine cannot run `zlib` to completion inside its own ceiling on that
-          # identifier. Whether the lane may go on claiming the whole set - or must state `zlib` on
-          # `osx-x64` as a named exclusion the way the conformance step states its own - is a
-          # decision about what this component CLAIMS, and JSC-182 records it open.
+          # identifier - which is why the exclusion above names it rather than this bound moving.
+          # JSC-182 records the measurement and JSC-183 the decision.
           #
           # The estimate that stood here before that run said "above forty-one minutes", scaled
           # from `richards` at 32.0 on this image against 46.3 on `ubuntu-latest`. The measurement
