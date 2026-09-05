@@ -121,6 +121,7 @@ was confirmed.
 |---|---|---|
 | `Broiler.VM.Profile.JavaScript` | **The ECMAScript Language Specification, ECMA-262, 17th edition (ES2026)**, one file, retained at [`src/Broiler.VM.Profile.JavaScript/docs/specification/`](src/Broiler.VM.Profile.JavaScript/docs/specification/README.md) | 2026-09-03 |
 | `Broiler.VM.Composition.JavaScript.Conformance` | **test262**, the ECMAScript conformance suite, at `tc39/test262` commit `ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e` — archived as the retrieved archive at [`src/tests/conformance/pins/`](src/tests/conformance/pins/README.md), with its licence beside it | 2026-09-03 |
+| `Broiler.VM.Composition.JavaScript.Cli` | **Octane**, the retired JavaScript benchmark suite, at `chromium/octane` commit `570ad1ccfe86e3eecba0636c8f932ac08edec517` — archived as the retrieved archive at [`src/tests/octane/pins/`](src/tests/octane/pins/README.md), BSD 3-Clause, with its licence beside it as that licence requires | **not yet confirmed** |
 
 **What that entry is and what it is not.** It is a **normative reference document**, archived
 because roadmap section 24 asks for the pinned edition to be retrieved, hashed **and archived**,
@@ -173,6 +174,26 @@ co-signature is not independent**: the owner and the co-signer are one person.
 to a few megabytes, and the archive is 9.5 MB carrying exactly the same evidence — that the pinned
 digest can be checked in a checkout with no network. The choice is recorded rather than left to be
 inferred from a tree that does not hold what a reader might expect.
+
+**The third row is Octane, and its confirmation column says `not yet confirmed` because that is
+true.** The archive was retrieved, hashed and committed on 2026-09-04 under the workload roadmap's
+last stage, and the obligation two paragraphs above — that a component ingesting third-party
+material amends this file **in the change that introduces the material** — was not discharged then.
+This entry is the amendment; **the confirmation itself is a release-facing statement a person makes
+and is not made here.** It is recorded as owed rather than supplied, which is the same discipline
+the ledger applies to every other unmet clause.
+
+**What that row is, and how it differs from the two above it.** Octane is third-party **code**: 37
+JavaScript files, retained as the archive `git archive` produced at the pinned commit, run by the
+end-user host as a guest program. Nothing is derived from it, no line of it is copied into any
+assembly, and the suite is retired upstream — the pinned commit is its retirement commit — so a
+score from it is a number about this configuration and a comparison with nothing.
+
+**The opening sentence of this file is unaffected here too, and the mechanism is the same one.** The
+archive is a `.tar.gz` under `src/tests/`, no project includes it, the host is handed the extracted
+files as paths on a command line and packs nothing, and rule **N13** now names `tests/octane`
+alongside `tests/conformance` as a directory no project file may mention — so a benchmark file that
+reached a shipped image would fail that rule rather than survive as a missing row here.
 
 **One obligation moved inside this repository on 2026-08-31 and is recorded here rather than
 left to be discovered.** The JavaScript profile's snapshot copy of an Apache-2.0 engine now lands

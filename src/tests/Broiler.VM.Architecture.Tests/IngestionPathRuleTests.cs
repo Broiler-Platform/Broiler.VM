@@ -29,8 +29,16 @@ public sealed class IngestionPathRuleTests
     /// directory by any number of <c>..</c> steps is still caught. The harness is handed its suite
     /// as a command-line argument at run time, which is the whole reason no project file needs to
     /// name one.
+    /// <para>
+    /// <b>The second entry is the retained Octane workload, and it is here because the notice file
+    /// says it is.</b> That archive is separately licensed third-party CODE rather than a document,
+    /// and <c>THIRD_PARTY_NOTICES.md</c> states the mechanism keeping it out of a shipped image in
+    /// the same words it uses for the conformance suite - so the mechanism has to exist. The
+    /// end-user host takes the extracted files as paths on a command line exactly as the harness
+    /// takes a suite, so no project file needs to name this one either.
+    /// </para>
     /// </remarks>
-    private static readonly string[] SuiteDirectories = ["tests/conformance"];
+    private static readonly string[] SuiteDirectories = ["tests/conformance", "tests/octane"];
 
     [Fact]
     public void N13_The_Harness_And_Its_Suite_Reach_No_Package_And_No_Advertised_Closure()

@@ -5619,3 +5619,36 @@ this one ordering.
 **Authority and date.** The implementation of 2026-09-05 in this checkout, the subtree sweep before
 and after, and three cases appended to `src/tests/differential/the-statement-and-object-surface.js`
 whose answers were taken from the comparison engine before they were written down. 2026-09-05.
+
+---
+
+### JSC-145
+
+**Where:** `THIRD_PARTY_NOTICES.md`, whose ingestion table named two pieces of third-party material
+and not the third, and rule N13's list of suite directories, which named one of the two the notice
+file's mechanism sentence would have to be true of.
+
+**What the plan said, and what was done instead.** The notice file states an obligation in its own
+words: *a component that ingests or copies third-party source confirms this scoping, or amends this
+file, in the change that introduces the material.* The retained Octane workload — 37 files of
+BSD 3-Clause JavaScript, archived at `src/tests/octane/pins/` on 2026-09-04 under the workload
+roadmap's last stage — was committed with its upstream licence beside it and **without the notice
+entry the same paragraph asks for**. The pin's own README cites the stage that asked for the
+archive; nothing cited the obligation the archive triggers.
+
+**What was true, and why it is not merely a missing row.** The mechanism sentence the notice file
+writes for the conformance suite — *no project file names the suite directory, and rule N13 asserts
+it* — **was not true of this material**, because N13's list held `tests/conformance` alone. Writing
+the row without the list entry would have published a claim about a rule that was not making it,
+which is the failure mode the whole file is arranged to avoid. So the list gained `tests/octane`
+first, and the row follows it.
+
+**The confirmation is recorded as owed rather than supplied.** The row's third column reads
+`not yet confirmed`, because the confirmation is a release-facing statement a person makes and this
+change is not a person making it. The two rows above it carry a date and a named co-signature; this
+one carries the reason it does not.
+
+**Authority and date.** The notice file's own obligation paragraph, the pin at
+`src/tests/octane/pins/octane.pin` and the licence retained beside it, and rule N13 as it now
+stands, which passes with the second directory in its list and would report a violation for a
+project file naming either. 2026-09-05.
