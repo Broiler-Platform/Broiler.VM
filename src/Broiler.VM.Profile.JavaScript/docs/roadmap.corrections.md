@@ -6034,7 +6034,7 @@ written down. 2026-09-05.
 
 ---
 
-### JSC-160
+### JSC-153
 
 **Where:** the wide front end's parse of every declarative scope — `JsParser.Parse`,
 `ParseBlock`, `ParseSwitch`, `ParseFunctionBody`, `ParseTry`, `ParseFor` and
@@ -6081,7 +6081,7 @@ grammar, where a block-level function declaration is a lexical name and not a `v
 the two together would have refused `{ function f() {} } var f;`, which every engine runs.
 
 **Measured, on the pinned suite, before and after the whole bundle
-([JSC-160](#jsc-160) to [JSC-165](#jsc-165)).** `test/language/block-scope` went from 88 of 287
+([JSC-153](#jsc-153) to [JSC-158](#jsc-158)).** `test/language/block-scope` went from 88 of 287
 variants to **281**, and its `syntax/redeclaration` subtree from 6 of 189 to **189** — that subtree
 now passes whole. `test/language/statements/switch` went from 54 of 216 to **181**.
 `test/language/statements` as a whole went from 15,630 of 17,818 to **16,322**, and
@@ -6091,15 +6091,16 @@ rule, was unchanged at 5,232 of 6,115. **No variant that passed before the bundl
 in any of the five sweeps.
 
 **Authority and date.** The implementation of 2026-09-05 in this checkout, five subtree sweeps taken
-either side of this bundle on the checkout it was written against, twenty-one cases appended to
+either side of this bundle on the checkout it was written against, thirty-five cases appended to
 `src/tests/differential/the-statement-and-object-surface.js` whose answers were taken from the
-comparison engine before they were written down, and eight acceptance rows — five refusals and three
-that assert the rules do NOT fire, because an early error that fires where the language has none
-turns a working program into a refusal and is the worse failure of the two. 2026-09-05.
+comparison engine before they were written down, and six acceptance rows — five refusals and one
+that RUNS every shape one scope may legally hold twice, because an early error that fires where the
+language has none turns a working program into a refusal and is the worse failure of the two.
+2026-09-05.
 
 ---
 
-### JSC-161
+### JSC-154
 
 **Where:** `JsParser.ParseIf`, `ParseWhile`, `ParseDoWhile`, `ParseFor` and the labelled-statement
 arm of `ParseStatement`, and the 65 variants of `test/language/statements/if` together with the
@@ -6146,7 +6147,7 @@ a declaration as an `if` body, and one running the three positions the annex sti
 
 ---
 
-### JSC-162
+### JSC-155
 
 **Where:** `JsParser.ParseFunctionBody`, `ParseArrowBody`, `ParseClassMember` and `ParseObjectEntry`,
 and `ParseDirectives` — the last of which is the reason none of the other four could have been
@@ -6195,7 +6196,7 @@ bound twice by a list that carries a default. 2026-09-05.
 
 ---
 
-### JSC-163
+### JSC-156
 
 **Where:** `SliceTokenizer.ReadIdentifierOrKeyword` and the `SliceToken` it returns, and every
 position in `JsParser` that reads an `Identifier` rather than an `IdentifierName`: `BindingName`, a
@@ -6247,7 +6248,7 @@ member name and two unreserved words with escapes. 2026-09-05.
 
 ---
 
-### JSC-164
+### JSC-157
 
 **Where:** `JsParser.ValidateClassBody`, the enumerating head of `JsParser.ParseFor`, and
 `ParseSwitch`.
@@ -6279,16 +6280,16 @@ clause loop carries one bit saying whether a default has been seen.
 a RULE rather than a file: `test/language/block-scope/syntax/for-in` went from 12 of 16 variants to
 **14**, `test/language/statements/class/elements` and `test/language/expressions/class/elements` lose
 four parse-phase failures each, and `test/language/statements/switch` loses the last of its
-`S12.11` pair. All are inside the bundle figures [JSC-160](#jsc-160) reports.
+`S12.11` pair. All are inside the bundle figures [JSC-153](#jsc-153) reports.
 
 **Authority and date.** The implementation of 2026-09-05 in this checkout, the sweeps either side of
-it, and sixteen cases appended to
+it, and thirteen cases appended to
 `src/tests/differential/the-statement-and-object-surface.js` whose answers were taken from the
 comparison engine before they were written down. 2026-09-05.
 
 ---
 
-### JSC-165
+### JSC-158
 
 **Where:** `JsCompiler.CompileReturn`, and the 22 variants a whole-suite run reported in its
 `unsupported` column with the construct named — `test/language/global-code/return.js` among them.

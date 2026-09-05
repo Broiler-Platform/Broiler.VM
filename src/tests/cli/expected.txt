@@ -516,7 +516,7 @@ modules/ambiguous.mjs|4|1617
 modules/an-import-in-a-script.js|3|2401:ModuleDeclarationOutsideModuleGoal
 modules/a-bare-specifier.mjs|6|resolves only a specifier that begins with
 
-# THE EARLY ERRORS ABOUT DECLARED NAMES, which JSC-160 added, and the three rows that hold the
+# THE EARLY ERRORS ABOUT DECLARED NAMES, which JSC-153 added, and the three rows that hold the
 # OTHER direction of every one of them. An early error that fires where the language has none turns
 # a working program into a refusal, which is a worse failure than the one this bundle was written
 # to fix - so the accepting rows come first, and each of their values was taken from the comparison
