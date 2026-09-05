@@ -85,11 +85,18 @@ internal sealed record JsIdentifier(SliceSourceSpan Span, string Name) : JsExpre
 internal sealed record JsThisExpression(SliceSourceSpan Span) : JsExpression(Span);
 
 /// <summary>An array literal. A <see langword="null"/> element is an elision.</summary>
-// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=3CCFD5
+/// <param name="TrailingComma">
+/// Whether a comma closed the list. A literal may end with one and the PATTERN the same brackets
+/// cover may not end with one after a rest element, so <c>[...x,]</c> is a value and is not a
+/// target - and by the time the cover grammar is resolved the comma is no longer in the tree. It
+/// is recorded rather than recovered because nothing else in the parse can answer it afterwards.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=250D83
 // Broiler-Human:        PENDING
 internal sealed record JsArrayLiteral(
     SliceSourceSpan Span,
-    System.Collections.Generic.IReadOnlyList<JsExpression?> Elements) : JsExpression(Span);
+    System.Collections.Generic.IReadOnlyList<JsExpression?> Elements,
+    bool TrailingComma = false) : JsExpression(Span);
 
 /// <summary><c>...x</c> as an array element or a call argument.</summary>
 /// <remarks>
@@ -158,11 +165,16 @@ internal sealed record JsObjectEntry(
     bool Shorthand = false) : JsNode(Span);
 
 /// <summary>An object literal.</summary>
-// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=3CE3F5
+/// <param name="TrailingComma">
+/// Whether a comma closed the list, for the same reason <see cref="JsArrayLiteral"/> records it:
+/// <c>({ ...x, })</c> is a value and <c>({ ...x, } = o)</c> is not a target.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=4A7B2D
 // Broiler-Human:        PENDING
 internal sealed record JsObjectLiteral(
     SliceSourceSpan Span,
-    System.Collections.Generic.IReadOnlyList<JsObjectEntry> Entries) : JsExpression(Span);
+    System.Collections.Generic.IReadOnlyList<JsObjectEntry> Entries,
+    bool TrailingComma = false) : JsExpression(Span);
 
 /// <summary>One formal parameter.</summary>
 /// <param name="Span">Where the parameter begins.</param>

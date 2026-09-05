@@ -599,3 +599,121 @@ p(function(){ var o = {}, s = ""; var src = { get a(){ s += "g"; return { b: 1 }
 p(function(){ var s = ""; var src = { get a(){ s += "g"; return 1; } }; var { a: v } = src; return s + ":" + v; });
 // The value of the assignment is the source, whichever shape the target took.
 p(function(){ var o = {}; var src = { a: 1 }; return (({ a: o.z } = src) === src) + "," + o.z; });
+
+// --- a function declaration inside a block is a binding of that block
+//
+// JSC-240. The declaration was hoisted to the enclosing body, so its closure was built against a
+// chain the block's own record was not on: a body naming a `let` of the same block reached a
+// global. Annex B's `var`-scoped alias is the other half, written where the declaration stands.
+p(function(){ var r; { let n = 0; function fn(){ n += 1; } fn(); r = n; } return r; });
+p(function(){ { let n = 5; function fn(){ return n; } return fn(); } });
+p(function(){ var s = ""; { function g(){ return 1; } s += g(); } { function g(){ return 2; } s += g(); } return s; });
+p(function(){ var s = ""; { function* g(){ yield 1; } s += [...g()]; } { function* g(){ yield 2; } s += [...g()]; } return s; });
+p(function(){ var r; switch (1) { case 1: { let z = 7; function k(){ return z; } r = k(); } } return r; });
+p(function(){ try { let w = 9; function m(){ return w; } return m(); } catch (e) { return e.name; } });
+p(function(){ var r; { let q = 3; l: function h(){ return q; } r = h(); } return r; });
+p(function(){ var s = ""; { function a(){ return b(); } function b(){ return "ab"; } s = a(); } return s; });
+// The alias exists before the declaration is reached and holds `undefined` until then.
+p(function(){ var i = typeof f; { function f(){} } return i + "," + typeof f; });
+p(function(){ if (false) { function q(){} } return typeof q; });
+p(function(){ if (true) function i(){ return "i"; } return i(); });
+p(function(){ var s = ""; if (true) function j(){ return 1; } else function j(){ return 2; } return "" + j(); });
+p(function(){ switch (1) { case 1: function s(){ return "s"; } } return s(); });
+// The alias is declined where a `var` of the name would have been an early error.
+p(function(){ { let f = 1; { function f(){} } } return typeof f; });
+p(function(){ for (let f; ; ) { { function f(){} } break; } return typeof f; });
+p(function(){ switch (0) { default: let f; { function f(){} } } return typeof f; });
+p(function(){ try { throw {}; } catch ({ d }) { { function d(){} } } return typeof d; });
+// A simple catch parameter does not decline it.
+p(function(){ try { throw null; } catch (c) { { function c(){ return 5; } } } return typeof c; });
+// A parameter of the same name declines it.
+p(function(p1){ { function p1(){} } return typeof p1; });
+// A generator, an async function and an async generator get no alias at all.
+p(function(){ switch (0) { default: async function a(){} } return typeof a; });
+p(function(){ { function* b(){} } return typeof b; });
+p(function(){ { async function* c(){} } return typeof c; });
+// The block's own binding is the one the block sees, whatever the alias holds.
+p(function(){ function f(){ return "outer"; } var s = ""; { function f(){ return "inner"; } s += f(); } return s + "," + f(); });
+
+// --- a statement's completion value
+//
+// JSC-242. `UpdateEmpty(C, undefined)` is on `if`, on every iteration statement, on `with`, on
+// `try` and on `switch`, and a `finally` that completes normally contributes none of its own.
+p(function(){ return (0, eval)('1; if (true) { }'); });
+p(function(){ return (0, eval)('2; if (true) { 3; }'); });
+p(function(){ return (0, eval)('1; if (false) { }'); });
+p(function(){ return (0, eval)('1; while (false) { }'); });
+p(function(){ return (0, eval)('2; while (false) { 3; }'); });
+p(function(){ return (0, eval)('1; do { break; } while (false)'); });
+p(function(){ return (0, eval)('2; do { 3; break; } while (false)'); });
+p(function(){ return (0, eval)('1; try { } finally { }'); });
+p(function(){ return (0, eval)('2; try { 3; } finally { }'); });
+p(function(){ return (0, eval)('4; try { } catch (err) { } finally { 5; }'); });
+p(function(){ return (0, eval)('1; try { throw null; } catch (err) { } finally { }'); });
+p(function(){ return (0, eval)('1; switch ("a") { default: case "a": }'); });
+p(function(){ return (0, eval)('1; switch ("a") { case null: }'); });
+p(function(){ return (0, eval)('1; { }'); });
+p(function(){ return (0, eval)('1; l: { }'); });
+p(function(){ return (0, eval)('1; for (var i0 = 0; i0 < 0; ++i0) { 2; }'); });
+p(function(){ return (0, eval)('1; for (var i1 = 0; i1 < 1; ++i1) { 2; }'); });
+p(function(){ return (0, eval)('1; for (var k0 in { }) { 2; }'); });
+p(function(){ return (0, eval)('1; for (var v0 of [ ]) { 2; }'); });
+p(function(){ return (0, eval)('1; with ({ }) { }'); });
+p(function(){ return (0, eval)('1; do { 2; with({}) { 3; break; } 4; } while (false);'); });
+p(function(){ return (0, eval)("for (var i2 = 0; i2 < 2; ++i2) { if (i2) { try { throw null; } catch (e) { break; } } 'bad completion'; }"); });
+
+// --- the early errors an assignment PATTERN carries
+//
+// JSC-241. `ToPattern` is the cover grammar's reinterpretation and its rules are not the
+// declaration path's: a rest element must be last with no comma after it, a shorthand's key is a
+// reference and not a name, and strict code assigns to neither restricted name through a pattern.
+p(function(){ try { (0, eval)("0, [...pa,] = [];"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("0, ({...pb,} = {});"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("var pc = [...pd,];"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("0, ({ default } = {});"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("0, ({ extends } = {});"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("0, ({ default: pe } = {});"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("0, ({ if });"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("'use strict'; 0, [arguments] = [];"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("'use strict'; 0, ({ eval } = {});"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("'use strict'; 0, ({ a: arguments } = {});"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("'use strict'; 0, [...eval] = [];"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("0, [arguments] = [];"); return "ok"; } catch(e){ return e.name; } });
+// A nested pattern with a default is an ordinary target and was refused as if it were not.
+p(function(){ var a = [], r = ([ [a[0]] = [7] ] = [ ]); return a[0] + "," + (r.length === 0); });
+p(function(){ var o = {}; 0, ([ {} = 1 ] = [ ]); 0, ({ p: {} = 1 } = {}); return "ok"; });
+p(function(){ var b; 0, [ {a: b} = {a: 4} ] = [ ]; return b; });
+
+// --- a suspension may not appear in a parameter list
+//
+// JSC-243. The default belongs to the enclosing function's own prologue, so a `yield` or an
+// `await` written there lowers into a unit that carries neither flag.
+p(function(){ try { (0, eval)("function* ga(x = yield) {}"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("var gb = { *g(x = yield) {} };"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("class GC { *g(x = yield) {} }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("async function gd(x = await 1) {}"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("var ge = { async m(x = await 1) {} };"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("async function gf() { (a = await 1) => {}; }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("async function gg() { (await) => {}; }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("async function gh() { ([await]) => {}; }"); return "ok"; } catch(e){ return e.name; } });
+// A method's parameters are `[~Yield, ~Await]` however deeply a generator or an async function
+// encloses them, so the same words there are ordinary names.
+p(function(){ try { (0, eval)("function* gi() { ({ m(x = yield) {} }); }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("async function gj() { ({ m(await) {} }); }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("function gk() { (await) => {}; }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("async function gl() { const q = async () => await 1; }"); return "ok"; } catch(e){ return e.name; } });
+
+// --- a private name is not a property key, and a generator method is a method
+//
+// JSC-244. An object literal's key is read in one place, so the four method forms and the plain
+// entry are one refusal; and the generator form alone did not record itself as a method, so its
+// body had no home object and `super` in it was refused.
+p(function(){ try { (0, eval)("var ha = { #m() {} };"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("var hb = { get #m() {} };"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("var hc = { *#m() {} };"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("var hd = { async #m() {} };"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("var he = { #m: 1 };"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("class HF { field = { #m() {} } }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("class HG { #m() { return 1; } n() { return this.#m(); } } 0;"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ var base = { x: "base" }; var o = { *g() { return super.x; } }; Object.setPrototypeOf(o, base); return o.g().next().value; });
+p(function(){ var base = { x: "base" }; var o = { g() { return super.x; } }; Object.setPrototypeOf(o, base); return o.g(); });
