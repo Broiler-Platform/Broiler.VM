@@ -16,6 +16,7 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptCompletion.Identity : Broiler.VM.VmPayloadIdentity { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptCompletion.Value : Broiler.VM.Profile.JavaScript.JavaScriptValue { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.AsyncFlagsInconsistent : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1612
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.AsyncIterationOutsideAsync : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1630
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.AwaitOutsideAsync : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1611
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.ClassElementFlagsInconsistent : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1621
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.CodeUnitRangeInvalid : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1603
@@ -1145,10 +1146,15 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.In : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 90
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.InitialiseScoped : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 18
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.InstanceOf : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 89
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.IterateAwaitStep : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 124
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.IterateClose : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 105
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.IterateCloseAsync : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 125
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.IterateCloseCheck : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 126
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.IterateNext : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 103
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.IterateNextAsync : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 123
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.IterateRest : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 104
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.IterateStart : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 102
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.IterateStartAsync : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 122
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Jump : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 96
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.JumpIfFalse : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 97
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.JumpIfTrue : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 98

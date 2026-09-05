@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   12
-// Annotated:        12/12
-// Exempt:           32
-// Human-reviewed:   0/12
+// Relevant units:   17
+// Annotated:        17/17
+// Exempt:           50
+// Human-reviewed:   0/17
 // IP risk:          None
 // Security risk:    High
-// Criteria:         4/4
+// Criteria:         5/5
 // Resource impact:  4/10 max
-// Unverified:       12
+// Unverified:       17
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -40,6 +40,38 @@ internal enum JsGeneratorState
 
     /// <summary>It returned, threw, or was returned into. There is no frame any more.</summary>
     Completed = 3,
+}
+
+/// <summary>Which suspension the dispatch loop left through.</summary>
+/// <remarks>
+/// <para>
+/// <b>It exists because ONE body can contain both, and until the async generator there was no such
+/// body.</b> A generator suspends only at a <c>yield</c> and an async function only at an
+/// <c>await</c>, so the driver that received the value knew what the value meant from which driver
+/// it was. An async generator's body suspends at both, into the same frame, and the two mean
+/// opposite things on the way out: an <c>await</c>'s value is handed to <c>PromiseResolve</c> and
+/// the caller waits, a <c>yield</c>'s value settles the promise the caller is already holding. A
+/// driver that confused them would resolve a request with a promise the body was waiting on.
+/// </para>
+/// <para>
+/// <b>It is written by the instruction and read by the driver, and never by the frame itself.</b>
+/// The alternative was reading the opcode byte back out of the code at <c>Pc</c>, which is exact
+/// and is also a second place that knows which opcodes suspend - and the one that would drift is
+/// the reader.
+/// </para>
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E74209
+// Broiler-Human:        PENDING
+internal enum JsSuspension
+{
+    /// <summary>The loop has not suspended, or the last suspension has been consumed.</summary>
+    None = 0,
+
+    /// <summary>It left through <c>Yield</c> or <c>YieldDelegate</c>: the value is yielded.</summary>
+    Yield = 1,
+
+    /// <summary>It left through <c>Await</c>: the value is awaited.</summary>
+    Await = 2,
 }
 
 /// <summary>How a resumption re-enters the frame it is resuming.</summary>
@@ -169,6 +201,16 @@ internal sealed class JsFrame
     // Broiler-Human:        PENDING
     internal bool Suspended { get; set; }
 
+    /// <summary>Which suspension the loop left through, when it left through one.</summary>
+    /// <remarks>
+    /// It is only ever read by the async generator driver, which is the one driver whose frame can
+    /// suspend two ways. The generator driver and the async driver each serve a body that has only
+    /// one kind of suspension in it and never ask.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=1B626A
+    // Broiler-Human:        PENDING
+    internal JsSuspension Suspension { get; set; }
+
     /// <summary>How the next re-entry into the loop presents itself at the suspension point.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=DC6827
     // Broiler-Human:        PENDING
@@ -205,6 +247,30 @@ internal sealed class JsFrame
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=0CD375
     // Broiler-Human:        PENDING
     internal bool Delegating { get; set; }
+
+    /// <summary>
+    /// Where inside an ASYNC delegation the pending resumption re-enters, or zero.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A synchronous <c>yield*</c> needs no such field because it has ONE suspension point: the
+    /// inner value going out.</b> An asynchronous one has five, because every inner step is awaited
+    /// before it is examined - so a resumption can arrive at the yield of an inner value, at the
+    /// await of what <c>next</c> or <c>throw</c> answered, at the await of what <c>return</c>
+    /// answered, at the await of a close performed because the inner iterator has no <c>throw</c>,
+    /// or at the await the language performs on the RESUMPTION's own value when the inner iterator
+    /// has no <c>return</c>. All five re-enter the same instruction, and this is what tells them
+    /// apart.
+    /// </para>
+    /// <para>
+    /// <b>Zero is the yield, and it is zero rather than a named member for the reason
+    /// <see cref="Delegating"/> is a bool</b>: the field is written and read in one method, and a
+    /// resumption that arrives with it unset is the ordinary one.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=881772
+    // Broiler-Human:        PENDING
+    internal int DelegateStage { get; set; }
 
     /// <summary>Whether any instruction of the body has run yet.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=ADA5EB
@@ -431,6 +497,144 @@ internal sealed class JsAsyncCall
     internal JsPromiseObject Promise { get; }
 
     /// <summary>Whether the body is on the interpreter's stack right now.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=832C69
+    // Broiler-Human:        PENDING
+    internal bool Running { get; set; }
+}
+
+/// <summary>Which of the five things an async generator object is doing right now.</summary>
+/// <remarks>
+/// <b>They are five where a synchronous generator's are four, and the extra one is the whole reason
+/// the queue exists.</b> A synchronous generator finishes a resumption before its <c>next</c>
+/// returns, so there is no state between "running" and "suspended". An asynchronous one answers a
+/// promise and goes on running across jobs, so a second <c>next</c> can arrive at any point - and
+/// <see cref="DrainingQueue"/> is the state in which the body is GONE but requests may still be
+/// waiting, each of which is owed an answer in the order it was made.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=2B18DF
+// Broiler-Human:        PENDING
+internal enum JsAsyncGeneratorState
+{
+    /// <summary>Built, and no instruction of its body has run.</summary>
+    SuspendedStart = 0,
+
+    /// <summary>Suspended at a <c>yield</c>, with a frame waiting to be resumed.</summary>
+    SuspendedYield = 1,
+
+    /// <summary>Its body is running, or is waiting on an <c>await</c> that will resume it.</summary>
+    Executing = 2,
+
+    /// <summary>The body has finished and the requests it did not answer are being answered.</summary>
+    DrainingQueue = 3,
+
+    /// <summary>There is no body and no request left. Every later request answers at once.</summary>
+    Completed = 4,
+}
+
+/// <summary>
+/// ONE call of <c>next</c>, <c>return</c> or <c>throw</c> on an async generator that has not been
+/// answered yet.
+/// </summary>
+/// <remarks>
+/// <b>It is the pairing a synchronous generator never needs: what was asked, and where to put the
+/// answer.</b> <c>gen.next()</c> on a synchronous generator asks and is answered in one call, so
+/// the question never has to be written down. On an async generator the answer is a promise made
+/// now and settled later - possibly several jobs later, possibly after other requests that arrived
+/// first - so both halves have to survive in a list.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=ADB28B
+// Broiler-Human:        PENDING
+internal sealed class JsAsyncGeneratorRequest
+{
+    /// <summary>Records one unanswered request.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=AFF929
+    // Broiler-Human:        PENDING
+    internal JsAsyncGeneratorRequest(JsResumeMode mode, JsValue value, JsPromiseObject promise)
+    {
+        Mode = mode;
+        Value = value;
+        Promise = promise;
+    }
+
+    /// <summary>Which of the three methods was called.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=7287F2
+    // Broiler-Human:        PENDING
+    internal JsResumeMode Mode { get; }
+
+    /// <summary>The one argument it was called with, or <c>undefined</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=CF3706
+    // Broiler-Human:        PENDING
+    internal JsValue Value { get; }
+
+    /// <summary>The promise that call answered with, still pending.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=8A7CF2
+    // Broiler-Human:        PENDING
+    internal JsPromiseObject Promise { get; }
+}
+
+/// <summary>
+/// An async generator object: the state machine, the one frame it may resume, and the queue of
+/// requests it has not answered.
+/// </summary>
+/// <remarks>
+/// <para>
+/// <b>The queue is the difference between this and <see cref="JsGenerator"/>, and it is not an
+/// optimisation.</b> <c>const g = agen(); g.next(); g.next();</c> makes two calls before the first
+/// has settled anything, and both are entitled to an answer, in that order, from a body only one of
+/// them may be inside. Without the queue the second call would either re-enter a running frame -
+/// two interpreters on one operand stack - or be answered out of order, and a program that awaits
+/// both promises can tell.
+/// </para>
+/// <para>
+/// <b>The request at the FRONT is the one being served, and it is removed when it is answered
+/// rather than when it is taken.</b> That is the specification's arrangement and it is load-bearing
+/// twice: a <c>yield</c> answers the front request and then looks at the queue again, continuing
+/// WITHOUT suspending if another request is already waiting; and a body that finishes answers the
+/// front request and then drains the rest, each with a done step, until it reaches a
+/// <c>return</c> - which is awaited before it is answered.
+/// </para>
+/// <para>
+/// <b>What bounds the queue is what bounds every other list a guest can grow: the fuel each call
+/// spends.</b> A request is enqueued by a call of <c>next</c>, and a call is charged; a program
+/// that queues a million requests has made a million calls and paid for them. Nothing here is
+/// charged twice for being asynchronous.
+/// </para>
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=4; Fingerprint=F8D803
+// Broiler-Falsified-If: two requests made before the first settles are answered out of order, or a request reaches a body that is already on the interpreter's stack
+// Broiler-Human:        PENDING
+internal sealed class JsAsyncGenerator : JsObject
+{
+    /// <summary>Creates an async generator object over a frame that has not started.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=E761B7
+    // Broiler-Human:        PENDING
+    internal JsAsyncGenerator(JsObject? prototype, JsFrame frame)
+        : base(prototype, "AsyncGenerator") => Frame = frame;
+
+    /// <summary>The suspended frame, or <see langword="null"/> once the body has finished.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=5E59D5
+    // Broiler-Human:        PENDING
+    internal JsFrame? Frame { get; set; }
+
+    /// <summary>Which of the five states the async generator is in.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=DBD730
+    // Broiler-Human:        PENDING
+    internal JsAsyncGeneratorState State { get; set; } = JsAsyncGeneratorState.SuspendedStart;
+
+    /// <summary>The requests made and not yet answered, oldest first.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=A43500
+    // Broiler-Human:        PENDING
+    internal System.Collections.Generic.List<JsAsyncGeneratorRequest> Queue { get; } = [];
+
+    /// <summary>Whether the body is on the interpreter's stack at this instant.</summary>
+    /// <remarks>
+    /// <b>It is NOT the same question <see cref="State"/> answers, and that is why it is a second
+    /// field.</b> <see cref="JsAsyncGeneratorState.Executing"/> covers the whole span from a
+    /// resumption to the settlement that ends it, including the jobs an <c>await</c> waits through -
+    /// during which nothing is on the stack and the driver is free to be re-entered. This is true
+    /// only while the dispatch loop is actually inside the body, which is the condition that makes
+    /// a re-entry a corruption rather than a queued request.
+    /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=4; Fingerprint=832C69
     // Broiler-Human:        PENDING
     internal bool Running { get; set; }

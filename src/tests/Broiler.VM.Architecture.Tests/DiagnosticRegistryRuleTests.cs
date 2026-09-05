@@ -68,10 +68,18 @@ public sealed class DiagnosticRegistryRuleTests
         // codes rather than new ones, because a code minted for the wide front end alone would have
         // had no reachability value the registry admits - the retained SOURCE corpus is the slice
         // surface's, and rule N7 requires every seam row to be reached by an entry of it.
-        Assert.Equal(53, Vocabulary.Count);
+        // Revision 8 is ONE code again, and it is about a SEQUENCE rather than a single
+        // instruction: a `for await` head is five instructions with an `Await` standing between
+        // them, and only the `Await` carried the async flag's own check. The other four would have
+        // run perfectly well in an ordinary function - each is a call on an iterator - and the
+        // answer would have been a promise nobody ever resolved rather than an error anybody could
+        // diagnose. THE SEAM HALF DID NOT GROW WITH IT EITHER: `for await` outside a body that may
+        // await is a language error rather than a manifest refusal, so it reaches the existing
+        // unexpected-token code, and the async generator itself is admitted rather than refused.
+        Assert.Equal(54, Vocabulary.Count);
         Assert.Equal(24, SeamVocabulary.Count);
         Assert.Equal(Vocabulary.Count + SeamVocabulary.Count, Registry.Count);
-        Assert.Equal(7, DiagnosticRegistry.Revision);
+        Assert.Equal(8, DiagnosticRegistry.Revision);
 
         // The two vocabularies live in two assemblies that cannot see each other, so the one thing
         // no compiler could catch is a number used in both. Nothing else in the build reads both
@@ -167,9 +175,12 @@ public sealed class DiagnosticRegistryRuleTests
         // no defensive row on purpose - all three of its format-ceiling codes ARE reachable by a
         // program, and recording them as unreachable would have been recording something untrue to
         // avoid generating three sources.
+        // The fifty-third is the `for await` head's, and its corpus entry is one of the head's five
+        // instructions in a unit that may not await - which is enough, because the refusal is on
+        // the unit's flag and not on the sequence being complete.
         Assert.Equal(2, ArchitectureRules.DefensiveCodes.Length);
         Assert.Equal(
-            52,
+            53,
             Registry.Count(static row => row.Reachability == "corpus"));
         Assert.Equal(
             23,

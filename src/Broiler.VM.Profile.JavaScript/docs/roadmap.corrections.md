@@ -4948,3 +4948,159 @@ one it is a `TypeError`.
 
 **Authority and date.** The implementation of 2026-09-05 in this checkout and the cases appended to
 `src/tests/differential/the-statement-and-object-surface.js`. 2026-09-05.
+
+### JSC-140
+
+**Where:** the parser's three tests for whether a `let` at the cursor begins a lexical DECLARATION or
+is an ordinary identifier — one at statement position and one in each of the two `for` heads.
+
+**What was assumed.** That the set of tokens a binding name can begin with could be written out as a
+literal list, and that writing it three times was harmless because the list does not change.
+
+**What was true.** The list was short by two, and by the two whose membership is CONTEXTUAL rather
+than fixed. `yield` is a binding name in sloppy code outside a generator, and `await` is one outside
+an async function and outside the module goal — both of which the parser already decides correctly,
+in `IsIdentifierName`, for every other position a name may stand in. `let yield = 4;` therefore fell
+through to the identifier arm, `let` became an expression statement, and the name after it became the
+surprise: `2102:ExpectedToken`, *"`;` was expected and `yield` was found"*, on a program every engine
+runs.
+
+**What that cost, measured.** Twelve variants of `test/language/statements/for-await-of` in the
+pinned suite, all of them generated from templates that declare `let yield` or `let await` at the top
+of the file and never reach the construct under test at all. A conformance runner scores a refused
+source as a FAILURE rather than as unsupported, so all twelve were counted against a family that had
+nothing to do with them. The same refusal is reachable from a two-line program with no `for await` in
+it, which is what makes it a defect in the parser rather than in the family that surfaced it.
+
+**What replaced it.** One predicate, `BeginsLetDeclaration`, asked in all three places: the token
+after the `let` is a declaration head when `IsIdentifierName` admits it or when it opens a
+destructuring pattern. The contextual rules are then stated once, where they already were, and the
+next name added to the identifier set cannot be added to two of the three sites.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, and the subtree run of
+`test/language/statements/for-await-of` before and after, in which the twelve refusals become passes.
+2026-09-05.
+
+### JSC-141
+
+**Where:** the lowering of a function DECLARATION written inside a block, and the environment its
+closure captures.
+
+**What was assumed.** That a block-scoped function declaration behaves like the function expression a
+reader would substitute for it, so that a body naming a `let` of the enclosing block reaches it.
+
+**What was true.** It does not. The shortest witness is one line and needs no family this stage
+admits: `{ let n = 0; function fn() { n += 1; } fn(); print(n); }` answers
+`uncaught ReferenceError: n is not defined`, where the same block with
+`var fn = function () { n += 1; };` answers `1`. The declaration is hoisted to the enclosing FUNCTION
+scope and its closure captures that scope, so the block's own environment record — which is where `n`
+lives — is not on the chain the body resolves against.
+
+**What that cost, measured.** Four variants of `test/language/statements/for-await-of`, each of the
+shape `{ let iterCount = 0; async function fn() { … } … }`, which the suite generates inside a block
+so that the file's own bindings do not leak. The four fail on `iterCount` rather than on anything
+they test. The cost outside the suite is not measured here and is not small: the shape is what every
+`if (…) { function f() {} }` in sloppy code produces.
+
+**What replaced it.** Nothing, in this bundle. The repair is in the hoisting pass rather than in the
+family this stage admits, and it needs the block-level function semantics of Annex B decided before
+it is written — a declaration hoisted to the block, with a `var`-scoped alias assigned where the
+declaration stands. Recording it is what stops the next reader treating the four failures as an
+async-iteration defect.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the witness above run
+through the published binary, and the subtree run that names the four. 2026-09-05.
+
+### JSC-142
+
+**Where:** [JSC-101](#jsc-101), which measures the per-frame cost of the executor's dispatch loop and
+derives the call-depth bound from it, re-taken for the sixth time — and, this time, the first at
+which something had to move.
+
+**What the measurement says now.** Asynchronous iteration adds five arms to the dispatch loop — the
+four steps of a `for await` head and the check its close owes — and the executor's own frame grew
+from **4,073 bytes to 4,551**. On the sixty-four megabytes `JsExecution.GuestStackBytes` declared,
+that is **14,737** calls against a call-depth maximum a host may be granted of 8,192: a factor of
+**1.80**, where [JSC-126](#jsc-126) had already recorded 2.01 as the narrowest the margin had ever
+been. Below two is not a margin that has narrowed; it is the ordering the ceiling depends on no
+longer holding, because a program granted the maximum could reach the stack before it reached the
+ceiling and a stack overflow is the one failure the CLR cannot turn into an exception.
+
+**What replaced it.** The guest stack, raised from sixty-four megabytes to **ninety-six**, at which
+the same bisection measures **22,122** calls — 2.70 times the grantable ceiling and 3.69 times
+`JsEngine.MaximumCallDepth`. The stack is a reservation of ADDRESS SPACE committed a page at a time,
+so a program that never recurses pays for none of it; the alternative, lowering the grantable
+ceiling, would have answered a question about the machine by changing what a program is allowed to
+do, which is the choice [JSC-85](#jsc-85) already declined.
+
+**Both figures are measured on a build with the bounds lifted**, because a bisection that stops at a
+declared bound reports the promise rather than the capacity — which is the distinction
+`eng/measure-frame-cost.py` prints in as many words when both depths are stopped by the bound. The
+script's own `DEFAULT_STACK_BYTES` is stated rather than read, so it moved with the constant.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout and three bisections: one
+against the published binary, which reports both depths stopped by the declared bound; one against a
+build with `JsEngine.MaximumCallDepth` and the profile's call-depth maximum lifted, on the
+sixty-four-megabyte stack, which reports 14,737; and one against the same build on ninety-six, which
+reports 22,122. 2026-09-05.
+
+### JSC-143
+
+**Where:** the lowering of a `const` declared at the top level of a PROGRAM, and every write to it.
+
+**What was assumed.** That the refusal `2204:AssignmentToConstant` covers assignment to a constant
+binding wherever one is written, which is what the refusal's own message says.
+
+**What was true.** It covers a constant that resolves to a SLOT. A `const` at program scope with a
+block depth of zero is published as a property of the global object instead — which is what makes it
+reachable across entry points — and a write to it therefore resolves to no slot at all and is
+lowered to `StoreGlobal`, where nothing asks whether the binding was constant. `const c = 1; c = 9;`
+answers `9` at the top level of a script and is refused inside a function. A destructuring target
+takes the same path, so `[c] = [9]` mutates it too; the pattern is not the cause and the constant is
+not protected either way.
+
+**What that cost, measured.** Four variants of `test/language/statements/for-await-of` whose
+generated body assigns to a `const` through a `for await` head and asserts the `TypeError` the
+language owes — reported as *"Promise incorrectly fulfilled"*, because the assignment succeeded.
+Beyond the suite the cost is a silent one: a program that writes to a top-level `const` gets the
+write rather than the error, and nothing anywhere reports it.
+
+**What replaced it.** Nothing, in this bundle. The repair belongs with the global binding model
+rather than with this stage's families: the specification gives the global environment a DECLARATIVE
+part precisely so that `let` and `const` at the top level are not properties, and adding a constant
+flag to the global object's property table would answer the assignment while leaving both
+enumerable in `for…in`, which they are not. Recording it is what keeps the four failures from being
+read as an async-iteration defect.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the witness
+`const c = 1; c = 9; c` run through the published binary, and the subtree run that names the four.
+2026-09-05.
+
+### JSC-144
+
+**Where:** the parse of a `for` head, which accepts an initialiser on a head that iterates.
+
+**What was assumed.** That a `for … of` or `for … in` head with a declarator carrying an initialiser
+is a shape the grammar cannot produce, so the parser could take the single declarator and drop
+whatever else was on it.
+
+**What was true.** The grammar cannot produce it and a PROGRAM can write it, which is the difference
+between a production and an early error. `for (var x = 1 of []) ;` is a Syntax Error in the language
+and this front end accepts it, discards the `= 1` and runs the loop; the same holds for `let` and
+`const`.
+
+**What that cost, measured.** Six variants of `test/language/statements/for-await-of` —
+`head-var-init`, `head-let-init` and `head-const-init`, each in both modes — which expect a
+parse-phase `SyntaxError` and get a program that runs. It is one of several parse-phase early errors
+this front end does not implement, and it is recorded rather than repaired because it is the one this
+stage's subtree runs measured: the other twenty refusals in the same subtree are escaped keywords, a
+strict directive under a non-simple parameter list, and a `let` followed by a line terminator.
+
+**What replaced it.** Nothing, in this bundle. The repair is one test at each of the two head sites —
+a declarator with an initialiser reaching an `of` or `in` head is `2101:UnexpectedToken` — and it is
+not taken here because the whole class deserves one pass over the early errors rather than the two
+this bundle happened to trip over.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the witness
+`for (var x = 1 of []) ;` run through the published binary, and the subtree run that names the six.
+2026-09-05.

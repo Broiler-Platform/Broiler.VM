@@ -554,7 +554,14 @@ internal sealed record JsForInStatement(
 /// iterator a <c>return</c> on every abrupt exit. A flag would have put those two lowerings in one
 /// method with a condition down the middle of it.
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=9DA212
+/// <param name="IsAwait">
+/// Whether the head was written <c>for await</c>. THIS one IS a flag rather than a record of its
+/// own, and the difference from the paragraph above is that the two lowerings are the same shape:
+/// acquire, step, bind, run, close - with an <c>Await</c> after the step and a different close. The
+/// head grammar, the per-iteration binding copy, the four exits that owe a close and the three
+/// forms of head are identical, and a second record would have been a second copy of all of it.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=6A873D
 // Broiler-Human:        PENDING
 internal sealed record JsForOfStatement(
     SliceSourceSpan Span,
@@ -563,7 +570,8 @@ internal sealed record JsForOfStatement(
     JsPattern? Pattern,
     JsExpression? Target,
     JsExpression Right,
-    JsStatement Body) : JsStatement(Span);
+    JsStatement Body,
+    bool IsAwait = false) : JsStatement(Span);
 
 /// <summary><c>break</c>, with an optional label.</summary>
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=095D71

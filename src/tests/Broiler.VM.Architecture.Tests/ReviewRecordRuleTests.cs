@@ -949,7 +949,14 @@ public sealed class ReviewRecordRuleTests
         // frame a generator is, with the realm setup for its prototypes; and the `Reflect`
         // namespace. Each is covered for the same reason every other product file is, which is that
         // it compiles into an assembly this component builds.
-        Assert.Equal(116, AssuranceSources.Files.Count);
+        //
+        // The fifteenth is the ASYNCHRONOUS half of the iteration protocol: the intrinsics an async
+        // generator and a `for await` reach - `%AsyncIteratorPrototype%`,
+        // `%AsyncGeneratorPrototype%`, `%AsyncGeneratorFunction%` and the wrapper that turns a
+        // synchronous iterator into an asynchronous one. It is a file of its own for the reason the
+        // synchronous generator's realm setup is: it is reached by walking up from a value rather
+        // than from any global, and putting it in the global setup would have hidden that.
+        Assert.Equal(117, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

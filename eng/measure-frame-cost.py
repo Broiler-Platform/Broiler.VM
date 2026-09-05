@@ -55,7 +55,7 @@ DEFAULT_BINARY_DIRECTORY = (
 # The stack `JsExecution.GuestStackBytes` declares for one guest invocation. It is stated here
 # rather than read, because a script that read it from the source would agree with the source by
 # construction and would stop being able to notice the two disagreeing.
-DEFAULT_STACK_BYTES = 64 * 1024 * 1024
+DEFAULT_STACK_BYTES = 96 * 1024 * 1024
 
 RETURNING = """function down(n) { return n === 0 ? 0 : down(n - 1); }
 print("answered " + down(%d));

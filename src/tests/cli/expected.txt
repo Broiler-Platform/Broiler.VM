@@ -455,24 +455,31 @@ runs/an-unhandled-rejection-does-not-stop-the-drain.js|0|and kept running
 # this answers on Fuel where the delegation chain above answers on the call depth.
 --fuel 200000 limits/an-await-that-never-ends.js|5|did not settle within its allowance
 
-# WHAT ADMITTING `async` PUT AT RISK, pinned here. Each of these three was only ever reachable from
-# a position this manifest refused first, and admitting the async function is what made each of them
-# need a refusal of its own. A regression puts any of them back to an expected-token diagnostic,
-# which a conformance runner scores as a failure rather than as unsupported.
-refused/an-async-generator-function.js|3|2104:ConstructOutsideManifest
-refused/an-async-generator-method-of-a-class-body.js|3|2104:ConstructOutsideManifest
-refused/a-for-await-in-an-async-function.js|3|2104:ConstructOutsideManifest
+# THE SEVEN ROWS THAT USED TO PIN THE ASYNC GENERATOR'S REFUSAL, NOW PINNING WHAT IT DOES. Each of
+# the seven positions is still exercised - the declaration, the class member, the object literal's
+# member, the private name, the field initialiser, the static block and the `for await` head - and
+# each answers a value taken from the comparison engine rather than a diagnostic. The positions did
+# not change; what they answer did, and moving the rows rather than deleting them is what keeps that
+# a checked fact instead of a gap.
+runs/an-async-generator-function.js|0|made,body,first:1:false,second:2:false,third:undefined:true
+runs/an-async-generator-method-of-a-class-body.js|0|base,instance;static
+runs/an-async-generator-method-of-an-object-literal.js|0|7,8;keyed
+runs/an-async-generator-with-a-private-name.js|0|1,2;static
+runs/an-async-generator-in-a-class-field-initialiser.js|0|field;block
+runs/a-for-await-in-an-async-function.js|0|1,2;3,4;5,6;14,16
 
-# AND THE FOUR POSITIONS ADMITTING THE CLASS BODY OPENED, pinned the same way. Two of them did not
-# exist before 2026-09-05: there was no field INITIALISER and no static BLOCK for a declaration to
-# sit in, so an async generator written in either was refused for the enclosing construct and never
-# reached on its own. The third is where two families meet - `async *#m` has a key this manifest
-# admits and a kind it does not - and the fourth is the object literal's, one token away from the
-# two spellings beside it that ARE admitted. Every one of them is the shape the audit
-# `eng/audit-refusals.py` exists to catch: a construct refused where somebody remembered and met by
-# a surprise token where nobody did, which a conformance runner scores as a failure rather than as
-# unsupported.
-refused/an-async-generator-in-a-class-field-initialiser.js|3|2104:ConstructOutsideManifest
-refused/an-async-generator-in-a-class-static-block.js|3|2104:ConstructOutsideManifest
-refused/an-async-generator-with-a-private-name.js|3|2104:ConstructOutsideManifest
-refused/an-async-generator-method-of-an-object-literal.js|3|2104:ConstructOutsideManifest
+# AND THE SEVEN THE FAMILY NEEDED BEYOND ITS POSITIONS. An async generator is not the two families
+# it is spelled from, and each of these pins a part that neither of them carries: the request queue
+# answering four calls made before the first settled, in order; the three kinds of source a
+# `for await` head can be pointed at, only one of which has a `Symbol.asyncIterator`; the four
+# abrupt exits that owe an ASYNCHRONOUS close and the one that does not; the four-deep prototype
+# chain and the `%AsyncIteratorPrototype%` at the top of it; the two abrupt resumptions, one of
+# which awaits its own argument before the body's finalisers run; and the delegation, which awaits
+# every inner step before it asks whether the inner iterator is done.
+runs/an-async-generators-request-queue.js|0|all-four-called,sent:b,awaited:w,1:false,2:false,done:true,undefined:true
+runs/a-for-await-over-the-three-kinds-of-source.js|0|g1,g2;p1,p2,p3;t1,t2
+runs/an-async-iterator-closed-by-every-abrupt-exit.js|0|break:closed,break:after,labelled:closed,labelled:after,return:closed,return:returned,throw:closed,throw:caught:boom,continue:closed,continue:seen:3
+runs/an-async-generator-prototype-chain.js|0|[object AsyncGeneratorFunction];[object AsyncGenerator];true;[object AsyncGenerator];true;function;true;constructor+next+return+throw;true;AsyncGeneratorFunction;true;false;true
+runs/an-async-generator-returned-and-thrown-into.js|0|first:1,awaited,finalised,returned:R:true,after:undefined:true,throw:rejected:early,finalised,inside:rejected:inside
+runs/an-async-delegation.js|0|i1,i2,after:inner-done,s1,s2,after:sync-done,a1,a2
+runs/an-async-delegation-forwards-an-abrupt-resumption.js|0|first:n1,inner-throw:E,recovered:recovered:false,inner-return:R,ended:R:true,closed-before-told,missing:TypeError

@@ -1,8 +1,8 @@
 # broiler.javascript.slice diagnostic-code registry
 #
-# registry-revision: 7
+# registry-revision: 8
 # published-at-milestone: JS-3a (revision 1), JS-3b (revision 2), JS-4 (revision 3), JSW-2 (revision 4),
-#                         JSW-5 (revisions 5, 6 and 7)
+#                         JSW-5 (revisions 5, 6, 7 and 8)
 # owning-decision: JSD-0009
 # format-version: 1, 2
 # feature-manifest: broiler.javascript.slice, broiler.javascript.wide
@@ -100,8 +100,9 @@
 1609|YieldOutsideGenerator|core-result|SemanticValidationFailed|code|corpus|wide-a-suspension-outside-a-generator|5
 1610|GeneratorFlagsInconsistent|core-result|InconsistentStructure|functions|corpus|wide-a-generator-that-is-also-the-program-body|5
 1611|AwaitOutsideAsync|core-result|SemanticValidationFailed|code|corpus|wide-an-await-outside-an-async-function|6
-1612|AsyncFlagsInconsistent|core-result|InconsistentStructure|functions|corpus|wide-an-async-function-that-is-also-a-generator|6
+1612|AsyncFlagsInconsistent|core-result|InconsistentStructure|functions|corpus|wide-an-async-function-that-is-also-the-program-body|6
 1621|ClassElementFlagsInconsistent|core-result|InconsistentStructure|code|corpus|wide-a-class-element-whose-flags-contradict|7
+1630|AsyncIterationOutsideAsync|core-result|SemanticValidationFailed|code|corpus|wide-an-async-iteration-step-outside-an-async-function|8
 1901|Truncated|core-result|Truncated|reader|corpus|a-truncated-payload|1
 1902|MalformedEncoding|core-result|MalformedEncoding|reader|corpus|an-overlong-variable-length-integer|1
 1903|ReaderStopped|core-result|InconsistentStructure|reader|defensive|every bounded-read status this build was compiled against has its own arm, so this one answers a status the reader does not currently have|1

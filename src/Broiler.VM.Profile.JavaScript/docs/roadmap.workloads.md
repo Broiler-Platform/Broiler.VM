@@ -329,18 +329,29 @@ the act that would turn a stage into a milestone with a ledger row.
   destructuring target), and a generator member of a class body. Each is exercised by fixtures under
   `src/tests/cli/runs` and by cases in the retained differential probe, whose answers were taken from
   the comparison engine before they were written down.
-- **What it has NOT admitted, and why that is a refusal rather than a gap in this record.** The
-  ASYNC GENERATOR — `async function*`, and an async generator method of a class body or an object
-  literal — together with `for await`, which is the loop that consumes one. They stay refused by
-  name, with their own construct in the diagnostic, in every position the audit can write them in,
-  including the two the class body newly opened. **An async generator is not the two families it is
-  spelled from.** It needs a request queue on the generator object so that a second `next` before the
-  first settles is queued rather than re-entering a running frame, a `next` that answers a promise,
-  `%AsyncGeneratorFunction%` and `%AsyncGeneratorPrototype%`, `Symbol.asyncIterator` reaching them,
-  and the wrapping of a synchronous iterator that `for await` performs — none of which the generator
-  family or the `async` family already carries. **A family half-admitted is worse than a family
-  refused**, which is what the per-family gate above exists to say, so it is left whole for a stage
-  that can finish it.
+- **And, on 2026-09-05, the ASYNC GENERATOR and `for await`, which the paragraph this replaces left
+  refused.** `async function*` as a declaration and as an expression, an async generator method of an
+  object literal and of a class body — `static`, private, computed and Symbol-keyed — `await` and
+  `yield` in one body without either being mistaken for the other, `yield*` over an async or a
+  synchronous inner iterator, and `for await` in an async function, an async method, an async arrow
+  and an async generator. **An async generator is not the two families it is spelled from**, and what
+  it needed beyond them is what this stage built: a REQUEST QUEUE on the generator object, so that a
+  second `next` before the first settles is answered in order rather than re-entering a running
+  frame; `next`, `return` and `throw` each answering a promise, including when they are errors;
+  `%AsyncGeneratorFunction%`, `%AsyncGeneratorFunction.prototype%`, `%AsyncGeneratorPrototype%` and
+  `%AsyncIteratorPrototype%`, with `Symbol.asyncIterator` reaching them; and
+  `%AsyncFromSyncIteratorPrototype%`, which is what makes `for await` over an Array of promises
+  iterate what they resolve to. The suspension the two families share is told apart by the FRAME —
+  `JsFrame.Suspension` is written by the instruction that left the dispatch loop — because an async
+  generator's body is the first that can suspend two ways into one frame, and the two mean opposite
+  things to the driver that receives the value.
+- **What the family cost the call-depth measurement, which is the first time it cost anything.** Five
+  dispatch arms took the executor's own frame from 4,073 bytes to 4,551 and the capacity on the
+  declared stack from 16,478 calls to 14,737 — 1.80 times the ceiling a host may be granted, below
+  the factor of two [JSC-126](roadmap.corrections.md#jsc-126) had already called the narrowest it had
+  been. The guest stack was raised to ninety-six megabytes and re-measured at 22,122 calls, which is
+  2.70 times that ceiling; [JSC-142](roadmap.corrections.md#jsc-142) records both figures and why the
+  stack moved rather than the ceiling.
 - **The decorator stays refused as well**, and it is not this stage's to admit: it is a proposal
   rather than a production of the pinned edition, and the tokenizer refuses it by name at the `@`.
 
