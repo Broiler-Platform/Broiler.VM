@@ -199,6 +199,11 @@ def main():
 
     binary = pathlib.Path(arguments.binary_directory) / BINARY_NAME
 
+    # The published image carries a suffix on Windows and not on the other two claimed platforms,
+    # and a driver that assumed either would leave one cell of the matrix unable to run at all.
+    if not binary.exists() and binary.with_suffix(".exe").exists():
+        binary = binary.with_suffix(".exe")
+
     if not binary.exists():
         raise SystemExit(f"# no binary at {binary}")
 

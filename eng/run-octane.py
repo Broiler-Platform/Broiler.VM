@@ -148,6 +148,13 @@ def main():
 
     binary = pathlib.Path(arguments.binary_directory) / "Broiler.VM.Composition.JavaScript.Cli"
 
+    # A PUBLISHED IMAGE CARRIES A SUFFIX ON ONE OF THE THREE CLAIMED PLATFORMS AND NOT ON THE OTHER
+    # TWO, so the suffix is tried rather than assumed. Without this the workload lane would be
+    # green on Linux and macOS and would report "no binary" on Windows - which is the shape of a
+    # matrix that looks filled and is not.
+    if not binary.exists() and binary.with_suffix(".exe").exists():
+        binary = binary.with_suffix(".exe")
+
     if not binary.exists():
         raise SystemExit(f"# no binary at {binary}")
 

@@ -380,6 +380,76 @@ jobs:
             esac
           done
 
+      # THE TWO THIRD-PARTY WORKLOADS, OUT OF THE PUBLISHED IMAGE, ON EVERY CLAIMED RID.
+      #
+      # This step exists because of a specific failure and not for symmetry. A workload that has
+      # only ever run on one machine under a JIT is what let a failing Native AOT run reach two
+      # retained bundles before anything noticed, and the workload roadmap's last stage asks for
+      # exactly this lane in those words. Both workloads run out of `artifacts/ci-aot-*`, which is
+      # the image the step above published and ran the component's own suites through, so a
+      # trimming or an AOT-shaped failure that the component's suites do not reach is caught by
+      # the corpora that do.
+      #
+      # OCTANE RUNS WHOLE AND test262 RUNS OVER A NAMED SELECTION, and the asymmetry is the
+      # extraction. The Octane pin is 37 files and extracting it costs nothing; the test262
+      # archive is 232 MB extracted, and the step on the build job above already records why that
+      # extraction happens on one Linux runner rather than on every publish cell - the ENGINE's
+      # answers over a fixed corpus are what a whole run measures, and no runtime identifier
+      # changes them. What DOES change with the identifier is whether the published image can
+      # execute the corpus at all, and a named selection answers that at a hundredth of the cost.
+      #
+      # THE EXCLUSION, STATED HERE RATHER THAN DISCOVERED: no RID but the Linux one has scored the
+      # whole suite, and the selection below is a reading about execution rather than about
+      # conformance. A figure from this step is retained by no bundle and stated by no document.
+      - name: Run the two third-party workloads out of the published image
+        shell: bash
+        run: |
+          set -euo pipefail
+          py=python3
+          command -v "$py" >/dev/null 2>&1 || py=python
+
+          # The wall clock is bounded per benchmark because a lane may not hang: the driver's own
+          # default is an hour, which is a workstation's answer and not a runner's. A benchmark
+          # that meets the bound reports no score and the driver exits non-zero, which is the
+          # answer this step wants - a benchmark that cannot finish on this RID is a finding.
+          "$py" eng/run-octane.py --binary-directory artifacts/ci-aot-JavaScript.Cli --wall 600000
+
+          # The selection is four subtrees that between them reach the front end, the executor,
+          # the realm's own objects and the suspension machinery, which is what makes a published
+          # image's failure visible here rather than only in the whole run. `--expect` is what
+          # makes the extraction answerable to the pin rather than to itself.
+          pins="src/tests/conformance/pins"
+          rm -rf artifacts/t262-rid && mkdir -p artifacts/t262-rid
+          tar xzf "$pins"/test262-*.tar.gz -C artifacts/t262-rid
+          suite=$(find artifacts/t262-rid -maxdepth 1 -mindepth 1 -type d)
+
+          # THE EXIT CODE IS NOT THE ASSERTION HERE, and the driver's own header says why: 1 means
+          # cases failed, which a whole run of this suite does today and which is a result rather
+          # than a reason to stop. What this step asserts is that the run was MEASURED - the
+          # driver stops before the merge when a shard reports the harness's own defect code, so a
+          # merged report that exists and carries a total is the discriminator, and its absence
+          # fails the lane.
+          set +e
+          "$py" eng/run-test262.py --suite "$suite" \
+            --binary-directory artifacts/ci-aot-JavaScript.Conformance \
+            --jobs 2 --out artifacts/test262-rid \
+            --dir test/language/statements/class \
+            --dir test/language/expressions/object \
+            --dir test/built-ins/Array \
+            --dir test/built-ins/Promise
+          measured=$?
+          set -e
+
+          if [ ! -f artifacts/test262-rid/test262.report ]; then
+            echo "the published image did not produce a merged report (driver exit $measured)" >&2
+            exit 1
+          fi
+
+          grep -q '^total|' artifacts/test262-rid/test262.report || {
+            echo "the merged report carries no total, so nothing was measured" >&2
+            exit 1
+          }
+
       # THE SHARDED RUN, WHICH IS A DIFFERENT QUESTION FROM THE STEP ABOVE.
       #
       # One unsharded run proves the totals. It cannot prove that the shards of a sharded run
