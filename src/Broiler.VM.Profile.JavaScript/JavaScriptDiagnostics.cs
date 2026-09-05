@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   8
 // Annotated:        8/8
-// Exempt:           54
+// Exempt:           62
 // Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    High
@@ -48,7 +48,7 @@ namespace Broiler.VM.Profile.JavaScript;
 /// predicate's own record calls a worse record than one block on the vocabulary.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=6349FD
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=4E0E55
 // Broiler-Human:        PENDING
 public enum JavaScriptDiagnosticCode
 {
@@ -293,6 +293,67 @@ public enum JavaScriptDiagnosticCode
     /// precedence.
     /// </remarks>
     ClassElementFlagsInconsistent = 1621,
+
+    // ---- 1613: the module goal ---------------------------------------------------------------
+    //
+    // Out of numeric order beside the block above, and deliberately: these were minted while 1621
+    // was, and packing them after it would have put a module refusal in the middle of the
+    // structural block it has nothing to do with. Every code here is about a relation BETWEEN
+    // modules - what a request names, what an export resolves to, whether the composition admits
+    // the surface at all - and none of them can be stated about one row.
+
+    /// <summary>
+    /// The artifact carries module records and declares no module surface beside its manifest.
+    /// </summary>
+    ModuleSectionOutsideManifest = 1613,
+
+    /// <summary>A module record states an index, a count or a slot this format refuses.</summary>
+    MalformedModuleRow = 1614,
+
+    /// <summary>A module requests a key no module of this artifact carries.</summary>
+    /// <remarks>
+    /// <b>Resolution happened before the bytes were written and this is the check that it was
+    /// complete.</b> The composition turns a specifier into a key and supplies the module under
+    /// that key; an artifact whose request matches no key is one whose producer resolved a
+    /// specifier and then did not carry what it resolved to, which no amount of executing would
+    /// discover any earlier.
+    /// </remarks>
+    ModuleRequestUnresolved = 1615,
+
+    /// <summary>An import or a re-export names an export the exporting module does not have.</summary>
+    ModuleExportNotFound = 1616,
+
+    /// <summary>Two star re-exports supply the same name from different bindings.</summary>
+    ModuleExportAmbiguous = 1617,
+
+    /// <summary>
+    /// Resolving an export re-entered the module and name it started from: a cyclic import.
+    /// </summary>
+    /// <remarks>
+    /// <b>This is what a cyclic import costs, and it costs a named refusal rather than a budget.</b>
+    /// A cycle in the module GRAPH is ordinary and runs; a cycle in an export RESOLUTION -
+    /// <c>a</c> re-exporting a name from <c>b</c> while <c>b</c> re-exports it from <c>a</c> -
+    /// names a binding that exists nowhere, and a resolver that followed it would walk the cycle
+    /// until an allowance ran out. The walk carries the pairs it has visited and refuses on
+    /// re-entry, so the answer is this code and never an exhaustion.
+    /// </remarks>
+    ModuleExportCircular = 1618,
+
+    /// <summary>
+    /// The artifact declares the module surface and the composition registered no resolver.
+    /// </summary>
+    /// <remarks>
+    /// <b>Admitting the surface and answering its one question are two different acts, and this is
+    /// the second.</b> A composition declines the surface by not admitting it, and is told so with
+    /// <see cref="SurfaceOutsideComposition"/>; a composition that admits it and registers no
+    /// resolver has said it will run modules and supplied no way to say what a specifier names.
+    /// Both are refused at verification, and a reader holding one of the two codes knows which of
+    /// the two things is missing.
+    /// </remarks>
+    ModuleResolverAbsent = 1619,
+
+    /// <summary>The artifact declares the module surface and carries no module records.</summary>
+    ModuleSectionMissing = 1620,
 
     // ---- 1900: the bounded reader's own statuses, mapped -----------------------------------
 

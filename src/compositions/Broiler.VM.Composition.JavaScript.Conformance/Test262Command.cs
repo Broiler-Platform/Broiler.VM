@@ -200,11 +200,33 @@ internal static class Test262Command
         if (output is not null)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(output))!);
-            File.WriteAllText(output, report.Render());
+            File.WriteAllText(output, report.Render(), Transcript);
         }
 
         return report.Failed ? ExitCodes.Failed : ExitCodes.Ok;
     }
+
+    /// <summary>
+    /// The encoder a transcript is written with: one that SUBSTITUTES rather than throwing.
+    /// </summary>
+    /// <remarks>
+    /// <b>A transcript that cannot be written has measured nothing, and the default encoder throws
+    /// on text the language admits.</b> A JavaScript String is a sequence of UTF-16 code units, so
+    /// a test may legally name an export - or a variable, or a property - with an unpaired
+    /// surrogate, and the front end's refusal quotes the name back. <c>File.WriteAllText</c>'s
+    /// default encoder answers that by raising, which ended a whole shard AFTER it had scored every
+    /// one of its files: the totals were printed and then discarded, and the run reported a harness
+    /// defect for a test that had behaved exactly as it declared it would.
+    /// <para>
+    /// Substitution is the right answer here and would be the wrong one in an artifact. The
+    /// transcript is a report for a person to read; what it says about such a test is its verdict,
+    /// and a replacement character in the echoed name costs nothing that matters. The bytes an
+    /// ARTIFACT carries are a different question, and the format answers it with an encoding of its
+    /// own rather than by substituting.
+    /// </para>
+    /// </remarks>
+    private static readonly System.Text.UTF8Encoding Transcript = new(
+        encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: false);
 
     /// <summary>Prints one report's tallies, its totals and its coverage, in that order.</summary>
     /// <remarks>

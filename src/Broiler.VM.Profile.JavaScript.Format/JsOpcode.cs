@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   23
 // Annotated:        23/23
-// Exempt:           113
+// Exempt:           115
 // Human-reviewed:   0/23
 // IP risk:          None
 // Security risk:    Medium
@@ -98,7 +98,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// queue the host drains.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=380159
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=E2DD6C
 // Broiler-Human:        PENDING
 public enum JsOpcode : byte
 {
@@ -719,6 +719,46 @@ public enum JsOpcode : byte
     /// </remarks>
     Await = 0x6C,
 
+    // ---- modules ------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Push the value of import entry <c>u16</c> of this artifact's import table.
+    /// </summary>
+    /// <remarks>
+    /// <b>AN IMPORT IS NOT A SLOT AND COPYING IT INTO ONE WOULD BE WRONG.</b> An imported binding
+    /// is an indirection onto a slot of the EXPORTING module's environment, so a write that module
+    /// makes after this module was evaluated has to be visible here - which is what the language
+    /// calls a live binding and what a copy at instantiation time silently breaks. So the read goes
+    /// through the artifact's import table to the exporting environment on every access, and an
+    /// import has no slot of its own to be stale.
+    /// <para>
+    /// The operand indexes the artifact-wide table rather than the current module's, so the
+    /// executor never has to know which module a code unit belongs to; the verifier resolves every
+    /// entry to an environment and a slot before anything runs, so this instruction performs no
+    /// resolution at all.
+    /// </para>
+    /// </remarks>
+    LoadImport = 0x6D,
+
+    /// <summary>
+    /// Pop one value and throw a <c>TypeError</c> naming the immutable binding constant <c>u16</c>.
+    /// </summary>
+    /// <remarks>
+    /// <b>ASSIGNING TO AN IMMUTABLE BINDING IS A RUN-TIME FAILURE AND NOT AN EARLY ERROR</b>, which
+    /// is the fact this instruction exists to express. <c>const x = 1; x = 2;</c> and a write to an
+    /// imported binding are both <c>TypeError</c> at the moment the assignment runs, so a program
+    /// that guards one with <c>try</c> - which the conformance suite does, repeatedly - is a program
+    /// that must compile and run. Refusing it at the front end scored those tests as refusals of a
+    /// construct the manifest admits perfectly well.
+    /// <para>
+    /// <b>It is NOT terminal, and that is deliberate rather than an oversight.</b> It always throws,
+    /// so nothing after it runs - but the verifier's reachability is a property of the instruction
+    /// stream, and marking it terminal would make the return that follows an assignment at the end
+    /// of a function body unreachable code and refuse a correct program.
+    /// </para>
+    /// </remarks>
+    ThrowImmutable = 0x6E,
+
     // ---- the class body -------------------------------------------------------------------------
 
     /// <summary>
@@ -1008,7 +1048,7 @@ public static class JsOpcodes
         ElementIsMethod | ElementIsGetter | ElementIsSetter;
 
     /// <summary>Every opcode format version 2 defines, in ascending numeric order.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B26808
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=7BF5E0
     // Broiler-Human:        PENDING
     public static readonly JsOpcode[] All =
     [
@@ -1046,6 +1086,7 @@ public static class JsOpcodes
         JsOpcode.ForInStart, JsOpcode.ForInNext,
         JsOpcode.IterateStart, JsOpcode.IterateNext, JsOpcode.IterateRest, JsOpcode.IterateClose,
         JsOpcode.Yield, JsOpcode.YieldDelegate, JsOpcode.Await,
+        JsOpcode.LoadImport, JsOpcode.ThrowImmutable,
         JsOpcode.DefineClassElement, JsOpcode.NewPrivateName,
         JsOpcode.LoadPrivate, JsOpcode.StorePrivate, JsOpcode.HasPrivate,
         JsOpcode.RunStaticElements,
@@ -1097,7 +1138,7 @@ public static class JsOpcodes
     /// The operand shape of <paramref name="opcode"/>, or <see langword="null"/> when this format
     /// version does not define it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=D20C1D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=1B2128
     // Broiler-Human:        PENDING
     public static JsOperandShape? Shape(JsOpcode opcode) => opcode switch
     {
@@ -1142,7 +1183,8 @@ public static class JsOpcodes
         JsOpcode.DeleteProperty or JsOpcode.DefineGetter or JsOpcode.DefineSetter or
         JsOpcode.Closure or
         JsOpcode.LoadArgument or JsOpcode.RestArguments or JsOpcode.RequireCoercible or
-        JsOpcode.NewPrivateName
+        JsOpcode.NewPrivateName or
+        JsOpcode.LoadImport or JsOpcode.ThrowImmutable
             => JsOperandShape.U16,
 
         JsOpcode.Jump or JsOpcode.JumpIfFalse or JsOpcode.JumpIfTrue or
@@ -1168,7 +1210,7 @@ public static class JsOpcodes
     /// and the verifier's abstract height is computed from them alone. A false answer means the
     /// opcode is not one this format version defines - not that its effect is unknown.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=90E61D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=D72A29
     // Broiler-Human:        PENDING
     public static bool TryDescribe(JsOpcode opcode, uint operand, out int pops, out int pushes)
     {
@@ -1199,6 +1241,7 @@ public static class JsOpcodes
             case JsOpcode.LoadGlobalOrUndefined:
             case JsOpcode.NewObject:
             case JsOpcode.Closure:
+            case JsOpcode.LoadImport:
             case JsOpcode.Duplicate:
             case JsOpcode.Pick:
             case JsOpcode.SuperCallForwarded:
@@ -1214,6 +1257,7 @@ public static class JsOpcodes
             case JsOpcode.StoreScoped:
             case JsOpcode.InitialiseScoped:
             case JsOpcode.StoreGlobal:
+            case JsOpcode.ThrowImmutable:
             case JsOpcode.Pop:
             case JsOpcode.PushObjectScope:
             case JsOpcode.Throw:

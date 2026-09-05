@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   14
-// Annotated:        14/14
-// Exempt:           26
-// Human-reviewed:   0/14
+// Relevant units:   16
+// Annotated:        16/16
+// Exempt:           28
+// Human-reviewed:   0/16
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  2/10 max
-// Unverified:       14
+// Unverified:       16
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -224,7 +224,7 @@ internal readonly struct JsEntry(string name, uint unit)
 internal sealed class JsProgram : IVmVerifiedState
 {
     /// <summary>Creates a verified program.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A12776
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3DCF7E
     // Broiler-Human:        PENDING
     internal JsProgram(
         JsValue[] constants,
@@ -234,7 +234,9 @@ internal sealed class JsProgram : IVmVerifiedState
         JsRegion[] regions,
         JsEntry[] entries,
         int positionRowCount,
-        System.Collections.Immutable.ImmutableArray<string> admittedSurfaces)
+        System.Collections.Immutable.ImmutableArray<string> admittedSurfaces,
+        JsModuleRecord[]? modules = null,
+        JsBinding[]? importBindings = null)
     {
         Constants = constants;
         Names = names;
@@ -244,6 +246,47 @@ internal sealed class JsProgram : IVmVerifiedState
         Entries = entries;
         PositionRowCount = positionRowCount;
         AdmittedSurfaces = admittedSurfaces;
+        Modules = modules ?? [];
+        ImportBindings = importBindings ?? [];
+        ModuleOfUnit = MapUnits(Modules, functions.Length);
+    }
+
+    /// <summary>The module records, empty when the artifact carries none.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=68CF90
+    // Broiler-Human:        PENDING
+    internal JsModuleRecord[] Modules { get; }
+
+    /// <summary>
+    /// Every import entry of the artifact, resolved to the binding it reads.
+    /// </summary>
+    /// <remarks>
+    /// The table is the artifact's rather than each module's, because an import read carries an
+    /// index into it and the executor must be able to follow that index without first working out
+    /// which module the running code unit belongs to.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2AAC1D
+    // Broiler-Human:        PENDING
+    internal JsBinding[] ImportBindings { get; }
+
+    /// <summary>Which module each code unit belongs to, or -1 for a unit that is not a module.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=949234
+    // Broiler-Human:        PENDING
+    internal int[] ModuleOfUnit { get; }
+
+    /// <summary>Indexes the module bodies by code unit, so an invocation can recognise one.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B0B137
+    // Broiler-Human:        PENDING
+    private static int[] MapUnits(JsModuleRecord[] modules, int unitCount)
+    {
+        var map = new int[unitCount];
+        System.Array.Fill(map, -1);
+
+        for (var index = 0; index < modules.Length; index++)
+        {
+            map[modules[index].BodyUnit] = index;
+        }
+
+        return map;
     }
 
     /// <summary>The optional feature manifests the composition that verified this admits.</summary>

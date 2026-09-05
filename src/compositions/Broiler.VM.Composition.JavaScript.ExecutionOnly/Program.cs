@@ -80,6 +80,7 @@ internal static class Program
 
             checks.AddRange(ReplayChecks(corpus, verbose));
             checks.AddRange(HostLifetimeChecks.Run(corpus));
+            checks.AddRange(ModuleSurfaceChecks.Run(corpus));
             checks.AddRange(OrderingChecks.Run(
                 corpus, CorpusReplay.ReadManifest(Path.Combine(corpus, "corpus.manifest"))));
 

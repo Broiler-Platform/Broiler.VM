@@ -109,3 +109,12 @@ wide-a-class-element-whose-flags-contradict|f73139f5f9f3970bc0ab9adc978a56990497
 wide-a-version-1-artifact-announced-as-version-2|4a871c79683bcd1c0192ed7cfd50d4d8a9caf59d62f8071e9776188fee5d8156|wide|InvalidArtifact|DescriptorMismatch|1003|-|-|-|-
 wide-a-slice-manifest-announced-as-the-wide-one|820f00f2877b8bebc95b8ec462f6fa6c9aade306bf7de8eb32b9d48f065fcd2d|wide|InvalidArtifact|DescriptorMismatch|1006|-|-|-|-
 wide-a-method-called-through-a-property|f7bde8e8fc2b93608fe40962a7abb3e33ff28ea5d01dcb20d41635e698db4bcd|wide|Normal|NormalCompleted|0|7|-|-|-
+modules-a-module-section-no-surface-declares|2cbf7c1c57869b2fb2d7102d361dd409719c62a1c8548e4bdeb192230d2ca8ed|modules|InvalidArtifact|UnknownFeature|1613|-|-|-|-
+modules-a-module-row-the-format-cannot-represent|8a5578e819fdb74a274e13f5cf17de2e99395ad0723c9569879a2d69d5f34b87|modules|InvalidArtifact|InconsistentStructure|1614|-|-|-|-
+modules-a-request-naming-no-module|c0c198de78ffb5a667d1b5054797288266adbe6bf96204d0a86172e938ff6523|modules|InvalidArtifact|InconsistentStructure|1615|-|-|-|-
+modules-an-import-of-a-name-nothing-exports|2c9ef61ec3ce6e7d5afb10739d7d323e2caa302906310d633fb0c0c928274e75|modules|InvalidArtifact|InconsistentStructure|1616|-|-|-|-
+modules-a-name-two-star-re-exports-supply|39481d397c29a0f75a7e86426d10c88949a322829a6cd3311d4a0e4f8d7ee3e6|modules|InvalidArtifact|InconsistentStructure|1617|-|-|-|-
+modules-a-cyclic-export-resolution|2806c28d4171abc66bf89f9850813ad037f34c2e811a946e1238289685f3a160|modules|InvalidArtifact|InconsistentStructure|1618|-|-|-|-
+modules-a-module-artifact-with-no-resolver|a1fb5b1a6d1b6e342d55a8110eb3a48ac7049439c84d5e137356759d44a6ca56|modules-no-resolver|InvalidArtifact|UnsupportedFeatureManifest|1619|-|-|-|-
+modules-the-module-surface-with-no-module-records|891add6650cc81c41b9195515630d18746a3511f1a87e3005556d40db0052b0b|modules|InvalidArtifact|InconsistentStructure|1620|-|-|-|-
+modules-a-live-binding-read-after-a-write|c413c532200288dbeae07b8763fff9bf27aa6367d5f8d24c467da6a98f0f4db2|modules|Normal|NormalCompleted|0|3|-|-|-

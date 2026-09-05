@@ -229,13 +229,18 @@ runs/a-private-name-is-not-a-property.js|0|42 / visible visible 0 visible {"visi
 runs/a-private-brand-is-per-class-evaluation.js|0|true false false / true false / 1 1 / TypeError TypeError TypeError
 runs/a-private-method-and-accessor.js|0|95 205 206 / 2 true false / TypeError
 
-# TWO REFUSALS THAT MUST NOT BE 2104, and the reason is the same one from the other direction:
-# the manifest admits `super` and it admits a class binding, so a program that writes either
-# where the language has nothing for it is wrong about the LANGUAGE. Answering 2104 would say
-# this profile declines a construct it implements, and the conformance runner would stop scoring
-# a case it can answer.
+# A REFUSAL THAT MUST NOT BE 2104, and the reason is the same one from the other direction: the
+# manifest admits `super`, so a program that writes one where the language has nothing for it is
+# wrong about the LANGUAGE. Answering 2104 would say this profile declines a construct it
+# implements, and the conformance runner would stop scoring a case it can answer.
 refused/a-super-property-outside-a-method.js|3|2101:UnexpectedToken
-refused/an-assignment-to-a-class-binding.js|3|2204:AssignmentToConstant
+
+# AND ONE THAT STOPPED BEING A REFUSAL AT ALL. An assignment to an immutable binding - a `const`,
+# or the binding a named class expression gives its own body - was a compile-time 2204 here and is
+# a run-time TypeError in the language, which is a program refused for what it might do rather
+# than told what it did. JSW-8's `ThrowImmutable` moved it, and this row is the program that shows
+# the move: the assignment throws when it is reached and the binding is untouched afterwards.
+runs/an-assignment-to-a-class-binding.js|0|TypeError function true
 
 # THE GENERATOR FAMILY, which moved from refused-by-name to admitted on 2026-09-04. Every value
 # below was taken from node before it was written here, so each row is a comparison against another
@@ -476,3 +481,28 @@ refused/an-async-generator-in-a-class-field-initialiser.js|3|2104:ConstructOutsi
 refused/an-async-generator-in-a-class-static-block.js|3|2104:ConstructOutsideManifest
 refused/an-async-generator-with-a-private-name.js|3|2104:ConstructOutsideManifest
 refused/an-async-generator-method-of-an-object-literal.js|3|2104:ConstructOutsideManifest
+
+# THE MODULE GOAL, which JSW-8 added. A `.mjs` is a module and a `.js` is a script, which is the
+# only thing that decides the goal here - there is no flag on these rows, because the point is
+# that the presentation carries it. The four families are the ones the exit gate names: the import
+# and export forms with a live binding, a cycle in the GRAPH which is ordinary and runs, a cycle in
+# an export RESOLUTION which is refused by name at verification rather than by walking until an
+# allowance runs out, and top-level `await`, which orders a graph rather than merely appearing in
+# it.
+#
+# The values are this host's, and the reason they are not node's is the shape of the answer rather
+# than a disagreement: this host prints a module graph's completion value, which node has no way to
+# ask for. What node did settle is the `print` ordering of the top-level-await rows, which is the
+# part a different evaluation order would change.
+modules/a-live-binding.mjs|0|44
+modules/cycle-a.mjs|0|21
+modules/an-assignment-to-an-import.mjs|0|TypeError
+modules/top-level-await.mjs|0|dependency finished with awaited
+
+# The refusals, one per code the module goal adds that a command line can reach. The two at
+# verification are the interesting pair: nothing ran, nothing was allowed to run, and the artifact
+# was refused for a property of the GRAPH rather than of any one module's bytes.
+modules/circular-a.mjs|4|1618
+modules/ambiguous.mjs|4|1617
+modules/an-import-in-a-script.js|3|2401:ModuleDeclarationOutsideModuleGoal
+modules/a-bare-specifier.mjs|6|resolves only a specifier that begins with

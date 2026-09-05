@@ -33,6 +33,7 @@
 import argparse
 import os
 import pathlib
+import shutil
 import subprocess
 import sys
 
@@ -84,8 +85,19 @@ def host(binary, probe):
 
 def comparison(engine, probe, scratch):
     """What the comparison engine answered."""
-    wrapped = scratch / (probe.stem + ".wrapped.js")
+    # A MODULE PROBE KEEPS ITS EXTENSION AND TAKES ITS DEPENDENCIES WITH IT. The comparison engine
+    # decides the goal from the file name, so a `.mjs` copied to a `.js` would be read as a script
+    # and every import in it would be a syntax error; and the copy lives in the scratch directory,
+    # so a relative specifier resolves against THAT directory rather than the probe's. Both are
+    # answered here rather than in the probe, because the probe on disk has to be the file the host
+    # runs - which is what stops the two engines running different source.
+    module = probe.suffix == ".mjs"
+    wrapped = scratch / (probe.stem + (".wrapped.mjs" if module else ".wrapped.js"))
     wrapped.write_text(SHIM + probe.read_text(encoding="utf-8"), encoding="utf-8")
+
+    if module and (probe.parent / "modules").is_dir():
+        shutil.copytree(
+            probe.parent / "modules", scratch / "modules", dirs_exist_ok=True)
 
     done = subprocess.run(
         [engine, str(wrapped)],
@@ -120,7 +132,11 @@ def main():
     if not binary.exists():
         raise SystemExit(f"# no binary at {binary}")
 
-    probes = sorted(PROBES.glob("*.js"))
+    # THE MODULE PROBES ARE GLOBBED BESIDE THE SCRIPT ONES AND THEIR DEPENDENCIES ARE NOT. A probe
+    # is a file at the top of this directory; the modules a module probe imports live one level
+    # down, under `modules/`, which is what keeps a dependency from being run as a probe of its own
+    # and reported as answering no cases.
+    probes = sorted(list(PROBES.glob("*.js")) + list(PROBES.glob("*.mjs")))
 
     if arguments.only:
         probes = [p for p in probes if p.stem == arguments.only]

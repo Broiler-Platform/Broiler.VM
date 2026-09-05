@@ -20,6 +20,16 @@ method that reads the array-like protocol where the language says the iteration 
 which were true of this realm while N17 was green, and all of which the first run of
 `the-general-surface.js` found *(recorded as [JSC-91](../../Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-91))*.
 
+## One probe is a `.mjs`, and the extension is the probe
+
+`the-module-goal.mjs` covers the module goal, and it cannot be written as a `.js`. **A module is a
+module because of how it is PRESENTED** — both this host and the comparison engine decide the goal
+from the file name — so a probe over imports, live bindings, the namespace exotic object and
+top-level `await` has to be a module file. Its dependencies are one directory down, under
+`modules/`, which is what keeps the driver from running one of them as a probe of its own; the
+driver copies that directory beside the wrapped copy it hands the comparison engine, because a
+relative specifier resolves against the file that writes it.
+
 ## The two comparisons, and why both are needed
 
 `eng/run-differential.py` always compares against the retained answers. That is a **regression**

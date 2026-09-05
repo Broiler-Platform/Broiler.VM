@@ -5134,3 +5134,183 @@ at all.
 **Authority and date.** The implementation of 2026-09-05 in this checkout, the sweeps of
 `test/language/literals` and `test/built-ins/RegExp` before and after, and the comparison against
 the second engine for every separator form named above. 2026-09-05.
+---
+
+### JSC-133
+
+**Where:** the wide surface's lowering — `JsCompiler.EmitStaticStore` — and the remark on it that
+defended refusing an assignment to a `const` at compile time as consistency with every other
+occurrence of the same mistake.
+
+**What the plan said.** That an assignment to an immutable binding is an early error. The seam half
+of [the diagnostic registry](diagnostics/registry.txt) has carried `2204:AssignmentToConstant` since
+revision 2, a retained source entry is refused with it, and the source corpus's own remark says a
+front end that accepted `const x = 1; x = 2;` would be a front end whose `const` means nothing.
+
+**What was true.** **The language makes it a run-time `TypeError`.** `const x = 1; x = 2;` parses,
+compiles and runs, and the failure happens when the assignment executes. Every engine does this, and
+it is not a nicety: it is what makes `assert.throws(TypeError, function () { x = 1; })` a program —
+a program the conformance suite writes repeatedly, because that is the only way to observe the rule
+the specification states. Refusing it at the front end said this manifest does not admit an
+assignment, when what it does not admit is the assignment **succeeding**.
+
+**What that cost, measured.** `test/language/statements/const` of the pinned suite — a subtree that
+has nothing to do with modules and that this checkout could already run — went from **42 passing and
+33 failing to 46 passing and 29 failing** on this repair alone, with no case moving the other way.
+Four cases had been failing for as long as the wide surface has had a `const`, and every one of them
+is the same shape: `assert.throws(TypeError, function () { x = 1; })`.
+
+Seven further cases of `test/language/module-code` were scored `fail` with the front end's own
+refusal as the reason — `instn-iee-bndng-fun`, `instn-iee-bndng-var`, `instn-named-bndng-fun`,
+`instn-named-bndng-trlng-comma`, `instn-named-bndng-var`, `instn-star-binding` and
+`instn-local-bndng-const`. Six of those are about an **imported** binding and would have been
+introduced by this stage had it copied the rule; the seventh is the `const` one again. The cost
+outside the suite is a program shape this host could not run at all: the ordinary way to test that a
+binding is immutable.
+
+**How it was found.** By writing the immutable-import rule the same way, and then reading what the
+module subtree said about it. The suite is emphatic where a person's intuition is not: seven tests
+disagreed in the same words, and the seventh named `const` rather than an import — which is what
+turned "my new rule is wrong" into "the rule it was copied from is wrong too".
+
+**What replaced it.** One opcode, `ThrowImmutable`, which pops a value and throws a `TypeError`
+naming the binding. An assignment to a constant or to an import lowers to a duplicate and that
+instruction, so the expression still has its value and the store never happens. **It is deliberately
+not terminal**: it always throws, but reachability is a property of the instruction stream, and
+marking it terminal would make the return after an assignment at the end of a function body
+unreachable code and refuse a correct program.
+
+**What this does NOT change, stated because a reader would reasonably assume it did.** The slice
+front end still refuses the assignment at compile time, its retained source entry still records
+`2204`, and the registry row is untouched. The slice's manifest has no exceptions and no `try`, so a
+run-time `TypeError` there would be an unconditional failure with no way to observe it; the two
+front ends genuinely differ, and the code stays reachable through the one that still emits it.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, and two runs of the
+pinned suite at `ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e` taken either side of the repair — one over
+`test/language/statements/const` and one over `test/language/module-code`. The acceptance row
+`runs/an-assignment-to-a-class-binding.js` is the same program from the other side: it was a
+`refused/` row asserting `2204` and is now a `runs/` row asserting the `TypeError`. 2026-09-05.
+
+---
+
+### JSC-134
+
+**Where:** [the workload roadmap](roadmap.workloads.md#jsw-8--the-module-goal)'s JSW-8 exit gate:
+"a cyclic import terminates with a named diagnostic rather than by exhausting a budget".
+
+**What the plan said.** Read plainly, that a cyclic import is a thing this profile answers with a
+named refusal. The contrast the sentence draws is with a budget exhaustion, which is the failure
+mode of a resolver that follows specifiers without a module map, and the clause is right to name
+that as the outcome to avoid.
+
+**What was true.** **A cycle in the module graph is ordinary, and a correct implementation runs
+it.** `a` importing `b` while `b` imports `a` is a legal program every engine evaluates: the module
+map stops the second visit, the bodies are evaluated in the order a depth-first walk leaves them,
+and what a module of the cycle observes about the other is the temporal dead zone. Refusing every
+cycle in order to satisfy the sentence would have refused a program family the pinned suite has a
+subtree for, and would have been a conformance exclusion adopted to make a gate read true.
+
+**What is genuinely a cycle with no answer** is a cycle in an export **resolution** — `a`
+re-exporting a name from `b` while `b` re-exports the same name from `a` — which names a binding
+that exists nowhere, and which a resolver following the chain would walk until something ran out.
+That is the case the gate's contrast is about, and it is the one that takes the named diagnostic.
+
+**What that cost, measured.** Nothing was built wrong, because the distinction was drawn before the
+linker was written. What it would have cost is stated instead, since that is the decision this entry
+records: the `test/language/module-code` subtree of the pinned suite contains cyclic-import cases
+that pass in this checkout and would each have been a refusal.
+
+**What replaced it.** Two mechanisms, and both are exercised. Evaluation marks a module as under way
+**before** walking its requests, so the module that closes a cycle finds its starting point already
+running and returns — which is what makes an ordinary cycle terminate at all. Export resolution
+carries the (module, name) pairs it has visited and answers `1618:ModuleExportCircular` on re-entry,
+at verification, before anything runs. The retained corpus holds one entry for each, and the
+command-line acceptance table holds a row for each — a graph cycle that reaches a value and a
+resolution cycle refused by that code.
+
+**And one exclusion this stage does NOT add, recorded because it was drafted and is wrong.** An
+earlier draft of this entry excluded top-level `await` from `broiler.javascript.modules`, on the
+ground that settling a promise needs a job queue this profile did not have. **That ground stopped
+being true before this stage landed.** The surface it was written against had neither `async`
+functions nor a queue; the one this stage was re-expressed onto has both, and the conformance
+harness drains the queue between invocations. So top-level `await` is **admitted**: a module body
+whose parse saw an `await` outside any function carries `FunctionFlags.Async`, graph evaluation is
+an ordered list rather than a recursive walk, and a body that suspends registers a continuation that
+resumes the list where it stopped — which is what makes an importer wait for a dependency that
+awaits. The `top-level-await` subtree of the pinned suite is run rather than skipped, and the
+differential probe's ordering cases were compared against the comparison engine before they were
+written down.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the
+`test/language/module-code` run this stage records, the acceptance rows `modules/cycle-a.mjs`,
+`modules/circular-a.mjs` and `modules/top-level-await.mjs`, and the retained probe
+`src/tests/differential/the-module-goal.mjs`. 2026-09-05.
+
+---
+
+### JSC-135
+
+**Where:** the executor's `DeleteIndex` arm — the computed form of `delete`, `delete o[k]`.
+
+**What was assumed.** That the two spellings of one operator need one implementation each, and that
+the difference between them is only where the key comes from.
+
+**What was true.** They are one operator and the language has one rule for it: a `delete` the object
+refuses answers `false` in sloppy code and throws a `TypeError` in strict code. The static arm,
+`DeleteProperty`, has carried that rule and a remark explaining it since it was written. The
+computed arm dropped the answer on the floor: it pushed `false` and went on, **in strict code as
+well**. So `delete o.frozen` threw and `delete o["frozen"]` did not, and a program that reached a
+refused delete through a computed key — which is every program that deletes a key it holds in a
+variable — was told nothing and carried on as though the property were gone.
+
+**What that cost, measured.** Two cases of `test/language/module-code/namespace/internals` in the
+pinned suite, which delete a Symbol-keyed property of a module namespace and expect the throw; a
+Symbol key can only be written computed, which is what makes those two reach this arm. The wider
+cost is not measured here and is not claimed: the arm is reached by every computed `delete` in the
+suite, and the subtree this stage ran is the only figure this entry has.
+
+**How it was found.** By implementing the module namespace's own refusals and finding that the test
+asserting `delete ns[Symbol.toStringTag]` throws still failed after the namespace had been made to
+refuse it. The namespace was refusing correctly; the operator was discarding the refusal.
+
+**What replaced it.** The computed arm keeps the answer, throws in strict code with the key in the
+message, and pushes the same boolean it always did. Nothing about the static arm moved.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout and the
+`test/language/module-code` run this stage records. 2026-09-05.
+
+---
+
+### JSC-136
+
+**Where:** the conformance composition — `Test262Command`, which writes each shard's transcript — and
+the module resolvers, which encode a specifier to hand across the capability seam.
+
+**What was assumed.** That a JavaScript string is UTF-8 text, so `Encoding.UTF8.GetBytes` and
+`File.WriteAllText` are the way to move one.
+
+**What was true.** A JavaScript string is a sequence of UTF-16 code units and an unpaired surrogate
+is a legal one. `Encoding.UTF8` throws `EncoderFallbackException` on it by default, and this
+component already knows that: `JsFormat.EncodeText` and `JsFormat.DecodeText` exist because the
+constant pool had to carry exactly such a string, and they are WTF-8 for that reason. The
+conformance harness did not use them.
+
+**What that cost, measured.** A whole shard of the pinned suite aborted with
+`EncoderFallbackException: 55356` **after it had scored every file it was given**, so the run lost
+one eighth of its results and reported a crash rather than a score. The suite has a family of module
+tests whose export names are deliberately unpaired surrogates — `export-expname-unpaired-surrogate`
+and its four neighbours — which is what reaches the specifier encoding; a source file's own text can
+contain one too, which is what reaches the transcript writer.
+
+**How it was found.** By running `test/language/module-code`, which is the first subtree this
+component has run that contains such a name at all.
+
+**What replaced it.** The engine's specifier encoding and the resolvers' decoding go through
+`JsFormat.EncodeText` and `JsFormat.DecodeText`, which is what those functions are for; and the
+transcript writer holds one `UTF8Encoding` built with `throwOnInvalidBytes: false`, so a transcript
+substitutes where it cannot encode rather than taking the run down with it. A transcript is a report,
+and a substitution in one is a legible loss; a crash after the work is done is not.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout and the
+`test/language/module-code` run this stage records, which completes on all eight shards. 2026-09-05.

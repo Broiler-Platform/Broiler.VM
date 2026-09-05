@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   17
-// Annotated:        17/17
-// Exempt:           8
-// Human-reviewed:   0/17
+// Relevant units:   18
+// Annotated:        18/18
+// Exempt:           10
+// Human-reviewed:   0/18
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         6/6
+// Criteria:         7/7
 // Resource impact:  3/10 max
-// Unverified:       17
+// Unverified:       18
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -123,6 +123,30 @@ public static class JavaScriptProfile
     public static VmFeatureManifestId DynamicManifest { get; } =
         VmFeatureManifestId.Parse(Format.JsSurfaces.Dynamic);
 
+    /// <summary>
+    /// The module surface: module records, live bindings, and the import and export forms.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>An optional surface exactly as the two above are, and declined the same way.</b> An
+    /// artifact carrying module records still names <see cref="WideManifest"/> in its header and
+    /// declares this identity beside it; a composition that does not admit it refuses that artifact
+    /// at verification. The question it lets a composition answer separately is <b>resolution</b>:
+    /// what a specifier names is a host decision, and a composition with no answer to it has no
+    /// business evaluating a module graph.
+    /// </para>
+    /// <para>
+    /// <b>It is the one surface that is not a set of globals.</b> The binary and dynamic surfaces
+    /// are declared by the names a program reads; this one is declared by a SECTION, because a
+    /// module reads no name at all - what puts a program inside it is that it carries module
+    /// records.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8A2782
+    // Broiler-Human:        PENDING
+    public static VmFeatureManifestId ModulesManifest { get; } =
+        VmFeatureManifestId.Parse(Format.JsSurfaces.Modules);
+
     /// <summary>The kind ID stamped on a completion value.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C9902C
     // Broiler-Human:        PENDING
@@ -147,6 +171,17 @@ public static class JavaScriptProfile
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A9FBB7
     // Broiler-Human:        PENDING
     public const int WriteBindingIndex = 0;
+
+    /// <summary>The binding index a module request is put to the composition through.</summary>
+    /// <remarks>
+    /// It is the third slot because the import list has three entries and the index IS the
+    /// position: the artifact provider between them is reached through the mediator rather than
+    /// through this table, and it still occupies a slot, so numbering around it would be numbering
+    /// against a list nobody keeps.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=520441
+    // Broiler-Human:        PENDING
+    public const int ResolveBindingIndex = 2;
 
     /// <summary>
     /// The one host capability this profile imports: write one run of UTF-8 text.
@@ -207,6 +242,55 @@ public static class JavaScriptProfile
             version: 1,
             VmCapabilitySignatureId.FromCanonicalDescription("(source-utf8)->artifact"),
             VmCapabilityKind.ArtifactProvider,
+            VmCapabilityReentrancy.NonReentrant,
+            VmCapabilityThreadAffinity.CallerThread,
+            VmExceptionTranslation.TerminateOperation);
+
+    /// <summary>
+    /// The host capability a composition registers to answer what a module specifier names.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The profile reads no file and follows no specifier, and this is the seam that keeps it
+    /// that way.</b> A module artifact arrives with its graph already whole: every module the root
+    /// can reach is in the artifact under the key the composition resolved it to, and a request is
+    /// matched against those keys by exact comparison. Turning <c>"./b.mjs"</c> into a key is the
+    /// composition's act, performed before the artifact existed, in whatever way that composition's
+    /// deployment calls for - a file path, a URL, a name in a bundle, a table.
+    /// </para>
+    /// <para>
+    /// <b>So what is registered is a RULING, not a door the guest reaches through.</b> Linking
+    /// hands the host one request - the referring module's key, the specifier as the source wrote
+    /// it, and the key the artifact says it resolves to, separated by NULs - and the host answers
+    /// <c>Completed</c> when that is how it resolves the specifier and <c>Refused</c> when it is
+    /// not. The profile therefore never derives a key: it can only be told that one it was handed
+    /// is right, so a graph resolved by somebody else's rules is refused by the composition that
+    /// would have to run it.
+    /// </para>
+    /// <para>
+    /// <b>Why a ruling rather than an answer.</b> A capability answering with bytes would have to
+    /// hand back a reference this profile could dereference, and the contract's opaque reference is
+    /// deliberately not dereferenceable - which is the right decision and not an obstacle to work
+    /// around. A ruling needs no such channel and gives the composition the same authority: nothing
+    /// this profile does with a request survives the host saying no.
+    /// </para>
+    /// <para>
+    /// <b>It is Optional, and its absence is a DIFFERENT event from declining the surface.</b> A
+    /// composition that does not admit <see cref="ModulesManifest"/> is told so by
+    /// <c>SurfaceOutsideComposition</c>; one that admits it and registers nothing here is told
+    /// <c>ModuleResolverAbsent</c>. Both refuse the artifact at verification, and the two codes are
+    /// what tell a reader which of the two things is missing.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=D7A399
+    // Broiler-Falsified-If: this profile opens a file, follows a specifier, or honours a module request the host was not asked to rule on
+    // Broiler-Human:        PENDING
+    public static VmHostCapabilityDescriptor ResolveCapability { get; } =
+        new(
+            VmCapabilityId.Parse("broiler.javascript.resolve"),
+            version: 1,
+            VmCapabilitySignatureId.FromCanonicalDescription("(bytes)->unit"),
+            VmCapabilityKind.Value,
             VmCapabilityReentrancy.NonReentrant,
             VmCapabilityThreadAffinity.CallerThread,
             VmExceptionTranslation.TerminateOperation);
@@ -314,7 +398,7 @@ public static class JavaScriptProfile
     /// drift between a record and a construction, and this paragraph is what closes it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=929887
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=864F45
     // Broiler-Falsified-If: a row here disagrees with decision JSD-0004 or JSD-0008 without a dated record of the correction
     // Broiler-Human:        PENDING
     private static VmProfileDescriptor Build(ImmutableArray<string> admittedSurfaces)
@@ -358,9 +442,14 @@ public static class JavaScriptProfile
             // The slice imports nothing and still does; what changed is that a surface with a
             // `print` exists, and a `print` that reached the console without the composition
             // registering anything would be the ambient surface the capability table forbids.
+            // THREE OPTIONAL IMPORTS, and the third is what a composition admitting the module
+            // surface has to register before a module artifact will verify. It is Optional for the
+            // same reason the first two are: a composition that registers nothing still creates a
+            // runtime and still runs scripts.
             hostCapabilityDescriptors: ImmutableArray.Create(
                 new VmCapabilityImport(WriteCapability, VmCapabilityImportKind.Optional),
-                new VmCapabilityImport(SourceProviderCapability, VmCapabilityImportKind.Optional)),
+                new VmCapabilityImport(SourceProviderCapability, VmCapabilityImportKind.Optional),
+                new VmCapabilityImport(ResolveCapability, VmCapabilityImportKind.Optional)),
 
             // `eval` AND THE `Function` CONSTRUCTOR, THROUGH THE MEDIATOR AND NOWHERE ELSE. Both
             // turn a String into a request and run whatever verified handle the composition's

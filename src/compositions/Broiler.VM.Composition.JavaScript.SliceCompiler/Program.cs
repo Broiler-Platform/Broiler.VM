@@ -230,6 +230,22 @@ internal static class Program
                 .Append(retain ? "file" : "generated").Append(Eol);
         }
 
+        // THE MODULE-GOAL REFUSALS ARE RETAINED BESIDE THE OTHERS AND UNDER THE SAME KIND, because
+        // the registry's `source` reachability is a claim that a named retained source is refused
+        // with a code, and it is the same claim whichever goal the source was presented under. The
+        // extension is what records the goal: a `.mjs` here is read back as module source, which is
+        // the same convention the CLI composition applies to a path it is handed.
+        foreach (var program in SliceSourcePrograms.RefusedModules)
+        {
+            var text = Normalise(program.Source);
+            var extension = program.Options.Goal == SliceGoal.Module ? ".mjs" : ".js";
+            File.WriteAllText(Path.Combine(refused, program.Name + extension), text);
+
+            manifest.Append("refused|").Append(program.Name).Append('|')
+                .Append(Sha256(System.Text.Encoding.UTF8.GetBytes(text))).Append('|')
+                .Append(program.Code).Append("|file").Append(Eol);
+        }
+
         File.WriteAllText(Path.Combine(root, "source.manifest"), manifest.ToString());
     }
 

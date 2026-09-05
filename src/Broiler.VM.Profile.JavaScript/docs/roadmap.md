@@ -753,7 +753,7 @@ never silently widened:
 |---|---|---|
 | `broiler.javascript.slice` | Numbers, arithmetic, comparison, local variables, structured control flow. No objects, no strings, no functions, no property access. **Deliberately not JavaScript anyone would ship** — its purpose is to close the whole contract loop against about two thousand readable lines. | JS-1 |
 | `broiler.javascript.core` | The language surface: objects, prototypes, properties, closures, functions, classes, exceptions, iteration, destructuring, strict mode, and the core standard library. | JS-5 opens it; increments extend it |
-| `broiler.javascript.modules` | Module records, live bindings, import and export forms, and — where declared — top-level await. | JS-7 |
+| `broiler.javascript.modules` | Module records, live bindings, import and export forms, and top-level await, which IS declared: the surface was allocated "where declared" against a profile that had neither `async` functions nor a job queue, and the one that opened it has both *(corrected: JSC-134)*. | Opened by JSW-8 |
 | `broiler.javascript.dynamic` | `eval`, the `Function` constructor, and dynamic `import()`. Separate because a composition that registers no artifact provider must be able to decline exactly this and say so. | JS-8 |
 | `broiler.javascript.regexp` | Regular expressions, over the from-scratch matcher. | JS-6, or excluded with a published failure |
 | `broiler.javascript.binary` | `ArrayBuffer`, `DataView` and the typed array constructors. Separate because shared mutable memory addressed by index is a question a composition has to be able to answer on its own; `SharedArrayBuffer` and `Atomics` are deliberately **not** in it, because they are the multi-agent surface and need the agent model of [section 13](#13-realms-agents-and-the-host-boundary) *(corrected: JSC-86)*. | Opened by JSW-2 |
@@ -768,27 +768,42 @@ unmet for it *(corrected: JSC-70)*.
 ### Two kinds of identity, and how an artifact names the second
 
 The table above was written as though every manifest were a manifest an artifact **names in its
-header**, one per artifact. Two of its rows are not, and the difference is worth stating rather than
-leaving for a reader to notice *(corrected: JSC-86)*.
+header**, one per artifact. Three of its rows are not, and the difference is worth stating rather
+than leaving for a reader to notice *(corrected: JSC-86)*.
 
 **A manifest an artifact names is a whole surface**, and `broiler.javascript.slice` and
 `broiler.javascript.wide` are that: an artifact declares one, the format version is defined against
 it, and every construct in the artifact belongs to it.
 
 **An OPTIONAL SURFACE is something an artifact declares BESIDE the manifest it names**, and
-`broiler.javascript.binary` and `broiler.javascript.dynamic` are that. The artifact still names
-`broiler.javascript.wide`; a section of it lists the optional surfaces it reaches; and the verifier
-refuses an artifact declaring one the composition did not admit — at verification, with an
-invalid-artifact reason, which is the property this section already required and which now has a
-mechanism.
+`broiler.javascript.binary`, `broiler.javascript.dynamic` and `broiler.javascript.modules` are that.
+The artifact still names `broiler.javascript.wide`; a section of it lists the optional surfaces it
+reaches; and the verifier refuses an artifact declaring one the composition did not admit — at
+verification, with an invalid-artifact reason, which is the property this section already required
+and which now has a mechanism.
 
 **Why the second kind has to exist at all** is a fact about what the surfaces are made of. A
-construct the front end refuses by name — a module declaration, a `class` — cannot reach an artifact
-at all, so the artifact's own manifest carries it. A typed array constructor is a **global name**,
-and a program that constructs one is, byte for byte, a program that reads a name. Nothing in an
-artifact says which names matter unless the artifact says so. A `typeof` deliberately declares
+construct the front end refuses by name — a `class`, before JSW-6 admitted one — cannot reach an
+artifact at all, so the artifact's own manifest carries it. A typed array constructor is a **global
+name**, and a program that constructs one is, byte for byte, a program that reads a name. Nothing in
+an artifact says which names matter unless the artifact says so. A `typeof` deliberately declares
 nothing, so `typeof Uint8Array === "undefined"` — the shape a machine-generated program uses to find
 out whether it may go on — stays a question this profile answers rather than an artifact it refuses.
+
+**And the module surface is declared by a SECTION rather than by a global, which is a third shape
+this paragraph did not have.** There is no name a program reads to reach a module graph and no
+`typeof` that finds out whether it may: what the artifact carries is a Modules section, and carrying
+one *is* reaching the surface. So the declaration is not a hint the artifact volunteers about names
+it uses — a module artifact that omitted it would be refused either way — and what the declaration
+buys is the same thing it buys for the other two: a composition that declines the identity refuses
+the artifact **at verification**, by name, rather than by failing to answer a request later.
+
+**A second question the module surface asks, which the other two do not**, is who resolves a
+specifier. Admitting the surface says a graph may run; it does not say what `"./lib.mjs"` names, and
+this profile deliberately cannot answer that — it reads no filesystem and knows no package layout.
+The resolver is therefore a **host capability the composition registers**, and a composition that
+admits the surface and registers none refuses a module artifact with `1619:ModuleResolverAbsent`, at
+verification, before anything runs. Two questions, two refusals, and a retained corpus row for each.
 
 **And a composition declines by building a descriptor**, not by setting a flag: it names the
 optional surfaces it admits when it registers, and there is no other door.
@@ -1329,6 +1344,16 @@ Three pause kinds exist and they are not interchangeable:
 | A generator `yield` or an `await` inside an async function | Guest | Nothing extra; guest suspension is ordinary |
 | Instantiation parked on top-level await | Instantiation | The descriptor's asynchronous-instantiation declaration. Core contract version 1 **admits** it, gated on that declaration; an undeclared park is `InvalidState` / `UndeclaredAsynchronousInstantiation` and is not resumable |
 | A host or diagnostic client pausing execution | External | A double gate: the descriptor declares it **and** the runtime enables it. Neither alone suffices, and the two failure modes are distinguishable |
+
+**What JSW-8 built is the first row and not the second, and the distinction is worth stating.** A
+module graph is evaluated inside an **invocation** — the composition asks for one entry point,
+`#module`, and the graph runs there — rather than at instantiation. So a top-level `await` is an
+ordinary guest suspension: the module body carries the async flag, the graph is walked once into an
+evaluation order, and a body that suspends registers a continuation that resumes the order where it
+stopped when its promise settles. Nothing parks instantiation, no descriptor declares asynchronous
+instantiation, and no core suspension is created. The second row is still the design for a host that
+wants the graph settled before it holds an instance; it is not what a caller gets today, and a
+reader who assumed otherwise would be looking for a `Suspended` that never arrives.
 
 **Continuations are captured by unwinding, not by rewriting.** The seed reaches an IL emitter for
 its generator implementation through a narrow edge; that route does not exist here. The executor

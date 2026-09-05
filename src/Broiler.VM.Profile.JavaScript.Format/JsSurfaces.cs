@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   8
-// Annotated:        8/8
+// Relevant units:   9
+// Annotated:        9/9
 // Exempt:           0
-// Human-reviewed:   0/8
+// Human-reviewed:   0/9
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  0/10 max
-// Unverified:       8
+// Unverified:       9
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -75,15 +75,36 @@ public static class JsSurfaces
     // Broiler-Human:        PENDING
     public const string Dynamic = "broiler.javascript.dynamic";
 
+    /// <summary>
+    /// The module surface: module records, live bindings, and the import and export forms.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is declared by a SECTION rather than by a global, which is what makes it the odd one
+    /// of the three.</b> The binary and dynamic surfaces are sets of globals, and an artifact is
+    /// inside one when it reads one of those names; a module reads no name at all - what puts it
+    /// inside this surface is that it carries module records. So the lowering declares this one
+    /// where it writes those records, and <see cref="TryOwner"/> never answers with it.
+    /// </para>
+    /// <para>
+    /// <b>What a composition is declining when it declines this one is RESOLUTION.</b> Turning a
+    /// specifier into the identity of a module is the host's decision - a file path, a URL, a name
+    /// in a bundle - and a composition with no answer to it has no business running a module graph.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=30036F
+    // Broiler-Human:        PENDING
+    public const string Modules = "broiler.javascript.modules";
+
     /// <summary>Every optional surface this build knows, in ascending ordinal order.</summary>
     /// <remarks>
     /// An artifact declaring a name that is not here is refused as naming a surface this build does
     /// not implement, which is a different failure from naming one the composition declined and
     /// carries a different diagnostic.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=78B347
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=80FB1C
     // Broiler-Human:        PENDING
-    public static readonly string[] All = [Binary, Dynamic];
+    public static readonly string[] All = [Binary, Dynamic, Modules];
 
     /// <summary>
     /// The global names the binary surface owns, in ascending ordinal order.

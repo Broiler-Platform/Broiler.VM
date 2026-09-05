@@ -68,10 +68,20 @@ public sealed class DiagnosticRegistryRuleTests
         // codes rather than new ones, because a code minted for the wide front end alone would have
         // had no reachability value the registry admits - the retained SOURCE corpus is the slice
         // surface's, and rule N7 requires every seam row to be reached by an entry of it.
-        Assert.Equal(53, Vocabulary.Count);
-        Assert.Equal(24, SeamVocabulary.Count);
+        //
+        // Revision 8 is the module goal, and it is the first revision to grow BOTH halves. Eight
+        // core codes, because linking a graph is a verification pass with refusals no script
+        // artifact has a vocabulary for - a request naming no module, an import of a name nothing
+        // exports, two star re-exports supplying one name, a resolution that walks a cycle - and
+        // three seam codes, because a module's early errors are the front end's. The observation
+        // recorded at revision 7, that a seam code minted for the wide front end alone would have
+        // had no reachability the registry admits, is what changed here rather than what held: the
+        // retained SOURCE corpus now carries module-goal entries too, so those three rows are
+        // reached by a named source the same way every other seam row is.
+        Assert.Equal(61, Vocabulary.Count);
+        Assert.Equal(27, SeamVocabulary.Count);
         Assert.Equal(Vocabulary.Count + SeamVocabulary.Count, Registry.Count);
-        Assert.Equal(7, DiagnosticRegistry.Revision);
+        Assert.Equal(8, DiagnosticRegistry.Revision);
 
         // The two vocabularies live in two assemblies that cannot see each other, so the one thing
         // no compiler could catch is a number used in both. Nothing else in the build reads both
@@ -153,26 +163,30 @@ public sealed class DiagnosticRegistryRuleTests
 
         Assert.Empty(ArchitectureRules.N7(Registry, corpus, sourceCorpus));
 
-        // Non-vacuous, and the figures that matter: fifty-two of the fifty-three core-result rows
-        // are reached by a retained corpus entry and one is not, which is the count rule N7 fixes
-        // rather than the registry; and every one of the twenty-three embedder-seam rows JS-3b
-        // published is reached by a retained source entry, with none defensive. Fifteen of the
-        // fifty-two arrived with format version 2: five refusals the version adds, three about the
-        // optional surfaces, FOUR about the two unit kinds that may suspend - a generator and an
-        // async function, each with a suspension in the wrong unit and a flag pairing that
-        // contradicts itself - ONE about the class body's own operand bits, whose six flags have
-        // rules between them that a combination can break without any single bit being unknown, and
-        // two that registering a second version and a second manifest made observable at all. The
-        // seam half has
-        // no defensive row on purpose - all three of its format-ceiling codes ARE reachable by a
-        // program, and recording them as unreachable would have been recording something untrue to
-        // avoid generating three sources.
+        // Non-vacuous, and the figures that matter: sixty of the sixty-one core-result rows are
+        // reached by a retained corpus entry and one is not, which is the count rule N7 fixes
+        // rather than the registry; and every one of the twenty-six embedder-seam rows that is not
+        // defensive is reached by a retained source entry. Twenty-three of the sixty arrived with
+        // format version 2: five refusals the version adds, three about the optional surfaces,
+        // FOUR about the two unit kinds that may suspend - a generator and an async function, each
+        // with a suspension in the wrong unit and a flag pairing that contradicts itself - ONE
+        // about the class body's own operand bits, whose six flags have rules between them that a
+        // combination can break without any single bit being unknown, EIGHT about linking a module
+        // graph, and two that registering a second version and a second manifest made observable
+        // at all. The seam half has no defensive row beyond the one below on purpose - its
+        // format-ceiling codes ARE reachable by a program, and recording them as unreachable would
+        // have been recording something untrue to avoid generating three sources.
+        //
+        // TWO OF THE EIGHT MODULE ROWS ARE REACHED BY VARYING THE HOST AND NOT THE BYTES, which is
+        // a shape only the exhaustion rows had before: a composition that registers no module
+        // resolver refuses a perfectly well-formed artifact, so the entry that pins that refusal
+        // carries a replay mode of its own rather than malformed bytes.
         Assert.Equal(2, ArchitectureRules.DefensiveCodes.Length);
         Assert.Equal(
-            52,
+            60,
             Registry.Count(static row => row.Reachability == "corpus"));
         Assert.Equal(
-            23,
+            26,
             Registry.Count(static row => row.Reachability == "source"));
         // One seam row is defensive, and which one is the finding: the operand-stack ceiling
         // cannot be reached through this front end, because the parse depth bound refuses at about

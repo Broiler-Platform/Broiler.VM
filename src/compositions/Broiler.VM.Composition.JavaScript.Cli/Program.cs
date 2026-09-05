@@ -186,7 +186,15 @@ internal static class Program
             }
 
             var joined = WideHost.Run(
-                read, module, checkOnly, forceStrict, fuel, wall, depth, callDepth, liveBytes);
+                read,
+                module || SourceFiles.IsModulePath(files[^1]),
+                checkOnly,
+                forceStrict,
+                fuel,
+                wall,
+                depth,
+                callDepth,
+                liveBytes);
             Report(string.Join(' ', files), joined, single: true, all, quiet);
             return ExitCodes.For(joined.Status);
         }
@@ -224,10 +232,17 @@ internal static class Program
         {
             var source = SourceFiles.Read(path);
 
+            // A `.mjs` FILE IS A MODULE WHETHER OR NOT THE OPTION WAS PASSED, and a sweep over a
+            // tree is where that matters: a directory holding both is one run, and the goal each
+            // file is read under has to come from the file rather than from one flag covering all
+            // of them.
+            var asModule = module || SourceFiles.IsModulePath(path);
+
             var result = slice
-                ? Host.Run(source, module, checkOnly, fuel, depth)
+                ? Host.Run(source, asModule, checkOnly, fuel, depth)
                 : WideHost.Run(
-                    [source], module, checkOnly, forceStrict, fuel, wall, depth, callDepth, liveBytes);
+                    [source], asModule, checkOnly, forceStrict, fuel, wall, depth, callDepth,
+                    liveBytes);
 
             counts[result.Status] = counts.TryGetValue(result.Status, out var seen) ? seen + 1 : 1;
 
@@ -562,6 +577,7 @@ internal static class Program
         Console.WriteLine("realm per file, so one file's globals cannot decide the next one's result.");
         Console.WriteLine();
         Console.WriteLine("  --module    read each file under the module goal rather than the script goal");
+        Console.WriteLine("              (a .mjs file is read as a module without it)");
         Console.WriteLine("  --strict    compile every script as strict-mode code");
         Console.WriteLine("  --sweep     run each named file in a realm of its own rather than sharing one");
         Console.WriteLine("  --slice     use the narrow broiler.javascript.slice surface instead");

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   93
-// Annotated:        93/93
-// Exempt:           13
-// Human-reviewed:   0/93
+// Relevant units:   98
+// Annotated:        98/98
+// Exempt:           14
+// Human-reviewed:   0/98
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         9/9
+// Criteria:         12/12
 // Resource impact:  7/10 max
-// Unverified:       93
+// Unverified:       98
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -822,7 +822,7 @@ internal sealed class JsEngine
     }
 
     /// <summary>Writes a property on any value.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=E1D2E7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=B5FA6D
     // Broiler-Human:        PENDING
     internal void SetProperty(JsValue baseValue, string key, JsValue value, bool strict)
     {
@@ -872,6 +872,23 @@ internal sealed class JsEngine
         {
             var number = ToNumber(value);
             _ = view.TryWriteAt((int)at, number);
+            return;
+        }
+
+        // A NAMESPACE REFUSES EVERY WRITE, and in strict code a refused write is a `TypeError`.
+        // The walk below would find an export's own property, see it is writable - which it is,
+        // and which a program can read off the descriptor - and let the assignment land in a copy
+        // that no longer tracks the module's binding. Module code is always strict, so this is a
+        // throw wherever an import is in scope; the sloppy branch is here for a namespace that
+        // reached a script through a host.
+        if (target is JsModuleNamespace)
+        {
+            if (strict)
+            {
+                ThrowTypeError(
+                    "Cannot assign to '" + key + "' of a module namespace object");
+            }
+
             return;
         }
 
@@ -1048,7 +1065,7 @@ internal sealed class JsEngine
     /// call that does not name a receiver, which is nearly all of them.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=3523E4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=701115
     // Broiler-Human:        PENDING
     internal bool SetWithReceiver(JsObject target, string key, JsValue value, JsValue receiver)
     {
@@ -1056,6 +1073,16 @@ internal sealed class JsEngine
         {
             _ = view.TryWriteAt((int)at, ToNumber(value));
             return true;
+        }
+
+        // A NAMESPACE REFUSES EVERY WRITE, INCLUDING ONE TO A NAME IT DOES NOT EXPORT. Its export
+        // properties read back as writable - the language says so, and a program can see it in the
+        // descriptor - so the walk below would find a writable data property and let the write
+        // land, silently turning a live binding into a copy. The refusal is unconditional and is
+        // the object's, not the property's, which is why it is decided before the walk begins.
+        if (target is JsModuleNamespace)
+        {
+            return false;
         }
 
         var current = target;
@@ -1860,7 +1887,7 @@ internal sealed class JsEngine
     }
 
     /// <summary>The <c>in</c> operator's lookup: does any object in the chain have the key.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=913AFA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=806916
     // Broiler-Human:        PENDING
     internal bool HasProperty(JsObject start, string key)
     {
@@ -1871,6 +1898,17 @@ internal sealed class JsEngine
         if (start is JsTypedArray view && JsObject.IsArrayIndex(key, out _))
         {
             return view.TryGetOwnProperty(key, out _);
+        }
+
+        // A NAMESPACE ANSWERS THIS FROM ITS EXPORT SET AND NEVER READS THE BINDING. The walk below
+        // asks each object for the property, and a namespace answers that by reading through to the
+        // module's slot - which throws for an export whose module has not run yet. `'x' in ns` is
+        // true for such a name and `ns.x` is a `ReferenceError`; going through the walk would make
+        // both the same throw. The Symbol table is still the base's, so `@@toStringTag in ns` is
+        // answered below by the ordinary path.
+        if (start is JsModuleNamespace names)
+        {
+            return names.Exports(key);
         }
 
         var current = start;
@@ -2185,7 +2223,7 @@ internal sealed class JsEngine
         return joined;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=27144B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=87267C
     // Broiler-Human:        PENDING
     private string Describe(JsValue value) => value.Type switch
     {
@@ -2201,7 +2239,7 @@ internal sealed class JsEngine
         // engine answers with a TypeError - reached this while building that very TypeError's
         // message, failed the cast, and ended the whole invocation as a contract violation: an
         // internal fault, uncatchable, in place of the language's own error.
-        JsType.Symbol => value.AsSymbol().ToString(),
+        JsType.Symbol => value.AsSymbol().Rendered,
         _ => value.IsObject && value.AsObject().IsCallable ? "function" : "object",
     };
 
@@ -2484,10 +2522,15 @@ internal sealed class JsEngine
     }
 
     /// <summary>Runs a program's entry point and answers what it completed with.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=B716FA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=3D2B88
     // Broiler-Human:        PENDING
     internal JsValue RunEntry(JsProgram program, uint unit)
     {
+        if (program.ModuleOfUnit[(int)unit] is var moduleIndex and >= 0)
+        {
+            return RunModuleGraph(program, moduleIndex);
+        }
+
         var code = program.Functions[(int)unit];
         var environment = new JsEnvironment((int)code.ScopeSlots, null);
 
@@ -2501,6 +2544,280 @@ internal sealed class JsEngine
             JsValue.Undefined,
             null,
             null);
+    }
+
+    // ---- modules -------------------------------------------------------------------------------
+
+    /// <summary>The module instances of this realm, created the first time a module is entered.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=3D208B
+    // Broiler-Human:        PENDING
+    private JsModuleInstance[]? modules;
+
+    /// <summary>
+    /// Links and evaluates the graph rooted at one module, and answers what its body completed with.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Three phases, and the order is the specification's rather than a convenience.</b> Every
+    /// module's environment is created, then every module's declarations are initialised, then the
+    /// bodies are evaluated in the order a depth-first walk from the root leaves them. Collapsing
+    /// the second phase into the third is the change that breaks a legal cyclic program: the module
+    /// that runs first calls a function of the one that has not, and that function has to already
+    /// exist.
+    /// </para>
+    /// <para>
+    /// <b>Linking happens once per realm and evaluation happens once per module.</b> A second
+    /// invocation of the root entry point answers what the first completed with rather than running
+    /// the graph again, which is what the language says of a module that is already evaluated.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=7F9904
+    // Broiler-Falsified-If: a module body runs twice in one realm, or a module body runs before every module's declarations are initialised
+    // Broiler-Human:        PENDING
+    private JsValue RunModuleGraph(JsProgram program, int root)
+    {
+        if (modules is null)
+        {
+            modules = new JsModuleInstance[program.Modules.Length];
+
+            for (var index = 0; index < modules.Length; index++)
+            {
+                var record = program.Modules[index];
+                var slots = (int)program.Functions[(int)record.BodyUnit].ScopeSlots;
+                modules[index] = new JsModuleInstance(new JsEnvironment(slots, null));
+            }
+
+            for (var index = 0; index < modules.Length; index++)
+            {
+                modules[index].Namespace =
+                    new JsModuleNamespace(program.Modules[index], modules, this);
+            }
+
+            Confirm(program);
+
+            for (var index = 0; index < modules.Length; index++)
+            {
+                Charge(FuelPerInstruction);
+
+                Execute(
+                    program,
+                    (int)program.Modules[index].InitialiserUnit,
+                    modules[index].Environment,
+                    JsValue.Undefined,
+                    System.Array.Empty<JsValue>(),
+                    null,
+                    JsValue.Undefined,
+                    null,
+                    null);
+
+                modules[index].State = JsModuleState.Initialised;
+            }
+        }
+
+        var order = new System.Collections.Generic.List<int>(program.Modules.Length);
+        Order(program, root, order);
+        Step(program, order, 0);
+        return modules[root].Completion;
+    }
+
+    /// <summary>
+    /// Puts the graph rooted at one module into the order its bodies must be evaluated in.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The walk ORDERS and does not evaluate, which is what lets a module await.</b> A walk that
+    /// evaluated as it descended would hold the rest of the graph on the native stack, and a module
+    /// that suspended half way would have to be resumed into a stack that no longer exists. An
+    /// explicit order is a list a continuation can carry, so the module after an awaiting one is
+    /// reached from a job rather than from a frame.
+    /// </para>
+    /// <para>
+    /// A module already on the walk is skipped rather than descended into, which is what makes a
+    /// cyclic import terminate here.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=8D99CC
+    // Broiler-Human:        PENDING
+    private void Order(JsProgram program, int index, System.Collections.Generic.List<int> order)
+    {
+        var instance = modules![index];
+
+        if (instance.State is JsModuleState.Ordered or JsModuleState.Evaluating or
+            JsModuleState.Evaluated)
+        {
+            return;
+        }
+
+        instance.State = JsModuleState.Ordered;
+        Charge(FuelPerInstruction);
+
+        foreach (var request in program.Modules[index].Requests)
+        {
+            Order(program, request, order);
+        }
+
+        order.Add(index);
+    }
+
+    /// <summary>
+    /// Evaluates the ordered modules from <paramref name="at"/>, pausing where one awaits.
+    /// </summary>
+    /// <remarks>
+    /// <b>A module that suspends does not hold the walk open - it schedules the rest of it.</b> The
+    /// continuation is registered on the promise the module's own evaluation answers with, so the
+    /// module after it runs when that settles and not before, which is the ordering guarantee
+    /// top-level <c>await</c> exists to give. Nothing here drains the queue: the host does that, at
+    /// a point the host chooses, exactly as it does for any other asynchronous program.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=F0048D
+    // Broiler-Falsified-If: a module body runs before a module it requested has finished awaiting
+    // Broiler-Human:        PENDING
+    private void Step(JsProgram program, System.Collections.Generic.List<int> order, int at)
+    {
+        for (var position = at; position < order.Count; position++)
+        {
+            var index = order[position];
+            var instance = modules![index];
+
+            if (instance.State == JsModuleState.Evaluated)
+            {
+                continue;
+            }
+
+            instance.State = JsModuleState.Evaluating;
+            var record = program.Modules[index];
+            var unit = program.Functions[(int)record.BodyUnit];
+
+            if (!unit.IsAsync)
+            {
+                instance.Completion = Execute(
+                    program,
+                    (int)record.BodyUnit,
+                    instance.Environment,
+                    JsValue.Undefined,
+                    System.Array.Empty<JsValue>(),
+                    null,
+                    JsValue.Undefined,
+                    null,
+                    null);
+
+                instance.State = JsModuleState.Evaluated;
+                continue;
+            }
+
+            var promise = StartAsyncModule(program, record, instance);
+            instance.State = JsModuleState.Evaluated;
+
+            // A MODULE THAT RAN TO ITS END WITHOUT SUSPENDING NEEDS NO CONTINUATION, and taking
+            // one anyway would put the rest of the graph on the job queue for no reason - which is
+            // observable, because a reaction registered by the next module would then run first.
+            if (promise.State != JsPromiseState.Pending)
+            {
+                continue;
+            }
+
+            var resume = position + 1;
+
+            Realm.AwaitOn(
+                this,
+                JsValue.Object(promise),
+                (engine, value, threw) =>
+                {
+                    if (threw)
+                    {
+                        throw new JsThrow(value, engine.Render(value));
+                    }
+
+                    engine.Step(program, order, resume);
+                });
+
+            return;
+        }
+    }
+
+    /// <summary>Enters one module body as an async frame and answers the promise it settles.</summary>
+    /// <remarks>
+    /// The frame needs a function to name the unit it is running, and a module body is nobody's
+    /// closure - so one is made over the module's own environment. It is never called and never
+    /// reaches the guest; what it carries is the unit index and the scope chain the frame would
+    /// otherwise have to be told twice.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=07269D
+    // Broiler-Human:        PENDING
+    private JsPromiseObject StartAsyncModule(
+        JsProgram program, JsModuleRecord record, JsModuleInstance instance)
+    {
+        var body = new JsScriptFunction(
+            Realm.FunctionPrototype, program, (int)record.BodyUnit, instance.Environment);
+
+        var frame = new JsFrame(
+            program,
+            (int)record.BodyUnit,
+            instance.Environment,
+            JsValue.Undefined,
+            System.Array.Empty<JsValue>(),
+            body);
+
+        Charge((frame.FrameBytes / 64) + 4);
+        var call = new JsAsyncCall(frame, Realm.NewAsyncPromise());
+        ResumeAsync(call, JsResumeMode.Next, JsValue.Undefined);
+        return call.Promise;
+    }
+
+    /// <summary>
+    /// Puts every module request to the composition, and refuses a graph it resolves differently.
+    /// </summary>
+    /// <remarks>
+    /// <b>The profile never derives a key and this is why it does not have to.</b> The artifact
+    /// states what its producer resolved each specifier to; this asks the composition whether that
+    /// is its own answer, one request at a time, and a <c>Refused</c> ends the run by name. So a
+    /// graph bundled under one host's resolution rules cannot be evaluated under another's, and no
+    /// filesystem, URL scheme or search path is known to this component at all.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=4B22CD
+    // Broiler-Falsified-If: a module request is honoured without the composition being asked, or a refusal is treated as an answer
+    // Broiler-Human:        PENDING
+    private void Confirm(JsProgram program)
+    {
+        if (capabilities is null ||
+            capabilities.BindingCount <= JavaScriptProfile.ResolveBindingIndex ||
+            !capabilities.IsBound(JavaScriptProfile.ResolveBindingIndex))
+        {
+            ThrowTypeError("this composition provides no module resolver");
+            return;
+        }
+
+        foreach (var record in program.Modules)
+        {
+            for (var index = 0; index < record.Requests.Length; index++)
+            {
+                Charge(FuelPerInstruction);
+                var target = program.Modules[record.Requests[index]];
+
+                // THE FORMAT'S OWN TEXT ENCODING AND NOT THE PLATFORM'S. A module specifier is a
+                // JavaScript String, so it may hold an unpaired surrogate that UTF-8 cannot carry -
+                // and the platform's encoder answers that by THROWING, which turned a conformance
+                // case about a lone surrogate in an export name into a harness crash. The format
+                // already defines an encoding for exactly this and the request uses it.
+                var request = JsFormat.EncodeText(
+                    record.Key + "\0" + record.RequestSpecifiers[index] + "\0" + target.Key);
+
+                if (!meter.TryCharge(VmBudgetDimension.HostCalls, 1))
+                {
+                    throw new JsAbort(JsAbortKind.Exhausted, "the host-call allowance is spent");
+                }
+
+                var outcome = capabilities.InvokeBytes(
+                    JavaScriptProfile.ResolveBindingIndex, new VmBytes(request), out _);
+
+                if (outcome != VmHostCallOutcome.Completed)
+                {
+                    ThrowTypeError(
+                        "this composition does not resolve '" + record.RequestSpecifiers[index] +
+                        "' from '" + record.Key + "' to '" + target.Key + "'");
+                }
+            }
+        }
     }
 
     /// <summary>Enters one bytecode function's frame.</summary>
@@ -2949,7 +3266,7 @@ internal sealed class JsEngine
     /// have run for a throw from the instruction itself, and no unwinding is reimplemented.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=062D6E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=674E99
     // Broiler-Human:        PENDING
     private JsValue Execute(
         JsProgram program,
@@ -3458,17 +3775,32 @@ internal sealed class JsEngine
                             break;
                         }
 
+                        // A COMPUTED DELETE OBEYS THE SAME STRICT RULE THE STATIC ONE DOES, and it
+                        // did not: `delete o.frozen` threw in strict code and `delete o["frozen"]`
+                        // answered `false` and went on. The two are one operator written two ways,
+                        // so a program that reached a refused delete through a computed key was
+                        // told nothing and carried on as though the property were gone.
                         case JsOpcode.DeleteIndex:
                         {
                             var key = stack[--sp];
                             var target = stack[--sp];
 
-                            stack[sp++] = JsValue.Boolean(
-                                !target.IsObject ||
+                            var removed = !target.IsObject ||
                                 (key.IsSymbol
                                     ? target.AsObject().DeleteOwnSymbol(key.AsSymbol())
-                                    : target.AsObject().DeleteOwnProperty(ToPropertyKey(key))));
+                                    : target.AsObject().DeleteOwnProperty(ToPropertyKey(key)));
 
+                            if (!removed && strict)
+                            {
+                                ThrowTypeError(
+                                    "Cannot delete property '" +
+                                    (key.IsSymbol
+                                        ? "Symbol(" + key.AsSymbol().Description + ")"
+                                        : ToPropertyKey(key)) +
+                                    "'");
+                            }
+
+                            stack[sp++] = JsValue.Boolean(removed);
                             pc++;
                             break;
                         }
@@ -4078,6 +4410,22 @@ internal sealed class JsEngine
                             frame.Suspended = true;
                             return yielded;
                         }
+
+                        // AN IMPORT READ GOES TO THE EXPORTING ENVIRONMENT EVERY TIME. Nothing is
+                        // cached here and nothing may be: a live binding is one whose later value
+                        // is seen, so the only correct read is the one that happens now.
+                        case JsOpcode.LoadImport:
+                            stack[sp++] = JsModuleNamespace.Read(
+                                program.ImportBindings[U16(code, pc)], modules!, this);
+
+                            pc += 3;
+                            break;
+
+                        case JsOpcode.ThrowImmutable:
+                            ThrowTypeError(
+                                "Assignment to constant variable '" + names[U16(code, pc)] + "'");
+
+                            break;
 
                         case JsOpcode.Await:
                         {

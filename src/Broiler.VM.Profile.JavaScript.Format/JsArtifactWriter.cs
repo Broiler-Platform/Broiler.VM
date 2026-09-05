@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   24
-// Annotated:        24/24
+// Relevant units:   29
+// Annotated:        29/29
 // Exempt:           0
-// Human-reviewed:   0/24
+// Human-reviewed:   0/29
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       24
+// Unverified:       29
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -65,6 +65,81 @@ public readonly record struct JsExceptionRegionRow(
     uint ScopeDepth,
     uint StackHeight,
     JsFormat.HandlerKind Kind);
+
+/// <summary>One import entry: what a module binds one of its own names to.</summary>
+/// <param name="RequestIndex">Which of the module's requested modules the binding comes from.</param>
+/// <param name="NameConstant">
+/// The constant holding the EXPORTED name being imported. It is unread and must be zero when
+/// <paramref name="Kind"/> is a namespace import, because a namespace import names no export.
+/// </param>
+/// <param name="Kind">Whether one export is bound, or the requested module's namespace object.</param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=9C945D
+// Broiler-Human:        PENDING
+public readonly record struct JsImportEntryRow(
+    uint RequestIndex, uint NameConstant, JsFormat.ImportKind Kind);
+
+/// <summary>One local export entry: a name this module exports out of a slot of its own.</summary>
+/// <param name="NameConstant">The constant holding the exported name.</param>
+/// <param name="Slot">
+/// The slot of the module's own environment the name reads through. It is a SLOT and not a value,
+/// which is what makes an export live: a later write by this module is seen by every importer.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=C4B691
+// Broiler-Human:        PENDING
+public readonly record struct JsLocalExportRow(uint NameConstant, uint Slot);
+
+/// <summary>
+/// One indirect export entry: a name this module exports out of a module it requested.
+/// </summary>
+/// <param name="NameConstant">The constant holding the name this module exports it under.</param>
+/// <param name="RequestIndex">Which requested module supplies it.</param>
+/// <param name="ImportNameConstant">
+/// The constant holding the name it is exported under THERE, which need not be the same name. Zero
+/// and unread when <paramref name="Kind"/> is a namespace re-export.
+/// </param>
+/// <param name="Kind">Whether one export is re-exported, or the whole namespace object.</param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=AF3F6B
+// Broiler-Human:        PENDING
+public readonly record struct JsIndirectExportRow(
+    uint NameConstant, uint RequestIndex, uint ImportNameConstant, JsFormat.ImportKind Kind);
+
+/// <summary>One module record, as the artifact declares it.</summary>
+/// <param name="KeyConstant">
+/// The constant holding this module's resolved key. It is the composition's canonical name for the
+/// module and is what a request is matched against; this format has no opinion about its shape.
+/// </param>
+/// <param name="UnitIndex">The code unit that is this module's body.</param>
+/// <param name="InitialiserUnitIndex">
+/// The code unit that initialises this module's environment. It runs for EVERY module of a graph
+/// before ANY module's body does, which is what makes a function of a cyclic dependency callable
+/// from a module that runs first.
+/// </param>
+/// <param name="RequestSpecifierConstants">
+/// The specifiers this module names, in source order, exactly as the source wrote them. They are
+/// carried so a running host can be asked whether it resolves them the way this artifact says.
+/// </param>
+/// <param name="RequestKeyConstants">
+/// The keys of the modules this one requests, parallel to the specifiers. A request is a KEY and
+/// not an index, so a producer cannot make a request point at a module by accident of table order.
+/// </param>
+/// <param name="Imports">This module's import entries, in source order.</param>
+/// <param name="LocalExports">This module's local export entries.</param>
+/// <param name="IndirectExports">This module's indirect export entries.</param>
+/// <param name="StarExportRequests">
+/// The requests this module re-exports every name of: one entry per <c>export * from</c>.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=7CA6C6
+// Broiler-Human:        PENDING
+public sealed record JsModuleRow(
+    uint KeyConstant,
+    uint UnitIndex,
+    uint InitialiserUnitIndex,
+    uint[] RequestSpecifierConstants,
+    uint[] RequestKeyConstants,
+    JsImportEntryRow[] Imports,
+    JsLocalExportRow[] LocalExports,
+    JsIndirectExportRow[] IndirectExports,
+    uint[] StarExportRequests);
 
 /// <summary>
 /// Writes the byte layout of a format-version-2 artifact.
@@ -218,6 +293,74 @@ public static class JsArtifactWriter
             JavaScriptArtifactWriter.WriteVarUInt(buffer, row.ScopeDepth);
             JavaScriptArtifactWriter.WriteVarUInt(buffer, row.StackHeight);
             buffer.Add((byte)row.Kind);
+        }
+
+        return buffer.ToArray();
+    }
+
+    /// <summary>Encodes the module-record section body.</summary>
+    /// <remarks>
+    /// <b>The section carries what the source DECLARED and not what it resolves to.</b> Which slot
+    /// of which module an import ends up reading is the answer to a walk over star and indirect
+    /// exports, and a producer that wrote its own answer here would be asking the verifier to trust
+    /// a resolution it did not perform. So the entries stay in the shape the language states them
+    /// in - a request is a key, an indirect export names a request and a name - and resolving them
+    /// is the verifier's, executing nothing.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=00BAC9
+    // Broiler-Human:        PENDING
+    public static byte[] Modules(JsModuleRow[] rows, uint? declaredCount = null)
+    {
+        var buffer = new System.Collections.Generic.List<byte>();
+        JavaScriptArtifactWriter.WriteVarUInt(buffer, declaredCount ?? (ulong)rows.Length);
+
+        foreach (var row in rows)
+        {
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, row.KeyConstant);
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, row.UnitIndex);
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, row.InitialiserUnitIndex);
+
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, (ulong)row.RequestKeyConstants.Length);
+
+            for (var request = 0; request < row.RequestKeyConstants.Length; request++)
+            {
+                JavaScriptArtifactWriter.WriteVarUInt(buffer, row.RequestSpecifierConstants[request]);
+                JavaScriptArtifactWriter.WriteVarUInt(buffer, row.RequestKeyConstants[request]);
+            }
+
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, (ulong)row.Imports.Length);
+
+            foreach (var entry in row.Imports)
+            {
+                JavaScriptArtifactWriter.WriteVarUInt(buffer, entry.RequestIndex);
+                JavaScriptArtifactWriter.WriteVarUInt(buffer, entry.NameConstant);
+                buffer.Add((byte)entry.Kind);
+            }
+
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, (ulong)row.LocalExports.Length);
+
+            foreach (var entry in row.LocalExports)
+            {
+                JavaScriptArtifactWriter.WriteVarUInt(buffer, entry.NameConstant);
+                JavaScriptArtifactWriter.WriteVarUInt(buffer, entry.Slot);
+            }
+
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, (ulong)row.IndirectExports.Length);
+
+            foreach (var entry in row.IndirectExports)
+            {
+                JavaScriptArtifactWriter.WriteVarUInt(buffer, entry.NameConstant);
+                JavaScriptArtifactWriter.WriteVarUInt(buffer, entry.RequestIndex);
+                JavaScriptArtifactWriter.WriteVarUInt(buffer, entry.ImportNameConstant);
+                buffer.Add((byte)entry.Kind);
+            }
+
+            JavaScriptArtifactWriter.WriteVarUInt(buffer, (ulong)row.StarExportRequests.Length);
+
+            foreach (var request in row.StarExportRequests)
+            {
+                JavaScriptArtifactWriter.WriteVarUInt(buffer, request);
+            }
         }
 
         return buffer.ToArray();

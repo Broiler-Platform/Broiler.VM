@@ -2,6 +2,8 @@ using Broiler.VM;
 using Broiler.VM.Profile.JavaScript;
 using System.Collections.Immutable;
 
+using Broiler.VM.Profile.JavaScript.Format;
+
 namespace Broiler.VM.Composition.JavaScript.ExecutionOnly;
 
 /// <summary>
@@ -24,6 +26,30 @@ internal static class Hosts
     /// profile assembly and this closure would stop being a single-profile closure.
     /// </remarks>
     internal static VmCatalog Catalog() => Catalog("default");
+
+    /// <summary>The prefix every module replay mode shares.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal const string ModuleMode = "modules";
+
+    /// <summary>The module mode that admits the surface and registers a resolver.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal const string ModuleAdmittedMode = "modules";
+
+    /// <summary>
+    /// The module mode that admits the surface and registers no resolver.
+    /// </summary>
+    /// <remarks>
+    /// <b>It is a THIRD mode and not the declining one, because the two refuse for different
+    /// reasons.</b> A composition that does not admit the surface is told
+    /// <c>SurfaceOutsideComposition</c>, which the wide-declining mode already reaches; one that
+    /// admits it and registers nothing is told <c>ModuleResolverAbsent</c>. Folding them into one
+    /// mode would have left one of the two codes with no retained entry.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal const string ModuleUnresolvedMode = "modules-no-resolver";
 
     /// <summary>
     /// The catalog a replay mode registers, which is where a composition declines a surface.
@@ -90,7 +116,8 @@ internal static class Hosts
         // says they are, because a descriptor that said version 1 would be refused for the
         // mismatch before the version-2 pass ever read a section.
         if (string.Equals(mode, "wide", StringComparison.Ordinal) ||
-            string.Equals(mode, "wide-declining", StringComparison.Ordinal))
+            string.Equals(mode, "wide-declining", StringComparison.Ordinal) ||
+            mode.StartsWith(ModuleMode, StringComparison.Ordinal))
         {
             return new VmArtifactDescriptor(
                 JavaScriptProfile.Id,
@@ -198,6 +225,19 @@ internal static class Hosts
             ceilings.Add(VmCeilingSpec.AdoptProfileDefault(dimension));
         }
 
+        var capabilities = ImmutableArray.CreateBuilder<VmCapabilityRegistration>();
+
+        // REGISTERING THE RESOLVER IS THE ONE THING THAT SEPARATES TWO OF THE MODULE MODES. A
+        // resolution rule of "the key the request already carries" is what this replay's producer
+        // used to bundle its graphs, so this host confirms every request; the mode that registers
+        // nothing is the one whose artifact is refused for want of a resolver.
+        if (string.Equals(mode, ModuleAdmittedMode, StringComparison.Ordinal))
+        {
+            capabilities.Add(VmCapabilityRegistration.Value(
+                JavaScriptProfile.ResolveCapability,
+                Confirm));
+        }
+
         return new VmRuntimeCreationOptions(
             aggregateBudget: null,
             ceilings: ceilings.ToImmutable(),
@@ -205,6 +245,26 @@ internal static class Hosts
             maxLiveSuspendedOperations: 1,
             guestLoadBounds: VmGuestLoadBoundsSpec.AdoptProfileMaxima,
             externalSuspension: VmExternalSuspensionMode.Disabled,
-            capabilities: ImmutableArray<VmCapabilityRegistration>.Empty);
+            capabilities: capabilities.ToImmutable());
+    }
+
+    /// <summary>
+    /// This replay's module resolution: the key the request already carries.
+    /// </summary>
+    /// <remarks>
+    /// The retained module entries are bundled by a producer whose keys are the names it gave each
+    /// module, so this host's rule is the same one - and a request carrying no key at all is
+    /// refused, which is what makes the confirmation a check rather than a formality.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private static VmHostCallOutcome Confirm(VmBytes argument, out VmOpaqueRef result)
+    {
+        result = default;
+        var parts = JsFormat.DecodeText(argument.Span).Split('\0');
+
+        return parts.Length == 3 && parts[2].Length != 0
+            ? VmHostCallOutcome.Completed
+            : VmHostCallOutcome.Refused;
     }
 }

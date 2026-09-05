@@ -841,6 +841,45 @@ ever spends the allowance and ends as a resource exhaustion rather than hanging.
 still holds**: `async` and `await` are still refused by name, so an asynchronous test262 case still
 cannot be written in the syntax the suite writes it in.
 
+**And there is a module goal now, which is what that paragraph's first fact was blocking.** From
+2026-09-05 a source presented as a module — a `.mjs` on this host's command line, or `--module` — is
+read under the module goal, and a graph of them is linked at verification and evaluated as one
+invocation. The identity is `broiler.javascript.modules` and it is an **optional surface**: the
+artifact names `broiler.javascript.wide` and declares the surface beside it, exactly as
+`broiler.javascript.binary` and `broiler.javascript.dynamic` are declared, so a composition that
+declines it refuses a module artifact with `1608:SurfaceOutsideComposition` at verification. **The
+resolver is the composition's and not the profile's**: this profile reads no file, and a composition
+that admits the surface without registering a resolver capability refuses a module artifact with
+`1619:ModuleResolverAbsent`, also at verification. Both refusals have a retained corpus entry, and
+the second is one of the two rows whose replay varies the HOST rather than the bytes.
+
+**Top-level `await` is admitted, and the reason it is worth saying so is that it was going to be
+excluded.** The exclusion drafted for it read that settling a promise needs a job queue this profile
+does not have; the paragraph above is that ground going away. What the module goal does with it is
+ordinary guest suspension rather than a parked instantiation — a module body whose parse saw an
+`await` outside any function carries the async flag, and a body that suspends resumes the evaluation
+order where it stopped — so an importer waits for a dependency that awaits, and nothing declares
+asynchronous instantiation *(recorded as [JSC-134](roadmap.corrections.md#jsc-134))*.
+
+**What that is worth is one subtree of the pinned suite, measured either side of the change and not
+otherwise.** `test/language/module-code` — 748 files, 750 variants — went from **pass 2, fail 0,
+unsupported 2, skipped 746** to **pass 536, fail 22, unsupported 39, skipped 153**. The before figure
+is what a harness that skipped every module-flagged file by name produces, measured on this checkout
+with that harness restored rather than reasoned out; 152 of the 153 that are still skipped are
+`_FIXTURE` files another test loads and never runs on its own. **This is a subtree somebody named,
+so it is a fact about that subtree**, and roadmap
+[section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s rule — a manifest
+is not accepted without a retained run of its own over the whole suite — is as unmet for this
+identity as for the two beside it.
+
+**Four families of the module subtree are refused by name and are counted as `unsupported` rather
+than as failures**, which is what the harness's fourth verdict is for: a dynamic `import()`, an
+import attribute clause (`with { type: "json" }` and the older `assert` spelling), `for await`, and
+an async generator function. The first two are surfaces this stage did not open — a dynamic
+`import()` belongs to `broiler.javascript.dynamic` and needs an artifact provider, and an attribute
+clause needs a type this host has no reader for — and the last two are not the module goal's at all.
+Nothing on that list is partially admitted, and nothing on it is mis-run.
+
 **What none of this is.** **Native AOT was not published on the machine this was written on**,
 and the component's lane is the authority for what publishes — under section 1 a lane retains
 nothing and advances nothing here, so what stands open there is a collection rather than a fact

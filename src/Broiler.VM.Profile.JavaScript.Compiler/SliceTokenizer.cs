@@ -883,7 +883,7 @@ public sealed class SliceTokenizer
     /// on strictness, strictness is the validator's, and a tokenizer that knew about strictness
     /// would be the ambient parse state this component removed.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=801F07
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=730FCD
     // Broiler-Falsified-If: the value this produces differs from the language's MV for the same literal text
     // Broiler-Human:        PENDING
     private SliceToken ReadNumericLiteral(int startLine, int startColumn, bool sawNewline)
@@ -909,7 +909,8 @@ public sealed class SliceTokenizer
                 return RefuseNumeric(start, startLine, startColumn, "a radix prefix with no digits");
             }
 
-            if (!SeparatorsAreBetweenDigits(source[digitsStart..index], radix))
+            if (!SeparatorsAreBetweenDigits(
+                    System.MemoryExtensions.AsSpan(source, digitsStart, index - digitsStart), radix))
             {
                 return RefuseNumeric(
                     start, startLine, startColumn, "a numeric separator that is not between two digits");

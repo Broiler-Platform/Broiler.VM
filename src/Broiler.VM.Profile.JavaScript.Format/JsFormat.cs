@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   20
-// Annotated:        20/20
-// Exempt:           28
-// Human-reviewed:   0/20
+// Relevant units:   25
+// Annotated:        25/25
+// Exempt:           31
+// Human-reviewed:   0/25
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       20
+// Unverified:       25
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -63,7 +63,7 @@ public static class JsFormat
     /// version-1 meanings; their bodies are read under version 2's rules where those differ, and
     /// the two places they differ - the limits body and the exception-region body - say so.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=01A16C
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=913500
     // Broiler-Human:        PENDING
     public enum SectionKind : uint
     {
@@ -101,6 +101,28 @@ public static class JsFormat
         /// surface made only of globals has to be declared at all.
         /// </remarks>
         Surfaces = 9,
+
+        /// <summary>
+        /// The module records: what each module of a graph requests, imports and exports.
+        /// </summary>
+        /// <remarks>
+        /// Admitted only by an artifact that declares <see cref="JsSurfaces.Modules"/> beside its
+        /// manifest, for the reason every optional surface is declared: a composition has to be
+        /// able to decline module resolution separately from admitting objects and closures.
+        /// </remarks>
+        Modules = 10,
+    }
+
+    /// <summary>What one import entry binds its local name to.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=7A6F7F
+    // Broiler-Human:        PENDING
+    public enum ImportKind : byte
+    {
+        /// <summary>One exported name of the requested module: <c>import { a } from …</c>.</summary>
+        Named = 0,
+
+        /// <summary>The requested module's namespace object: <c>import * as ns from …</c>.</summary>
+        Namespace = 1,
     }
 
     /// <summary>The constant-pool entry tags version 2 reads.</summary>
@@ -317,6 +339,37 @@ public static class JsFormat
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=6A8F76
     // Broiler-Human:        PENDING
     public const uint CeilingSurfaces = 16;
+
+    /// <summary>The most module records one artifact may declare.</summary>
+    /// <remarks>
+    /// A module graph is resolved whole at verification, and export resolution walks it, so this
+    /// ceiling bounds a walk rather than a table. It is stated separately from the function ceiling
+    /// because a module and a code unit are not the same thing: every module has two code units and
+    /// most code units are not a module's.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=E9A0DE
+    // Broiler-Human:        PENDING
+    public const uint CeilingModules = 4_096;
+
+    /// <summary>The most modules one module may request.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=3B7014
+    // Broiler-Human:        PENDING
+    public const uint CeilingModuleRequests = 4_096;
+
+    /// <summary>The most import entries one artifact may declare.</summary>
+    /// <remarks>
+    /// <b>The bound is the operand width and is stated anyway.</b> An import read carries a
+    /// <c>u16</c> index into the artifact-wide import table, so 65 536 is what the encoding can
+    /// say - and a bound that happens to equal a field width is a bound nobody checked.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B0BF18
+    // Broiler-Human:        PENDING
+    public const uint CeilingImportEntries = 65_536;
+
+    /// <summary>The most export entries of one kind one module may declare.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=394835
+    // Broiler-Human:        PENDING
+    public const uint CeilingExportEntries = 65_536;
 
     /// <summary>Encodes a JavaScript String for the constant and name tables.</summary>
     /// <remarks>

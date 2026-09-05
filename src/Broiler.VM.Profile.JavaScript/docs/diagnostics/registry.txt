@@ -1,8 +1,8 @@
 # broiler.javascript.slice diagnostic-code registry
 #
-# registry-revision: 7
+# registry-revision: 8
 # published-at-milestone: JS-3a (revision 1), JS-3b (revision 2), JS-4 (revision 3), JSW-2 (revision 4),
-#                         JSW-5 (revisions 5, 6 and 7)
+#                         JSW-5 (revisions 5, 6 and 7), JSW-8 (revision 8)
 # owning-decision: JSD-0009
 # format-version: 1, 2
 # feature-manifest: broiler.javascript.slice, broiler.javascript.wide
@@ -27,9 +27,12 @@
 #                core result, so there is no reason for it to carry and inventing one would be
 #                claiming a transport the code does not use.
 # stage          the pass that refuses. For the core-result half: header, manifest, framing,
-#                limits, constants, code, entries, functions, positions, reserved, reader. For the
-#                embedder-seam half: tokenizer, parser, semantics, lowering. `functions` arrived
-#                with format version 2, which is the first version to have a function table.
+#                limits, constants, code, entries, functions, modules, positions, reserved,
+#                reader. For the embedder-seam half: tokenizer, parser, semantics, lowering.
+#                `functions` arrived with format version 2, which is the first version to have a
+#                function table. `modules` arrived with revision 8: it is the LINK, which runs
+#                after every other structural pass and before the artifact is accepted, and it is
+#                the only pass whose answer depends on the composition as well as on the bytes.
 # reachability   corpus     a named entry of the retained corpus produces this code.
 #                source     a named entry of the retained SOURCE corpus is refused with this code.
 #                           The source corpus is src/tests/corpus/js-1/source/source.manifest, and
@@ -101,6 +104,14 @@
 1610|GeneratorFlagsInconsistent|core-result|InconsistentStructure|functions|corpus|wide-a-generator-that-is-also-the-program-body|5
 1611|AwaitOutsideAsync|core-result|SemanticValidationFailed|code|corpus|wide-an-await-outside-an-async-function|6
 1612|AsyncFlagsInconsistent|core-result|InconsistentStructure|functions|corpus|wide-an-async-function-that-is-also-a-generator|6
+1613|ModuleSectionOutsideManifest|core-result|UnknownFeature|modules|corpus|modules-a-module-section-no-surface-declares|8
+1614|MalformedModuleRow|core-result|InconsistentStructure|modules|corpus|modules-a-module-row-the-format-cannot-represent|8
+1615|ModuleRequestUnresolved|core-result|InconsistentStructure|modules|corpus|modules-a-request-naming-no-module|8
+1616|ModuleExportNotFound|core-result|InconsistentStructure|modules|corpus|modules-an-import-of-a-name-nothing-exports|8
+1617|ModuleExportAmbiguous|core-result|InconsistentStructure|modules|corpus|modules-a-name-two-star-re-exports-supply|8
+1618|ModuleExportCircular|core-result|InconsistentStructure|modules|corpus|modules-a-cyclic-export-resolution|8
+1619|ModuleResolverAbsent|core-result|UnsupportedFeatureManifest|modules|corpus|modules-a-module-artifact-with-no-resolver|8
+1620|ModuleSectionMissing|core-result|InconsistentStructure|modules|corpus|modules-the-module-surface-with-no-module-records|8
 1621|ClassElementFlagsInconsistent|core-result|InconsistentStructure|code|corpus|wide-a-class-element-whose-flags-contradict|7
 1901|Truncated|core-result|Truncated|reader|corpus|a-truncated-payload|1
 1902|MalformedEncoding|core-result|MalformedEncoding|reader|corpus|an-overlong-variable-length-integer|1
@@ -129,3 +140,6 @@
 2301|TooManyLocals|embedder-seam|-|lowering|source|refuse-more-locals-than-the-frame-admits|2
 2302|TooManyConstants|embedder-seam|-|lowering|source|refuse-more-constants-than-the-pool-admits|2
 2303|OperandStackTooDeep|embedder-seam|-|lowering|defensive|no source reaches it: the operand stack grows only with right-nested operators, the format's ceiling is 1024 operands, and the parse depth bound refuses at a measured maximum of about 170 levels of source - the parse bound dominates the stack ceiling|2
+2401|ModuleDeclarationOutsideModuleGoal|embedder-seam|-|parser|source|refuse-an-import-in-a-script|8
+2402|DuplicateExportName|embedder-seam|-|semantics|source|refuse-a-name-exported-twice|8
+2403|ExportNameNotDeclared|embedder-seam|-|semantics|source|refuse-an-export-of-a-name-nothing-declares|8

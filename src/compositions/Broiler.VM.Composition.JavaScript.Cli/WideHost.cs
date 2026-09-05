@@ -58,9 +58,28 @@ internal static class WideHost
             : module ? SliceParseOptions.Module : SliceParseOptions.Script;
 
         var scripts = new List<JsScriptUnit>(files.Count);
+        var modules = new List<JsModuleUnit>();
 
         for (var index = 0; index < files.Count; index++)
         {
+            // THE LAST FILE IS THE ONE THAT MAY BE A MODULE, and the ones before it are its realm.
+            // That is what a shell does with `broiler-js harness.js main.mjs`: the earlier files are
+            // scripts evaluated in order, and the module graph is rooted at what was asked for. A
+            // module in the middle of the list would be a graph whose evaluation order the argument
+            // order decided, which is not an order anybody could state.
+            if (module && index == files.Count - 1)
+            {
+                var loaded = ModuleGraph.Load(files[index].Path);
+
+                if (loaded.Failure.Length != 0)
+                {
+                    return new RunResult(RunStatus.Unreadable, string.Empty, loaded.Failure, []);
+                }
+
+                modules.AddRange(loaded.Modules);
+                continue;
+            }
+
             scripts.Add(new JsScriptUnit(
                 "script" + index.ToString(System.Globalization.CultureInfo.InvariantCulture),
                 files[index].Text,
@@ -68,7 +87,7 @@ internal static class WideHost
                 forceStrict));
         }
 
-        var compiled = JsCompiler.Compile(scripts);
+        var compiled = JsCompiler.Compile(scripts, modules);
 
         if (!compiled.Succeeded || compiled.Artifact is null)
         {
@@ -101,12 +120,16 @@ internal static class WideHost
 
         using (runtime)
         {
-            return Run(runtime, compiled.Artifact, scripts.Count, checkOnly);
+            return Run(
+                runtime, compiled.Artifact, scripts.Count, modules.Count != 0, checkOnly);
         }
     }
 
-    private static RunResult Run(VmRuntime runtime, byte[] artifact, int count, bool checkOnly)
+    private static RunResult Run(
+        VmRuntime runtime, byte[] artifact, int scripts, bool hasModules, bool checkOnly)
     {
+        var count = scripts + (hasModules ? 1 : 0);
+
         var descriptor = new VmArtifactDescriptor(
             JavaScriptProfile.Id,
             Broiler.VM.Profile.JavaScript.Format.JsFormat.FormatVersion,
@@ -173,9 +196,16 @@ internal static class WideHost
             // so the profile never chooses; this host chooses after the last script, which is what
             // a shell does and what makes `Promise.resolve(1).then(print)` print before the process
             // ends. A host that wanted a drain between scripts would ask between them instead.
+            // A MODULE GRAPH IS ONE MORE INVOCATION AND IT COMES BEFORE THE DRAIN. It is a
+            // separate entry point rather than another script because a module is not called: what
+            // this asks for is the root, and the linker reaches the rest of the graph from it. It
+            // must precede the drain, because a module that awaits leaves the rest of its own
+            // evaluation on the queue.
             var name = index == count
                 ? JavaScriptProfile.DrainEntryPoint
-                : "script" + index.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                : index == scripts && hasModules
+                    ? JsCompiler.ModuleEntry
+                    : "script" + index.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
             var request = new VmInvocationRequest(
                 new VmUtf8Text(System.Text.Encoding.UTF8.GetBytes(name)));
@@ -278,6 +308,14 @@ internal static class WideHost
         // host that refused to evaluate source would be refusing what a person pointing a
         // JavaScript host at a file expects; a sibling root that registers nothing gets the
         // deterministic refusal instead, and both are correct compositions of the same profile.
+        // REGISTERING THE RESOLVER IS THIS COMPOSITION ANSWERING THE MODULE SURFACE'S OWN
+        // QUESTION. Admitting the surface is the descriptor's act; saying what a specifier names is
+        // this one, and a sibling root that wanted modules on other terms would answer differently
+        // here and nowhere else.
+        capabilities.Add(VmCapabilityRegistration.Value(
+            JavaScriptProfile.ResolveCapability,
+            Resolve));
+
         capabilities.Add(VmCapabilityRegistration.ArtifactProvider(
             JavaScriptProfile.SourceProviderCapability,
             new SourceProvider()));
@@ -292,7 +330,24 @@ internal static class WideHost
             capabilities: capabilities.ToImmutable());
     }
 
-    /// <summary>The one host capability this root registers: write a line to standard output.</summary>
+    /// <summary>
+    /// Rules on whether a module request resolves the way this composition resolves it.
+    /// </summary>
+    /// <remarks>
+    /// <c>Refused</c> is a policy answer and not a failure of the call, which is exactly what it
+    /// means here: the artifact was resolved by rules that are not this host's, and this host
+    /// declines to evaluate it.
+    /// </remarks>
+    private static VmHostCallOutcome Resolve(VmBytes argument, out VmOpaqueRef result)
+    {
+        result = default;
+
+        return ModuleGraph.Confirms(argument.Span)
+            ? VmHostCallOutcome.Completed
+            : VmHostCallOutcome.Refused;
+    }
+
+    /// <summary>The first host capability this root registers: write a line to standard output.</summary>
     private static VmHostCallOutcome Write(VmBytes argument, out VmOpaqueRef result)
     {
         result = default;

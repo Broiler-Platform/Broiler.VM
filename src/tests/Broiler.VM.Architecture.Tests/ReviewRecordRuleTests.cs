@@ -941,15 +941,17 @@ public sealed class ReviewRecordRuleTests
         // a file appearing in a product assembly fails here until someone decides whether it is
         // covered, and the number records that the decision was made.
         //
-        // The workload programme added fourteen, each for a reason the number should carry: the
+        // The workload programme added fifteen, each for a reason the number should carry: the
         // optional-surface names and the four files of the binary surface and its realm setup; the
-        // dynamic surface's realm setup; the regular-expression matcher this profile owns; the
-        // keyed collections, their realm setup and their iterators; the promise; Symbol as a
-        // primitive together with the realm setup that installs the well-known ones; the suspended
-        // frame a generator is, with the realm setup for its prototypes; and the `Reflect`
-        // namespace. Each is covered for the same reason every other product file is, which is that
-        // it compiles into an assembly this component builds.
-        Assert.Equal(116, AssuranceSources.Files.Count);
+        // dynamic surface's realm setup; the regular-expression matcher, which the front end needs
+        // in order to refuse an invalid pattern where the literal is written and which therefore
+        // lives in the format assembly; the keyed collections, their realm setup and their
+        // iterators; the promise; Symbol as a primitive together with the realm setup that installs
+        // the well-known ones; the suspended frame a generator is, with the realm setup for its
+        // prototypes; the `Reflect` namespace; and the module record. Each is covered for the same
+        // reason every other product file is, which is that it compiles into an assembly this
+        // component builds.
+        Assert.Equal(117, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(
