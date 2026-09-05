@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   18
-// Annotated:        18/18
+// Relevant units:   21
+// Annotated:        21/21
 // Exempt:           15
-// Human-reviewed:   0/18
+// Human-reviewed:   0/21
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       18
+// Unverified:       21
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -58,7 +58,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>Object</c>, <c>Object.prototype</c> and the statics on the constructor.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F6551E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F043C9
     // Broiler-Human:        PENDING
     private void SetupObject()
     {
@@ -141,6 +141,47 @@ internal sealed partial class JsRealm
                     return JsValue.Undefined;
                 }),
                 JsPropertyAttributes.Configurable));
+
+        // THE FOUR ANNEX B ACCESSOR HELPERS. They are older than `Object.defineProperty` and the
+        // language keeps them because the web does; a program that uses one is usually old rather
+        // than wrong, and answering `undefined is not a function` for it is a refusal dressed as a
+        // bug. `__defineGetter__` DEFINES rather than assigns, so it replaces a data property with
+        // an accessor - which is the whole reason it exists.
+        Method(ObjectPrototype, "__defineGetter__", 2, static (engine, thisValue, arguments) =>
+        {
+            var host = engine.ToObject(thisValue);
+            var accessor = ArgOfObject(arguments, 1);
+
+            if (!accessor.IsObject || !accessor.AsObject().IsCallable)
+            {
+                return engine.ThrowTypeError("Object.prototype.__defineGetter__: the getter is not callable");
+            }
+
+            ObjectDefineAccessorHalf(engine, host, ArgOfObject(arguments, 0), accessor, getter: true);
+            return JsValue.Undefined;
+        });
+
+        Method(ObjectPrototype, "__defineSetter__", 2, static (engine, thisValue, arguments) =>
+        {
+            var host = engine.ToObject(thisValue);
+            var accessor = ArgOfObject(arguments, 1);
+
+            if (!accessor.IsObject || !accessor.AsObject().IsCallable)
+            {
+                return engine.ThrowTypeError("Object.prototype.__defineSetter__: the setter is not callable");
+            }
+
+            ObjectDefineAccessorHalf(engine, host, ArgOfObject(arguments, 0), accessor, getter: false);
+            return JsValue.Undefined;
+        });
+
+        // THE LOOKUP PAIR WALKS THE PROTOTYPE CHAIN, which is what distinguishes them from
+        // `getOwnPropertyDescriptor`: they answer about the property a read would REACH.
+        Method(ObjectPrototype, "__lookupGetter__", 1, static (engine, thisValue, arguments) =>
+            ObjectLookupAccessorHalf(engine, thisValue, ArgOfObject(arguments, 0), getter: true));
+
+        Method(ObjectPrototype, "__lookupSetter__", 1, static (engine, thisValue, arguments) =>
+            ObjectLookupAccessorHalf(engine, thisValue, ArgOfObject(arguments, 0), getter: false));
 
         Method(ObjectPrototype, "hasOwnProperty", 1, static (engine, thisValue, arguments) =>
         {
@@ -313,6 +354,22 @@ internal sealed partial class JsRealm
             }
 
             return JsValue.Object(groups);
+        });
+
+        // `hasOwnProperty` WITHOUT THE RECEIVER, which is the point: `o.hasOwnProperty(k)` is a
+        // method call on `o`, so it fails for an object with a null prototype and lies for one that
+        // shadowed the name. The idiom that worked was
+        // `Object.prototype.hasOwnProperty.call(o, k)`, and this is that idiom with a name.
+        Method(constructor, "hasOwn", 2, (engine, thisValue, arguments) =>
+        {
+            _ = thisValue;
+            var host = engine.ToObject(ArgOfObject(arguments, 0));
+            var requested = ArgOfObject(arguments, 1);
+
+            return JsValue.Boolean(
+                requested.IsSymbol
+                    ? host.TryGetOwnSymbol(requested.AsSymbol(), out _)
+                    : host.HasOwnProperty(engine.ToPropertyKey(requested)));
         });
 
         Method(constructor, "getOwnPropertyNames", 1, (engine, thisValue, arguments) =>
@@ -596,6 +653,74 @@ internal sealed partial class JsRealm
         });
     }
 
+    /// <summary>Defines one half of an accessor, leaving the other half as it stands.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=595FB1
+    // Broiler-Human:        PENDING
+    private static void ObjectDefineAccessorHalf(
+        JsEngine engine, JsObject host, JsValue key, JsValue accessor, bool getter)
+    {
+        var function = accessor.AsObject();
+
+        if (key.IsSymbol)
+        {
+            host.TryGetOwnSymbol(key.AsSymbol(), out var held);
+
+            host.SetOwnSymbol(
+                key.AsSymbol(),
+                JsProperty.Accessor(
+                    getter ? function : held.Getter,
+                    getter ? held.Setter : function,
+                    JsPropertyAttributes.Enumerable | JsPropertyAttributes.Configurable));
+
+            return;
+        }
+
+        var name = engine.ToPropertyKey(key);
+        host.TryGetOwnProperty(name, out var existing);
+
+        host.SetOwnProperty(
+            name,
+            JsProperty.Accessor(
+                getter ? function : existing.Getter,
+                getter ? existing.Setter : function,
+                JsPropertyAttributes.Enumerable | JsPropertyAttributes.Configurable));
+    }
+
+    /// <summary>Finds one half of the accessor a read of <paramref name="key"/> would reach.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B0B2B3
+    // Broiler-Human:        PENDING
+    private static JsValue ObjectLookupAccessorHalf(
+        JsEngine engine, JsValue receiver, JsValue key, bool getter)
+    {
+        var current = engine.ToObject(receiver);
+        var symbol = key.IsSymbol ? key.AsSymbol() : null;
+        var name = symbol is null ? engine.ToPropertyKey(key) : string.Empty;
+
+        while (current is not null)
+        {
+            engine.Charge(1);
+
+            var found = symbol is null
+                ? current.TryGetOwnProperty(name, out var property)
+                : current.TryGetOwnSymbol(symbol, out property);
+
+            if (found)
+            {
+                if (!property.IsAccessor)
+                {
+                    return JsValue.Undefined;
+                }
+
+                var half = getter ? property.Getter : property.Setter;
+                return half is null ? JsValue.Undefined : JsValue.Object(half);
+            }
+
+            current = current.Prototype;
+        }
+
+        return JsValue.Undefined;
+    }
+
     /// <summary>Reads argument <paramref name="at"/>, which the caller may not have supplied.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=939E17
     // Broiler-Human:        PENDING
@@ -817,13 +942,25 @@ internal sealed partial class JsRealm
     /// The specification's <c>ValidateAndApplyPropertyDescriptor</c>: refuse what the existing
     /// property forbids, then write the merge of the two.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A520F1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BB7EC1
     // Broiler-Human:        PENDING
     private static void ObjectApplyDescriptor(
         JsEngine engine, JsObject target, string key, ObjectDescriptorFields fields)
     {
         var wantsAccessor = fields.HasGet || fields.HasSet;
         var wantsData = fields.HasValue || fields.HasWritable;
+
+        // AN ARRAY'S `length` IS CHECKED AND COERCED BEFORE IT IS DEFINED, exactly as an assignment
+        // to it is: a definition is the other way a program reaches it, and the two may not
+        // disagree about which values are lengths.
+        if (target is JsArray sized && fields.HasValue &&
+            string.Equals(key, "length", System.StringComparison.Ordinal))
+        {
+            var wanted = engine.ArrayLengthOrRefuse(fields.Value);
+            fields.Value = JsValue.Number(wanted);
+            ObjectApplyLength(engine, sized, wanted, fields);
+            return;
+        }
 
         if (!target.TryGetOwnProperty(key, out var current))
         {
@@ -1157,10 +1294,62 @@ internal sealed partial class JsRealm
     /// vacates the slot and writes the ordinary map when it is handed a descriptor the slot cannot
     /// express, so an element can carry attributes after all.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1FA36A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=6ABCFB
     // Broiler-Human:        PENDING
-    private static bool ObjectIsUnattributable(JsObject target, string key) =>
-        target is JsArray && string.Equals(key, "length", System.StringComparison.Ordinal);
+    private static bool ObjectIsUnattributable(JsObject target, string key)
+    {
+        _ = target;
+        _ = key;
+
+        // NOTHING IS, AND THIS ANSWERED "AN ARRAY'S `length`" UNTIL 2026-09-05. Skipping it made
+        // `Object.freeze([1,2,3])` leave the length writable, so a frozen Array could still be
+        // truncated — which `Object.isFrozen` then answered `true` about, because it asked the same
+        // predicate. The length is attributable like anything else; what it is not is deletable,
+        // and that is a different question asked elsewhere.
+        return false;
+    }
+
+    /// <summary>Applies a definition of an Array's <c>length</c>, which may only partly succeed.</summary>
+    /// <remarks>
+    /// <b>A shortening that meets a non-configurable element stops there</b>, and the definition has
+    /// then failed even though it did something: the length is left where the walk stopped and the
+    /// <c>TypeError</c> says the definition did not take. Reporting success would tell a program the
+    /// length is what it asked for when it is not.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=794CB0
+    // Broiler-Human:        PENDING
+    private static void ObjectApplyLength(
+        JsEngine engine, JsArray target, uint wanted, ObjectDescriptorFields fields)
+    {
+        if (fields.HasEnumerable && fields.Enumerable)
+        {
+            throw engine.Error("TypeError", "Cannot redefine property: length");
+        }
+
+        if (fields.HasConfigurable && fields.Configurable)
+        {
+            throw engine.Error("TypeError", "Cannot redefine property: length");
+        }
+
+        if (!target.LengthWritable && wanted != target.Length)
+        {
+            throw engine.Error("TypeError", "Cannot assign to read only property 'length'");
+        }
+
+        var applied = target.TrySetLength(wanted);
+
+        if (fields.HasWritable && !fields.Writable)
+        {
+            target.TryGetOwnProperty("length", out var held);
+            held.Attributes &= ~JsPropertyAttributes.Writable;
+            target.SetOwnProperty("length", held);
+        }
+
+        if (!applied)
+        {
+            throw engine.Error("TypeError", "Cannot redefine property: length");
+        }
+    }
 
     /// <summary>Which fields a descriptor object actually carried, and what they said.</summary>
     /// <remarks>

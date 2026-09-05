@@ -4948,3 +4948,39 @@ one it is a `TypeError`.
 
 **Authority and date.** The implementation of 2026-09-05 in this checkout and the cases appended to
 `src/tests/differential/the-statement-and-object-surface.js`. 2026-09-05.
+
+### JSC-128
+
+**Where:** `Object.freeze` and `Object.seal` over an Array, and the predicate that told them to skip
+its `length`.
+
+**What the predicate said.** That an Array's `length` is *unattributable* — a property whose
+attributes may not be set — so the integrity walk stepped over it.
+
+**What was true.** It is attributable like any other property; what it is not is *deletable*, which
+is a different question asked somewhere else. Skipping it left **a frozen Array whose length was
+still writable**, so `Object.freeze([1,2,3])` produced an object that could still be truncated to
+nothing — and `Object.isFrozen` answered `true` about it, because it consulted the same predicate.
+An integrity guarantee that reports itself held while not holding is worse than one that is absent.
+
+**Three neighbours were wrong in the same area, and the pinned suite counts all four together.**
+An Array's `length` was neither checked nor coerced on the way in: `a.length = -1` and
+`a.length = 1.5` were silently accepted where the language raises a `RangeError`, and
+`a.length = "2"` set nothing rather than two — the check is that `ToUint32` and `ToNumber` agree,
+which is what refuses the first two and accepts the third. A shortening deleted every element above
+the new length regardless of whether it MAY delete them, where the language stops at the first
+non-configurable element and leaves the length there — a partial result rather than either extreme.
+And a write past a length that had been made non-writable was dropped silently in strict code, where
+it owes a `TypeError`: the object model cannot know the mode, so the refusal was only half made.
+
+**Two absences were found in the same sweep**: `Object.hasOwn` — which is
+`Object.prototype.hasOwnProperty.call(o, k)` with a name, and works for an object with a null
+prototype — and the four Annex B accessor helpers `__defineGetter__`, `__defineSetter__`,
+`__lookupGetter__` and `__lookupSetter__`, which the language keeps because the web does.
+
+**What that cost, measured.** `test/built-ins/Object` scored **6,175 of 6,802 variants** before this
+work and **6,511** after it. Of the 289 that remain, 116 name `Proxy`.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the sweeps of
+`test/built-ins/Object` before and after, and the forty-one cases appended to
+`src/tests/differential/the-later-library-methods.js`. 2026-09-05.

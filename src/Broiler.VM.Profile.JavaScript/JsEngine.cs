@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   92
-// Annotated:        92/92
+// Relevant units:   93
+// Annotated:        93/93
 // Exempt:           13
-// Human-reviewed:   0/92
+// Human-reviewed:   0/93
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         9/9
 // Resource impact:  7/10 max
-// Unverified:       92
+// Unverified:       93
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -822,7 +822,7 @@ internal sealed class JsEngine
     }
 
     /// <summary>Writes a property on any value.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=974335
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=E1D2E7
     // Broiler-Human:        PENDING
     internal void SetProperty(JsValue baseValue, string key, JsValue value, bool strict)
     {
@@ -837,6 +837,29 @@ internal sealed class JsEngine
 
         var current = baseValue.IsObject ? baseValue.AsObject() : PrototypeFor(baseValue);
         var target = baseValue.AsObjectOrNull();
+
+        // AN ARRAY'S `length` IS THE ONE PROPERTY WHOSE VALUE IS CHECKED BEFORE IT IS STORED, and
+        // the check has to be here because it can THROW: `a.length = -1` is a RangeError in every
+        // engine, and the object model has no engine to raise one with. What reaches the object is
+        // the coerced number, so `a.length = "2"` sets two rather than nothing.
+        if (target is JsArray sized && string.Equals(key, "length", System.StringComparison.Ordinal))
+        {
+            value = JsValue.Number(ArrayLengthOrRefuse(value));
+        }
+
+        // A WRITE PAST A CLOSED LENGTH IS A REFUSAL, and in strict code a refusal is a TypeError.
+        // The object model drops the write silently because it cannot know the mode, so the mode's
+        // half of the answer belongs here.
+        if (target is JsArray fixedLength && !fixedLength.LengthWritable &&
+            JsObject.IsArrayIndex(key, out var past) && past >= fixedLength.Length)
+        {
+            if (strict)
+            {
+                ThrowTypeError("Cannot add property " + key + ", object is not extensible");
+            }
+
+            return;
+        }
 
         // THE ELEMENT CONVERSION IS THE ENGINE'S BECAUSE IT CAN RUN `valueOf`. The object model
         // stores an element without an engine to hand, so it can convert a primitive exactly and
@@ -916,6 +939,28 @@ internal sealed class JsEngine
         }
 
         target.SetOwnProperty(key, JsProperty.Data(value, JsPropertyAttributes.Default));
+    }
+
+    /// <summary>An Array length, or the <c>RangeError</c> the language owes for anything else.</summary>
+    /// <remarks>
+    /// <b>The test is that the number survives the round trip</b>, which is the specification's own
+    /// wording and is why <c>-1</c>, <c>1.5</c> and <c>NaN</c> are all refused while <c>"2"</c> is
+    /// accepted: each of the three has a <c>ToUint32</c> that differs from its <c>ToNumber</c>, and
+    /// the string does not.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4781FB
+    // Broiler-Human:        PENDING
+    internal uint ArrayLengthOrRefuse(JsValue value)
+    {
+        var number = ToNumber(value);
+        var index = JsValue.ToUint32(number);
+
+        if (index != number)
+        {
+            throw Error("RangeError", "Invalid array length");
+        }
+
+        return index;
     }
 
     /// <summary>Defines an own data property under a key that is not known until it is evaluated.</summary>
@@ -4803,7 +4848,7 @@ internal sealed class JsEngine
     }
 
     /// <summary>Writes an indexed property, with the fast path an Array element deserves.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=16B604
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=715A35
     // Broiler-Human:        PENDING
     internal void SetIndexed(JsValue target, JsValue key, JsValue value, bool strict)
     {
@@ -4819,6 +4864,22 @@ internal sealed class JsEngine
             // fast path too, and only while the array is extensible.
             if (at == number && at >= 0)
             {
+                // A CLOSED LENGTH REFUSES BEFORE EITHER FAST PATH IS TAKEN, and in strict code the
+                // refusal is a TypeError. The object model drops such a write silently because it
+                // cannot know the mode; this is where the mode is known.
+                if (!array.LengthWritable && at >= array.Length)
+                {
+                    if (strict)
+                    {
+                        ThrowTypeError(
+                            "Cannot add property " + at.ToString(
+                                System.Globalization.CultureInfo.InvariantCulture) +
+                            ", object is not extensible");
+                    }
+
+                    return;
+                }
+
                 if (at < array.DenseCount)
                 {
                     if (!array.DenseAt(at).IsEmpty)

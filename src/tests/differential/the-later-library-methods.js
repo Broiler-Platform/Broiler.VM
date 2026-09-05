@@ -243,3 +243,49 @@ p(function(){ var out = []; var names = ["Array","Map","Set","RegExp","Promise",
 p(function(){ return String(Array[Symbol.species] === Array) + String(Object.getOwnPropertyDescriptor(Map, Symbol.species).set); });
 p(function(){ return String(Object.getOwnPropertyDescriptor(WeakMap, Symbol.species) === undefined); });
 p(function(){ var d = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(Int8Array), Symbol.species); return String(d !== undefined) + "," + (d ? d.get.name : ""); });
+
+// --- `Object.hasOwn`, the four Annex B accessor helpers, and an Array's `length` as a property
+// rather than as a number. APPENDED for the reason the numbering asks. It is the pass that found
+// `Object.freeze` deliberately skipping an Array's length - so a frozen Array could still be
+// truncated, and `Object.isFrozen` answered `true` about it.
+p(function(){ return String(Object.hasOwn({a:1}, "a")) + Object.hasOwn({}, "a"); });
+p(function(){ return String(Object.hasOwn(Object.create({a:1}), "a")); });
+p(function(){ var s = Symbol("k"); var o = {}; o[s] = 1; return String(Object.hasOwn(o, s)); });
+p(function(){ return String(Object.hasOwn([1], 0)) + Object.hasOwn([1], "length"); });
+p(function(){ return Object.hasOwn.length + "," + Object.hasOwn.name; });
+p(function(){ try { Object.hasOwn(null, "a"); return "no-throw"; } catch(e){ return e.name; } });
+p(function(){ return String(Object.hasOwn("ab", 0)) + Object.hasOwn("ab", "length"); });
+p(function(){ var o = {}; o.__defineGetter__("x", function(){ return 7; }); return o.x; });
+p(function(){ var o = {}; o.__defineSetter__("x", function(v){ this.seen = v; }); o.x = 3; return o.seen; });
+p(function(){ var o = {}; o.__defineGetter__("x", function(){ return 1; }); var d = Object.getOwnPropertyDescriptor(o, "x"); return d.enumerable + "," + d.configurable + "," + (typeof d.get) + "," + String(d.set); });
+p(function(){ var o = {x: 1}; o.__defineGetter__("x", function(){ return 2; }); return o.x; });
+p(function(){ var o = {}; o.__defineGetter__("x", function(){ return 1; }); o.__defineSetter__("x", function(v){}); var d = Object.getOwnPropertyDescriptor(o, "x"); return (typeof d.get) + "," + (typeof d.set); });
+p(function(){ var o = {}; o.__defineGetter__("x", function(){ return 1; }); return typeof o.__lookupGetter__("x"); });
+p(function(){ var base = {}; base.__defineGetter__("x", function(){ return 1; }); var o = Object.create(base); return typeof o.__lookupGetter__("x"); });
+p(function(){ var o = {x:1}; return String(o.__lookupGetter__("x")); });
+p(function(){ var o = {}; o.__defineSetter__("x", function(v){}); return typeof o.__lookupSetter__("x") + String(o.__lookupGetter__("x")); });
+p(function(){ try { ({}).__defineGetter__("x", 1); return "no-throw"; } catch(e){ return e.name; } });
+p(function(){ return [typeof Object.prototype.__defineGetter__, typeof Object.prototype.__lookupSetter__].join(); });
+p(function(){ return Object.prototype.__defineGetter__.length + "," + Object.prototype.__lookupGetter__.length; });
+p(function(){ var a = [1,2,3]; Object.defineProperty(a, "length", {value: 1}); return a.join(); });
+p(function(){ var a = [1,2,3]; try { Object.defineProperty(a, "length", {value: -1}); return "no-throw"; } catch(e){ return e.name; } });
+p(function(){ var a = [1]; try { Object.defineProperty(a, "length", {value: 4294967296}); return "no-throw"; } catch(e){ return e.name; } });
+p(function(){ var a = [1]; try { Object.defineProperty(a, "length", {value: "x"}); return "no-throw"; } catch(e){ return e.name; } });
+p(function(){ var a = [1]; Object.defineProperty(a, "length", {value: "2"}); return a.length; });
+p(function(){ var a = [1,2]; Object.defineProperty(a, "length", {writable: false}); try { a.push(3); return "pushed"; } catch(e){ return e.name; } });
+p(function(){ var a = [1,2]; Object.defineProperty(a, "length", {writable: false}); var d = Object.getOwnPropertyDescriptor(a, "length"); return d.writable + "," + d.enumerable + "," + d.configurable; });
+p(function(){ var a = []; var d = Object.getOwnPropertyDescriptor(a, "length"); return d.writable + "," + d.enumerable + "," + d.configurable + "," + d.value; });
+p(function(){ var a = [1,2,3]; a.length = 1; return a.join() + "," + a.length; });
+p(function(){ var a = [1]; try { a.length = -1; return "no-throw " + a.length; } catch(e){ return e.name; } });
+p(function(){ var a = [1]; try { a.length = 1.5; return "no-throw"; } catch(e){ return e.name; } });
+p(function(){ var a = []; a[4294967294] = 1; return a.length; });
+p(function(){ var a = []; try { a[4294967295] = 1; return a.length + "," + a["4294967295"]; } catch(e){ return e.name; } });
+p(function(){ var a = [1,2,3]; Object.defineProperty(a, "1", {value: 9}); return a.join(); });
+p(function(){ var a = [1,2,3]; Object.defineProperty(a, "5", {value: 9, enumerable: true}); return a.length + "," + a.join(); });
+p(function(){ "use strict"; var a = [1]; Object.defineProperty(a, "length", {writable: false}); try { a[1] = 2; return "no-throw"; } catch(e){ return e.name; } });
+p(function(){ var a = [1,2,3]; Object.freeze(a); try { a.length = 1; return "no-throw," + a.length; } catch(e){ return e.name; } });
+p(function(){ var a = [1,2,3]; Object.defineProperty(a, "length", {value: 2, writable: false}); return a.length + "," + a.join(); });
+p(function(){ var a = [1,2,3]; Object.defineProperty(a, "1", {configurable: false}); try { Object.defineProperty(a, "length", {value: 0}); } catch(e){} return a.length + "," + a.join(); });
+p(function(){ var a = [1]; try { Object.defineProperty(a, "length", {enumerable: true}); return "no-throw"; } catch(e){ return e.name; } });
+p(function(){ var a = [1]; try { Object.defineProperty(a, "length", {configurable: true}); return "no-throw"; } catch(e){ return e.name; } });
+p(function(){ var a = [1]; try { Object.defineProperty(a, "length", {get: function(){ return 1; }}); return "no-throw"; } catch(e){ return e.name; } });

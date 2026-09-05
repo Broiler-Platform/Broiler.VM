@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   13
-// Annotated:        13/13
-// Exempt:           4
-// Human-reviewed:   0/13
+// Relevant units:   14
+// Annotated:        14/14
+// Exempt:           5
+// Human-reviewed:   0/14
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       13
+// Unverified:       14
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -78,6 +78,16 @@ internal sealed class JsArray : JsObject
     // Broiler-Human:        PENDING
     internal uint Length => length;
 
+    /// <summary>Whether the length may still move.</summary>
+    /// <remarks>
+    /// A closed length is what makes a write past the end a refusal rather than an extension, and
+    /// the engine has to be able to ask before it stores: a store that was silently dropped is a
+    /// <c>TypeError</c> in strict code, and only the caller knows the mode.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=AA042B
+    // Broiler-Human:        PENDING
+    internal bool LengthWritable => lengthWritable;
+
     /// <summary>How many elements the dense part holds.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FB598E
     // Broiler-Human:        PENDING
@@ -125,24 +135,66 @@ internal sealed class JsArray : JsObject
     }
 
     /// <summary>Sets the Array's length, dropping or extending as the specification requires.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=8BB249
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=65E131
     // Broiler-Human:        PENDING
-    internal void SetLength(uint value)
+    internal void SetLength(uint value) => _ = TrySetLength(value);
+
+    /// <summary>Sets the length, and answers whether it got all the way there.</summary>
+    /// <remarks>
+    /// <b>A SHORTENING DELETES FROM THE TOP DOWN AND STOPS AT THE FIRST ELEMENT IT MAY NOT
+    /// DELETE.</b> `Object.defineProperty(a, "1", {configurable: false})` makes index 1 permanent,
+    /// and the language says a later `a.length = 0` deletes index 2, fails at index 1, and leaves
+    /// the length at 2 — a partial result rather than either extreme. Truncating regardless would
+    /// destroy a property the program was promised, and refusing outright would leave a length
+    /// nobody could shrink at all.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=28839C
+    // Broiler-Human:        PENDING
+    internal bool TrySetLength(uint value)
     {
-        if (value < length)
+        if (value >= length)
         {
-            if (elements.Count > value)
+            length = value;
+            return true;
+        }
+
+        var reached = value;
+
+        for (var candidate = length; candidate > value; candidate--)
+        {
+            var at = candidate - 1;
+            var key = JsNumberFormat.ToUintString(at);
+
+            // THE DENSE HALF HAS NO ATTRIBUTES TO CONSULT: an element that is still in it is an
+            // ordinary configurable data property, and one that was given attributes has already
+            // moved into the map underneath - leaving a HOLE in the dense half at that index, which
+            // is why the test is on the slot being empty rather than on the index being past the
+            // end. Only the map can refuse.
+            var dense = at < elements.Count && !elements[(int)at].IsEmpty;
+
+            if (!dense && base.TryGetOwnProperty(key, out var held) && !held.Configurable)
             {
-                elements.RemoveRange((int)value, elements.Count - (int)value);
+                reached = at + 1;
+                break;
             }
 
-            for (var candidate = value; candidate < length; candidate++)
+            if (dense)
             {
-                base.DeleteOwnProperty(JsNumberFormat.ToUintString(candidate));
+                elements[(int)at] = JsValue.Empty;
+            }
+            else
+            {
+                base.DeleteOwnProperty(key);
             }
         }
 
-        length = value;
+        if (elements.Count > reached)
+        {
+            elements.RemoveRange((int)reached, elements.Count - (int)reached);
+        }
+
+        length = reached;
+        return reached == value;
     }
 
     /// <summary>Writes one indexed element.</summary>
