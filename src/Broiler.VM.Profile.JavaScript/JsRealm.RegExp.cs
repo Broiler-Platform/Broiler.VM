@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   34
-// Annotated:        34/34
+// Relevant units:   39
+// Annotated:        39/39
 // Exempt:           8
-// Human-reviewed:   0/34
+// Human-reviewed:   0/39
 // IP risk:          Medium
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  4/10 max
-// Unverified:       34
+// Unverified:       39
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -91,11 +91,15 @@ namespace Broiler.VM.Profile.JavaScript;
 /// nothing today and will cost something the day that engine moves.
 /// </item>
 /// <item>
-/// <b>No <c>Symbol.match</c>, <c>Symbol.replace</c>, <c>Symbol.search</c> or <c>Symbol.split</c>
-/// protocol.</b> This surface has no Symbols at all, so the six built-ins here test for a RegExp
-/// object rather than dispatching on a method: subclassing <c>RegExp</c> and overriding
-/// <c>exec</c> changes nothing, and neither does an object that merely looks like one. There is no
-/// <c>matchAll</c>, and <c>replaceAll</c> takes a string pattern only.
+/// <b>The pattern protocol dispatches and the RegExp's own <c>exec</c> is still not consulted.</b>
+/// The five String methods ask their argument for <c>Symbol.match</c>, <c>Symbol.matchAll</c>,
+/// <c>Symbol.replace</c>, <c>Symbol.search</c> or <c>Symbol.split</c> and call it when it answers,
+/// so a program's own object is a pattern — <i>(this read "no Symbols at all" until 2026-09-05,
+/// which was true when this surface had none and had stopped being true; corrected as
+/// JSC-129)</i>. What the five methods on <c>RegExp.prototype</c> do NOT do is go through the
+/// receiver's own <c>exec</c>: they run the matcher directly, so a subclass overriding <c>exec</c>
+/// changes what <c>re.exec(s)</c> answers and not what <c>s.match(re)</c> answers.
+/// <c>replaceAll</c> takes a string pattern only.
 /// </item>
 /// <item>
 /// <b>A required repetition is counted rather than reasoned about.</b> <c>/(?:){1000000000}/</c>
@@ -114,7 +118,7 @@ internal sealed partial class JsRealm
     private JsRegExpCharge? regExpCharge;
 
     /// <summary>Builds <c>RegExp</c>, <c>RegExp.prototype</c>, and the String methods that take one.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=069E54
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=84B942
     // Broiler-Human:        PENDING
     private void SetupRegExp()
     {
@@ -205,6 +209,48 @@ internal sealed partial class JsRealm
         RegExpFlagGetter(prototype, "unicode", 'u');
         RegExpFlagGetter(prototype, "sticky", 'y');
 
+        // ---- the pattern protocol, which is what makes these five methods dispatchable --------
+        //
+        // A PATTERN IS AN OBJECT WITH THE RIGHT SYMBOL AND NOT A RegExp. `"x".replace(p, r)` asks
+        // `p` for `Symbol.replace` and calls it; a program's own object answering that Symbol is a
+        // pattern, and a RegExp is one because its prototype answers all five. That is the whole
+        // extension point the language gives here, and this realm answered it by TESTING FOR A
+        // RegExp OBJECT until 2026-09-05 - a header remark defended the difference on the grounds
+        // that this surface had no Symbols, which stopped being true when it acquired them.
+        RegExpSymbolMethod(prototype, MatchSymbol, "[Symbol.match]", 1,
+            (engine, pattern, arguments) =>
+                RegExpMatchThrough(engine, pattern, engine.ToStringValue(ArgOfRegExp(arguments, 0))));
+
+        RegExpSymbolMethod(prototype, MatchAllSymbol, "[Symbol.matchAll]", 1,
+            (engine, pattern, arguments) =>
+                RegExpMatchAllThrough(
+                    engine, pattern, engine.ToStringValue(ArgOfRegExp(arguments, 0))));
+
+        RegExpSymbolMethod(prototype, SearchSymbol, "[Symbol.search]", 1,
+            (engine, pattern, arguments) =>
+                RegExpSearchThrough(engine, pattern, engine.ToStringValue(ArgOfRegExp(arguments, 0))));
+
+        RegExpSymbolMethod(prototype, ReplaceSymbol, "[Symbol.replace]", 2,
+            (engine, pattern, arguments) =>
+                JsValue.String(
+                    RegExpReplaceAll(
+                        engine,
+                        pattern,
+                        engine.ToStringValue(ArgOfRegExp(arguments, 0)),
+                        ArgOfRegExp(arguments, 1))));
+
+        RegExpSymbolMethod(prototype, SplitSymbol, "[Symbol.split]", 2,
+            (engine, pattern, arguments) =>
+            {
+                var input = engine.ToStringValue(ArgOfRegExp(arguments, 0));
+                var bound = ArgOfRegExp(arguments, 1);
+                var limit = bound.Type == JsType.Undefined ? 4294967295L : engine.ToUint32(bound);
+
+                return limit == 0
+                    ? JsValue.Object(NewArray())
+                    : JsValue.Object(RegExpSplitPattern(engine, pattern, input, limit));
+            });
+
         // ---- the String methods that take a RegExp ------------------------------------------
         //
         // `match` and `search` are defined here because they exist only for regular expressions.
@@ -217,8 +263,15 @@ internal sealed partial class JsRealm
 
         Method(StringPrototype, "match", 1, (engine, thisValue, arguments) =>
         {
+            var given = ArgOfRegExp(arguments, 0);
+
+            if (RegExpDispatch(engine, thisValue, given, engine.Realm.MatchSymbol, out var answered))
+            {
+                return answered;
+            }
+
             var input = RegExpStringThis(engine, thisValue);
-            var pattern = RegExpFromArgument(engine, ArgOfRegExp(arguments, 0));
+            var pattern = RegExpFromArgument(engine, given);
             engine.Charge((ulong)input.Length + 16);
 
             if (!pattern.Global)
@@ -260,8 +313,24 @@ internal sealed partial class JsRealm
         // This is that loop, as an iterator, and it is the reason the method exists.
         Method(StringPrototype, "matchAll", 1, (engine, thisValue, arguments) =>
         {
-            var input = RegExpStringThis(engine, thisValue);
             var given = ArgOfRegExp(arguments, 0);
+
+            // THE GLOBALITY CHECK HAPPENS BEFORE THE DISPATCH AND NOT INSIDE IT, which is the one
+            // place this method's order differs from its four neighbours: the language checks that
+            // a RegExp argument is global first, so `"x".matchAll(/a/)` is a TypeError even though
+            // `RegExp.prototype[Symbol.matchAll]` would have accepted it.
+            if (given.AsObjectOrNull() is RegExpObject checkedFirst && !checkedFirst.Global)
+            {
+                return engine.ThrowTypeError(
+                    "String.prototype.matchAll called with a non-global RegExp argument");
+            }
+
+            if (RegExpDispatch(engine, thisValue, given, engine.Realm.MatchAllSymbol, out var answered))
+            {
+                return answered;
+            }
+
+            var input = RegExpStringThis(engine, thisValue);
 
             // A NON-GLOBAL REGULAR EXPRESSION IS A TYPE ERROR AND NOT AN ITERATOR OF ONE. The
             // language refuses it because the loop this performs would not terminate without the
@@ -312,8 +381,15 @@ internal sealed partial class JsRealm
 
         Method(StringPrototype, "search", 1, (engine, thisValue, arguments) =>
         {
+            var given = ArgOfRegExp(arguments, 0);
+
+            if (RegExpDispatch(engine, thisValue, given, engine.Realm.SearchSymbol, out var answered))
+            {
+                return answered;
+            }
+
             var input = RegExpStringThis(engine, thisValue);
-            var pattern = RegExpFromArgument(engine, ArgOfRegExp(arguments, 0));
+            var pattern = RegExpFromArgument(engine, given);
             engine.Charge((ulong)input.Length + 16);
 
             // `search` neither consults nor disturbs `lastIndex`: it saves it, searches from zero,
@@ -328,9 +404,17 @@ internal sealed partial class JsRealm
 
         Method(StringPrototype, "replace", 2, (engine, thisValue, arguments) =>
         {
-            var input = RegExpStringThis(engine, thisValue);
             var search = ArgOfRegExp(arguments, 0);
             var replacement = ArgOfRegExp(arguments, 1);
+
+            if (RegExpDispatch(
+                    engine, thisValue, search, engine.Realm.ReplaceSymbol, out var answered,
+                    replacement))
+            {
+                return answered;
+            }
+
+            var input = RegExpStringThis(engine, thisValue);
             engine.Charge((ulong)input.Length + 16);
 
             return JsValue.String(
@@ -341,9 +425,16 @@ internal sealed partial class JsRealm
 
         Method(StringPrototype, "split", 2, (engine, thisValue, arguments) =>
         {
-            var input = RegExpStringThis(engine, thisValue);
             var separator = ArgOfRegExp(arguments, 0);
             var bound = ArgOfRegExp(arguments, 1);
+
+            if (RegExpDispatch(
+                    engine, thisValue, separator, engine.Realm.SplitSymbol, out var answered, bound))
+            {
+                return answered;
+            }
+
+            var input = RegExpStringThis(engine, thisValue);
             engine.Charge((ulong)input.Length + 16);
 
             var limit = bound.Type == JsType.Undefined ? 4294967295L : engine.ToUint32(bound);
@@ -368,6 +459,164 @@ internal sealed partial class JsRealm
             return JsValue.Object(
                 RegExpSplitText(engine, input, engine.ToStringValue(separator), limit));
         });
+    }
+
+    /// <summary>Installs one of the five pattern methods under its Symbol.</summary>
+    /// <remarks>
+    /// <b>Each one requires a real RegExp receiver</b>, which is not the same as requiring a RegExp
+    /// argument at the call site: a program's own object may answer the Symbol however it likes, and
+    /// what this refuses is a call of <c>RegExp.prototype[Symbol.match]</c> on something that is not
+    /// one.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=BF84D3
+    // Broiler-Human:        PENDING
+    private void RegExpSymbolMethod(
+        JsObject host,
+        JsSymbol key,
+        string name,
+        int arity,
+        System.Func<JsEngine, RegExpObject, JsValue[], JsValue> body) =>
+        host.SetOwnSymbol(
+            key,
+            JsProperty.Data(
+                JsValue.Object(Native(name, arity, (engine, thisValue, arguments) =>
+                {
+                    if (thisValue.AsObjectOrNull() is not RegExpObject pattern)
+                    {
+                        return engine.ThrowTypeError(
+                            "RegExp.prototype" + name + " called on a value that is not a RegExp");
+                    }
+
+                    return body(engine, pattern, arguments);
+                })),
+                JsPropertyAttributes.BuiltIn));
+
+    /// <summary>Hands the work to the pattern when the pattern says it can do it.</summary>
+    /// <remarks>
+    /// <b>The read is a <c>GetMethod</c> and the ORDER matters.</b> A nullish pattern is not asked
+    /// at all — <c>"x".replace(null, r)</c> replaces the text <c>"null"</c> — and a pattern whose
+    /// Symbol is present but not callable is a <c>TypeError</c> rather than a fall-through, because
+    /// an object that claims the protocol and cannot perform it is a mistake worth reporting. The
+    /// receiver is coerced to a String only on the path that does NOT dispatch, since the method
+    /// being dispatched to is handed the receiver as it stands.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=627A72
+    // Broiler-Human:        PENDING
+    private static bool RegExpDispatch(
+        JsEngine engine,
+        JsValue receiver,
+        JsValue pattern,
+        JsSymbol key,
+        out JsValue answered,
+        JsValue extra = default)
+    {
+        answered = JsValue.Undefined;
+
+        if (pattern.IsNullish)
+        {
+            return false;
+        }
+
+        if (receiver.IsNullish)
+        {
+            engine.ThrowTypeError("String.prototype method called on null or undefined");
+        }
+
+        var method = engine.GetSymbol(pattern, key);
+
+        if (method.Type == JsType.Undefined || method.Type == JsType.Null)
+        {
+            return false;
+        }
+
+        if (!method.IsObject || !method.AsObject().IsCallable)
+        {
+            engine.ThrowTypeError("the pattern's protocol method is not callable");
+        }
+
+        answered = extra.IsEmpty
+            ? engine.Call(method, pattern, [receiver])
+            : engine.Call(method, pattern, [receiver, extra]);
+
+        return true;
+    }
+
+    /// <summary>What <c>String.prototype.match</c> does once the pattern is known to be one.</summary>
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=E15631
+    // Broiler-Human:        PENDING
+    private JsValue RegExpMatchThrough(JsEngine engine, RegExpObject pattern, string input)
+    {
+        engine.Charge((ulong)input.Length + 16);
+
+        if (!pattern.Global)
+        {
+            return RegExpExecute(engine, pattern, input);
+        }
+
+        pattern.LastIndex = JsValue.Number(0);
+        var found = NewArray();
+
+        while (true)
+        {
+            var match = RegExpMatchOne(engine, pattern, input);
+
+            if (match is null)
+            {
+                break;
+            }
+
+            found.Push(JsValue.String(match.TextOf(input, 0)));
+
+            if (match.Length == 0)
+            {
+                pattern.LastIndex = JsValue.Number(
+                    JsRegExpMatcher.Advance(input, match.End, pattern.Unicode));
+            }
+        }
+
+        pattern.LastIndex = JsValue.Number(0);
+        return found.Length == 0 ? JsValue.Null : JsValue.Object(found);
+    }
+
+    /// <summary>The same for <c>search</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=7F4778
+    // Broiler-Human:        PENDING
+    private JsValue RegExpSearchThrough(JsEngine engine, RegExpObject pattern, string input)
+    {
+        engine.Charge((ulong)input.Length + 16);
+        var saved = pattern.LastIndex;
+        pattern.LastIndex = JsValue.Number(0);
+        var match = RegExpRun(engine, pattern, input, 0, pattern.Sticky);
+        pattern.LastIndex = saved;
+        return JsValue.Number(match is null ? -1 : match.Index);
+    }
+
+    /// <summary>The same for <c>matchAll</c>, over a copy of the pattern.</summary>
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=69F556
+    // Broiler-Human:        PENDING
+    private JsValue RegExpMatchAllThrough(JsEngine engine, RegExpObject pattern, string input)
+    {
+        var walked = RegExpBuild(engine, pattern.Source, pattern.Flags);
+        walked.LastIndex = JsValue.Number(engine.ToInteger(pattern.LastIndex));
+        engine.Charge((ulong)input.Length + 16);
+
+        return JsValue.Object(CreateListIterator("RegExp String Iterator", slot =>
+        {
+            var match = RegExpMatchOne(engine, walked, input);
+
+            if (match is null)
+            {
+                return (false, JsValue.Undefined, slot);
+            }
+
+            if (match.Length == 0)
+            {
+                walked.LastIndex = JsValue.Number(
+                    JsRegExpMatcher.Advance(input, match.End, walked.Unicode));
+            }
+
+            return (true, JsValue.Object(RegExpResult(engine, walked, match, input)), slot + 1);
+        }));
     }
 
     /// <summary>Reads one argument, which may not have been passed.</summary>

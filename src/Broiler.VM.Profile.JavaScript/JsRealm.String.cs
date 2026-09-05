@@ -56,7 +56,7 @@ internal sealed partial class JsRealm
     private const int StringLengthCeiling = 1 << 24;
 
     /// <summary>Builds <c>String</c>, <c>String.fromCharCode</c> and <c>String.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=795264
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=287028
     // Broiler-Human:        PENDING
     private void SetupString()
     {
@@ -135,6 +135,18 @@ internal sealed partial class JsRealm
                 {
                     return engine.ThrowRangeError(
                         JsNumberFormat.ToJsString(code) + " is not a valid code point");
+                }
+
+                // A SURROGATE CODE POINT IS A LEGAL ARGUMENT AND ONE CODE UNIT. The platform's
+                // converter refuses one - it encodes SCALAR values, and a surrogate is not one -
+                // and the exception it raises is not a JavaScript error: it ended the whole
+                // invocation as a contract violation. The language says `fromCodePoint(0xD800)` is
+                // a String of length one holding that unit, which is the same thing
+                // `fromCharCode(0xD800)` answers.
+                if (code >= 0xD800 && code <= 0xDFFF)
+                {
+                    builder.Append((char)code);
+                    continue;
                 }
 
                 builder.Append(char.ConvertFromUtf32((int)code));

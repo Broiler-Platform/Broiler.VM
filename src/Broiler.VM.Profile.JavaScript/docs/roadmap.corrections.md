@@ -4984,3 +4984,70 @@ work and **6,511** after it. Of the 289 that remain, 116 name `Proxy`.
 **Authority and date.** The implementation of 2026-09-05 in this checkout, the sweeps of
 `test/built-ins/Object` before and after, and the forty-one cases appended to
 `src/tests/differential/the-later-library-methods.js`. 2026-09-05.
+
+### JSC-129
+
+**Where:** the pattern protocol — the five Symbols a String method dispatches through — and the
+header remark in `JsRealm.RegExp.cs` that explained its absence.
+
+**What the remark said.** *"No `Symbol.match`, `Symbol.replace`, `Symbol.search` or `Symbol.split`
+protocol. This surface has no Symbols at all, so the six built-ins here test for a RegExp object
+rather than dispatching on a method."*
+
+**The first sentence of the reason stopped being true when the realm acquired `Symbol`**, and the
+remark outlived it — the same shape as [JSC-105](#jsc-105) and [JSC-114](#jsc-114): a stated
+limitation whose stated cause has gone, which is harder to notice than an unstated one because the
+document looks like it was thought about.
+
+**What that cost.** A pattern in this language is *an object with the right Symbol*, not a RegExp:
+`"x".replace(p, r)` asks `p` for `Symbol.replace` and calls it, and a program's own object answering
+that Symbol is a pattern. Testing for a RegExp object refused every such object, and
+`Symbol.matchAll` was not even minted.
+
+**What replaced it.** The five methods on `RegExp.prototype`, under their Symbols, and the five on
+`String.prototype` dispatching through `GetMethod` in the specification's order — a nullish pattern
+is not asked at all, so `"null".replace(null, "X")` still replaces the text; a Symbol that is present
+and not callable is a `TypeError` rather than a fall-through.
+
+**What is still not done is now stated precisely rather than by a sentence that had rotted.** The
+five methods on `RegExp.prototype` run the matcher directly instead of reading the receiver's own
+`exec`, so a subclass overriding `exec` changes what `re.exec(s)` answers and not what
+`s.match(re)` answers. That is worth about 170 variants of `built-ins/RegExp` and is a separate
+piece of work.
+
+**One crash was found in the same sweep.** `String.fromCodePoint(0xD800)` ended the invocation as
+`ProfileFault/ProfileContractViolation`: the platform's converter encodes SCALAR values and refuses
+a surrogate, and the exception it raises is not a JavaScript error. The language says a surrogate
+code point is a legal argument and one code unit — the same thing `fromCharCode` answers — and
+twenty-four variants of the suite build strings that way.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the sweeps of
+`test/built-ins/String` and `test/built-ins/RegExp`, and the thirty cases appended to
+`src/tests/differential/the-json-date-and-regexp-surface.js`. 2026-09-05.
+
+### JSC-130
+
+**Where:** [JSC-105](#jsc-105), which recorded that the Unicode character database is an open
+external dependency and that what it is needed for is *case folding, normalisation and the property
+escapes in a pattern*. That entry named the dependency; this one prices it.
+
+**Measured, on the pinned suite.** `test/built-ins/RegExp` scores 1,660 of 3,743 variants. Of the
+2,070 that fail:
+
+- **1,170 are property escapes** — `\p{…}`. The generated tests are 442 files: **350 name a Script
+  or a Script_Extensions**, 54 name a binary property, and 38 name a General_Category. The platform
+  this component runs on publishes General_Category and nothing else, so **the 38 are reachable
+  without acquiring anything and the other 404 are not**.
+- **302 are the `v` flag** and the set notation it brings, which is a feature rather than a data
+  gap.
+- **124 are inline modifiers** — `(?i:…)` — likewise.
+
+**What that says about the dependency.** Acquiring the UCD would move about a thousand variants of
+one subtree, and nothing else in the suite is waiting on it except normalisation *(JSC-91)* and case
+folding. It is the largest single conformance figure attributable to one unmade decision, and the
+decision is a licensing and provenance one that the ledger's
+[section 3](roadmap.status.md#3-open-external-dependencies) records as a human action rather than a
+piece of work anybody here can do.
+
+**Authority and date.** The sweep of `test/built-ins/RegExp` on 2026-09-05 in this checkout, and the
+file counts under `test/built-ins/RegExp/property-escapes/generated`. 2026-09-05.

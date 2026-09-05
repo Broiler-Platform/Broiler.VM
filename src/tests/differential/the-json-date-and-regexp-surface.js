@@ -198,3 +198,36 @@ p(function(){ var s = "a\uD800b"; return s.length + "," + s.charCodeAt(1).toStri
 p(function(){ return JSON.stringify("\uD800"); });
 p(function(){ return String.fromCharCode(0xD800).charCodeAt(0).toString(16); });
 p(function(){ var o = {}; o["\uD800"] = 1; return Object.keys(o)[0].charCodeAt(0).toString(16); });
+
+// --- the pattern protocol: the five Symbols a String method dispatches through, and the five
+// methods `RegExp.prototype` answers them with. APPENDED for the reason the numbering asks.
+p(function(){ return "abc".match(/b/)[0]; });
+p(function(){ return "aaa".match(/a/g).join(); });
+p(function(){ return "abc".search(/c/); });
+p(function(){ return "abc".replace(/b/, "X"); });
+p(function(){ return "a1b".split(/\d/).join("|"); });
+p(function(){ return [..."a1b2".matchAll(/\d/g)].map(function(m){return m[0];}).join(); });
+p(function(){ var o = {}; o[Symbol.match] = function(s){ return "custom:" + s; }; return "abc".match(o); });
+p(function(){ var o = {}; o[Symbol.search] = function(s){ return 42; }; return "abc".search(o); });
+p(function(){ var o = {}; o[Symbol.replace] = function(s, r){ return s + "|" + r; }; return "abc".replace(o, "R"); });
+p(function(){ var o = {}; o[Symbol.split] = function(s, l){ return [s, l]; }; return "abc".split(o, 3).join(","); });
+p(function(){ var o = {}; o[Symbol.matchAll] = function(s){ return "iter:" + s; }; return "abc".matchAll(o); });
+p(function(){ var o = {}; o[Symbol.match] = 5; try { "abc".match(o); return "no-throw"; } catch(e){ return e.name; } });
+p(function(){ var o = {}; o[Symbol.match] = null; return String("abc".match(o)); });
+p(function(){ return String("abc".match(null)); });
+p(function(){ return "null".replace(null, "X"); });
+p(function(){ return typeof RegExp.prototype[Symbol.match] + typeof RegExp.prototype[Symbol.replace] + typeof RegExp.prototype[Symbol.split] + typeof RegExp.prototype[Symbol.search] + typeof RegExp.prototype[Symbol.matchAll]; });
+p(function(){ return RegExp.prototype[Symbol.match].name + "," + RegExp.prototype[Symbol.replace].length; });
+p(function(){ try { RegExp.prototype[Symbol.match].call({}, "a"); return "no-throw"; } catch(e){ return e.name; } });
+p(function(){ return /b/[Symbol.match]("abc")[0]; });
+p(function(){ return /b/[Symbol.replace]("abc", "Z"); });
+p(function(){ return /\d/[Symbol.split]("a1b").join("|"); });
+p(function(){ return /c/[Symbol.search]("abc"); });
+p(function(){ return typeof Symbol.matchAll; });
+p(function(){ var calls = []; var o = { get [Symbol.replace](){ calls.push("get"); return function(){ return "R"; }; } }; var r = "x".replace(o, "y"); return r + calls.join(); });
+p(function(){ return "aXbXc".replace(/X/g, function(m, off){ return off; }); });
+p(function(){ return "abc".replace("b", function(m){ return m.toUpperCase(); }); });
+p(function(){ return String.fromCodePoint(0xD800).length + "," + String.fromCodePoint(0xD800).charCodeAt(0).toString(16); });
+p(function(){ var s = String.fromCodePoint(0xDC00) + String.fromCodePoint(0xDC01); return s.length + "," + /^\D+$/u.test(s); });
+p(function(){ return String.fromCodePoint(0x10000).length + "," + String.fromCodePoint(0x10000).codePointAt(0).toString(16); });
+p(function(){ try { String.fromCodePoint(0x110000); return "no-throw"; } catch(e){ return e.name; } });

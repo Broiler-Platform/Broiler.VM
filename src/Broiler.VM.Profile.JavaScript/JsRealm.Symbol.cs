@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   10
 // Annotated:        10/10
-// Exempt:           18
+// Exempt:           19
 // Human-reviewed:   0/10
 // IP risk:          Low
 // Security risk:    Medium
@@ -122,6 +122,11 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     internal JsSymbol SplitSymbol { get; } = new("Symbol.split", described: true);
 
+    /// <summary>The Symbol <c>String.prototype.matchAll</c> dispatches through.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1AAACF
+    // Broiler-Human:        PENDING
+    internal JsSymbol MatchAllSymbol { get; } = new("Symbol.matchAll", described: true);
+
     /// <summary>The prototype every built-in iterator this realm makes inherits from.</summary>
     /// <remarks>
     /// It carries the one member <c>%IteratorPrototype%</c> has to have: a
@@ -139,7 +144,7 @@ internal sealed partial class JsRealm
         new(System.StringComparer.Ordinal);
 
     /// <summary>Builds the <c>Symbol</c> intrinsic and the iterators the realm's own types need.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=084B79
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7896D4
     // Broiler-Human:        PENDING
     private void SetupSymbol()
     {
@@ -182,6 +187,7 @@ internal sealed partial class JsRealm
         constructor.DefineFrozen("replace", JsValue.Symbol(ReplaceSymbol));
         constructor.DefineFrozen("search", JsValue.Symbol(SearchSymbol));
         constructor.DefineFrozen("split", JsValue.Symbol(SplitSymbol));
+        constructor.DefineFrozen("matchAll", JsValue.Symbol(MatchAllSymbol));
 
         Method(constructor, "for", 1, static (engine, thisValue, arguments) =>
         {
