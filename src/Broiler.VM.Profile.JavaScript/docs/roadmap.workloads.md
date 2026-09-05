@@ -159,6 +159,16 @@ something was relying on. So each such stage carries the same clause: the family
 *refused by name* to *admitted and exercised*, and no family moves to *refused as an unexpected
 token* on the way.
 
+**And admitting a family CREATES positions the audit has never seen.** That is the clause a reader
+is most likely to skip and the one that has cost most. A class field initialiser and a class static
+block did not exist as syntactic positions until the class body was admitted; an async generator
+written in either was refused for the enclosing construct and never reached on its own, so a family
+that answered correctly everywhere the audit looked could answer with a surprise token in a position
+the audit had no row for. The audit is therefore re-run over a MATRIX rather than a list, in both
+directions — every position a refused family can be written in, and every position an admitted one
+can — and it is retained as `eng/audit-refusals.py` so that a later stage runs the same question
+rather than a remembered version of it.
+
 ### 3.4 The two failures that are defects rather than absences
 
 **`pdfjs` is refused by this component's own verifier, on bytes this component's own lowering
@@ -311,6 +321,28 @@ the act that would turn a stage into a milestone with a ledger row.
   for the family, since that audit is what caught a refusal that produced the right outcome for the
   wrong reason. `unsupported` shrinks for the manifest claiming the family, with the subtree runs
   that show it retained whole, failures included.
+- **What the stage has admitted, family by family.** The class DECLARATION and EXPRESSION, `super`
+  and `new.target`; the generator family; the `async` family and `await`; `with`; and, on
+  2026-09-05, the whole of the class BODY — a class field with its initialiser, a class static
+  block, a private name in every form the grammar gives it (a field, a method, a getter, a setter,
+  each of those `static` as well, `this.#x`, `o.#x`, `o?.#x`, `#x in o`, and a private access as a
+  destructuring target), and a generator member of a class body. Each is exercised by fixtures under
+  `src/tests/cli/runs` and by cases in the retained differential probe, whose answers were taken from
+  the comparison engine before they were written down.
+- **What it has NOT admitted, and why that is a refusal rather than a gap in this record.** The
+  ASYNC GENERATOR — `async function*`, and an async generator method of a class body or an object
+  literal — together with `for await`, which is the loop that consumes one. They stay refused by
+  name, with their own construct in the diagnostic, in every position the audit can write them in,
+  including the two the class body newly opened. **An async generator is not the two families it is
+  spelled from.** It needs a request queue on the generator object so that a second `next` before the
+  first settles is queued rather than re-entering a running frame, a `next` that answers a promise,
+  `%AsyncGeneratorFunction%` and `%AsyncGeneratorPrototype%`, `Symbol.asyncIterator` reaching them,
+  and the wrapping of a synchronous iterator that `for await` performs — none of which the generator
+  family or the `async` family already carries. **A family half-admitted is worse than a family
+  refused**, which is what the per-family gate above exists to say, so it is left whole for a stage
+  that can finish it.
+- **The decorator stays refused as well**, and it is not this stage's to admit: it is a proposal
+  rather than a production of the pinned edition, and the tokenizer refuses it by name at the `@`.
 
 ### JSW-6 — The core library still absent from the realm
 

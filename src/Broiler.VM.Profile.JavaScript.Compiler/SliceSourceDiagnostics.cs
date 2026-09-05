@@ -97,6 +97,15 @@ public enum SliceSourceDiagnosticCode
     // ---- 2200: static semantics ------------------------------------------------------------
 
     /// <summary>One scope declares a lexical name twice.</summary>
+    /// <remarks>
+    /// <b>A CLASS BODY is a scope of this kind and its element names are declarations in it</b>,
+    /// which is the second thing this code answers for and the one a reader would not guess. A
+    /// private name is a lexical binding of the class's own scope in this front end - that is how
+    /// a method captures one - so two <c>#x</c> in one body are two declarations of one name; and
+    /// <c>constructor</c> and <c>prototype</c> are declared by the class DEFINITION rather than by
+    /// its body, so a body element of either name is the second declaration of a name the
+    /// definition has already made. All four are the same fact and take the same code.
+    /// </remarks>
     DuplicateLexicalDeclaration = 2201,
 
     /// <summary>
@@ -117,12 +126,22 @@ public enum SliceSourceDiagnosticCode
     /// An identifier reference that resolves to no binding, in a manifest with no global object.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// <b>This is a deliberate divergence and is recorded as one.</b> In the language a free name
     /// is a runtime <c>ReferenceError</c>, because it might be a property of the global object.
     /// <c>broiler.javascript.slice</c> declares no global object and no property access at all, so
     /// a free name can never resolve at run time either and deferring the answer would only move
     /// the same refusal later. It becomes a language-conformance exclusion the moment the manifest
     /// grows a global, and the decision record says so.
+    /// </para>
+    /// <para>
+    /// <b>A PRIVATE NAME no enclosing class declares is the same fact where the manifest DOES have
+    /// a global object</b>, and it is the case that makes the paragraph above general rather than
+    /// slice-specific. There is no global object of private names and there could not be: a private
+    /// name is minted by the class evaluation that declares it, so a spelling no enclosing class
+    /// declares names nothing that was ever created and can no more resolve at run time than at
+    /// compile time. The language says the same thing by making it a Syntax Error.
+    /// </para>
     /// </remarks>
     UnresolvableIdentifier = 2206,
 

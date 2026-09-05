@@ -481,9 +481,12 @@ public static class JavaScriptProfile
         // took the per-call cost from 3,158 bytes to 3,463 and the capacity from 21,246 calls to
         // 19,377; admitting `async`, `await` and `with` took it to 3,736 bytes and 17,963 calls,
         // which is still more than twice this row - so the ordering the row exists to guarantee
-        // still holds. The last two families were measured apart, at 18,277 and 19,288 calls, and
-        // the figure here is the one measured on a build carrying both, because a per-frame cost
-        // belongs to the whole dispatch loop rather than to a family.
+        // still holds. Those families were measured apart, at 18,277 and 19,288 calls, and
+        // the figure here is the one measured on a build carrying all of them, because a per-frame
+        // cost belongs to the whole dispatch loop rather than to a family. Admitting the CLASS BODY
+        // - fields, static blocks, private names and a generator member - took it to 4,073 bytes
+        // and 16,478 calls, which is 2.01 times this row: the ordering the row exists to guarantee
+        // still holds, and the margin is now the narrowest it has been *(JSC-125)*.
         values[(int)VmBudgetDimension.CallDepth] = 8_192;
         values[(int)VmBudgetDimension.VerifierWork] = 1_099_511_627_776;
         values[(int)VmBudgetDimension.ArtifactBytes] = 536_870_912;

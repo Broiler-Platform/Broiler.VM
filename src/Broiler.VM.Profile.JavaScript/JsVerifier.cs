@@ -1476,6 +1476,26 @@ internal sealed class JsVerifier
                             JavaScriptDiagnosticCode.ConstantIndexOutOfRange,
                             (ulong)offset);
 
+                // A PRIVATE NAME'S CONSTANT IS ITS DESCRIPTION AND NOTHING READS IT AS A KEY, but it
+                // is checked as a name anyway: a Number constant there would be a description no
+                // diagnostic could print, and the check costs one comparison at verification time
+                // rather than a surprise at the first `TypeError` a private access reports.
+                case JsOpcode.NewPrivateName:
+                    if (operand >= state.Constants!.Length)
+                    {
+                        return Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.ConstantIndexOutOfRange,
+                            (ulong)offset);
+                    }
+
+                    return NamesAName(operand)
+                        ? Ok
+                        : Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.ConstantIndexOutOfRange,
+                            (ulong)offset);
+
                 case JsOpcode.Closure:
                     return operand < units.Length
                         ? Ok
@@ -1540,6 +1560,35 @@ internal sealed class JsVerifier
                             VmReason.UnknownFeature,
                             JavaScriptDiagnosticCode.UnknownOpcode,
                             (ulong)offset);
+
+                // A CLASS ELEMENT'S FLAGS ARE A SET WITH RULES BETWEEN ITS MEMBERS, and the rules
+                // are checked rather than resolved. Each of the three pairs below names a bit
+                // combination the executor has no behaviour for, and letting one through would mean
+                // choosing an arm at run time for an encoding nothing agreed on: a static block
+                // that lands on an instance has no `this` to run against; a getter that is also a
+                // setter is one function asked to be two; and a public element reaching this
+                // instruction at all is one `DefineMethod` should have defined, since only a
+                // private element and a field are recorded rather than defined.
+                case JsOpcode.DefineClassElement:
+                {
+                    var block = (operand & JsOpcodes.ElementIsBlock) != 0;
+                    var accessor = operand & (JsOpcodes.ElementIsGetter | JsOpcodes.ElementIsSetter);
+                    var method = (operand & JsOpcodes.ElementIsMethod) != 0;
+                    var isPrivate = (operand & JsOpcodes.ElementIsPrivate) != 0;
+
+                    var consistent = operand <= JsOpcodes.ElementBits &&
+                        accessor != (JsOpcodes.ElementIsGetter | JsOpcodes.ElementIsSetter) &&
+                        (!block || operand == (JsOpcodes.ElementIsBlock | JsOpcodes.ElementIsStatic)) &&
+                        (accessor == 0 || (method && isPrivate)) &&
+                        (!method || isPrivate);
+
+                    return consistent
+                        ? Ok
+                        : Invalid(
+                            VmReason.InconsistentStructure,
+                            JavaScriptDiagnosticCode.ClassElementFlagsInconsistent,
+                            (ulong)offset);
+                }
 
                 // A member is a getter, or a setter, or neither - never both. Resolving the pair
                 // by precedence would give one encoding two readings.

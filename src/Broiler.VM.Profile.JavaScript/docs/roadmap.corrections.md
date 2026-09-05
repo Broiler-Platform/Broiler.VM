@@ -4489,3 +4489,160 @@ beside the bound in `JsEngine.MaximumCallDepth`, in `JavaScriptProfile`'s maxima
 `eng/measure-frame-cost.py` performs — one against the published binary, one against a build with the
 engine's bound and the profile's call-depth maximum lifted, which is what reports the capacity rather
 than the promise. 2026-09-04.
+
+### JSC-121
+
+**Where:** `JsParser.ParseClassMember`, the arm that reads an `async` modifier in a class body, and
+`JsCompiler.FindConstructor`, which decides which member is the class's own constructor.
+
+**What was assumed.** That a member named `constructor` is the class's constructor, and that the
+question is answered by three things: that the member is not static, that its key is not computed,
+and that the key is the string `constructor`. The `async` arm was written to the same shape as the
+ordinary method arm and produced a member of kind `Method`, so it satisfied all three.
+
+**What was true.** The language settles this on a fourth thing the check did not ask: whether the
+member is a SPECIAL method. `class C { async constructor() { } }` is a Syntax Error, and so are
+`get constructor`, `set constructor` and `*constructor`. This front end accepted all four. The
+`async` one is the worst of them, because it did not merely accept a member the language refuses — it
+made that member the CLASS CONSTRUCTOR and compiled it with `ClassConstructor`, `Constructible` and
+`Async` at once, and the constructible bit is dropped from an async unit. So
+`class C { async constructor(){} }` compiled, and `new C()` answered
+`TypeError: function is not a constructor` — a run-time refusal, naming nothing the source wrote,
+for a program the front end owed a Syntax Error.
+
+**What that cost, measured.** The four shapes are reachable from three characters of source, and the
+outcome was an error about a function where the language says an error about a class. In the pinned
+suite's `test/language/statements/class` subtree the `definition` directory contributed **10** of the
+parse-phase failures before the repair, and the early-error rows under `elements/syntax/early-errors`
+another **36**.
+
+**What replaced it.** `ValidateClassBody`, run over the parsed member list, refuses a non-static
+non-computed `constructor` that is anything but a plain method, refuses a static member named
+`prototype`, and refuses a private name declared twice. `FindConstructor` additionally asks that the
+member is not private, so `#constructor` cannot become one either. The code is
+`2201:DuplicateLexicalDeclaration` in each case, because each is the second declaration of a name
+something has already declared — the class definition's own for `constructor` and `prototype`, the
+body's own for a repeated private name.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the comparison engine at
+`/opt/node22/bin/node` — which answers `SyntaxError: Class constructor may not be an async method`
+for the first shape and `SyntaxError` for the other three — and the differential probe's cases 241
+and 242, taken from that engine before they were written down. 2026-09-05.
+
+### JSC-122
+
+**Where:** `JsEngine.Evaluate`, the arm that answers when the artifact provider does not supply a
+program.
+
+**What was assumed.** That every way a guest-initiated load can fail is this host's own plumbing, so
+one `EvalError` naming the outcome and the reason serves them all.
+
+**What was true.** One of those ways is not plumbing at all. The mediator answers `ProviderRefused`
+when the provider it asked declined, and the only providers this profile's compositions register are
+source compilers — so `ProviderRefused` means *the front end refused the source*, which is the one
+case the language has its own answer for: `eval` of text that is not a program throws a
+**`SyntaxError`**. Programs test for it, and a conformance case that writes
+`assert.throws(SyntaxError, function () { eval(src); })` is asking about the language rather than
+about this host's load path.
+
+**What that cost, measured.** In `test/language/statements/class` alone, **136 variants** failed with
+`Expected a SyntaxError but got a EvalError` — every one of them a case whose subject this host
+answers correctly and whose verdict was decided by the wrapper around the answer. The subtree's
+failures fell from **998 to 926** when this was repaired. The difference that remains is the cases
+that use a DIRECT `eval`, which this profile refuses for a reason of its own that is published and
+which is not this defect.
+
+**What replaced it.** `ProviderRefused` is tested before the outcome and answered with
+`ThrowSyntaxError`. Every other way a load can fail — no provider registered, a budget exhausted, the
+mediator out of scope, a foreign artifact, no entry point — keeps the `EvalError` it had, because
+each of those really is this host's plumbing and none of them is a statement about the source.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the two sweeps of
+`test/language/statements/class` that bracket it, and the differential probe's cases 234 to 244 —
+the eleven that disagreed with the comparison engine before the repair and agree after it.
+2026-09-05.
+
+### JSC-123
+
+**Where:** `JsParser.ParseClassMember`, the arm that decides whether `get` and `set` are modifiers.
+
+**What was assumed.** That `get` and `set` are member names rather than modifiers exactly when the
+token after them ends a member name — `(`, `=`, `;` or `}` — which is what `IsMemberNameEnd` lists.
+
+**What was true.** There is a fifth token that makes them names, and it is not an ending: `*`.
+`class C { get` / newline / `*a(){} }` declares a FIELD called `get` and then a generator method
+called `a`, because `get` is a modifier only before a *PropertyName* and `*` is not one. With `*`
+absent from the list the parser read `get` as an accessor modifier, took `*` as the key, and reported
+that a class element with a `get` modifier needs a parameter list — a diagnostic about a construct
+the source did not write.
+
+**What that cost, measured.** **Four variants** of the pinned suite's
+`elements/syntax/valid/grammar-field-named-get-followed-by-generator-asi.js` and its `set` twin, each
+of which is a VALID program this front end refused. It was reachable only once class fields were
+admitted, because without them `get` alone was refused as a field before the `*` was reached.
+
+**What replaced it.** The `get`/`set` arm additionally requires that the next token is not `*`.
+`static` and `async` are deliberately unchanged: `static *m(){}` is a static generator and
+`async *m(){}` is an async generator, so for those two the `*` keeps them modifiers.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout and the two suite sweeps
+that bracket it. 2026-09-05.
+
+### JSC-124
+
+**Where:** `SliceSourcePrograms.Refused`, the row `refuse-an-unexpected-character`, and through it the
+retained source corpus and the registry's reachability claim for code `2001`.
+
+**What was assumed.** That `1 @ 2` is a source refused for an unexpected character, and that the
+registry row
+`2001|UnexpectedCharacter|embedder-seam|-|tokenizer|source|refuse-an-unexpected-character` therefore
+names a case that produces the code.
+
+**What was true.** Since commit `b6bda26` — the bundle that admitted class declarations — the
+tokenizer refuses `@` **by name, as a decorator**, with `2104:ConstructOutsideManifest`. That was the
+right change and it is documented where it was made; what nobody re-ran was the check that depends on
+it. So the retained manifest recorded a code the front end had stopped producing for that source, and
+the registry claimed a reachability code `2001` no longer had.
+
+**What that cost, measured.** **One of the sixteen** checks
+`Broiler.VM.Composition.JavaScript.SliceCompiler --checks` performs was failing, and had been since
+that commit: `every source the manifest excludes is refused by name: refuse-an-unexpected-character:
+wanted UnexpectedCharacter, got ConstructOutsideManifest`. It is not one of the gates the workload
+stages run, which is how it survived. Rule N7 was green throughout, because N7 reads the manifest
+rather than re-running the front end — so the rule that exists to keep the registry honest could not
+see the one thing that had made it dishonest.
+
+**What replaced it.** The source is `1 ¡ 2`. An inverted exclamation mark is not an identifier start,
+begins no token either grammar defines, and — unlike `@` — is not a character any proposal is going to
+give a meaning to, which is the property the row needs and `@` never had. The corpus was regenerated
+and all sixteen checks pass.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout and
+`Broiler.VM.Composition.JavaScript.SliceCompiler --checks`, run before and after. 2026-09-05.
+
+### JSC-125
+
+**Where:** [JSC-101](#jsc-101), which measures the per-frame cost of the executor's dispatch loop and
+derives the call-depth bound from it, re-taken for the fifth time.
+
+**What the measurement says now.** Admitting the class body adds six arms to the dispatch loop —
+`DefineClassElement`, `RunStaticElements`, `NewPrivateName`, `LoadPrivate`, `StorePrivate` and
+`HasPrivate` — and the executor's own frame grew from **3,736 bytes to 4,073**. The
+sixty-four-megabyte guest stack holds **16,478** calls where it held 17,963, against an engine bound
+of 6,000 and a call-depth maximum a host may be granted of 8,192. That is **2.75** times the bound and
+**2.01** times the ceiling, so nothing had to move. The returning and throwing depths agree exactly,
+at 16,478 apiece, which is the property [JSC-97](#jsc-97) established and this measurement
+re-confirms.
+
+**It is recorded even though nothing moved, and the narrowing is why.** JSC-101's finding was that a
+bound derived from a measurement goes stale silently. This is the first re-measurement where the
+factor against the ceiling a host may be granted reached two: one more family of this size takes it
+under, and at that point either the stack is re-declared or the ceiling is. Saying so now is cheaper
+than discovering it from a terminated process. The figures are recorded beside the bound in
+`JsEngine.MaximumCallDepth`, in `JavaScriptProfile`'s maxima and in `JsExecution.GuestStackBytes`.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout and the two bisections
+`eng/measure-frame-cost.py` performs — one against the published binary, which reports both depths
+stopped by the declared bound, and one against a build with `JsEngine.MaximumCallDepth` and both of
+the profile's call-depth maxima lifted to 400,000, which is what reports the capacity rather than the
+promise. 2026-09-05.

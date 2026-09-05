@@ -280,6 +280,20 @@ public enum JavaScriptDiagnosticCode
     /// </remarks>
     AsyncFlagsInconsistent = 1612,
 
+    /// <summary>
+    /// A <c>DefineClassElement</c> operand carries a bit set the instruction has no reading for.
+    /// </summary>
+    /// <remarks>
+    /// <b>It is a code of its own rather than a second use of <see cref="UnknownOpcode"/></b>,
+    /// because every bit in the operand IS defined by this format version: what is wrong is the
+    /// combination, and an author told "unknown feature" would go looking for a version of the
+    /// format that has one. A static block that is not static, a getter that is also a setter, and
+    /// a public element on an instruction that only records private ones are the three shapes it
+    /// answers for, and each is an encoding the executor would otherwise have to pick an arm for by
+    /// precedence.
+    /// </remarks>
+    ClassElementFlagsInconsistent = 1621,
+
     // ---- 1900: the bounded reader's own statuses, mapped -----------------------------------
 
     /// <summary>The payload ended inside a value the reader was part-way through.</summary>

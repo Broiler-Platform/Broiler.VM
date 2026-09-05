@@ -292,6 +292,21 @@ internal sealed class JsEngine
 
         var loaded = Loader.RequestLoad(in request);
 
+        // A PROVIDER REFUSAL IS A `SyntaxError` AND NOT AN `EvalError`, and the two are different
+        // answers to different questions. `ProviderRefused` is what the mediator reports when the
+        // provider it asked answered "this is not a program I will supply" - which, for the only
+        // providers this profile's compositions register, means the front end refused the SOURCE.
+        // The language says `eval` of source that is not a program throws a `SyntaxError`, and
+        // programs test for it: a conformance case that asserts `assert.throws(SyntaxError, ...)`
+        // over an evaluated string is checking the language and not this host's plumbing, and an
+        // `EvalError` there failed a case whose subject this host answers correctly. Every OTHER
+        // way a load can fail - no provider registered, a budget exhausted, the mediator out of
+        // scope, a foreign artifact - is this host's own plumbing and keeps the `EvalError` it had.
+        if (loaded.Reason == VmReason.ProviderRefused)
+        {
+            return ThrowSyntaxError("the evaluated source is not a program this profile admits");
+        }
+
         if (loaded.Outcome != VmOutcome.Normal || !loaded.TryGetArtifact(out var artifact))
         {
             throw Error(
@@ -414,7 +429,11 @@ internal sealed class JsEngine
     /// figures describes the build that ships both: a per-frame cost is a property of the whole
     /// dispatch loop, so it is measured on the tree that has everything in it. The measurement
     /// was re-taken each time anyway, because a bound that is safe by arithmetic nobody re-did is a
-    /// bound nobody knows is safe.
+    /// bound nobody knows is safe. Admitting the CLASS BODY - fields, static blocks, private names
+    /// and a generator member - added six arms and grew it once more, from 3,736 bytes to
+    /// <b>4,073</b>, and the capacity fell from 17,963 calls to <b>16,478</b>: 2.75 times this
+    /// bound and 2.01 times the ceiling a host may be granted, so nothing had to move
+    /// <i>(JSC-125)</i>.
     /// </para>
     /// <para>
     /// <b>An <c>await</c>'s resumption does NOT stack, which is the one thing about this family
@@ -1333,6 +1352,294 @@ internal sealed class JsEngine
         return constructor;
     }
 
+    /// <summary>Records one class element on the constructor for later application.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The home object is given here and not when the element is applied</b>, because it is a
+    /// property of the FUNCTION and the function is created once. A field initialiser's
+    /// <c>super.x</c> reads through the class prototype for every instance, not through whatever
+    /// object the initialiser happened to run against.
+    /// </para>
+    /// <para>
+    /// <b>A second half of an accessor merges rather than appending</b>, and it merges only into an
+    /// element of the same name in the same list. <c>get #a</c> and <c>set #a</c> declare one
+    /// private name; two records would install two elements under one name and the second would
+    /// hide the first.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void RecordClassElement(
+        JsScriptFunction target, JsObject prototype, JsValue key, JsValue body, byte flags)
+    {
+        Charge(4);
+        var isStatic = (flags & JsOpcodes.ElementIsStatic) != 0;
+
+        if (body.IsObject && body.AsObject() is JsScriptFunction bodied)
+        {
+            bodied.HomeObject = isStatic ? target : prototype;
+        }
+
+        var list = isStatic
+            ? target.StaticElements ??= []
+            : target.InstanceElements ??= [];
+
+        if ((flags & JsOpcodes.ElementIsSetter) != 0)
+        {
+            foreach (var standing in list)
+            {
+                if (standing.Key.IsSymbol && key.IsSymbol &&
+                    ReferenceEquals(standing.Key.AsSymbol(), key.AsSymbol()))
+                {
+                    standing.Setter = body;
+                    standing.Flags |= JsOpcodes.ElementIsSetter;
+                    return;
+                }
+            }
+
+            list.Add(
+                new JsClassElement { Key = key, Body = JsValue.Undefined, Setter = body, Flags = flags });
+
+            return;
+        }
+
+        if ((flags & JsOpcodes.ElementIsGetter) != 0)
+        {
+            foreach (var standing in list)
+            {
+                if (standing.Key.IsSymbol && key.IsSymbol &&
+                    ReferenceEquals(standing.Key.AsSymbol(), key.AsSymbol()))
+                {
+                    standing.Body = body;
+                    standing.Flags |= JsOpcodes.ElementIsGetter;
+                    return;
+                }
+            }
+        }
+
+        list.Add(new JsClassElement { Key = key, Body = body, Setter = JsValue.Undefined, Flags = flags });
+    }
+
+    /// <summary>Runs the elements a class body recorded against the constructor itself.</summary>
+    /// <remarks>
+    /// <b>The private methods go on in a pass of their own, before anything runs.</b> A static
+    /// field's initialiser and a static block may both call a private static method, and the class
+    /// body is entitled to write the method after them - <c>class C { static a = C.#m(); static
+    /// #m() { return 1 } }</c> is an ordinary program. One pass in source order would have made
+    /// that a <c>TypeError</c> about a method the class does have.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void RunStaticElements(JsScriptFunction target)
+    {
+        if (target.StaticElements is not { } elements)
+        {
+            return;
+        }
+
+        ApplyClassElements(target, elements, methods: true);
+        ApplyClassElements(target, elements, methods: false);
+    }
+
+    /// <summary>Gives one new instance the elements its class recorded.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void InitialiseInstanceElements(JsObject instance, JsScriptFunction constructor)
+    {
+        if (constructor.InstanceElements is not { } elements)
+        {
+            return;
+        }
+
+        ApplyClassElements(instance, elements, methods: true);
+        ApplyClassElements(instance, elements, methods: false);
+    }
+
+    /// <summary>Applies one pass of a recorded element list to one object.</summary>
+    /// <remarks>
+    /// <b>A field's initialiser is CALLED and a method is not</b>, which is the whole of what the
+    /// method bit decides here. The receiver of the call is the object being given the element, so
+    /// <c>class C { x = this.y }</c> reads the instance and <c>class C { static x = this.name }</c>
+    /// reads the constructor - one rule, two objects, decided by which list the element was in.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void ApplyClassElements(
+        JsObject target,
+        System.Collections.Generic.List<JsClassElement> elements,
+        bool methods)
+    {
+        var receiver = JsValue.Object(target);
+
+        foreach (var element in elements)
+        {
+            var isMethod = (element.Flags & JsOpcodes.ElementIsMethod) != 0;
+
+            if (isMethod != methods)
+            {
+                continue;
+            }
+
+            Charge(4);
+
+            if (isMethod)
+            {
+                target.SetPrivate(element.Key.AsSymbol(), PrivateElementOf(element));
+                continue;
+            }
+
+            if ((element.Flags & JsOpcodes.ElementIsBlock) != 0)
+            {
+                Call(element.Body, receiver, System.Array.Empty<JsValue>());
+                continue;
+            }
+
+            var value = element.Body.Type == JsType.Undefined
+                ? JsValue.Undefined
+                : Call(element.Body, receiver, System.Array.Empty<JsValue>());
+
+            if ((element.Flags & JsOpcodes.ElementIsPrivate) != 0)
+            {
+                var name = element.Key.AsSymbol();
+
+                // A FIELD DECLARED TWICE ON ONE OBJECT IS A TypeError AND NOT A SECOND WRITE. It is
+                // reachable without a duplicate in the source: `class C { #x = 1 }` whose
+                // constructor returns an object it has already constructed would install `#x` on it
+                // twice, and the language says the second attempt fails.
+                if (target.HasPrivate(name))
+                {
+                    ThrowTypeError(
+                        "Cannot initialize " + name.Description + " twice on the same object");
+                }
+
+                target.SetPrivate(
+                    name, JsProperty.Data(value, JsPropertyAttributes.Writable));
+
+                continue;
+            }
+
+            if (element.Key.IsSymbol)
+            {
+                target.SetOwnSymbol(
+                    element.Key.AsSymbol(), JsProperty.Data(value, JsPropertyAttributes.Default));
+
+                continue;
+            }
+
+            // A FIELD IS CreateDataPropertyOrThrow AND NOT AN ASSIGNMENT, which is what makes a
+            // field shadow an inherited SETTER of the same name rather than calling it. An
+            // assignment would have run the setter and defined nothing.
+            DefineOwnDataProperty(target, ToPropertyKey(element.Key), value);
+        }
+    }
+
+    /// <summary>Defines one own data property, refusing where the object already refuses.</summary>
+    /// <remarks>
+    /// <b>It is <c>CreateDataPropertyOrThrow</c> and not <c>SetOwnProperty</c>.</b> A field lands
+    /// on an instance the class body has never seen frozen, so the refusal is rare - but it is
+    /// reachable: a derived constructor may return a frozen object, and a class whose fields then
+    /// fail to define must say so rather than produce an instance missing them.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void DefineOwnDataProperty(JsObject target, string key, JsValue value)
+    {
+        if (target.TryGetOwnProperty(key, out var standing)
+            ? !standing.Configurable
+            : !target.Extensible)
+        {
+            ThrowTypeError("Cannot define property " + key + ", object is not extensible");
+        }
+
+        target.SetOwnProperty(key, JsProperty.Data(value, JsPropertyAttributes.Default));
+    }
+
+    /// <summary>The private element one recorded method or accessor installs.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private static JsProperty PrivateElementOf(JsClassElement element)
+    {
+        var accessor = element.Flags & (JsOpcodes.ElementIsGetter | JsOpcodes.ElementIsSetter);
+
+        if (accessor == 0)
+        {
+            // NOT WRITABLE, which is what makes `this.#m = 1` a TypeError rather than a
+            // replacement of the class's own method on one instance.
+            return JsProperty.Data(element.Body, JsPropertyAttributes.None);
+        }
+
+        return JsProperty.Accessor(
+            element.Body.AsObjectOrNull(),
+            element.Setter.AsObjectOrNull(),
+            JsPropertyAttributes.None);
+    }
+
+    /// <summary>Reads one private element, or says why there is none to read.</summary>
+    /// <remarks>
+    /// <b>The refusal names the private name and not the object</b>, because the object is usually
+    /// the answer's subject rather than its cause: a method extracted from a class and called
+    /// against something else meets this, and so does a brand check written as a read. Both are
+    /// the same fact - this object was not constructed by the class that minted this name.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private JsValue ReadPrivate(JsValue host, JsSymbol name)
+    {
+        if (!host.IsObject || !host.AsObject().TryGetPrivate(name, out var element))
+        {
+            return ThrowTypeError(
+                "Cannot read private member " + name.Description +
+                " from an object whose class did not declare it");
+        }
+
+        if (!element.IsAccessor)
+        {
+            return element.Value;
+        }
+
+        // A WRITE-ONLY PRIVATE ACCESSOR IS A TypeError WHEN READ, and not `undefined`. `set #a` on
+        // its own declares a name with no getter, and the language refuses the read rather than
+        // answering the absence the way a property with no getter does.
+        return element.Getter is null
+            ? ThrowTypeError("'" + name.Description + "' was defined without a getter")
+            : Call(JsValue.Object(element.Getter), host, System.Array.Empty<JsValue>());
+    }
+
+    /// <summary>Writes one private element, or says why it cannot be written.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private void WritePrivate(JsValue host, JsSymbol name, JsValue value)
+    {
+        if (!host.IsObject || !host.AsObject().TryGetPrivate(name, out var element))
+        {
+            ThrowTypeError(
+                "Cannot write private member " + name.Description +
+                " to an object whose class did not declare it");
+
+            return;
+        }
+
+        if (element.IsAccessor)
+        {
+            if (element.Setter is null)
+            {
+                ThrowTypeError("'" + name.Description + "' was defined without a setter");
+                return;
+            }
+
+            Call(JsValue.Object(element.Setter), host, [value]);
+            return;
+        }
+
+        if (!element.Writable)
+        {
+            ThrowTypeError("Cannot write to private method " + name.Description);
+            return;
+        }
+
+        host.AsObject().SetPrivate(name, JsProperty.Data(value, JsPropertyAttributes.Writable));
+    }
+
     /// <summary>Runs a <c>super()</c>: constructs the superclass and binds the result as <c>this</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=93BF15
     // Broiler-Human:        PENDING
@@ -1367,6 +1674,16 @@ internal sealed class JsEngine
         }
 
         binding.Value = constructed;
+
+        // THE DERIVED CLASS'S OWN FIELDS GO ON HERE AND NOT IN ITS CONSTRUCTOR'S PROLOGUE. The
+        // object did not exist until this instant - the BASE constructor made it - so this is the
+        // first point at which a derived class has something to install its fields on, and it is
+        // also why a field initialiser may read `this` while the constructor's first line may not.
+        if (constructed.IsObject)
+        {
+            InitialiseInstanceElements(constructed.AsObject(), active);
+        }
+
         return constructed;
     }
 
@@ -1704,6 +2021,13 @@ internal sealed class JsEngine
 
             instance = new JsObject(
                 prototype.IsObject ? prototype.AsObject() : Realm.ObjectPrototype);
+
+            // THE FIELDS GO ON BEFORE THE BODY RUNS AND NOT AFTER IT, which is what makes
+            // `class C { x = 1; constructor() { this.x += 1 } }` produce a `2`. The specification
+            // puts this at the top of a BASE constructor's body evaluation; a derived one gets its
+            // own fields when `super()` returns, because until then it has no object to give them
+            // to.
+            InitialiseInstanceElements(instance, script);
         }
 
         var binding = new JsCell
@@ -3164,6 +3488,87 @@ internal sealed class JsEngine
                             var heritage = derived ? stack[--sp] : JsValue.Undefined;
                             stack[sp++] = BuildClass(constructor, derived, heritage);
                             pc += 2;
+                            break;
+                        }
+
+                        // THE PAIR UNDER THE KEY IS READ AND NOT POPPED, which is what lets a whole
+                        // class body run over the one constructor-and-prototype pair the lowering
+                        // loaded once. Which of the two is the home object is the static bit's
+                        // answer and nothing else's.
+                        case JsOpcode.DefineClassElement:
+                        {
+                            var elementFlags = code[pc + 1];
+                            var body = stack[--sp];
+                            var key = stack[--sp];
+
+                            RecordClassElement(
+                                (JsScriptFunction)stack[sp - 2].AsObject(),
+                                stack[sp - 1].AsObject(),
+                                key,
+                                body,
+                                elementFlags);
+
+                            pc += 2;
+                            break;
+                        }
+
+                        case JsOpcode.RunStaticElements:
+                            RunStaticElements((JsScriptFunction)stack[sp - 1].AsObject());
+                            pc++;
+                            break;
+
+                        case JsOpcode.NewPrivateName:
+                            Charge(2);
+
+                            stack[sp++] = JsValue.Symbol(
+                                new JsSymbol(program.Constants[U16(code, pc)].AsString(), described: true)
+                                {
+                                    IsPrivateName = true,
+                                });
+
+                            pc += 3;
+                            break;
+
+                        case JsOpcode.LoadPrivate:
+                        {
+                            var name = stack[--sp].AsSymbol();
+                            var host = stack[--sp];
+                            stack[sp++] = ReadPrivate(host, name);
+                            pc++;
+                            break;
+                        }
+
+                        case JsOpcode.StorePrivate:
+                        {
+                            var written = stack[--sp];
+                            var name = stack[--sp].AsSymbol();
+                            var host = stack[--sp];
+                            WritePrivate(host, name, written);
+                            stack[sp++] = written;
+                            pc++;
+                            break;
+                        }
+
+                        // A NON-OBJECT IS A TypeError AND NOT A `false`. The form exists to ask a
+                        // question `o.#x` would have thrown for, so answering `false` for a number
+                        // reads like the right answer - and it is the ORDINARY `in` operator's
+                        // answer that this follows instead: `"x" in 5` throws, and the private form
+                        // is the same operator with a name the grammar spells differently. The
+                        // opposite reading was written first and the comparison engine refused it.
+                        case JsOpcode.HasPrivate:
+                        {
+                            var name = stack[--sp].AsSymbol();
+                            var host = stack[--sp];
+
+                            if (!host.IsObject)
+                            {
+                                ThrowTypeError(
+                                    "Cannot use 'in' operator to search for '" + name.Description +
+                                    "' in " + Describe(host));
+                            }
+
+                            stack[sp++] = JsValue.Boolean(host.AsObject().HasPrivate(name));
+                            pc++;
                             break;
                         }
 
