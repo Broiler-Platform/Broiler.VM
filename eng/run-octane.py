@@ -25,10 +25,13 @@
 # `JS-10`'s, and roadmap section 17 governs any figure that is ever retained. What this answers is
 # the question section 1 asks: does the benchmark REPORT a score, or does it meet something.
 #
-#   python3 eng/run-octane.py [--binary-directory <dir>] [--only <name>]... [--fuel <n>]
-#                             [--wall <ms>] [--live-bytes <n>]
+#   python3 eng/run-octane.py [--binary-directory <dir>] [--only <name>]... [--skip <name>]...
+#                             [--fuel <n>] [--wall <ms>] [--live-bytes <n>]
 #
 # `--only` may be repeated and names a SELECTION; with none of them the fifteen in the pin all run.
+# `--skip` removes a benchmark from whatever that selection came to, and every run that uses one
+# NAMES it - once before anything runs and once in the summary - because a ratio over a shrunken
+# denominator reads exactly like a complete run. Skipping everything is refused.
 # Each benchmark's wall-clock duration is printed beside its exit code, because `--wall` is an
 # allowance a caller has to state and there was nothing to state one from.
 #
@@ -163,6 +166,14 @@ def main():
     # 23m28s of Octane on every publish cell of a lane that runs on every push. A name that is not
     # a benchmark is refused rather than silently running nothing.
     parser.add_argument("--only", action="append", default=None, metavar="NAME")
+
+    # `--skip` IS THE OTHER HALF, AND IT EXISTS FOR AN EXCLUSION SOMEBODY DECIDED. `--only` says
+    # what a caller wants to reach; this says what a caller has decided it cannot. They are not
+    # interchangeable: a selection that silently omitted a benchmark would read as a smaller
+    # question answered green, whereas a skip is NAMED in the summary line below every time it is
+    # used, so a run always says what it did not run. The lane's one use is `zlib` on `osx-x64`,
+    # where the benchmark meets the profile's own wall-clock ceiling - see JSC-183.
+    parser.add_argument("--skip", action="append", default=None, metavar="NAME")
     parser.add_argument("--fuel", type=int, default=1_000_000_000_000)
     parser.add_argument("--wall", type=int, default=3_600_000)
 
@@ -179,12 +190,21 @@ def main():
     # passes this selection through a shell, and a typo in one that ran what it could and said
     # nothing would report "3 of 3 benchmarks reported a score" over a selection missing the
     # fourth - a green step for a smaller question than the one it was asked.
-    unknown = [name for name in (arguments.only or []) if name not in BENCHMARKS]
+    named = (arguments.only or []) + (arguments.skip or [])
+    unknown = [name for name in named if name not in BENCHMARKS]
 
     if unknown:
         raise SystemExit(
             "# not a benchmark in the pin: " + ", ".join(unknown)
             + "\n# the fifteen are: " + ", ".join(BENCHMARKS))
+
+    # A SKIP THAT WOULD LEAVE NOTHING TO RUN IS REFUSED, because a run of no benchmarks reports
+    # "0 of 0 benchmarks reported a score and exited zero" and exits ZERO - a green step over a
+    # question nobody asked. An exclusion is a decision about one benchmark, never a way to turn
+    # the workload off.
+    if arguments.skip and not [
+            name for name in (arguments.only or BENCHMARKS) if name not in arguments.skip]:
+        raise SystemExit("# the skips leave no benchmark to run, which is not an exclusion")
 
     binary = pathlib.Path(arguments.binary_directory) / "Broiler.VM.Composition.JavaScript.Cli"
 
@@ -218,7 +238,15 @@ def main():
         print(f"# {fields['files']} files, content {fields['content-sha256']}")
         print(f"# judging {binary}")
 
-        wanted = arguments.only or BENCHMARKS
+        # THE SKIPS ARE PRINTED BEFORE ANYTHING RUNS, and that placement is the point: a reader who
+        # sees only the summary at the end still meets the exclusion at the top of the transcript,
+        # and a run that excluded something never looks like a run that did not.
+        skipped = [name for name in (arguments.only or BENCHMARKS) if name in (arguments.skip or [])]
+
+        for name in skipped:
+            print(f"# SKIPPED {name} - excluded by the caller, not attempted")
+
+        wanted = [name for name in (arguments.only or BENCHMARKS) if name not in skipped]
         scored = 0
         spent = 0.0
 
@@ -234,7 +262,13 @@ def main():
             if code == 0:
                 scored += 1
 
-        print(f"# {scored} of {len(wanted)} benchmarks reported a score and exited zero")
+        # THE SUMMARY NAMES WHAT WAS NOT RUN, every time. `scored of len(wanted)` is a ratio over
+        # what was attempted, and a ratio over a shrunken denominator reads exactly like a complete
+        # run - "14 of 14" and "14 of 15" are one keystroke apart and mean different things. So the
+        # excluded names are repeated here rather than left to the lines above.
+        print(f"# {scored} of {len(wanted)} benchmarks reported a score and exited zero"
+              + (f", {len(skipped)} excluded and not attempted: {', '.join(skipped)}"
+                 if skipped else ""))
         print(f"# {spent:.0f}s over {len(wanted)} benchmarks, "
               f"under a REQUESTED wall of {arguments.wall // 1000}s each")
         return 0 if scored == len(wanted) else 1

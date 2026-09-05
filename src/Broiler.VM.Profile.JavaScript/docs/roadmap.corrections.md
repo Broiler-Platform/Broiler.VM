@@ -7554,3 +7554,124 @@ which is further than either cell has ever reached.
 while `linux-x64`, `linux-arm64`, `osx-arm64` and `osx-x64` proceeded into it; and a local
 reproduction against a directory holding only `Broiler.VM.Composition.JavaScript.Cli.exe`, which
 the driver failed to resolve before the change and resolves after it. 2026-09-05.
+
+### JSC-182
+
+**Where:** [JSC-180](#jsc-180)'s extrapolation of what `zlib` would cost on a runner, the sentence
+in the lane step that carried it, and the JSW-10 bullet that said the answer was unknown.
+
+**What was assumed.** That a speed ratio measured on one benchmark bounds another. `zlib` met the
+profile's `WallClock` ceiling of 3,600s on the machine this branch was developed on — under the JIT
+build and again on the published Native AOT image — so no duration for it could be obtained there.
+What could be obtained was a ratio: `richards` scored **32.0** on that AOT image on that machine and
+**46.3** on `ubuntu-latest`. JSC-180 divided the ceiling by that 1.45 and concluded that a runner
+"needs somewhere **above forty-one minutes**" for `zlib`, offering it as a lower bound on the
+grounds that the numerator was itself a bound.
+
+**What was true.** The reasoning is sound only if the ratio transfers, and it does not. **`zlib`
+scores on a runner in 2,342 seconds — 39 minutes and 2 seconds — which is BELOW the stated lower
+bound.** The two benchmarks do not stress the same machinery, so `richards` measures nothing about
+`zlib`: the ratio `zlib` actually exhibits between that machine and `ubuntu-latest` is at least
+**1.54**, since the numerator is a bound rather than a figure. A one-benchmark ratio is an
+illustration and never a bound, and the entry should have said so.
+
+**What the run measured, and it is not one answer.** The first full lane, dispatched deliberately
+on 2026-09-05, over the four cells that reached the workload step:
+
+| runtime identifier | `richards` | `zlib` | score | the fifteen | headroom |
+|---|---|---|---|---|---|
+| `linux-x64` | 59.5 | 2,342s | 65.2 | 2,997s, **15 of 15** | 1,258s |
+| `osx-arm64` | 50.2 | 2,796s | 54.6 | 3,651s, **15 of 15** | 804s |
+| `linux-arm64` | 44.8 | 2,897s | 52.8 | 3,749s, **15 of 15** | 703s |
+| `osx-x64` | 24.7 | **3,600s** | none | 5,141s, **14 of 15** | **none — met** |
+
+**`zlib` scores on three of the four and MEETS THE CEILING on `osx-x64`**, which reported
+`AllowanceExhausted on WallClock` and failed the step. That cell is the slowest of the matrix by a
+wide margin — `richards` 24.7 against `linux-x64`'s 59.5, so roughly 2.4 times slower — and `zlib`
+is 78 per cent of the whole run, so it is the benchmark that reaches the ceiling first everywhere.
+The headroom column is the reading that matters: 21 minutes, 13, 12, and then none.
+
+**That failure is a finding and not a bound to raise**, and the distinction is the whole of why the
+wall is where it is. An hour is already the maximum `JavaScriptProfile.Maxima()` permits, so there
+is no larger number to move to; what `osx-x64` reports is that **this engine cannot run `zlib` to
+completion inside its own ceiling on that runtime identifier**, which is a true statement about the
+engine and the cell rather than a misconfigured lane.
+
+**The decision it forces is not taken here.** A full lane that is red every week on one cell trains
+readers to ignore it, and the alternative — excluding `zlib` on `osx-x64` by name, the way the
+conformance step states its own exclusions — is a decision about **what this component CLAIMS**
+rather than about a number. This component has no reviewer, and roadmap section 16 makes an
+untruthful support claim a stop condition, so the choice belongs to a person. It is recorded here
+open.
+
+**What is corrected and what is not.** JSC-180 stands as written — this ledger appends and never
+edits — and its other figures are unaffected: the ceiling is still the profile's, the 23m28s is
+still what fifteen benchmarks cost on a publish cell, and the observation that the same box scored
+`richards` at 64.7 and 35.4 ninety minutes apart is still the reason no duration here travels. What
+is withdrawn is the **forty-one-minute lower bound** and the method that produced it. The lane step
+comment and the JSW-10 bullet, which both said the answer was not known, now carry the measurement.
+
+**What this does not claim.** Not that `zlib` scores on every claimed identifier — it does not, and
+`osx-x64` is the counterexample. Nor that the two Windows cells agree with either group: they never
+reached the workload step in this run, because [JSC-181](#jsc-181)'s defect stopped them one second
+in, so `win-x64` and `win-arm64` have still executed neither the benchmark nor the step. Two of six
+identifiers are therefore unmeasured, one has failed, and three have scored. The exclusion the
+roadmap already states is unchanged and separate: no identifier scores the whole set on the push
+path, because the quick lane's six do not include `zlib`.
+
+**Authority and date.** Run 33964028317 of 2026-09-05, `broiler-vm (full)` on `1910c6f`, reading
+each cell's own transcript: `--- zlib (exit 0, 2342s)` on `linux-x64`, `(exit 0, 2796s)` on
+`osx-arm64` and `(exit 0, 2897s)` on `linux-arm64`, each with `# 15 of 15 benchmarks reported a
+score and exited zero`; and on `osx-x64` `--- zlib (exit 5, 3600s)` with
+`the program did not settle within its allowance: AllowanceExhausted on WallClock` and
+`# 14 of 15 benchmarks reported a score and exited zero`. 2026-09-05.
+
+### JSC-183
+
+**Where:** the workload step's Octane selection on `osx-x64`, and the decision
+[JSC-182](#jsc-182) recorded open.
+
+**What was open.** `zlib` does not score on `osx-x64`. That cell met the profile's `WallClock`
+ceiling at 3,600s and reported 14 of 15, while `linux-x64` scored the benchmark at 2,342s,
+`osx-arm64` at 2,796s and `linux-arm64` at 2,897s. JSC-182 established that this is a **finding
+rather than a bound to raise** — an hour is what `JavaScriptProfile.Maxima()` permits, so there is
+no larger allowance to move to — and left the consequence to a person: either the full lane stands
+red on that cell every Monday, or the benchmark is excluded there by name.
+
+**What was decided, and by whom.** **The exclusion is stated.** The decision is the repository
+owner's, taken on 2026-09-05 in the session that ran the lane, on a recommendation this component
+made in these terms: a lane that is always red on the same cell is a lane nobody reads, and an
+exclusion that carries its measurement is more honest than a red somebody has learned to skip past.
+Nothing about the engine changed and no figure moved; what changed is what the lane ATTEMPTS on one
+runtime identifier.
+
+**What replaced it.** `eng/run-octane.py` gains `--skip`, and the step passes `--skip zlib` on
+`osx-x64` alone. Three properties make it an exclusion rather than a quiet reduction:
+
+- **It is named twice in every run that uses it** — once as `# SKIPPED zlib` before anything runs,
+  and again in the summary as `N of M ... 1 excluded and not attempted: zlib`. A ratio over a
+  shrunken denominator reads exactly like a complete run, and `14 of 14` and `14 of 15` are one
+  keystroke apart.
+- **Skipping everything is refused.** A run of no benchmarks would report `0 of 0 ... exited zero`
+  and exit ZERO, which is a green step over a question nobody asked. An exclusion is a decision
+  about one benchmark and never a way to turn the workload off.
+- **It is keyed on the runtime identifier**, so the other five cells still attempt the set whole.
+  A skip that spread to every cell would retire the benchmark rather than exclude it.
+
+**What this costs, stated rather than buried.** The whole Octane set is now scored on **four** of
+six identifiers rather than five: `linux-x64`, `linux-arm64` and `osx-arm64` have scored it, the
+two Windows cells have never executed the step at all — [JSC-181](#jsc-181)'s defect stopped them,
+and the fix has not been through a full lane since — and `osx-x64` scores fourteen of fifteen by
+decision. **The roadmap's exclusion list says exactly that**, and no support claim moves: a lane is
+not an evidence bundle, and `docs/support.md` is fed by retained collections.
+
+**What would reopen it.** A `zlib` that scores on `osx-x64` inside the hour — a faster runner image,
+or an engine that spends less on it — makes the exclusion unnecessary, and the duration the driver
+prints on every other cell is what a reader would notice it from. The exclusion is not a claim that
+the benchmark CANNOT run there, only that on the image and runner measured on 2026-09-05 it did not.
+
+**Authority and date.** The owner's decision of 2026-09-05, on the measurements JSC-182 records
+from run 33964028317; and a local exercise of the new path against the published Native AOT image,
+in which a skip that empties the selection is refused, a skip naming something that is not a
+benchmark is refused, and a run that skips `zlib` prints it as SKIPPED and reports it excluded in
+the summary. 2026-09-05.

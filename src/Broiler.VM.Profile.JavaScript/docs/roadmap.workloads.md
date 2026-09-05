@@ -455,11 +455,21 @@ the act that would turn a stage into a milestone with a ledger row.
   *([JSC-180](roadmap.corrections.md#jsc-180))*. The per-benchmark allowance is the profile's own
   `WallClock` maximum rather than a figure the lane chose, because an hour is the most any
   composition of this profile may be granted — so a benchmark that meets it has met **this
-  engine's ceiling**, which is a finding rather than a bound to move. **The exclusions are that no
-  identifier but the Linux one has scored the whole conformance suite, that no identifier scores
-  the whole Octane set on the push path, and that `zlib` has no known duration on any machine here
-  — it meets that ceiling on the one it was measured on, and whether it fits inside the hour on a
-  runner is what the first full lane answers.**
+  engine's ceiling**, which is a finding rather than a bound to move. On 2026-09-05 the first full
+  lane measured what that allowance is for, and the answer is not uniform: `zlib` scores in 2,342
+  seconds on `linux-x64`, 2,796 on `osx-arm64` and 2,897 on `linux-arm64` — and on `osx-x64`, the
+  slowest cell of the matrix, **it meets the ceiling and does not score at all**
+  *([JSC-182](roadmap.corrections.md#jsc-182))*. `zlib` is 78 per cent of the whole run, so it is
+  what reaches the ceiling first everywhere; the headroom is 1,258 seconds, 804, 703, and then none.
+  **`zlib` is therefore excluded on `osx-x64` by name** *([JSC-183](roadmap.corrections.md#jsc-183))*
+  — an exclusion rather than a larger allowance, because an hour is already the largest allowance
+  this profile permits — and the driver prints it as skipped before it runs anything and again in
+  its summary, so no transcript reports fourteen as though it were fifteen. **The exclusions are
+  that no identifier but the Linux one has scored the whole conformance suite, that no identifier
+  scores the whole Octane set on the push path — the quick lane's six do not include `zlib` — and
+  that `osx-x64` scores fourteen of the fifteen. The set is scored WHOLE on three identifiers**:
+  `linux-x64`, `linux-arm64` and `osx-arm64`. The two Windows cells have never executed the step
+  at all *([JSC-181](roadmap.corrections.md#jsc-181))*.
 - **The whole-suite runs are retained per manifest**, under
   [section 4's evidence contract](roadmap.status.md#4-required-evidence-bundle), with the harness's
   five verdicts reported rather than four — a variant that spent an allowance is neither a pass, a
