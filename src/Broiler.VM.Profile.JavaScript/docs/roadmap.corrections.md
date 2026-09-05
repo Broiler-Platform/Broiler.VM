@@ -7150,3 +7150,53 @@ as a pattern defect.
 `/opt/node22/bin/node` and this host, in which this host accepts every one the engine refuses; and
 the subtree runs of the two families named above, in which the twelve remain failures at both ends.
 2026-09-05.
+
+---
+
+### JSC-174
+
+**Where:** `eng/collect-js-evidence.py`'s four control loops, each of which injects a defect into the
+real checkout, judges it, and reverts — and each of which reports *the anchor has moved* when the
+injection changes nothing.
+
+**What was assumed.** That an injection changing nothing means the code it names has been
+refactored. Every loop carries a byte-for-byte guard that stops the run if a revert does not restore
+its file, so the loops were written as though a control could only fail to apply for that one
+reason.
+
+**What was true.** There is a second reason and it is the one that arrived. **A collection
+interrupted between an injection and its revert leaves the injection in the working tree**, and the
+next collection reads that as the file's original text. The mutation is then a no-op, the control
+reports the anchor as moved, and the tree stays wrong — a skip naming the wrong cause, and a control
+matrix that reads like a refactor rather than like an interrupted run. **The byte-for-byte guard
+cannot see it**, because it compares a revert only against what that same run read.
+
+**It was found by its consequence rather than by reading the script.** A collection of this
+programme's own bundle reported two controls skipped and twenty-nine controls run with none passing,
+and `JavaScriptVerifier.cs` was carrying the allocator-ordering injection one of those two skipped
+controls makes. **A control that judged nothing had been reported as a control whose subject had
+moved on**, which is the same defect bundle
+[JS-9-004](evidence/js-9-004/README.md) records of a retained log describing sessions that no longer
+existed, and the same defect the `JS-3a` collection found when a refactor moved an anchor and
+nothing said so.
+
+**What replaced it.** Each loop asks git which tracked files are modified before it starts, and a
+skip now says which of the two reasons applies: an anchor that moved, or a file already modified in
+this checkout, *so what was read as the original is not the committed text*. **The skip is still a
+gap and still a skip** — the collector does not repair the tree, because a script that reverted a
+change it did not make would be undoing whatever the person running it was doing — but the log now
+names the thing a reader has to fix.
+
+**And the rest of that matrix was unreadable for a second reason, which is stated here rather than
+repaired.** Every control in the whole-suite loop is judged by the suite's exit code, and this
+checkout's suite fails three tests that belong to a different component vendored under
+`src/Broiler.VM.HyperV/`: two package rules about projects outside the solution, and the assurance
+scanner's count of product projects on disk. **Those assertions are working**: the scanner's says in
+its own comment that a seventh product project appearing in the tree fails there *until someone
+decides whether it is covered*, and that decision is a person's. Until it is taken, no control this
+collector runs can pass, because none of them can make the suite go from failing to passing.
+
+**Authority and date.** The interrupted collection of 2026-09-05 and the injection it left in
+`JavaScriptVerifier.cs`; the control logs of the collection that followed it, in which twenty-nine
+controls ran and none passed; and the three suite failures, each traced to a project under
+`src/Broiler.VM.HyperV/` that no rule of this component accounts for. 2026-09-05.

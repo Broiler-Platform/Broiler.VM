@@ -678,6 +678,40 @@ CONTROLS = [
 ]
 
 
+def dirty_tracked_files():
+    """
+    The tracked files git reports as modified, as component-relative paths.
+
+    A CONTROL CANNOT BE JUDGED ON A FILE THAT IS ALREADY MODIFIED, and the failure this exists for
+    is not hypothetical: a collection killed between an injection and its revert leaves the
+    injection in the tree, and the next collection reads it as the ORIGINAL. The mutation is then a
+    no-op, the control reports "the anchor has moved", and the tree stays wrong - a skip that names
+    the wrong cause and a matrix that reads like a refactor rather than like an interrupted run.
+    The byte-for-byte guard inside each loop cannot see this, because it only compares a revert
+    against what that same run read.
+    """
+    code, output = run(["git", "status", "--porcelain", "--untracked-files=no"])
+
+    if code != 0:
+        return set()
+
+    return {
+        line[3:].strip().replace("\\", "/")
+        for line in output.splitlines()
+        if line.strip()
+    }
+
+
+def skip_reason(path, dirty):
+    """Which of the two reasons an injection changed nothing."""
+    return (
+        "the file is ALREADY MODIFIED in this checkout, so what was read as the original is not "
+        "the committed text - a previous collection was interrupted between an injection and its "
+        "revert, and this control has judged nothing"
+        if path.replace("\\", "/") in dirty
+        else "the anchor has moved")
+
+
 def controls(out):
     """Each control is injected into the real checkout, judged by the suite, and reverted."""
     log = [
@@ -689,6 +723,7 @@ def controls(out):
 
     passed = 0
     skipped = 0
+    dirty = dirty_tracked_files()
 
     for name, why, path, mutate in CONTROLS:
         original = read(path)
@@ -696,7 +731,9 @@ def controls(out):
 
         if mutated == original:
             skipped += 1
-            log.append(f"[{name}] SKIPPED - the injection changed nothing; the anchor has moved.")
+            log.append(
+                f"[{name}] SKIPPED - the injection changed nothing; "
+                + skip_reason(path, dirty))
             log.append(f"    file: {path}")
             log.append("")
             continue
@@ -1151,6 +1188,7 @@ def corpus_controls(out, corpus, arguments):
 
     passed = 0
     skipped = 0
+    dirty = dirty_tracked_files()
 
     for name, why, path, mutate in CORPUS_CONTROLS:
         original = read(path)
@@ -1158,7 +1196,9 @@ def corpus_controls(out, corpus, arguments):
 
         if mutated == original:
             skipped += 1
-            log.append("[" + name + "] SKIPPED - the injection changed nothing; the anchor moved.")
+            log.append(
+                "[" + name + "] SKIPPED - the injection changed nothing; "
+                + skip_reason(path, dirty))
             log.append("    file: " + path)
             log.append("")
             continue
@@ -1329,6 +1369,7 @@ def fuzz_controls(out, corpus):
 
     passed = 0
     skipped = 0
+    dirty = dirty_tracked_files()
 
     for name, why, path, mutate, expected in FUZZ_CONTROLS:
         original = read(path)
@@ -1336,7 +1377,9 @@ def fuzz_controls(out, corpus):
 
         if mutated == original:
             skipped += 1
-            log.append("[" + name + "] SKIPPED - the injection changed nothing; the anchor moved.")
+            log.append(
+                "[" + name + "] SKIPPED - the injection changed nothing; "
+                + skip_reason(path, dirty))
             log.append("    file: " + path)
             log.append("")
             continue
@@ -1524,6 +1567,7 @@ def android_controls(out):
 
     passed = 0
     skipped = 0
+    dirty = dirty_tracked_files()
 
     for name, why, path, mutate in ANDROID_CONTROLS:
         original = read(path)
@@ -1531,7 +1575,9 @@ def android_controls(out):
 
         if mutated == original:
             skipped += 1
-            log.append("[" + name + "] SKIPPED - the injection changed nothing; the anchor moved.")
+            log.append(
+                "[" + name + "] SKIPPED - the injection changed nothing; "
+                + skip_reason(path, dirty))
             log.append("    file: " + path)
             log.append("")
             continue
