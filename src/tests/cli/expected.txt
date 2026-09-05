@@ -569,3 +569,29 @@ modules/a-default-async-generator.mjs|0|first awaited false
 # front end cannot read the grammar, which it can.
 modules/an-import-meta-in-a-script.js|3|2404:ImportMetaOutsideModuleGoal
 modules/an-import-attribute.mjs|3|2405:UnsupportedImportAttribute
+
+# THE SIX RULES THIS BUNDLE ADDED, one row per rule and one row per shape each of them must NOT
+# reach. An early error that fires where the language has none turns working programs into
+# refusals, which is worse than the failure it was written to close - so every rule below is
+# judged from both directions and the `runs/` rows are not decoration.
+#
+# `2205` is a left-hand side the grammar gives no target, `2209` is a word this context reserves,
+# and `2101` is a position the grammar has no production for. None of them is `2104`: the manifest
+# admits destructuring, generators, async functions and private names, and a program that writes
+# one of these is wrong about the LANGUAGE.
+refused/a-rest-element-with-a-comma-after-it.js|3|2205:InvalidAssignmentTarget
+refused/a-reserved-word-as-a-shorthand-property.js|3|2209:ReservedWordAsBinding
+refused/a-restricted-name-as-a-pattern-target.js|3|2205:InvalidAssignmentTarget
+refused/a-suspension-in-a-parameter-list.js|3|2101:UnexpectedToken
+refused/a-private-name-as-a-property-key.js|3|2101:UnexpectedToken
+runs/the-patterns-a-rest-and-a-shorthand-still-admit.js|0|1:2/3 4:{"q":5,"r":6} 2:9 7/8 10:11:12 13:14 15:16 17/18
+runs/a-suspension-a-parameter-list-still-admits.js|0|name:d 1 20/22 function 3
+runs/the-keys-an-object-literal-still-admits.js|0|set:12 1 2 4 5 6 7 8 function function function 11 from-the-prototype from-the-prototype private-field/private-method/private-static
+
+# AND THE ROW THAT IS ALL ONE RULE READ FROM THE ACCEPTING SIDE. A function declaration inside a
+# block binds in that block and, in sloppy code, ALSO gets the `var`-scoped alias Annex B assigns
+# where the declaration stands. Neither half is a refusal, and neither half is right alone: the
+# first without the second makes `if (x) { function f() { } } f();` a `ReferenceError` every engine
+# runs, and the second without the first leaves the closure resolving the block's own `let` to a
+# global. Every value in the file was taken from the comparison engine.
+runs/a-function-a-block-declares.js|0|2 first second switch try undefined aliased undefined clause undefined undefined undefined undefined

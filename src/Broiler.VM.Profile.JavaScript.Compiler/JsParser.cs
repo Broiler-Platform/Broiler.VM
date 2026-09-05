@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   143
-// Annotated:        143/143
-// Exempt:           17
-// Human-reviewed:   0/143
+// Relevant units:   145
+// Annotated:        145/145
+// Exempt:           19
+// Human-reviewed:   0/145
 // IP risk:          None
 // Security risk:    High
-// Criteria:         2/2
+// Criteria:         3/3
 // Resource impact:  3/10 max
-// Unverified:       143
+// Unverified:       145
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -207,6 +207,33 @@ internal sealed class JsParser
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9D6B6E
     // Broiler-Human:        PENDING
     private bool awaitIsOperator;
+
+    /// <summary>Whether the cursor is inside a formal parameter list of its own function.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A parameter list may not SUSPEND, and the language says so four times over.</b>
+    /// A generator's <c>FormalParameters</c> may not contain a <c>YieldExpression</c>, an async
+    /// function's and an async method's may not contain an <c>AwaitExpression</c>, an arrow's
+    /// <c>ArrowParameters</c> may not contain one either, and an <c>AsyncArrowHead</c> may not.
+    /// The four are one rule about one position, so they are one flag and one refusal at each of
+    /// the two expressions rather than four checks at four parse sites.
+    /// </para>
+    /// <para>
+    /// <b>The rule is what keeps a suspension out of a unit that cannot carry one.</b> The default
+    /// of a parameter belongs to the enclosing function's own prologue, so a <c>yield</c> written
+    /// in a METHOD's default inside a generator lowered a <c>Yield</c> into a unit with no
+    /// generator flag - and the verifier refused an artifact this front end had just produced,
+    /// answering <c>SemanticValidationFailed</c> where the language has a syntax error.
+    /// </para>
+    /// <para>
+    /// <b>It is cleared by every nested body</b>, because the language's <c>Contains</c> does not
+    /// look inside a function: <c>(a = async () =&gt; await 1) =&gt; { }</c> is a program, and the
+    /// <c>await</c> in it belongs to the inner arrow.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B9FB84
+    // Broiler-Human:        PENDING
+    private bool inParameters;
 
     /// <summary>Creates a parser over an already-tokenized source.</summary>
     /// <param name="stream">The tokens to read.</param>
@@ -1265,7 +1292,7 @@ internal sealed class JsParser
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=A7885F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=6F220C
     // Broiler-Human:        PENDING
     private JsStatement ParseIf()
     {
@@ -1278,17 +1305,35 @@ internal sealed class JsParser
         // AN `if` CLAUSE IS THE ONE POSITION ANNEX B ADMITS A FUNCTION DECLARATION IN, and it
         // admits it in sloppy code only. Everything else a declaration can begin with is refused
         // here, which is the whole of the `statements/if` family.
-        var consequent = ParseNestedStatement("an `if`", functionAllowed: !strict);
+        var consequent = Clause(ParseNestedStatement("an `if`", functionAllowed: !strict));
         JsStatement? alternate = null;
 
         if (Current.Kind == SliceTokenKind.Else)
         {
             Advance();
-            alternate = ParseNestedStatement("an `else`", functionAllowed: !strict);
+            alternate = Clause(ParseNestedStatement("an `else`", functionAllowed: !strict));
         }
 
         return new JsIfStatement(span, test, consequent, alternate);
     }
+
+    /// <summary>Gives an <c>if</c> clause that is a bare function declaration its implicit block.</summary>
+    /// <remarks>
+    /// <b>The language does not describe this position twice, and neither does this parser.</b>
+    /// Annex B admits <c>if (x) function f() { }</c> by saying it is the program
+    /// <c>if (x) { function f() { } }</c> — so the wrapping happens once, here, and every rule
+    /// about a function declaration inside a block then applies to it without being restated: the
+    /// name is a binding of that block, the closure is built against the block's record, and the
+    /// <c>var</c>-scoped alias the same Annex B creates is written where the declaration stands.
+    /// A lowering that instead special-cased the clause would have had to carry all four rules a
+    /// second time, and the four are the ones a reader is least likely to notice have drifted.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=E259A6
+    // Broiler-Human:        PENDING
+    private static JsStatement Clause(JsStatement statement) =>
+        statement is JsFunctionDeclaration
+            ? new JsBlockStatement(statement.Span, [statement])
+            : statement;
 
     /// <summary>Parses <c>with</c>, and refuses it where the language has no such statement.</summary>
     /// <remarks>
@@ -1844,12 +1889,22 @@ internal sealed class JsParser
     /// gives, which is the category the language puts it in.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3D4BD5
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=0665F0
     // Broiler-Human:        PENDING
     private System.Collections.Generic.List<JsParameter> ParseOrdinaryParameters()
     {
         var outerAwait = awaitIsOperator;
+        var outerYield = yieldIsOperator;
         awaitIsOperator = false;
+
+        // AND `[~Yield]` IS THE OTHER HALF OF THE SAME SENTENCE, which this cleared for `await`
+        // alone. `MethodDefinition : PropertyName ( UniqueFormalParameters )` passes NEITHER
+        // parameter down, so a method's list is `[~Yield, ~Await]` however deeply a generator
+        // encloses it - and leaving the yield flag set made `function* g() { ({ m(x = yield) { } });
+        // }` parse a yield EXPRESSION into a method's prologue. The instruction then went into a
+        // unit with no generator flag and THE VERIFIER REFUSED THE ARTIFACT, answering
+        // `SemanticValidationFailed` where the language has an ordinary program.
+        yieldIsOperator = false;
 
         try
         {
@@ -1858,6 +1913,7 @@ internal sealed class JsParser
         finally
         {
             awaitIsOperator = outerAwait;
+            yieldIsOperator = outerYield;
         }
     }
 
@@ -1867,9 +1923,26 @@ internal sealed class JsParser
     /// <c>f(...a, b)</c> answer "`)` was expected" at <c>,</c> instead of silently accepting a
     /// parameter after the one that takes everything.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=202F04
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D6EE24
     // Broiler-Human:        PENDING
     private System.Collections.Generic.List<JsParameter> ParseParameters()
+    {
+        var outerParameters = inParameters;
+        inParameters = true;
+
+        try
+        {
+            return ParseParameterList();
+        }
+        finally
+        {
+            inParameters = outerParameters;
+        }
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=C4D664
+    // Broiler-Human:        PENDING
+    private System.Collections.Generic.List<JsParameter> ParseParameterList()
     {
         var parameters = new System.Collections.Generic.List<JsParameter>();
         Expect(SliceTokenKind.OpenParen, "(");
@@ -2101,7 +2174,7 @@ internal sealed class JsParser
             : new JsTargetPattern(span, new JsIdentifier(span, BindingName()));
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9C328C
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=10C4F6
     // Broiler-Human:        PENDING
     private JsFunctionNode ParseFunctionBody(
         SliceSourceSpan span,
@@ -2124,6 +2197,22 @@ internal sealed class JsParser
         // this host then rejected.
         var outerAwait = awaitIsOperator;
         awaitIsOperator = isAsync;
+
+        // AND `[Yield]` IS DECIDED HERE FOR THE SAME REASON AND WAS NOT. Every caller set the flag
+        // around this call and a method's caller had nothing to set it to, so an ordinary method
+        // written inside a generator kept the ENCLOSING generator's context and
+        // `function* g() { ({ m(yield) { return yield; } }); }` - a program node runs - parsed a
+        // yield EXPRESSION into the method's body. The instruction went into a unit with no
+        // generator flag and the verifier refused an artifact this front end had just produced,
+        // which is the same failure the parameter half of this sentence produced one line away.
+        var outerYield = yieldIsOperator;
+        yieldIsOperator = isGenerator;
+
+        // AND A BODY IS NOT ITS ENCLOSING ARROW'S PARAMETER LIST. `Contains` does not look inside a
+        // function, so `(a = async () => await 1) => { }` is a program: the `await` belongs to the
+        // inner arrow and not to the outer one's head.
+        var outerArrowParameters = inParameters;
+        inParameters = false;
         Expect(SliceTokenKind.OpenBrace, "{");
         var directives = ParseDirectives();
         var body = new System.Collections.Generic.List<JsStatement>();
@@ -2159,6 +2248,8 @@ internal sealed class JsParser
         ValidateVarScope(body, parameters);
         strict = outer;
         awaitIsOperator = outerAwait;
+        yieldIsOperator = outerYield;
+        inParameters = outerArrowParameters;
 
         return new JsFunctionNode(
             span, name, parameters, body, isArrow, inner, directives, isGenerator, isAsync);
@@ -3706,11 +3797,25 @@ internal sealed class JsParser
     /// statements into one and yield the wrong value. The other terminators are the tokens that
     /// begin no expression, which is where an operand stops being optional.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=997C18
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=EC88DE
     // Broiler-Human:        PENDING
     private JsExpression ParseYield(bool noIn)
     {
         var span = Span();
+
+        // A GENERATOR'S PARAMETER LIST MAY NOT CONTAIN ONE, which is the same early error an
+        // arrow's list carries about `await` and is here for the same reason: a default is
+        // evaluated in the enclosing function's own prologue, and a `Yield` written there belongs
+        // to a unit the verifier will not accept it in. `function* g(x = yield) { }` is a syntax
+        // error in the language and was an accepted artifact here.
+        if (inParameters)
+        {
+            Refuse(
+                span,
+                SliceSourceDiagnosticCode.UnexpectedToken,
+                "a `yield` expression is not admitted in a function's parameters");
+        }
+
         Advance();
 
         // `yield [no LineTerminator here] *` IS THE PRODUCTION, so a newline before the star does
@@ -3817,7 +3922,7 @@ internal sealed class JsParser
     /// expression and allocates nothing, so a source with many parenthesised expressions costs a
     /// bracket count each and not a speculative parse.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=DC2432
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F87432
     // Broiler-Human:        PENDING
     private bool TryParseArrow(SliceSourceSpan span, out JsExpression arrow)
     {
@@ -3867,7 +3972,11 @@ internal sealed class JsParser
                     return true;
                 }
 
-                var asyncParameters = ParseParameters();
+                // AND AN ASYNC ARROW'S HEAD CARRIES THE SAME EARLY ERROR. `AsyncArrowHead Contains
+                // AwaitExpression` is a syntax error in the same words the ordinary arrow's is, so
+                // `async (a = await 1) => { }` is refused whether or not an async function encloses
+                // it - the arrow supplies the context its own parameters may not use.
+                var asyncParameters = ParseArrowParameters();
                 Expect(SliceTokenKind.EqualsGreaterThan, "=>");
                 arrow = ParseArrowBody(span, asyncParameters, isAsync: true);
                 return true;
@@ -3926,11 +4035,35 @@ internal sealed class JsParser
             return false;
         }
 
-        var parameters = ParseOrdinaryParameters();
+        var parameters = ParseArrowParameters();
         Expect(SliceTokenKind.EqualsGreaterThan, "=>");
         arrow = ParseArrowBody(span, parameters);
         return true;
     }
+
+    /// <summary>Parses an arrow function's parameters in the <c>[?Await]</c> context it inherits.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>An arrow is the exception <see cref="ParseOrdinaryParameters"/> was written to include
+    /// and should not have.</b> A method's and an accessor's parameters really are
+    /// <c>[~Await]</c> whatever encloses them, so <c>async function f() { ({ m(await) { } }); }</c>
+    /// binds a parameter called <c>await</c> and is a program. An arrow's are <c>[?Await]</c>: the
+    /// production is <c>ArrowParameters[?Yield, ?Await]</c>, so the same word inside an async body
+    /// is the operator and not a name, and <c>async function f() { (await) =&gt; { }; }</c> is a
+    /// syntax error every engine gives.
+    /// </para>
+    /// <para>
+    /// <b>Inheriting the context is only half the rule, and the half alone is worse than neither.</b>
+    /// It makes <c>await</c> an operator in a list that belongs to a unit with no async flag, so
+    /// <c>(a = await 1) =&gt; { }</c> would parse, lower an <c>Await</c> into that unit, and be
+    /// REFUSED BY THE VERIFIER - an artifact this front end had just produced. The language's other
+    /// half is the early error this flag exists for, stated where the operator is recognised.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=7804D2
+    // Broiler-Falsified-If: an arrow's parameter list is parsed with the enclosing `[Await]` context cleared
+    // Broiler-Human:        PENDING
+    private System.Collections.Generic.List<JsParameter> ParseArrowParameters() => ParseParameters();
 
     /// <summary>
     /// Answers whether an <c>async</c> at the cursor begins an arrow function rather than an
@@ -3981,7 +4114,7 @@ internal sealed class JsParser
         return tokens[scan].Kind == SliceTokenKind.EqualsGreaterThan;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=460536
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=308CE2
     // Broiler-Human:        PENDING
     private JsExpression ParseArrowBody(
         SliceSourceSpan span,
@@ -4001,8 +4134,14 @@ internal sealed class JsParser
         // `[+Await]` whatever encloses it, because it is itself the async context.
         var outerOperator = yieldIsOperator;
         var outerAwait = awaitIsOperator;
+        var outerArrowParameters = inParameters;
         yieldIsOperator = false;
         awaitIsOperator = isAsync;
+
+        // A CONCISE BODY IS A BODY TOO, and an arrow written as the default of another arrow's
+        // parameter reaches here without passing `ParseFunctionBody`. Leaving the flag set would
+        // have refused `(a = () => 1) => { }`'s inner body for an `await` that is its own.
+        inParameters = false;
 
         try
         {
@@ -4036,6 +4175,7 @@ internal sealed class JsParser
         {
             yieldIsOperator = outerOperator;
             awaitIsOperator = outerAwait;
+            inParameters = outerArrowParameters;
         }
     }
 
@@ -4150,7 +4290,7 @@ internal sealed class JsParser
         _ => 0,
     };
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5C81EB
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=C085AF
     // Broiler-Human:        PENDING
     private JsExpression ParseUnary()
     {
@@ -4169,6 +4309,21 @@ internal sealed class JsParser
             // them apart cheaply, because it is the one that already knows how deep in functions it
             // is.
             sawTopLevelAwait |= functionDepth == 0;
+
+            // AND A PARAMETER LIST IS THE ONE CONTEXT THAT ADMITS THE OPERATOR AND REFUSES THE
+            // EXPRESSION. `FormalParameters Contains AwaitExpression` is an early error in its own
+            // right for an async function, an async method and an async arrow, and
+            // `ArrowParameters Contains AwaitExpression` is one for an ordinary arrow written
+            // inside an async body - separate in every case from the `[Await]` context the list is
+            // parsed in, and what stops an `Await` reaching a unit that carries no async flag. The
+            // refusal is stated once, here, because this is the only place the expression is built.
+            if (inParameters)
+            {
+                Refuse(
+                    span,
+                    SliceSourceDiagnosticCode.UnexpectedToken,
+                    "an `await` expression is not admitted in a function's parameters");
+            }
 
             Advance();
             return new JsAwaitExpression(span, ParseUnary());
@@ -4814,13 +4969,14 @@ internal sealed class JsParser
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B37576
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=DC4C54
     // Broiler-Human:        PENDING
     private JsExpression ParseArrayLiteral()
     {
         var span = Span();
         Expect(SliceTokenKind.OpenBracket, "[");
         var elements = new System.Collections.Generic.List<JsExpression?>();
+        var trailing = false;
 
         while (Current.Kind != SliceTokenKind.CloseBracket &&
             Current.Kind != SliceTokenKind.EndOfSource &&
@@ -4846,23 +5002,26 @@ internal sealed class JsParser
 
             if (Current.Kind != SliceTokenKind.Comma)
             {
+                trailing = false;
                 break;
             }
 
             Advance();
+            trailing = true;
         }
 
         Expect(SliceTokenKind.CloseBracket, "]");
-        return new JsArrayLiteral(span, elements);
+        return new JsArrayLiteral(span, elements, trailing);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=4E3F41
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=8CB8B4
     // Broiler-Human:        PENDING
     private JsExpression ParseObjectLiteral()
     {
         var span = Span();
         Expect(SliceTokenKind.OpenBrace, "{");
         var entries = new System.Collections.Generic.List<JsObjectEntry>();
+        var trailing = false;
 
         while (Current.Kind != SliceTokenKind.CloseBrace &&
             Current.Kind != SliceTokenKind.EndOfSource &&
@@ -4872,17 +5031,19 @@ internal sealed class JsParser
 
             if (Current.Kind != SliceTokenKind.Comma)
             {
+                trailing = false;
                 break;
             }
 
             Advance();
+            trailing = true;
         }
 
         Expect(SliceTokenKind.CloseBrace, "}");
-        return new JsObjectLiteral(span, entries);
+        return new JsObjectLiteral(span, entries, trailing);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F36B21
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=464413
     // Broiler-Human:        PENDING
     private JsObjectEntry ParseObjectEntry()
     {
@@ -4907,7 +5068,15 @@ internal sealed class JsParser
             var generatorKey = PropertyKey(out var generatorComputed);
             var outerOperator = yieldIsOperator;
             yieldIsOperator = true;
-            var generatorParameters = ParseOrdinaryParameters();
+
+            // A GENERATOR METHOD'S LIST IS `[+Yield, ~Await]` AND NOT `[~Yield, ~Await]`, so it is
+            // not `ParseOrdinaryParameters`'s. The flag set above is what makes `yield` there the
+            // operator the early error then refuses, rather than a parameter NAME that would have
+            // let `({ *g(x = yield) { } })` through as a program.
+            var outerGeneratorAwait = awaitIsOperator;
+            awaitIsOperator = false;
+            var generatorParameters = ParseParameters();
+            awaitIsOperator = outerGeneratorAwait;
 
             var generatorBody = ParseFunctionBody(
                 span, generatorKey, generatorParameters, isArrow: false, isGenerator: true,
@@ -4915,12 +5084,19 @@ internal sealed class JsParser
 
             yieldIsOperator = outerOperator;
 
+            // AND IT IS A METHOD, which this entry alone did not say. The bit decides whether the
+            // lowering emits `DefineMethod` or `DefineField`, and a generator method that reached
+            // the second one had no home object - so `({ *g() { super.x; } })`, an ordinary
+            // program, was refused with "`super` is only admitted inside a method" while
+            // `({ async *g() { super.x; } })` beside it was accepted. The three method forms in
+            // this method now say the same thing about themselves.
             return new JsObjectEntry(
                 span,
                 JsPropertyKind.Init,
                 generatorKey,
                 generatorComputed,
-                new JsFunctionExpression(span, generatorBody));
+                new JsFunctionExpression(span, generatorBody),
+                IsMethod: true);
         }
 
         if (Current.Kind == SliceTokenKind.Async &&
@@ -5016,6 +5192,21 @@ internal sealed class JsParser
             // property and `{ break }` is a reference to a binding no source can have.
             _ = RefuseEscapedReservedWord(keyToken);
 
+            // WHICH IS THE SAME REASON THE PLAIN SPELLING IS REFUSED TOO, and until now only the
+            // escaped one was. A shorthand's key is an `IdentifierReference` and a written-out key
+            // is an `IdentifierName`, so `{ default: 42 }` is a property and `{ default }` is a
+            // reference to a word no binding may be called - in an object literal and in the
+            // `ObjectAssignmentPattern` the same braces cover, which is why the rule is here,
+            // where the two are still one production, rather than in the reinterpretation.
+            if (!IsIdentifierName(keyToken.Kind))
+            {
+                Refuse(
+                    new SliceSourceSpan(keyToken.Line, keyToken.Column),
+                    SliceSourceDiagnosticCode.ReservedWordAsBinding,
+                    "`" + Describe(keyToken) + "` is a reserved word here, and a shorthand " +
+                        "property's key is also the name it reads");
+            }
+
             return new JsObjectEntry(
                 span, JsPropertyKind.Init, key, computed, new JsIdentifier(span, key),
                 Shorthand: true);
@@ -5068,12 +5259,28 @@ internal sealed class JsParser
         return new JsPrivateMemberExpression(span, target, name, optional);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=99DC6F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3562F8
     // Broiler-Human:        PENDING
     private string PropertyKey(out JsExpression? computed)
     {
         computed = null;
         var token = Current;
+
+        // A PRIVATE NAME IS NOT A PROPERTY KEY, and this is where an object literal's keys are
+        // read - so `({ #m() { } })`, `({ get #m() { } })`, `({ *#m() { } })` and `({ #m: 1 })` are
+        // all one refusal rather than four. The language states it as an early error on the method
+        // definition - "It is a Syntax Error if PrivateBoundNames of MethodDefinition is
+        // non-empty" - and it holds INSIDE a class as much as outside it: the private name a class
+        // body binds belongs to the class, and an object literal written in a field's initialiser
+        // is still an object literal. A class member never reaches here, because the member parser
+        // recognises its own private name before asking for a key.
+        if (IsPrivateName(token))
+        {
+            Refuse(
+                Span(),
+                SliceSourceDiagnosticCode.UnexpectedToken,
+                "a private name belongs to a class body and cannot be a property key");
+        }
 
         switch (token.Kind)
         {
@@ -5645,7 +5852,7 @@ internal sealed class JsParser
     /// point from <see cref="ParseBindingPattern"/> rather than a flag on it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7D89FB
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=540EC4
     // Broiler-Human:        PENDING
     private JsPattern ToPattern(JsExpression expression)
     {
@@ -5668,7 +5875,14 @@ internal sealed class JsParser
 
                     if (element is JsSpreadElement spread)
                     {
-                        if (index != array.Elements.Count - 1)
+                        // A COMMA AFTER THE REST ELEMENT COUNTS AS SOMETHING AFTER IT, which is
+                        // the one way the rule reads differently on the two sides of the cover
+                        // grammar. An array LITERAL may end with a comma, so `[...x,]` is a value;
+                        // an `ArrayAssignmentPattern` puts the rest element last with nothing at
+                        // all after it, not even the comma a list is otherwise free to end with.
+                        // The comma is gone from the tree by now, which is why the literal carries
+                        // whether there was one.
+                        if (index != array.Elements.Count - 1 || array.TrailingComma)
                         {
                             Refuse(
                                 spread.Span,
@@ -5697,7 +5911,9 @@ internal sealed class JsParser
 
                     if (entry.Kind == JsPropertyKind.Spread)
                     {
-                        if (index != literal.Entries.Count - 1)
+                        // The same asymmetry the array case carries: `({ ...x, })` is a literal
+                        // and `({ ...x, } = o)` is not a pattern.
+                        if (index != literal.Entries.Count - 1 || literal.TrailingComma)
                         {
                             Refuse(
                                 entry.Span,
@@ -5726,6 +5942,22 @@ internal sealed class JsParser
                 return new JsObjectPattern(literal.Span, properties, rest);
             }
 
+            // AND IN STRICT CODE A PATTERN'S LEAF IS NO MORE A TARGET THAN A BARE NAME IS.
+            // `"use strict"; arguments = 1;` was already refused where the `=` was read, and
+            // `"use strict"; [arguments] = [];` reached no such place: the bracket settled the
+            // left-hand side as a pattern before the rule about the two restricted names was
+            // asked, so the same replacement was accepted one bracket away from being refused.
+            // The rule belongs on every leaf of a pattern and not on the one that is written
+            // alone, which is why it is here rather than beside the ordinary assignment.
+            case JsIdentifier identifier when strict && IsRestrictedInStrictCode(identifier.Name):
+                Refuse(
+                    expression.Span,
+                    SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+                    "`" + identifier.Name +
+                        "` is not the target of a destructuring assignment in strict code");
+
+                return new JsTargetPattern(expression.Span, expression);
+
             case JsIdentifier:
             case JsMemberExpression:
 
@@ -5746,13 +5978,29 @@ internal sealed class JsParser
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7DE10D
+    /// <summary>Reinterprets one element of a cover grammar as a pattern element.</summary>
+    /// <remarks>
+    /// <b>An element whose target is ITSELF a pattern arrives already reinterpreted, and that is
+    /// the case this missed.</b> <c>[a] = 1</c> and <c>{} = 1</c> are settled as destructuring
+    /// assignments the moment the parser reads their <c>=</c>, because a bracket or a brace before
+    /// one can be nothing else — so by the time such an element reaches here it is a
+    /// <see cref="JsDestructuringAssignment"/> and not the <see cref="JsAssignmentExpression"/>
+    /// this looked for. Falling through to <see cref="ToPattern"/> then met a node that is neither
+    /// a literal nor a reference, and <c>[ [a] = 1 ] = []</c> — an ordinary program every engine
+    /// runs, and the shape the suite uses to test that an iterator is closed when a nested default
+    /// throws — was REFUSED. The two arms carry the same pair, one already converted.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=64381B
     // Broiler-Human:        PENDING
-    private JsPatternElement ToPatternElement(JsExpression expression) =>
-        expression is JsAssignmentExpression { Operator: SliceTokenKind.Equals } assignment
-            ? new JsPatternElement(
-                expression.Span, ToPattern(assignment.Target), assignment.Value)
-            : new JsPatternElement(expression.Span, ToPattern(expression), null);
+    private JsPatternElement ToPatternElement(JsExpression expression) => expression switch
+    {
+        JsAssignmentExpression { Operator: SliceTokenKind.Equals } assignment =>
+            new JsPatternElement(
+                expression.Span, ToPattern(assignment.Target), assignment.Value),
+        JsDestructuringAssignment destructuring =>
+            new JsPatternElement(expression.Span, destructuring.Target, destructuring.Value),
+        _ => new JsPatternElement(expression.Span, ToPattern(expression), null),
+    };
 
     // ---- token plumbing ------------------------------------------------------------------------
 

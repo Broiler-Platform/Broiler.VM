@@ -6840,3 +6840,313 @@ of the same gate is unasserted too**, and is named here for the same reason.
 watched in both directions; the Octane run of 2026-09-05, in which the `regexp` benchmark reported
 a score and printed no checksum failure; and the absence of any `System.Text.RegularExpressions`
 spelling in the profile's three product assemblies, which is what the rule now holds. 2026-09-05.
+
+---
+
+### JSC-168
+
+**Where:** [JSC-138](#jsc-138), which recorded that a function declaration written inside a block
+does not close over the block's bindings and left the repair to a later bundle. This is that bundle.
+
+**What was assumed.** That a function declaration is a `var` in every respect but its initialiser —
+hoisted to the enclosing body, initialised before the first statement runs — so one collector could
+answer for both. `CollectVarScope` descended through blocks, loops, `try` and `switch` gathering
+declarations into the enclosing body's list, and `CompileBlock` had nothing to do with them.
+
+**What was true.** The two part company at exactly one point, and it is the point that decides which
+environment a closure captures. **A function declaration written inside a block is a LEXICAL binding
+of that block**, so its closure is built while the block's record is current; a `var` anywhere in a
+body binds in the body. Hoisting the declaration out built the closure against a chain the block's
+record was not on, and a body naming a `let` of the same block resolved it to a global:
+`{ let n = 0; function fn() { n += 1; } fn(); }` answered `uncaught ReferenceError: n is not defined`
+where the same block written with a function EXPRESSION answered `1`. The same defect had a second
+face nobody had connected to it — two sibling blocks each declaring `function* g()` share one hoisted
+binding, so the second declaration wins in both blocks and the first block's `[...g()]` yields the
+second's value. A second agent met that face, wrote it down as `undefined is not iterable`, and
+worked around it.
+
+**And the language's answer has a second half that cannot be shipped separately.** Annex B
+additionally gives sloppy code a `var`-scoped binding of the same name, initialised to `undefined`
+when the body is entered and assigned the block's binding WHERE THE DECLARATION STANDS. Doing only
+the lexical half was measured before it was extended: it turns `if (x) { function f() { } } f();` —
+which every engine runs — into a `ReferenceError`, and it cost **59 variants of `test/annexB`
+outside the excluded eval families** that had been passing, against 209 it fixed. An early error or
+a lost binding where the language has neither is worse than the failure being closed, so the two
+halves are one correction.
+
+**What replaced it.** `CollectVarScope` collects a function declaration at the TOP LEVEL of a
+hoisting scope and nowhere below it, looking through a label because
+`TopLevelVarScopedDeclarations` does; `CollectLexical` answers with the block's function names
+beside its `let`, `const` and `class` names, and with the constness of each, so `CompileBlock`
+declares the whole lexical set before the block's first instruction — which is also the temporal
+dead zone the block always owed and did not have. `HoistBlockFunctions` then builds every closure at
+block entry with the block's record current, slots first so two functions in one block can call each
+other. A `switch` gets the same treatment over its clauses read as one list, because its clauses are
+one record. `ParseIf` gives a bare declaration in an `if` or `else` clause the block Annex B says it
+is, once, so that every rule about a declaration in a block applies to it without being restated.
+
+**Annex B's own clause is a question about an EARLY ERROR, and `ScanAnnexB` asks exactly that
+question.** The alias is created when replacing the declaration with `var F` would not have been a
+syntax error, so the walk carries the set of names such a `var` would have collided with, adds each
+enclosing block's lexical names on the way down, and admits a declaration when its name is not in
+the set its ENCLOSING blocks give. A simple catch parameter does not block it and a destructuring one
+does, which is not this walk's invention but B.3.4's exemption. A parameter name blocks it, and so
+does `arguments`. **A generator, an async function and an async generator get no alias at all** —
+the clause names `FunctionDeclaration` and not the three productions that look like it — and
+admitting them cost three conforming refusals in `test/language/statements/switch` before it was
+noticed.
+
+**What that cost, measured.** `test/annexB/language/function-code` **61 of 159 variants to 159 of
+159**; `test/annexB/language/global-code` **48 of 153 to 136 of 153**, the remaining seventeen all
+waiting on `$262.evalScript`, which this manifest declines as a guest-initiated load. The whole of
+`test/annexB/language` outside the excluded eval families goes **167 of 425 to 353 of 425**, and the
+excluded eval families themselves — measured but not claimed — **116 of 470 to 308 of 470**.
+`test/language/statements/for-await-of` goes **2,420 of 2,427 to 2,427 of 2,427**, which includes
+the four variants [JSC-138](#jsc-138) named. `test/language/statements/switch` goes **181 of 216 to
+213 of 216** and `test/language/statements/block` loses its two failures. Nothing regressed:
+`test/language/statements`, `test/language/expressions`, `test/annexB/language` and
+`test/built-ins/Array` were each read variant by variant at both ends and **no variant that passed
+before fails after**.
+
+**Two of the suite's own files disagree with the comparison engine, and this profile follows the
+suite.** `annexB/language/function-code/block-decl-nested-blocks-with-fun-decl.js` asserts that a
+declaration in a nested block whose name an enclosing block declares lexically gets NO alias, and
+`block-decl-func-skip-arguments.js` asserts that a declaration named `arguments` gets none;
+`/opt/node22/bin/node` fails both when they are run through the suite's own harness. Both shapes are
+therefore kept OUT of the differential probes, which take their answers from that engine, and are
+carried by the suite figures instead.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; the subtree runs named
+above, taken before any change, again after the lexical half alone, and again after both halves;
+cases 426 to 448 of `src/tests/differential/the-statement-and-object-surface.js`, every one of them
+measured against `/opt/node22/bin/node` before it was written down; and the acceptance rows
+`runs/a-function-a-block-declares.js` and
+`runs/the-declarations-a-clause-still-admits.js`. 2026-09-05.
+
+### JSC-169
+
+**Where:** `ToPattern` in `JsParser`, the cover grammar's reinterpretation of an array or object
+LITERAL as an assignment pattern, and the early errors an assignment pattern carries.
+
+**What was assumed.** That the reinterpretation is a shape change and the rules had already been
+stated on the declaration path — so `ToPattern` needed to refuse only what could not be a reference
+at all.
+
+**What was true.** The two paths deliberately differ, which is why sharing them is refused, and the
+difference cuts both ways: `ParseBindingPattern` had rules `ToPattern` also owed, and `ToPattern`
+had a refusal the language does not have. **Four rules, three missing and one invented.**
+
+**A rest element is last with nothing after it, and a comma is something.** An array literal may end
+with a comma and an `ArrayAssignmentPattern` may not, so `var a = [...x,];` is a value and
+`0, [...x,] = [];` is a syntax error — and the comma is gone from the tree by the time the
+reinterpretation runs, so the literal now records whether there was one. The object case reads the
+same way.
+
+**A shorthand property's key is an `IdentifierReference` and a written-out key is an
+`IdentifierName`.** `({ default: 42 })` is a property and `({ default })` is a reference to a word no
+binding may be called. The rule is stated where the literal's entry is parsed rather than in the
+reinterpretation, because the same braces cover both readings and the rule is the same on either.
+
+**Strict code replaces neither restricted name, and a bracket does not change that.**
+`"use strict"; arguments = 1;` was refused where the `=` was read; `"use strict"; [arguments] = [];`
+reached no such place, because the bracket settled the left-hand side as a pattern before the rule
+was asked. The rule belongs on every LEAF of a pattern, which is what also refuses `[...eval]` and
+`({ a: arguments })`.
+
+**And the invented refusal is the one that mattered most.** An element whose target is itself a
+pattern arrives at `ToPatternElement` ALREADY reinterpreted — `[a] = 1` and `{} = 1` are settled as
+destructuring assignments the moment their `=` is read — so it was a `JsDestructuringAssignment`
+where the code looked for a `JsAssignmentExpression`, fell through to `ToPattern`, and met a node
+that is neither a literal nor a reference. `[ [a] = 1 ] = []` — an ordinary program, and the shape
+the suite uses to test that an iterator is closed when a nested default throws — was REFUSED. A
+refusal of a correct program is worse than an accepted incorrect one, and this one was reachable
+from three families at once.
+
+**What that cost, measured.** `test/language/expressions/assignment/dstr` **609 of 640 variants to
+632 of 640**; `test/language/statements/for-of/dstr` **1,074 of 1,095 to 1,093 of 1,095**;
+`test/language/statements/for-in/dstr` **40 of 49 to 49 of 49**. Nothing regressed in
+`test/language/expressions` or anywhere else measured.
+
+**What is NOT closed here.** The `syntax-error-ident-ref-*-escaped` variants of the same families
+need the STRICT-reserved word set — `implements`, `interface`, `package`, `private`, `protected`,
+`public` — which this front end does not have at all; [JSC-173](#jsc-173) records that separately,
+because it is a rule about identifiers everywhere rather than about patterns.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; the subtree runs named
+above at both ends; twenty-four shapes put through `/opt/node22/bin/node` and this host side by side
+before anything was changed, covering both directions of every rule; cases 471 to 485 of
+`src/tests/differential/the-statement-and-object-surface.js`; and the acceptance rows
+`refused/a-rest-element-with-a-comma-after-it.js`,
+`refused/a-reserved-word-as-a-shorthand-property.js`,
+`refused/a-restricted-name-as-a-pattern-target.js` and
+`runs/the-patterns-a-rest-and-a-shorthand-still-admit.js`. 2026-09-05.
+
+### JSC-170
+
+**Where:** the completion value a script answers with, which slot zero of a script unit holds and
+`CompileStatements` threads.
+
+**What was assumed.** That a statement either produces a value or leaves the one before it standing,
+so an expression statement writes the slot and nothing else touches it.
+
+**What was true.** That is the rule for a statement LIST and for a block, and it is not the rule for
+most statements. `UpdateEmpty(C, undefined)` appears on `if`, on every iteration statement, on
+`with`, on `try` and on `switch`: each answers with its own body's value, and with `undefined` —
+not with the value of whatever ran before it — when its body produced none. So `1; if (true) { }` is
+`undefined` and was `1`, `1; while (false) { }` is `undefined` and was `1`, and
+`1; switch ("a") { case null: }` is `undefined` and was `1`. **A `finally` that completes normally
+contributes no value of its own either**: the `try` statement's value is its block's or its `catch`'s
+and survives the finaliser, so `2; try { 3; } finally { }` is `3` and
+`4; try { } catch (e) { } finally { 5; }` is `undefined` — and the finaliser was being compiled with
+the enclosing script's completion slot, so its statements overwrote an answer that was already
+settled.
+
+**A BLOCK IS THE EXCEPTION, and it is the one a list of these gets wrong.** `Block : { }` answers
+`empty` and a statement list carries the value forward across an empty one, so `1; { }` is `1`. That
+is why the reset is written at the eight statements that own it rather than once in
+`CompileStatements`.
+
+**What replaced it.** Two instructions at the head of each of those statements, putting the slot back
+to `undefined` before the statement runs. A slot the body overwrites when it produces a value and
+leaves alone when it does not IS `UpdateEmpty`, so the whole rule costs nothing per iteration and a
+`break` out of the middle of a loop body needs no arm of its own — the slot already holds what the
+language says it holds. The finaliser is compiled with no completion slot at all on both of its
+normal-path emissions.
+
+**What that cost, measured.** The `cptn-*` families of `test/language/statements` go **42 of 148
+variants to 148 of 148**, which is every one of them: `do-while`, `for`, `for-in`, `for-of`, `if`,
+`switch`, `try`, `while` and `with`, each measured as its own family rather than in aggregate.
+`test/language/statements/if` goes **104 of 125 to 120 of 125** and
+`test/language/statements/try` **353 of 388 to 375 of 388**.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; the subtree run of
+`test/language/statements` before and after; twenty-five completion values put through
+`/opt/node22/bin/node` and this host and compared whole; and cases 449 to 470 of
+`src/tests/differential/the-statement-and-object-surface.js`, which reach the value through an
+INDIRECT eval because a direct one is a published exclusion of this manifest. 2026-09-05.
+
+### JSC-171
+
+**Where:** `ParseOrdinaryParameters` and the `[Yield]` and `[Await]` contexts a parameter list and a
+body are parsed in.
+
+**What was assumed.** That an arrow's parameters are `[~Await]` like a method's, and that clearing
+the flag was the safe answer because an `await` there would lower an `Await` into a unit with no
+async flag and the verifier would refuse it. The declaration said so in those words.
+
+**What was true.** The reasoning was right about the consequence and wrong about the rule.
+`ArrowParameters[?Yield, ?Await]` inherits the enclosing context, so
+`async function f() { (await) => { }; }` is a syntax error every engine gives and was accepted here.
+**The language's answer is both halves at once**: the context reserves the NAME, and a separate early
+error — `ArrowParameters Contains AwaitExpression` — refuses the EXPRESSION. Only the two together
+are safe; the first alone produces exactly the artifact that declaration warned about.
+
+**And the same sentence is written three more times in the grammar.** A generator's
+`FormalParameters` may not contain a `YieldExpression`, an async function's and an async method's may
+not contain an `AwaitExpression`, and an `AsyncArrowHead` may not either. All four are one rule about
+one position, so they are one flag set by `ParseParameters` and one refusal at each of the two
+expressions.
+
+**The rule had already cost this component the failure it exists to prevent, in the half nobody was
+looking at.** `ParseOrdinaryParameters` cleared `[Await]` and left `[Yield]` alone, and
+`ParseFunctionBody` decided `[Await]` for every body and left `[Yield]` to its callers — so an
+ordinary method written inside a generator kept the ENCLOSING generator's context in both its
+parameter list and its body. `function* g() { ({ m(x = yield) { } }); }` and
+`function* g() { ({ m(yield) { return yield; } }); }` are programs the comparison engine runs, and
+this host answered **`1609 (InvalidArtifact/SemanticValidationFailed)`** — the verifier refusing
+bytes this component had just produced, which roadmap section 3.4 records as the worst failure shape
+this component has. A `MethodDefinition` passes neither parameter down, so both are now `[~Yield,
+~Await]`, and a generator METHOD's list — which really is `[+Yield]` — sets the flag itself instead
+of borrowing an answer meant for ordinary methods.
+
+**What that cost, measured.** The rule reaches every family that has a parameter list, so the
+figures are small and wide rather than concentrated:
+`test/language/expressions/async-arrow-function` **105 of 110 variants to 109 of 110**,
+`test/language/expressions/arrow-function` **612 of 643 to 614 of 643**,
+`test/language/expressions/generators` **526 of 546 to 528 of 546**,
+`test/language/statements/generators` **501 of 510 to 503 of 510**,
+`test/language/statements/class` **8,405 of 8,635 to 8,411 of 8,635** and
+`test/language/expressions/class` **7,822 of 8,010 to 7,828 of 8,010**;
+`test/language/expressions/object/method-definition` goes **518 of 557 to 551 of 557** together with
+[JSC-172](#jsc-172). Forty-four variants across those families pass that did not, and none that
+passed fails. The figure worth reading is the one that is not a suite number: two shapes that
+produced an artifact this component's own verifier refused now produce a program.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; twenty shapes over the
+arrow, method, generator, async and async-generator forms put through `/opt/node22/bin/node` and this
+host before anything was changed and again after, in both directions; cases 486 to 497 of
+`src/tests/differential/the-statement-and-object-surface.js`; and the acceptance rows
+`refused/a-suspension-in-a-parameter-list.js` and
+`runs/a-suspension-a-parameter-list-still-admits.js`. 2026-09-05.
+
+### JSC-172
+
+**Where:** `PropertyKey` in `JsParser`, and the entry a generator method builds in an object literal.
+
+**What was assumed.** That a private name is refused wherever it does not belong, and that
+`MemberName` — whose own comment says it is refusing the object literal's key — was that place.
+
+**What was true.** `MemberName` reads what follows a `.`, and the object literal's key is read by
+`PropertyKey`, which took any token's raw text. So `({ #m() { } })` — and the getter, setter,
+generator, async and plain-entry spellings of it — were accepted, and the language has no such
+production in any edition. It holds INSIDE a class as much as outside one, because the private names
+a class body binds belong to the class and an object literal written in a field's initialiser is
+still an object literal. Stating it once where the key is read covers five entry forms at once, and a
+class member never passes through there: the member parser recognises its own private name before it
+asks for a key.
+
+**And beside it, one entry form did not say what it was.** The object literal's generator arm built
+its entry without the method bit that its ordinary, accessor, async and async-generator siblings all
+set — so the lowering emitted `DefineField` rather than `DefineMethod`, the function had no home
+object, and `({ *g() { super.x; } })` was refused with "`super` is only admitted inside a method"
+while `({ async *g() { super.x; } })` beside it was accepted. That is a refusal of a correct program,
+found from the other direction while measuring the family the private-name rule lives in.
+
+**What that cost, measured.** `test/language/expressions/object/method-definition` **518 of 557
+variants to 551 of 557** together with [JSC-171](#jsc-171), and
+`test/language/expressions/object/concise-generator.js` passes at both variants where it passed at
+neither. The six that remain are four direct-`eval` variants this manifest excludes and two
+`yield`-in-a-spread cases inside a generator method's body, which are neither this correction's nor
+[JSC-171](#jsc-171)'s. Two name-inference variants that had been failing —
+`fn-name-gen.js` and `generator-name-prop-symbol.js` — pass now, because the entry a generator
+method builds finally reaches `DefineMethod`.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; the subtree run named
+above at both ends; nineteen shapes over the five entry forms and the class members they must not
+reach, put through `/opt/node22/bin/node` and this host before and after; cases 498 to 506 of
+`src/tests/differential/the-statement-and-object-surface.js`; and the acceptance rows
+`refused/a-private-name-as-a-property-key.js` and
+`runs/the-keys-an-object-literal-still-admits.js`. 2026-09-05.
+
+### JSC-173
+
+**Where:** the words strict code reserves and this front end does not, recorded and NOT repaired
+here, so that the next reader does not find it by measuring the family it hides in.
+
+**What was assumed.** Nothing was assumed; the set was never written. `IsIdentifierName` answers for
+the contextual keywords and `BindingName` refuses `eval`, `arguments` and `let`, and there the
+reservation stops.
+
+**What was true.** Strict code reserves six more words outright — `implements`, `interface`,
+`package`, `private`, `protected` and `public` — and reserves `yield` and `static` as well. This
+front end accepts all of them everywhere: `"use strict"; package;` compiles, and so does
+`"use strict"; var package = 1;`. The gap surfaces in the `syntax-error-ident-ref-*-escaped` variants
+of the destructuring families [JSC-169](#jsc-169) closed the rest of, because those spell the word
+through a unicode escape and `RefuseEscapedReservedWord` asks a keyword table the words are not in;
+twelve variants across `test/language/expressions/assignment/dstr` and
+`test/language/expressions/arrow-function/dstr` are waiting on it, and the `identifiers` families
+hold more.
+
+**What replaced it.** Nothing, in this bundle, and the reason is a measurement rather than a
+preference. The repair is an EARLY ERROR over a set of ordinary identifiers, so its blast radius is
+every strict-mode program in the suite and every strict-mode program a host runs — the direction in
+which a mistake turns working programs into refusals. It wants its own two-direction audit against
+the comparison engine, over every position an identifier may stand in, and it is worth more than the
+twelve variants it would close here. Recording it is what stops the next reader treating those twelve
+as a pattern defect.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; six shapes over `package`,
+`yield`, `let` and `static` in binding, reference and shorthand positions, put through
+`/opt/node22/bin/node` and this host, in which this host accepts every one the engine refuses; and
+the subtree runs of the two families named above, in which the twelve remain failures at both ends.
+2026-09-05.
