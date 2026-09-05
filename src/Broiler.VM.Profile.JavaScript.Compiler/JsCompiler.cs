@@ -3364,7 +3364,7 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=654A6B
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=4DC775
     // Broiler-Human:        PENDING
     private void CompileReturn(JsReturnStatement returned)
     {
@@ -3372,12 +3372,19 @@ public sealed class JsCompiler
         // that declares a lexical name pushes a scope of its own, and so does a `with`, so asking
         // the current scope let `{ let a; return 1; }` at the top of a script through - and admitting
         // `with` would have added a second way in.
+        // AND IT IS AN EARLY ERROR RATHER THAN A MANIFEST REFUSAL, which until 2026-09-05 it was
+        // not. `2104` says this profile declines a construct it could otherwise run, and the
+        // conformance runner reads the code: every case of a top-level `return` was reported as a
+        // surface nobody had built and taken out of both the pass and the fail column, when what
+        // the language says is that the source is not a program. `2101` is what a source wrong
+        // about the LANGUAGE gets, exactly as `with` in strict code and a `super` property outside
+        // a method do.
         if (FunctionScope().Kind == ScopeKind.Program)
         {
             Refuse(
                 returned.Span,
-                SliceSourceDiagnosticCode.ConstructOutsideManifest,
-                "`return` outside a function is not admitted");
+                SliceSourceDiagnosticCode.UnexpectedToken,
+                "`return` has nothing to return from outside a function");
 
             return;
         }

@@ -349,8 +349,20 @@ public enum SliceTokenKind
 /// question about the whitespace between two tokens, and a parser that had to look back into the
 /// source text to answer it would be a third re-scan.
 /// </para>
+/// <para>
+/// <b><see cref="IsEscaped"/> is the fourth, and it is the one fact about an identifier that its
+/// characters no longer carry.</b> <c>await</c> and <c>await</c> ARE one name - the escape is
+/// how a code point was written and not part of what was written - so
+/// <see cref="RawText"/> holds the same string for both, and the difference between them is
+/// nevertheless an early error the language states: an identifier that reaches for a reserved word
+/// through an escape is refused wherever the unescaped word would have been. A parser that had to
+/// answer that by looking at the source text would be the re-scan this type exists to remove.
+/// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=95A77A
+/// <param name="IsEscaped">
+/// Whether the token's characters were written with at least one unicode escape in them.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=CD6A13
 // Broiler-Falsified-If: any consumer of this type reads the original source text to recover a fact a field here carries
 // Broiler-Human:        PENDING
 public readonly record struct SliceToken(
@@ -361,7 +373,8 @@ public readonly record struct SliceToken(
     int Line,
     int Column,
     bool PrecededByLineTerminator,
-    bool IsLegacyOctal);
+    bool IsLegacyOctal,
+    bool IsEscaped = false);
 
 /// <summary>
 /// The one pass over the source characters. Every artifact is tokenized at most once.
@@ -632,7 +645,7 @@ public sealed class SliceTokenizer
         return ReadPunctuator(startLine, startColumn, sawNewline);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=3DEFF5
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=101E97
     // Broiler-Human:        PENDING
     private SliceToken ReadIdentifierOrKeyword(int startLine, int startColumn, bool sawNewline)
     {
@@ -675,6 +688,12 @@ public sealed class SliceTokenizer
         // identifier spelled oddly, not an `if`; the language forbids it in keyword position and
         // this grammar has no production where the distinction changes what is parsed, so it is
         // read as the identifier its characters spell.
+        //
+        // WHAT IT IS NOT IS A NAME, and that fact is CARRIED from here rather than decided here. An
+        // IdentifierName may be spelled with escapes freely - a property key and a member name are
+        // both programs every engine runs - and an Identifier may not reach a reserved word that
+        // way, so the answer depends on the POSITION and only the parser knows the position. A
+        // tokenizer that decided it would be the ambient parse state this component removed.
         var escaped = index - start != text.Length;
 
         return new SliceToken(
@@ -685,7 +704,8 @@ public sealed class SliceTokenizer
             startLine,
             startColumn,
             sawNewline,
-            false);
+            false,
+            escaped);
     }
 
     /// <summary>Reads one <c>\uXXXX</c> or <c>\u{…}</c> escape inside an identifier.</summary>
@@ -810,13 +830,21 @@ public sealed class SliceTokenizer
 
     /// <summary>The keyword table. One place knows which words are words.</summary>
     /// <remarks>
+    /// <para>
     /// <c>let</c> is here rather than treated contextually. The slice grammar has no production in
     /// which <c>let</c> is a legal identifier reference, so the contextual treatment the language
     /// requires would buy a program nobody can write and cost a rule nobody can see.
+    /// </para>
+    /// <para>
+    /// <b>It is reachable from the wide parser, and for one question only:</b> which word an
+    /// ESCAPED identifier would have been had it been spelled plainly. Asking the table rather than
+    /// writing a second list of reserved words in the parser is what keeps the answer one fact -
+    /// a word added here cannot be forgotten there.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=15B2D3
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=E5ABA7
     // Broiler-Human:        PENDING
-    private static SliceTokenKind KeywordKind(string text) => text switch
+    internal static SliceTokenKind KeywordKind(string text) => text switch
     {
         "var" => SliceTokenKind.Var,
         "let" => SliceTokenKind.Let,

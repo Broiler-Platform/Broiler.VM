@@ -5619,3 +5619,291 @@ this one ordering.
 **Authority and date.** The implementation of 2026-09-05 in this checkout, the subtree sweep before
 and after, and three cases appended to `src/tests/differential/the-statement-and-object-surface.js`
 whose answers were taken from the comparison engine before they were written down. 2026-09-05.
+
+---
+
+### JSC-160
+
+**Where:** the wide front end's parse of every declarative scope — `JsParser.Parse`,
+`ParseBlock`, `ParseSwitch`, `ParseFunctionBody`, `ParseTry`, `ParseFor` and
+`ParseVariableStatement` — and the 183 variants of
+`test/language/block-scope/syntax/redeclaration`, the 125 of
+`test/language/statements/switch/syntax/redeclaration` and the rest of the family that a whole run
+of `test/language` reported as *"expected a parse-phase SyntaxError and it threw at run time"*.
+
+**What was assumed.** That a redeclaration is the lowering's problem: the lowering declares a slot
+per name, and a second declaration of a name it already has either finds that slot or overwrites the
+entry, so nothing is lost and nothing needs saying. The module goal was the exception and had rules
+of its own in `JsCompiler.DeclareModuleBindings`, written as if the script goal genuinely had none.
+
+**What was true.** **A lexical binding is created BY its declaration, so a second declaration of the
+same name has nothing to do — and the language refuses the source rather than choosing which
+declaration wins.** That is a whole family of early errors and not a corner of one. Within one
+declarative scope a lexically declared name may not be declared twice, may not collide with a `var`
+or a function declaration of the same scope, a `catch` parameter may not be redeclared by its
+handler's lexical declarations, a parameter may not be redeclared at the top of the body it belongs
+to, and a loop head's lexical bindings may not be redeclared with `var` by the body. Every one of
+those is a source no conforming engine accepts, and this front end ran all of them.
+
+**Three things make the rule harder than "the same name twice", and each was a way to get it
+wrong.** A FUNCTION DECLARATION is a lexical name inside a block and a `var` name at the top of a
+body, which is why `function f() {} function f() {}` is a program at a script's top level and
+`{ function f() {} let f; }` is not. The web-compatibility annex removes the duplicate error for a
+block whose duplicate names are ALL bound by plain function declarations in sloppy code — the shape
+the web is full of — and removes it for nothing else, so an async or generator declaration of the
+same name is still refused and a `var` colliding with any of them still is. And a `switch` shares
+ONE block scope across every one of its clauses, so `switch (x) { case 1: let a; case 2: let a; }`
+declares one name twice where a reader sees two scopes; a check written per clause would have found
+nothing wrong with either.
+
+**What replaced it.** A section of `JsParser` that answers, for one statement list, which names it
+declares lexically and which it declares with `var`, and applies the two rules to the pair.
+`ValidateBlockScope` runs where a `Block` closes, `ValidateVarScope` where a script, a module, a
+function body or a class static block closes, `ValidateCatchParameter` where a handler closes,
+`ValidateLoopHead` where a loop body closes, and `ValidateBindingList` on each `let` or `const`
+declaration's own binding list — which is also where `let x, x;` and `let let;` are refused. **The
+`var` walk is deliberately NOT the one `JsCompiler.CollectVarScope` already had.** That one collects
+what a hoisting prologue must declare, so it takes a function declaration at every level, which is
+the web-compatibility behaviour of a block-level function; this one answers a question about the
+grammar, where a block-level function declaration is a lexical name and not a `var` one, and folding
+the two together would have refused `{ function f() {} } var f;`, which every engine runs.
+
+**Measured, on the pinned suite, before and after the whole bundle
+([JSC-160](#jsc-160) to [JSC-165](#jsc-165)).** `test/language/block-scope` went from 88 of 287
+variants to **281**, and its `syntax/redeclaration` subtree from 6 of 189 to **189** — that subtree
+now passes whole. `test/language/statements/switch` went from 54 of 216 to **181**.
+`test/language/statements` as a whole went from 15,630 of 17,818 to **16,322**, and
+`test/language/expressions` from 16,860 of 20,902 to **17,428**. `test/built-ins/Array`, run as a
+control because a wrongly-fired early error shows up in a subtree that has nothing to do with the
+rule, was unchanged at 5,232 of 6,115. **No variant that passed before the bundle fails after it**,
+in any of the five sweeps.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, five subtree sweeps taken
+either side of this bundle on the checkout it was written against, twenty-one cases appended to
+`src/tests/differential/the-statement-and-object-surface.js` whose answers were taken from the
+comparison engine before they were written down, and eight acceptance rows — five refusals and three
+that assert the rules do NOT fire, because an early error that fires where the language has none
+turns a working program into a refusal and is the worse failure of the two. 2026-09-05.
+
+---
+
+### JSC-161
+
+**Where:** `JsParser.ParseIf`, `ParseWhile`, `ParseDoWhile`, `ParseFor` and the labelled-statement
+arm of `ParseStatement`, and the 65 variants of `test/language/statements/if` together with the
+statement-position half of `test/language/statements/let/syntax`.
+
+**What was assumed.** That the body of an `if`, a loop or a label is a statement, and that
+`ParseStatement` is the production that parses one. It is the production that parses a
+`StatementListItem`, which is a wider thing.
+
+**What was true.** **The grammar gives these five positions a `Statement`, and a declaration is not
+one.** `if (x) let y;`, `while (x) class C {}` and `label: const z = 1;` are syntax errors in every
+engine, and the reason is not tidiness: a lexical declaration whose only enclosing scope is the
+clause itself would have nowhere to put its slot and nothing could ever read it. The `with` body
+already refused a declaration for exactly this reason; the other five positions did not, and parsed
+one into a scope that could not hold it.
+
+**The one exception is the web-compatibility annex's, and it is narrower than it looks.** A PLAIN
+function declaration is admitted in an `if` clause, in an `else` clause and under a label, in sloppy
+code — and nowhere else and in no other form. So `while (x) function f() {}` is refused in sloppy
+code too, and a generator, an async function and an async generator are refused in all five
+positions in both modes.
+
+**What replaced it.** `ParseNestedStatement`, which each of the five positions now calls, with a
+flag saying whether the annex's function declaration is admitted here. **Its hardest case is a line
+break.** An `ExpressionStatement` may not BEGIN with `let [` and may begin with `let` followed by
+anything else, so `if (false) let` followed by a newline and `x = 1;` is the identifier `let`, a
+semicolon nobody wrote, and a separate assignment — a program the suite writes down in seven places.
+The first implementation refused all seven, which is the direction that matters, because it turned
+working programs into refusals; the arm that recognises them is spelled out before the refusal.
+
+**Measured, on the pinned suite.** `test/language/statements/if` went from 43 of 125 variants to
+**104**, `test/language/statements/labeled` from 16 of 37 to **33**,
+`test/language/statements/while` from 45 of 72 to **62**, `test/language/statements/do-while` from
+46 of 70 to **62**, and `test/language/statements/let` from 249 of 287 to **280**. The intermediate
+sweep taken with the rule and without the line-break arm is what measured that arm's worth: seven
+variants across `for`, `for-in`, `for-of`, `for-await-of`, `if`, `labeled` and `while` had gone from
+passing to refused, and the arm returns all seven.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the subtree sweeps either
+side of it, nine cases appended to
+`src/tests/differential/the-statement-and-object-surface.js`, and two acceptance rows — one refusing
+a declaration as an `if` body, and one running the three positions the annex still admits.
+2026-09-05.
+
+---
+
+### JSC-162
+
+**Where:** `JsParser.ParseFunctionBody`, `ParseArrowBody`, `ParseClassMember` and `ParseObjectEntry`,
+and `ParseDirectives` — the last of which is the reason none of the other four could have been
+written first.
+
+**What was assumed.** That a formal parameter list is a list of bindings and that a duplicate in one
+is a sloppy-mode curiosity the lowering settles by letting the last one win. And that a directive
+prologue is a run of string literals each followed by a semicolon, a newline, or the end of the
+source.
+
+**What was true.** **Whether one name may be bound twice by a parameter list turns on three separate
+things, and the answer is "no" if any of them says so.** A method, an accessor and an arrow take
+`UniqueFormalParameters`, so `({ m(a, a) {} })` and `(a, a) => 1` are refused however sloppy the
+code around them is; strict code refuses a duplicate in any function; and a parameter list that is
+not SIMPLE — one with a default, a rest parameter or a pattern in it — refuses a duplicate in sloppy
+code too, because the arguments object can no longer be the mapped one that gave the legacy
+behaviour its meaning. Only the plain sloppy function with a plain list keeps
+`function f(a, a) {}`.
+
+**And a body may not declare `use strict` over a parameter list that is not simple**, which is an
+ordering the specification could not resolve rather than a restriction it chose: a default's
+expression is evaluated as the function is entered, so it would have to be strict or sloppy code
+before the directive that decides which had been reached.
+
+**A DIRECTIVE MAY BE THE LAST THING IN A BODY, and one was not recognised there.**
+`function f() { "use strict" }` has a prologue — the string is an expression statement whose
+semicolon the closing brace inserts — and this parser read it as an ordinary statement, so the body
+was sloppy. That is a whole strictness silently lost, and it also hid the rule above, because the
+directive the rule is about had not been seen. The prologue now ends at a closing brace as well as
+at a semicolon, at a line break and at the end of the source.
+
+**And an accessor's arity is grammar rather than convention.** A getter is written with an empty
+parameter list in the production itself, and a setter with exactly one `FormalParameter`, which
+admits a pattern and a default and admits no rest — because a setter is called with one argument and
+a rest parameter would be asking for a count the caller never varies.
+
+**Measured, on the pinned suite.** `test/language/expressions/object` went from 1,853 of 2,252
+variants to **1,929**, `test/language/expressions/arrow-function` from 506 of 643 to **612**,
+`test/language/expressions/function` from 447 of 484 to **463**, and
+`test/language/statements/function` from 727 of 783 to **745**.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the subtree sweeps either
+side of it, ten cases appended to
+`src/tests/differential/the-statement-and-object-surface.js`, and one acceptance row refusing a name
+bound twice by a list that carries a default. 2026-09-05.
+
+---
+
+### JSC-163
+
+**Where:** `SliceTokenizer.ReadIdentifierOrKeyword` and the `SliceToken` it returns, and every
+position in `JsParser` that reads an `Identifier` rather than an `IdentifierName`: `BindingName`, a
+function's and a class's own name, an identifier reference, a label, a `break` or `continue` label,
+an object pattern's shorthand and an object literal's shorthand.
+
+**What was assumed.** Written down on the tokenizer's own declaration, and half right: *"an escaped
+keyword is not a keyword … the language forbids it in keyword position and this grammar has no
+production where the distinction changes what is parsed, so it is read as the identifier its
+characters spell."*
+
+**What was true.** The first half holds and the second does not. **An escape changes how a name is
+written and not what it is, and the language nevertheless refuses the escaped spelling wherever the
+plain one is reserved** — so that a program cannot smuggle a keyword into an identifier position.
+The tokenizer resolves the escape, so `await` spelled with one and `await` spelled without one are
+the same characters by the time the parser sees them, and this front end therefore accepted an
+escaped `break` as a variable, an escaped `let` as a class name and an escaped `await` as a binding
+inside an async function — three sources no engine accepts. The suite writes the case out for every
+reserved word and every position it can appear in, which is why one bit on the token is worth
+carrying.
+
+**The rule is about the POSITION and the tokenizer cannot know the position**, which is why the fact
+is carried rather than decided there. An `IdentifierName` may be spelled with escapes freely — a
+property key and a member name both admit one — and only an `Identifier` may not reach a reserved
+word that way.
+
+**What replaced it.** `SliceToken` carries `IsEscaped`, set by the one place that reads an
+identifier's characters, and `JsParser.RefuseEscapedReservedWord` asks
+`SliceTokenizer.KeywordKind` which word the escape spells and then asks the SAME predicate every
+ordinary identifier position asks — so a word that is a name here stays a name here however it was
+spelled. An escaped `await` in a sloppy script is an ordinary identifier, and the same two spellings
+inside an async function are both refused. The two words that predicate cannot answer for are
+`let` and `static`, which strict code reserves and which it otherwise calls names because a property
+key may spell them.
+
+**Measured, on the pinned suite.** `test/language/identifiers` went from 263 of 535 variants to
+**407** and `test/language/reserved-words` from 35 of 53 to **47**, and both are this entry's alone:
+the sweep taken immediately before this rule and immediately after it moved `test/language`'s
+remaining subtrees from 3,812 of 5,100 to 3,977 and moved nothing outside those two directories.
+`test/language/expressions/assignment` went from 698 of 850 to **770** when the object literal's
+shorthand was included, which is where a destructuring assignment writes its targets.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the sweep taken either
+side of the rule alone, thirteen cases appended to
+`src/tests/differential/the-statement-and-object-surface.js` — written in PAIRS, because the rule is
+about a context and a case that only ever refuses cannot show one — and two acceptance rows, one
+refusing an escaped `enum` as a binding and one running a source that spells a property key, a
+member name and two unreserved words with escapes. 2026-09-05.
+
+---
+
+### JSC-164
+
+**Where:** `JsParser.ValidateClassBody`, the enumerating head of `JsParser.ParseFor`, and
+`ParseSwitch`.
+
+**What was assumed.** That a static member of a class body needs checking only against `prototype`,
+that a `for … in` or `for … of` head is a binding and an expression, and that a second `default`
+clause is a clause that never runs.
+
+**What was true.** **A static METHOD may be called `constructor` and a static FIELD may not.**
+`static constructor() {}` is an ordinary method of the constructor object that happens to carry that
+name; `static constructor;` is a field of the name the class definition owns. The check skipped
+every static member after testing it for `prototype`, so the field went through.
+
+**An enumerating head declares a binding and does not initialise it**, because the value comes from
+the object or the iterator — so `for (let x = 3 in o)` names a value nothing could ever read. The
+one form the language keeps is the web-compatibility annex's, and it is narrow: a `var`, a plain
+name, an `in` head, and sloppy code, which is the exact shape the web was written with before the
+rule existed.
+
+**And a `CaseBlock` is case clauses, one optional default clause, and case clauses again**, so a
+second `default` is a syntax error rather than a clause the dispatch will never reach.
+
+**What replaced it.** Three tests, each at the place that already had the facts in hand: the
+class-body validator falls through to the field case after the `prototype` test rather than
+continuing past it, the enumerating head refuses an initialiser outside the annex's shape, and the
+clause loop carries one bit saying whether a default has been seen.
+
+**Measured, on the pinned suite.** These three are small by design, and are recorded because each is
+a RULE rather than a file: `test/language/block-scope/syntax/for-in` went from 12 of 16 variants to
+**14**, `test/language/statements/class/elements` and `test/language/expressions/class/elements` lose
+four parse-phase failures each, and `test/language/statements/switch` loses the last of its
+`S12.11` pair. All are inside the bundle figures [JSC-160](#jsc-160) reports.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the sweeps either side of
+it, and sixteen cases appended to
+`src/tests/differential/the-statement-and-object-surface.js` whose answers were taken from the
+comparison engine before they were written down. 2026-09-05.
+
+---
+
+### JSC-165
+
+**Where:** `JsCompiler.CompileReturn`, and the 22 variants a whole-suite run reported in its
+`unsupported` column with the construct named — `test/language/global-code/return.js` among them.
+
+**What was assumed.** That `return` outside a function is a construct this manifest declines, which
+is what `SliceSourceDiagnosticCode.ConstructOutsideManifest` says.
+
+**What was true.** **It is an early error the language states, and a conformance runner grades the
+two answers differently.** `2104` says this profile could run the construct and has chosen not to,
+so every case of a top-level `return` was taken out of both the pass and the fail column; what the
+language says is that the source is not a program at all. The refusal itself was right —
+[JSC-111](#jsc-111) fixed the scope test it asks — and only the code it carried was wrong, which is
+the kind of error that survives precisely because nothing about the observable behaviour changes.
+
+**It was the only member of that column that was not a surface.** The rest of a whole run's
+`unsupported` total is a dynamic `import()`, an import attribute clause and `import.meta`, and each
+of those genuinely is a construct this manifest has not built.
+
+**What replaced it.** `SliceSourceDiagnosticCode.UnexpectedToken`, which is what a source wrong
+about the LANGUAGE gets — the same code `with` in strict code and a `super` property outside a
+method already carry — with a message that says what the source asked for rather than what this
+profile has.
+
+**Measured, on the pinned suite.** `test/language/statements/return` went from 10 of 31 variants to
+**30**, and the `unsupported` column of a sweep of `test/language/statements` went from 20 variants
+to **empty**. `test/language/global-code` carries the other two and went from 49 of 73 to **51**.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the sweep either side of
+it, and one acceptance row pinning the new code against the block-scoped shape
+[JSC-111](#jsc-111) records. 2026-09-05.

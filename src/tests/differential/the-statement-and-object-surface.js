@@ -413,3 +413,110 @@ p(function(){ return (function(){ var local = 1; return String(delete local); })
 p(function(){ try { var b = null; var k = { toString: function(){ throw new RangeError("key"); } }; return String(b[k]); } catch(e){ return e.name; } });
 p(function(){ try { var b = undefined; var k = { toString: function(){ throw new RangeError("key"); } }; b[k] = 1; return "no-throw"; } catch(e){ return e.name; } });
 p(function(){ var seen = 0; try { var b = null; var k = { toString: function(){ seen = 1; return "x"; } }; return String(b[k]); } catch(e){ return "threw:" + seen; } });
+
+// --- the early errors about DECLARED NAMES, which are what one declarative scope may hold. Every
+// case is asked through an indirect eval, because a probe file that wrote one of them directly
+// would not compile at all. `ok` means the source was accepted; anything else is the error's name.
+p(function(){ try { (0, eval)("{ let dn1; let dn1 }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("{ let dn2; var dn2 }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("{ { var dn3; } let dn3; }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("{ var dn4; var dn4 }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("{ function dn5() {} function dn5() {} }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("'use strict'; { function dn6() {} function dn6() {} }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("{ function* dn7() {} function* dn7() {} }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("{ function dn8() {} var dn8 }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("function dn9() { { let a; var a; } }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("{ function dnA() {} } var dnA;"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("let dnB; let dnB;"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("let dnC; var dnC;"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("function dnD(){} let dnD;"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("var dnE; function dnE(){}"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("function dnF(a) { let a; }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("function dnG(a) { { let a; } }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("(a) => { let a; }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("try {} catch (e) { let e; }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("try {} catch (e) { var e; }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("try {} catch ([e]) { var e; }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("try {} catch (e) { function e(){} }"); return "ok"; } catch(e){ return e.name; } });
+
+// --- a `switch` shares ONE block scope across every one of its clauses, which is what makes these
+// cases different from the block cases above, and it has at most one `default`.
+p(function(){ try { (0, eval)("switch (0) { case 1: let swA; break; case 2: let swA; break; }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("switch (0) { case 1: let swB; break; case 2: var swB; break; }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("switch (0) { case 1: let swC; break; case 2: swC = 1; }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("switch (0) { default: break; default: break; }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("switch (0) { case 1: function swD(){} default: function swD(){} }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("'use strict'; switch (0) { case 1: function swE(){} default: function swE(){} }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("switch (0) { case 1: function* swF(){} default: function* swF(){} }"); return "ok"; } catch(e){ return e.name; } });
+
+// --- a loop head and the body it encloses are two scopes, and the one rule that spans them.
+p(function(){ try { (0, eval)("for (let lpA, lpA;false;) ;"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("for (let lpB; false;) { var lpB; }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("for (let lpC of []) { let lpC; }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("for (let [lpD, lpD] of []) ;"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("for (var lpE of []) { var lpE; }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("let let;"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("var let;"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("'use strict'; var let;"); return "ok"; } catch(e){ return e.name; } });
+
+// --- a STATEMENT position, where a declaration may not stand. The one exception is Annex B's, and
+// it covers a plain function declaration in an `if` clause or under a label, in sloppy code only.
+p(function(){ try { (0, eval)("if (1) let stA;"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("if (1) function stB(){}"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("'use strict'; if (1) function stC(){}"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("if (1) function* stD(){}"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("if (1) class StE {}"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("while (0) function stF(){}"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("stG: function stH(){}"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("stI: let stJ;"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("if (false) let\nstK = 1;"); return "ok"; } catch(e){ return e.name; } });
+
+// --- a formal parameter list: when one name may appear in it twice, and the directive a list that
+// is not simple may not be given.
+p(function(){ try { (0, eval)("function paA(a, a) {}"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("'use strict'; function paB(a, a) {}"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("function paC(a, a = 1) {}"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("({ m(a, a) {} })"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("(a, a) => 1"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("(function (a = 1) { 'use strict' })"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("({ get gA(x) {} })"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("({ set sA() {} })"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("({ set sB(...x) {} })"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("({ set sC([x]) {} })"); return "ok"; } catch(e){ return e.name; } });
+
+// --- a unicode escape spells a name and never reaches a reserved word through one. The pairs are
+// what make the rule visible: one word is a name where nothing reserves it and refused where
+// something does, and a PROPERTY key is an IdentifierName and may spell anything at all.
+p(function(){ try { (0, eval)("var \\u0061wait;"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("async function esA() { var \\u0061wait; }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("var bre\\u0061k;"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { return String((0, eval)("var esB = { \\u0069f: 1 }; esB.\\u0069f;")); } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("class l\\u0065t {}"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("var \\u0061sync = 1;"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("function* esC() { var yi\\u0065ld; }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("var yi\\u0065ld;"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("'use strict'; var yi\\u0065ld;"); return "ok"; } catch(e){ return e.name; } });
+
+// --- an enumerating head declares a binding and does not initialise it, and the one exception is
+// Annex B's: a `var` with a plain name, an `in` head, and sloppy code.
+p(function(){ try { (0, eval)("for (let fhA = 3 in {}) ;"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("for (const fhB = 3 in {}) ;"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("for (var fhC = 3 in {}) ;"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("'use strict'; for (var fhD = 3 in {}) ;"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("for (var fhE = 3 of []) ;"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("for (var [fhF] = [] in {}) ;"); return "ok"; } catch(e){ return e.name; } });
+
+// --- the two names a class definition owns, against the members that may and may not spell them.
+p(function(){ try { (0, eval)("class ClA { static constructor; }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("class ClB { static 'constructor'; }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("class ClC { static constructor() {} }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("class ClD { static prototype; }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("class ClE { 'constructor'() {} }"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("class ClF { static ['constructor']; }"); return "ok"; } catch(e){ return e.name; } });
+
+// --- an object literal's SHORTHAND is a reference and its key is a name, so the escape rule reaches
+// it too; a `let` written that way is a name in sloppy code and the same escape refuses `break`.
+p(function(){ try { (0, eval)("var shA = { bre\\u0061k } = { break: 42 };"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("var shB = { l\\u0065t } = { let: 42 };"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("var shC = { br\\u0065ak = 1 } = {};"); return "ok"; } catch(e){ return e.name; } });
+p(function(){ try { (0, eval)("var shD = { async } = { async: 1 };"); return "ok"; } catch(e){ return e.name; } });

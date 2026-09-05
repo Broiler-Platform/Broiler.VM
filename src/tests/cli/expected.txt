@@ -515,3 +515,33 @@ modules/circular-a.mjs|4|1618
 modules/ambiguous.mjs|4|1617
 modules/an-import-in-a-script.js|3|2401:ModuleDeclarationOutsideModuleGoal
 modules/a-bare-specifier.mjs|6|resolves only a specifier that begins with
+
+# THE EARLY ERRORS ABOUT DECLARED NAMES, which JSC-160 added, and the three rows that hold the
+# OTHER direction of every one of them. An early error that fires where the language has none turns
+# a working program into a refusal, which is a worse failure than the one this bundle was written
+# to fix - so the accepting rows come first, and each of their values was taken from the comparison
+# engine before it was written down.
+runs/the-names-one-scope-may-hold-twice.js|0|1/a/b/second/reached/inner/shadow/last-wins/one-scope
+runs/the-declarations-a-clause-still-admits.js|0|consequent/alternate/label/an ordinary name
+runs/the-names-an-escape-may-still-spell.js|0|1/2/3/4
+
+# And the refusals, one per rule and one per code. `2201` is a name something has already declared,
+# `2202` is a lexical name a `var` of the same scope also declares, `2101` is a position the grammar
+# gives no declaration, and `2209` is a word this context reserves. None of them is `2104`: the
+# manifest admits every construct below, and a program that writes one of these is wrong about the
+# LANGUAGE - which is the difference a conformance runner grades on.
+refused/a-name-a-block-declares-twice.js|3|2201:DuplicateLexicalDeclaration
+refused/a-name-declared-both-lexically-and-with-var.js|3|2202:VarAndLexicalCollision
+refused/a-name-two-switch-clauses-share.js|3|2201:DuplicateLexicalDeclaration
+refused/a-catch-parameter-the-handler-declares-again.js|3|2201:DuplicateLexicalDeclaration
+refused/a-parameter-the-body-declares-again.js|3|2201:DuplicateLexicalDeclaration
+refused/a-name-bound-twice-by-one-parameter-list.js|3|2201:DuplicateLexicalDeclaration
+refused/a-declaration-as-the-body-of-an-if.js|3|2101:UnexpectedToken
+refused/an-escaped-reserved-word-as-a-name.js|3|2209:ReservedWordAsBinding
+
+# AND THE ONE ROW THAT MOVED RATHER THAN ARRIVED. `return` outside a function was refused as a
+# construct outside the manifest, which said this profile had not built it; it is an early error the
+# language states, so it now carries the code every other language error carries. Nothing about the
+# refusal itself changed - the same source is refused at the same position - and what changed is
+# which column a conformance runner may put it in.
+refused/a-return-outside-a-function.js|3|2101:UnexpectedToken

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   124
-// Annotated:        124/124
+// Relevant units:   141
+// Annotated:        141/141
 // Exempt:           17
-// Human-reviewed:   0/124
+// Human-reviewed:   0/141
 // IP risk:          None
 // Security risk:    High
 // Criteria:         2/2
 // Resource impact:  3/10 max
-// Unverified:       124
+// Unverified:       141
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -274,7 +274,7 @@ internal sealed class JsParser
     internal bool SawTopLevelAwait => sawTopLevelAwait;
 
     /// <summary>Parses a whole program.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=4057EA
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F0558F
     // Broiler-Human:        PENDING
     internal JsProgramNode Parse()
     {
@@ -304,12 +304,17 @@ internal sealed class JsParser
             body.Add(ParseStatement());
         }
 
+        // A SCRIPT'S OWN TOP LEVEL IS A DECLARATIVE SCOPE and its declarations obey the same two
+        // rules a function body's do. It has no parameters to collide with, which is the only part
+        // of the check a program has nothing for.
+        ValidateVarScope(body, null);
+
         return new JsProgramNode(span, directives, body, strict);
     }
 
     // ---- statements ----------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=867C65
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9594DE
     // Broiler-Human:        PENDING
     private JsStatement ParseStatement()
     {
@@ -413,10 +418,16 @@ internal sealed class JsParser
                     SliceTokenKind.Of or SliceTokenKind.Static or SliceTokenKind.Async or
                     SliceTokenKind.Let when Peek(1).Kind == SliceTokenKind.Colon:
                 {
+                    _ = RefuseEscapedReservedWord(Current);
                     var label = Current.RawText;
                     Advance();
                     Advance();
-                    return new JsLabelledStatement(span, label, ParseStatement());
+
+                    // A LABELLED ITEM IS A `Statement` OR A FUNCTION DECLARATION AND NOTHING ELSE,
+                    // so `label: let x;` is a syntax error while `label: function f() {}` is the
+                    // Annex B form every engine admits in sloppy code.
+                    return new JsLabelledStatement(
+                        span, label, ParseNestedStatement("a label", functionAllowed: !strict));
                 }
 
                 default:
@@ -429,14 +440,21 @@ internal sealed class JsParser
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=13C0B4
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=074893
     // Broiler-Human:        PENDING
     private System.Collections.Generic.List<JsStringLiteral> ParseDirectives()
     {
         var directives = new System.Collections.Generic.List<JsStringLiteral>();
 
+        // A DIRECTIVE MAY BE THE LAST THING IN A BODY, and until now one was not recognised there.
+        // `function f() { "use strict" }` has a prologue - the string is an expression statement
+        // whose semicolon the closing brace inserts - and reading it as an ordinary statement made
+        // the body sloppy, which is a whole strictness silently lost. It also hid the rule that a
+        // parameter list with a default in it may not be given a `use strict` directive, because
+        // the directive the rule is about had not been seen.
         while (Current.Kind == SliceTokenKind.StringLiteral &&
-            Peek(1).Kind is SliceTokenKind.Semicolon or SliceTokenKind.EndOfSource ||
+            Peek(1).Kind is SliceTokenKind.Semicolon or SliceTokenKind.EndOfSource or
+                SliceTokenKind.CloseBrace ||
             (Current.Kind == SliceTokenKind.StringLiteral && Peek(1).PrecededByLineTerminator))
         {
             var token = Current;
@@ -1093,7 +1111,7 @@ internal sealed class JsParser
         return new JsExpressionStatement(span, expression);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D651CF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D1B875
     // Broiler-Human:        PENDING
     private JsBlockStatement ParseBlock()
     {
@@ -1109,10 +1127,11 @@ internal sealed class JsParser
         }
 
         Expect(SliceTokenKind.CloseBrace, "}");
+        ValidateBlockScope(body);
         return new JsBlockStatement(span, body);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=478F25
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=839871
     // Broiler-Human:        PENDING
     private JsVariableStatement ParseVariableStatement()
     {
@@ -1127,6 +1146,7 @@ internal sealed class JsParser
         Advance();
         var declarators = ParseDeclarators(noIn: false);
         Semicolon();
+        ValidateBindingList(kind, declarators);
         return new JsVariableStatement(span, kind, declarators);
     }
 
@@ -1170,7 +1190,7 @@ internal sealed class JsParser
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=C43D03
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=A7885F
     // Broiler-Human:        PENDING
     private JsStatement ParseIf()
     {
@@ -1179,13 +1199,17 @@ internal sealed class JsParser
         Expect(SliceTokenKind.OpenParen, "(");
         var test = ParseExpression();
         Expect(SliceTokenKind.CloseParen, ")");
-        var consequent = ParseStatement();
+
+        // AN `if` CLAUSE IS THE ONE POSITION ANNEX B ADMITS A FUNCTION DECLARATION IN, and it
+        // admits it in sloppy code only. Everything else a declaration can begin with is refused
+        // here, which is the whole of the `statements/if` family.
+        var consequent = ParseNestedStatement("an `if`", functionAllowed: !strict);
         JsStatement? alternate = null;
 
         if (Current.Kind == SliceTokenKind.Else)
         {
             Advance();
-            alternate = ParseStatement();
+            alternate = ParseNestedStatement("an `else`", functionAllowed: !strict);
         }
 
         return new JsIfStatement(span, test, consequent, alternate);
@@ -1250,7 +1274,7 @@ internal sealed class JsParser
         return new JsWithStatement(span, target, ParseStatement());
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=CEFC11
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5E3C87
     // Broiler-Human:        PENDING
     private JsStatement ParseWhile()
     {
@@ -1259,16 +1283,16 @@ internal sealed class JsParser
         Expect(SliceTokenKind.OpenParen, "(");
         var test = ParseExpression();
         Expect(SliceTokenKind.CloseParen, ")");
-        return new JsWhileStatement(span, test, ParseStatement());
+        return new JsWhileStatement(span, test, ParseNestedStatement("a `while`"));
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F2DD64
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=00F97E
     // Broiler-Human:        PENDING
     private JsStatement ParseDoWhile()
     {
         var span = Span();
         Advance();
-        var body = ParseStatement();
+        var body = ParseNestedStatement("a `do`");
         Expect(SliceTokenKind.While, "while");
         Expect(SliceTokenKind.OpenParen, "(");
         var test = ParseExpression();
@@ -1282,7 +1306,7 @@ internal sealed class JsParser
         return new JsDoWhileStatement(span, body, test);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D29F46
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=74B58B
     // Broiler-Human:        PENDING
     private JsStatement ParseFor()
     {
@@ -1336,6 +1360,7 @@ internal sealed class JsParser
 
             Advance();
             var declarators = ParseDeclarators(noIn: true);
+            ValidateBindingList(kind, declarators);
 
             if (Current.Kind is SliceTokenKind.In or SliceTokenKind.Of && declarators.Count == 1)
             {
@@ -1343,6 +1368,25 @@ internal sealed class JsParser
                 // Expression, which is not a distinction anybody would guess: `for (x of a, b)` is
                 // a syntax error and `for (x in a, b)` iterates the keys of `b`.
                 var isOf = Current.Kind == SliceTokenKind.Of;
+
+                // AN ENUMERATING HEAD DECLARES A BINDING AND DOES NOT INITIALISE IT. The value comes
+                // from the object or the iterator, so `for (let x = 3 in o)` names a value that
+                // nothing could ever read. The one form the language keeps is Annex B's, and it is
+                // narrow: a `var` with a plain name, an `in` head, and sloppy code - which is the
+                // exact shape the web was written with before the rule existed.
+                if (declarators[0].Initialiser is not null &&
+                    (kind != SliceDeclarationKind.Var || isOf || strict ||
+                        declarators[0].Pattern is not null))
+                {
+                    Refuse(
+                        declarators[0].Span,
+                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        "a `for … in` or `for … of` head declares its binding and does not " +
+                            "initialise it");
+
+                    return new JsEmptyStatement(span);
+                }
+
                 Advance();
                 var source = isOf ? ParseAssignment() : ParseExpression();
                 Expect(SliceTokenKind.CloseParen, ")");
@@ -1356,13 +1400,16 @@ internal sealed class JsParser
                     return AwaitOnlyIterates(span);
                 }
 
+                var iterated = ParseNestedStatement("a `for` loop");
+                ValidateLoopHead(kind, declarators, iterated);
+
                 return isOf
                     ? new JsForOfStatement(
                         span, kind, declarators[0].Name, declarators[0].Pattern, null, source,
-                        ParseStatement(), isAwait)
+                        iterated, isAwait)
                     : new JsForInStatement(
                         span, kind, declarators[0].Name, declarators[0].Pattern, null, source,
-                        ParseStatement());
+                        iterated);
             }
 
             initialiser = new JsVariableStatement(headSpan, kind, declarators);
@@ -1394,11 +1441,13 @@ internal sealed class JsParser
                     return AwaitOnlyIterates(span);
                 }
 
+                var iterated = ParseNestedStatement("a `for` loop");
+
                 return isOf
                     ? new JsForOfStatement(
-                        span, null, string.Empty, pattern, head, source, ParseStatement(), isAwait)
+                        span, null, string.Empty, pattern, head, source, iterated, isAwait)
                     : new JsForInStatement(
-                        span, null, string.Empty, pattern, head, source, ParseStatement());
+                        span, null, string.Empty, pattern, head, source, iterated);
             }
 
             initialiser = new JsExpressionStatement(headSpan, expression);
@@ -1430,7 +1479,14 @@ internal sealed class JsParser
             return AwaitOnlyIterates(span);
         }
 
-        return new JsForStatement(span, initialiser, test, update, ParseStatement());
+        var counted = ParseNestedStatement("a `for` loop");
+
+        if (initialiser is JsVariableStatement declared)
+        {
+            ValidateLoopHead(declared.Kind, declared.Declarators, counted);
+        }
+
+        return new JsForStatement(span, initialiser, test, update, counted);
     }
 
     /// <summary>What a <c>for await</c> over a head that is not an <c>of</c> head is told.</summary>
@@ -1446,7 +1502,7 @@ internal sealed class JsParser
         return new JsEmptyStatement(span);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=BB6569
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=BEAD2B
     // Broiler-Human:        PENDING
     private JsStatement ParseBreakOrContinue()
     {
@@ -1457,6 +1513,7 @@ internal sealed class JsParser
 
         if (Current.Kind == SliceTokenKind.Identifier && !Current.PrecededByLineTerminator)
         {
+            _ = RefuseEscapedReservedWord(Current);
             label = Current.RawText;
             Advance();
         }
@@ -1504,7 +1561,7 @@ internal sealed class JsParser
         return new JsThrowStatement(span, value);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=0CEFB0
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=C759FB
     // Broiler-Human:        PENDING
     private JsStatement ParseTry()
     {
@@ -1537,6 +1594,7 @@ internal sealed class JsParser
             }
 
             handler = ParseBlock();
+            ValidateCatchParameter(parameter, catchPattern, handler);
         }
 
         if (Current.Kind == SliceTokenKind.Finally)
@@ -1553,7 +1611,7 @@ internal sealed class JsParser
         return new JsTryStatement(span, block, parameter, catchPattern, handler, finaliser);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=2EBD7F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D070D8
     // Broiler-Human:        PENDING
     private JsStatement ParseSwitch()
     {
@@ -1564,6 +1622,7 @@ internal sealed class JsParser
         Expect(SliceTokenKind.CloseParen, ")");
         Expect(SliceTokenKind.OpenBrace, "{");
         var clauses = new System.Collections.Generic.List<JsSwitchClause>();
+        var sawDefault = false;
 
         while (Current.Kind is SliceTokenKind.Case or SliceTokenKind.Default && diagnostics.Count == 0)
         {
@@ -1577,6 +1636,20 @@ internal sealed class JsParser
             }
             else
             {
+                // ONE `switch` HAS AT MOST ONE `default`, and the grammar says so rather than the
+                // semantics: a `CaseBlock` is case clauses, one optional default clause, and case
+                // clauses again. A second one is a syntax error and not a clause that never runs.
+                if (sawDefault)
+                {
+                    Refuse(
+                        Span(),
+                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        "a `switch` has at most one `default` clause");
+
+                    break;
+                }
+
+                sawDefault = true;
                 Advance();
             }
 
@@ -1594,12 +1667,25 @@ internal sealed class JsParser
         }
 
         Expect(SliceTokenKind.CloseBrace, "}");
+
+        // EVERY CLAUSE OF ONE `switch` SHARES ONE BLOCK SCOPE, which is the whole reason this is
+        // checked here and not clause by clause. The `CaseBlock` is the scope and a clause is not,
+        // so `switch (x) { case 1: let a; case 2: let a; }` declares one name twice - and a check
+        // that ran per clause would have found nothing wrong with either of them.
+        var whole = new System.Collections.Generic.List<JsStatement>();
+
+        foreach (var clause in clauses)
+        {
+            whole.AddRange(clause.Body);
+        }
+
+        ValidateBlockScope(whole);
         return new JsSwitchStatement(span, discriminant, clauses);
     }
 
     // ---- functions -----------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=CEBED1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=72103F
     // Broiler-Human:        PENDING
     private JsFunctionNode ParseFunctionRest(
         SliceSourceSpan span, bool declaration, bool isAsync = false)
@@ -1633,6 +1719,7 @@ internal sealed class JsParser
 
         if (IsIdentifierName(Current.Kind))
         {
+            _ = RefuseEscapedReservedWord(Current);
             name = Current.RawText;
             Advance();
         }
@@ -1823,7 +1910,7 @@ internal sealed class JsParser
         return new JsArrayPattern(span, elements, rest);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=43342A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=2D455B
     // Broiler-Human:        PENDING
     private JsPattern ParseObjectBindingPattern(SliceSourceSpan span)
     {
@@ -1861,7 +1948,13 @@ internal sealed class JsParser
                         SliceSourceDiagnosticCode.ExpectedToken,
                         "`:` was expected and `" + Describe(Current) + "` was found");
                 }
-                else if (!IsIdentifierName(keyToken.Kind))
+                else if (IsIdentifierName(keyToken.Kind))
+                {
+                    // A SHORTHAND'S KEY IS AN Identifier AND NOT AN IdentifierName, so it answers
+                    // for an escaped reserved word the way every other binding position does.
+                    _ = RefuseEscapedReservedWord(keyToken);
+                }
+                else
                 {
                     // A SHORTHAND'S KEY IS ALSO ITS BINDING NAME, so a word this goal or this
                     // strictness reserves is answered for as a reserved word - the same answer
@@ -1933,7 +2026,7 @@ internal sealed class JsParser
             : new JsTargetPattern(span, new JsIdentifier(span, BindingName()));
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=CED958
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9C328C
     // Broiler-Human:        PENDING
     private JsFunctionNode ParseFunctionBody(
         SliceSourceSpan span,
@@ -1941,7 +2034,8 @@ internal sealed class JsParser
         System.Collections.Generic.List<JsParameter> parameters,
         bool isArrow,
         bool isGenerator = false,
-        bool isAsync = false)
+        bool isAsync = false,
+        bool uniqueParameters = false)
     {
         var outer = strict;
 
@@ -1978,6 +2072,16 @@ internal sealed class JsParser
 
         Expect(SliceTokenKind.CloseBrace, "}");
         var inner = strict;
+
+        // THE BODY IS CHECKED WHILE ITS OWN STRICTNESS IS STILL IN FORCE. Nothing in the check below
+        // reads it today, because a function declaration at the top of a body is a `var` name in
+        // both modes and the Annex B relaxation has nothing to relax there - but the strictness of
+        // the code being judged is the strictness of the code it was written in, and restoring the
+        // caller's first would have made that accidental rather than stated. The parameter rules DO
+        // read it, and read it for the same reason: `function f(a, a) { "use strict"; }` is refused
+        // by a directive that has only just been seen.
+        ValidateParameters(parameters, uniqueParameters, inner, DeclaresUseStrict(directives));
+        ValidateVarScope(body, parameters);
         strict = outer;
         awaitIsOperator = outerAwait;
 
@@ -2002,7 +2106,7 @@ internal sealed class JsParser
     /// why <c>class D extends a.b() { }</c> parses and <c>class D extends a = b { }</c> does not.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F6D78A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=C0F049
     // Broiler-Human:        PENDING
     private JsClassNode ParseClass(SliceSourceSpan span, bool declaration)
     {
@@ -2013,6 +2117,7 @@ internal sealed class JsParser
 
         if (IsIdentifierName(Current.Kind))
         {
+            _ = RefuseEscapedReservedWord(Current);
             name = Current.RawText;
             Advance();
         }
@@ -2104,7 +2209,7 @@ internal sealed class JsParser
     /// not spell at all.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=646ECA
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=893659
     // Broiler-Human:        PENDING
     private void ValidateClassBody(System.Collections.Generic.List<JsClassMember> members)
     {
@@ -2139,7 +2244,25 @@ internal sealed class JsParser
                         SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
                         "the class definition declares `prototype` on the constructor, so a static " +
                             "member cannot declare it again");
+
+                    continue;
                 }
+
+                // A STATIC FIELD MAY NOT BE NAMED `constructor` EITHER, and a static METHOD may.
+                // `static constructor() {}` is an ordinary method of the constructor object that
+                // happens to be called that, so the arm above skipped every static member and let
+                // `static constructor;` through - a field of the name the class definition owns.
+                if (member.Kind != JsMethodKind.Field ||
+                    !string.Equals(member.Key, "constructor", System.StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                Refuse(
+                    member.Span,
+                    SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+                    "the class definition declares `constructor`, so a field cannot declare it " +
+                        "again");
 
                 continue;
             }
@@ -2213,7 +2336,7 @@ internal sealed class JsParser
     /// <c>static m() { }</c> is a static method - and reading the key first would have made the
     /// second one a field called <c>static</c> followed by a surprise.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=2E52A4
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=C1DE41
     // Broiler-Human:        PENDING
     private JsClassMember? ParseClassMember()
     {
@@ -2316,8 +2439,13 @@ internal sealed class JsParser
         // static-semantics pass's question rather than this one's.
         var parameters = ParseParameters();
 
+        if (kind is JsMethodKind.Get or JsMethodKind.Set)
+        {
+            ValidateAccessorParameters(kind == JsMethodKind.Get, parameters, span);
+        }
+
         var body = ParseFunctionBody(
-            span, key, parameters, isArrow: false, isGenerator, isAsync);
+            span, key, parameters, isArrow: false, isGenerator, isAsync, uniqueParameters: true);
 
         yieldIsOperator = outerOperator;
         awaitIsOperator = outerAwait;
@@ -2491,6 +2619,887 @@ internal sealed class JsParser
                     "`super` is followed by `.`, `[` or `(` and by nothing else");
 
                 return new JsNullLiteral(span);
+        }
+    }
+
+    // ---- the early errors about declared names --------------------------------------------------
+
+    /// <summary>One name a scope declares, where the source declared it, and by what.</summary>
+    /// <param name="Name">The bound name.</param>
+    /// <param name="Span">Where a collision this name is half of is reported.</param>
+    /// <param name="ByFunction">
+    /// <b>Whether a FUNCTION DECLARATION bound it</b>, which is the one fact the duplicate rule needs
+    /// and the only one it cannot recover from the name. Sloppy code may declare one function twice
+    /// in a block and may not declare anything else twice there, so a pair of colliding entries has
+    /// to remember what declared each of them.
+    /// </param>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=6B14D5
+    // Broiler-Human:        PENDING
+    private readonly record struct JsDeclaredName(
+        string Name, SliceSourceSpan Span, bool ByFunction);
+
+    /// <summary>Every name a statement list declares LEXICALLY, in source order.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A function declaration is lexical in a BLOCK and var-scoped at the TOP of a body, and that
+    /// one difference is the whole of <paramref name="topLevel"/>.</b> It is why
+    /// <c>function f() {} function f() {}</c> is a program at a script's top level and
+    /// <c>{ function f() {} let f; }</c> is not, and why <c>function f() {} let f;</c> is refused by
+    /// the var rule rather than by the duplicate rule.
+    /// </para>
+    /// <para>
+    /// <b>It descends into nothing but a label.</b> A block, a loop body and a clause each open a
+    /// scope of their own and are checked when THEY close; a label opens none, so
+    /// <c>{ label: function f() {} let f; }</c> is a duplicate and every engine says so.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9A2BA2
+    // Broiler-Human:        PENDING
+    private static void LexicallyDeclaredNames(
+        System.Collections.Generic.IReadOnlyList<JsStatement> body,
+        bool topLevel,
+        System.Collections.Generic.List<JsDeclaredName> into)
+    {
+        foreach (var statement in body)
+        {
+            switch (statement)
+            {
+                case JsVariableStatement variable when variable.Kind != SliceDeclarationKind.Var:
+                    foreach (var declarator in variable.Declarators)
+                    {
+                        DeclaratorNames(declarator, into);
+                    }
+
+                    break;
+
+                case JsClassDeclaration declared when declared.Class.Name.Length != 0:
+                    into.Add(new JsDeclaredName(declared.Class.Name, declared.Span, false));
+                    break;
+
+                // A GENERATOR AND AN ASYNC FUNCTION ARE LEXICAL NAMES THAT ANNEX B DOES NOT COVER.
+                // The web-compatibility relaxation below is written for `FunctionDeclaration` and
+                // for nothing else, so `{ function* f() {} function* f() {} }` is refused where
+                // `{ function f() {} function f() {} }` is not - which is why the flag records the
+                // PLAIN form rather than "a function of some kind declared it".
+                case JsFunctionDeclaration declaration
+                    when !topLevel && declaration.Function.Name.Length != 0:
+                    into.Add(new JsDeclaredName(
+                        declaration.Function.Name,
+                        declaration.Span,
+                        !declaration.Function.IsGenerator && !declaration.Function.IsAsync));
+
+                    break;
+
+                case JsLabelledStatement labelled:
+                    LexicallyDeclaredNames([labelled.Body], topLevel, into);
+                    break;
+
+                // AN EXPORTED DECLARATION IS A DECLARATION OF THE MODULE, and the `export` in front
+                // of it changes what the name is published as rather than where it is bound.
+                case JsExportDeclaration { Declaration: { } exported }:
+                    LexicallyDeclaredNames([exported], topLevel, into);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+    /// <summary>Every name a statement list declares with <c>var</c>, in source order.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It descends through every statement and stops at every FUNCTION</b>, because a <c>var</c>
+    /// anywhere inside a body belongs to that body and a <c>var</c> inside a nested function belongs
+    /// to the nested one. That is what makes <c>{ { var f; } let f; }</c> a collision and
+    /// <c>{ function g() { var f; } let f; }</c> a program.
+    /// </para>
+    /// <para>
+    /// <b>It is not <see cref="JsCompiler"/>'s walk of the same shape and must not become it.</b>
+    /// That one collects what a hoisting prologue has to declare, so it takes a function declaration
+    /// at EVERY level, which is the web-compatibility behaviour of a block-level function. This one
+    /// answers a question about the grammar, where a block-level function declaration is a lexical
+    /// name and not a var one - and folding the two together would refuse
+    /// <c>{ function f() {} } var f;</c>, which every engine runs.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=4D47F3
+    // Broiler-Human:        PENDING
+    private static void VarDeclaredNames(
+        System.Collections.Generic.IReadOnlyList<JsStatement> body,
+        bool topLevel,
+        System.Collections.Generic.List<JsDeclaredName> into)
+    {
+        foreach (var statement in body)
+        {
+            switch (statement)
+            {
+                case JsVariableStatement variable when variable.Kind == SliceDeclarationKind.Var:
+                    foreach (var declarator in variable.Declarators)
+                    {
+                        DeclaratorNames(declarator, into);
+                    }
+
+                    break;
+
+                case JsFunctionDeclaration declaration
+                    when topLevel && declaration.Function.Name.Length != 0:
+                    into.Add(new JsDeclaredName(declaration.Function.Name, declaration.Span, true));
+                    break;
+
+                // A LABEL CARRIES THE TOP-LEVEL-NESS THROUGH IT and every other statement ends it,
+                // which is why this one arm passes `topLevel` on and the rest pass `false`.
+                case JsLabelledStatement labelled:
+                    VarDeclaredNames([labelled.Body], topLevel, into);
+                    break;
+
+                case JsBlockStatement block:
+                    VarDeclaredNames(block.Body, false, into);
+                    break;
+
+                case JsIfStatement conditional:
+                    VarDeclaredNames([conditional.Consequent], false, into);
+
+                    if (conditional.Alternate is not null)
+                    {
+                        VarDeclaredNames([conditional.Alternate], false, into);
+                    }
+
+                    break;
+
+                case JsWhileStatement loop:
+                    VarDeclaredNames([loop.Body], false, into);
+                    break;
+
+                case JsDoWhileStatement loop:
+                    VarDeclaredNames([loop.Body], false, into);
+                    break;
+
+                case JsWithStatement scoped:
+                    VarDeclaredNames([scoped.Body], false, into);
+                    break;
+
+                case JsForStatement loop:
+                    if (loop.Initialiser is not null)
+                    {
+                        VarDeclaredNames([loop.Initialiser], false, into);
+                    }
+
+                    VarDeclaredNames([loop.Body], false, into);
+                    break;
+
+                case JsForInStatement loop:
+                    if (loop.Declaration == SliceDeclarationKind.Var)
+                    {
+                        HeadNames(loop.Name, loop.Pattern, loop.Span, into);
+                    }
+
+                    VarDeclaredNames([loop.Body], false, into);
+                    break;
+
+                case JsForOfStatement loop:
+                    if (loop.Declaration == SliceDeclarationKind.Var)
+                    {
+                        HeadNames(loop.Name, loop.Pattern, loop.Span, into);
+                    }
+
+                    VarDeclaredNames([loop.Body], false, into);
+                    break;
+
+                case JsTryStatement guarded:
+                    VarDeclaredNames(guarded.Block.Body, false, into);
+
+                    if (guarded.Handler is not null)
+                    {
+                        VarDeclaredNames(guarded.Handler.Body, false, into);
+                    }
+
+                    if (guarded.Finaliser is not null)
+                    {
+                        VarDeclaredNames(guarded.Finaliser.Body, false, into);
+                    }
+
+                    break;
+
+                case JsSwitchStatement switched:
+                    foreach (var clause in switched.Clauses)
+                    {
+                        VarDeclaredNames(clause.Body, false, into);
+                    }
+
+                    break;
+
+                case JsExportDeclaration { Declaration: { } exported }:
+                    VarDeclaredNames([exported], topLevel, into);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+    /// <summary>The names one declarator binds, whether it names one or destructures.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=748E65
+    // Broiler-Human:        PENDING
+    private static void DeclaratorNames(
+        JsDeclarator declarator, System.Collections.Generic.List<JsDeclaredName> into) =>
+        HeadNames(declarator.Name, declarator.Pattern, declarator.Span, into);
+
+    /// <summary>The names a loop head or a declarator binds, given its two possible shapes.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=6400A7
+    // Broiler-Human:        PENDING
+    private static void HeadNames(
+        string name,
+        JsPattern? pattern,
+        SliceSourceSpan span,
+        System.Collections.Generic.List<JsDeclaredName> into)
+    {
+        if (pattern is null)
+        {
+            if (name.Length != 0)
+            {
+                into.Add(new JsDeclaredName(name, span, false));
+            }
+
+            return;
+        }
+
+        var names = new System.Collections.Generic.List<string>();
+        PatternNames(pattern, names);
+
+        foreach (var bound in names)
+        {
+            into.Add(new JsDeclaredName(bound, span, false));
+        }
+    }
+
+    /// <summary>
+    /// The two rules every declarative scope obeys: no lexical name twice, and no lexical name that
+    /// a <c>var</c> of the same scope also declares.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The second rule is not the first one with a wider set.</b> Two <c>var</c> declarations of
+    /// one name are a program - <c>{ var f; var f; }</c> runs everywhere - because a <c>var</c>
+    /// binding is created once and the second declaration finds it. A lexical binding is created by
+    /// its declaration, so a second one has nothing to do, and the specification refuses the source
+    /// rather than choosing which declaration wins.
+    /// </para>
+    /// <para>
+    /// <b><paramref name="functionsMayRepeat"/> is Annex B and applies to a BLOCK in sloppy code
+    /// only.</b> <c>{ function f() {} function f() {} }</c> is a source the web is full of, so the
+    /// specification's web-compatibility annex removes the duplicate error for it - and removes it
+    /// only when EVERY declaration of the name is a function declaration and only outside strict
+    /// code, which is why the flag alone is not enough and each entry remembers what declared it.
+    /// The collision with a <c>var</c> is NOT relaxed by that annex, so
+    /// <c>{ function f() {} var f; }</c> is refused in sloppy code too.
+    /// </para>
+    /// <para>
+    /// <b>It stops at the first collision.</b> The parser's statement loops already halt on the
+    /// first diagnostic, so a second one from the same scope would report a name whose declaration a
+    /// reader is about to be told about anyway.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=1D0837
+    // Broiler-Human:        PENDING
+    private void ValidateDeclaredNames(
+        System.Collections.Generic.List<JsDeclaredName> lexical,
+        System.Collections.Generic.List<JsDeclaredName> vars,
+        bool functionsMayRepeat)
+    {
+        var seen = new System.Collections.Generic.Dictionary<string, bool>(
+            System.StringComparer.Ordinal);
+
+        foreach (var entry in lexical)
+        {
+            if (entry.Name.Length == 0)
+            {
+                continue;
+            }
+
+            if (!seen.TryGetValue(entry.Name, out var onlyFunctions))
+            {
+                seen[entry.Name] = entry.ByFunction;
+                continue;
+            }
+
+            if (functionsMayRepeat && onlyFunctions && entry.ByFunction)
+            {
+                continue;
+            }
+
+            Refuse(
+                entry.Span,
+                SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+                "`" + entry.Name + "` is declared twice in one scope");
+
+            return;
+        }
+
+        foreach (var entry in vars)
+        {
+            if (entry.Name.Length != 0 && seen.ContainsKey(entry.Name))
+            {
+                Refuse(
+                    entry.Span,
+                    SliceSourceDiagnosticCode.VarAndLexicalCollision,
+                    "`" + entry.Name + "` is declared both lexically and as a `var`");
+
+                return;
+            }
+        }
+    }
+
+    /// <summary>Rules on a BLOCK's statement list: a block, a <c>catch</c> body or a case block.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=2C6C4E
+    // Broiler-Human:        PENDING
+    private void ValidateBlockScope(System.Collections.Generic.IReadOnlyList<JsStatement> body)
+    {
+        // NOTHING IS CHECKED ONCE THE PARSE HAS REFUSED. A statement that failed to parse leaves a
+        // placeholder in the list and a binding name that failed leaves a synthetic name, so a
+        // second rule applied to that list would report a collision the source does not contain.
+        if (diagnostics.Count != 0 || body.Count == 0)
+        {
+            return;
+        }
+
+        var lexical = new System.Collections.Generic.List<JsDeclaredName>();
+        LexicallyDeclaredNames(body, topLevel: false, lexical);
+
+        if (lexical.Count == 0)
+        {
+            return;
+        }
+
+        var vars = new System.Collections.Generic.List<JsDeclaredName>();
+        VarDeclaredNames(body, topLevel: false, vars);
+        ValidateDeclaredNames(lexical, vars, functionsMayRepeat: !strict);
+    }
+
+    /// <summary>
+    /// Rules on the top of a VAR SCOPE - a script, a module, a function body or a static block -
+    /// and on the parameters that scope was entered with.
+    /// </summary>
+    /// <remarks>
+    /// <b>A parameter is not a lexical name of the body and collides with one anyway.</b>
+    /// <c>function f(a) { let a; }</c> is refused by a rule of its own, because the parameter list
+    /// and the body are two environments and the language forbids the inner one from shadowing the
+    /// outer at its own top level; <c>function f(a) { { let a; } }</c> is a program, because a block
+    /// inside the body is a third environment and shadowing is what it is for.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=DA4BD9
+    // Broiler-Human:        PENDING
+    private void ValidateVarScope(
+        System.Collections.Generic.IReadOnlyList<JsStatement> body,
+        System.Collections.Generic.IReadOnlyList<JsParameter>? parameters)
+    {
+        if (diagnostics.Count != 0)
+        {
+            return;
+        }
+
+        var lexical = new System.Collections.Generic.List<JsDeclaredName>();
+        LexicallyDeclaredNames(body, topLevel: true, lexical);
+
+        if (lexical.Count == 0)
+        {
+            return;
+        }
+
+        var vars = new System.Collections.Generic.List<JsDeclaredName>();
+        VarDeclaredNames(body, topLevel: true, vars);
+
+        // A FUNCTION DECLARATION AT THIS LEVEL IS ONE OF THE `var` NAMES, so the duplicate rule can
+        // never see two of them and the Annex B relaxation has nothing to relax here.
+        ValidateDeclaredNames(lexical, vars, functionsMayRepeat: false);
+
+        if (parameters is null || parameters.Count == 0 || diagnostics.Count != 0)
+        {
+            return;
+        }
+
+        var bound = new System.Collections.Generic.List<string>();
+
+        foreach (var parameter in parameters)
+        {
+            PatternNames(parameter.Target, bound);
+        }
+
+        foreach (var entry in lexical)
+        {
+            foreach (var name in bound)
+            {
+                if (!string.Equals(name, entry.Name, System.StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                Refuse(
+                    entry.Span,
+                    SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+                    "`" + entry.Name + "` is a parameter of this function, so its body cannot " +
+                        "declare it again");
+
+                return;
+            }
+        }
+    }
+
+    /// <summary>Rules on a <c>catch</c> parameter against the block it guards.</summary>
+    /// <remarks>
+    /// <b>A <c>var</c> may reach through a SIMPLE catch parameter and nothing else may.</b>
+    /// <c>try {} catch (e) { var e; }</c> is a source the web is full of and the specification's
+    /// web-compatibility annex keeps it working; the moment the parameter destructures -
+    /// <c>catch ([e])</c> - the annex stops applying and the same body is refused. A lexical
+    /// declaration of the name is refused either way, and so is a function declaration of it,
+    /// because a function declaration in a block is a lexical name.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=6994B4
+    // Broiler-Human:        PENDING
+    private void ValidateCatchParameter(
+        string parameter, JsPattern? pattern, JsBlockStatement handler)
+    {
+        if (diagnostics.Count != 0 || (parameter.Length == 0 && pattern is null))
+        {
+            return;
+        }
+
+        var bound = new System.Collections.Generic.List<JsDeclaredName>();
+        HeadNames(parameter, pattern, handler.Span, bound);
+
+        var seen = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
+
+        foreach (var entry in bound)
+        {
+            if (seen.Add(entry.Name))
+            {
+                continue;
+            }
+
+            Refuse(
+                entry.Span,
+                SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+                "`" + entry.Name + "` is bound twice by one `catch` parameter");
+
+            return;
+        }
+
+        var lexical = new System.Collections.Generic.List<JsDeclaredName>();
+        LexicallyDeclaredNames(handler.Body, topLevel: false, lexical);
+
+        foreach (var entry in lexical)
+        {
+            if (!seen.Contains(entry.Name))
+            {
+                continue;
+            }
+
+            Refuse(
+                entry.Span,
+                SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+                "`" + entry.Name + "` is the `catch` parameter, so the handler cannot declare it " +
+                    "again");
+
+            return;
+        }
+
+        if (pattern is null)
+        {
+            return;
+        }
+
+        var vars = new System.Collections.Generic.List<JsDeclaredName>();
+        VarDeclaredNames(handler.Body, topLevel: false, vars);
+
+        foreach (var entry in vars)
+        {
+            if (!seen.Contains(entry.Name))
+            {
+                continue;
+            }
+
+            Refuse(
+                entry.Span,
+                SliceSourceDiagnosticCode.VarAndLexicalCollision,
+                "`" + entry.Name + "` is bound by a destructuring `catch` parameter, so the " +
+                    "handler cannot declare it with `var`");
+
+            return;
+        }
+    }
+
+    /// <summary>Rules on one <c>let</c> or <c>const</c> declaration's own binding list.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Both rules are the declaration's own and neither is about the scope around it.</b>
+    /// <c>let a, a;</c> is refused where <c>var a, a;</c> is a program, for the reason two lexical
+    /// declarations of one name in a block are refused; and <c>let let;</c> is refused because the
+    /// grammar excludes the word from a lexical declaration's bound names in sloppy code as well as
+    /// strict, which is the one place <c>let</c> is reserved without strictness having anything to
+    /// do with it.
+    /// </para>
+    /// <para>
+    /// It is applied to a <c>for</c> head as well as to a statement, because
+    /// <c>for (let let of []) ;</c> and <c>for (let x = 1, x = 2;;) ;</c> are the same two rules one
+    /// production along.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=85ED13
+    // Broiler-Human:        PENDING
+    private void ValidateBindingList(
+        SliceDeclarationKind kind,
+        System.Collections.Generic.IReadOnlyList<JsDeclarator> declarators)
+    {
+        if (kind == SliceDeclarationKind.Var || diagnostics.Count != 0)
+        {
+            return;
+        }
+
+        var bound = new System.Collections.Generic.List<JsDeclaredName>();
+
+        foreach (var declarator in declarators)
+        {
+            DeclaratorNames(declarator, bound);
+        }
+
+        var seen = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
+
+        foreach (var entry in bound)
+        {
+            if (string.Equals(entry.Name, "let", System.StringComparison.Ordinal))
+            {
+                Refuse(
+                    entry.Span,
+                    SliceSourceDiagnosticCode.ReservedWordAsBinding,
+                    "`let` is not a name a `let` or `const` declaration may bind");
+
+                return;
+            }
+
+            if (seen.Add(entry.Name))
+            {
+                continue;
+            }
+
+            Refuse(
+                entry.Span,
+                SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+                "`" + entry.Name + "` is declared twice by one declaration");
+
+            return;
+        }
+    }
+
+    /// <summary>
+    /// Rules on a loop head's lexical bindings against the <c>var</c> declarations of its body.
+    /// </summary>
+    /// <remarks>
+    /// <b>The head and the body are two scopes and this is the one rule that spans them.</b>
+    /// <c>for (let x; false; ) { let x; }</c> is a program, because the body's block is a scope of
+    /// its own; <c>for (let x; false; ) { var x; }</c> is not, because a <c>var</c> in the body
+    /// belongs to the enclosing function and would be the same binding the head just declared
+    /// lexically.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9B0E82
+    // Broiler-Human:        PENDING
+    private void ValidateLoopHead(
+        SliceDeclarationKind? kind,
+        System.Collections.Generic.IReadOnlyList<JsDeclarator> declarators,
+        JsStatement body)
+    {
+        if (kind is null or SliceDeclarationKind.Var || diagnostics.Count != 0)
+        {
+            return;
+        }
+
+        var bound = new System.Collections.Generic.List<JsDeclaredName>();
+
+        foreach (var declarator in declarators)
+        {
+            DeclaratorNames(declarator, bound);
+        }
+
+        if (bound.Count == 0)
+        {
+            return;
+        }
+
+        var vars = new System.Collections.Generic.List<JsDeclaredName>();
+        VarDeclaredNames([body], topLevel: false, vars);
+
+        foreach (var entry in vars)
+        {
+            foreach (var head in bound)
+            {
+                if (!string.Equals(entry.Name, head.Name, System.StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                Refuse(
+                    entry.Span,
+                    SliceSourceDiagnosticCode.VarAndLexicalCollision,
+                    "`" + entry.Name + "` is declared by this loop's head, so its body cannot " +
+                        "declare it with `var`");
+
+                return;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Rules on a formal parameter list: when a name may appear in it twice, and when the body it
+    /// belongs to may declare <c>use strict</c>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Whether one name may be bound twice depends on three separate things and the answer is
+    /// "no" if any of them says so.</b> A METHOD, an ACCESSOR and an ARROW take
+    /// <c>UniqueFormalParameters</c>, so <c>({ m(a, a) {} })</c> and <c>(a, a) =&gt; 1</c> are
+    /// refused however sloppy the code around them is; STRICT code refuses a duplicate in any
+    /// function; and a parameter list that is not SIMPLE - one with a default, a rest or a pattern
+    /// in it - refuses a duplicate in sloppy code too, because the arguments object can no longer
+    /// be the mapped one that made the legacy behaviour meaningful. Only the plain sloppy function
+    /// with a plain parameter list keeps <c>function f(a, a) {}</c>, and it keeps it because the web
+    /// is full of it.
+    /// </para>
+    /// <para>
+    /// <b>A body may not declare <c>use strict</c> over a parameter list that is not simple</b>, and
+    /// the reason is an ordering the specification could not resolve: a default's expression is
+    /// evaluated as the function is entered, so it would have to be strict or sloppy code before
+    /// the directive that decides which has been reached. The language refuses the source rather
+    /// than choosing, and it is a rule this parser can only apply here - after the prologue has
+    /// been read, with the parameter list still in hand.
+    /// </para>
+    /// </remarks>
+    /// <param name="parameters">The list as the source wrote it.</param>
+    /// <param name="unique">Whether the production takes <c>UniqueFormalParameters</c>.</param>
+    /// <param name="strictHere">Whether the parameter list is strict-mode code.</param>
+    /// <param name="declaredUseStrict">Whether the body's own prologue declared strictness.</param>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5EBBDC
+    // Broiler-Human:        PENDING
+    private void ValidateParameters(
+        System.Collections.Generic.IReadOnlyList<JsParameter> parameters,
+        bool unique,
+        bool strictHere,
+        bool declaredUseStrict)
+    {
+        if (diagnostics.Count != 0 || parameters.Count == 0)
+        {
+            return;
+        }
+
+        var simple = true;
+
+        foreach (var parameter in parameters)
+        {
+            if (parameter.IsRest || parameter.Default is not null ||
+                parameter.Target is not JsTargetPattern { Target: JsIdentifier })
+            {
+                simple = false;
+                break;
+            }
+        }
+
+        if (!simple && declaredUseStrict)
+        {
+            Refuse(
+                parameters[0].Span,
+                SliceSourceDiagnosticCode.UnexpectedToken,
+                "a body cannot declare `use strict` over a parameter list that has a default, a " +
+                    "rest parameter or a pattern in it");
+
+            return;
+        }
+
+        if (!unique && simple && !strictHere)
+        {
+            return;
+        }
+
+        var seen = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
+
+        foreach (var parameter in parameters)
+        {
+            var names = new System.Collections.Generic.List<string>();
+            PatternNames(parameter.Target, names);
+
+            foreach (var name in names)
+            {
+                if (seen.Add(name))
+                {
+                    continue;
+                }
+
+                Refuse(
+                    parameter.Span,
+                    SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+                    "`" + name + "` is bound twice by one parameter list");
+
+                return;
+            }
+        }
+    }
+
+    /// <summary>Rules on an accessor's parameter list, which the grammar fixes exactly.</summary>
+    /// <remarks>
+    /// <b>An accessor's arity is grammar and not convention.</b> A getter is
+    /// <c>get PropertyName ( ) { … }</c> with an empty list in the production itself, and a setter
+    /// is <c>set PropertyName ( PropertySetParameterList ) { … }</c> where that list is ONE
+    /// <c>FormalParameter</c> - which admits a pattern and a default and admits no rest, because a
+    /// setter is called with exactly one argument and a rest parameter would be asking for a count
+    /// the caller never varies.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=4BB581
+    // Broiler-Human:        PENDING
+    private void ValidateAccessorParameters(
+        bool isGetter,
+        System.Collections.Generic.IReadOnlyList<JsParameter> parameters,
+        SliceSourceSpan span)
+    {
+        if (diagnostics.Count != 0)
+        {
+            return;
+        }
+
+        if (isGetter)
+        {
+            if (parameters.Count != 0)
+            {
+                Refuse(
+                    span,
+                    SliceSourceDiagnosticCode.UnexpectedToken,
+                    "a getter takes no parameters");
+            }
+
+            return;
+        }
+
+        if (parameters.Count != 1)
+        {
+            Refuse(
+                span,
+                SliceSourceDiagnosticCode.ExpectedToken,
+                "a setter takes exactly one parameter");
+
+            return;
+        }
+
+        if (parameters[0].IsRest)
+        {
+            Refuse(
+                parameters[0].Span,
+                SliceSourceDiagnosticCode.UnexpectedToken,
+                "a setter's one parameter cannot be a rest parameter");
+        }
+    }
+
+    /// <summary>Whether a directive prologue asked for strict mode.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=E30EEC
+    // Broiler-Human:        PENDING
+    private static bool DeclaresUseStrict(
+        System.Collections.Generic.IReadOnlyList<JsStringLiteral> directives)
+    {
+        foreach (var directive in directives)
+        {
+            if (string.Equals(directive.RawText, "\"use strict\"", System.StringComparison.Ordinal) ||
+                string.Equals(directive.RawText, "'use strict'", System.StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // ---- a statement position, where a declaration may not stand --------------------------------
+
+    /// <summary>
+    /// Parses the single <c>Statement</c> a loop, an <c>if</c> or a label takes as its body, and
+    /// refuses a DECLARATION written there.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The grammar admits a <c>Statement</c> in these positions and a declaration is not one</b>,
+    /// which is why <c>if (x) let y;</c> and <c>while (x) class C {}</c> are syntax errors rather
+    /// than one-statement scopes. The reason is the same one the <c>with</c> body already gives: a
+    /// lexical declaration whose only enclosing scope is the loop's single statement would have
+    /// nowhere to put its slot and nothing could ever read it.
+    /// </para>
+    /// <para>
+    /// <b>A plain function declaration is the one exception, and it is Annex B rather than the
+    /// grammar.</b> <c>if (x) function f() {}</c> and <c>label: function f() {}</c> are sources the
+    /// web is full of, so the web-compatibility annex admits them in sloppy code - and admits
+    /// exactly those two positions and no others, which is why <c>while (x) function f() {}</c> is
+    /// refused in sloppy code too. A generator, an async function and an async generator are never
+    /// admitted by that annex in any position, so <paramref name="functionAllowed"/> covers the
+    /// plain form alone.
+    /// </para>
+    /// </remarks>
+    /// <param name="position">What the body belongs to, for the message.</param>
+    /// <param name="functionAllowed">
+    /// Whether a plain function declaration is admitted here, which is true for an <c>if</c> clause
+    /// and a labelled item in sloppy code and false everywhere else.
+    /// </param>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=C9E0A0
+    // Broiler-Human:        PENDING
+    private JsStatement ParseNestedStatement(string position, bool functionAllowed = false)
+    {
+        // `let` IS THE ONE WORD WHOSE ANSWER HERE TURNS ON A LINE BREAK, and getting it wrong
+        // refuses a program rather than accepting one. An `ExpressionStatement` may not BEGIN with
+        // `let [` and may begin with `let` followed by anything else, so `if (false) let` followed
+        // by a newline and `x = 1;` is the identifier `let`, a semicolon nobody wrote, and a
+        // separate assignment - which every engine runs and the conformance suite writes down in
+        // seven places. Only `let [` and a `let` on the same line as the name it would bind are the
+        // declaration this position has no room for.
+        if (Current.Kind == SliceTokenKind.Let && BeginsLetDeclaration() &&
+            Peek(1).Kind != SliceTokenKind.OpenBracket && Peek(1).PrecededByLineTerminator)
+        {
+            return ParseExpressionStatement();
+        }
+
+        if (!BeginsRefusedDeclaration(functionAllowed))
+        {
+            return ParseStatement();
+        }
+
+        var span = Span();
+
+        Refuse(
+            span,
+            SliceSourceDiagnosticCode.UnexpectedToken,
+            "a declaration is not a statement, so it cannot be the body of " + position);
+
+        return new JsEmptyStatement(span);
+    }
+
+    /// <summary>Whether the token at the cursor begins a declaration this position refuses.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=1039B3
+    // Broiler-Human:        PENDING
+    private bool BeginsRefusedDeclaration(bool functionAllowed)
+    {
+        switch (Current.Kind)
+        {
+            case SliceTokenKind.Const:
+            case SliceTokenKind.Class:
+                return true;
+
+            case SliceTokenKind.Let:
+                return BeginsLetDeclaration();
+
+            // A GENERATOR IS NEVER THE ANNEX B FORM. `if (x) function* g() {}` is a syntax error in
+            // every engine and in every mode, so the `*` is tested even where a plain function
+            // declaration is admitted.
+            case SliceTokenKind.Function:
+                return !functionAllowed || Peek(1).Kind == SliceTokenKind.Star;
+
+            case SliceTokenKind.Async when Peek(1).Kind == SliceTokenKind.Function &&
+                !Peek(1).PrecededByLineTerminator:
+                return true;
+
+            default:
+                return false;
         }
     }
 
@@ -2897,7 +3906,7 @@ internal sealed class JsParser
         return tokens[scan].Kind == SliceTokenKind.EqualsGreaterThan;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=613434
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=460536
     // Broiler-Human:        PENDING
     private JsExpression ParseArrowBody(
         SliceSourceSpan span,
@@ -2927,10 +3936,16 @@ internal sealed class JsParser
                 return new JsFunctionExpression(
                     span,
                     ParseFunctionBody(
-                        span, string.Empty, parameters, isArrow: true, isGenerator: false, isAsync));
+                        span, string.Empty, parameters, isArrow: true, isGenerator: false, isAsync,
+                        uniqueParameters: true));
             }
 
             var value = ParseAssignment();
+
+            // A CONCISE BODY REACHES NO `ParseFunctionBody`, so the parameter rules are applied
+            // here as well. An arrow takes `UniqueFormalParameters` in both of its two body forms,
+            // and a concise body declares no prologue, so `use strict` cannot be the reason.
+            ValidateParameters(parameters, unique: true, strict, declaredUseStrict: false);
 
             var body = new System.Collections.Generic.List<JsStatement>
             {
@@ -3437,7 +4452,7 @@ internal sealed class JsParser
         return arguments;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=84FFDF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=6EF2FF
     // Broiler-Human:        PENDING
     private JsExpression ParsePrimary()
     {
@@ -3550,6 +4565,11 @@ internal sealed class JsParser
             case SliceTokenKind.Static:
             case SliceTokenKind.Async:
             case SliceTokenKind.Let:
+                // AN IDENTIFIER REFERENCE IS AN Identifier AND NOT AN IdentifierName, so a reserved
+                // word reached through an escape is refused here exactly as a binding position
+                // refuses one. `break` read as a free variable would have been a run-time
+                // `ReferenceError` about a name the source never meant to write.
+                _ = RefuseEscapedReservedWord(token);
                 Advance();
                 return new JsIdentifier(span, token.RawText);
 
@@ -3671,7 +4691,7 @@ internal sealed class JsParser
         return new JsObjectLiteral(span, entries);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D13385
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F36B21
     // Broiler-Human:        PENDING
     private JsObjectEntry ParseObjectEntry()
     {
@@ -3699,7 +4719,8 @@ internal sealed class JsParser
             var generatorParameters = ParseOrdinaryParameters();
 
             var generatorBody = ParseFunctionBody(
-                span, generatorKey, generatorParameters, isArrow: false, isGenerator: true);
+                span, generatorKey, generatorParameters, isArrow: false, isGenerator: true,
+                uniqueParameters: true);
 
             yieldIsOperator = outerOperator;
 
@@ -3737,7 +4758,8 @@ internal sealed class JsParser
             var asyncParameters = ParseParameters();
 
             var asyncBody = ParseFunctionBody(
-                span, asyncKey, asyncParameters, isArrow: false, asyncIsGenerator, isAsync: true);
+                span, asyncKey, asyncParameters, isArrow: false, asyncIsGenerator, isAsync: true,
+                uniqueParameters: true);
 
             yieldIsOperator = outerOperator;
             awaitIsOperator = outerAwait;
@@ -3759,7 +4781,10 @@ internal sealed class JsParser
             Advance();
             var accessorKey = PropertyKey(out var accessorComputed);
             var parameters = ParseOrdinaryParameters();
-            var body = ParseFunctionBody(span, accessorKey, parameters, isArrow: false);
+            ValidateAccessorParameters(kind == JsPropertyKind.Get, parameters, span);
+
+            var body = ParseFunctionBody(
+                span, accessorKey, parameters, isArrow: false, uniqueParameters: true);
 
             return new JsObjectEntry(
                 span,
@@ -3776,7 +4801,9 @@ internal sealed class JsParser
         if (Current.Kind == SliceTokenKind.OpenParen)
         {
             var parameters = ParseOrdinaryParameters();
-            var body = ParseFunctionBody(span, key, parameters, isArrow: false);
+
+            var body = ParseFunctionBody(
+                span, key, parameters, isArrow: false, uniqueParameters: true);
 
             return new JsObjectEntry(
                 span,
@@ -3792,6 +4819,12 @@ internal sealed class JsParser
             // A shorthand property: `{ x }` is `{ x: x }`, and the key is a name in scope. It is
             // recorded AS a shorthand because the equivalence has one exception: `{ __proto__ }`
             // defines a property where `{ __proto__: p }` sets the prototype.
+            //
+            // AND BECAUSE THE KEY IS ALSO A NAME, a reserved word reached through an escape is
+            // refused here as it is in every other Identifier position. `{ break: 42 }` is a
+            // property and `{ break }` is a reference to a binding no source can have.
+            _ = RefuseEscapedReservedWord(keyToken);
+
             return new JsObjectEntry(
                 span, JsPropertyKind.Init, key, computed, new JsIdentifier(span, key),
                 Shorthand: true);
@@ -3804,6 +4837,7 @@ internal sealed class JsParser
         // reached it, which is exactly the set that was never reinterpreted.
         if (Current.Kind == SliceTokenKind.Equals && computed is null && IsIdentifierName(keyToken.Kind))
         {
+            _ = RefuseEscapedReservedWord(keyToken);
             Advance();
 
             return new JsObjectEntry(
@@ -3941,7 +4975,56 @@ internal sealed class JsParser
         string.Equals(name, "eval", System.StringComparison.Ordinal) ||
         string.Equals(name, "arguments", System.StringComparison.Ordinal);
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=999E9F
+    /// <summary>
+    /// Refuses an identifier that reaches a word this context reserves through a unicode escape.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>An escape changes how a name is written and not what it is, which is exactly why this
+    /// rule exists.</b> The tokenizer resolves the escape, so <c>await</c> spelled with one and
+    /// <c>await</c> spelled without one are the same characters by the time the parser sees them -
+    /// and the language nevertheless refuses the escaped form wherever the plain one is reserved,
+    /// so that a program cannot smuggle a keyword into an identifier position. The suite writes the
+    /// case out for every reserved word and every position, which is why answering it is worth a
+    /// bit on the token.
+    /// </para>
+    /// <para>
+    /// <b>It asks the SAME predicate every ordinary identifier position asks</b>, so a word that is
+    /// a name here stays a name here however it was spelled: <c>await</c> in a sloppy script is an
+    /// ordinary identifier and its escaped spelling is one too, while the same two spellings inside
+    /// an async function are both refused. The two exceptions the predicate does not cover are
+    /// <c>let</c> and <c>static</c>, which strict code reserves and which
+    /// <see cref="IsIdentifierName"/> answers for as names because a property key may spell them.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=286654
+    // Broiler-Human:        PENDING
+    private bool RefuseEscapedReservedWord(SliceToken token)
+    {
+        if (!token.IsEscaped)
+        {
+            return false;
+        }
+
+        var spelled = SliceTokenizer.KeywordKind(token.RawText);
+
+        if (spelled == SliceTokenKind.Identifier ||
+            (IsIdentifierName(spelled) &&
+                !(strict && spelled is SliceTokenKind.Let or SliceTokenKind.Static)))
+        {
+            return false;
+        }
+
+        Refuse(
+            new SliceSourceSpan(token.Line, token.Column),
+            SliceSourceDiagnosticCode.ReservedWordAsBinding,
+            "`" + token.RawText + "` is a reserved word here, and a unicode escape does not make " +
+                "it a name");
+
+        return true;
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B80262
     // Broiler-Human:        PENDING
     private string BindingName()
     {
@@ -3949,6 +5032,8 @@ internal sealed class JsParser
 
         if (IsIdentifierName(token.Kind))
         {
+            _ = RefuseEscapedReservedWord(token);
+
             // STRICT CODE BINDS NEITHER `eval` NOR `arguments`, and this is the one funnel every
             // binding name passes through - a declarator, a parameter, a catch parameter, a
             // pattern's leaf and an import's local name - so the rule is stated once. It is an
@@ -3960,6 +5045,20 @@ internal sealed class JsParser
                     Span(),
                     SliceSourceDiagnosticCode.ReservedWordAsBinding,
                     "`" + token.RawText + "` is not a binding name in strict code");
+            }
+
+            // AND STRICT CODE BINDS NO `let` EITHER, which is a RESERVATION rather than the
+            // restriction above: `let` is a contextual keyword in sloppy code, where `var let = 1;`
+            // is a program every engine runs, and strict code reserves the word outright. The test
+            // is on the token kind rather than the text because the tokenizer already recognises
+            // the word, and it is here rather than in `IsIdentifierName` because that predicate
+            // also answers for a property key and a member name, which strict code spells freely.
+            if (strict && token.Kind == SliceTokenKind.Let)
+            {
+                Refuse(
+                    Span(),
+                    SliceSourceDiagnosticCode.ReservedWordAsBinding,
+                    "`let` is a reserved word in strict code and is not a binding name");
             }
 
             Advance();
