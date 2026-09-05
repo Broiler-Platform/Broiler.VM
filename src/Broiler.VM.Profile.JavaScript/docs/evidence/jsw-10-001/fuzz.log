@@ -1,0 +1,78 @@
+Seeded mutation fuzzing over two of roadmap section 7's four surfaces: the verifier, and
+the executor over verified-but-adversarial artifacts. A session may not be read as
+covering the other two.
+
+THAT SENTENCE USED TO SAY WHY, AND THE REASON STOPPED BEING TRUE. It read that the source
+tokenizer and parser and the regular-expression matcher are surfaces this profile has not
+written. All three are written here now - the front end since JS-3b, and the matcher since
+the workload programme replaced the translation onto the platform's engine - so what
+leaves them uncovered is that these sessions mutate ARTIFACTS and those surfaces consume
+SOURCE. The scope is the same and the reason for it is not, which is exactly the shape of
+claim a retained log must not carry after it stops holding.
+
+ANSWER-GUIDED, AND NOT COVERAGE-GUIDED. The adjective is the whole of the claim. A
+mutant whose published answer no seed artifact produces is kept as a further seed; the
+pool opens as the retained corpus and grows to a ceiling. Each session reports what it
+did: how many answers the seeds reached, how many the session ended on, how many mutants
+it kept, and the pool size before and after.
+
+WHAT THAT IS NOT. The signal is the answer this profile PUBLISHES, not an edge the
+mutant executed. Two paths to one answer are one signal, and a defect on a path that
+answers like its neighbour is invisible to the guidance. Instrumenting for anything
+finer would put a coverage host in a published closure or change the assembly under
+test, and JSD-0013 records that refusal and what would falsify it.
+
+THIS HEADER HAS BEEN WRONG BEFORE, IN BOTH DIRECTIONS. It said coverage-guided when the
+mutator took no feedback at all, which JSC-38 corrected to NOT coverage-guided. It then
+said no session takes feedback after the sessions began taking it. The precise claim is
+the one above: feedback by published answer, and no edge coverage anywhere.
+
+Each session is a total function of its seed and the seed corpus. A session that answers
+the same way every time, or that never reaches the executor, exits NON-ZERO rather than
+reporting clean iterations it did not earn.
+
+[seed 1, 25000 iterations] exit 0
+    broiler-js-fuzz: seed 1, 25000 iterations, 118 seed artifacts, surfaces: verifier and executor
+    broiler-js-fuzz: no counterexample in 25000 iterations.
+      InvalidArtifact: 21091
+      Normal/fault:ReferenceError: 177
+      Normal/invoke:Normal: 1096
+      Normal/invoke:ResourceExhaustion: 20
+      ResourceExhaustion: 2616
+    broiler-js-fuzz: guidance - 44 answers reached by the 118 seed artifacts, 46 by the end of the session, 2 mutants kept as further seeds, pool 118 -> 120 (ceiling 512). Guidance is by PUBLISHED ANSWER and is not edge coverage.
+    broiler-js-fuzz: 1293 mutants verified and were instantiated and invoked, so both surfaces were reached.
+
+[seed 2, 25000 iterations] exit 0
+    broiler-js-fuzz: seed 2, 25000 iterations, 118 seed artifacts, surfaces: verifier and executor
+    broiler-js-fuzz: no counterexample in 25000 iterations.
+      InvalidArtifact: 21195
+      Normal/fault:ReferenceError: 147
+      Normal/invoke:Normal: 1121
+      Normal/invoke:ResourceExhaustion: 19
+      ResourceExhaustion: 2518
+    broiler-js-fuzz: guidance - 44 answers reached by the 118 seed artifacts, 46 by the end of the session, 2 mutants kept as further seeds, pool 118 -> 120 (ceiling 512). Guidance is by PUBLISHED ANSWER and is not edge coverage.
+    broiler-js-fuzz: 1287 mutants verified and were instantiated and invoked, so both surfaces were reached.
+
+[seed 3, 25000 iterations] exit 0
+    broiler-js-fuzz: seed 3, 25000 iterations, 118 seed artifacts, surfaces: verifier and executor
+    broiler-js-fuzz: no counterexample in 25000 iterations.
+      InvalidArtifact: 21175
+      Normal/fault:ReferenceError: 165
+      Normal/invoke:Normal: 1129
+      Normal/invoke:ResourceExhaustion: 27
+      ResourceExhaustion: 2504
+    broiler-js-fuzz: guidance - 44 answers reached by the 118 seed artifacts, 46 by the end of the session, 2 mutants kept as further seeds, pool 118 -> 120 (ceiling 512). Guidance is by PUBLISHED ANSWER and is not edge coverage.
+    broiler-js-fuzz: 1321 mutants verified and were instantiated and invoked, so both surfaces were reached.
+
+[seed 4, 25000 iterations] exit 0
+    broiler-js-fuzz: seed 4, 25000 iterations, 118 seed artifacts, surfaces: verifier and executor
+    broiler-js-fuzz: no counterexample in 25000 iterations.
+      InvalidArtifact: 21152
+      Normal/fault:ReferenceError: 159
+      Normal/invoke:Normal: 1062
+      Normal/invoke:ResourceExhaustion: 31
+      ResourceExhaustion: 2596
+    broiler-js-fuzz: guidance - 44 answers reached by the 118 seed artifacts, 46 by the end of the session, 2 mutants kept as further seeds, pool 118 -> 120 (ceiling 512). Guidance is by PUBLISHED ANSWER and is not edge coverage.
+    broiler-js-fuzz: 1252 mutants verified and were instantiated and invoked, so both surfaces were reached.
+
+sessions: 4; sessions reporting a finding: 0

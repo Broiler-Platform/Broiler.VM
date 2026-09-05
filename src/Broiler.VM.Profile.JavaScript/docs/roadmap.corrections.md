@@ -7244,3 +7244,45 @@ it was written to report.
 **Authority and date.** The decision of 2026-09-05 recorded above; the three assertions, now green,
 with the vacuity guard watched in both directions; and the whole solution's suites passing with no
 failures for the first time in this programme. 2026-09-05.
+
+---
+
+### JSC-176
+
+**Where:** the retained corpus entry `wide-an-import-call-with-no-surface-declared`, and the
+opcode renumbering this branch performed when two stages allocated the same byte.
+
+**What was assumed.** That renumbering an opcode is a change to the code that emits it and the code
+that reads it. Both were updated in the same change and the whole test suite stayed green.
+
+**What was true.** **The retained corpus is BYTES, and bytes do not follow a rename.** The dynamic
+import allocated `ImportCall` at `0x83`; the generator parameter split, merged first, had already
+taken `0x83` for `EnterBody`; so the merge moved `ImportCall` to `0x85`. The corpus BUILDER writes
+`(byte)JsOpcode.ImportCall` and was therefore correct from the moment of the merge — and the
+committed `.bjsb` file still carried `0x83`, which now means `EnterBody`. The artifact that was
+written to be refused as *an import call in an artifact declaring no dynamic surface* was refused as
+*a body seam outside a generator*: the right kind of answer, from the wrong instruction, about a
+program nobody wrote.
+
+**Nothing in the ordinary gates could see it.** The suite passes, the differential probes pass, the
+acceptance table passes, and the refusal audit passes, because every one of them compiles source
+through the current lowering. **The retained corpus is the only gate that replays BYTES nobody is
+compiling**, which is exactly what it is for: bundle JS-1-002 records it as the check that a change
+to the front end cannot quietly redefine what a stored artifact means. It was found by the corpus
+replay inside an evidence collection, which is the first time this programme had run one.
+
+**What replaced it.** The corpus was regenerated from its builder, which rewrote the one entry's
+bytes and its digest in the manifest; the replay then agreed on all 118 entries.
+
+**A second finding from the same replay is NOT a defect, and it is recorded so the next reader does
+not chase it.** The soak's plateau check read a factor of 1.79 against a band of 1.2 during that
+collection and 0.96 immediately afterwards, on the same commit — the heap climbing steadily under
+load and flat when idle. The check says of itself that it is *a plateau check and not a
+measurement*, and what a busy machine changes is when the collector runs rather than what the
+program retains. **A collection taken while other work shares the machine is not a collection of
+this check**, which is the same hazard the Octane wall clock has and is recorded for the same
+reason.
+
+**Authority and date.** The corpus replay of 2026-09-05 before and after the regeneration, the
+manifest digest that changed with it, and the two readings of the plateau check on one commit
+under load and at rest. 2026-09-05.

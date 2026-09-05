@@ -1,0 +1,1770 @@
+[executiononly/jit] publish exit 0
+dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o /home/user/Broiler.VM/artifacts/js-publish/executiononly/jit -r linux-x64 --self-contained false -p:PublishTrimmed=false
+  Determining projects to restore...
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 304 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 304 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj (in 304 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 304 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 6 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 7 ms).
+  Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.ExecutionOnly -> /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.JavaScript.ExecutionOnly.dll
+  Broiler.VM.Composition.JavaScript.ExecutionOnly -> /home/user/Broiler.VM/artifacts/js-publish/executiononly/jit/
+
+
+[executiononly/jit] --closure exit 0
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.JavaScript.ExecutionOnly
+label execution-only
+carries-lowering no
+profiles 1
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 3
+manifest broiler.javascript.slice broiler.javascript.wide
+format-versions 1 2
+
+
+[executiononly/jit/corpus] run exit 1
+     entry addition: Normal/NormalCompleted/0/42/-/-/-
+     entry division-by-zero: Normal/NormalCompleted/0/Infinity/-/-/-
+     entry zero-over-zero: Normal/NormalCompleted/0/NaN/-/-/-
+     entry negative-zero-division: Normal/NormalCompleted/0/-Infinity/-/-/-
+     entry remainder-takes-the-dividends-sign: Normal/NormalCompleted/0/-2/-/-/-
+     entry bitwise-or-goes-through-to-int32: Normal/NormalCompleted/0/-2147483648/-/-/-
+     entry unsigned-shift-goes-through-to-uint32: Normal/NormalCompleted/0/4294967295/-/-/-
+     entry comparison-produces-a-boolean: Normal/NormalCompleted/0/true/-/-/-
+     entry not-a-number-is-not-itself: Normal/NormalCompleted/0/false/-/-/-
+     entry a-boolean-adds-as-one: Normal/NormalCompleted/0/2/-/-/-
+     entry strict-equality-compares-kinds: Normal/NormalCompleted/0/false/-/-/-
+     entry an-unassigned-local-is-undefined: Normal/NormalCompleted/0/undefined/-/-/-
+     entry a-counting-loop: Normal/NormalCompleted/0/55/-/-/-
+     entry a-taken-conditional: Normal/NormalCompleted/0/1/-/-/-
+     entry an-untaken-conditional: Normal/NormalCompleted/0/2/-/-/-
+     entry two-entry-points: Normal/NormalCompleted/0/1/-/-/-
+     entry source-multiplication-binds-tighter: Normal/NormalCompleted/0/7/-/-/-
+     entry source-parentheses-regroup: Normal/NormalCompleted/0/9/-/-/-
+     entry source-subtraction-is-left-associative: Normal/NormalCompleted/0/5/-/-/-
+     entry source-assignment-is-right-associative: Normal/NormalCompleted/0/14/-/-/-
+     entry source-unary-minus-binds-tighter-than-a-shift: Normal/NormalCompleted/0/4294967295/-/-/-
+     entry source-unary-plus-is-to-number: Normal/NormalCompleted/0/1/-/-/-
+     entry source-remainder-takes-the-dividends-sign: Normal/NormalCompleted/0/-2/-/-/-
+     entry source-a-hexadecimal-literal: Normal/NormalCompleted/0/255/-/-/-
+     entry source-a-comparison-produces-a-boolean: Normal/NormalCompleted/0/true/-/-/-
+     entry source-strict-equality-compares-kinds: Normal/NormalCompleted/0/false/-/-/-
+     entry source-logical-or-answers-its-operand: Normal/NormalCompleted/0/5/-/-/-
+     entry source-logical-and-answers-its-operand: Normal/NormalCompleted/0/0/-/-/-
+     entry source-logical-and-does-not-evaluate-the-right-side: Normal/NormalCompleted/0/0/-/-/-
+     entry source-a-conditional-expression: Normal/NormalCompleted/0/10/-/-/-
+     entry source-a-var-is-visible-before-its-declaration: Normal/NormalCompleted/0/undefined/-/-/-
+     entry source-a-block-scopes-a-let: Normal/NormalCompleted/0/1/-/-/-
+     entry source-a-declaration-without-an-initialiser: Normal/NormalCompleted/0/undefined/-/-/-
+     entry source-a-counting-for-loop: Normal/NormalCompleted/0/55/-/-/-
+     entry source-break-leaves-the-loop: Normal/NormalCompleted/0/3/-/-/-
+     entry source-continue-reaches-the-update: Normal/NormalCompleted/0/12/-/-/-
+     entry source-a-do-while-runs-once: Normal/NormalCompleted/0/1/-/-/-
+     entry source-an-untaken-else: Normal/NormalCompleted/0/2/-/-/-
+     entry source-a-semicolon-is-inserted: Normal/NormalCompleted/0/3/-/-/-
+     entry source-a-comment-is-not-code: Normal/NormalCompleted/0/3/-/-/-
+     entry source-a-directive-prologue-is-not-the-completion-value: Normal/NormalCompleted/0/2/-/-/-
+     entry wrong-magic: InvalidArtifact/MalformedEncoding/1001/-/-1:0:0:0/-/-
+     entry unsupported-format-version: InvalidArtifact/UnsupportedProfileFormatVersion/1002/-/-/-/-
+     entry a-manifest-this-build-does-not-accept: InvalidArtifact/UnsupportedFeatureManifest/1004/-/-/-/-
+     entry a-manifest-identity-longer-than-the-format-admits: InvalidArtifact/InconsistentStructure/1005/-/-/-/-
+     entry an-overlong-variable-length-integer: InvalidArtifact/MalformedEncoding/1902/-/-/-/-
+     entry trailing-bytes: InvalidArtifact/InconsistentStructure/1104/-/-/-/-
+     entry an-unknown-section-kind: InvalidArtifact/UnknownFeature/1101/-/-/-/-
+     entry a-duplicated-section: InvalidArtifact/InconsistentStructure/1102/-/-/-/-
+     entry sections-out-of-order: InvalidArtifact/InconsistentStructure/1102/-/-/-/-
+     entry no-code-section: InvalidArtifact/InconsistentStructure/1103/-/-/-/-
+     entry a-section-shorter-than-it-declared: InvalidArtifact/InconsistentStructure/1105/-/-/-/-
+     entry a-truncated-payload: InvalidArtifact/Truncated/1901/-/-/-/-
+     entry more-frames-than-the-slice-has: InvalidArtifact/UnknownFeature/1202/-/-/-/-
+     entry a-declared-maximum-above-the-formats-own-ceiling: InvalidArtifact/InconsistentStructure/1201/-/-/-/-
+     entry an-interned-name-the-manifest-excludes: InvalidArtifact/UnknownFeature/1304/-/-/-/-
+     entry an-unknown-constant-tag: InvalidArtifact/UnknownFeature/1301/-/-/-/-
+     entry a-boolean-constant-that-is-neither: InvalidArtifact/MalformedEncoding/1302/-/-/-/-
+     entry more-constants-than-the-limits-section-admits: InvalidArtifact/InconsistentStructure/1303/-/-/-/-
+     entry a-constant-count-far-beyond-what-the-artifact-carries: InvalidArtifact/InconsistentStructure/1303/-/-/-/-
+     entry an-exception-region-the-manifest-excludes: InvalidArtifact/UnknownFeature/1507/-/-/-/-
+     entry a-suspension-target-the-manifest-excludes: InvalidArtifact/UnknownFeature/1508/-/-/-/-
+     entry an-unknown-opcode: InvalidArtifact/UnknownFeature/1401/-/2:0:0:0/-/-
+     entry a-code-section-of-no-length: InvalidArtifact/InconsistentStructure/1410/-/-/-/-
+     entry an-instruction-whose-operand-runs-off-the-end: InvalidArtifact/Truncated/1402/-/-/-/-
+     entry a-jump-out-of-range: InvalidArtifact/InconsistentStructure/1403/-/-/-/-
+     entry a-jump-into-an-operand: InvalidArtifact/InconsistentStructure/1403/-/-/-/-
+     entry an-operand-stack-underflow: InvalidArtifact/SemanticValidationFailed/1405/-/-/-/-
+     entry an-operand-stack-deeper-than-declared: InvalidArtifact/SemanticValidationFailed/1406/-/-/-/-
+     entry two-paths-reaching-one-offset-at-different-heights: InvalidArtifact/InconsistentStructure/1404/-/-/-/-
+     entry an-instruction-no-entry-point-reaches: InvalidArtifact/InconsistentStructure/1411/-/-/-/-
+     entry code-that-falls-off-the-end: InvalidArtifact/SemanticValidationFailed/1409/-/-/-/-
+     entry a-constant-index-past-the-pool: InvalidArtifact/SemanticValidationFailed/1407/-/-/-/-
+     entry a-local-index-past-the-frame: InvalidArtifact/SemanticValidationFailed/1408/-/-/-/-
+     entry a-return-that-leaves-more-than-the-completion-value: InvalidArtifact/SemanticValidationFailed/1412/-/-/-/-
+     entry no-entry-point: InvalidArtifact/InconsistentStructure/1501/-/-/-/-
+     entry a-duplicated-entry-point: InvalidArtifact/InconsistentStructure/1502/-/-/-/-
+     entry an-entry-point-inside-an-operand: InvalidArtifact/InconsistentStructure/1503/-/-/-/-
+     entry a-position-row-inside-an-operand: InvalidArtifact/InconsistentStructure/1506/-/2:1:1:1/-/-
+     entry an-entry-point-name-of-no-length: InvalidArtifact/InconsistentStructure/1504/-/-/-/-
+     entry an-entry-point-reached-with-operands-on-the-stack: InvalidArtifact/SemanticValidationFailed/1505/-/-/-/-
+     entry a-refusal-covered-by-the-second-position-row: InvalidArtifact/UnknownFeature/1401/-/2:3:7:5/-/-
+     entry an-artifact-larger-than-this-host-admits: ResourceExhaustion/CeilingReached/0/-/-/ArtifactBytes/Artifact
+     entry a-section-count-ceiling-this-host-declined: ResourceExhaustion/CeilingReached/0/-/-/SectionCount/Artifact
+     entry a-declared-count-ceiling-this-host-declined: ResourceExhaustion/CeilingReached/0/-/-/DeclaredCount/Artifact
+     entry a-structural-depth-ceiling-this-host-declined: ResourceExhaustion/CeilingReached/0/-/-/StructuralDepth/Artifact
+     entry an-allocation-this-host-declined: ResourceExhaustion/AllowanceExhausted/0/-/-/AllocatedBytes/Runtime
+     entry a-verifier-work-allowance-this-host-spent: ResourceExhaustion/AllowanceExhausted/0/-/-/VerifierWork/Runtime
+     entry a-wall-clock-allowance-already-spent: ResourceExhaustion/AllowanceExhausted/0/-/-/WallClock/Runtime
+     entry a-token-that-was-already-cancelled: Cancellation/Cancelled/0/-/-/-/-
+     entry a-profile-the-catalog-does-not-hold: UnsupportedProfile/ProfileNotInCatalog/0/-/-/-/-
+     entry wide-a-function-row-the-format-cannot-represent: InvalidArtifact/InconsistentStructure/1601/-/-/-/-
+     entry wide-an-entry-point-naming-no-code-unit: InvalidArtifact/InconsistentStructure/1602/-/-/-/-
+     entry wide-code-units-that-do-not-tile-the-code-section: InvalidArtifact/InconsistentStructure/1603/-/-/-/-
+     entry wide-a-scope-popped-past-the-frame: InvalidArtifact/InconsistentStructure/1604/-/-/-/-
+     entry wide-an-exception-handler-outside-its-code-unit: InvalidArtifact/InconsistentStructure/1605/-/-/-/-
+     entry wide-a-surface-declared-twice: InvalidArtifact/InconsistentStructure/1606/-/-/-/-
+     entry wide-a-surface-this-build-does-not-implement: InvalidArtifact/UnknownFeature/1607/-/-/-/-
+     entry wide-a-surface-the-composition-declined: InvalidArtifact/UnsupportedFeatureManifest/1608/-/-/-/-
+     entry wide-a-suspension-outside-a-generator: InvalidArtifact/SemanticValidationFailed/1609/-/-/-/-
+     entry wide-a-generator-that-is-also-the-program-body: InvalidArtifact/InconsistentStructure/1610/-/-/-/-
+     entry wide-an-await-outside-an-async-function: InvalidArtifact/SemanticValidationFailed/1611/-/-/-/-
+     entry wide-an-async-function-that-is-also-the-program-body: InvalidArtifact/InconsistentStructure/1612/-/-/-/-
+     entry wide-an-async-iteration-step-outside-an-async-function: InvalidArtifact/SemanticValidationFailed/1630/-/-/-/-
+     entry wide-a-class-element-whose-flags-contradict: InvalidArtifact/InconsistentStructure/1621/-/-/-/-
+     entry wide-a-version-1-artifact-announced-as-version-2: InvalidArtifact/DescriptorMismatch/1003/-/-/-/-
+     entry wide-a-slice-manifest-announced-as-the-wide-one: InvalidArtifact/DescriptorMismatch/1006/-/-/-/-
+     entry wide-a-method-called-through-a-property: Normal/NormalCompleted/0/7/-/-/-
+     entry modules-a-module-section-no-surface-declares: InvalidArtifact/UnknownFeature/1613/-/-/-/-
+     entry modules-a-module-row-the-format-cannot-represent: InvalidArtifact/InconsistentStructure/1614/-/-/-/-
+     entry modules-a-request-naming-no-module: InvalidArtifact/InconsistentStructure/1615/-/-/-/-
+     entry modules-an-import-of-a-name-nothing-exports: InvalidArtifact/InconsistentStructure/1616/-/-/-/-
+     entry modules-a-name-two-star-re-exports-supply: InvalidArtifact/InconsistentStructure/1617/-/-/-/-
+     entry modules-a-cyclic-export-resolution: InvalidArtifact/InconsistentStructure/1618/-/-/-/-
+     entry modules-a-module-artifact-with-no-resolver: InvalidArtifact/UnsupportedFeatureManifest/1619/-/-/-/-
+     entry modules-the-module-surface-with-no-module-records: InvalidArtifact/InconsistentStructure/1620/-/-/-/-
+     entry modules-a-live-binding-read-after-a-write: Normal/NormalCompleted/0/3/-/-/-
+ok   unsupported-profile-examines-no-payload-byte: UnsupportedProfile/ProfileNotInCatalog over an empty payload
+ok   execution-step-kinds: Instantiated, Completed, Faulted as a ReferenceError, and ContractViolation from a resume
+ok   suspended-is-declared-produced-at-js-7: neither external suspension nor asynchronous instantiation is declared; JS-7 produces the fifth kind
+ok   operand-stack-sized-from-verification: the artifact declared 16 and verification computed 2
+ok   the-caller-buffer-may-change-afterwards: the buffer was overwritten after verification and the answer did not move
+ok   the-fuzz-guidance-loop-is-wired: a new answer is kept, a repeat is not, and every offer is counted
+FAIL corpus-replay: wide-an-import-call-with-no-surface-declared: expected InvalidArtifact/UnknownFeature/1622/-/-/-/-, observed InvalidArtifact/SemanticValidationFailed/1609/-/-/-/- (hash match)
+ok   corpus-replays-twice-with-no-residue: both passes agreed row for row
+ok   the-corpus-contains-passing-controls: 43 entries verify successfully
+ok   five-verifier-outcomes: Cancellation, InvalidArtifact, Normal, ResourceExhaustion, UnsupportedProfile
+ok   every-invalid-artifact-carries-a-diagnostic-code: 66 entries, each with a code
+ok   an-exhaustion-names-a-dimension-and-a-scope-and-nothing-else-does: 7 exhaustion entries name a pair, 111 name none
+ok   every-dimension-this-host-can-tighten-is-pinned-by-one-entry: 7 dimensions, one entry each: AllocatedBytes, ArtifactBytes, DeclaredCount, SectionCount, StructuralDepth, VerifierWork, WallClock
+ok   two-siblings-under-one-parent-spend-one-total: 28 invocations completed and 100 were refused across two siblings; the parent spent 4000 of 4000 fuel. Which sibling was refused is not asserted: both draw on one total and the order is a race
+ok   a-parent-with-a-live-child-refuses-disposal: with 1 live child the parent answered InvalidState/AggregateBudgetHasLiveRuntimes; after the child was disposed it answered Accepted
+ok   a-sealed-parent-admits-no-further-runtime: sealing answered Accepted; a runtime created afterwards was refused with ResourceExhaustion/ParentExhausted
+ok   recycled-runtimes-reach-a-heap-plateau: 10000 of 10000 cycles completed; the heap went from 114744 bytes at the midpoint to 110024 at the end, a factor of 0.96 against a band of 1.2. Both readings are after warm-up, which is what makes them comparable in every publish mode. This is a plateau check and not a measurement. The curve, as cycle=bytes: 0=109440 625=111608 1250=111608 1875=111608 2500=111608 3125=111672 3750=111672 4375=111672 5000=114744 5625=114872 6250=114872 6875=114872 7500=114872 8125=114872 8750=114872 9375=114872 10000=110024
+ok   a composition declining modules, and one with no resolver, each refuse by name: admitted: Normal/NormalCompleted/0; surface declined: InvalidArtifact/UnsupportedFeatureManifest/1608; no resolver: InvalidArtifact/UnsupportedFeatureManifest/1619
+ok   ceilings-are-materialised-before-the-first-byte-is-read: ResourceExhaustion/ArtifactBytes over 89 bytes against a ceiling of 4, with 0 meter events; 118 corpus entries are held to the two checks below
+ok   a-well-formed-artifact-does-charge-for-what-it-allocates: addition charges 88 allocated bytes and 97 work units across 91 meter events
+ok   a-declaration-past-its-bound-sizes-nothing: 4 entries refused with zero allocated bytes: a-constant-count-far-beyond-what-the-artifact-carries, more-constants-than-the-limits-section-admits, a-declared-maximum-above-the-formats-own-ceiling, more-frames-than-the-slice-has
+ok   allocation-is-proportional-to-the-bytes-present-not-to-what-they-declare: 118 entries under 64 allocated bytes per artifact byte; the highest is 3.3 at source-continue-reaches-the-update
+broiler-js-execution-only: 1 of 22 checks FAILED
+
+
+[executiononly/trimmed] publish exit 0
+dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o /home/user/Broiler.VM/artifacts/js-publish/executiononly/trimmed -r linux-x64 --self-contained true
+  Determining projects to restore...
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 369 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj (in 369 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 369 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 369 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 5 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 5 ms).
+  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.ExecutionOnly -> /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.JavaScript.ExecutionOnly.dll
+  Optimizing assemblies for size. This process might take a while.
+  Broiler.VM.Composition.JavaScript.ExecutionOnly -> /home/user/Broiler.VM/artifacts/js-publish/executiononly/trimmed/
+
+
+[executiononly/trimmed] --closure exit 0
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.JavaScript.ExecutionOnly
+label execution-only
+carries-lowering no
+profiles 1
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 3
+manifest broiler.javascript.slice broiler.javascript.wide
+format-versions 1 2
+
+
+[executiononly/trimmed/corpus] run exit 1
+     entry addition: Normal/NormalCompleted/0/42/-/-/-
+     entry division-by-zero: Normal/NormalCompleted/0/Infinity/-/-/-
+     entry zero-over-zero: Normal/NormalCompleted/0/NaN/-/-/-
+     entry negative-zero-division: Normal/NormalCompleted/0/-Infinity/-/-/-
+     entry remainder-takes-the-dividends-sign: Normal/NormalCompleted/0/-2/-/-/-
+     entry bitwise-or-goes-through-to-int32: Normal/NormalCompleted/0/-2147483648/-/-/-
+     entry unsigned-shift-goes-through-to-uint32: Normal/NormalCompleted/0/4294967295/-/-/-
+     entry comparison-produces-a-boolean: Normal/NormalCompleted/0/true/-/-/-
+     entry not-a-number-is-not-itself: Normal/NormalCompleted/0/false/-/-/-
+     entry a-boolean-adds-as-one: Normal/NormalCompleted/0/2/-/-/-
+     entry strict-equality-compares-kinds: Normal/NormalCompleted/0/false/-/-/-
+     entry an-unassigned-local-is-undefined: Normal/NormalCompleted/0/undefined/-/-/-
+     entry a-counting-loop: Normal/NormalCompleted/0/55/-/-/-
+     entry a-taken-conditional: Normal/NormalCompleted/0/1/-/-/-
+     entry an-untaken-conditional: Normal/NormalCompleted/0/2/-/-/-
+     entry two-entry-points: Normal/NormalCompleted/0/1/-/-/-
+     entry source-multiplication-binds-tighter: Normal/NormalCompleted/0/7/-/-/-
+     entry source-parentheses-regroup: Normal/NormalCompleted/0/9/-/-/-
+     entry source-subtraction-is-left-associative: Normal/NormalCompleted/0/5/-/-/-
+     entry source-assignment-is-right-associative: Normal/NormalCompleted/0/14/-/-/-
+     entry source-unary-minus-binds-tighter-than-a-shift: Normal/NormalCompleted/0/4294967295/-/-/-
+     entry source-unary-plus-is-to-number: Normal/NormalCompleted/0/1/-/-/-
+     entry source-remainder-takes-the-dividends-sign: Normal/NormalCompleted/0/-2/-/-/-
+     entry source-a-hexadecimal-literal: Normal/NormalCompleted/0/255/-/-/-
+     entry source-a-comparison-produces-a-boolean: Normal/NormalCompleted/0/true/-/-/-
+     entry source-strict-equality-compares-kinds: Normal/NormalCompleted/0/false/-/-/-
+     entry source-logical-or-answers-its-operand: Normal/NormalCompleted/0/5/-/-/-
+     entry source-logical-and-answers-its-operand: Normal/NormalCompleted/0/0/-/-/-
+     entry source-logical-and-does-not-evaluate-the-right-side: Normal/NormalCompleted/0/0/-/-/-
+     entry source-a-conditional-expression: Normal/NormalCompleted/0/10/-/-/-
+     entry source-a-var-is-visible-before-its-declaration: Normal/NormalCompleted/0/undefined/-/-/-
+     entry source-a-block-scopes-a-let: Normal/NormalCompleted/0/1/-/-/-
+     entry source-a-declaration-without-an-initialiser: Normal/NormalCompleted/0/undefined/-/-/-
+     entry source-a-counting-for-loop: Normal/NormalCompleted/0/55/-/-/-
+     entry source-break-leaves-the-loop: Normal/NormalCompleted/0/3/-/-/-
+     entry source-continue-reaches-the-update: Normal/NormalCompleted/0/12/-/-/-
+     entry source-a-do-while-runs-once: Normal/NormalCompleted/0/1/-/-/-
+     entry source-an-untaken-else: Normal/NormalCompleted/0/2/-/-/-
+     entry source-a-semicolon-is-inserted: Normal/NormalCompleted/0/3/-/-/-
+     entry source-a-comment-is-not-code: Normal/NormalCompleted/0/3/-/-/-
+     entry source-a-directive-prologue-is-not-the-completion-value: Normal/NormalCompleted/0/2/-/-/-
+     entry wrong-magic: InvalidArtifact/MalformedEncoding/1001/-/-1:0:0:0/-/-
+     entry unsupported-format-version: InvalidArtifact/UnsupportedProfileFormatVersion/1002/-/-/-/-
+     entry a-manifest-this-build-does-not-accept: InvalidArtifact/UnsupportedFeatureManifest/1004/-/-/-/-
+     entry a-manifest-identity-longer-than-the-format-admits: InvalidArtifact/InconsistentStructure/1005/-/-/-/-
+     entry an-overlong-variable-length-integer: InvalidArtifact/MalformedEncoding/1902/-/-/-/-
+     entry trailing-bytes: InvalidArtifact/InconsistentStructure/1104/-/-/-/-
+     entry an-unknown-section-kind: InvalidArtifact/UnknownFeature/1101/-/-/-/-
+     entry a-duplicated-section: InvalidArtifact/InconsistentStructure/1102/-/-/-/-
+     entry sections-out-of-order: InvalidArtifact/InconsistentStructure/1102/-/-/-/-
+     entry no-code-section: InvalidArtifact/InconsistentStructure/1103/-/-/-/-
+     entry a-section-shorter-than-it-declared: InvalidArtifact/InconsistentStructure/1105/-/-/-/-
+     entry a-truncated-payload: InvalidArtifact/Truncated/1901/-/-/-/-
+     entry more-frames-than-the-slice-has: InvalidArtifact/UnknownFeature/1202/-/-/-/-
+     entry a-declared-maximum-above-the-formats-own-ceiling: InvalidArtifact/InconsistentStructure/1201/-/-/-/-
+     entry an-interned-name-the-manifest-excludes: InvalidArtifact/UnknownFeature/1304/-/-/-/-
+     entry an-unknown-constant-tag: InvalidArtifact/UnknownFeature/1301/-/-/-/-
+     entry a-boolean-constant-that-is-neither: InvalidArtifact/MalformedEncoding/1302/-/-/-/-
+     entry more-constants-than-the-limits-section-admits: InvalidArtifact/InconsistentStructure/1303/-/-/-/-
+     entry a-constant-count-far-beyond-what-the-artifact-carries: InvalidArtifact/InconsistentStructure/1303/-/-/-/-
+     entry an-exception-region-the-manifest-excludes: InvalidArtifact/UnknownFeature/1507/-/-/-/-
+     entry a-suspension-target-the-manifest-excludes: InvalidArtifact/UnknownFeature/1508/-/-/-/-
+     entry an-unknown-opcode: InvalidArtifact/UnknownFeature/1401/-/2:0:0:0/-/-
+     entry a-code-section-of-no-length: InvalidArtifact/InconsistentStructure/1410/-/-/-/-
+     entry an-instruction-whose-operand-runs-off-the-end: InvalidArtifact/Truncated/1402/-/-/-/-
+     entry a-jump-out-of-range: InvalidArtifact/InconsistentStructure/1403/-/-/-/-
+     entry a-jump-into-an-operand: InvalidArtifact/InconsistentStructure/1403/-/-/-/-
+     entry an-operand-stack-underflow: InvalidArtifact/SemanticValidationFailed/1405/-/-/-/-
+     entry an-operand-stack-deeper-than-declared: InvalidArtifact/SemanticValidationFailed/1406/-/-/-/-
+     entry two-paths-reaching-one-offset-at-different-heights: InvalidArtifact/InconsistentStructure/1404/-/-/-/-
+     entry an-instruction-no-entry-point-reaches: InvalidArtifact/InconsistentStructure/1411/-/-/-/-
+     entry code-that-falls-off-the-end: InvalidArtifact/SemanticValidationFailed/1409/-/-/-/-
+     entry a-constant-index-past-the-pool: InvalidArtifact/SemanticValidationFailed/1407/-/-/-/-
+     entry a-local-index-past-the-frame: InvalidArtifact/SemanticValidationFailed/1408/-/-/-/-
+     entry a-return-that-leaves-more-than-the-completion-value: InvalidArtifact/SemanticValidationFailed/1412/-/-/-/-
+     entry no-entry-point: InvalidArtifact/InconsistentStructure/1501/-/-/-/-
+     entry a-duplicated-entry-point: InvalidArtifact/InconsistentStructure/1502/-/-/-/-
+     entry an-entry-point-inside-an-operand: InvalidArtifact/InconsistentStructure/1503/-/-/-/-
+     entry a-position-row-inside-an-operand: InvalidArtifact/InconsistentStructure/1506/-/2:1:1:1/-/-
+     entry an-entry-point-name-of-no-length: InvalidArtifact/InconsistentStructure/1504/-/-/-/-
+     entry an-entry-point-reached-with-operands-on-the-stack: InvalidArtifact/SemanticValidationFailed/1505/-/-/-/-
+     entry a-refusal-covered-by-the-second-position-row: InvalidArtifact/UnknownFeature/1401/-/2:3:7:5/-/-
+     entry an-artifact-larger-than-this-host-admits: ResourceExhaustion/CeilingReached/0/-/-/ArtifactBytes/Artifact
+     entry a-section-count-ceiling-this-host-declined: ResourceExhaustion/CeilingReached/0/-/-/SectionCount/Artifact
+     entry a-declared-count-ceiling-this-host-declined: ResourceExhaustion/CeilingReached/0/-/-/DeclaredCount/Artifact
+     entry a-structural-depth-ceiling-this-host-declined: ResourceExhaustion/CeilingReached/0/-/-/StructuralDepth/Artifact
+     entry an-allocation-this-host-declined: ResourceExhaustion/AllowanceExhausted/0/-/-/AllocatedBytes/Runtime
+     entry a-verifier-work-allowance-this-host-spent: ResourceExhaustion/AllowanceExhausted/0/-/-/VerifierWork/Runtime
+     entry a-wall-clock-allowance-already-spent: ResourceExhaustion/AllowanceExhausted/0/-/-/WallClock/Runtime
+     entry a-token-that-was-already-cancelled: Cancellation/Cancelled/0/-/-/-/-
+     entry a-profile-the-catalog-does-not-hold: UnsupportedProfile/ProfileNotInCatalog/0/-/-/-/-
+     entry wide-a-function-row-the-format-cannot-represent: InvalidArtifact/InconsistentStructure/1601/-/-/-/-
+     entry wide-an-entry-point-naming-no-code-unit: InvalidArtifact/InconsistentStructure/1602/-/-/-/-
+     entry wide-code-units-that-do-not-tile-the-code-section: InvalidArtifact/InconsistentStructure/1603/-/-/-/-
+     entry wide-a-scope-popped-past-the-frame: InvalidArtifact/InconsistentStructure/1604/-/-/-/-
+     entry wide-an-exception-handler-outside-its-code-unit: InvalidArtifact/InconsistentStructure/1605/-/-/-/-
+     entry wide-a-surface-declared-twice: InvalidArtifact/InconsistentStructure/1606/-/-/-/-
+     entry wide-a-surface-this-build-does-not-implement: InvalidArtifact/UnknownFeature/1607/-/-/-/-
+     entry wide-a-surface-the-composition-declined: InvalidArtifact/UnsupportedFeatureManifest/1608/-/-/-/-
+     entry wide-a-suspension-outside-a-generator: InvalidArtifact/SemanticValidationFailed/1609/-/-/-/-
+     entry wide-a-generator-that-is-also-the-program-body: InvalidArtifact/InconsistentStructure/1610/-/-/-/-
+     entry wide-an-await-outside-an-async-function: InvalidArtifact/SemanticValidationFailed/1611/-/-/-/-
+     entry wide-an-async-function-that-is-also-the-program-body: InvalidArtifact/InconsistentStructure/1612/-/-/-/-
+     entry wide-an-async-iteration-step-outside-an-async-function: InvalidArtifact/SemanticValidationFailed/1630/-/-/-/-
+     entry wide-a-class-element-whose-flags-contradict: InvalidArtifact/InconsistentStructure/1621/-/-/-/-
+     entry wide-a-version-1-artifact-announced-as-version-2: InvalidArtifact/DescriptorMismatch/1003/-/-/-/-
+     entry wide-a-slice-manifest-announced-as-the-wide-one: InvalidArtifact/DescriptorMismatch/1006/-/-/-/-
+     entry wide-a-method-called-through-a-property: Normal/NormalCompleted/0/7/-/-/-
+     entry modules-a-module-section-no-surface-declares: InvalidArtifact/UnknownFeature/1613/-/-/-/-
+     entry modules-a-module-row-the-format-cannot-represent: InvalidArtifact/InconsistentStructure/1614/-/-/-/-
+     entry modules-a-request-naming-no-module: InvalidArtifact/InconsistentStructure/1615/-/-/-/-
+     entry modules-an-import-of-a-name-nothing-exports: InvalidArtifact/InconsistentStructure/1616/-/-/-/-
+     entry modules-a-name-two-star-re-exports-supply: InvalidArtifact/InconsistentStructure/1617/-/-/-/-
+     entry modules-a-cyclic-export-resolution: InvalidArtifact/InconsistentStructure/1618/-/-/-/-
+     entry modules-a-module-artifact-with-no-resolver: InvalidArtifact/UnsupportedFeatureManifest/1619/-/-/-/-
+     entry modules-the-module-surface-with-no-module-records: InvalidArtifact/InconsistentStructure/1620/-/-/-/-
+     entry modules-a-live-binding-read-after-a-write: Normal/NormalCompleted/0/3/-/-/-
+ok   unsupported-profile-examines-no-payload-byte: UnsupportedProfile/ProfileNotInCatalog over an empty payload
+ok   execution-step-kinds: Instantiated, Completed, Faulted as a ReferenceError, and ContractViolation from a resume
+ok   suspended-is-declared-produced-at-js-7: neither external suspension nor asynchronous instantiation is declared; JS-7 produces the fifth kind
+ok   operand-stack-sized-from-verification: the artifact declared 16 and verification computed 2
+ok   the-caller-buffer-may-change-afterwards: the buffer was overwritten after verification and the answer did not move
+ok   the-fuzz-guidance-loop-is-wired: a new answer is kept, a repeat is not, and every offer is counted
+FAIL corpus-replay: wide-an-import-call-with-no-surface-declared: expected InvalidArtifact/UnknownFeature/1622/-/-/-/-, observed InvalidArtifact/SemanticValidationFailed/1609/-/-/-/- (hash match)
+ok   corpus-replays-twice-with-no-residue: both passes agreed row for row
+ok   the-corpus-contains-passing-controls: 43 entries verify successfully
+ok   five-verifier-outcomes: Cancellation, InvalidArtifact, Normal, ResourceExhaustion, UnsupportedProfile
+ok   every-invalid-artifact-carries-a-diagnostic-code: 66 entries, each with a code
+ok   an-exhaustion-names-a-dimension-and-a-scope-and-nothing-else-does: 7 exhaustion entries name a pair, 111 name none
+ok   every-dimension-this-host-can-tighten-is-pinned-by-one-entry: 7 dimensions, one entry each: AllocatedBytes, ArtifactBytes, DeclaredCount, SectionCount, StructuralDepth, VerifierWork, WallClock
+ok   two-siblings-under-one-parent-spend-one-total: 28 invocations completed and 100 were refused across two siblings; the parent spent 4000 of 4000 fuel. Which sibling was refused is not asserted: both draw on one total and the order is a race
+ok   a-parent-with-a-live-child-refuses-disposal: with 1 live child the parent answered InvalidState/AggregateBudgetHasLiveRuntimes; after the child was disposed it answered Accepted
+ok   a-sealed-parent-admits-no-further-runtime: sealing answered Accepted; a runtime created afterwards was refused with ResourceExhaustion/ParentExhausted
+ok   recycled-runtimes-reach-a-heap-plateau: 10000 of 10000 cycles completed; the heap went from 92784 bytes at the midpoint to 88064 at the end, a factor of 0.95 against a band of 1.2. Both readings are after warm-up, which is what makes them comparable in every publish mode. This is a plateau check and not a measurement. The curve, as cycle=bytes: 0=87480 625=89648 1250=89648 1875=89648 2500=89648 3125=89712 3750=92784 4375=92784 5000=92784 5625=92912 6250=92912 6875=92912 7500=92912 8125=92912 8750=92912 9375=92912 10000=88064
+ok   a composition declining modules, and one with no resolver, each refuse by name: admitted: Normal/NormalCompleted/0; surface declined: InvalidArtifact/UnsupportedFeatureManifest/1608; no resolver: InvalidArtifact/UnsupportedFeatureManifest/1619
+ok   ceilings-are-materialised-before-the-first-byte-is-read: ResourceExhaustion/ArtifactBytes over 89 bytes against a ceiling of 4, with 0 meter events; 118 corpus entries are held to the two checks below
+ok   a-well-formed-artifact-does-charge-for-what-it-allocates: addition charges 88 allocated bytes and 97 work units across 91 meter events
+ok   a-declaration-past-its-bound-sizes-nothing: 4 entries refused with zero allocated bytes: a-constant-count-far-beyond-what-the-artifact-carries, more-constants-than-the-limits-section-admits, a-declared-maximum-above-the-formats-own-ceiling, more-frames-than-the-slice-has
+ok   allocation-is-proportional-to-the-bytes-present-not-to-what-they-declare: 118 entries under 64 allocated bytes per artifact byte; the highest is 3.3 at source-continue-reaches-the-update
+broiler-js-execution-only: 1 of 22 checks FAILED
+
+
+[executiononly/aot] publish exit 0
+dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o /home/user/Broiler.VM/artifacts/js-publish/executiononly/aot -r linux-x64 -p:PublishAot=true
+  Determining projects to restore...
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 371 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 371 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 371 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj (in 371 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 16 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 16 ms).
+  Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.ExecutionOnly -> /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.JavaScript.ExecutionOnly.dll
+  Generating native code
+  Broiler.VM.Composition.JavaScript.ExecutionOnly -> /home/user/Broiler.VM/artifacts/js-publish/executiononly/aot/
+
+
+[executiononly/aot] --closure exit 0
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.JavaScript.ExecutionOnly
+label execution-only
+carries-lowering no
+profiles 1
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 3
+manifest broiler.javascript.slice broiler.javascript.wide
+format-versions 1 2
+
+
+[executiononly/aot/corpus] run exit 1
+     entry addition: Normal/NormalCompleted/0/42/-/-/-
+     entry division-by-zero: Normal/NormalCompleted/0/Infinity/-/-/-
+     entry zero-over-zero: Normal/NormalCompleted/0/NaN/-/-/-
+     entry negative-zero-division: Normal/NormalCompleted/0/-Infinity/-/-/-
+     entry remainder-takes-the-dividends-sign: Normal/NormalCompleted/0/-2/-/-/-
+     entry bitwise-or-goes-through-to-int32: Normal/NormalCompleted/0/-2147483648/-/-/-
+     entry unsigned-shift-goes-through-to-uint32: Normal/NormalCompleted/0/4294967295/-/-/-
+     entry comparison-produces-a-boolean: Normal/NormalCompleted/0/true/-/-/-
+     entry not-a-number-is-not-itself: Normal/NormalCompleted/0/false/-/-/-
+     entry a-boolean-adds-as-one: Normal/NormalCompleted/0/2/-/-/-
+     entry strict-equality-compares-kinds: Normal/NormalCompleted/0/false/-/-/-
+     entry an-unassigned-local-is-undefined: Normal/NormalCompleted/0/undefined/-/-/-
+     entry a-counting-loop: Normal/NormalCompleted/0/55/-/-/-
+     entry a-taken-conditional: Normal/NormalCompleted/0/1/-/-/-
+     entry an-untaken-conditional: Normal/NormalCompleted/0/2/-/-/-
+     entry two-entry-points: Normal/NormalCompleted/0/1/-/-/-
+     entry source-multiplication-binds-tighter: Normal/NormalCompleted/0/7/-/-/-
+     entry source-parentheses-regroup: Normal/NormalCompleted/0/9/-/-/-
+     entry source-subtraction-is-left-associative: Normal/NormalCompleted/0/5/-/-/-
+     entry source-assignment-is-right-associative: Normal/NormalCompleted/0/14/-/-/-
+     entry source-unary-minus-binds-tighter-than-a-shift: Normal/NormalCompleted/0/4294967295/-/-/-
+     entry source-unary-plus-is-to-number: Normal/NormalCompleted/0/1/-/-/-
+     entry source-remainder-takes-the-dividends-sign: Normal/NormalCompleted/0/-2/-/-/-
+     entry source-a-hexadecimal-literal: Normal/NormalCompleted/0/255/-/-/-
+     entry source-a-comparison-produces-a-boolean: Normal/NormalCompleted/0/true/-/-/-
+     entry source-strict-equality-compares-kinds: Normal/NormalCompleted/0/false/-/-/-
+     entry source-logical-or-answers-its-operand: Normal/NormalCompleted/0/5/-/-/-
+     entry source-logical-and-answers-its-operand: Normal/NormalCompleted/0/0/-/-/-
+     entry source-logical-and-does-not-evaluate-the-right-side: Normal/NormalCompleted/0/0/-/-/-
+     entry source-a-conditional-expression: Normal/NormalCompleted/0/10/-/-/-
+     entry source-a-var-is-visible-before-its-declaration: Normal/NormalCompleted/0/undefined/-/-/-
+     entry source-a-block-scopes-a-let: Normal/NormalCompleted/0/1/-/-/-
+     entry source-a-declaration-without-an-initialiser: Normal/NormalCompleted/0/undefined/-/-/-
+     entry source-a-counting-for-loop: Normal/NormalCompleted/0/55/-/-/-
+     entry source-break-leaves-the-loop: Normal/NormalCompleted/0/3/-/-/-
+     entry source-continue-reaches-the-update: Normal/NormalCompleted/0/12/-/-/-
+     entry source-a-do-while-runs-once: Normal/NormalCompleted/0/1/-/-/-
+     entry source-an-untaken-else: Normal/NormalCompleted/0/2/-/-/-
+     entry source-a-semicolon-is-inserted: Normal/NormalCompleted/0/3/-/-/-
+     entry source-a-comment-is-not-code: Normal/NormalCompleted/0/3/-/-/-
+     entry source-a-directive-prologue-is-not-the-completion-value: Normal/NormalCompleted/0/2/-/-/-
+     entry wrong-magic: InvalidArtifact/MalformedEncoding/1001/-/-1:0:0:0/-/-
+     entry unsupported-format-version: InvalidArtifact/UnsupportedProfileFormatVersion/1002/-/-/-/-
+     entry a-manifest-this-build-does-not-accept: InvalidArtifact/UnsupportedFeatureManifest/1004/-/-/-/-
+     entry a-manifest-identity-longer-than-the-format-admits: InvalidArtifact/InconsistentStructure/1005/-/-/-/-
+     entry an-overlong-variable-length-integer: InvalidArtifact/MalformedEncoding/1902/-/-/-/-
+     entry trailing-bytes: InvalidArtifact/InconsistentStructure/1104/-/-/-/-
+     entry an-unknown-section-kind: InvalidArtifact/UnknownFeature/1101/-/-/-/-
+     entry a-duplicated-section: InvalidArtifact/InconsistentStructure/1102/-/-/-/-
+     entry sections-out-of-order: InvalidArtifact/InconsistentStructure/1102/-/-/-/-
+     entry no-code-section: InvalidArtifact/InconsistentStructure/1103/-/-/-/-
+     entry a-section-shorter-than-it-declared: InvalidArtifact/InconsistentStructure/1105/-/-/-/-
+     entry a-truncated-payload: InvalidArtifact/Truncated/1901/-/-/-/-
+     entry more-frames-than-the-slice-has: InvalidArtifact/UnknownFeature/1202/-/-/-/-
+     entry a-declared-maximum-above-the-formats-own-ceiling: InvalidArtifact/InconsistentStructure/1201/-/-/-/-
+     entry an-interned-name-the-manifest-excludes: InvalidArtifact/UnknownFeature/1304/-/-/-/-
+     entry an-unknown-constant-tag: InvalidArtifact/UnknownFeature/1301/-/-/-/-
+     entry a-boolean-constant-that-is-neither: InvalidArtifact/MalformedEncoding/1302/-/-/-/-
+     entry more-constants-than-the-limits-section-admits: InvalidArtifact/InconsistentStructure/1303/-/-/-/-
+     entry a-constant-count-far-beyond-what-the-artifact-carries: InvalidArtifact/InconsistentStructure/1303/-/-/-/-
+     entry an-exception-region-the-manifest-excludes: InvalidArtifact/UnknownFeature/1507/-/-/-/-
+     entry a-suspension-target-the-manifest-excludes: InvalidArtifact/UnknownFeature/1508/-/-/-/-
+     entry an-unknown-opcode: InvalidArtifact/UnknownFeature/1401/-/2:0:0:0/-/-
+     entry a-code-section-of-no-length: InvalidArtifact/InconsistentStructure/1410/-/-/-/-
+     entry an-instruction-whose-operand-runs-off-the-end: InvalidArtifact/Truncated/1402/-/-/-/-
+     entry a-jump-out-of-range: InvalidArtifact/InconsistentStructure/1403/-/-/-/-
+     entry a-jump-into-an-operand: InvalidArtifact/InconsistentStructure/1403/-/-/-/-
+     entry an-operand-stack-underflow: InvalidArtifact/SemanticValidationFailed/1405/-/-/-/-
+     entry an-operand-stack-deeper-than-declared: InvalidArtifact/SemanticValidationFailed/1406/-/-/-/-
+     entry two-paths-reaching-one-offset-at-different-heights: InvalidArtifact/InconsistentStructure/1404/-/-/-/-
+     entry an-instruction-no-entry-point-reaches: InvalidArtifact/InconsistentStructure/1411/-/-/-/-
+     entry code-that-falls-off-the-end: InvalidArtifact/SemanticValidationFailed/1409/-/-/-/-
+     entry a-constant-index-past-the-pool: InvalidArtifact/SemanticValidationFailed/1407/-/-/-/-
+     entry a-local-index-past-the-frame: InvalidArtifact/SemanticValidationFailed/1408/-/-/-/-
+     entry a-return-that-leaves-more-than-the-completion-value: InvalidArtifact/SemanticValidationFailed/1412/-/-/-/-
+     entry no-entry-point: InvalidArtifact/InconsistentStructure/1501/-/-/-/-
+     entry a-duplicated-entry-point: InvalidArtifact/InconsistentStructure/1502/-/-/-/-
+     entry an-entry-point-inside-an-operand: InvalidArtifact/InconsistentStructure/1503/-/-/-/-
+     entry a-position-row-inside-an-operand: InvalidArtifact/InconsistentStructure/1506/-/2:1:1:1/-/-
+     entry an-entry-point-name-of-no-length: InvalidArtifact/InconsistentStructure/1504/-/-/-/-
+     entry an-entry-point-reached-with-operands-on-the-stack: InvalidArtifact/SemanticValidationFailed/1505/-/-/-/-
+     entry a-refusal-covered-by-the-second-position-row: InvalidArtifact/UnknownFeature/1401/-/2:3:7:5/-/-
+     entry an-artifact-larger-than-this-host-admits: ResourceExhaustion/CeilingReached/0/-/-/ArtifactBytes/Artifact
+     entry a-section-count-ceiling-this-host-declined: ResourceExhaustion/CeilingReached/0/-/-/SectionCount/Artifact
+     entry a-declared-count-ceiling-this-host-declined: ResourceExhaustion/CeilingReached/0/-/-/DeclaredCount/Artifact
+     entry a-structural-depth-ceiling-this-host-declined: ResourceExhaustion/CeilingReached/0/-/-/StructuralDepth/Artifact
+     entry an-allocation-this-host-declined: ResourceExhaustion/AllowanceExhausted/0/-/-/AllocatedBytes/Runtime
+     entry a-verifier-work-allowance-this-host-spent: ResourceExhaustion/AllowanceExhausted/0/-/-/VerifierWork/Runtime
+     entry a-wall-clock-allowance-already-spent: ResourceExhaustion/AllowanceExhausted/0/-/-/WallClock/Runtime
+     entry a-token-that-was-already-cancelled: Cancellation/Cancelled/0/-/-/-/-
+     entry a-profile-the-catalog-does-not-hold: UnsupportedProfile/ProfileNotInCatalog/0/-/-/-/-
+     entry wide-a-function-row-the-format-cannot-represent: InvalidArtifact/InconsistentStructure/1601/-/-/-/-
+     entry wide-an-entry-point-naming-no-code-unit: InvalidArtifact/InconsistentStructure/1602/-/-/-/-
+     entry wide-code-units-that-do-not-tile-the-code-section: InvalidArtifact/InconsistentStructure/1603/-/-/-/-
+     entry wide-a-scope-popped-past-the-frame: InvalidArtifact/InconsistentStructure/1604/-/-/-/-
+     entry wide-an-exception-handler-outside-its-code-unit: InvalidArtifact/InconsistentStructure/1605/-/-/-/-
+     entry wide-a-surface-declared-twice: InvalidArtifact/InconsistentStructure/1606/-/-/-/-
+     entry wide-a-surface-this-build-does-not-implement: InvalidArtifact/UnknownFeature/1607/-/-/-/-
+     entry wide-a-surface-the-composition-declined: InvalidArtifact/UnsupportedFeatureManifest/1608/-/-/-/-
+     entry wide-a-suspension-outside-a-generator: InvalidArtifact/SemanticValidationFailed/1609/-/-/-/-
+     entry wide-a-generator-that-is-also-the-program-body: InvalidArtifact/InconsistentStructure/1610/-/-/-/-
+     entry wide-an-await-outside-an-async-function: InvalidArtifact/SemanticValidationFailed/1611/-/-/-/-
+     entry wide-an-async-function-that-is-also-the-program-body: InvalidArtifact/InconsistentStructure/1612/-/-/-/-
+     entry wide-an-async-iteration-step-outside-an-async-function: InvalidArtifact/SemanticValidationFailed/1630/-/-/-/-
+     entry wide-a-class-element-whose-flags-contradict: InvalidArtifact/InconsistentStructure/1621/-/-/-/-
+     entry wide-a-version-1-artifact-announced-as-version-2: InvalidArtifact/DescriptorMismatch/1003/-/-/-/-
+     entry wide-a-slice-manifest-announced-as-the-wide-one: InvalidArtifact/DescriptorMismatch/1006/-/-/-/-
+     entry wide-a-method-called-through-a-property: Normal/NormalCompleted/0/7/-/-/-
+     entry modules-a-module-section-no-surface-declares: InvalidArtifact/UnknownFeature/1613/-/-/-/-
+     entry modules-a-module-row-the-format-cannot-represent: InvalidArtifact/InconsistentStructure/1614/-/-/-/-
+     entry modules-a-request-naming-no-module: InvalidArtifact/InconsistentStructure/1615/-/-/-/-
+     entry modules-an-import-of-a-name-nothing-exports: InvalidArtifact/InconsistentStructure/1616/-/-/-/-
+     entry modules-a-name-two-star-re-exports-supply: InvalidArtifact/InconsistentStructure/1617/-/-/-/-
+     entry modules-a-cyclic-export-resolution: InvalidArtifact/InconsistentStructure/1618/-/-/-/-
+     entry modules-a-module-artifact-with-no-resolver: InvalidArtifact/UnsupportedFeatureManifest/1619/-/-/-/-
+     entry modules-the-module-surface-with-no-module-records: InvalidArtifact/InconsistentStructure/1620/-/-/-/-
+     entry modules-a-live-binding-read-after-a-write: Normal/NormalCompleted/0/3/-/-/-
+ok   unsupported-profile-examines-no-payload-byte: UnsupportedProfile/ProfileNotInCatalog over an empty payload
+ok   execution-step-kinds: Instantiated, Completed, Faulted as a ReferenceError, and ContractViolation from a resume
+ok   suspended-is-declared-produced-at-js-7: neither external suspension nor asynchronous instantiation is declared; JS-7 produces the fifth kind
+ok   operand-stack-sized-from-verification: the artifact declared 16 and verification computed 2
+ok   the-caller-buffer-may-change-afterwards: the buffer was overwritten after verification and the answer did not move
+ok   the-fuzz-guidance-loop-is-wired: a new answer is kept, a repeat is not, and every offer is counted
+FAIL corpus-replay: wide-an-import-call-with-no-surface-declared: expected InvalidArtifact/UnknownFeature/1622/-/-/-/-, observed InvalidArtifact/SemanticValidationFailed/1609/-/-/-/- (hash match)
+ok   corpus-replays-twice-with-no-residue: both passes agreed row for row
+ok   the-corpus-contains-passing-controls: 43 entries verify successfully
+ok   five-verifier-outcomes: Cancellation, InvalidArtifact, Normal, ResourceExhaustion, UnsupportedProfile
+ok   every-invalid-artifact-carries-a-diagnostic-code: 66 entries, each with a code
+ok   an-exhaustion-names-a-dimension-and-a-scope-and-nothing-else-does: 7 exhaustion entries name a pair, 111 name none
+ok   every-dimension-this-host-can-tighten-is-pinned-by-one-entry: 7 dimensions, one entry each: AllocatedBytes, ArtifactBytes, DeclaredCount, SectionCount, StructuralDepth, VerifierWork, WallClock
+ok   two-siblings-under-one-parent-spend-one-total: 28 invocations completed and 100 were refused across two siblings; the parent spent 4000 of 4000 fuel. Which sibling was refused is not asserted: both draw on one total and the order is a race
+ok   a-parent-with-a-live-child-refuses-disposal: with 1 live child the parent answered InvalidState/AggregateBudgetHasLiveRuntimes; after the child was disposed it answered Accepted
+ok   a-sealed-parent-admits-no-further-runtime: sealing answered Accepted; a runtime created afterwards was refused with ResourceExhaustion/ParentExhausted
+ok   recycled-runtimes-reach-a-heap-plateau: 10000 of 10000 cycles completed; the heap went from 136376 bytes at the midpoint to 131552 at the end, a factor of 0.96 against a band of 1.2. Both readings are after warm-up, which is what makes them comparable in every publish mode. This is a plateau check and not a measurement. The curve, as cycle=bytes: 0=89632 625=136312 1250=136312 1875=136312 2500=136312 3125=136376 3750=136376 4375=136376 5000=136376 5625=136504 6250=136504 6875=136504 7500=136504 8125=136504 8750=136504 9375=136504 10000=131552
+ok   a composition declining modules, and one with no resolver, each refuse by name: admitted: Normal/NormalCompleted/0; surface declined: InvalidArtifact/UnsupportedFeatureManifest/1608; no resolver: InvalidArtifact/UnsupportedFeatureManifest/1619
+ok   ceilings-are-materialised-before-the-first-byte-is-read: ResourceExhaustion/ArtifactBytes over 89 bytes against a ceiling of 4, with 0 meter events; 118 corpus entries are held to the two checks below
+ok   a-well-formed-artifact-does-charge-for-what-it-allocates: addition charges 88 allocated bytes and 97 work units across 91 meter events
+ok   a-declaration-past-its-bound-sizes-nothing: 4 entries refused with zero allocated bytes: a-constant-count-far-beyond-what-the-artifact-carries, more-constants-than-the-limits-section-admits, a-declared-maximum-above-the-formats-own-ceiling, more-frames-than-the-slice-has
+ok   allocation-is-proportional-to-the-bytes-present-not-to-what-they-declare: 118 entries under 64 allocated bytes per artifact byte; the highest is 3.3 at source-continue-reaches-the-update
+broiler-js-execution-only: 1 of 22 checks FAILED
+
+
+[executiononly] catalog tables identical across modes: True
+
+[slicecompiler/jit] publish exit 0
+dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o /home/user/Broiler.VM/artifacts/js-publish/slicecompiler/jit -r linux-x64 --self-contained false -p:PublishTrimmed=false
+  Determining projects to restore...
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 334 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 334 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 334 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj (in 334 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 6 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 7 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 6 ms).
+  Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Profile.JavaScript -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.SliceCompiler -> /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.JavaScript.SliceCompiler.dll
+  Broiler.VM.Composition.JavaScript.SliceCompiler -> /home/user/Broiler.VM/artifacts/js-publish/slicecompiler/jit/
+
+
+[slicecompiler/jit] --closure exit 0
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.JavaScript.SliceCompiler
+label narrow-runtime-compiler-shaped
+carries-lowering yes
+profiles 1
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 3
+
+
+[slicecompiler/jit/checks] run exit 0
+ok   a-neighbours-maximum-does-not-reach-this-profile: the neighbour caps section count at 1 and this profile's artifact still verified
+ok   a-neighbours-adopted-default-does-reach-this-profile: adopting defaults beside a neighbour declaring 1 refused this artifact, naming SectionCount
+ok   a-foreign-payload-is-not-projected: the neighbour's payload completed and projected as neither of this profile's
+ok   registration-order-does-not-change-the-catalog-identity: both encodings are 578 bytes and equal
+ok   descriptor-admitted-and-its-refusals-named: admitted, and four named negative cases were each refused
+ok   every source the manifest admits compiles: 25 sources compiled
+ok   every source the manifest excludes is refused by name: 32 sources refused with the recorded code
+ok   every module-goal early error is refused with its own code: 5 sources, each refused by name
+ok   the lowering is deterministic: 25 sources compiled twice to identical bytes
+ok   two goals in one process do not reach each other: 200 concurrent script-and-module pairs, each answered by its own goal
+ok   deep nesting is refused rather than survived: 20 levels compiled; 100,000 levels refused as NestingTooDeep, with no stack overflow
+ok   an early error never produces bytes: 32 refusals, none carrying an artifact
+ok   the source fuzz guidance loop keeps a new answer and refuses a repeat: 1 of 3 offers kept, baseline 1
+ok   a declining composition refuses at verification: InvalidArtifact/UnsupportedFeatureManifest/1608
+ok   an admitting composition with no provider refuses at run time: EvalError
+ok   a typeof declares no surface and is answered rather than refused: undefined
+ok   an admitting composition runs what the declining one refused: 44
+broiler-js-slice-compiler: 17 checks passed
+
+
+[slicecompiler/trimmed] publish exit 0
+dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o /home/user/Broiler.VM/artifacts/js-publish/slicecompiler/trimmed -r linux-x64 --self-contained true
+  Determining projects to restore...
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 329 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 329 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 329 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj (in 329 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 6 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 7 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 8 ms).
+  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Profile.JavaScript -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.SliceCompiler -> /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.JavaScript.SliceCompiler.dll
+  Optimizing assemblies for size. This process might take a while.
+  Broiler.VM.Composition.JavaScript.SliceCompiler -> /home/user/Broiler.VM/artifacts/js-publish/slicecompiler/trimmed/
+
+
+[slicecompiler/trimmed] --closure exit 0
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.JavaScript.SliceCompiler
+label narrow-runtime-compiler-shaped
+carries-lowering yes
+profiles 1
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 3
+
+
+[slicecompiler/trimmed/checks] run exit 0
+ok   a-neighbours-maximum-does-not-reach-this-profile: the neighbour caps section count at 1 and this profile's artifact still verified
+ok   a-neighbours-adopted-default-does-reach-this-profile: adopting defaults beside a neighbour declaring 1 refused this artifact, naming SectionCount
+ok   a-foreign-payload-is-not-projected: the neighbour's payload completed and projected as neither of this profile's
+ok   registration-order-does-not-change-the-catalog-identity: both encodings are 578 bytes and equal
+ok   descriptor-admitted-and-its-refusals-named: admitted, and four named negative cases were each refused
+ok   every source the manifest admits compiles: 25 sources compiled
+ok   every source the manifest excludes is refused by name: 32 sources refused with the recorded code
+ok   every module-goal early error is refused with its own code: 5 sources, each refused by name
+ok   the lowering is deterministic: 25 sources compiled twice to identical bytes
+ok   two goals in one process do not reach each other: 200 concurrent script-and-module pairs, each answered by its own goal
+ok   deep nesting is refused rather than survived: 20 levels compiled; 100,000 levels refused as NestingTooDeep, with no stack overflow
+ok   an early error never produces bytes: 32 refusals, none carrying an artifact
+ok   the source fuzz guidance loop keeps a new answer and refuses a repeat: 1 of 3 offers kept, baseline 1
+ok   a declining composition refuses at verification: InvalidArtifact/UnsupportedFeatureManifest/1608
+ok   an admitting composition with no provider refuses at run time: EvalError
+ok   a typeof declares no surface and is answered rather than refused: undefined
+ok   an admitting composition runs what the declining one refused: 44
+broiler-js-slice-compiler: 17 checks passed
+
+
+[slicecompiler/aot] publish exit 0
+dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o /home/user/Broiler.VM/artifacts/js-publish/slicecompiler/aot -r linux-x64 -p:PublishAot=true
+  Determining projects to restore...
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 364 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 368 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 368 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj (in 368 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 15 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 19 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 16 ms).
+  Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Profile.JavaScript -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.SliceCompiler -> /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.JavaScript.SliceCompiler.dll
+  Generating native code
+  Broiler.VM.Composition.JavaScript.SliceCompiler -> /home/user/Broiler.VM/artifacts/js-publish/slicecompiler/aot/
+
+
+[slicecompiler/aot] --closure exit 0
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.JavaScript.SliceCompiler
+label narrow-runtime-compiler-shaped
+carries-lowering yes
+profiles 1
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 3
+
+
+[slicecompiler/aot/checks] run exit 0
+ok   a-neighbours-maximum-does-not-reach-this-profile: the neighbour caps section count at 1 and this profile's artifact still verified
+ok   a-neighbours-adopted-default-does-reach-this-profile: adopting defaults beside a neighbour declaring 1 refused this artifact, naming SectionCount
+ok   a-foreign-payload-is-not-projected: the neighbour's payload completed and projected as neither of this profile's
+ok   registration-order-does-not-change-the-catalog-identity: both encodings are 578 bytes and equal
+ok   descriptor-admitted-and-its-refusals-named: admitted, and four named negative cases were each refused
+ok   every source the manifest admits compiles: 25 sources compiled
+ok   every source the manifest excludes is refused by name: 32 sources refused with the recorded code
+ok   every module-goal early error is refused with its own code: 5 sources, each refused by name
+ok   the lowering is deterministic: 25 sources compiled twice to identical bytes
+ok   two goals in one process do not reach each other: 200 concurrent script-and-module pairs, each answered by its own goal
+ok   deep nesting is refused rather than survived: 20 levels compiled; 100,000 levels refused as NestingTooDeep, with no stack overflow
+ok   an early error never produces bytes: 32 refusals, none carrying an artifact
+ok   the source fuzz guidance loop keeps a new answer and refuses a repeat: 1 of 3 offers kept, baseline 1
+ok   a declining composition refuses at verification: InvalidArtifact/UnsupportedFeatureManifest/1608
+ok   an admitting composition with no provider refuses at run time: EvalError
+ok   a typeof declares no surface and is answered rather than refused: undefined
+ok   an admitting composition runs what the declining one refused: 44
+broiler-js-slice-compiler: 17 checks passed
+
+
+[slicecompiler] catalog tables identical across modes: True
+
+[conformance/jit] publish exit 0
+dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o /home/user/Broiler.VM/artifacts/js-publish/conformance/jit -r linux-x64 --self-contained false -p:PublishTrimmed=false
+  Determining projects to restore...
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 341 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 341 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 341 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance.csproj (in 341 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 6 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 7 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 7 ms).
+  Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Profile.JavaScript -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.Conformance -> /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.JavaScript.Conformance.dll
+  Broiler.VM.Composition.JavaScript.Conformance -> /home/user/Broiler.VM/artifacts/js-publish/conformance/jit/
+
+
+[conformance/jit] --closure exit 0
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.JavaScript.Conformance
+label narrow-runtime-compiler-shaped
+carries-lowering yes
+profiles 1
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 3
+manifest broiler.javascript.slice broiler.javascript.wide
+format-versions 1 2
+
+
+[conformance/jit/js-3a] run exit 3
+ok   sharding-is-stable-and-normalizes-the-path: three spellings of one path answer shard 2 of 4
+ok   sharding-does-not-move-when-the-selection-grows: 0 of 20 paths changed shard after five were added
+ok   sharding-partitions-rather-than-samples: seven shards covered 200 of 200 paths, each exactly once
+ok   sharding-refuses-a-shard-index-its-count-does-not-have: zero shards, an index equal to the count and an index below -1 are all refused
+ok   the-selection-pipeline-is-a-partition: 4 candidates split into 1 selected and 3 excluded, and the stages add back up
+ok   an-exclusion-is-counted-at-the-first-stage-that-removes-it: knownIncorrect=1, outOfScope=0
+ok   an-empty-scope-runs-everything-and-a-stated-one-does-not: no pattern matches all; a bare prefix, a directory prefix and a star all match; a miss does not
+ok   negative-metadata-tests-are-opt-in: without the opt-in 1 of 2 are selected, with it 2
+ok   a-known-incorrect-entry-without-a-reason-is-refused: 1 entry admitted, 1 refused for naming no reason
+ok   the-completion-protocol-tells-the-four-kinds-apart: 6 recorded sequences classified, and a reported failure carries its own text
+ok   an-exception-escaping-the-engine-is-a-failed-case-and-not-a-dead-run: answer `escaped InvalidOperationException`, which groups by type rather than by message
+ok   a-file-that-declares-no-verdict-is-refused-rather-than-defaulted: a missing block, a missing expectation and a missing description are each named
+ok   the-raw-flag-is-required-exactly-where-bytes-exist: a source file declaring raw and an artifact not declaring it are both refused
+ok   every-expectation-kind-round-trips-and-a-fifth-is-refused: 4 kinds render and parse back; an unknown kind names the four that exist
+ok   a-report-renders-and-reads-back-to-the-same-report: 2 results and 0 findings survived the trip
+ok   a-report-names-the-edition-it-was-scored-against: edition|ECMA-262|ES2026|tc39/ecma262|0248456c758431e4bb8e5d26333ff1865123c9cd|spec.html|ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0|archived
+ok   a-report-scored-against-another-edition-is-refused: /tmp/broiler-js-conformance-other-edition.txt was scored against ECMA-262 ES2026 at 0000000000000000000000000000000000000000 and this build is pinned to ECMA-262 ES2026 at 0248456c758431e4bb8e5d26333ff1865123c9cd
+ok   a-retained-pin-reads-back-what-it-declares: a-suite someone/a-suite@abc123 content sha256 def456 over 7 files - archived at somewhere/a-suite.tar.gz
+ok   a-retained-pin-missing-anything-is-refused-rather-than-defaulted: 6 of 6 malformed pins were refused: a missing key, an unknown key, no header, an archived field that is neither yes nor no, an archive with no path, and a path with no archive
+ok   a-suite-that-is-not-the-pinned-one-is-refused-on-every-count-it-can-be: the pinned content raises 0 complaints, different content raises 2 - digest and file count - and different bytes at the same count raise 1; a run under the pin reports it as the revision
+ok   a-detail-carrying-a-separator-cannot-write-a-row-nobody-wrote: one result written from one result, with the separator removed rather than escaped
+ok   a-mode-total-accounts-for-every-case-it-selected: selected 4, executed 3, skipped 1
+ok   removing-a-shard-report-produces-incomplete-coverage: two shards merge clean; one alone reports 2 finding(s) rather than a total of one
+ok   shards-that-read-different-revisions-are-not-one-run: a merge of two revisions is refused rather than added
+ok   a-test-two-shards-both-scored-is-refused: one path scored by two shards is a configuration failure, not two results
+ok   a-merged-report-handed-to-a-merge-is-refused-as-a-shard: a report covering every shard is named as what it is rather than counted as one
+ok   every-named-configuration-failure-can-actually-be-produced: all 6 members reached by an input
+ok   a-floor-holds-on-the-run-that-set-it-and-refuses-one-pass-fewer: two passes set the floor; one pass is reported as a regression naming the figure
+ok   a-suite-revision-change-re-bases-the-floor-and-retains-the-old-one: a run on a new revision re-bases rather than regressing, and the old floor stays in the file
+ok   a-floor-may-not-be-set-from-a-run-that-covered-less-than-it-claimed: a run with a finding and a single shard's run are both inadmissible
+FAIL every-source-refusal-has-a-declared-language-class: unclassified: [ModuleDeclarationOutsideModuleGoal, DuplicateExportName, ExportNameNotDeclared, ImportMetaOutsideModuleGoal, UnsupportedImportAttribute]; not in the vocabulary: []
+ok   only-an-early-error-may-score-and-every-class-is-populated: EarlyError=17, OutsideManifest=1, Divergence=7, ImplementationLimit=4
+ok   a-refusal-the-manifest-made-is-not-a-pass-on-a-negative-test: declared a SyntaxError, was refused as ConstructOutsideManifest, scored Skipped
+ok   the-same-refusal-scores-for-a-native-fixture-and-not-for-an-ingested-one: native fixture Passed, ingested test Skipped
+ok   an-unearned-refusal-is-unscorable-and-an-earned-one-passes: positive=Skipped, divergence=Skipped, limit=Skipped, early error=Passed
+ok   a-refusal-that-names-no-code-is-reported-as-a-failure: an unnamed refusal scored Failed
+ok   a-nested-negative-and-a-folded-description-are-read-and-a-block-scalar-is-not-metadata: description `A description folded over two lines.`, flags 0
+ok   the-two-list-spellings-read-to-the-same-list: [onlyStrict, module] both ways
+ok   the-dialect-reader-refuses-metadata-it-cannot-honour: 8 malformed blocks, each refused
+ok   a-key-this-harness-has-no-use-for-is-skipped-and-a-flag-is-not: read past 4 unknown keys to `a file carrying keys this harness has no use for`
+ok   the-dialect-reader-reads-lf-crlf-and-a-lone-carriage-return-alike: three line-terminator spellings read to one frontmatter
+ok   a-block-indented-as-a-unit-reads-the-same-as-one-at-the-margin: both read `folded over two lines` and 1 flag(s)
+ok   the-suites-raw-flag-is-source-and-not-artifact-bytes: 1 case in Script mode carrying source
+ok   a-file-declaring-no-strictness-becomes-two-cases-and-only-one-carries-the-prologue: 2 cases: a.js#strict, a.js#sloppy
+ok   a-file-declaring-its-strictness-or-its-goal-becomes-one-case: onlyStrict, noStrict, module and raw each give one case
+ok   a-parse-negative-naming-harness-files-is-selectable-and-a-positive-one-is-not: 2 selectable negative case(s), 1 declined positive
+ok   a-file-this-harness-cannot-run-is-counted-and-named-rather-than-dropped: 6 declines, each a counted candidate carrying a reason
+ok   a-suite-file-carrying-no-metadata-block-is-declined-and-not-refused: declined: a source file carrying no metadata block, which is a harness or fixture file rather than a test
+ok   the-two-ingested-expectation-spellings-parse-back-to-themselves: `refused-as-early-error SyntaxError`, `completes`
+ok   a-comment-written-with-two-hashes-does-not-end-a-section: 3 of 3 proposals survived two `##` comments; 1 standard, 1 test-harness, 0 complaint(s)
+ok   a-feature-list-that-cannot-be-read-is-refused-rather-than-emptied: 4 of 4 malformed lists were refused - a missing heading, an empty section, one name under two headings, a name under none - and the refused one handed back 0 proposals rather than the one it had already read
+ok   a-trailing-comment-is-not-part-of-a-feature-name: `a-proposal  # …` declares `a-proposal`
+ok   a-test-claiming-a-proposal-is-not-scored-and-one-claiming-the-language-is: excluded 2 of 4 - a test claiming a proposal alongside a published construct is still about the proposal - and kept [about-the-language.js, about-nothing.js]
+ok   an-empty-exclusion-set-excludes-nothing: with nothing declared a proposal, 2 of 2 tests are selected and 0 excluded
+ok   the-feature-filter-cannot-opt-back-into-an-excluded-test: asking for `a-proposal` by name selected 0 tests, and a test the scope filter would also have removed is counted at the exclusion (1) rather than at the filter (0)
+ok   the-test262-partition-is-exhaustive-and-disjoint: 500 files, each in exactly one shard at 1, 2, 3, 4, 7, 16 and 64 shards
+ok   a-shard-argument-is-read-or-refused-and-never-defaulted: `3/8` reads; no --shard is the whole selection; `3`, `a/b`, `4/4` and `-1/4` are refused
+ok   a-merge-of-every-shard-equals-an-unsharded-run-over-the-same-list: four shards of 120 files merge to test262 120 files, 240 variants: pass 160, fail 13, unsupported 34, exhausted 22, skipped 11, with 3 families and 2 dimensions identical to the unsharded run
+ok   removing-a-test262-shard-report-produces-incomplete-coverage: three of four shards report incomplete coverage and a coverage field that says partial, not a whole run of a smaller suite
+ok   shards-taken-under-two-manifests-or-two-admitted-sets-are-not-one-run: a merge of two manifests and a merge of two declined sets are both refused rather than added
+ok   the-family-table-names-a-family-the-run-met-and-omits-one-it-did-not: 3 families, most-met first: a class declaration, a call with more than 255 arguments, a generator function
+ok   an-exhaustion-is-counted-apart-from-a-failure-and-names-its-dimension: one failure and one exhaustion, and the exhausted variant is named with `WallClock`
+ok   a-sharded-limited-or-narrowed-run-says-so-where-a-rule-can-see-it: 3 of 3 partial runs render `coverage|partial`, and the whole one renders `coverage|whole`
+ok   a-test262-report-round-trips-and-a-forged-coverage-claim-is-refused: 6 results survived the trip; a report edited to claim it was whole is refused rather than believed
+broiler-js-conformance: the harness's own checks failed; nothing was scored
+
+
+[conformance/jit/ingest-shape] run exit 3
+ok   sharding-is-stable-and-normalizes-the-path: three spellings of one path answer shard 2 of 4
+ok   sharding-does-not-move-when-the-selection-grows: 0 of 20 paths changed shard after five were added
+ok   sharding-partitions-rather-than-samples: seven shards covered 200 of 200 paths, each exactly once
+ok   sharding-refuses-a-shard-index-its-count-does-not-have: zero shards, an index equal to the count and an index below -1 are all refused
+ok   the-selection-pipeline-is-a-partition: 4 candidates split into 1 selected and 3 excluded, and the stages add back up
+ok   an-exclusion-is-counted-at-the-first-stage-that-removes-it: knownIncorrect=1, outOfScope=0
+ok   an-empty-scope-runs-everything-and-a-stated-one-does-not: no pattern matches all; a bare prefix, a directory prefix and a star all match; a miss does not
+ok   negative-metadata-tests-are-opt-in: without the opt-in 1 of 2 are selected, with it 2
+ok   a-known-incorrect-entry-without-a-reason-is-refused: 1 entry admitted, 1 refused for naming no reason
+ok   the-completion-protocol-tells-the-four-kinds-apart: 6 recorded sequences classified, and a reported failure carries its own text
+ok   an-exception-escaping-the-engine-is-a-failed-case-and-not-a-dead-run: answer `escaped InvalidOperationException`, which groups by type rather than by message
+ok   a-file-that-declares-no-verdict-is-refused-rather-than-defaulted: a missing block, a missing expectation and a missing description are each named
+ok   the-raw-flag-is-required-exactly-where-bytes-exist: a source file declaring raw and an artifact not declaring it are both refused
+ok   every-expectation-kind-round-trips-and-a-fifth-is-refused: 4 kinds render and parse back; an unknown kind names the four that exist
+ok   a-report-renders-and-reads-back-to-the-same-report: 2 results and 0 findings survived the trip
+ok   a-report-names-the-edition-it-was-scored-against: edition|ECMA-262|ES2026|tc39/ecma262|0248456c758431e4bb8e5d26333ff1865123c9cd|spec.html|ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0|archived
+ok   a-report-scored-against-another-edition-is-refused: /tmp/broiler-js-conformance-other-edition.txt was scored against ECMA-262 ES2026 at 0000000000000000000000000000000000000000 and this build is pinned to ECMA-262 ES2026 at 0248456c758431e4bb8e5d26333ff1865123c9cd
+ok   a-retained-pin-reads-back-what-it-declares: a-suite someone/a-suite@abc123 content sha256 def456 over 7 files - archived at somewhere/a-suite.tar.gz
+ok   a-retained-pin-missing-anything-is-refused-rather-than-defaulted: 6 of 6 malformed pins were refused: a missing key, an unknown key, no header, an archived field that is neither yes nor no, an archive with no path, and a path with no archive
+ok   a-suite-that-is-not-the-pinned-one-is-refused-on-every-count-it-can-be: the pinned content raises 0 complaints, different content raises 2 - digest and file count - and different bytes at the same count raise 1; a run under the pin reports it as the revision
+ok   a-detail-carrying-a-separator-cannot-write-a-row-nobody-wrote: one result written from one result, with the separator removed rather than escaped
+ok   a-mode-total-accounts-for-every-case-it-selected: selected 4, executed 3, skipped 1
+ok   removing-a-shard-report-produces-incomplete-coverage: two shards merge clean; one alone reports 2 finding(s) rather than a total of one
+ok   shards-that-read-different-revisions-are-not-one-run: a merge of two revisions is refused rather than added
+ok   a-test-two-shards-both-scored-is-refused: one path scored by two shards is a configuration failure, not two results
+ok   a-merged-report-handed-to-a-merge-is-refused-as-a-shard: a report covering every shard is named as what it is rather than counted as one
+ok   every-named-configuration-failure-can-actually-be-produced: all 6 members reached by an input
+ok   a-floor-holds-on-the-run-that-set-it-and-refuses-one-pass-fewer: two passes set the floor; one pass is reported as a regression naming the figure
+ok   a-suite-revision-change-re-bases-the-floor-and-retains-the-old-one: a run on a new revision re-bases rather than regressing, and the old floor stays in the file
+ok   a-floor-may-not-be-set-from-a-run-that-covered-less-than-it-claimed: a run with a finding and a single shard's run are both inadmissible
+FAIL every-source-refusal-has-a-declared-language-class: unclassified: [ModuleDeclarationOutsideModuleGoal, DuplicateExportName, ExportNameNotDeclared, ImportMetaOutsideModuleGoal, UnsupportedImportAttribute]; not in the vocabulary: []
+ok   only-an-early-error-may-score-and-every-class-is-populated: EarlyError=17, OutsideManifest=1, Divergence=7, ImplementationLimit=4
+ok   a-refusal-the-manifest-made-is-not-a-pass-on-a-negative-test: declared a SyntaxError, was refused as ConstructOutsideManifest, scored Skipped
+ok   the-same-refusal-scores-for-a-native-fixture-and-not-for-an-ingested-one: native fixture Passed, ingested test Skipped
+ok   an-unearned-refusal-is-unscorable-and-an-earned-one-passes: positive=Skipped, divergence=Skipped, limit=Skipped, early error=Passed
+ok   a-refusal-that-names-no-code-is-reported-as-a-failure: an unnamed refusal scored Failed
+ok   a-nested-negative-and-a-folded-description-are-read-and-a-block-scalar-is-not-metadata: description `A description folded over two lines.`, flags 0
+ok   the-two-list-spellings-read-to-the-same-list: [onlyStrict, module] both ways
+ok   the-dialect-reader-refuses-metadata-it-cannot-honour: 8 malformed blocks, each refused
+ok   a-key-this-harness-has-no-use-for-is-skipped-and-a-flag-is-not: read past 4 unknown keys to `a file carrying keys this harness has no use for`
+ok   the-dialect-reader-reads-lf-crlf-and-a-lone-carriage-return-alike: three line-terminator spellings read to one frontmatter
+ok   a-block-indented-as-a-unit-reads-the-same-as-one-at-the-margin: both read `folded over two lines` and 1 flag(s)
+ok   the-suites-raw-flag-is-source-and-not-artifact-bytes: 1 case in Script mode carrying source
+ok   a-file-declaring-no-strictness-becomes-two-cases-and-only-one-carries-the-prologue: 2 cases: a.js#strict, a.js#sloppy
+ok   a-file-declaring-its-strictness-or-its-goal-becomes-one-case: onlyStrict, noStrict, module and raw each give one case
+ok   a-parse-negative-naming-harness-files-is-selectable-and-a-positive-one-is-not: 2 selectable negative case(s), 1 declined positive
+ok   a-file-this-harness-cannot-run-is-counted-and-named-rather-than-dropped: 6 declines, each a counted candidate carrying a reason
+ok   a-suite-file-carrying-no-metadata-block-is-declined-and-not-refused: declined: a source file carrying no metadata block, which is a harness or fixture file rather than a test
+ok   the-two-ingested-expectation-spellings-parse-back-to-themselves: `refused-as-early-error SyntaxError`, `completes`
+ok   a-comment-written-with-two-hashes-does-not-end-a-section: 3 of 3 proposals survived two `##` comments; 1 standard, 1 test-harness, 0 complaint(s)
+ok   a-feature-list-that-cannot-be-read-is-refused-rather-than-emptied: 4 of 4 malformed lists were refused - a missing heading, an empty section, one name under two headings, a name under none - and the refused one handed back 0 proposals rather than the one it had already read
+ok   a-trailing-comment-is-not-part-of-a-feature-name: `a-proposal  # …` declares `a-proposal`
+ok   a-test-claiming-a-proposal-is-not-scored-and-one-claiming-the-language-is: excluded 2 of 4 - a test claiming a proposal alongside a published construct is still about the proposal - and kept [about-the-language.js, about-nothing.js]
+ok   an-empty-exclusion-set-excludes-nothing: with nothing declared a proposal, 2 of 2 tests are selected and 0 excluded
+ok   the-feature-filter-cannot-opt-back-into-an-excluded-test: asking for `a-proposal` by name selected 0 tests, and a test the scope filter would also have removed is counted at the exclusion (1) rather than at the filter (0)
+ok   the-test262-partition-is-exhaustive-and-disjoint: 500 files, each in exactly one shard at 1, 2, 3, 4, 7, 16 and 64 shards
+ok   a-shard-argument-is-read-or-refused-and-never-defaulted: `3/8` reads; no --shard is the whole selection; `3`, `a/b`, `4/4` and `-1/4` are refused
+ok   a-merge-of-every-shard-equals-an-unsharded-run-over-the-same-list: four shards of 120 files merge to test262 120 files, 240 variants: pass 160, fail 13, unsupported 34, exhausted 22, skipped 11, with 3 families and 2 dimensions identical to the unsharded run
+ok   removing-a-test262-shard-report-produces-incomplete-coverage: three of four shards report incomplete coverage and a coverage field that says partial, not a whole run of a smaller suite
+ok   shards-taken-under-two-manifests-or-two-admitted-sets-are-not-one-run: a merge of two manifests and a merge of two declined sets are both refused rather than added
+ok   the-family-table-names-a-family-the-run-met-and-omits-one-it-did-not: 3 families, most-met first: a class declaration, a call with more than 255 arguments, a generator function
+ok   an-exhaustion-is-counted-apart-from-a-failure-and-names-its-dimension: one failure and one exhaustion, and the exhausted variant is named with `WallClock`
+ok   a-sharded-limited-or-narrowed-run-says-so-where-a-rule-can-see-it: 3 of 3 partial runs render `coverage|partial`, and the whole one renders `coverage|whole`
+ok   a-test262-report-round-trips-and-a-forged-coverage-claim-is-refused: 6 results survived the trip; a report edited to claim it was whole is refused rather than believed
+broiler-js-conformance: the harness's own checks failed; nothing was scored
+
+
+[conformance/trimmed] publish exit 0
+dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o /home/user/Broiler.VM/artifacts/js-publish/conformance/trimmed -r linux-x64 --self-contained true
+  Determining projects to restore...
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 310 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 310 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 310 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance.csproj (in 310 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 5 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 5 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 7 ms).
+  Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Profile.JavaScript -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.Conformance -> /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.JavaScript.Conformance.dll
+  Optimizing assemblies for size. This process might take a while.
+  Broiler.VM.Composition.JavaScript.Conformance -> /home/user/Broiler.VM/artifacts/js-publish/conformance/trimmed/
+
+
+[conformance/trimmed] --closure exit 0
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.JavaScript.Conformance
+label narrow-runtime-compiler-shaped
+carries-lowering yes
+profiles 1
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 3
+manifest broiler.javascript.slice broiler.javascript.wide
+format-versions 1 2
+
+
+[conformance/trimmed/js-3a] run exit 3
+ok   sharding-is-stable-and-normalizes-the-path: three spellings of one path answer shard 2 of 4
+ok   sharding-does-not-move-when-the-selection-grows: 0 of 20 paths changed shard after five were added
+ok   sharding-partitions-rather-than-samples: seven shards covered 200 of 200 paths, each exactly once
+ok   sharding-refuses-a-shard-index-its-count-does-not-have: zero shards, an index equal to the count and an index below -1 are all refused
+ok   the-selection-pipeline-is-a-partition: 4 candidates split into 1 selected and 3 excluded, and the stages add back up
+ok   an-exclusion-is-counted-at-the-first-stage-that-removes-it: knownIncorrect=1, outOfScope=0
+ok   an-empty-scope-runs-everything-and-a-stated-one-does-not: no pattern matches all; a bare prefix, a directory prefix and a star all match; a miss does not
+ok   negative-metadata-tests-are-opt-in: without the opt-in 1 of 2 are selected, with it 2
+ok   a-known-incorrect-entry-without-a-reason-is-refused: 1 entry admitted, 1 refused for naming no reason
+ok   the-completion-protocol-tells-the-four-kinds-apart: 6 recorded sequences classified, and a reported failure carries its own text
+ok   an-exception-escaping-the-engine-is-a-failed-case-and-not-a-dead-run: answer `escaped InvalidOperationException`, which groups by type rather than by message
+ok   a-file-that-declares-no-verdict-is-refused-rather-than-defaulted: a missing block, a missing expectation and a missing description are each named
+ok   the-raw-flag-is-required-exactly-where-bytes-exist: a source file declaring raw and an artifact not declaring it are both refused
+ok   every-expectation-kind-round-trips-and-a-fifth-is-refused: 4 kinds render and parse back; an unknown kind names the four that exist
+ok   a-report-renders-and-reads-back-to-the-same-report: 2 results and 0 findings survived the trip
+ok   a-report-names-the-edition-it-was-scored-against: edition|ECMA-262|ES2026|tc39/ecma262|0248456c758431e4bb8e5d26333ff1865123c9cd|spec.html|ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0|archived
+ok   a-report-scored-against-another-edition-is-refused: /tmp/broiler-js-conformance-other-edition.txt was scored against ECMA-262 ES2026 at 0000000000000000000000000000000000000000 and this build is pinned to ECMA-262 ES2026 at 0248456c758431e4bb8e5d26333ff1865123c9cd
+ok   a-retained-pin-reads-back-what-it-declares: a-suite someone/a-suite@abc123 content sha256 def456 over 7 files - archived at somewhere/a-suite.tar.gz
+ok   a-retained-pin-missing-anything-is-refused-rather-than-defaulted: 6 of 6 malformed pins were refused: a missing key, an unknown key, no header, an archived field that is neither yes nor no, an archive with no path, and a path with no archive
+ok   a-suite-that-is-not-the-pinned-one-is-refused-on-every-count-it-can-be: the pinned content raises 0 complaints, different content raises 2 - digest and file count - and different bytes at the same count raise 1; a run under the pin reports it as the revision
+ok   a-detail-carrying-a-separator-cannot-write-a-row-nobody-wrote: one result written from one result, with the separator removed rather than escaped
+ok   a-mode-total-accounts-for-every-case-it-selected: selected 4, executed 3, skipped 1
+ok   removing-a-shard-report-produces-incomplete-coverage: two shards merge clean; one alone reports 2 finding(s) rather than a total of one
+ok   shards-that-read-different-revisions-are-not-one-run: a merge of two revisions is refused rather than added
+ok   a-test-two-shards-both-scored-is-refused: one path scored by two shards is a configuration failure, not two results
+ok   a-merged-report-handed-to-a-merge-is-refused-as-a-shard: a report covering every shard is named as what it is rather than counted as one
+ok   every-named-configuration-failure-can-actually-be-produced: all 6 members reached by an input
+ok   a-floor-holds-on-the-run-that-set-it-and-refuses-one-pass-fewer: two passes set the floor; one pass is reported as a regression naming the figure
+ok   a-suite-revision-change-re-bases-the-floor-and-retains-the-old-one: a run on a new revision re-bases rather than regressing, and the old floor stays in the file
+ok   a-floor-may-not-be-set-from-a-run-that-covered-less-than-it-claimed: a run with a finding and a single shard's run are both inadmissible
+FAIL every-source-refusal-has-a-declared-language-class: unclassified: [ModuleDeclarationOutsideModuleGoal, DuplicateExportName, ExportNameNotDeclared, ImportMetaOutsideModuleGoal, UnsupportedImportAttribute]; not in the vocabulary: []
+ok   only-an-early-error-may-score-and-every-class-is-populated: EarlyError=17, OutsideManifest=1, Divergence=7, ImplementationLimit=4
+ok   a-refusal-the-manifest-made-is-not-a-pass-on-a-negative-test: declared a SyntaxError, was refused as ConstructOutsideManifest, scored Skipped
+ok   the-same-refusal-scores-for-a-native-fixture-and-not-for-an-ingested-one: native fixture Passed, ingested test Skipped
+ok   an-unearned-refusal-is-unscorable-and-an-earned-one-passes: positive=Skipped, divergence=Skipped, limit=Skipped, early error=Passed
+ok   a-refusal-that-names-no-code-is-reported-as-a-failure: an unnamed refusal scored Failed
+ok   a-nested-negative-and-a-folded-description-are-read-and-a-block-scalar-is-not-metadata: description `A description folded over two lines.`, flags 0
+ok   the-two-list-spellings-read-to-the-same-list: [onlyStrict, module] both ways
+ok   the-dialect-reader-refuses-metadata-it-cannot-honour: 8 malformed blocks, each refused
+ok   a-key-this-harness-has-no-use-for-is-skipped-and-a-flag-is-not: read past 4 unknown keys to `a file carrying keys this harness has no use for`
+ok   the-dialect-reader-reads-lf-crlf-and-a-lone-carriage-return-alike: three line-terminator spellings read to one frontmatter
+ok   a-block-indented-as-a-unit-reads-the-same-as-one-at-the-margin: both read `folded over two lines` and 1 flag(s)
+ok   the-suites-raw-flag-is-source-and-not-artifact-bytes: 1 case in Script mode carrying source
+ok   a-file-declaring-no-strictness-becomes-two-cases-and-only-one-carries-the-prologue: 2 cases: a.js#strict, a.js#sloppy
+ok   a-file-declaring-its-strictness-or-its-goal-becomes-one-case: onlyStrict, noStrict, module and raw each give one case
+ok   a-parse-negative-naming-harness-files-is-selectable-and-a-positive-one-is-not: 2 selectable negative case(s), 1 declined positive
+ok   a-file-this-harness-cannot-run-is-counted-and-named-rather-than-dropped: 6 declines, each a counted candidate carrying a reason
+ok   a-suite-file-carrying-no-metadata-block-is-declined-and-not-refused: declined: a source file carrying no metadata block, which is a harness or fixture file rather than a test
+ok   the-two-ingested-expectation-spellings-parse-back-to-themselves: `refused-as-early-error SyntaxError`, `completes`
+ok   a-comment-written-with-two-hashes-does-not-end-a-section: 3 of 3 proposals survived two `##` comments; 1 standard, 1 test-harness, 0 complaint(s)
+ok   a-feature-list-that-cannot-be-read-is-refused-rather-than-emptied: 4 of 4 malformed lists were refused - a missing heading, an empty section, one name under two headings, a name under none - and the refused one handed back 0 proposals rather than the one it had already read
+ok   a-trailing-comment-is-not-part-of-a-feature-name: `a-proposal  # …` declares `a-proposal`
+ok   a-test-claiming-a-proposal-is-not-scored-and-one-claiming-the-language-is: excluded 2 of 4 - a test claiming a proposal alongside a published construct is still about the proposal - and kept [about-the-language.js, about-nothing.js]
+ok   an-empty-exclusion-set-excludes-nothing: with nothing declared a proposal, 2 of 2 tests are selected and 0 excluded
+ok   the-feature-filter-cannot-opt-back-into-an-excluded-test: asking for `a-proposal` by name selected 0 tests, and a test the scope filter would also have removed is counted at the exclusion (1) rather than at the filter (0)
+ok   the-test262-partition-is-exhaustive-and-disjoint: 500 files, each in exactly one shard at 1, 2, 3, 4, 7, 16 and 64 shards
+ok   a-shard-argument-is-read-or-refused-and-never-defaulted: `3/8` reads; no --shard is the whole selection; `3`, `a/b`, `4/4` and `-1/4` are refused
+ok   a-merge-of-every-shard-equals-an-unsharded-run-over-the-same-list: four shards of 120 files merge to test262 120 files, 240 variants: pass 160, fail 13, unsupported 34, exhausted 22, skipped 11, with 3 families and 2 dimensions identical to the unsharded run
+ok   removing-a-test262-shard-report-produces-incomplete-coverage: three of four shards report incomplete coverage and a coverage field that says partial, not a whole run of a smaller suite
+ok   shards-taken-under-two-manifests-or-two-admitted-sets-are-not-one-run: a merge of two manifests and a merge of two declined sets are both refused rather than added
+ok   the-family-table-names-a-family-the-run-met-and-omits-one-it-did-not: 3 families, most-met first: a class declaration, a call with more than 255 arguments, a generator function
+ok   an-exhaustion-is-counted-apart-from-a-failure-and-names-its-dimension: one failure and one exhaustion, and the exhausted variant is named with `WallClock`
+ok   a-sharded-limited-or-narrowed-run-says-so-where-a-rule-can-see-it: 3 of 3 partial runs render `coverage|partial`, and the whole one renders `coverage|whole`
+ok   a-test262-report-round-trips-and-a-forged-coverage-claim-is-refused: 6 results survived the trip; a report edited to claim it was whole is refused rather than believed
+broiler-js-conformance: the harness's own checks failed; nothing was scored
+
+
+[conformance/trimmed/ingest-shape] run exit 3
+ok   sharding-is-stable-and-normalizes-the-path: three spellings of one path answer shard 2 of 4
+ok   sharding-does-not-move-when-the-selection-grows: 0 of 20 paths changed shard after five were added
+ok   sharding-partitions-rather-than-samples: seven shards covered 200 of 200 paths, each exactly once
+ok   sharding-refuses-a-shard-index-its-count-does-not-have: zero shards, an index equal to the count and an index below -1 are all refused
+ok   the-selection-pipeline-is-a-partition: 4 candidates split into 1 selected and 3 excluded, and the stages add back up
+ok   an-exclusion-is-counted-at-the-first-stage-that-removes-it: knownIncorrect=1, outOfScope=0
+ok   an-empty-scope-runs-everything-and-a-stated-one-does-not: no pattern matches all; a bare prefix, a directory prefix and a star all match; a miss does not
+ok   negative-metadata-tests-are-opt-in: without the opt-in 1 of 2 are selected, with it 2
+ok   a-known-incorrect-entry-without-a-reason-is-refused: 1 entry admitted, 1 refused for naming no reason
+ok   the-completion-protocol-tells-the-four-kinds-apart: 6 recorded sequences classified, and a reported failure carries its own text
+ok   an-exception-escaping-the-engine-is-a-failed-case-and-not-a-dead-run: answer `escaped InvalidOperationException`, which groups by type rather than by message
+ok   a-file-that-declares-no-verdict-is-refused-rather-than-defaulted: a missing block, a missing expectation and a missing description are each named
+ok   the-raw-flag-is-required-exactly-where-bytes-exist: a source file declaring raw and an artifact not declaring it are both refused
+ok   every-expectation-kind-round-trips-and-a-fifth-is-refused: 4 kinds render and parse back; an unknown kind names the four that exist
+ok   a-report-renders-and-reads-back-to-the-same-report: 2 results and 0 findings survived the trip
+ok   a-report-names-the-edition-it-was-scored-against: edition|ECMA-262|ES2026|tc39/ecma262|0248456c758431e4bb8e5d26333ff1865123c9cd|spec.html|ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0|archived
+ok   a-report-scored-against-another-edition-is-refused: /tmp/broiler-js-conformance-other-edition.txt was scored against ECMA-262 ES2026 at 0000000000000000000000000000000000000000 and this build is pinned to ECMA-262 ES2026 at 0248456c758431e4bb8e5d26333ff1865123c9cd
+ok   a-retained-pin-reads-back-what-it-declares: a-suite someone/a-suite@abc123 content sha256 def456 over 7 files - archived at somewhere/a-suite.tar.gz
+ok   a-retained-pin-missing-anything-is-refused-rather-than-defaulted: 6 of 6 malformed pins were refused: a missing key, an unknown key, no header, an archived field that is neither yes nor no, an archive with no path, and a path with no archive
+ok   a-suite-that-is-not-the-pinned-one-is-refused-on-every-count-it-can-be: the pinned content raises 0 complaints, different content raises 2 - digest and file count - and different bytes at the same count raise 1; a run under the pin reports it as the revision
+ok   a-detail-carrying-a-separator-cannot-write-a-row-nobody-wrote: one result written from one result, with the separator removed rather than escaped
+ok   a-mode-total-accounts-for-every-case-it-selected: selected 4, executed 3, skipped 1
+ok   removing-a-shard-report-produces-incomplete-coverage: two shards merge clean; one alone reports 2 finding(s) rather than a total of one
+ok   shards-that-read-different-revisions-are-not-one-run: a merge of two revisions is refused rather than added
+ok   a-test-two-shards-both-scored-is-refused: one path scored by two shards is a configuration failure, not two results
+ok   a-merged-report-handed-to-a-merge-is-refused-as-a-shard: a report covering every shard is named as what it is rather than counted as one
+ok   every-named-configuration-failure-can-actually-be-produced: all 6 members reached by an input
+ok   a-floor-holds-on-the-run-that-set-it-and-refuses-one-pass-fewer: two passes set the floor; one pass is reported as a regression naming the figure
+ok   a-suite-revision-change-re-bases-the-floor-and-retains-the-old-one: a run on a new revision re-bases rather than regressing, and the old floor stays in the file
+ok   a-floor-may-not-be-set-from-a-run-that-covered-less-than-it-claimed: a run with a finding and a single shard's run are both inadmissible
+FAIL every-source-refusal-has-a-declared-language-class: unclassified: [ModuleDeclarationOutsideModuleGoal, DuplicateExportName, ExportNameNotDeclared, ImportMetaOutsideModuleGoal, UnsupportedImportAttribute]; not in the vocabulary: []
+ok   only-an-early-error-may-score-and-every-class-is-populated: EarlyError=17, OutsideManifest=1, Divergence=7, ImplementationLimit=4
+ok   a-refusal-the-manifest-made-is-not-a-pass-on-a-negative-test: declared a SyntaxError, was refused as ConstructOutsideManifest, scored Skipped
+ok   the-same-refusal-scores-for-a-native-fixture-and-not-for-an-ingested-one: native fixture Passed, ingested test Skipped
+ok   an-unearned-refusal-is-unscorable-and-an-earned-one-passes: positive=Skipped, divergence=Skipped, limit=Skipped, early error=Passed
+ok   a-refusal-that-names-no-code-is-reported-as-a-failure: an unnamed refusal scored Failed
+ok   a-nested-negative-and-a-folded-description-are-read-and-a-block-scalar-is-not-metadata: description `A description folded over two lines.`, flags 0
+ok   the-two-list-spellings-read-to-the-same-list: [onlyStrict, module] both ways
+ok   the-dialect-reader-refuses-metadata-it-cannot-honour: 8 malformed blocks, each refused
+ok   a-key-this-harness-has-no-use-for-is-skipped-and-a-flag-is-not: read past 4 unknown keys to `a file carrying keys this harness has no use for`
+ok   the-dialect-reader-reads-lf-crlf-and-a-lone-carriage-return-alike: three line-terminator spellings read to one frontmatter
+ok   a-block-indented-as-a-unit-reads-the-same-as-one-at-the-margin: both read `folded over two lines` and 1 flag(s)
+ok   the-suites-raw-flag-is-source-and-not-artifact-bytes: 1 case in Script mode carrying source
+ok   a-file-declaring-no-strictness-becomes-two-cases-and-only-one-carries-the-prologue: 2 cases: a.js#strict, a.js#sloppy
+ok   a-file-declaring-its-strictness-or-its-goal-becomes-one-case: onlyStrict, noStrict, module and raw each give one case
+ok   a-parse-negative-naming-harness-files-is-selectable-and-a-positive-one-is-not: 2 selectable negative case(s), 1 declined positive
+ok   a-file-this-harness-cannot-run-is-counted-and-named-rather-than-dropped: 6 declines, each a counted candidate carrying a reason
+ok   a-suite-file-carrying-no-metadata-block-is-declined-and-not-refused: declined: a source file carrying no metadata block, which is a harness or fixture file rather than a test
+ok   the-two-ingested-expectation-spellings-parse-back-to-themselves: `refused-as-early-error SyntaxError`, `completes`
+ok   a-comment-written-with-two-hashes-does-not-end-a-section: 3 of 3 proposals survived two `##` comments; 1 standard, 1 test-harness, 0 complaint(s)
+ok   a-feature-list-that-cannot-be-read-is-refused-rather-than-emptied: 4 of 4 malformed lists were refused - a missing heading, an empty section, one name under two headings, a name under none - and the refused one handed back 0 proposals rather than the one it had already read
+ok   a-trailing-comment-is-not-part-of-a-feature-name: `a-proposal  # …` declares `a-proposal`
+ok   a-test-claiming-a-proposal-is-not-scored-and-one-claiming-the-language-is: excluded 2 of 4 - a test claiming a proposal alongside a published construct is still about the proposal - and kept [about-the-language.js, about-nothing.js]
+ok   an-empty-exclusion-set-excludes-nothing: with nothing declared a proposal, 2 of 2 tests are selected and 0 excluded
+ok   the-feature-filter-cannot-opt-back-into-an-excluded-test: asking for `a-proposal` by name selected 0 tests, and a test the scope filter would also have removed is counted at the exclusion (1) rather than at the filter (0)
+ok   the-test262-partition-is-exhaustive-and-disjoint: 500 files, each in exactly one shard at 1, 2, 3, 4, 7, 16 and 64 shards
+ok   a-shard-argument-is-read-or-refused-and-never-defaulted: `3/8` reads; no --shard is the whole selection; `3`, `a/b`, `4/4` and `-1/4` are refused
+ok   a-merge-of-every-shard-equals-an-unsharded-run-over-the-same-list: four shards of 120 files merge to test262 120 files, 240 variants: pass 160, fail 13, unsupported 34, exhausted 22, skipped 11, with 3 families and 2 dimensions identical to the unsharded run
+ok   removing-a-test262-shard-report-produces-incomplete-coverage: three of four shards report incomplete coverage and a coverage field that says partial, not a whole run of a smaller suite
+ok   shards-taken-under-two-manifests-or-two-admitted-sets-are-not-one-run: a merge of two manifests and a merge of two declined sets are both refused rather than added
+ok   the-family-table-names-a-family-the-run-met-and-omits-one-it-did-not: 3 families, most-met first: a class declaration, a call with more than 255 arguments, a generator function
+ok   an-exhaustion-is-counted-apart-from-a-failure-and-names-its-dimension: one failure and one exhaustion, and the exhausted variant is named with `WallClock`
+ok   a-sharded-limited-or-narrowed-run-says-so-where-a-rule-can-see-it: 3 of 3 partial runs render `coverage|partial`, and the whole one renders `coverage|whole`
+ok   a-test262-report-round-trips-and-a-forged-coverage-claim-is-refused: 6 results survived the trip; a report edited to claim it was whole is refused rather than believed
+broiler-js-conformance: the harness's own checks failed; nothing was scored
+
+
+[conformance/aot] publish exit 0
+dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o /home/user/Broiler.VM/artifacts/js-publish/conformance/aot -r linux-x64 -p:PublishAot=true
+  Determining projects to restore...
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 352 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 356 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 356 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance.csproj (in 356 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 20 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 20 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 20 ms).
+  Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.Conformance -> /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.JavaScript.Conformance.dll
+  Generating native code
+  Broiler.VM.Composition.JavaScript.Conformance -> /home/user/Broiler.VM/artifacts/js-publish/conformance/aot/
+
+
+[conformance/aot] --closure exit 0
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.JavaScript.Conformance
+label narrow-runtime-compiler-shaped
+carries-lowering yes
+profiles 1
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 3
+manifest broiler.javascript.slice broiler.javascript.wide
+format-versions 1 2
+
+
+[conformance/aot/js-3a] run exit 3
+ok   sharding-is-stable-and-normalizes-the-path: three spellings of one path answer shard 2 of 4
+ok   sharding-does-not-move-when-the-selection-grows: 0 of 20 paths changed shard after five were added
+ok   sharding-partitions-rather-than-samples: seven shards covered 200 of 200 paths, each exactly once
+ok   sharding-refuses-a-shard-index-its-count-does-not-have: zero shards, an index equal to the count and an index below -1 are all refused
+ok   the-selection-pipeline-is-a-partition: 4 candidates split into 1 selected and 3 excluded, and the stages add back up
+ok   an-exclusion-is-counted-at-the-first-stage-that-removes-it: knownIncorrect=1, outOfScope=0
+ok   an-empty-scope-runs-everything-and-a-stated-one-does-not: no pattern matches all; a bare prefix, a directory prefix and a star all match; a miss does not
+ok   negative-metadata-tests-are-opt-in: without the opt-in 1 of 2 are selected, with it 2
+ok   a-known-incorrect-entry-without-a-reason-is-refused: 1 entry admitted, 1 refused for naming no reason
+ok   the-completion-protocol-tells-the-four-kinds-apart: 6 recorded sequences classified, and a reported failure carries its own text
+ok   an-exception-escaping-the-engine-is-a-failed-case-and-not-a-dead-run: answer `escaped InvalidOperationException`, which groups by type rather than by message
+ok   a-file-that-declares-no-verdict-is-refused-rather-than-defaulted: a missing block, a missing expectation and a missing description are each named
+ok   the-raw-flag-is-required-exactly-where-bytes-exist: a source file declaring raw and an artifact not declaring it are both refused
+ok   every-expectation-kind-round-trips-and-a-fifth-is-refused: 4 kinds render and parse back; an unknown kind names the four that exist
+ok   a-report-renders-and-reads-back-to-the-same-report: 2 results and 0 findings survived the trip
+ok   a-report-names-the-edition-it-was-scored-against: edition|ECMA-262|ES2026|tc39/ecma262|0248456c758431e4bb8e5d26333ff1865123c9cd|spec.html|ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0|archived
+ok   a-report-scored-against-another-edition-is-refused: /tmp/broiler-js-conformance-other-edition.txt was scored against ECMA-262 ES2026 at 0000000000000000000000000000000000000000 and this build is pinned to ECMA-262 ES2026 at 0248456c758431e4bb8e5d26333ff1865123c9cd
+ok   a-retained-pin-reads-back-what-it-declares: a-suite someone/a-suite@abc123 content sha256 def456 over 7 files - archived at somewhere/a-suite.tar.gz
+ok   a-retained-pin-missing-anything-is-refused-rather-than-defaulted: 6 of 6 malformed pins were refused: a missing key, an unknown key, no header, an archived field that is neither yes nor no, an archive with no path, and a path with no archive
+ok   a-suite-that-is-not-the-pinned-one-is-refused-on-every-count-it-can-be: the pinned content raises 0 complaints, different content raises 2 - digest and file count - and different bytes at the same count raise 1; a run under the pin reports it as the revision
+ok   a-detail-carrying-a-separator-cannot-write-a-row-nobody-wrote: one result written from one result, with the separator removed rather than escaped
+ok   a-mode-total-accounts-for-every-case-it-selected: selected 4, executed 3, skipped 1
+ok   removing-a-shard-report-produces-incomplete-coverage: two shards merge clean; one alone reports 2 finding(s) rather than a total of one
+ok   shards-that-read-different-revisions-are-not-one-run: a merge of two revisions is refused rather than added
+ok   a-test-two-shards-both-scored-is-refused: one path scored by two shards is a configuration failure, not two results
+ok   a-merged-report-handed-to-a-merge-is-refused-as-a-shard: a report covering every shard is named as what it is rather than counted as one
+ok   every-named-configuration-failure-can-actually-be-produced: all 6 members reached by an input
+ok   a-floor-holds-on-the-run-that-set-it-and-refuses-one-pass-fewer: two passes set the floor; one pass is reported as a regression naming the figure
+ok   a-suite-revision-change-re-bases-the-floor-and-retains-the-old-one: a run on a new revision re-bases rather than regressing, and the old floor stays in the file
+ok   a-floor-may-not-be-set-from-a-run-that-covered-less-than-it-claimed: a run with a finding and a single shard's run are both inadmissible
+FAIL every-source-refusal-has-a-declared-language-class: unclassified: [ModuleDeclarationOutsideModuleGoal, DuplicateExportName, ExportNameNotDeclared, ImportMetaOutsideModuleGoal, UnsupportedImportAttribute]; not in the vocabulary: []
+ok   only-an-early-error-may-score-and-every-class-is-populated: EarlyError=17, OutsideManifest=1, Divergence=7, ImplementationLimit=4
+ok   a-refusal-the-manifest-made-is-not-a-pass-on-a-negative-test: declared a SyntaxError, was refused as ConstructOutsideManifest, scored Skipped
+ok   the-same-refusal-scores-for-a-native-fixture-and-not-for-an-ingested-one: native fixture Passed, ingested test Skipped
+ok   an-unearned-refusal-is-unscorable-and-an-earned-one-passes: positive=Skipped, divergence=Skipped, limit=Skipped, early error=Passed
+ok   a-refusal-that-names-no-code-is-reported-as-a-failure: an unnamed refusal scored Failed
+ok   a-nested-negative-and-a-folded-description-are-read-and-a-block-scalar-is-not-metadata: description `A description folded over two lines.`, flags 0
+ok   the-two-list-spellings-read-to-the-same-list: [onlyStrict, module] both ways
+ok   the-dialect-reader-refuses-metadata-it-cannot-honour: 8 malformed blocks, each refused
+ok   a-key-this-harness-has-no-use-for-is-skipped-and-a-flag-is-not: read past 4 unknown keys to `a file carrying keys this harness has no use for`
+ok   the-dialect-reader-reads-lf-crlf-and-a-lone-carriage-return-alike: three line-terminator spellings read to one frontmatter
+ok   a-block-indented-as-a-unit-reads-the-same-as-one-at-the-margin: both read `folded over two lines` and 1 flag(s)
+ok   the-suites-raw-flag-is-source-and-not-artifact-bytes: 1 case in Script mode carrying source
+ok   a-file-declaring-no-strictness-becomes-two-cases-and-only-one-carries-the-prologue: 2 cases: a.js#strict, a.js#sloppy
+ok   a-file-declaring-its-strictness-or-its-goal-becomes-one-case: onlyStrict, noStrict, module and raw each give one case
+ok   a-parse-negative-naming-harness-files-is-selectable-and-a-positive-one-is-not: 2 selectable negative case(s), 1 declined positive
+ok   a-file-this-harness-cannot-run-is-counted-and-named-rather-than-dropped: 6 declines, each a counted candidate carrying a reason
+ok   a-suite-file-carrying-no-metadata-block-is-declined-and-not-refused: declined: a source file carrying no metadata block, which is a harness or fixture file rather than a test
+ok   the-two-ingested-expectation-spellings-parse-back-to-themselves: `refused-as-early-error SyntaxError`, `completes`
+ok   a-comment-written-with-two-hashes-does-not-end-a-section: 3 of 3 proposals survived two `##` comments; 1 standard, 1 test-harness, 0 complaint(s)
+ok   a-feature-list-that-cannot-be-read-is-refused-rather-than-emptied: 4 of 4 malformed lists were refused - a missing heading, an empty section, one name under two headings, a name under none - and the refused one handed back 0 proposals rather than the one it had already read
+ok   a-trailing-comment-is-not-part-of-a-feature-name: `a-proposal  # …` declares `a-proposal`
+ok   a-test-claiming-a-proposal-is-not-scored-and-one-claiming-the-language-is: excluded 2 of 4 - a test claiming a proposal alongside a published construct is still about the proposal - and kept [about-the-language.js, about-nothing.js]
+ok   an-empty-exclusion-set-excludes-nothing: with nothing declared a proposal, 2 of 2 tests are selected and 0 excluded
+ok   the-feature-filter-cannot-opt-back-into-an-excluded-test: asking for `a-proposal` by name selected 0 tests, and a test the scope filter would also have removed is counted at the exclusion (1) rather than at the filter (0)
+ok   the-test262-partition-is-exhaustive-and-disjoint: 500 files, each in exactly one shard at 1, 2, 3, 4, 7, 16 and 64 shards
+ok   a-shard-argument-is-read-or-refused-and-never-defaulted: `3/8` reads; no --shard is the whole selection; `3`, `a/b`, `4/4` and `-1/4` are refused
+ok   a-merge-of-every-shard-equals-an-unsharded-run-over-the-same-list: four shards of 120 files merge to test262 120 files, 240 variants: pass 160, fail 13, unsupported 34, exhausted 22, skipped 11, with 3 families and 2 dimensions identical to the unsharded run
+ok   removing-a-test262-shard-report-produces-incomplete-coverage: three of four shards report incomplete coverage and a coverage field that says partial, not a whole run of a smaller suite
+ok   shards-taken-under-two-manifests-or-two-admitted-sets-are-not-one-run: a merge of two manifests and a merge of two declined sets are both refused rather than added
+ok   the-family-table-names-a-family-the-run-met-and-omits-one-it-did-not: 3 families, most-met first: a class declaration, a call with more than 255 arguments, a generator function
+ok   an-exhaustion-is-counted-apart-from-a-failure-and-names-its-dimension: one failure and one exhaustion, and the exhausted variant is named with `WallClock`
+ok   a-sharded-limited-or-narrowed-run-says-so-where-a-rule-can-see-it: 3 of 3 partial runs render `coverage|partial`, and the whole one renders `coverage|whole`
+ok   a-test262-report-round-trips-and-a-forged-coverage-claim-is-refused: 6 results survived the trip; a report edited to claim it was whole is refused rather than believed
+broiler-js-conformance: the harness's own checks failed; nothing was scored
+
+
+[conformance/aot/ingest-shape] run exit 3
+ok   sharding-is-stable-and-normalizes-the-path: three spellings of one path answer shard 2 of 4
+ok   sharding-does-not-move-when-the-selection-grows: 0 of 20 paths changed shard after five were added
+ok   sharding-partitions-rather-than-samples: seven shards covered 200 of 200 paths, each exactly once
+ok   sharding-refuses-a-shard-index-its-count-does-not-have: zero shards, an index equal to the count and an index below -1 are all refused
+ok   the-selection-pipeline-is-a-partition: 4 candidates split into 1 selected and 3 excluded, and the stages add back up
+ok   an-exclusion-is-counted-at-the-first-stage-that-removes-it: knownIncorrect=1, outOfScope=0
+ok   an-empty-scope-runs-everything-and-a-stated-one-does-not: no pattern matches all; a bare prefix, a directory prefix and a star all match; a miss does not
+ok   negative-metadata-tests-are-opt-in: without the opt-in 1 of 2 are selected, with it 2
+ok   a-known-incorrect-entry-without-a-reason-is-refused: 1 entry admitted, 1 refused for naming no reason
+ok   the-completion-protocol-tells-the-four-kinds-apart: 6 recorded sequences classified, and a reported failure carries its own text
+ok   an-exception-escaping-the-engine-is-a-failed-case-and-not-a-dead-run: answer `escaped InvalidOperationException`, which groups by type rather than by message
+ok   a-file-that-declares-no-verdict-is-refused-rather-than-defaulted: a missing block, a missing expectation and a missing description are each named
+ok   the-raw-flag-is-required-exactly-where-bytes-exist: a source file declaring raw and an artifact not declaring it are both refused
+ok   every-expectation-kind-round-trips-and-a-fifth-is-refused: 4 kinds render and parse back; an unknown kind names the four that exist
+ok   a-report-renders-and-reads-back-to-the-same-report: 2 results and 0 findings survived the trip
+ok   a-report-names-the-edition-it-was-scored-against: edition|ECMA-262|ES2026|tc39/ecma262|0248456c758431e4bb8e5d26333ff1865123c9cd|spec.html|ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0|archived
+ok   a-report-scored-against-another-edition-is-refused: /tmp/broiler-js-conformance-other-edition.txt was scored against ECMA-262 ES2026 at 0000000000000000000000000000000000000000 and this build is pinned to ECMA-262 ES2026 at 0248456c758431e4bb8e5d26333ff1865123c9cd
+ok   a-retained-pin-reads-back-what-it-declares: a-suite someone/a-suite@abc123 content sha256 def456 over 7 files - archived at somewhere/a-suite.tar.gz
+ok   a-retained-pin-missing-anything-is-refused-rather-than-defaulted: 6 of 6 malformed pins were refused: a missing key, an unknown key, no header, an archived field that is neither yes nor no, an archive with no path, and a path with no archive
+ok   a-suite-that-is-not-the-pinned-one-is-refused-on-every-count-it-can-be: the pinned content raises 0 complaints, different content raises 2 - digest and file count - and different bytes at the same count raise 1; a run under the pin reports it as the revision
+ok   a-detail-carrying-a-separator-cannot-write-a-row-nobody-wrote: one result written from one result, with the separator removed rather than escaped
+ok   a-mode-total-accounts-for-every-case-it-selected: selected 4, executed 3, skipped 1
+ok   removing-a-shard-report-produces-incomplete-coverage: two shards merge clean; one alone reports 2 finding(s) rather than a total of one
+ok   shards-that-read-different-revisions-are-not-one-run: a merge of two revisions is refused rather than added
+ok   a-test-two-shards-both-scored-is-refused: one path scored by two shards is a configuration failure, not two results
+ok   a-merged-report-handed-to-a-merge-is-refused-as-a-shard: a report covering every shard is named as what it is rather than counted as one
+ok   every-named-configuration-failure-can-actually-be-produced: all 6 members reached by an input
+ok   a-floor-holds-on-the-run-that-set-it-and-refuses-one-pass-fewer: two passes set the floor; one pass is reported as a regression naming the figure
+ok   a-suite-revision-change-re-bases-the-floor-and-retains-the-old-one: a run on a new revision re-bases rather than regressing, and the old floor stays in the file
+ok   a-floor-may-not-be-set-from-a-run-that-covered-less-than-it-claimed: a run with a finding and a single shard's run are both inadmissible
+FAIL every-source-refusal-has-a-declared-language-class: unclassified: [ModuleDeclarationOutsideModuleGoal, DuplicateExportName, ExportNameNotDeclared, ImportMetaOutsideModuleGoal, UnsupportedImportAttribute]; not in the vocabulary: []
+ok   only-an-early-error-may-score-and-every-class-is-populated: EarlyError=17, OutsideManifest=1, Divergence=7, ImplementationLimit=4
+ok   a-refusal-the-manifest-made-is-not-a-pass-on-a-negative-test: declared a SyntaxError, was refused as ConstructOutsideManifest, scored Skipped
+ok   the-same-refusal-scores-for-a-native-fixture-and-not-for-an-ingested-one: native fixture Passed, ingested test Skipped
+ok   an-unearned-refusal-is-unscorable-and-an-earned-one-passes: positive=Skipped, divergence=Skipped, limit=Skipped, early error=Passed
+ok   a-refusal-that-names-no-code-is-reported-as-a-failure: an unnamed refusal scored Failed
+ok   a-nested-negative-and-a-folded-description-are-read-and-a-block-scalar-is-not-metadata: description `A description folded over two lines.`, flags 0
+ok   the-two-list-spellings-read-to-the-same-list: [onlyStrict, module] both ways
+ok   the-dialect-reader-refuses-metadata-it-cannot-honour: 8 malformed blocks, each refused
+ok   a-key-this-harness-has-no-use-for-is-skipped-and-a-flag-is-not: read past 4 unknown keys to `a file carrying keys this harness has no use for`
+ok   the-dialect-reader-reads-lf-crlf-and-a-lone-carriage-return-alike: three line-terminator spellings read to one frontmatter
+ok   a-block-indented-as-a-unit-reads-the-same-as-one-at-the-margin: both read `folded over two lines` and 1 flag(s)
+ok   the-suites-raw-flag-is-source-and-not-artifact-bytes: 1 case in Script mode carrying source
+ok   a-file-declaring-no-strictness-becomes-two-cases-and-only-one-carries-the-prologue: 2 cases: a.js#strict, a.js#sloppy
+ok   a-file-declaring-its-strictness-or-its-goal-becomes-one-case: onlyStrict, noStrict, module and raw each give one case
+ok   a-parse-negative-naming-harness-files-is-selectable-and-a-positive-one-is-not: 2 selectable negative case(s), 1 declined positive
+ok   a-file-this-harness-cannot-run-is-counted-and-named-rather-than-dropped: 6 declines, each a counted candidate carrying a reason
+ok   a-suite-file-carrying-no-metadata-block-is-declined-and-not-refused: declined: a source file carrying no metadata block, which is a harness or fixture file rather than a test
+ok   the-two-ingested-expectation-spellings-parse-back-to-themselves: `refused-as-early-error SyntaxError`, `completes`
+ok   a-comment-written-with-two-hashes-does-not-end-a-section: 3 of 3 proposals survived two `##` comments; 1 standard, 1 test-harness, 0 complaint(s)
+ok   a-feature-list-that-cannot-be-read-is-refused-rather-than-emptied: 4 of 4 malformed lists were refused - a missing heading, an empty section, one name under two headings, a name under none - and the refused one handed back 0 proposals rather than the one it had already read
+ok   a-trailing-comment-is-not-part-of-a-feature-name: `a-proposal  # …` declares `a-proposal`
+ok   a-test-claiming-a-proposal-is-not-scored-and-one-claiming-the-language-is: excluded 2 of 4 - a test claiming a proposal alongside a published construct is still about the proposal - and kept [about-the-language.js, about-nothing.js]
+ok   an-empty-exclusion-set-excludes-nothing: with nothing declared a proposal, 2 of 2 tests are selected and 0 excluded
+ok   the-feature-filter-cannot-opt-back-into-an-excluded-test: asking for `a-proposal` by name selected 0 tests, and a test the scope filter would also have removed is counted at the exclusion (1) rather than at the filter (0)
+ok   the-test262-partition-is-exhaustive-and-disjoint: 500 files, each in exactly one shard at 1, 2, 3, 4, 7, 16 and 64 shards
+ok   a-shard-argument-is-read-or-refused-and-never-defaulted: `3/8` reads; no --shard is the whole selection; `3`, `a/b`, `4/4` and `-1/4` are refused
+ok   a-merge-of-every-shard-equals-an-unsharded-run-over-the-same-list: four shards of 120 files merge to test262 120 files, 240 variants: pass 160, fail 13, unsupported 34, exhausted 22, skipped 11, with 3 families and 2 dimensions identical to the unsharded run
+ok   removing-a-test262-shard-report-produces-incomplete-coverage: three of four shards report incomplete coverage and a coverage field that says partial, not a whole run of a smaller suite
+ok   shards-taken-under-two-manifests-or-two-admitted-sets-are-not-one-run: a merge of two manifests and a merge of two declined sets are both refused rather than added
+ok   the-family-table-names-a-family-the-run-met-and-omits-one-it-did-not: 3 families, most-met first: a class declaration, a call with more than 255 arguments, a generator function
+ok   an-exhaustion-is-counted-apart-from-a-failure-and-names-its-dimension: one failure and one exhaustion, and the exhausted variant is named with `WallClock`
+ok   a-sharded-limited-or-narrowed-run-says-so-where-a-rule-can-see-it: 3 of 3 partial runs render `coverage|partial`, and the whole one renders `coverage|whole`
+ok   a-test262-report-round-trips-and-a-forged-coverage-claim-is-refused: 6 results survived the trip; a report edited to claim it was whole is refused rather than believed
+broiler-js-conformance: the harness's own checks failed; nothing was scored
+
+
+[conformance] catalog tables identical across modes: True
+
+[cli/jit] publish exit 0
+dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o /home/user/Broiler.VM/artifacts/js-publish/cli/jit -r linux-x64 --self-contained false -p:PublishTrimmed=false
+  Determining projects to restore...
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 304 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 304 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj (in 304 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 304 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 5 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 5 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 6 ms).
+  Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Profile.JavaScript -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.Cli -> /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.JavaScript.Cli.dll
+  Broiler.VM.Composition.JavaScript.Cli -> /home/user/Broiler.VM/artifacts/js-publish/cli/jit/
+
+
+[cli/jit] --closure exit 0
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.JavaScript.Cli
+label narrow-runtime-compiler
+carries-lowering yes
+profiles 1
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 3
+manifest broiler.javascript.slice broiler.javascript.wide
+format-versions 1 2
+lowering Broiler.VM.Profile.JavaScript.Compiler
+
+
+[cli/jit/runs] run exit 1
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-base-constructor-builds-from-new-target.js  Derived true true derived
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-boolean.js  true
+the dispatcher true no receiver true false the object no receiver
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-call-through-a-with-gets-the-object.js  undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-class-body-is-strict-code.js  undefined TypeError
+threw    /home/user/Broiler.VM/src/tests/cli/runs/a-class-called-without-new.js  uncaught TypeError: Class constructor Cell cannot be invoked without 'new'
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-class-expression-binds-its-own-name.js  true Inner Anonymous undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-class-field-defines-rather-than-assigns.js  setter:2/1 / 1 undefined / through the getter 2 / true false
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-class-field-runs-per-instance.js  key:a key:b init:a ctor init:a ctor / 3 undefined Counted / a,bare,b / false / truetruetrue
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-class-in-a-parameter-default.js  default/named
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-class-member-is-not-enumerable.js  own falsetruetrue false falsefalsefalse
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-class-static-block.js  key:first key:second field:first block:this-is-the-class:true field:second block:sees:4 / 3 4 5 / length,name,prototype,first,fromBlock,second
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-class-with-methods-and-accessors.js  250
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-closure-in-a-for-of-body.js  1,2,3
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-delegation-that-forwards-a-throw.js  inner caught BANG / outer got inner-return / TypeError
+threw    /home/user/Broiler.VM/src/tests/cli/runs/a-derived-constructor-that-never-calls-super.js  uncaught ReferenceError: Must call super constructor in derived class before accessing 'this' or returning from derived constructor
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-destructuring-assignment.js  2 1 7 8 {"b":9}
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-destructuring-catch-parameter.js  TypeError/true 3
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-destructuring-declaration.js  1 2 5 {"c":3,"d":4} 10 9 0
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-destructuring-parameter.js  n:2:0,0 n:5:1,2 1
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-finally-that-yields-defers-the-return.js  one from the finaliser/false asked/true undefined/true
+suspended-in-the-first-script,first-script-ended,resumed-at-the-drain
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-first-script-that-leaves-a-job-owed.js  2
+1,2;3,4;5,6;14,16
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-for-await-in-an-async-function.js  [object Promise]
+g1,g2;p1,p2,p3;t1,t2
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-for-await-over-the-three-kinds-of-source.js  [object Promise]
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-for-of-over-the-iteration-protocol.js  a1,b2,x,y
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-for-of-that-closes-its-iterator.js  next,closed,next,closed,RangeError
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-function-a-block-declares.js  2 first second switch try undefined aliased undefined clause undefined undefined undefined undefined
+before,default,called,resumed
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-generator-default-runs-at-the-call.js  undefined
+10
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-generator-in-a-for-of-source.js  undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-generator-member-of-a-class-body.js  11,13,15 / a,b / function function true / TypeError
+11,13,15
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-generator-method-of-an-object-literal.js  undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-generator-prototype-chain.js  true 0 true object constructor,next,return,throw [object Generator] true
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-generator-that-is-already-running.js  TypeError then done=true
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-generator-that-yields-twice.js  1,11,done,undefined,true
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-loop-that-ends.js  45
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-method-resolves-super-through-its-home-object.js  Upper Upper
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-module-goal-program.js  3
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-parameter-default.js  a-a- a+a+ a-z 1
+third
+number
+3:2
+captured
+4
+2
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-parameter-named-arguments.js  parameter-named-arguments ok
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-private-brand-is-per-class-evaluation.js  true false false / true false / 1 1 / TypeError TypeError TypeError
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-private-method-and-accessor.js  95 205 206 / 2 true false / TypeError
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-private-name-is-not-a-property.js  42 / visible visible 0 visible {"visible":1} visible visible visible
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-product.js  42
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-rest-parameter.js  1:0::true 1:2:2,3:true 1
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-return-from-a-catch-inside-a-finally.js  caught/finalised
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-return-that-runs-a-finally-across-a-yield.js  caught=0 finalised=1 value=forced done=true
+threw    /home/user/Broiler.VM/src/tests/cli/runs/a-second-script-the-owed-job-outlives.js  uncaught ReferenceError: trace is not defined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-spread-element-and-argument.js  1,2,3 1/2/3 a,b 3
+declared 3
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-strict-script-with-a-function-declaration.js  undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-super-call-through-three-classes.js  base-middle-leaf Leaf>Base true
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-suspension-a-parameter-list-still-admits.js  name:d 1 20/22 function 3
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-template-literal-in-a-spread-argument.js  a-b-c 2
+threw    /home/user/Broiler.VM/src/tests/cli/runs/a-this-read-before-super-returns.js  uncaught ReferenceError: Must call super constructor in derived class before accessing 'this' or returning from derived constructor
+4:255,0,255,3
+undefined:false
+4:0,1,2,3
+7
+0,2,2,255
+16909060:67305985:1
+2:67305985
+0:undefined:0:8
+TypeError
+undefined:undefined:undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-typed-array-over-a-buffer.js  typed-array-over-a-buffer ok
+012 012 13 00010210 finally returned:3 inside/RangeError/undefined 02
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-with-left-by-every-exit.js  undefined
+from-the-prototype the object function string my own values function 3 outer on the object
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-with-over-a-prototype-chain.js  undefined
+the enclosing binding the property the enclosing binding first second outer:false inner:true at capture changed after the with ended the enclosing binding 2
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-with-resolved-again-at-every-mention.js  undefined
+written outer-before written-outside assigned/the variable on the prototype on the instance true set:7 false 3 100
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-with-that-assigns-in-both-directions.js  undefined
+hoisted/callable still the function's true false true on the prototype false/still here
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-with-that-hoists-and-deletes.js  undefined
+held-var held-let held-const outer-var outer-let outer-const held passed undefined undefined undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-with-that-shadows-and-does-not.js  undefined
+3 b ABC 42.00 6 true 3 10-20-30 1 1,2,3 3 2 TypeError TypeError named 0 function
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-with-whose-object-is-coerced.js  undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-array-literal-with-a-hole.js  3 false undefined 2
+2:false:1
+2:1
+3:2
+2:2:3:4
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-array-literal-with-holes.js  array-literal-holes ok
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-assignment-to-a-class-binding.js  TypeError function true
+Base/derived/false plain
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-arrow-closes-over-this.js  [object Promise]
+from-the-default,from-the-array [object AsyncFunction]
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-arrow-in-a-pattern-default.js  [object Promise]
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-call-starts-its-body-and-a-generators-does-not.js  before,async-body,after
+first:n1,inner-throw:E,recovered:recovered:false,inner-return:R,ended:R:true,closed-before-told,missing:TypeError
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-delegation-forwards-an-abrupt-resumption.js  [object Promise]
+i1,i2,after:inner-done,s1,s2,after:sync-done,a1,a2
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-delegation.js  [object Promise]
+TypeError true 2 declared false true AsyncFunction [object AsyncFunction] [object AsyncFunction] member
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-function-is-not-a-constructor.js  undefined
+call-returned early:TypeError:before late:RangeError:after
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-function-that-throws-before-its-first-await.js  [object Promise]
+made,body,first:1:false,second:2:false,third:undefined:true
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-generator-function.js  [object Promise]
+field;block
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-generator-in-a-class-field-initialiser.js  [object Promise]
+base,instance;static
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-generator-method-of-a-class-body.js  [object Promise]
+7,8;keyed
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-generator-method-of-an-object-literal.js  [object Promise]
+[object AsyncGeneratorFunction];[object AsyncGenerator];true;[object AsyncGenerator];true;function;true;constructor+next+return+throw;true;AsyncGeneratorFunction;true;false;true
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-generator-prototype-chain.js  undefined
+first:1,awaited,finalised,returned:R:true,after:undefined:true,throw:rejected:early,finalised,inside:rejected:inside
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-generator-returned-and-thrown-into.js  [object Promise]
+1,2;static
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-generator-with-a-private-name.js  [object Promise]
+all-four-called,sent:b,awaited:w,1:false,2:false,done:true,undefined:true
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-generators-request-queue.js  [object Promise]
+break:closed,break:after,labelled:closed,labelled:after,return:closed,return:returned,throw:closed,throw:caught:boom,continue:closed,continue:seen:3
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-iterator-closed-by-every-abrupt-exit.js  [object Promise]
+Base/tag/m
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-method-resolves-this-and-super.js  [object Promise]
+try,finally-in,finally-out,settled:from-try b
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-await-inside-a-finally-defers-the-return.js  [object Promise]
+a1,t1,a2,t2
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-await-of-a-plain-value-still-yields-to-the-queue.js  [object Promise]
+ok:0,f0,ok:1,f1,caught:bad,f2,ok:3,f3
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-await-of-a-rejection-reaches-the-bodys-own-catch.js  [object Promise]
+then-entered,1,then-resumed,2,got:value,3,4,5
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-await-of-a-thenable-costs-a-second-turn.js  [object Promise]
+3
+42
+42
+5:2:function
+42
+42:object
+EvalError:true
+undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-indirect-eval.js  indirect-eval ok
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-object-spread.js  {"a":1,"b":3,"c":4} {}
+the queue ran after it
+and kept running
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-unhandled-rejection-does-not-stop-the-drain.js  [object Promise]
+ok       /home/user/Broiler.VM/src/tests/cli/runs/the-declarations-a-clause-still-admits.js  consequent/alternate/label/an ordinary name
+ok       /home/user/Broiler.VM/src/tests/cli/runs/the-keys-an-object-literal-still-admits.js  set:12 1 2 4 5 6 7 8 function function function 11 from-the-prototype from-the-prototype private-field/private-method/private-static
+ok       /home/user/Broiler.VM/src/tests/cli/runs/the-names-an-escape-may-still-spell.js  1/2/3/4
+ok       /home/user/Broiler.VM/src/tests/cli/runs/the-names-one-scope-may-hold-twice.js  1/a/b/second/reached/inner/shadow/last-wins/one-scope
+ok       /home/user/Broiler.VM/src/tests/cli/runs/the-patterns-a-rest-and-a-shorthand-still-admit.js  1:2/3 4:{"q":5,"r":6} 2:9 7/8 10:11:12 13:14 15:16 17/18
+ok       /home/user/Broiler.VM/src/tests/cli/runs/two-parameters-with-one-name.js  2/undefined/2
+# 93 files
+# Completed: 89
+# Faulted: 4
+
+
+[cli/trimmed] publish exit 0
+dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o /home/user/Broiler.VM/artifacts/js-publish/cli/trimmed -r linux-x64 --self-contained true
+  Determining projects to restore...
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 327 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 327 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 327 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj (in 327 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 6 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 8 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 8 ms).
+  Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.Cli -> /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.JavaScript.Cli.dll
+  Optimizing assemblies for size. This process might take a while.
+  Broiler.VM.Composition.JavaScript.Cli -> /home/user/Broiler.VM/artifacts/js-publish/cli/trimmed/
+
+
+[cli/trimmed] --closure exit 0
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.JavaScript.Cli
+label narrow-runtime-compiler
+carries-lowering yes
+profiles 1
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 3
+manifest broiler.javascript.slice broiler.javascript.wide
+format-versions 1 2
+lowering Broiler.VM.Profile.JavaScript.Compiler
+
+
+[cli/trimmed/runs] run exit 1
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-base-constructor-builds-from-new-target.js  Derived true true derived
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-boolean.js  true
+the dispatcher true no receiver true false the object no receiver
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-call-through-a-with-gets-the-object.js  undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-class-body-is-strict-code.js  undefined TypeError
+threw    /home/user/Broiler.VM/src/tests/cli/runs/a-class-called-without-new.js  uncaught TypeError: Class constructor Cell cannot be invoked without 'new'
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-class-expression-binds-its-own-name.js  true Inner Anonymous undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-class-field-defines-rather-than-assigns.js  setter:2/1 / 1 undefined / through the getter 2 / true false
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-class-field-runs-per-instance.js  key:a key:b init:a ctor init:a ctor / 3 undefined Counted / a,bare,b / false / truetruetrue
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-class-in-a-parameter-default.js  default/named
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-class-member-is-not-enumerable.js  own falsetruetrue false falsefalsefalse
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-class-static-block.js  key:first key:second field:first block:this-is-the-class:true field:second block:sees:4 / 3 4 5 / length,name,prototype,first,fromBlock,second
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-class-with-methods-and-accessors.js  250
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-closure-in-a-for-of-body.js  1,2,3
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-delegation-that-forwards-a-throw.js  inner caught BANG / outer got inner-return / TypeError
+threw    /home/user/Broiler.VM/src/tests/cli/runs/a-derived-constructor-that-never-calls-super.js  uncaught ReferenceError: Must call super constructor in derived class before accessing 'this' or returning from derived constructor
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-destructuring-assignment.js  2 1 7 8 {"b":9}
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-destructuring-catch-parameter.js  TypeError/true 3
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-destructuring-declaration.js  1 2 5 {"c":3,"d":4} 10 9 0
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-destructuring-parameter.js  n:2:0,0 n:5:1,2 1
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-finally-that-yields-defers-the-return.js  one from the finaliser/false asked/true undefined/true
+suspended-in-the-first-script,first-script-ended,resumed-at-the-drain
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-first-script-that-leaves-a-job-owed.js  2
+1,2;3,4;5,6;14,16
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-for-await-in-an-async-function.js  [object Promise]
+g1,g2;p1,p2,p3;t1,t2
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-for-await-over-the-three-kinds-of-source.js  [object Promise]
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-for-of-over-the-iteration-protocol.js  a1,b2,x,y
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-for-of-that-closes-its-iterator.js  next,closed,next,closed,RangeError
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-function-a-block-declares.js  2 first second switch try undefined aliased undefined clause undefined undefined undefined undefined
+before,default,called,resumed
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-generator-default-runs-at-the-call.js  undefined
+10
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-generator-in-a-for-of-source.js  undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-generator-member-of-a-class-body.js  11,13,15 / a,b / function function true / TypeError
+11,13,15
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-generator-method-of-an-object-literal.js  undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-generator-prototype-chain.js  true 0 true object constructor,next,return,throw [object Generator] true
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-generator-that-is-already-running.js  TypeError then done=true
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-generator-that-yields-twice.js  1,11,done,undefined,true
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-loop-that-ends.js  45
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-method-resolves-super-through-its-home-object.js  Upper Upper
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-module-goal-program.js  3
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-parameter-default.js  a-a- a+a+ a-z 1
+third
+number
+3:2
+captured
+4
+2
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-parameter-named-arguments.js  parameter-named-arguments ok
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-private-brand-is-per-class-evaluation.js  true false false / true false / 1 1 / TypeError TypeError TypeError
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-private-method-and-accessor.js  95 205 206 / 2 true false / TypeError
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-private-name-is-not-a-property.js  42 / visible visible 0 visible {"visible":1} visible visible visible
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-product.js  42
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-rest-parameter.js  1:0::true 1:2:2,3:true 1
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-return-from-a-catch-inside-a-finally.js  caught/finalised
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-return-that-runs-a-finally-across-a-yield.js  caught=0 finalised=1 value=forced done=true
+threw    /home/user/Broiler.VM/src/tests/cli/runs/a-second-script-the-owed-job-outlives.js  uncaught ReferenceError: trace is not defined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-spread-element-and-argument.js  1,2,3 1/2/3 a,b 3
+declared 3
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-strict-script-with-a-function-declaration.js  undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-super-call-through-three-classes.js  base-middle-leaf Leaf>Base true
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-suspension-a-parameter-list-still-admits.js  name:d 1 20/22 function 3
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-template-literal-in-a-spread-argument.js  a-b-c 2
+threw    /home/user/Broiler.VM/src/tests/cli/runs/a-this-read-before-super-returns.js  uncaught ReferenceError: Must call super constructor in derived class before accessing 'this' or returning from derived constructor
+4:255,0,255,3
+undefined:false
+4:0,1,2,3
+7
+0,2,2,255
+16909060:67305985:1
+2:67305985
+0:undefined:0:8
+TypeError
+undefined:undefined:undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-typed-array-over-a-buffer.js  typed-array-over-a-buffer ok
+012 012 13 00010210 finally returned:3 inside/RangeError/undefined 02
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-with-left-by-every-exit.js  undefined
+from-the-prototype the object function string my own values function 3 outer on the object
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-with-over-a-prototype-chain.js  undefined
+the enclosing binding the property the enclosing binding first second outer:false inner:true at capture changed after the with ended the enclosing binding 2
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-with-resolved-again-at-every-mention.js  undefined
+written outer-before written-outside assigned/the variable on the prototype on the instance true set:7 false 3 100
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-with-that-assigns-in-both-directions.js  undefined
+hoisted/callable still the function's true false true on the prototype false/still here
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-with-that-hoists-and-deletes.js  undefined
+held-var held-let held-const outer-var outer-let outer-const held passed undefined undefined undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-with-that-shadows-and-does-not.js  undefined
+3 b ABC 42.00 6 true 3 10-20-30 1 1,2,3 3 2 TypeError TypeError named 0 function
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-with-whose-object-is-coerced.js  undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-array-literal-with-a-hole.js  3 false undefined 2
+2:false:1
+2:1
+3:2
+2:2:3:4
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-array-literal-with-holes.js  array-literal-holes ok
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-assignment-to-a-class-binding.js  TypeError function true
+Base/derived/false plain
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-arrow-closes-over-this.js  [object Promise]
+from-the-default,from-the-array [object AsyncFunction]
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-arrow-in-a-pattern-default.js  [object Promise]
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-call-starts-its-body-and-a-generators-does-not.js  before,async-body,after
+first:n1,inner-throw:E,recovered:recovered:false,inner-return:R,ended:R:true,closed-before-told,missing:TypeError
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-delegation-forwards-an-abrupt-resumption.js  [object Promise]
+i1,i2,after:inner-done,s1,s2,after:sync-done,a1,a2
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-delegation.js  [object Promise]
+TypeError true 2 declared false true AsyncFunction [object AsyncFunction] [object AsyncFunction] member
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-function-is-not-a-constructor.js  undefined
+call-returned early:TypeError:before late:RangeError:after
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-function-that-throws-before-its-first-await.js  [object Promise]
+made,body,first:1:false,second:2:false,third:undefined:true
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-generator-function.js  [object Promise]
+field;block
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-generator-in-a-class-field-initialiser.js  [object Promise]
+base,instance;static
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-generator-method-of-a-class-body.js  [object Promise]
+7,8;keyed
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-generator-method-of-an-object-literal.js  [object Promise]
+[object AsyncGeneratorFunction];[object AsyncGenerator];true;[object AsyncGenerator];true;function;true;constructor+next+return+throw;true;AsyncGeneratorFunction;true;false;true
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-generator-prototype-chain.js  undefined
+first:1,awaited,finalised,returned:R:true,after:undefined:true,throw:rejected:early,finalised,inside:rejected:inside
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-generator-returned-and-thrown-into.js  [object Promise]
+1,2;static
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-generator-with-a-private-name.js  [object Promise]
+all-four-called,sent:b,awaited:w,1:false,2:false,done:true,undefined:true
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-generators-request-queue.js  [object Promise]
+break:closed,break:after,labelled:closed,labelled:after,return:closed,return:returned,throw:closed,throw:caught:boom,continue:closed,continue:seen:3
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-iterator-closed-by-every-abrupt-exit.js  [object Promise]
+Base/tag/m
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-method-resolves-this-and-super.js  [object Promise]
+try,finally-in,finally-out,settled:from-try b
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-await-inside-a-finally-defers-the-return.js  [object Promise]
+a1,t1,a2,t2
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-await-of-a-plain-value-still-yields-to-the-queue.js  [object Promise]
+ok:0,f0,ok:1,f1,caught:bad,f2,ok:3,f3
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-await-of-a-rejection-reaches-the-bodys-own-catch.js  [object Promise]
+then-entered,1,then-resumed,2,got:value,3,4,5
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-await-of-a-thenable-costs-a-second-turn.js  [object Promise]
+3
+42
+42
+5:2:function
+42
+42:object
+EvalError:true
+undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-indirect-eval.js  indirect-eval ok
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-object-spread.js  {"a":1,"b":3,"c":4} {}
+the queue ran after it
+and kept running
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-unhandled-rejection-does-not-stop-the-drain.js  [object Promise]
+ok       /home/user/Broiler.VM/src/tests/cli/runs/the-declarations-a-clause-still-admits.js  consequent/alternate/label/an ordinary name
+ok       /home/user/Broiler.VM/src/tests/cli/runs/the-keys-an-object-literal-still-admits.js  set:12 1 2 4 5 6 7 8 function function function 11 from-the-prototype from-the-prototype private-field/private-method/private-static
+ok       /home/user/Broiler.VM/src/tests/cli/runs/the-names-an-escape-may-still-spell.js  1/2/3/4
+ok       /home/user/Broiler.VM/src/tests/cli/runs/the-names-one-scope-may-hold-twice.js  1/a/b/second/reached/inner/shadow/last-wins/one-scope
+ok       /home/user/Broiler.VM/src/tests/cli/runs/the-patterns-a-rest-and-a-shorthand-still-admit.js  1:2/3 4:{"q":5,"r":6} 2:9 7/8 10:11:12 13:14 15:16 17/18
+ok       /home/user/Broiler.VM/src/tests/cli/runs/two-parameters-with-one-name.js  2/undefined/2
+# 93 files
+# Completed: 89
+# Faulted: 4
+
+
+[cli/aot] publish exit 0
+dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o /home/user/Broiler.VM/artifacts/js-publish/cli/aot -r linux-x64 -p:PublishAot=true
+  Determining projects to restore...
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 341 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 341 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj (in 341 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 341 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 16 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 17 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 17 ms).
+  Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Profile.JavaScript -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
+  Broiler.VM.Composition.JavaScript.Cli -> /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.JavaScript.Cli.dll
+  Generating native code
+  Broiler.VM.Composition.JavaScript.Cli -> /home/user/Broiler.VM/artifacts/js-publish/cli/aot/
+
+
+[cli/aot] --closure exit 0
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.JavaScript.Cli
+label narrow-runtime-compiler
+carries-lowering yes
+profiles 1
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 3
+manifest broiler.javascript.slice broiler.javascript.wide
+format-versions 1 2
+lowering Broiler.VM.Profile.JavaScript.Compiler
+
+
+[cli/aot/runs] run exit 1
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-base-constructor-builds-from-new-target.js  Derived true true derived
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-boolean.js  true
+the dispatcher true no receiver true false the object no receiver
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-call-through-a-with-gets-the-object.js  undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-class-body-is-strict-code.js  undefined TypeError
+threw    /home/user/Broiler.VM/src/tests/cli/runs/a-class-called-without-new.js  uncaught TypeError: Class constructor Cell cannot be invoked without 'new'
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-class-expression-binds-its-own-name.js  true Inner Anonymous undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-class-field-defines-rather-than-assigns.js  setter:2/1 / 1 undefined / through the getter 2 / true false
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-class-field-runs-per-instance.js  key:a key:b init:a ctor init:a ctor / 3 undefined Counted / a,bare,b / false / truetruetrue
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-class-in-a-parameter-default.js  default/named
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-class-member-is-not-enumerable.js  own falsetruetrue false falsefalsefalse
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-class-static-block.js  key:first key:second field:first block:this-is-the-class:true field:second block:sees:4 / 3 4 5 / length,name,prototype,first,fromBlock,second
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-class-with-methods-and-accessors.js  250
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-closure-in-a-for-of-body.js  1,2,3
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-delegation-that-forwards-a-throw.js  inner caught BANG / outer got inner-return / TypeError
+threw    /home/user/Broiler.VM/src/tests/cli/runs/a-derived-constructor-that-never-calls-super.js  uncaught ReferenceError: Must call super constructor in derived class before accessing 'this' or returning from derived constructor
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-destructuring-assignment.js  2 1 7 8 {"b":9}
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-destructuring-catch-parameter.js  TypeError/true 3
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-destructuring-declaration.js  1 2 5 {"c":3,"d":4} 10 9 0
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-destructuring-parameter.js  n:2:0,0 n:5:1,2 1
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-finally-that-yields-defers-the-return.js  one from the finaliser/false asked/true undefined/true
+suspended-in-the-first-script,first-script-ended,resumed-at-the-drain
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-first-script-that-leaves-a-job-owed.js  2
+1,2;3,4;5,6;14,16
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-for-await-in-an-async-function.js  [object Promise]
+g1,g2;p1,p2,p3;t1,t2
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-for-await-over-the-three-kinds-of-source.js  [object Promise]
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-for-of-over-the-iteration-protocol.js  a1,b2,x,y
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-for-of-that-closes-its-iterator.js  next,closed,next,closed,RangeError
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-function-a-block-declares.js  2 first second switch try undefined aliased undefined clause undefined undefined undefined undefined
+before,default,called,resumed
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-generator-default-runs-at-the-call.js  undefined
+10
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-generator-in-a-for-of-source.js  undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-generator-member-of-a-class-body.js  11,13,15 / a,b / function function true / TypeError
+11,13,15
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-generator-method-of-an-object-literal.js  undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-generator-prototype-chain.js  true 0 true object constructor,next,return,throw [object Generator] true
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-generator-that-is-already-running.js  TypeError then done=true
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-generator-that-yields-twice.js  1,11,done,undefined,true
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-loop-that-ends.js  45
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-method-resolves-super-through-its-home-object.js  Upper Upper
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-module-goal-program.js  3
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-parameter-default.js  a-a- a+a+ a-z 1
+third
+number
+3:2
+captured
+4
+2
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-parameter-named-arguments.js  parameter-named-arguments ok
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-private-brand-is-per-class-evaluation.js  true false false / true false / 1 1 / TypeError TypeError TypeError
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-private-method-and-accessor.js  95 205 206 / 2 true false / TypeError
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-private-name-is-not-a-property.js  42 / visible visible 0 visible {"visible":1} visible visible visible
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-product.js  42
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-rest-parameter.js  1:0::true 1:2:2,3:true 1
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-return-from-a-catch-inside-a-finally.js  caught/finalised
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-return-that-runs-a-finally-across-a-yield.js  caught=0 finalised=1 value=forced done=true
+threw    /home/user/Broiler.VM/src/tests/cli/runs/a-second-script-the-owed-job-outlives.js  uncaught ReferenceError: trace is not defined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-spread-element-and-argument.js  1,2,3 1/2/3 a,b 3
+declared 3
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-strict-script-with-a-function-declaration.js  undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-super-call-through-three-classes.js  base-middle-leaf Leaf>Base true
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-suspension-a-parameter-list-still-admits.js  name:d 1 20/22 function 3
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-template-literal-in-a-spread-argument.js  a-b-c 2
+threw    /home/user/Broiler.VM/src/tests/cli/runs/a-this-read-before-super-returns.js  uncaught ReferenceError: Must call super constructor in derived class before accessing 'this' or returning from derived constructor
+4:255,0,255,3
+undefined:false
+4:0,1,2,3
+7
+0,2,2,255
+16909060:67305985:1
+2:67305985
+0:undefined:0:8
+TypeError
+undefined:undefined:undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-typed-array-over-a-buffer.js  typed-array-over-a-buffer ok
+012 012 13 00010210 finally returned:3 inside/RangeError/undefined 02
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-with-left-by-every-exit.js  undefined
+from-the-prototype the object function string my own values function 3 outer on the object
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-with-over-a-prototype-chain.js  undefined
+the enclosing binding the property the enclosing binding first second outer:false inner:true at capture changed after the with ended the enclosing binding 2
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-with-resolved-again-at-every-mention.js  undefined
+written outer-before written-outside assigned/the variable on the prototype on the instance true set:7 false 3 100
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-with-that-assigns-in-both-directions.js  undefined
+hoisted/callable still the function's true false true on the prototype false/still here
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-with-that-hoists-and-deletes.js  undefined
+held-var held-let held-const outer-var outer-let outer-const held passed undefined undefined undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-with-that-shadows-and-does-not.js  undefined
+3 b ABC 42.00 6 true 3 10-20-30 1 1,2,3 3 2 TypeError TypeError named 0 function
+ok       /home/user/Broiler.VM/src/tests/cli/runs/a-with-whose-object-is-coerced.js  undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-array-literal-with-a-hole.js  3 false undefined 2
+2:false:1
+2:1
+3:2
+2:2:3:4
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-array-literal-with-holes.js  array-literal-holes ok
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-assignment-to-a-class-binding.js  TypeError function true
+Base/derived/false plain
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-arrow-closes-over-this.js  [object Promise]
+from-the-default,from-the-array [object AsyncFunction]
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-arrow-in-a-pattern-default.js  [object Promise]
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-call-starts-its-body-and-a-generators-does-not.js  before,async-body,after
+first:n1,inner-throw:E,recovered:recovered:false,inner-return:R,ended:R:true,closed-before-told,missing:TypeError
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-delegation-forwards-an-abrupt-resumption.js  [object Promise]
+i1,i2,after:inner-done,s1,s2,after:sync-done,a1,a2
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-delegation.js  [object Promise]
+TypeError true 2 declared false true AsyncFunction [object AsyncFunction] [object AsyncFunction] member
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-function-is-not-a-constructor.js  undefined
+call-returned early:TypeError:before late:RangeError:after
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-function-that-throws-before-its-first-await.js  [object Promise]
+made,body,first:1:false,second:2:false,third:undefined:true
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-generator-function.js  [object Promise]
+field;block
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-generator-in-a-class-field-initialiser.js  [object Promise]
+base,instance;static
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-generator-method-of-a-class-body.js  [object Promise]
+7,8;keyed
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-generator-method-of-an-object-literal.js  [object Promise]
+[object AsyncGeneratorFunction];[object AsyncGenerator];true;[object AsyncGenerator];true;function;true;constructor+next+return+throw;true;AsyncGeneratorFunction;true;false;true
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-generator-prototype-chain.js  undefined
+first:1,awaited,finalised,returned:R:true,after:undefined:true,throw:rejected:early,finalised,inside:rejected:inside
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-generator-returned-and-thrown-into.js  [object Promise]
+1,2;static
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-generator-with-a-private-name.js  [object Promise]
+all-four-called,sent:b,awaited:w,1:false,2:false,done:true,undefined:true
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-generators-request-queue.js  [object Promise]
+break:closed,break:after,labelled:closed,labelled:after,return:closed,return:returned,throw:closed,throw:caught:boom,continue:closed,continue:seen:3
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-iterator-closed-by-every-abrupt-exit.js  [object Promise]
+Base/tag/m
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-async-method-resolves-this-and-super.js  [object Promise]
+try,finally-in,finally-out,settled:from-try b
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-await-inside-a-finally-defers-the-return.js  [object Promise]
+a1,t1,a2,t2
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-await-of-a-plain-value-still-yields-to-the-queue.js  [object Promise]
+ok:0,f0,ok:1,f1,caught:bad,f2,ok:3,f3
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-await-of-a-rejection-reaches-the-bodys-own-catch.js  [object Promise]
+then-entered,1,then-resumed,2,got:value,3,4,5
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-await-of-a-thenable-costs-a-second-turn.js  [object Promise]
+3
+42
+42
+5:2:function
+42
+42:object
+EvalError:true
+undefined
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-indirect-eval.js  indirect-eval ok
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-object-spread.js  {"a":1,"b":3,"c":4} {}
+the queue ran after it
+and kept running
+ok       /home/user/Broiler.VM/src/tests/cli/runs/an-unhandled-rejection-does-not-stop-the-drain.js  [object Promise]
+ok       /home/user/Broiler.VM/src/tests/cli/runs/the-declarations-a-clause-still-admits.js  consequent/alternate/label/an ordinary name
+ok       /home/user/Broiler.VM/src/tests/cli/runs/the-keys-an-object-literal-still-admits.js  set:12 1 2 4 5 6 7 8 function function function 11 from-the-prototype from-the-prototype private-field/private-method/private-static
+ok       /home/user/Broiler.VM/src/tests/cli/runs/the-names-an-escape-may-still-spell.js  1/2/3/4
+ok       /home/user/Broiler.VM/src/tests/cli/runs/the-names-one-scope-may-hold-twice.js  1/a/b/second/reached/inner/shadow/last-wins/one-scope
+ok       /home/user/Broiler.VM/src/tests/cli/runs/the-patterns-a-rest-and-a-shorthand-still-admit.js  1:2/3 4:{"q":5,"r":6} 2:9 7/8 10:11:12 13:14 15:16 17/18
+ok       /home/user/Broiler.VM/src/tests/cli/runs/two-parameters-with-one-name.js  2/undefined/2
+# 93 files
+# Completed: 89
+# Faulted: 4
+
+
+[cli] catalog tables identical across modes: True

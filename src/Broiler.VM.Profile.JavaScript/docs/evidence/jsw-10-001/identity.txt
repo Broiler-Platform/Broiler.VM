@@ -1,0 +1,12 @@
+bundle:                JSW-10-001
+milestone:             JSW-10
+collected (UTC):       2026-09-05T07:21:39+00:00
+component commit:      334c37ad495c5f4acd6cb4641f02e56deddc3b02
+branch:                claude/roadmap-workloads-impl-lgp1tb
+working tree:          clean
+dirty entries:         0
+owner:                 profile architecture owner (unassigned identity)
+reviewer:              NONE - nothing here has been reviewed
+
+Every path below is relative to the component root. A figure in this bundle is this
+component's own; no result from any other component is evidence here.

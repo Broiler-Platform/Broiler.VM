@@ -1,0 +1,17 @@
+exit 0
+
+  Determining projects to restore...
+  Restored /home/user/Broiler.VM/src/tests/Broiler.VM.Fixtures/Broiler.VM.Fixtures.csproj (in 268 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 268 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 268 ms).
+  Restored /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/Broiler.VM.Architecture.Tests.csproj (in 268 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 3 ms).
+  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
+  Broiler.VM.Fixtures -> /home/user/Broiler.VM/src/tests/Broiler.VM.Fixtures/bin/Release/net10.0/Broiler.VM.Fixtures.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Architecture.Tests -> /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll
+Test run for /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:   197, Skipped:     0, Total:   197, Duration: 7 s - Broiler.VM.Architecture.Tests.dll (net10.0)

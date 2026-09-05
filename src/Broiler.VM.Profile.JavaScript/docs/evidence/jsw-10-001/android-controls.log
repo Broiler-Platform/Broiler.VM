@@ -1,0 +1,10 @@
+These controls are judged by an ANDROID HEAD THAT RAN. Nothing in the other tables can:
+a suite may not reference a profile assembly, and the corpus replay and the fuzz session
+are both desktop processes. A control PASSES when the injected run does not print the
+sentinel and the reverted run does.
+
+An application hands no exit code to a harness, so the sentinel's ABSENCE is what a
+broken run and a failed check have in common - which is the direction this reads. A
+control that looked for the word FAIL would pass on a run that never started.
+
+SKIPPED ENTIRELY - no Android SDK on this machine, so no control here was injected. That is a GAP in this collection and not a smaller total.
