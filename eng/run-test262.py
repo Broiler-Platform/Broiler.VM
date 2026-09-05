@@ -201,11 +201,21 @@ def main():
 
     # The published image carries a suffix on Windows and not on the other two claimed platforms,
     # and a driver that assumed either would leave one cell of the matrix unable to run at all.
-    if not binary.exists() and binary.with_suffix(".exe").exists():
-        binary = binary.with_suffix(".exe")
+    #
+    # THE SUFFIX IS APPENDED AND NOT SUBSTITUTED. `with_suffix` replaces the last dotted segment,
+    # and every composition root here is named with dots, so it produced a path no publish makes -
+    # the fallback never fired on either Windows cell. `eng/run-cli-acceptance.py` had the shape
+    # right from the start, because it builds its candidates from the assembly NAME rather than
+    # from a path.
+    if not binary.exists() and binary.with_name(binary.name + ".exe").exists():
+        binary = binary.with_name(binary.name + ".exe")
 
+    # Both candidates are named when neither is there, for the reason `eng/run-octane.py` records
+    # beside the same check: a message naming one path cannot distinguish a missing publish from a
+    # driver that looked in the wrong place.
     if not binary.exists():
-        raise SystemExit(f"# no binary at {binary}")
+        raise SystemExit(
+            f"# no binary at {binary}\n# and none at {binary.with_name(binary.name + '.exe')}")
 
     suite = pathlib.Path(arguments.suite).resolve()
 

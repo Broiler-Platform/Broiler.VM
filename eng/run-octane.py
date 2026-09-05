@@ -192,11 +192,22 @@ def main():
     # TWO, so the suffix is tried rather than assumed. Without this the workload lane would be
     # green on Linux and macOS and would report "no binary" on Windows - which is the shape of a
     # matrix that looks filled and is not.
-    if not binary.exists() and binary.with_suffix(".exe").exists():
-        binary = binary.with_suffix(".exe")
+    #
+    # THE SUFFIX IS APPENDED AND NOT SUBSTITUTED, and the distinction is the whole of the defect
+    # this line used to carry. `with_suffix` REPLACES the last dotted segment, and this assembly's
+    # name is dotted five deep: it turned `Broiler.VM.Composition.JavaScript.Cli` into
+    # `Broiler.VM.Composition.JavaScript.exe`, a path no publish has ever produced. So the fallback
+    # never fired, on either Windows cell, and the comment above described an intent the code did
+    # not carry out - which is exactly the matrix that looks filled and is not.
+    if not binary.exists() and binary.with_name(binary.name + ".exe").exists():
+        binary = binary.with_name(binary.name + ".exe")
 
+    # BOTH CANDIDATES ARE NAMED WHEN NEITHER IS THERE. The message used to name one path, which is
+    # what let a broken suffix fallback read as a missing publish rather than as a driver that had
+    # looked in the wrong place - the reader cannot tell those apart from "no binary at <path>".
     if not binary.exists():
-        raise SystemExit(f"# no binary at {binary}")
+        raise SystemExit(
+            f"# no binary at {binary}\n# and none at {binary.with_name(binary.name + '.exe')}")
 
     fields = pinned()
     scratch = pathlib.Path(tempfile.mkdtemp(prefix="broiler-octane-"))

@@ -7507,3 +7507,50 @@ with the workload step at 8m55s on `linux-x64` and 9m53s on `linux-arm64`, six b
 four-subtree conformance selection between them; and two workstation runs of `zlib` alone, one on
 the JIT build and one on the published Native AOT image, each cut at 3,600s with `richards` scored
 beside the second at 32.0 against that lane's 46.3. 2026-09-05.
+
+### JSC-181
+
+**Where:** the Windows fallback in `eng/run-octane.py` and `eng/run-test262.py` — the two lines that
+look for a published image carrying a `.exe` suffix.
+
+**What was assumed.** That `pathlib.Path.with_suffix(".exe")` adds the suffix a Windows publish
+carries. The comment above the line said so in as many words — *a published image carries a suffix
+on one of the three claimed platforms and not on the other two, so the suffix is tried rather than
+assumed* — and named the failure it was there to prevent: **"the shape of a matrix that looks
+filled and is not."**
+
+**What was true.** `with_suffix` **replaces** the last dotted segment rather than appending one, and
+every composition root in this repository is named with dots. So the candidate it built for the
+end-user host was `Broiler.VM.Composition.JavaScript.exe` — dropping `.Cli` — which is a path no
+publish has ever produced. The fallback could not fire. The conformance root's driver carried the
+same line and the same defect. `eng/run-cli-acceptance.py` never had it, and the difference is
+instructive: it builds its candidates from the assembly NAME and appends, rather than mutating a
+path.
+
+**Nothing local could have found it.** There is no Windows machine here, and neither driver has a
+test — they are exercised by the lane and by a person, and every exercise until now was on Linux or
+macOS, where the first candidate exists and the fallback is never reached. The comment was correct
+about the intent and correct about the risk; what nobody had was a run on the platform it was
+written for.
+
+**It was found by the first full lane that carried the workload step**, dispatched deliberately on
+2026-09-05. Both Windows cells failed **one second into the step**, at 11:46:10 and 11:46:50, with
+`# no binary at artifacts\ci-aot-JavaScript.Cli\Broiler.VM.Composition.JavaScript.Cli` — and the
+cost was larger than the step: the fuzz sessions, the sharded conformance run and the package
+consumer all sit AFTER it in the job, so `set -e` skipped them and the run lost its Windows
+coverage entirely. The four Unix cells reached Octane and were unaffected.
+
+**What replaced it.** `binary.with_name(binary.name + ".exe")` in both drivers, which appends. And
+the message that reports the absence now names **both** candidates rather than one: a driver that
+looked in the wrong place and a publish that did not happen are indistinguishable from
+`no binary at <path>`, which is why this defect read as the second for as long as it did.
+
+**What this does not claim.** Not that the Windows cells now pass the workload step — nothing has
+run it there yet. What the fix establishes is that the step will get as far as executing the image,
+which is further than either cell has ever reached.
+
+**Authority and date.** Run 33964028317 of 2026-09-05, `broiler-vm (full)` on `1910c6f`, in which
+`full / publish and run (win-x64)` and `(win-arm64)` both failed at the workload step in one second
+while `linux-x64`, `linux-arm64`, `osx-arm64` and `osx-x64` proceeded into it; and a local
+reproduction against a directory holding only `Broiler.VM.Composition.JavaScript.Cli.exe`, which
+the driver failed to resolve before the change and resolves after it. 2026-09-05.
