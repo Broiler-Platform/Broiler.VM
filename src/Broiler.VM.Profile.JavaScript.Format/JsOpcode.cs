@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   16
-// Annotated:        16/16
-// Exempt:           107
-// Human-reviewed:   0/16
+// Relevant units:   23
+// Annotated:        23/23
+// Exempt:           113
+// Human-reviewed:   0/23
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  0/10 max
-// Unverified:       16
+// Unverified:       23
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -63,7 +63,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// guest-visible functions to hold the protocol, and a guest could then reach them.
 /// </para>
 /// <para>
-/// <b>A class is eight instructions and not a section.</b> <see cref="NewClass"/> builds the
+/// <b>A class is fourteen instructions and not a section.</b> <see cref="NewClass"/> builds the
 /// object graph the specification's <c>ClassDefinitionEvaluation</c> builds,
 /// <see cref="DefineMethod"/> attaches one member and gives it its home object, and
 /// <see cref="LoadSuperProperty"/>, <see cref="StoreSuperProperty"/>, <see cref="SuperCall"/>,
@@ -73,6 +73,19 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// the closures, the property definitions, the scope holding the class's own binding - is the
 /// instructions that were already here, because a class is mostly an object graph and only partly
 /// a new kind of frame.
+/// </para>
+/// <para>
+/// <b>The class BODY cost six more, and every one of them exists because a class element happens
+/// at a time the class definition is not.</b> <see cref="DefineClassElement"/> records a field, a
+/// private method or a static block without performing it, and <see cref="RunStaticElements"/>
+/// performs the static ones later, after the class binding exists - two instructions for what looks
+/// like one step because the specification makes it two. <see cref="NewPrivateName"/> mints the
+/// name a class evaluation declares, and <see cref="LoadPrivate"/>, <see cref="StorePrivate"/> and
+/// <see cref="HasPrivate"/> are the three things a program may do with one. <b>None of the four
+/// private instructions is a property instruction with a different key</b>: a private element is
+/// stored beside an object's properties rather than in the same table, which is what keeps it out
+/// of every reflection surface without any of them being told that private names exist, and reading
+/// an absent one is an error where reading an absent property is <c>undefined</c>.
 /// </para>
 /// <para>
 /// <b>The three suspension opcodes are NOT section 6's suspension targets.</b> Section 6 of the
@@ -85,7 +98,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// queue the host drains.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=4C870C
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=380159
 // Broiler-Human:        PENDING
 public enum JsOpcode : byte
 {
@@ -706,6 +719,127 @@ public enum JsOpcode : byte
     /// </remarks>
     Await = 0x6C,
 
+    // ---- the class body -------------------------------------------------------------------------
+
+    /// <summary>
+    /// Pop an initialiser and a key; record one class element on the constructor two below them,
+    /// which stays with the home object above it. The operand is a bit set of
+    /// <see cref="JsOpcodes.ElementBits"/>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It RECORDS a class element and does not define anything yet</b>, and the delay is the
+    /// whole reason it exists. A field's key is evaluated once, when the class is; its initialiser
+    /// runs once per instance, later, with a <c>this</c> that does not exist while the class body
+    /// is being evaluated. A static element's key is evaluated with the other keys, in body order,
+    /// and its initialiser runs after every member has been defined and the class binding
+    /// initialised — so <c>class C { static [k()] = C.name }</c> sees a <c>C</c> that a definition
+    /// performed in place could not. An instruction that defined the property here would have had
+    /// to choose one of the two times and would have been wrong at the other.
+    /// </para>
+    /// <para>
+    /// <b>It reads TWO values under the key rather than one, and that is deliberate.</b> The
+    /// constructor is where every element is recorded — the specification puts <c>[[Fields]]</c> on
+    /// the constructor — and the home object is what the initialiser's <c>super</c> reads through,
+    /// which is the PROTOTYPE for an instance element and the constructor for a static one. The
+    /// class lowering already holds exactly that pair on the stack while it defines members, so
+    /// naming both costs nothing; the alternative — one host value, with the other reached through
+    /// <c>constructor.prototype</c> — would have gone through a property a guest can watch.
+    /// </para>
+    /// <para>
+    /// <b>A static block reaches the executor as this instruction too.</b> It has no key, so the
+    /// lowering pushes <c>undefined</c> for one and sets <see cref="JsOpcodes.ElementIsBlock"/>;
+    /// everything else about it — that it runs at class-definition time, in body order, with
+    /// <c>this</c> as the constructor — is a static field's behaviour exactly, and the ordered list
+    /// the two share is what makes them interleave the way the source wrote them.
+    /// </para>
+    /// </remarks>
+    DefineClassElement = 0x6F,
+
+    /// <summary>
+    /// Push a private name that no other evaluation of this instruction has produced, described by
+    /// constant <c>u16</c>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A private name is created per CLASS EVALUATION and not per class body</b>, which is why
+    /// it is an instruction rather than a constant-pool entry. Two evaluations of one class
+    /// expression declare two unrelated <c>#x</c>: an instance of the first is not branded by the
+    /// second, and <c>#x in o</c> asked from inside the second must answer <c>false</c> for it. A
+    /// pooled constant would have made the two the same name and the brand check meaningless.
+    /// </para>
+    /// <para>
+    /// <b>What it pushes is held in an ordinary scope slot, and that is what a method closes over.</b>
+    /// The specification's PrivateEnvironment is a scope chain of exactly this shape, so this
+    /// profile needs no second environment kind: the class scope holds one slot per declared
+    /// private name, and every method, field initialiser and static block in the body captures it
+    /// the way it captures the class's own binding.
+    /// </para>
+    /// <para>
+    /// <b>No guest expression can reach the value.</b> The lowering emits a load of one of those
+    /// slots only immediately before <see cref="LoadPrivate"/>, <see cref="StorePrivate"/>,
+    /// <see cref="HasPrivate"/> or <see cref="DefineClassElement"/>, and the slot's name begins
+    /// with <c>#</c>, which the front end never produces for an identifier expression. That is what
+    /// keeps a private name out of guest hands without giving the value representation an eighth
+    /// type.
+    /// </para>
+    /// </remarks>
+    NewPrivateName = 0x75,
+
+    /// <summary>
+    /// Pop a private name and an object; push the private element's value, or throw a
+    /// <c>TypeError</c> when the object carries no element of that name.
+    /// </summary>
+    /// <remarks>
+    /// <b>The absent case throws where <see cref="GetProperty"/> answers <c>undefined</c></b>, and
+    /// that is the whole difference between the two instructions. A private name is not a key an
+    /// arbitrary object could have: an object that does not carry it was not constructed by the
+    /// class that declared it, and the language reports that as an error rather than as a missing
+    /// property, so a brand check has something to be the alternative to.
+    /// </remarks>
+    LoadPrivate = 0x76,
+
+    /// <summary>
+    /// Pop a value, a private name and an object; write the private element and push the value
+    /// back. Throws a <c>TypeError</c> when the element is absent, is a method, or is an accessor
+    /// with no setter.
+    /// </summary>
+    /// <remarks>
+    /// <b>A private method is not writable and the refusal is a <c>TypeError</c> in every mode</b>,
+    /// sloppy included. An ordinary non-writable property assignment is silent outside strict code;
+    /// this one never is, because the class body a private name can be written in is strict code by
+    /// definition and there is no reading of the assignment that could succeed.
+    /// </remarks>
+    StorePrivate = 0x77,
+
+    /// <summary>
+    /// Pop a private name and an object; push whether the object carries an element of that name.
+    /// </summary>
+    /// <remarks>
+    /// <b>This is <c>#x in o</c>, and it is the ONLY instruction of the three that asks the
+    /// question without also demanding an answer.</b> It is what a program uses to find out whether
+    /// <see cref="LoadPrivate"/> would throw. <b>It still throws for a non-object</b>, which is the
+    /// one thing about it a reader guesses wrong: the form is the <see cref="In"/> operator with a
+    /// name the grammar spells differently, and <c>"x" in 5</c> is a <c>TypeError</c> too, so
+    /// answering <c>false</c> there would have made the private form the more permissive of the two.
+    /// </remarks>
+    HasPrivate = 0x78,
+
+    /// <summary>
+    /// Run the static elements recorded on the constructor at the top of the stack, in the order
+    /// they were recorded, with <c>this</c> bound to it. The constructor stays.
+    /// </summary>
+    /// <remarks>
+    /// <b>It is a separate instruction from the ones that recorded them because the two happen at
+    /// different points of the class's own evaluation.</b> Every key in the body is evaluated
+    /// first, in source order; then the class binding is initialised; and only then do the static
+    /// initialisers and blocks run — so a static block may name the class, and a computed key may
+    /// not. Running each element where it was recorded would have collapsed those three steps into
+    /// one and made <c>class C { static [C.name] = 1 }</c> succeed, which the language says is a
+    /// reference to a binding still in its dead zone.
+    /// </remarks>
+    RunStaticElements = 0x79,
+
     // ---- stack ------------------------------------------------------------------------------------------
 
     /// <summary>Pop one and discard it.</summary>
@@ -797,8 +931,84 @@ public static class JsOpcodes
     // Broiler-Human:        PENDING
     public const byte MemberBits = MemberIsGetter | MemberIsSetter | MemberIsEnumerable;
 
+    /// <summary>
+    /// The <see cref="JsOpcode.DefineClassElement"/> bit that puts the element on the constructor
+    /// rather than on every instance.
+    /// </summary>
+    /// <remarks>
+    /// It decides two things at once and they always agree: WHERE the element lands, and WHICH of
+    /// the constructor's two ordered lists records it — the instance list the executor replays for
+    /// every construction, or the static list <see cref="JsOpcode.RunStaticElements"/> replays
+    /// exactly once. It also selects the home object, which is the constructor for a static
+    /// element and the prototype for an instance one.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=7AB77D
+    // Broiler-Human:        PENDING
+    public const byte ElementIsStatic = 1;
+
+    /// <summary>
+    /// The <see cref="JsOpcode.DefineClassElement"/> bit that says the key is a private name.
+    /// </summary>
+    /// <remarks>
+    /// <b>It is not a spelling of the key and it changes where the element is stored.</b> A private
+    /// element goes in a table beside the object's properties and not in it, which is what keeps it
+    /// out of <c>Object.keys</c>, <c>Reflect.ownKeys</c>, <c>JSON.stringify</c> and <c>for…in</c>
+    /// without any of those having to know that private names exist.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=248820
+    // Broiler-Human:        PENDING
+    public const byte ElementIsPrivate = 2;
+
+    /// <summary>
+    /// The <see cref="JsOpcode.DefineClassElement"/> bit for a <c>static { … }</c> block, whose key
+    /// is nothing and whose body is called for its effect.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=D2B1B3
+    // Broiler-Human:        PENDING
+    public const byte ElementIsBlock = 4;
+
+    /// <summary>
+    /// The <see cref="JsOpcode.DefineClassElement"/> bit that says the pushed value IS the element
+    /// rather than a function producing it.
+    /// </summary>
+    /// <remarks>
+    /// A field's initialiser is called once per instance and a private method is installed on every
+    /// instance unchanged, so without this bit the executor would call the method itself and
+    /// install whatever it returned. It also makes the element non-writable, which is what makes
+    /// <c>this.#m = 1</c> a <c>TypeError</c> rather than a replacement.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=5E4168
+    // Broiler-Human:        PENDING
+    public const byte ElementIsMethod = 8;
+
+    /// <summary>
+    /// The <see cref="JsOpcode.DefineClassElement"/> bit for the getter half of a private accessor.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=F4107F
+    // Broiler-Human:        PENDING
+    public const byte ElementIsGetter = 16;
+
+    /// <summary>
+    /// The <see cref="JsOpcode.DefineClassElement"/> bit for the setter half of a private accessor.
+    /// </summary>
+    /// <remarks>
+    /// <b>The two halves are two instructions and one element.</b> <c>get #a</c> and <c>set #a</c>
+    /// written in one body declare ONE private name with two functions on it, so the second
+    /// instruction merges into the element the first recorded rather than replacing it — which is
+    /// why the halves are separate bits and not one accessor bit with a pair on the stack.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=7521A3
+    // Broiler-Human:        PENDING
+    public const byte ElementIsSetter = 32;
+
+    /// <summary>Every operand bit <see cref="JsOpcode.DefineClassElement"/> defines.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=A69539
+    // Broiler-Human:        PENDING
+    public const byte ElementBits = ElementIsStatic | ElementIsPrivate | ElementIsBlock |
+        ElementIsMethod | ElementIsGetter | ElementIsSetter;
+
     /// <summary>Every opcode format version 2 defines, in ascending numeric order.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=833C07
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B26808
     // Broiler-Human:        PENDING
     public static readonly JsOpcode[] All =
     [
@@ -836,6 +1046,9 @@ public static class JsOpcodes
         JsOpcode.ForInStart, JsOpcode.ForInNext,
         JsOpcode.IterateStart, JsOpcode.IterateNext, JsOpcode.IterateRest, JsOpcode.IterateClose,
         JsOpcode.Yield, JsOpcode.YieldDelegate, JsOpcode.Await,
+        JsOpcode.DefineClassElement, JsOpcode.NewPrivateName,
+        JsOpcode.LoadPrivate, JsOpcode.StorePrivate, JsOpcode.HasPrivate,
+        JsOpcode.RunStaticElements,
         JsOpcode.Pop, JsOpcode.Duplicate, JsOpcode.DuplicateTwo, JsOpcode.Swap, JsOpcode.Pick,
     ];
 
@@ -884,7 +1097,7 @@ public static class JsOpcodes
     /// The operand shape of <paramref name="opcode"/>, or <see langword="null"/> when this format
     /// version does not define it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=7AECCE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=D20C1D
     // Broiler-Human:        PENDING
     public static JsOperandShape? Shape(JsOpcode opcode) => opcode switch
     {
@@ -911,11 +1124,14 @@ public static class JsOpcodes
         JsOpcode.SetPrototypeLiteral or
         JsOpcode.IterateStart or JsOpcode.IterateRest or
         JsOpcode.Yield or JsOpcode.YieldDelegate or JsOpcode.Await or
+        JsOpcode.LoadPrivate or JsOpcode.StorePrivate or JsOpcode.HasPrivate or
+        JsOpcode.RunStaticElements or
         JsOpcode.Pop or JsOpcode.Duplicate or JsOpcode.DuplicateTwo or JsOpcode.Swap
             => JsOperandShape.None,
 
         JsOpcode.Call or JsOpcode.CallEval or JsOpcode.Construct or JsOpcode.Pick or
-        JsOpcode.DefineMethod or JsOpcode.NewClass or JsOpcode.SuperCall or JsOpcode.IterateClose
+        JsOpcode.DefineMethod or JsOpcode.NewClass or JsOpcode.SuperCall or
+        JsOpcode.IterateClose or JsOpcode.DefineClassElement
             => JsOperandShape.U8,
 
         JsOpcode.LoadConstant or
@@ -925,7 +1141,8 @@ public static class JsOpcodes
         JsOpcode.GetProperty or JsOpcode.SetProperty or JsOpcode.DefineField or
         JsOpcode.DeleteProperty or JsOpcode.DefineGetter or JsOpcode.DefineSetter or
         JsOpcode.Closure or
-        JsOpcode.LoadArgument or JsOpcode.RestArguments or JsOpcode.RequireCoercible
+        JsOpcode.LoadArgument or JsOpcode.RestArguments or JsOpcode.RequireCoercible or
+        JsOpcode.NewPrivateName
             => JsOperandShape.U16,
 
         JsOpcode.Jump or JsOpcode.JumpIfFalse or JsOpcode.JumpIfTrue or
@@ -951,7 +1168,7 @@ public static class JsOpcodes
     /// and the verifier's abstract height is computed from them alone. A false answer means the
     /// opcode is not one this format version defines - not that its effect is unknown.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=1FB23C
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=90E61D
     // Broiler-Human:        PENDING
     public static bool TryDescribe(JsOpcode opcode, uint operand, out int pops, out int pushes)
     {
@@ -1171,6 +1388,35 @@ public static class JsOpcodes
             case JsOpcode.Swap:
                 pops = 2;
                 pushes = 2;
+                return true;
+
+            // THE PAIR UNDERNEATH STAYS AND IS NOT COUNTED, exactly as the object under
+            // DefineMethod is. The instruction READS the constructor and the home object below the
+            // key rather than consuming them, so a class body's element list is a run of these over
+            // one pair - and the verifier still knows both are there, because the height it has
+            // computed at this instruction is at least four.
+            case JsOpcode.DefineClassElement:
+                pops = 2;
+                return true;
+
+            case JsOpcode.NewPrivateName:
+                pushes = 1;
+                return true;
+
+            case JsOpcode.LoadPrivate:
+            case JsOpcode.HasPrivate:
+                pops = 2;
+                pushes = 1;
+                return true;
+
+            case JsOpcode.StorePrivate:
+                pops = 3;
+                pushes = 1;
+                return true;
+
+            // The constructor stays, so a class lowering can run its static elements and then go on
+            // using the value it already had.
+            case JsOpcode.RunStaticElements:
                 return true;
 
             default:

@@ -241,3 +241,83 @@ p(function(){ return String(Object.getPrototypeOf({__proto__: Array.prototype, _
 p(function(){ var o = {get __proto__(){ return 1; }}; return String(o.__proto__) + "," + String(Object.getPrototypeOf(o) === Object.prototype); });
 p(function(){ var o = {}; o["__proto__"] = Array.prototype; return String(Object.getPrototypeOf(o) === Array.prototype); });
 p(function(){ var o = Object.create(null); o["__proto__"] = 1; return String(Object.getPrototypeOf(o)) + "," + o.__proto__; });
+
+// --- the class BODY: fields, static blocks, private names and a generator member.
+//
+// The four families admitted on 2026-09-05 are here rather than in a probe of their own, because
+// what each of them is FOR is an object graph the cases above already ask about from the outside: a
+// field is an own property with a descriptor, a static block writes the constructor, a private
+// element is the one thing on an object that none of the reflection above can see, and a generator
+// member is a method with a `super`. Every case is one line, so a divergence names the rule rather
+// than the class.
+//
+// EVERY EARLY-ERROR CASE USES INDIRECT `eval` AND NOT DIRECT. A direct `eval` inside a function is
+// refused by this profile — it resolves every name at lowering — so a direct one would compare a
+// refusal about `eval` against the other engine's answer about the class and find a difference that
+// is not the one the case is asking about.
+function thrown(f) { try { f(); return "no-throw"; } catch (e) { return e.name; } }
+
+// A field's two times: the key with the class, the initialiser with the instance.
+p(function(){ var log = []; function k(n){ log.push("k:" + n); return n; } class C { [k("a")] = log.push("i:a"); [k("b")] = 2; } new C(); return log.join(" "); });
+p(function(){ class C { x; } return String(new C().x) + "," + Object.keys(new C()).join(","); });
+p(function(){ class C { x = 1; } var d = Object.getOwnPropertyDescriptor(new C(), "x"); return String(d.writable) + d.enumerable + d.configurable; });
+p(function(){ class C { x = this; } var c = new C(); return String(c.x === c); });
+p(function(){ class C { x = 1; constructor(){ this.x += 1; } } return new C().x; });
+p(function(){ class B { x = 1; } class D extends B { y = this.x + 1; } var d = new D(); return d.x + "," + d.y; });
+p(function(){ class C { static x = this.name; } return C.x; });
+p(function(){ class C { static x = 1; static y = C.x + 1; } return C.y; });
+p(function(){ return thrown(function(){ (0, eval)("class Q1 { static [Q1.name] = 1; }"); }); });
+p(function(){ class B { set x(v){ this.seen = v; } } class D extends B { x = 1; } var d = new D(); return String(d.seen) + "," + d.x + "," + d.hasOwnProperty("x"); });
+p(function(){ var s = Symbol("k"); class C { [s] = 1; } return new C()[s] + "," + Object.getOwnPropertySymbols(new C()).length; });
+p(function(){ class C { x = 1; } return JSON.stringify(new C()); });
+p(function(){ class C { "a b" = 1; 0 = 2; } var c = new C(); return c["a b"] + "," + c[0] + "," + Object.keys(c).join("|"); });
+
+// A static block: the ordered list it shares with the static fields, and its `this`.
+p(function(){ var log = []; class C { static a = log.push("f"); static { log.push("b:" + (this === C)); } static c = log.push("g"); } return log.join(" "); });
+p(function(){ class C { static { this.made = 1; } } return C.made; });
+p(function(){ class C { static a = 1; static { this.b = this.a + 1; } } return C.b; });
+p(function(){ class C { static { C.named = 2; } } return C.named; });
+p(function(){ class C { static {} } return Object.getOwnPropertyNames(C).join(","); });
+
+// Private names: not properties, minted per class evaluation, and what each kind refuses.
+p(function(){ class C { #x = 1; read(){ return this.#x; } } return new C().read(); });
+p(function(){ class C { #x = 1; visible = 2; } var c = new C(); return Object.keys(c).join(",") + "," + Object.getOwnPropertyNames(c).length + "," + Reflect.ownKeys(c).length + "," + Object.getOwnPropertySymbols(c).length; });
+p(function(){ class C { #x = 1; visible = 2; } return JSON.stringify(new C()); });
+p(function(){ class C { #x = 1; } var seen = []; for (var k in new C()) { seen.push(k); } return seen.length; });
+p(function(){ class C { #x = 1; static has(o){ return #x in o; } } return String(C.has(new C())) + "," + String(C.has({})); });
+p(function(){ class C { #x = 1; static read(o){ return o.#x; } } return thrown(function(){ C.read({}); }); });
+p(function(){ class C { #x = 1; static has(o){ return #x in o; } } return thrown(function(){ C.has(5); }); });
+p(function(){ function make(){ return class { #x = 1; static has(o){ return #x in o; } }; } var A = make(), B = make(); return String(A.has(new A())) + "," + String(A.has(new B())); });
+p(function(){ class C { #x = 1; bump(){ return ++this.#x; } } var c = new C(); c.bump(); return c.bump(); });
+p(function(){ class C { #x = 1; add(){ this.#x += 4; return this.#x; } } return new C().add(); });
+p(function(){ class C { #m(){ return 7; } call(){ return this.#m(); } } return new C().call(); });
+p(function(){ class C { #m(){ return 7; } write(){ this.#m = 1; } } return thrown(function(){ new C().write(); }); });
+p(function(){ class C { #v = 1; get #a(){ return this.#v; } set #a(n){ this.#v = n * 2; } run(){ this.#a = 3; return this.#a; } } return new C().run(); });
+p(function(){ class C { get #a(){ return 1; } read(){ return this.#a; } write(){ this.#a = 1; } } var c = new C(); return c.read() + "," + thrown(function(){ c.write(); }); });
+p(function(){ class C { static #s = 5; static read(){ return C.#s; } } return C.read(); });
+p(function(){ class C { static #m(){ return 6; } static call(){ return C.#m(); } } return C.call(); });
+p(function(){ class C { static #s = 1; static holds(o){ return #s in o; } } return String(C.holds(C)) + "," + String(C.holds(new C())); });
+p(function(){ class C { #x = 1; put(o){ ({ a: o.#x } = { a: 9 }); return o.#x; } } return new C().put(new C()); });
+p(function(){ class Outer { #x = 1; run(){ class Inner { #x = 2; read(o){ return o.#x; } } return new Inner().read(new Inner()) + "," + this.#x; } } return new Outer().run(); });
+p(function(){ class C { #x = 1; read(){ return this.#x; } } var c = Object.freeze(new C()); return c.read() + "," + Object.isFrozen(c); });
+
+// The class body's own early errors, each a refusal rather than a wrong answer.
+p(function(){ return thrown(function(){ (0, eval)("class Q2 { x = arguments; }"); }); });
+p(function(){ return thrown(function(){ (0, eval)("class Q3 { static { arguments; } }"); }); });
+p(function(){ return thrown(function(){ (0, eval)("class Q4 { static { return 1; } }"); }); });
+p(function(){ return thrown(function(){ (0, eval)("class Q5 { #x; #x; }"); }); });
+p(function(){ return thrown(function(){ (0, eval)("class Q6 { #m(){} static #m(){} }"); }); });
+p(function(){ return thrown(function(){ (0, eval)("class Q7 { #constructor; }"); }); });
+p(function(){ return thrown(function(){ (0, eval)("class Q8 { get constructor(){} }"); }); });
+p(function(){ return thrown(function(){ (0, eval)("class Q9 { static prototype = 1; }"); }); });
+p(function(){ return thrown(function(){ (0, eval)("class QA { m(){ return this.#absent; } }"); }); });
+p(function(){ return thrown(function(){ (0, eval)("var qb = {}; qb.#x;"); }); });
+p(function(){ return thrown(function(){ (0, eval)("class QC { #x; m(o){ return delete o.#x; } }"); }); });
+p(function(){ class C { get #a(){ return 1; } set #a(v){} read(){ return this.#a; } } return new C().read(); });
+
+// A generator member of a class body, which is the object literal's method plus `super` and `static`.
+p(function(){ class B { base(){ return 10; } } class D extends B { *g(){ yield super.base(); yield 2; } } return [...new D().g()].join(","); });
+p(function(){ class C { static *g(){ yield 1; yield 2; } } return [...C.g()].join(","); });
+p(function(){ class C { *g(){} } return thrown(function(){ new (new C().g)(); }); });
+p(function(){ class C { get(){ return 1; } set(){ return 2; } static(){ return 3; } async(){ return 4; } } var c = new C(); return c.get() + "" + c.set() + c.static() + c.async(); });
+p(function(){ class C { get = 1; } return new C().get; });

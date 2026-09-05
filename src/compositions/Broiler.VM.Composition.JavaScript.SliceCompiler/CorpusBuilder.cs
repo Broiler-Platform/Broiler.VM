@@ -1078,6 +1078,9 @@ internal static class JavaScriptDiagnosticCodes
     /// <summary>A code-unit row combines the async flag with a flag that contradicts it.</summary>
     internal const int AsyncFlagsInconsistent = 1612;
 
+    /// <summary>A `DefineClassElement` operand carries a bit set the instruction has no reading for.</summary>
+    internal const int ClassElementFlagsInconsistent = 1621;
+
     internal const int WrongMagic = 1001;
     internal const int UnsupportedFormatVersion = 1002;
     internal const int ManifestIdTooLong = 1005;

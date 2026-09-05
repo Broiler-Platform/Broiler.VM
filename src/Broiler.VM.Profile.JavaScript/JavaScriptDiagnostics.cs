@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   8
 // Annotated:        8/8
-// Exempt:           53
+// Exempt:           54
 // Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    High
@@ -48,7 +48,7 @@ namespace Broiler.VM.Profile.JavaScript;
 /// predicate's own record calls a worse record than one block on the vocabulary.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=FB0386
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=6349FD
 // Broiler-Human:        PENDING
 public enum JavaScriptDiagnosticCode
 {
@@ -279,6 +279,20 @@ public enum JavaScriptDiagnosticCode
     /// is exactly what <c>async () =&gt; { await x; }</c> is.
     /// </remarks>
     AsyncFlagsInconsistent = 1612,
+
+    /// <summary>
+    /// A <c>DefineClassElement</c> operand carries a bit set the instruction has no reading for.
+    /// </summary>
+    /// <remarks>
+    /// <b>It is a code of its own rather than a second use of <see cref="UnknownOpcode"/></b>,
+    /// because every bit in the operand IS defined by this format version: what is wrong is the
+    /// combination, and an author told "unknown feature" would go looking for a version of the
+    /// format that has one. A static block that is not static, a getter that is also a setter, and
+    /// a public element on an instruction that only records private ones are the three shapes it
+    /// answers for, and each is an encoding the executor would otherwise have to pick an arm for by
+    /// precedence.
+    /// </remarks>
+    ClassElementFlagsInconsistent = 1621,
 
     // ---- 1900: the bounded reader's own statuses, mapped -----------------------------------
 

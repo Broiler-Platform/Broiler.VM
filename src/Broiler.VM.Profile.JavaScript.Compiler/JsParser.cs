@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   95
-// Annotated:        95/95
+// Relevant units:   103
+// Annotated:        103/103
 // Exempt:           15
-// Human-reviewed:   0/95
+// Human-reviewed:   0/103
 // IP risk:          None
 // Security risk:    High
 // Criteria:         2/2
 // Resource impact:  3/10 max
-// Unverified:       95
+// Unverified:       103
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -1315,7 +1315,7 @@ internal sealed class JsParser
     /// why <c>class D extends a.b() { }</c> parses and <c>class D extends a = b { }</c> does not.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=FB1030
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=F6D78A
     // Broiler-Human:        PENDING
     private JsClassNode ParseClass(SliceSourceSpan span, bool declaration)
     {
@@ -1383,7 +1383,139 @@ internal sealed class JsParser
 
         Expect(SliceTokenKind.CloseBrace, "}");
         strict = outer;
+        ValidateClassBody(members);
         return new JsClassNode(span, name, heritage, hasHeritage, members);
+    }
+
+    /// <summary>Rules on the names a class body may not give its elements.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Every rule here is about a name the class DEFINITION itself creates or needs</b>, which
+    /// is why they are one check rather than four. <c>constructor</c> is the class's own
+    /// constructor and a body may name a member that only as a plain non-static method — a getter,
+    /// a generator, an async method or a field of that name would define over the thing being
+    /// built. <c>prototype</c> is defined on the constructor by the definition, so a static member
+    /// of that name would be defining it twice.
+    /// </para>
+    /// <para>
+    /// <b>A private name may be declared twice only as the two halves of one accessor</b>, and only
+    /// when both halves are on the same side of <c>static</c>. Two fields of one name would mint one
+    /// private name and install two elements under it; a getter and a setter mint one name and
+    /// install one element with two functions, which is the case the language admits and the only
+    /// one.
+    /// </para>
+    /// <para>
+    /// <b>They are checked after the body is parsed rather than as each member arrives</b>, because
+    /// the duplicate rule needs the whole body: a getter is legal until a second getter appears.
+    /// </para>
+    /// <para>
+    /// <b>All but one take the DUPLICATE code rather than a code of their own</b>, and it is the
+    /// accurate one rather than the nearest one: each is a second declaration of a name something
+    /// has already declared - the class definition for <c>constructor</c> and <c>prototype</c>, the
+    /// body itself for a repeated private name. <c>#constructor</c> is the exception and takes the
+    /// reserved-name code, because nothing declared it first: it is a private name a class body may
+    /// not spell at all.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=646ECA
+    // Broiler-Human:        PENDING
+    private void ValidateClassBody(System.Collections.Generic.List<JsClassMember> members)
+    {
+        var seen =
+            new System.Collections.Generic.Dictionary<string, (JsMethodKind Kind, bool Static)>(
+                System.StringComparer.Ordinal);
+
+        foreach (var member in members)
+        {
+            if (member.Kind == JsMethodKind.StaticBlock)
+            {
+                continue;
+            }
+
+            if (member.IsPrivate)
+            {
+                ValidatePrivateElement(member, seen);
+                continue;
+            }
+
+            if (member.Computed is not null)
+            {
+                continue;
+            }
+
+            if (member.IsStatic)
+            {
+                if (string.Equals(member.Key, "prototype", System.StringComparison.Ordinal))
+                {
+                    Refuse(
+                        member.Span,
+                        SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+                        "the class definition declares `prototype` on the constructor, so a static " +
+                            "member cannot declare it again");
+                }
+
+                continue;
+            }
+
+            if (!string.Equals(member.Key, "constructor", System.StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            if (member.Kind != JsMethodKind.Method ||
+                member.Function is { } body && (body.IsGenerator || body.IsAsync))
+            {
+                Refuse(
+                    member.Span,
+                    SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+                    "the class definition declares `constructor`, so a field, an accessor, a " +
+                        "generator or an async method cannot declare it again");
+            }
+        }
+    }
+
+    /// <summary>Rules on one private element against the ones already declared.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=D76607
+    // Broiler-Human:        PENDING
+    private void ValidatePrivateElement(
+        JsClassMember member,
+        System.Collections.Generic.Dictionary<string, (JsMethodKind Kind, bool Static)> seen)
+    {
+        if (string.Equals(member.Key, "#constructor", System.StringComparison.Ordinal))
+        {
+            Refuse(
+                member.Span,
+                SliceSourceDiagnosticCode.ReservedWordAsBinding,
+                "`#constructor` is a private name a class body reserves and cannot declare");
+
+            return;
+        }
+
+        // THE KEY IS THE BARE NAME AND `static` IS NOT PART OF IT. One class body declares ONE
+        // private name per spelling however its elements are spread across `static`, because the
+        // name lives in the class's scope and not on either object - so `#m` and `static #m` are a
+        // duplicate, and the accessor pair below has to agree about `static` rather than being
+        // allowed to straddle it. Keying on the pair instead let `get #a` and `static set #a`
+        // through, which would have minted one name and installed its two halves on two different
+        // objects.
+        if (!seen.TryGetValue(member.Key, out var already))
+        {
+            seen[member.Key] = (member.Kind, member.IsStatic);
+            return;
+        }
+
+        if (already.Static == member.IsStatic &&
+            (already.Kind == JsMethodKind.Get && member.Kind == JsMethodKind.Set ||
+                already.Kind == JsMethodKind.Set && member.Kind == JsMethodKind.Get))
+        {
+            seen[member.Key] = (JsMethodKind.Method, member.IsStatic);
+            return;
+        }
+
+        Refuse(
+            member.Span,
+            SliceSourceDiagnosticCode.DuplicateLexicalDeclaration,
+            "`" + member.Key + "` is declared more than once by this class body");
     }
 
     /// <summary>Parses one class element, or refuses one this manifest does not admit.</summary>
@@ -1394,7 +1526,7 @@ internal sealed class JsParser
     /// <c>static m() { }</c> is a static method - and reading the key first would have made the
     /// second one a field called <c>static</c> followed by a surprise.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=E0DF0D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=0AFF84
     // Broiler-Human:        PENDING
     private JsClassMember? ParseClassMember()
     {
@@ -1405,82 +1537,213 @@ internal sealed class JsParser
         {
             if (Peek(1).Kind == SliceTokenKind.OpenBrace)
             {
-                Refuse(span, "a class static block");
-                return null;
+                Advance();
+                return ParseStaticBlock(span);
             }
 
             isStatic = true;
             Advance();
         }
 
-        if (Current.Kind == SliceTokenKind.Star)
-        {
-            Refuse(span, "a generator method");
-            return null;
-        }
+        var isGenerator = false;
+        var isAsync = false;
 
         if (Current.Kind == SliceTokenKind.Async &&
             !Peek(1).PrecededByLineTerminator &&
-            !IsMemberNameEnd(Peek(1).Kind))
+            !IsMemberNameEnd(Peek(1).Kind) &&
+            Peek(1).Kind != SliceTokenKind.Equals)
         {
-            // AN ASYNC GENERATOR MEMBER IS STILL REFUSED AND ITS TEST COMES FIRST, for the reason
-            // the object literal's does: the two differ by one token and an arm that parsed on
-            // `async` alone would have turned a refusal into a surprise.
-            if (Peek(1).Kind == SliceTokenKind.Star)
+            isAsync = true;
+            Advance();
+        }
+
+        if (Current.Kind == SliceTokenKind.Star)
+        {
+            // AN ASYNC GENERATOR METHOD IS STILL REFUSED, and it is refused HERE rather than on the
+            // `async` above because the two differ by exactly this token: an arm that refused on
+            // `async` alone would have taken every ordinary async method with it.
+            if (isAsync)
             {
                 Refuse(span, "an async generator method");
                 return null;
             }
 
+            isGenerator = true;
             Advance();
-            var asyncKey = PropertyKey(out var asyncComputed);
-            var outerOperator = yieldIsOperator;
-            var outerAwait = awaitIsOperator;
-            yieldIsOperator = false;
-            awaitIsOperator = true;
-            var asyncParameters = ParseParameters();
-
-            var asyncBody = ParseFunctionBody(
-                span, asyncKey, asyncParameters, isArrow: false, isGenerator: false, isAsync: true);
-
-            yieldIsOperator = outerOperator;
-            awaitIsOperator = outerAwait;
-
-            return new JsClassMember(
-                span, JsMethodKind.Method, isStatic, asyncKey, asyncComputed, asyncBody);
         }
 
         var kind = JsMethodKind.Method;
 
-        if (Current.Kind is SliceTokenKind.Get or SliceTokenKind.Set &&
-            !IsMemberNameEnd(Peek(1).Kind))
+        // `get` AND `set` ARE MODIFIERS ONLY BEFORE A PROPERTY NAME, and `*` is not one. `class C {
+        // get\n*a(){} }` declares a FIELD named `get` and then a generator method - which is what
+        // the grammar says and what every engine does - so testing only for the tokens that end a
+        // member name made the `*` a surprise inside an accessor that had no parameter list.
+        if (!isAsync && !isGenerator &&
+            Current.Kind is SliceTokenKind.Get or SliceTokenKind.Set &&
+            !IsMemberNameEnd(Peek(1).Kind) &&
+            Peek(1).Kind != SliceTokenKind.Star)
         {
             kind = Current.Kind == SliceTokenKind.Get ? JsMethodKind.Get : JsMethodKind.Set;
             Advance();
         }
 
-        if (IsPrivateName(Current))
-        {
-            Refuse(span, "a private name");
-            return null;
-        }
+        var isPrivate = IsPrivateName(Current);
+        string key;
+        JsExpression? computed = null;
 
-        var key = PropertyKey(out var computed);
+        if (isPrivate)
+        {
+            key = Current.RawText;
+            Advance();
+        }
+        else
+        {
+            key = PropertyKey(out computed);
+        }
 
         // A CLASS FIELD IS EVERY MEMBER THAT IS NOT FOLLOWED BY A PARAMETER LIST, and naming it
         // that way covers `x = 1`, a bare `x`, and `x` followed by a newline in one answer. The
-        // alternative - refusing on the `=` alone - would have let a bare field come back as a
+        // alternative - deciding on the `=` alone - would have let a bare field come back as a
         // missing `(`, which names the punctuation rather than the construct.
         if (Current.Kind != SliceTokenKind.OpenParen)
         {
-            Refuse(span, "a class field");
-            return null;
+            // A MODIFIER WITH NO PARAMETER LIST AFTER IT IS NOT A FIELD, it is a malformed method.
+            // `class C { *x = 1 }` has a `*` that only a method may carry, and calling the result a
+            // field would define one named `x` and silently drop the `*` the source wrote.
+            if (isGenerator || isAsync || kind != JsMethodKind.Method)
+            {
+                Refuse(
+                    span,
+                    SliceSourceDiagnosticCode.ExpectedToken,
+                    "a class element with a `*`, `async`, `get` or `set` modifier needs a " +
+                        "parameter list");
+
+                return null;
+            }
+
+            return ParseFieldTail(span, isStatic, key, computed, isPrivate);
         }
 
-        var parameters = ParseOrdinaryParameters();
-        var body = ParseFunctionBody(span, key, parameters, isArrow: false);
-        return new JsClassMember(span, kind, isStatic, key, computed, body);
+        var outerOperator = yieldIsOperator;
+        var outerAwait = awaitIsOperator;
+        yieldIsOperator = isGenerator;
+        awaitIsOperator = isAsync;
+
+        // A METHOD'S PARAMETER LIST IS THE ORDINARY ONE AND AN ACCESSOR'S IS NOT OPTIONAL ABOUT IT:
+        // both paths go through the same parse, and which parameter forms a member admits is the
+        // static-semantics pass's question rather than this one's.
+        var parameters = ParseParameters();
+
+        var body = ParseFunctionBody(
+            span, key, parameters, isArrow: false, isGenerator, isAsync);
+
+        yieldIsOperator = outerOperator;
+        awaitIsOperator = outerAwait;
+        return new JsClassMember(span, kind, isStatic, key, computed, isPrivate, body);
     }
+
+    /// <summary>Parses the tail of a field, from just after its key.</summary>
+    /// <remarks>
+    /// <b>A field's initialiser is an <c>AssignmentExpression</c> and not an expression</b>, so the
+    /// comma in <c>class C { x = 1, y = 2 }</c> is not a sequence operator joining two initialisers:
+    /// it is the token after a field, and the language has no class element separator spelled that
+    /// way. Parsing the wider production here would have accepted a body no engine accepts.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=C98C95
+    // Broiler-Human:        PENDING
+    private JsClassMember ParseFieldTail(
+        SliceSourceSpan span, bool isStatic, string key, JsExpression? computed, bool isPrivate)
+    {
+        JsFunctionNode? initialiser = null;
+
+        if (Current.Kind == SliceTokenKind.Equals)
+        {
+            Advance();
+
+            // `arguments` AND `yield` ARE NOT WRITABLE IN AN INITIALISER, and `await` is not either.
+            // The initialiser is its own function body in the specification, so a `yield` inside one
+            // is a `yield` outside any generator however the class was reached; the two flags are
+            // cleared here rather than in the lowering because it is the PARSE that decides whether
+            // the word is an operator.
+            var outerOperator = yieldIsOperator;
+            var outerAwait = awaitIsOperator;
+            yieldIsOperator = false;
+            awaitIsOperator = false;
+            var value = ParseAssignment();
+            yieldIsOperator = outerOperator;
+            awaitIsOperator = outerAwait;
+
+            initialiser = new JsFunctionNode(
+                span,
+                key,
+                System.Array.Empty<JsParameter>(),
+                [new JsReturnStatement(span, value)],
+                IsArrow: false,
+                IsStrict: true,
+                System.Array.Empty<JsStringLiteral>());
+        }
+
+        ConsumeFieldTerminator();
+        return new JsClassMember(
+            span, JsMethodKind.Field, isStatic, key, computed, isPrivate, initialiser);
+    }
+
+    /// <summary>Parses <c>static { … }</c>, from just after the <c>static</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=1A0E82
+    // Broiler-Human:        PENDING
+    private JsClassMember ParseStaticBlock(SliceSourceSpan span)
+    {
+        // A STATIC BLOCK IS NOT A GENERATOR, NOT ASYNC, AND HAS NO ARGUMENTS OBJECT, and all three
+        // are decided here: `yield` and `await` are ordinary identifiers nowhere inside it, because
+        // the block is its own function body and the specification makes both of them Syntax Errors
+        // there. Leaving the enclosing flags alone would have let `class C { static { await x; } }`
+        // inside an async function parse as an await the block cannot perform.
+        var outerOperator = yieldIsOperator;
+        var outerAwait = awaitIsOperator;
+        yieldIsOperator = false;
+        awaitIsOperator = false;
+
+        var body = ParseFunctionBody(
+            span, string.Empty, new System.Collections.Generic.List<JsParameter>(), isArrow: false);
+
+        yieldIsOperator = outerOperator;
+        awaitIsOperator = outerAwait;
+
+        return new JsClassMember(
+            span, JsMethodKind.StaticBlock, IsStatic: true, string.Empty, null, IsPrivate: false,
+            body);
+    }
+
+    /// <summary>Reads the token that ends a field, which is usually nothing at all.</summary>
+    /// <remarks>
+    /// <b>A field is terminated the way a statement is, by automatic semicolon insertion</b>, so
+    /// <c>class C { x = 1 }</c> and <c>class C { x = 1\ny = 2 }</c> both end their fields with no
+    /// token. Demanding a semicolon would have refused most of the class bodies anybody writes;
+    /// accepting anything at all would have made <c>class C { x = 1 y = 2 }</c> - two fields on one
+    /// line with nothing between them - a body this host admits and no other does.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=50E3D9
+    // Broiler-Human:        PENDING
+    private void ConsumeFieldTerminator()
+    {
+        if (Current.Kind == SliceTokenKind.Semicolon)
+        {
+            Advance();
+            return;
+        }
+
+        if (Current.Kind is SliceTokenKind.CloseBrace or SliceTokenKind.EndOfSource ||
+            Current.PrecededByLineTerminator)
+        {
+            return;
+        }
+
+        Refuse(
+            Span(),
+            SliceSourceDiagnosticCode.ExpectedToken,
+            "a class field ends with `;`, a line break or `}`");
+    }
+
 
     /// <summary>
     /// Whether a token can only follow a member NAME, so that the word before it was the name.
@@ -1499,7 +1762,7 @@ internal sealed class JsParser
     /// Whether the position admits it at all - a method for a property, a derived constructor for a
     /// call - is decided by the lowering, which is the pass that knows what it is inside of.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=E2BBEB
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9F1EC2
     // Broiler-Human:        PENDING
     private JsExpression ParseSuper(SliceSourceSpan span)
     {
@@ -1512,6 +1775,23 @@ internal sealed class JsParser
 
             case SliceTokenKind.Dot:
                 Advance();
+
+                // `super.#x` HAS NO READING AND IS NOT A PRIVATE ACCESS ON THE PROTOTYPE. A private
+                // element belongs to an object and `super` names no object - it names where a
+                // lookup starts - so the grammar admits an ordinary property name after it and
+                // nothing else. Left to `MemberName` the `#x` would have become a property called
+                // `#x` on the parent, which the source did not ask for.
+                if (IsPrivateName(Current))
+                {
+                    Refuse(
+                        Span(),
+                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        "`super` has no private elements of its own");
+
+                    Advance();
+                    return new JsNullLiteral(span);
+                }
+
                 return new JsSuperMemberExpression(span, MemberName(), null);
 
             case SliceTokenKind.OpenBracket:
@@ -1557,7 +1837,7 @@ internal sealed class JsParser
         return new JsSequenceExpression(span, all);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=016E6A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=18AB0B
     // Broiler-Human:        PENDING
     private JsExpression ParseAssignment(bool noIn = false)
     {
@@ -1611,8 +1891,12 @@ internal sealed class JsParser
                         span, ToPattern(target), ParseAssignment(noIn));
                 }
 
+                // A PRIVATE ACCESS IS A REFERENCE AND IS THE FOURTH KIND HERE. `this.#x = 1` is an
+                // ordinary assignment whose target happens to be stored somewhere other than the
+                // property table, and leaving it off this list refused the write at the parse -
+                // before any of the three passes that know what a private name is could see it.
                 if (target is not JsIdentifier and not JsMemberExpression and
-                    not JsSuperMemberExpression)
+                    not JsSuperMemberExpression and not JsPrivateMemberExpression)
                 {
                     Refuse(
                         span,
@@ -1963,13 +2247,45 @@ internal sealed class JsParser
         return new JsConditionalExpression(span, test, whenTrue, whenFalse);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=54E14C
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=C342F9
     // Broiler-Human:        PENDING
     private JsExpression ParseBinary(int minimum, bool noIn)
     {
         var span = Span();
-        var left = ParseUnary();
 
+        // `#x in obj` IS RECOGNISED HERE AND NOWHERE BELOW, because the grammar gives it a
+        // production at exactly this level - `RelationalExpression : PrivateIdentifier in
+        // ShiftExpression` - and the private name in it is not an operand of anything. Reaching it
+        // from the primary parse instead would have meant pushing a private name as a value, which
+        // no instruction of this profile can do and no other position of the grammar asks for; the
+        // result then rejoins the loop as an ordinary left operand, so `#x in a === b` associates
+        // the way the precedence table already says it does.
+        if (IsPrivateName(Current) && Peek(1).Kind == SliceTokenKind.In && !noIn)
+        {
+            var privateName = Current.RawText;
+            Advance();
+            Advance();
+
+            return Continue(
+                new JsPrivateInExpression(span, privateName, ParseBinary(Relational + 1, noIn)),
+                span,
+                minimum,
+                noIn);
+        }
+
+        return Continue(ParseUnary(), span, minimum, noIn);
+    }
+
+    /// <summary>The precedence of <c>in</c>, <c>instanceof</c> and the four comparisons.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=2AB4A2
+    // Broiler-Human:        PENDING
+    private const int Relational = 8;
+
+    /// <summary>Extends an already-parsed left operand with every operator that may follow it.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=2C6F23
+    // Broiler-Human:        PENDING
+    private JsExpression Continue(JsExpression left, SliceSourceSpan span, int minimum, bool noIn)
+    {
         while (true)
         {
             var kind = Current.Kind;
@@ -2105,7 +2421,7 @@ internal sealed class JsParser
     /// parentheses would get wrong.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=750BDD
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3806DF
     // Broiler-Human:        PENDING
     private JsExpression ParseCallChain()
     {
@@ -2161,7 +2477,7 @@ internal sealed class JsParser
             {
                 case SliceTokenKind.Dot:
                     Advance();
-                    current = new JsMemberExpression(span, current, MemberName(), null);
+                    current = AfterDot(span, current, optional: false);
                     break;
 
                 case SliceTokenKind.QuestionDot:
@@ -2199,9 +2515,7 @@ internal sealed class JsParser
                         return new JsChainExpression(span, current);
                     }
 
-                    current = new JsMemberExpression(
-                        span, current, MemberName(), null, Optional: true);
-
+                    current = AfterDot(span, current, optional: true);
                     break;
                 }
 
@@ -2283,7 +2597,7 @@ internal sealed class JsParser
     }
 
     /// <summary>Parses the callee of a <c>new</c>, which stops before the argument list.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5B0A3D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=C4724A
     // Broiler-Human:        PENDING
     private JsExpression ParseMemberOnly()
     {
@@ -2296,7 +2610,7 @@ internal sealed class JsParser
             {
                 case SliceTokenKind.Dot:
                     Advance();
-                    current = new JsMemberExpression(span, current, MemberName(), null);
+                    current = AfterDot(span, current, optional: false);
                     break;
 
                 case SliceTokenKind.OpenBracket:
@@ -2356,7 +2670,7 @@ internal sealed class JsParser
         return arguments;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=AE848D
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=51A06E
     // Broiler-Human:        PENDING
     private JsExpression ParsePrimary()
     {
@@ -2451,12 +2765,20 @@ internal sealed class JsParser
                 return new JsNullLiteral(span);
             }
 
-            // `#x in obj` is the one production that writes a private name where an expression is
-            // expected, and it reaches here as an identifier whose first character is `#`. Left to
-            // the arm below it would have become a free name and a run-time `ReferenceError`.
+            // A PRIVATE NAME REACHING HERE HAS ALREADY FAILED THE ONE PRODUCTION THAT ADMITS IT.
+            // `#x in obj` is caught at the relational level and `obj.#x` after the dot, so what is
+            // left is a private name standing where a value belongs - `#x + 1`, `f(#x)` - which is
+            // a syntax error rather than a surface this manifest declines. Left to the arm below it
+            // would have become a free name and a run-time `ReferenceError`.
             case SliceTokenKind.Identifier when IsPrivateName(token):
                 Advance();
-                return OutsideExpression(span, "a private name");
+
+                Refuse(
+                    span,
+                    SliceSourceDiagnosticCode.UnexpectedToken,
+                    "a private name is read through `.` or tested with `in`, and is not a value");
+
+                return new JsNullLiteral(span);
 
             case SliceTokenKind.Identifier:
             case SliceTokenKind.Get:
@@ -2735,6 +3057,29 @@ internal sealed class JsParser
         return new JsObjectEntry(span, JsPropertyKind.Init, key, computed, ParseAssignment());
     }
 
+    /// <summary>Parses what follows a <c>.</c> or a <c>?.</c>, which is one of two things.</summary>
+    /// <remarks>
+    /// <b>A private access is a different node and not a member access with a <c>#</c> in its
+    /// name</b>, and the two are told apart here because this is the only position where both are
+    /// grammatical. What follows from the choice is not cosmetic: <c>o.x</c> answers
+    /// <c>undefined</c> for a name nothing defined and <c>o.#x</c> is a <c>TypeError</c>, so a
+    /// single node would have had to re-derive the difference from the first character of a string
+    /// at every use.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=8DB9AA
+    // Broiler-Human:        PENDING
+    private JsExpression AfterDot(SliceSourceSpan span, JsExpression target, bool optional)
+    {
+        if (!IsPrivateName(Current))
+        {
+            return new JsMemberExpression(span, target, MemberName(), null, optional);
+        }
+
+        var name = Current.RawText;
+        Advance();
+        return new JsPrivateMemberExpression(span, target, name, optional);
+    }
+
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=99DC6F
     // Broiler-Human:        PENDING
     private string PropertyKey(out JsExpression? computed)
@@ -2774,20 +3119,23 @@ internal sealed class JsParser
             ? ((uint)value).ToString(System.Globalization.CultureInfo.InvariantCulture)
             : value.ToString("R", System.Globalization.CultureInfo.InvariantCulture);
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=67F4FE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=DC0C0B
     // Broiler-Human:        PENDING
     private string MemberName()
     {
         var token = Current;
 
-        // A PRIVATE NAME IS REFUSED WHERE IT IS WRITTEN AND NOT WHERE IT IS DECLARED. `this.#x`
-        // reads as an ordinary property access whose name happens to begin with `#`, so before
-        // classes were admitted it produced a run-time `undefined` and named nothing; with the
-        // class body admitted it is the one position left where a private name could still slip
-        // through under a diagnostic that does not name it.
+        // A PRIVATE NAME IS A SYNTAX ERROR HERE AND NOT AN UNADMITTED CONSTRUCT. This is the
+        // OBJECT LITERAL's key, and `({ #x: 1 })` is a program no edition of the language has ever
+        // had a meaning for - the grammar admits a private name in a class body and after a `.`
+        // and nowhere else. Refusing it against the manifest would say the surface is missing when
+        // what is missing is a production.
         if (IsPrivateName(token))
         {
-            Refuse(Span(), "a private name");
+            Refuse(
+                Span(),
+                SliceSourceDiagnosticCode.UnexpectedToken,
+                "a private name belongs to a class body and cannot be a property key here");
         }
 
         Advance();
@@ -3214,7 +3562,7 @@ internal sealed class JsParser
     /// point from <see cref="ParseBindingPattern"/> rather than a flag on it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9DE154
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7D89FB
     // Broiler-Human:        PENDING
     private JsPattern ToPattern(JsExpression expression)
     {
@@ -3297,6 +3645,12 @@ internal sealed class JsParser
 
             case JsIdentifier:
             case JsMemberExpression:
+
+            // `({ a: this.#x } = o)` IS A DESTRUCTURING ASSIGNMENT and its target is a reference
+            // like any other. It was refused here while every other position admitted the access,
+            // so a program could write `this.#x = o.a` and not the destructuring that means the
+            // same thing.
+            case JsPrivateMemberExpression:
                 return new JsTargetPattern(expression.Span, expression);
 
             default:

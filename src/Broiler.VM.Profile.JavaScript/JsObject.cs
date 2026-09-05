@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   27
-// Annotated:        27/27
-// Exempt:           24
-// Human-reviewed:   0/27
+// Relevant units:   30
+// Annotated:        30/30
+// Exempt:           25
+// Human-reviewed:   0/30
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  2/10 max
-// Unverified:       27
+// Unverified:       30
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -313,6 +313,87 @@ internal class JsObject
         }
 
         return keys;
+    }
+
+    /// <summary>
+    /// The private elements a class installed on this object, which are NOT properties.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A THIRD table, and the reason is every reflection surface in the profile.</b>
+    /// <c>Object.keys</c>, <c>Object.getOwnPropertyNames</c>,
+    /// <c>Object.getOwnPropertySymbols</c>, <c>Reflect.ownKeys</c>, <c>JSON.stringify</c>,
+    /// <c>for…in</c>, the spread of an object literal and <c>Object.assign</c> all walk the two
+    /// tables above. Storing a private element in either of them would have made every one of those
+    /// a way out for a field the class meant to keep, and closing them one at a time would have
+    /// meant each new surface had to remember. There is nothing to remember when the storage is
+    /// somewhere they do not look.
+    /// </para>
+    /// <para>
+    /// <b>It is a list and not a dictionary because a private name is compared by identity and
+    /// there are never many.</b> A class body declares as many private names as it has lines, and
+    /// the walk is the same one the Symbol table already does for the same reason.
+    /// </para>
+    /// <para>
+    /// <b>A <see cref="JsProperty"/> holds the element, and the attribute bits mean what they say.</b>
+    /// A private field is writable; a private method is not, which is what makes <c>this.#m = 1</c>
+    /// a <c>TypeError</c>; a private accessor is an accessor pair. None of them is ever enumerable
+    /// or configurable, because nothing enumerates them and nothing may delete one.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=79DD4B
+    // Broiler-Human:        PENDING
+    private System.Collections.Generic.List<(JsSymbol Name, JsProperty Element)>? privates;
+
+    /// <summary>Reads one private element.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=61865C
+    // Broiler-Human:        PENDING
+    internal bool TryGetPrivate(JsSymbol name, out JsProperty element)
+    {
+        if (privates is not null)
+        {
+            foreach (var (candidate, stored) in privates)
+            {
+                if (ReferenceEquals(candidate, name))
+                {
+                    element = stored;
+                    return true;
+                }
+            }
+        }
+
+        element = default;
+        return false;
+    }
+
+    /// <summary>Whether this object carries a private element of that name.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=689D5F
+    // Broiler-Human:        PENDING
+    internal bool HasPrivate(JsSymbol name) => TryGetPrivate(name, out _);
+
+    /// <summary>Installs or replaces one private element.</summary>
+    /// <remarks>
+    /// <b>It never consults <see cref="Extensible"/>.</b> A private element is installed by the
+    /// class's own construction, before the object reaches any code that could have frozen it, and
+    /// a frozen instance still carries the fields its class gave it - which is what
+    /// <c>Object.freeze(new C())</c> has to keep true for a class with private state.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=584929
+    // Broiler-Human:        PENDING
+    internal void SetPrivate(JsSymbol name, JsProperty element)
+    {
+        privates ??= [];
+
+        for (var at = 0; at < privates.Count; at++)
+        {
+            if (ReferenceEquals(privates[at].Name, name))
+            {
+                privates[at] = (name, element);
+                return;
+            }
+        }
+
+        privates.Add((name, element));
     }
 
     /// <summary>Defines a Symbol-keyed data property with the built-in attribute set.</summary>

@@ -132,13 +132,21 @@ public static class SliceSourcePrograms
     /// becomes bytes. They are judged by the composition that carries the front end, and the
     /// execution-only image - which has no front end - could not judge them and does not claim to.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=6AE934
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=FEAC8D
     // Broiler-Falsified-If: any source here compiles, or is refused with a code other than the one recorded beside it
     // Broiler-Human:        PENDING
     public static SliceRefusedSource[] Refused =>
     [
         // ---- tokenizing ------------------------------------------------------------------------
-        new("refuse-an-unexpected-character", "1 @ 2", SliceSourceDiagnosticCode.UnexpectedCharacter),
+        // THE CHARACTER IS `¡` AND NOT `@`, and the swap is a repair rather than a preference. This
+        // row was written with `@` while nothing in either grammar had a meaning for it; admitting
+        // the class family gave `@` one - the tokenizer now refuses it BY NAME as a decorator, which
+        // is a construct this manifest declines rather than a character it does not know - so the
+        // row asserted a code the front end had stopped producing and the registry claimed a
+        // reachability it no longer had *(corrected: JSC-125)*. `¡` is an inverted exclamation mark:
+        // it is not an identifier start, it begins no token either grammar defines, and no proposal
+        // is going to give it a meaning.
+        new("refuse-an-unexpected-character", "1 ¡ 2", SliceSourceDiagnosticCode.UnexpectedCharacter),
         new("refuse-an-unterminated-comment", "1 /* and no close", SliceSourceDiagnosticCode.UnterminatedComment),
         new("refuse-an-exponent-with-no-digits", "1e", SliceSourceDiagnosticCode.MalformedNumericLiteral),
         new(

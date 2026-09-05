@@ -210,14 +210,24 @@ runs/a-derived-constructor-that-never-calls-super.js|1|uncaught ReferenceError
 runs/a-this-read-before-super-returns.js|1|uncaught ReferenceError
 runs/a-class-called-without-new.js|1|cannot be invoked without 'new'
 
-# WHAT ADMITTING THE CLASS BODY PUT AT RISK, pinned here. Every construct below could only ever
-# appear inside a class body, so until 2026-09-04 all four were covered by one refusal naming the
-# class - and admitting the class is what made each of them need a refusal of its own. A
-# regression puts any of them back to an expected-token diagnostic, which a conformance runner
-# scores as a failure rather than as unsupported.
-refused/a-class-field.js|3|2104:ConstructOutsideManifest
-refused/a-private-name.js|3|2104:ConstructOutsideManifest
-refused/a-class-static-block.js|3|2104:ConstructOutsideManifest
+# THE CLASS BODY ITSELF, which moved from refused-by-name to admitted on 2026-09-04. Every value
+# below was taken from the comparison engine at /opt/node22/bin/node BEFORE it was written here, so
+# each row is a comparison against another implementation rather than an assertion this component
+# made about itself.
+#
+# The rows are grouped by what a regression would break rather than by construct. The first two are
+# a field's TWO times - a key evaluated once with the class and an initialiser run once per
+# instance - and the fact that a field DEFINES rather than assigns, which an inherited setter is
+# what tells apart. The third is the ordered list a static block and a static field share. The last
+# three are private names: that they are in no reflection surface at all, that a name is minted per
+# class EVALUATION so two evaluations of one class expression brand differently, and the four kinds
+# of private element with the refusal each gives.
+runs/a-class-field-runs-per-instance.js|0|key:a key:b init:a ctor init:a ctor / 3 undefined Counted / a,bare,b / false / truetruetrue
+runs/a-class-field-defines-rather-than-assigns.js|0|setter:2/1 / 1 undefined / through the getter 2 / true false
+runs/a-class-static-block.js|0|key:first key:second field:first block:this-is-the-class:true field:second block:sees:4 / 3 4 5 / length,name,prototype,first,fromBlock,second
+runs/a-private-name-is-not-a-property.js|0|42 / visible visible 0 visible {"visible":1} visible visible visible
+runs/a-private-brand-is-per-class-evaluation.js|0|true false false / true false / 1 1 / TypeError TypeError TypeError
+runs/a-private-method-and-accessor.js|0|95 205 206 / 2 true false / TypeError
 
 # TWO REFUSALS THAT MUST NOT BE 2104, and the reason is the same one from the other direction:
 # the manifest admits `super` and it admits a class binding, so a program that writes either
@@ -241,13 +251,13 @@ runs/a-delegation-that-forwards-a-throw.js|0|inner caught BANG / outer got inner
 runs/a-generator-that-is-already-running.js|0|TypeError then done=true
 runs/a-generator-prototype-chain.js|0|true 0 true object constructor,next,return,throw [object Generator] true
 
-# THE ONE POSITION THE TWO BUNDLES LEFT BETWEEN THEM, pinned from both sides. A `*` before a key in
-# a CLASS BODY is a generator member, which the class family and the generator family were admitted
-# by two different bundles and neither wrote - so it is refused BY NAME, at its own position, and
-# needs its own row for the reason every other class-body construct does. The same `*` in an OBJECT
-# LITERAL is a generator method that parses, lowers and runs, which is the row beside it: what the
-# manifest declines here is the class member and not the modifier.
-refused/a-generator-member-of-a-class-body.js|3|2104:ConstructOutsideManifest
+# THE ONE POSITION THE TWO BUNDLES LEFT BETWEEN THEM, now admitted from both sides. A `*` before a
+# key in a CLASS BODY was refused by name until 2026-09-04, because the class family and the
+# generator family were admitted by two different bundles and neither wrote the member that is
+# both. It keeps a row of its own beside the object literal's, because the class member is not the
+# modifier: only the class form has a `super` to resolve through a home object and a static form
+# that lands on the constructor.
+runs/a-generator-member-of-a-class-body.js|0|11,13,15 / a,b / function function true / TypeError
 runs/a-generator-method-of-an-object-literal.js|0|11,13,15
 
 # THE `with` STATEMENT, which moved from refused-by-name to admitted on 2026-09-04 and is the last
@@ -452,3 +462,17 @@ runs/an-unhandled-rejection-does-not-stop-the-drain.js|0|and kept running
 refused/an-async-generator-function.js|3|2104:ConstructOutsideManifest
 refused/an-async-generator-method-of-a-class-body.js|3|2104:ConstructOutsideManifest
 refused/a-for-await-in-an-async-function.js|3|2104:ConstructOutsideManifest
+
+# AND THE FOUR POSITIONS ADMITTING THE CLASS BODY OPENED, pinned the same way. Two of them did not
+# exist before 2026-09-05: there was no field INITIALISER and no static BLOCK for a declaration to
+# sit in, so an async generator written in either was refused for the enclosing construct and never
+# reached on its own. The third is where two families meet - `async *#m` has a key this manifest
+# admits and a kind it does not - and the fourth is the object literal's, one token away from the
+# two spellings beside it that ARE admitted. Every one of them is the shape the audit
+# `eng/audit-refusals.py` exists to catch: a construct refused where somebody remembered and met by
+# a surprise token where nobody did, which a conformance runner scores as a failure rather than as
+# unsupported.
+refused/an-async-generator-in-a-class-field-initialiser.js|3|2104:ConstructOutsideManifest
+refused/an-async-generator-in-a-class-static-block.js|3|2104:ConstructOutsideManifest
+refused/an-async-generator-with-a-private-name.js|3|2104:ConstructOutsideManifest
+refused/an-async-generator-method-of-an-object-literal.js|3|2104:ConstructOutsideManifest

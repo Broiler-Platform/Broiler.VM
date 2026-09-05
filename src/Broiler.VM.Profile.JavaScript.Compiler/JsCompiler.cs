@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   130
-// Annotated:        130/130
-// Exempt:           60
-// Human-reviewed:   0/130
+// Relevant units:   135
+// Annotated:        135/135
+// Exempt:           61
+// Human-reviewed:   0/135
 // IP risk:          None
 // Security risk:    High
 // Criteria:         6/6
 // Resource impact:  3/10 max
-// Unverified:       130
+// Unverified:       135
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -170,6 +170,21 @@ public sealed class JsCompiler
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F1806D
     // Broiler-Human:        PENDING
     private bool insideFunction;
+
+    /// <summary>
+    /// Whether the code being lowered is a class static block's own body, where <c>return</c> has
+    /// nothing to return from.
+    /// </summary>
+    /// <remarks>
+    /// <b>It is NOT the pattern the three flags above use, and the difference is the arrow.</b>
+    /// Those three are inherited by an arrow, because <c>this</c>, <c>super</c> and
+    /// <c>new.target</c> all reach outward from one; this one is cleared by every nested body
+    /// including an arrow's, because an arrow's <c>return</c> returns from the arrow rather than
+    /// from whatever encloses it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=05C97B
+    // Broiler-Human:        PENDING
+    private bool insideStaticBlock;
 
     /// <summary>Compiles one source text as a script called <c>main</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D206EC
@@ -409,13 +424,14 @@ public sealed class JsCompiler
     /// TypeError in the language, and the flag is what makes it one here.
     /// </param>
     /// <param name="isDerived">Whether this is the constructor of a class with a heritage.</param>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=82BEEE
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8C2CEB
     // Broiler-Human:        PENDING
     private int CompileFunction(
         JsFunctionNode function,
         JsFormat.FunctionFlags extra = JsFormat.FunctionFlags.None,
         bool isMethod = false,
-        bool isDerived = false)
+        bool isDerived = false,
+        bool isStaticBlock = false)
     {
         var outerBuffer = buffer;
         var outerScope = scope;
@@ -426,6 +442,13 @@ public sealed class JsCompiler
         var outerFunction = insideFunction;
         var outerExits = exits;
         exits = [];
+
+        // EVERY NESTED BODY CLEARS THIS AND AN ARROW CLEARS IT TOO, which is the one thing that
+        // separates it from the three flags below. `this` and `super` reach outward from an arrow;
+        // a `return` does not - it returns from the arrow - so an arrow written inside a static
+        // block may `return` even though the block may not.
+        var outerStaticBlock = insideStaticBlock;
+        insideStaticBlock = isStaticBlock;
 
         // AN ARROW INHERITS EVERY ONE OF THESE AND ANY OTHER FUNCTION RESETS THEM. That single
         // difference is what `super`, `this` and `new.target` mean inside an arrow.
@@ -570,6 +593,7 @@ public sealed class JsCompiler
         insideMethod = outerMethod;
         insideDerivedConstructor = outerDerived;
         insideFunction = outerFunction;
+        insideStaticBlock = outerStaticBlock;
         exits = outerExits;
         return index;
     }
@@ -2313,7 +2337,7 @@ public sealed class JsCompiler
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=13BB95
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=48CDC4
     // Broiler-Human:        PENDING
     private void CompileReturn(JsReturnStatement returned)
     {
@@ -2327,6 +2351,20 @@ public sealed class JsCompiler
                 returned.Span,
                 SliceSourceDiagnosticCode.ConstructOutsideManifest,
                 "`return` outside a function is not admitted");
+
+            return;
+        }
+
+        // A STATIC BLOCK COMPILES TO A FUNCTION AND IS NOT ONE, which is why the scope test above
+        // does not catch this. The block's body is a code unit so that it can close over the class
+        // scope and be called with the constructor as its `this`; nothing about it is a function a
+        // program can return FROM, and the specification makes the word an early error there.
+        if (insideStaticBlock)
+        {
+            Refuse(
+                returned.Span,
+                SliceSourceDiagnosticCode.IllegalBreak,
+                "`return` has nothing to return from inside a class static block");
 
             return;
         }
@@ -2533,7 +2571,7 @@ public sealed class JsCompiler
 
     // ---- expressions ---------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=AF65B3
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D135F4
     // Broiler-Human:        PENDING
     private void CompileExpression(JsExpression expression)
     {
@@ -2665,6 +2703,22 @@ public sealed class JsCompiler
                     Emit(JsOpcode.GetIndex);
                 }
 
+                break;
+
+            // A PRIVATE READ IS NOT A PROPERTY READ AND THE ABSENT CASE IS WHY. `o.x` answers
+            // `undefined` for a name nothing defined; `o.#x` on an object the declaring class never
+            // constructed is a TypeError, because a private name is not a key that object could
+            // have had.
+            case JsPrivateMemberExpression privateAccess:
+                CompileExpression(privateAccess.Target);
+                EmitPrivateName(privateAccess.Span, privateAccess.Name);
+                Emit(JsOpcode.LoadPrivate);
+                break;
+
+            case JsPrivateInExpression brand:
+                CompileExpression(brand.Target);
+                EmitPrivateName(brand.Span, brand.Name);
+                Emit(JsOpcode.HasPrivate);
                 break;
 
             case JsCallExpression call:
@@ -2871,23 +2925,53 @@ public sealed class JsCompiler
     /// <see cref="JsOpcode.Pick"/> away. The alternative - reading <c>C.prototype</c> before each
     /// prototype member - would be a property lookup per member for no gain, and it would go
     /// through a property this instruction set deliberately makes non-writable.
+    /// <b>That pair is also what <see cref="JsOpcode.DefineClassElement"/> reads</b>, which is why
+    /// a field costs no reload either.
+    /// </para>
+    /// <para>
+    /// <b>A class body has FOUR times in it and not one, and every ordering rule below is one of
+    /// them.</b> The private names are minted first, because a method compiled after them has to
+    /// capture the slots they live in. Then every key in the body is evaluated, in source order,
+    /// including the keys of static fields whose initialisers have not run. Then the class binding
+    /// is initialised. Only then do the static initialisers and blocks run, which is what lets
+    /// <c>static { C.tag = 1 }</c> name the class and stops
+    /// <c>static [C.name] = 1</c> from doing so. A lowering that performed a static field where it
+    /// was written would have collapsed the middle two and been wrong about both.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=913591
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DF7518
     // Broiler-Human:        PENDING
     private void CompileClass(JsClassNode node, string inferredName)
     {
         var outer = scope;
         var named = node.Name.Length != 0;
+        var privates = PrivateNamesOf(node);
 
-        if (named)
+        // THE SCOPE EXISTS FOR THE PRIVATE NAMES TOO AND NOT ONLY FOR THE CLASS'S OWN BINDING. An
+        // anonymous class with a `#x` in it has nowhere else to keep the name, and the name has to
+        // be somewhere every method of the body captures - which is the same requirement the class
+        // binding has and is met by the same record.
+        var scoped = named || privates.Count != 0;
+
+        if (scoped)
         {
             scope = new Scope(ScopeKind.Block, outer);
             blockDepth++;
             var site = buffer.Code.Count + 1;
             Emit(JsOpcode.PushScope, (ushort)0);
             buffer.ScopeSites.Add((site, scope));
-            scope.Declare(node.Name, constant: true);
+
+            if (named)
+            {
+                scope.Declare(node.Name, constant: true);
+            }
+
+            foreach (var privateName in privates)
+            {
+                var slot = scope.Declare(PrivateSlot(privateName), constant: true);
+                Emit(JsOpcode.NewPrivateName, StringConstant(privateName));
+                EmitScoped(JsOpcode.InitialiseScoped, 0, slot);
+            }
         }
 
         if (node.HasHeritage)
@@ -2918,14 +3002,23 @@ public sealed class JsCompiler
             Emit(JsOpcode.GetProperty, InternedName("prototype"));
         }
 
+        var statics = false;
+
         foreach (var member in node.Members)
         {
-            if (ReferenceEquals(member.Function, constructor))
+            if (member.Function is not null && ReferenceEquals(member.Function, constructor))
             {
                 continue;
             }
 
             Position(member.Span);
+
+            if (member.Kind is JsMethodKind.Field or JsMethodKind.StaticBlock || member.IsPrivate)
+            {
+                statics |= member.IsStatic;
+                CompileClassElement(member);
+                continue;
+            }
 
             if (member.IsStatic)
             {
@@ -2941,7 +3034,7 @@ public sealed class JsCompiler
                 CompileExpression(member.Computed);
             }
 
-            Emit(JsOpcode.Closure, (ushort)CompileFunction(member.Function, isMethod: true));
+            Emit(JsOpcode.Closure, (ushort)CompileFunction(member.Function!, isMethod: true));
             Emit(JsOpcode.DefineMethod, MemberOperand(member.Kind, enumerable: false));
 
             if (member.IsStatic)
@@ -2955,17 +3048,202 @@ public sealed class JsCompiler
             Emit(JsOpcode.Pop);
         }
 
-        if (!named)
+        if (named)
+        {
+            Emit(JsOpcode.Duplicate);
+            EmitScoped(JsOpcode.InitialiseScoped, 0, scope.SlotOf(node.Name));
+        }
+
+        // THE STATIC ELEMENTS RUN AFTER THE BINDING AND BEFORE THE SCOPE GOES, and both halves of
+        // that matter. A static block that names the class needs the binding initialised; a static
+        // block that reads a private name needs the record the names live in still to be the
+        // innermost one, because the block's own closure resolves them by hop count.
+        if (statics)
+        {
+            Emit(JsOpcode.RunStaticElements);
+        }
+
+        if (!scoped)
         {
             return;
         }
 
-        Emit(JsOpcode.Duplicate);
-        EmitScoped(JsOpcode.InitialiseScoped, 0, scope.SlotOf(node.Name));
         Emit(JsOpcode.PopScope);
         blockDepth--;
         scope = outer;
     }
+
+    /// <summary>
+    /// Lowers one field, private member or static block into a record on the constructor.
+    /// </summary>
+    /// <remarks>
+    /// <b>Every arm leaves the stack exactly as it found it</b>, which is what lets the caller run
+    /// a whole class body over the one constructor-and-prototype pair it loaded once. The key and
+    /// the initialiser are pushed and consumed by the one instruction, and the pair beneath them is
+    /// read rather than popped.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=21D83F
+    // Broiler-Human:        PENDING
+    private void CompileClassElement(JsClassMember member)
+    {
+        var flags = (byte)(
+            (member.IsStatic ? JsOpcodes.ElementIsStatic : 0) |
+            (member.IsPrivate ? JsOpcodes.ElementIsPrivate : 0));
+
+        if (member.Kind == JsMethodKind.StaticBlock)
+        {
+            RefuseArguments(member.Function!);
+            Emit(JsOpcode.LoadUndefined);
+
+            Emit(
+                JsOpcode.Closure,
+                (ushort)CompileFunction(member.Function!, isMethod: true, isStaticBlock: true));
+
+            Emit(JsOpcode.DefineClassElement, (byte)(flags | JsOpcodes.ElementIsBlock));
+            return;
+        }
+
+        if (member.IsPrivate)
+        {
+            EmitPrivateName(member.Span, member.Key);
+        }
+        else if (member.Computed is null)
+        {
+            Emit(JsOpcode.LoadConstant, StringConstant(member.Key));
+        }
+        else
+        {
+            CompileExpression(member.Computed);
+        }
+
+        if (member.Kind != JsMethodKind.Field)
+        {
+            flags |= member.Kind switch
+            {
+                JsMethodKind.Get => (byte)(JsOpcodes.ElementIsMethod | JsOpcodes.ElementIsGetter),
+                JsMethodKind.Set => (byte)(JsOpcodes.ElementIsMethod | JsOpcodes.ElementIsSetter),
+                _ => JsOpcodes.ElementIsMethod,
+            };
+
+            Emit(JsOpcode.Closure, (ushort)CompileFunction(member.Function!, isMethod: true));
+            Emit(JsOpcode.DefineClassElement, flags);
+            return;
+        }
+
+        // A FIELD WITH NO INITIALISER IS `undefined` AND NOT AN ABSENT FIELD. `class C { x }`
+        // defines `x` on every instance, so the field is recorded with no initialiser rather than
+        // not recorded - and the executor tells the two apart by what is pushed here.
+        if (member.Function is null)
+        {
+            Emit(JsOpcode.LoadUndefined);
+        }
+        else
+        {
+            RefuseArguments(member.Function);
+            Emit(JsOpcode.Closure, (ushort)CompileFunction(member.Function, isMethod: true));
+        }
+
+        Emit(JsOpcode.DefineClassElement, flags);
+    }
+
+    /// <summary>
+    /// Refuses an <c>arguments</c> anywhere inside a field initialiser or a static block.
+    /// </summary>
+    /// <remarks>
+    /// <b>Neither has an <c>arguments</c> of its own and neither may borrow one</b>, which is what
+    /// makes this an early error rather than a read of the enclosing function's object. Both run
+    /// with a <c>this</c> the class body does not have and with no argument list at all, so the
+    /// specification makes the WORD a Syntax Error there rather than leaving a program to discover
+    /// at run time that the object it named is somebody else's. An arrow inside one is included,
+    /// because an arrow has no <c>arguments</c> either and reaches outward for it; an ordinary
+    /// nested function is not, because it has one of its own - which is exactly the boundary the
+    /// walk this calls already draws for the enclosing function's own materialisation question.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=21BAC5
+    // Broiler-Human:        PENDING
+    private void RefuseArguments(JsFunctionNode body)
+    {
+        foreach (var statement in body.Body)
+        {
+            if (!Walk.Mentions(statement, "arguments"))
+            {
+                continue;
+            }
+
+            Refuse(
+                body.Span,
+                SliceSourceDiagnosticCode.UnresolvableIdentifier,
+                "`arguments` names nothing inside a class field initialiser or a static block");
+
+            return;
+        }
+    }
+
+    /// <summary>
+    /// Every private name one class body declares, in source order and once each.
+    /// </summary>
+    /// <remarks>
+    /// <b><c>get #a</c> and <c>set #a</c> declare ONE name and not two</b>, which is why this
+    /// de-duplicates rather than counting members. Two slots would have made the setter write an
+    /// element the getter could not see, and the brand check would then answer differently
+    /// depending on which half a program happened to ask through.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=14A539
+    // Broiler-Human:        PENDING
+    private static System.Collections.Generic.List<string> PrivateNamesOf(JsClassNode node)
+    {
+        var found = new System.Collections.Generic.List<string>();
+
+        foreach (var member in node.Members)
+        {
+            if (member.IsPrivate && !found.Contains(member.Key))
+            {
+                found.Add(member.Key);
+            }
+        }
+
+        return found;
+    }
+
+    /// <summary>Pushes the private name a class body in scope declared under this spelling.</summary>
+    /// <remarks>
+    /// <b>It resolves through the ordinary scope chain, so the INNERMOST class that declares the
+    /// spelling wins</b> - which is what the specification's PrivateEnvironment says, and what makes
+    /// a nested class able to declare its own <c>#x</c> without disturbing the outer one's. A
+    /// spelling no enclosing class declared is a refusal here and not a run-time absence, because
+    /// there is no object a name nobody minted could be found on.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=FEA545
+    // Broiler-Human:        PENDING
+    private void EmitPrivateName(SliceSourceSpan span, string name)
+    {
+        if (TryResolve(PrivateSlot(name), out var hops, out var slot, out _))
+        {
+            EmitScoped(JsOpcode.LoadScoped, (byte)hops, slot);
+            return;
+        }
+
+        Refuse(
+            span,
+            SliceSourceDiagnosticCode.UnresolvableIdentifier,
+            "`" + name + "` is not declared by any class this expression is inside of");
+
+        Emit(JsOpcode.LoadUndefined);
+    }
+
+    /// <summary>The slot name a private name is kept under.</summary>
+    /// <remarks>
+    /// <b>The second <c>#</c> is what keeps a private name apart from the lowering's own
+    /// temporaries.</b> A compound assignment declares a slot called <c>#target0</c> in the
+    /// enclosing FUNCTION scope, which is inside the class scope a private name lives in, so a
+    /// class that declared <c>#target0</c> - a perfectly ordinary private name - would have had its
+    /// name shadowed by a temporary and every access would have read whatever the last assignment
+    /// left there. No private name can begin with a second <c>#</c>, because an identifier cannot,
+    /// so this spelling is one no source can collide with.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6DE4AA
+    // Broiler-Human:        PENDING
+    private static string PrivateSlot(string name) => "#" + name;
 
     /// <summary>The class body's own <c>constructor</c>, when it wrote one.</summary>
     /// <remarks>
@@ -2974,13 +3252,14 @@ public sealed class JsCompiler
     /// syntactically, on a non-static, non-computed method whose property name is
     /// <c>constructor</c>, and so does this.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=69D105
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=6BC9DC
     // Broiler-Human:        PENDING
     private static JsFunctionNode? FindConstructor(JsClassNode node)
     {
         foreach (var member in node.Members)
         {
             if (!member.IsStatic &&
+                !member.IsPrivate &&
                 member.Kind == JsMethodKind.Method &&
                 member.Computed is null &&
                 string.Equals(member.Key, "constructor", System.StringComparison.Ordinal))
@@ -3350,7 +3629,7 @@ public sealed class JsCompiler
         CompileExpression(value);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D99E1A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C1F5F2
     // Broiler-Human:        PENDING
     private void CompileUnary(JsUnaryExpression unary)
     {
@@ -3445,6 +3724,20 @@ public sealed class JsCompiler
                 return;
             }
 
+            // `delete o.#x` IS A SYNTAX ERROR AND NOT A DELETION THAT ANSWERS `true`. A private
+            // element is not a property and there is no operation that removes one, so the language
+            // refuses the spelling rather than giving it a reading. Falling through to the arm
+            // below would have evaluated the access - throwing on a foreign object - and then
+            // answered `true` for a deletion that never happened.
+            case SliceTokenKind.Delete when unary.Operand is JsPrivateMemberExpression:
+                Refuse(
+                    unary.Span,
+                    SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+                    "a private element cannot be deleted");
+
+                Emit(JsOpcode.LoadTrue);
+                return;
+
             case SliceTokenKind.Delete:
                 CompileExpression(unary.Operand);
                 Emit(JsOpcode.Pop);
@@ -3468,7 +3761,7 @@ public sealed class JsCompiler
         });
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3147A8
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=54EE9D
     // Broiler-Human:        PENDING
     private void CompileUpdate(JsUpdateExpression update)
     {
@@ -3521,6 +3814,37 @@ public sealed class JsCompiler
             }
 
             Emit(JsOpcode.StoreSuperProperty);
+            Emit(JsOpcode.Pop);
+            EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, kept);
+            return;
+        }
+
+        if (update.Operand is JsPrivateMemberExpression privateOperand)
+        {
+            var owner = FunctionScope();
+            var kept = owner.Declare("#update" + owner.SlotCount, constant: false);
+            CompileExpression(privateOperand.Target);
+            EmitPrivateName(privateOperand.Span, privateOperand.Name);
+            Emit(JsOpcode.DuplicateTwo);
+            Emit(JsOpcode.LoadPrivate);
+            Emit(JsOpcode.ToNumber);
+
+            if (!update.Prefix)
+            {
+                Emit(JsOpcode.Duplicate);
+                EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, kept);
+            }
+
+            Emit(JsOpcode.LoadConstant, one);
+            Emit(add);
+
+            if (update.Prefix)
+            {
+                Emit(JsOpcode.Duplicate);
+                EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, kept);
+            }
+
+            Emit(JsOpcode.StorePrivate);
             Emit(JsOpcode.Pop);
             EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, kept);
             return;
@@ -3624,7 +3948,7 @@ public sealed class JsCompiler
         Mark(end);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=DFE46F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=3504BE
     // Broiler-Human:        PENDING
     private void CompileAssignment(JsAssignmentExpression assignment)
     {
@@ -3642,6 +3966,15 @@ public sealed class JsCompiler
                 CompileSuperKey(inherited);
                 CompileExpression(assignment.Value);
                 Emit(JsOpcode.StoreSuperProperty);
+                return;
+            }
+
+            if (assignment.Target is JsPrivateMemberExpression privateTarget)
+            {
+                CompileExpression(privateTarget.Target);
+                EmitPrivateName(privateTarget.Span, privateTarget.Name);
+                CompileExpression(assignment.Value);
+                Emit(JsOpcode.StorePrivate);
                 return;
             }
 
@@ -3699,6 +4032,21 @@ public sealed class JsCompiler
             CompileExpression(assignment.Value);
             Emit(opcode);
             Emit(JsOpcode.StoreSuperProperty);
+            return;
+        }
+
+        // THE OBJECT AND THE NAME ARE PUSHED ONCE AND DUPLICATED, so `o.#x += f()` evaluates `o`
+        // once - which is what the language says and what re-compiling the target for the write
+        // would have got wrong for any target with a side effect.
+        if (assignment.Target is JsPrivateMemberExpression privateAccess)
+        {
+            CompileExpression(privateAccess.Target);
+            EmitPrivateName(privateAccess.Span, privateAccess.Name);
+            Emit(JsOpcode.DuplicateTwo);
+            Emit(JsOpcode.LoadPrivate);
+            CompileExpression(assignment.Value);
+            Emit(opcode);
+            Emit(JsOpcode.StorePrivate);
             return;
         }
 
@@ -3818,7 +4166,7 @@ public sealed class JsCompiler
     /// it. This is the one place that decision is made, so an ordinary call and a tagged template
     /// cannot drift apart on it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=5CB0BA
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=B2B5D6
     // Broiler-Human:        PENDING
     private void EmitCallee(JsExpression callee)
     {
@@ -3839,6 +4187,19 @@ public sealed class JsCompiler
 
             // The receiver is under the callee and the calling convention wants it above, so one
             // exchange turns [receiver, callee] into [callee, receiver].
+            Emit(JsOpcode.Swap);
+            return;
+        }
+
+        // `o.#m()` IS CALLED AGAINST `o` EXACTLY AS `o.m()` IS. The private element is found in a
+        // different table and the calling convention is the same one, so the shape below is the
+        // member arm's with the private instruction where the property read was.
+        if (callee is JsPrivateMemberExpression privateCallee)
+        {
+            CompileExpression(privateCallee.Target);
+            Emit(JsOpcode.Duplicate);
+            EmitPrivateName(privateCallee.Span, privateCallee.Name);
+            Emit(JsOpcode.LoadPrivate);
             Emit(JsOpcode.Swap);
             return;
         }
@@ -4118,12 +4479,26 @@ public sealed class JsCompiler
     /// the ordinary expression it is - which is how a parenthesised chain inside another one keeps
     /// its own merge.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F70919
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=1DBDA5
     // Broiler-Human:        PENDING
     private void EmitChainLink(JsExpression node, Label end, bool shortIsTrue)
     {
         switch (node)
         {
+            case JsPrivateMemberExpression privateAccess:
+            {
+                EmitChainLink(privateAccess.Target, end, shortIsTrue);
+
+                if (privateAccess.Optional)
+                {
+                    EmitNullishGuard(end, held: 1, shortIsTrue);
+                }
+
+                EmitPrivateName(privateAccess.Span, privateAccess.Name);
+                Emit(JsOpcode.LoadPrivate);
+                return;
+            }
+
             case JsMemberExpression member:
             {
                 EmitChainLink(member.Target, end, shortIsTrue);
@@ -4365,7 +4740,7 @@ public sealed class JsCompiler
         Emit(JsOpcode.SuperCall, (byte)System.Math.Min(call.Arguments.Count, 255));
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F5D034
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=8A09AF
     // Broiler-Human:        PENDING
     private void CompileStoreTo(JsExpression target)
     {
@@ -4374,6 +4749,18 @@ public sealed class JsCompiler
             case JsIdentifier name:
                 StoreName(name.Span, name.Name);
                 break;
+
+            case JsPrivateMemberExpression privateAccess:
+            {
+                var owner = FunctionScope();
+                var kept = owner.Declare("#target" + owner.SlotCount, constant: false);
+                EmitScoped(JsOpcode.InitialiseScoped, (byte)blockDepth, kept);
+                CompileExpression(privateAccess.Target);
+                EmitPrivateName(privateAccess.Span, privateAccess.Name);
+                EmitScoped(JsOpcode.LoadScoped, (byte)blockDepth, kept);
+                Emit(JsOpcode.StorePrivate);
+                break;
+            }
 
             case JsMemberExpression member when member.Computed is null:
             {
@@ -5333,7 +5720,7 @@ public sealed class JsCompiler
             return false;
         }
 
-        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=988675
+        // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2E101D
         // Broiler-Human:        PENDING
         private static System.Collections.Generic.IEnumerable<JsNode?> Children(JsNode node)
         {
@@ -5582,6 +5969,17 @@ public sealed class JsCompiler
 
                 case JsSuperMemberExpression expression:
                     yield return expression.Computed;
+                    break;
+
+                // ONLY THE OBJECT IS A CHILD, because a private name is not an expression: it is
+                // spelled where a property name is spelled and evaluates nothing. `a[i].#x` still
+                // has to be walked, which is what the target is here for.
+                case JsPrivateMemberExpression expression:
+                    yield return expression.Target;
+                    break;
+
+                case JsPrivateInExpression expression:
+                    yield return expression.Target;
                     break;
 
                 case JsSuperCallExpression expression:

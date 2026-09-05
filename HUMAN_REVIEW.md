@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 2374 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 2408 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 116 |
-| Code units | 4339 |
-| Relevant | 2374 |
-| Exempt | 1965 |
-| Assessed | 2374 of 2374 (100%) |
-| Human reviewed | 0 of 2374 (0%) |
-| Unverified | 2374 |
+| Code units | 4391 |
+| Relevant | 2408 |
+| Exempt | 1983 |
+| Assessed | 2408 of 2408 (100%) |
+| Human reviewed | 0 of 2408 (0%) |
+| Unverified | 2408 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,11 +96,11 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 2374 |
+| HUMAN_PENDING | 2408 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
-| EXEMPT | 1965 |
+| EXEMPT | 1983 |
 
 ## 5. Aliases In The Tree
 
@@ -142,9 +142,9 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Binary/VmReadBounds.cs` | 11 | 3 | 8 | 3 | Low | Low | 0/0 |
 | `src/Broiler.VM.Binary/VmSectionFrame.cs` | 10 | 3 | 7 | 3 | Low | Low | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` | 190 | 130 | 60 | 130 | None | High | 6/6 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` | 110 | 95 | 15 | 95 | None | High | 2/2 |
-| `src/Broiler.VM.Profile.JavaScript.Compiler/JsSyntax.cs` | 78 | 71 | 7 | 71 | None | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsCompiler.cs` | 196 | 135 | 61 | 135 | None | High | 6/6 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs` | 118 | 103 | 15 | 103 | None | High | 2/2 |
+| `src/Broiler.VM.Profile.JavaScript.Compiler/JsSyntax.cs` | 82 | 73 | 9 | 73 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructCensus.cs` | 7 | 7 | 0 | 7 | None | High | 3/3 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceConstructs.cs` | 61 | 6 | 55 | 6 | None | High | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript.Compiler/SliceControlFlow.cs` | 8 | 8 | 0 | 8 | None | Medium | 4/0 |
@@ -164,10 +164,10 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript.Format/JavaScriptOpcode.cs` | 40 | 10 | 30 | 10 | None | High | 5/5 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsArtifactWriter.cs` | 24 | 24 | 0 | 24 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsFormat.cs` | 48 | 20 | 28 | 20 | None | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript.Format/JsOpcode.cs` | 123 | 16 | 107 | 16 | None | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript.Format/JsOpcode.cs` | 136 | 23 | 113 | 23 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript.Format/JsSurfaces.cs` | 8 | 8 | 0 | 8 | None | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/AssemblyMarker.cs` | 1 | 1 | 0 | 1 | None | None | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JavaScriptDiagnostics.cs` | 61 | 8 | 53 | 8 | Low | High | 1/1 |
+| `src/Broiler.VM.Profile.JavaScript/JavaScriptDiagnostics.cs` | 62 | 8 | 54 | 8 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptExecutor.cs` | 35 | 18 | 17 | 18 | Low | High | 6/6 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptLanguageEdition.cs` | 13 | 13 | 0 | 13 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JavaScriptPosition.cs` | 10 | 6 | 4 | 6 | None | Medium | 1/0 |
@@ -177,12 +177,12 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsArray.cs` | 17 | 13 | 4 | 13 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsBinary.cs` | 51 | 31 | 20 | 31 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsCollections.cs` | 87 | 51 | 36 | 51 | Low | High | 1/1 |
-| `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` | 97 | 84 | 13 | 84 | Low | High | 9/9 |
+| `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` | 105 | 92 | 13 | 92 | Low | High | 9/9 |
 | `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` | 24 | 13 | 11 | 13 | Low | High | 2/2 |
-| `src/Broiler.VM.Profile.JavaScript/JsFunction.cs` | 48 | 24 | 24 | 24 | Low | High | 1/1 |
+| `src/Broiler.VM.Profile.JavaScript/JsFunction.cs` | 55 | 25 | 30 | 25 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JsGenerator.cs` | 44 | 12 | 32 | 12 | None | High | 4/4 |
 | `src/Broiler.VM.Profile.JavaScript/JsNumberFormat.cs` | 19 | 19 | 0 | 19 | Low | Medium | 0/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsObject.cs` | 51 | 27 | 24 | 27 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsObject.cs` | 55 | 30 | 25 | 30 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsProgram.cs` | 40 | 14 | 26 | 14 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Array.cs` | 29 | 29 | 0 | 29 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Binary.cs` | 33 | 28 | 5 | 28 | Low | Medium | 0/0 |
@@ -206,7 +206,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.Symbol.cs` | 28 | 10 | 18 | 10 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRealm.cs` | 37 | 18 | 19 | 18 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsRegExpMatcher.cs` | 213 | 120 | 93 | 120 | Medium | Medium | 1/0 |
-| `src/Broiler.VM.Profile.JavaScript/JsSymbol.cs` | 5 | 2 | 3 | 2 | Low | Medium | 0/0 |
+| `src/Broiler.VM.Profile.JavaScript/JsSymbol.cs` | 6 | 2 | 4 | 2 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsThrow.cs` | 10 | 5 | 5 | 5 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsValue.cs` | 49 | 29 | 20 | 29 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsVerifier.cs` | 50 | 29 | 21 | 29 | Low | Medium | 0/0 |
@@ -436,7 +436,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: this writes a row at an offset not greater than the previous row's, or a row with a zero coordinate
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceSourcePrograms.Accepted` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourcePrograms.cs` - Security=High, Spec=none cited, `11701F`, PENDING
   - Falsified if: any program here runs to a value other than the one recorded beside it
-- `Broiler.VM.Profile.JavaScript.Compiler.SliceSourcePrograms.Refused` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourcePrograms.cs` - Security=High, Spec=none cited, `6AE934`, PENDING
+- `Broiler.VM.Profile.JavaScript.Compiler.SliceSourcePrograms.Refused` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourcePrograms.cs` - Security=High, Spec=none cited, `FEAC8D`, PENDING
   - Falsified if: any source here compiles, or is refused with a code other than the one recorded beside it
 - `Broiler.VM.Profile.JavaScript.Compiler.SliceSourcePrograms.Nested(int)` in `src/Broiler.VM.Profile.JavaScript.Compiler/SliceSourcePrograms.cs` - Security=High, Spec=none cited, `4CD3B4`, PENDING
   - Falsified if: this source terminates the process at any depth instead of being refused
@@ -578,7 +578,7 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: a job runs at a point the host did not ask for, or an endless queue is a hang rather than an exhaustion
 - `Broiler.VM.Profile.JavaScript.JsEngine.Loader` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `67C7AE`, PENDING
   - Falsified if: a mediator is used outside the invocation that supplied it
-- `Broiler.VM.Profile.JavaScript.JsEngine.Evaluate(JsValue[], bool, Format.JsFormat.FunctionFlags)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `4D1A6A`, PENDING
+- `Broiler.VM.Profile.JavaScript.JsEngine.Evaluate(JsValue[], bool, Format.JsFormat.FunctionFlags)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `AF4B33`, PENDING
   - Falsified if: guest source becomes executable bytes without passing through the mediator
 - `Broiler.VM.Profile.JavaScript.JsEngine.MaximumCallDepth` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `321EE5`, PENDING
   - Falsified if: a program recursing past this bound terminates the process rather than throwing a catchable RangeError
@@ -658,7 +658,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 2374 of the 2374 assessed units declare
+That is not a figure of speech. 2408 of the 2408 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

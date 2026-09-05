@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   2
 // Annotated:        2/2
-// Exempt:           3
+// Exempt:           4
 // Human-reviewed:   0/2
 // IP risk:          Low
 // Security risk:    Medium
@@ -72,4 +72,28 @@ internal sealed class JsSymbol
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=B25F68
     // Broiler-Human:        PENDING
     internal string Rendered => "Symbol(" + Description + ")";
+
+    /// <summary>
+    /// Whether this is a PRIVATE NAME rather than a Symbol: the key of a class's private element.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A private name is the same THING as a Symbol — a value whose identity is the whole of
+    /// it — and it is emphatically not the same KEY.</b> Reusing this class is what lets a private
+    /// name live in an ordinary scope slot and be captured by an ordinary closure, which is exactly
+    /// what the specification's PrivateEnvironment does, without the value representation growing
+    /// an eighth type that every coercion, every comparison and every <c>typeof</c> would then have
+    /// to answer for.
+    /// </para>
+    /// <para>
+    /// <b>The flag is a check and not a behaviour.</b> Nothing about a private name's use depends
+    /// on it: private elements live in their own table on the object, so no property operation can
+    /// reach one whatever its key. What it is for is that a private name must never become a
+    /// guest-visible value — a program that could get hold of one could read a field the class kept
+    /// — and this is what lets the places a Symbol enters guest hands say so rather than assume it.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8FB764
+    // Broiler-Human:        PENDING
+    internal bool IsPrivateName { get; init; }
 }

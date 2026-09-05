@@ -105,6 +105,7 @@ wide-a-suspension-outside-a-generator|5170303d47b91744b1415fca7816ab84630a6515ae
 wide-a-generator-that-is-also-the-program-body|07172942acf54ae77af43c41409de404eaf739c4ee70a80b0a82d45275a339dd|wide|InvalidArtifact|InconsistentStructure|1610|-|-|-|-
 wide-an-await-outside-an-async-function|8e160cada105f492d4dbab61a7b449500b3fac61475f9153e637f44aebd9e899|wide|InvalidArtifact|SemanticValidationFailed|1611|-|-|-|-
 wide-an-async-function-that-is-also-a-generator|750646985da3af87f25aa352558561afb119cdb1166dd40e9968a50eaa4e8638|wide|InvalidArtifact|InconsistentStructure|1612|-|-|-|-
+wide-a-class-element-whose-flags-contradict|f73139f5f9f3970bc0ab9adc978a56990497ed61eac7980fc97b9078cf184e17|wide|InvalidArtifact|InconsistentStructure|1621|-|-|-|-
 wide-a-version-1-artifact-announced-as-version-2|4a871c79683bcd1c0192ed7cfd50d4d8a9caf59d62f8071e9776188fee5d8156|wide|InvalidArtifact|DescriptorMismatch|1003|-|-|-|-
 wide-a-slice-manifest-announced-as-the-wide-one|820f00f2877b8bebc95b8ec462f6fa6c9aade306bf7de8eb32b9d48f065fcd2d|wide|InvalidArtifact|DescriptorMismatch|1006|-|-|-|-
-wide-a-method-called-through-a-property|a97116d8e18904eae5b1b9f31511a94bad92f2b0c3bbebbf62a1f90a42b308d9|wide|Normal|NormalCompleted|0|7|-|-|-
+wide-a-method-called-through-a-property|f7bde8e8fc2b93608fe40962a7abb3e33ff28ea5d01dcb20d41635e698db4bcd|wide|Normal|NormalCompleted|0|7|-|-|-

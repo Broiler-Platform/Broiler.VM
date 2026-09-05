@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   71
-// Annotated:        71/71
-// Exempt:           7
-// Human-reviewed:   0/71
+// Relevant units:   73
+// Annotated:        73/73
+// Exempt:           9
+// Human-reviewed:   0/73
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       71
+// Unverified:       73
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -637,7 +637,7 @@ internal sealed record JsFunctionDeclaration(SliceSourceSpan Span, JsFunctionNod
     : JsStatement(Span);
 
 /// <summary>What one member of a class body defines.</summary>
-// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=55B620
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=E08B13
 // Broiler-Human:        PENDING
 internal enum JsMethodKind
 {
@@ -649,16 +649,54 @@ internal enum JsMethodKind
 
     /// <summary>A setter.</summary>
     Set = 2,
+
+    /// <summary>
+    /// A field: <c>x</c>, <c>x = 1</c>, <c>static x = 1</c>, or the private forms of each.
+    /// </summary>
+    /// <remarks>
+    /// <b>A field is a member of the class body and NOT a property of anything the class body
+    /// evaluation defines</b>, which is why it is a member kind rather than a property definition
+    /// the lowering could emit inline. Its key is evaluated when the class is, once; its
+    /// initialiser runs once per INSTANCE, later, with a <c>this</c> the class body does not have.
+    /// The two halves therefore belong to different times, and a kind that carried only one of them
+    /// would have had to choose.
+    /// </remarks>
+    Field = 3,
+
+    /// <summary>A static initialisation block: <c>static { … }</c>.</summary>
+    /// <remarks>
+    /// <b>It has no key at all, and that is the one thing that separates it from a static field.</b>
+    /// Everything else about it - that it runs at class-definition time, in body order, with
+    /// <c>this</c> bound to the constructor, inside the class's own scope - is a static field's
+    /// behaviour exactly, so the lowering treats the two as one ordered list and only the
+    /// definition step differs.
+    /// </remarks>
+    StaticBlock = 4,
 }
 
 /// <summary>One member of a class body.</summary>
 /// <param name="Span">Where the member begins.</param>
-/// <param name="Kind">Whether it defines a method, a getter or a setter.</param>
+/// <param name="Kind">What the member defines.</param>
 /// <param name="IsStatic">Whether it lands on the constructor rather than on the prototype.</param>
-/// <param name="Key">The literal key, when it is not computed.</param>
+/// <param name="Key">
+/// The literal key, when it is not computed. For a private member it KEEPS its leading <c>#</c>,
+/// because that character is what makes the name a different name: <c>#x</c> and <c>x</c> may both
+/// be declared by one class body and mean two unrelated things.
+/// </param>
 /// <param name="Computed">The key expression, when it is computed.</param>
-/// <param name="Function">The member's body.</param>
-// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=BC7D4D
+/// <param name="IsPrivate">
+/// Whether the key is a private name. <b>It is a flag and not a test on <paramref name="Key"/></b>,
+/// because <c>class C { "#x"(){} }</c> declares an ordinary property whose name is the two
+/// characters <c>#x</c>, and a lowering that decided this by looking at the string would have made
+/// that member unreachable from outside the class.
+/// </param>
+/// <param name="Function">
+/// The member's body: the method, the field's initialiser, or the static block's statements.
+/// <b>It is null exactly when a field was written with no initialiser</b> - <c>class C { x; }</c> -
+/// which the specification says defines the field as <c>undefined</c> rather than not defining it,
+/// so the absence has to survive to the lowering rather than being filled in with a literal here.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=623186
 // Broiler-Human:        PENDING
 internal sealed record JsClassMember(
     SliceSourceSpan Span,
@@ -666,7 +704,8 @@ internal sealed record JsClassMember(
     bool IsStatic,
     string Key,
     JsExpression? Computed,
-    JsFunctionNode Function) : JsNode(Span);
+    bool IsPrivate,
+    JsFunctionNode? Function) : JsNode(Span);
 
 /// <summary>One class: the head, the heritage and the body, shared by both class forms.</summary>
 /// <param name="Span">Where the class begins.</param>
@@ -711,6 +750,38 @@ internal sealed record JsClassExpression(SliceSourceSpan Span, JsClassNode Class
 // Broiler-Human:        PENDING
 internal sealed record JsSuperMemberExpression(
     SliceSourceSpan Span, string Name, JsExpression? Computed) : JsExpression(Span);
+
+/// <summary><c>obj.#x</c>: a read, a write or a call through a private name.</summary>
+/// <remarks>
+/// <b>It is not a <see cref="JsMemberExpression"/> with an odd name, and the difference is what
+/// happens when the member is absent.</b> An ordinary property access answers <c>undefined</c> for
+/// a name nothing defined; a private access on an object outside the class that declared the name
+/// is a <c>TypeError</c>, because the private name is not a key that object could have. The two
+/// therefore lower to different instructions, and a tree that spelled them the same way would have
+/// had to re-derive which one it meant from the first character of a string.
+/// </remarks>
+/// <param name="Target">The object the private element is looked for on.</param>
+/// <param name="Name">The private name, leading <c>#</c> included.</param>
+/// <param name="Optional">Whether the access was written <c>?.#x</c> and short-circuits.</param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=E7C7F0
+// Broiler-Human:        PENDING
+internal sealed record JsPrivateMemberExpression(
+    SliceSourceSpan Span,
+    JsExpression Target,
+    string Name,
+    bool Optional = false) : JsExpression(Span);
+
+/// <summary><c>#x in obj</c>: the brand check.</summary>
+/// <remarks>
+/// <b>It is a production of its own and not the <c>in</c> operator over a private name</b>, because
+/// there is no value a private name could be pushed as: the operand grammar admits a private name
+/// only immediately left of <c>in</c>, and nowhere else does an expression position accept one. The
+/// whole point of the form is to ask the question that <c>obj.#x</c> would have thrown for.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=AD0EB0
+// Broiler-Human:        PENDING
+internal sealed record JsPrivateInExpression(
+    SliceSourceSpan Span, string Name, JsExpression Target) : JsExpression(Span);
 
 /// <summary><c>super(...)</c>, which only a derived constructor may write.</summary>
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=DFE543

@@ -146,6 +146,27 @@ internal static class WideCorpus
             "InconsistentStructure",
             JavaScriptDiagnosticCodes.AsyncFlagsInconsistent),
 
+        // ---- one row about the class body's own operand bits ------------------------------------
+        //
+        // EVERY BIT IN THIS OPERAND IS DEFINED AND THE COMBINATION IS NOT, which is why it is not
+        // the unknown-opcode answer the other operand checks give. A static block that is not
+        // static has no `this` to run against, and the executor would have had to pick an arm for
+        // an encoding nothing agreed on. The stack is left valid on purpose: the entry has to reach
+        // the operand check rather than being refused for a height the lowering would never write.
+        Entry(
+            "wide-a-class-element-whose-flags-contradict",
+            Artifact(code: [
+                (byte)JsOpcode.LoadUndefined,
+                (byte)JsOpcode.LoadUndefined,
+                (byte)JsOpcode.LoadUndefined,
+                (byte)JsOpcode.LoadUndefined,
+                (byte)JsOpcode.DefineClassElement, JsOpcodes.ElementIsBlock,
+                (byte)JsOpcode.Pop,
+                (byte)JsOpcode.Return,
+            ]),
+            "InconsistentStructure",
+            JavaScriptDiagnosticCodes.ClassElementFlagsInconsistent),
+
         // ---- two rows that were unreachable while one version was registered ------------------
         //
         // Both are the CALLER mislabelling the bytes, and neither could happen while the profile

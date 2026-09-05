@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   24
-// Annotated:        24/24
-// Exempt:           24
-// Human-reviewed:   0/24
+// Relevant units:   25
+// Annotated:        25/25
+// Exempt:           30
+// Human-reviewed:   0/25
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         1/1
 // Resource impact:  2/10 max
-// Unverified:       24
+// Unverified:       25
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -350,6 +350,87 @@ internal sealed class JsScriptFunction : JsFunction
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=57770B
     // Broiler-Human:        PENDING
     internal bool IsDerivedConstructor => Program.Functions[Unit].IsDerivedConstructor;
+
+    /// <summary>
+    /// The class elements every instance of this constructor is given, in the order the class body
+    /// wrote them.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>They live on the CONSTRUCTOR and not on the prototype, and the difference is which class
+    /// of a chain answers.</b> <c>class B { x = 1 } class D extends B { y = 2 }</c> gives an
+    /// instance both fields because B's constructor runs and installs its own, then D's
+    /// <c>super()</c> returns and D's are installed - two lists, one per class, applied by the
+    /// constructor each belongs to. A list on the prototype would have been found by a prototype
+    /// walk and applied once with whatever it found first.
+    /// </para>
+    /// <para>
+    /// <b>It is null on every function that is not a class constructor</b>, which is nearly all of
+    /// them, so an ordinary closure carries one null field and no list.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=578942
+    // Broiler-Human:        PENDING
+    internal System.Collections.Generic.List<JsClassElement>? InstanceElements { get; set; }
+
+    /// <summary>
+    /// The class elements that run once, on the constructor itself, when the class is defined.
+    /// </summary>
+    /// <remarks>
+    /// <b>Static fields and static blocks share ONE list because their order is one order.</b>
+    /// <c>class C { static a = 1; static { this.b = this.a } static c = 2 }</c> runs the three in
+    /// the order written, and two lists would have had to be merged by something that knew where
+    /// each element came from.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=35D9A1
+    // Broiler-Human:        PENDING
+    internal System.Collections.Generic.List<JsClassElement>? StaticElements { get; set; }
+}
+
+/// <summary>
+/// One recorded class element: what <c>DefineClassElement</c> stored and what applying it needs.
+/// </summary>
+/// <remarks>
+/// <b>A record of an element and not the element itself</b>, which is the whole reason it exists.
+/// A field's key is known when the class is defined and its value is not; a static block has a body
+/// and no key at all. Holding the three things a class body settled early - the key, the function,
+/// and which kind of element the flags say it is - is what lets the value be produced at the time
+/// the language says it is produced rather than at the time the syntax was read.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F94DCE
+// Broiler-Human:        PENDING
+internal sealed class JsClassElement
+{
+    /// <summary>
+    /// The property key, the private name, or <c>undefined</c> for a static block.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=3EE4B3
+    // Broiler-Human:        PENDING
+    internal JsValue Key { get; init; }
+
+    /// <summary>
+    /// The initialiser to call, the method to install, or <c>undefined</c> for a field written with
+    /// no initialiser.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=0206C2
+    // Broiler-Human:        PENDING
+    internal JsValue Body { get; set; }
+
+    /// <summary>The setter half, when this element is a private accessor that has one.</summary>
+    /// <remarks>
+    /// <b>One element carries both halves rather than the list carrying two elements.</b>
+    /// <c>get #a</c> and <c>set #a</c> declare one private name, so the second half found merges
+    /// into the first's record - and an instance then gets ONE element with two functions, which is
+    /// what makes reading and writing <c>this.#a</c> reach the pair the class wrote.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=679B2F
+    // Broiler-Human:        PENDING
+    internal JsValue Setter { get; set; }
+
+    /// <summary>The <c>DefineClassElement</c> operand bits this element was recorded with.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=00F3FD
+    // Broiler-Human:        PENDING
+    internal byte Flags { get; set; }
 }
 
 /// <summary>The result of <c>Function.prototype.bind</c>.</summary>
