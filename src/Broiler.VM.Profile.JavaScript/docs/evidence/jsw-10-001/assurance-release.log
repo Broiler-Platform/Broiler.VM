@@ -14,7 +14,7 @@ exit 1
   Broiler.VM.Architecture.Tests -> /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll
 Test run for /home/user/Broiler.VM/src/tests/Broiler.VM.Architecture.Tests/bin/Release/net10.0/Broiler.VM.Architecture.Tests.dll (.NETCoreApp,Version=v10.0)
 A total of 1 test files matched the specified pattern.
-  Failed Broiler.VM.Architecture.Tests.AssuranceRuleTests.J11_A_Tree_May_Be_Published_Only_When_The_Record_Says_So [56 ms]
+  Failed Broiler.VM.Architecture.Tests.AssuranceRuleTests.J11_A_Tree_May_Be_Published_Only_When_The_Record_Says_So [43 ms]
   Error Message:
    2662 thing(s) block a release of this tree:
   src/Broiler.VM.Abstractions/VmArtifactDescriptor.cs(43): Broiler.VM.VmArtifactDescriptor is HUMAN_PENDING and its human line reads 'PENDING'
@@ -72,5 +72,5 @@ A total of 1 test files matched the specified pattern.
    at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
    at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
 
-Failed!  - Failed:     1, Passed:   196, Skipped:     0, Total:   197, Duration: 6 s - Broiler.VM.Architecture.Tests.dll (net10.0)
-[xUnit.net 00:00:06.20]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J11_A_Tree_May_Be_Published_Only_When_The_Record_Says_So [FAIL]
+Failed!  - Failed:     1, Passed:   196, Skipped:     0, Total:   197, Duration: 5 s - Broiler.VM.Architecture.Tests.dll (net10.0)
+[xUnit.net 00:00:05.67]     Broiler.VM.Architecture.Tests.AssuranceRuleTests.J11_A_Tree_May_Be_Published_Only_When_The_Record_Says_So [FAIL]

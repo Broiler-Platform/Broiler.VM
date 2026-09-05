@@ -10,21 +10,21 @@ corpus modified.
 
 replay command: dotnet run --project src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj -c Release --no-build --corpus /home/user/Broiler.VM/src/tests/corpus/js-1
 
-[addition] FAIL
+[addition] PASS
     file:      src/tests/corpus/js-1/addition.bjsb
     mutation:  the last byte, exclusive-or 0xFF
     injected:  exit 1
-    reverted:  exit 1
+    reverted:  exit 0
       FAIL execution-step-kinds: verification InvalidArtifact/Truncated
       FAIL operand-stack-sized-from-verification: verification InvalidArtifact/Truncated
       FAIL the-caller-buffer-may-change-afterwards: verification InvalidArtifact/Truncated
-      FAIL corpus-replay: addition: expected Normal/NormalCompleted/0/42/-/-/-, observed InvalidArtifact/Truncated/1901/-/-/-/- (hash MISMATCH); wide-an-import-call-with-no-surface-declared: expected InvalidArtifact/UnknownFeature/1622/-/-/-/-, observed InvalidArtifact/SemanticValidationFailed/1609/-/-/-/- (hash match)
+      FAIL corpus-replay: addition: expected Normal/NormalCompleted/0/42/-/-/-, observed InvalidArtifact/Truncated/1901/-/-/-/- (hash MISMATCH)
 
-[an-unknown-opcode] FAIL
+[an-unknown-opcode] PASS
     file:      src/tests/corpus/js-1/an-unknown-opcode.bjsb
     mutation:  the last byte, exclusive-or 0xFF
     injected:  exit 1
-    reverted:  exit 1
-      FAIL corpus-replay: an-unknown-opcode: expected InvalidArtifact/UnknownFeature/1401/-/2:0:0:0/-/-, observed InvalidArtifact/Truncated/1901/-/-1:61:0:0/-/- (hash MISMATCH); wide-an-import-call-with-no-surface-declared: expected InvalidArtifact/UnknownFeature/1622/-/-/-/-, observed InvalidArtifact/SemanticValidationFailed/1609/-/-/-/- (hash match)
+    reverted:  exit 0
+      FAIL corpus-replay: an-unknown-opcode: expected InvalidArtifact/UnknownFeature/1401/-/2:0:0:0/-/-, observed InvalidArtifact/Truncated/1901/-/-1:61:0:0/-/- (hash MISMATCH)
 
-entries mutated: 2; detected: 0
+entries mutated: 2; detected: 2

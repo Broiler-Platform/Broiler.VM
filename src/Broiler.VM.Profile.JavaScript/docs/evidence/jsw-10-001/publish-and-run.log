@@ -1,12 +1,12 @@
 [executiononly/jit] publish exit 0
 dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o /home/user/Broiler.VM/artifacts/js-publish/executiononly/jit -r linux-x64 --self-contained false -p:PublishTrimmed=false
   Determining projects to restore...
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 304 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 304 ms).
-  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj (in 304 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 304 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 6 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 7 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 309 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 309 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 309 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj (in 309 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 5 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 5 ms).
   Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
   Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
   Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
@@ -27,7 +27,7 @@ manifest broiler.javascript.slice broiler.javascript.wide
 format-versions 1 2
 
 
-[executiononly/jit/corpus] run exit 1
+[executiononly/jit/corpus] run exit 0
      entry addition: Normal/NormalCompleted/0/42/-/-/-
      entry division-by-zero: Normal/NormalCompleted/0/Infinity/-/-/-
      entry zero-over-zero: Normal/NormalCompleted/0/NaN/-/-/-
@@ -133,6 +133,7 @@ format-versions 1 2
      entry wide-an-async-function-that-is-also-the-program-body: InvalidArtifact/InconsistentStructure/1612/-/-/-/-
      entry wide-an-async-iteration-step-outside-an-async-function: InvalidArtifact/SemanticValidationFailed/1630/-/-/-/-
      entry wide-a-class-element-whose-flags-contradict: InvalidArtifact/InconsistentStructure/1621/-/-/-/-
+     entry wide-an-import-call-with-no-surface-declared: InvalidArtifact/UnknownFeature/1622/-/-/-/-
      entry wide-a-version-1-artifact-announced-as-version-2: InvalidArtifact/DescriptorMismatch/1003/-/-/-/-
      entry wide-a-slice-manifest-announced-as-the-wide-one: InvalidArtifact/DescriptorMismatch/1006/-/-/-/-
      entry wide-a-method-called-through-a-property: Normal/NormalCompleted/0/7/-/-/-
@@ -151,7 +152,7 @@ ok   suspended-is-declared-produced-at-js-7: neither external suspension nor asy
 ok   operand-stack-sized-from-verification: the artifact declared 16 and verification computed 2
 ok   the-caller-buffer-may-change-afterwards: the buffer was overwritten after verification and the answer did not move
 ok   the-fuzz-guidance-loop-is-wired: a new answer is kept, a repeat is not, and every offer is counted
-FAIL corpus-replay: wide-an-import-call-with-no-surface-declared: expected InvalidArtifact/UnknownFeature/1622/-/-/-/-, observed InvalidArtifact/SemanticValidationFailed/1609/-/-/-/- (hash match)
+ok   corpus-replay: 118 entries replayed to their recorded answers
 ok   corpus-replays-twice-with-no-residue: both passes agreed row for row
 ok   the-corpus-contains-passing-controls: 43 entries verify successfully
 ok   five-verifier-outcomes: Cancellation, InvalidArtifact, Normal, ResourceExhaustion, UnsupportedProfile
@@ -161,27 +162,27 @@ ok   every-dimension-this-host-can-tighten-is-pinned-by-one-entry: 7 dimensions,
 ok   two-siblings-under-one-parent-spend-one-total: 28 invocations completed and 100 were refused across two siblings; the parent spent 4000 of 4000 fuel. Which sibling was refused is not asserted: both draw on one total and the order is a race
 ok   a-parent-with-a-live-child-refuses-disposal: with 1 live child the parent answered InvalidState/AggregateBudgetHasLiveRuntimes; after the child was disposed it answered Accepted
 ok   a-sealed-parent-admits-no-further-runtime: sealing answered Accepted; a runtime created afterwards was refused with ResourceExhaustion/ParentExhausted
-ok   recycled-runtimes-reach-a-heap-plateau: 10000 of 10000 cycles completed; the heap went from 114744 bytes at the midpoint to 110024 at the end, a factor of 0.96 against a band of 1.2. Both readings are after warm-up, which is what makes them comparable in every publish mode. This is a plateau check and not a measurement. The curve, as cycle=bytes: 0=109440 625=111608 1250=111608 1875=111608 2500=111608 3125=111672 3750=111672 4375=111672 5000=114744 5625=114872 6250=114872 6875=114872 7500=114872 8125=114872 8750=114872 9375=114872 10000=110024
+ok   recycled-runtimes-reach-a-heap-plateau: 10000 of 10000 cycles completed; the heap went from 114488 bytes at the midpoint to 109768 at the end, a factor of 0.96 against a band of 1.2. Both readings are after warm-up, which is what makes them comparable in every publish mode. This is a plateau check and not a measurement. The curve, as cycle=bytes: 0=112256 625=114424 1250=114424 1875=114424 2500=114424 3125=114488 3750=114488 4375=114488 5000=114488 5625=114616 6250=114616 6875=114616 7500=114616 8125=114616 8750=114616 9375=114616 10000=109768
 ok   a composition declining modules, and one with no resolver, each refuse by name: admitted: Normal/NormalCompleted/0; surface declined: InvalidArtifact/UnsupportedFeatureManifest/1608; no resolver: InvalidArtifact/UnsupportedFeatureManifest/1619
 ok   ceilings-are-materialised-before-the-first-byte-is-read: ResourceExhaustion/ArtifactBytes over 89 bytes against a ceiling of 4, with 0 meter events; 118 corpus entries are held to the two checks below
 ok   a-well-formed-artifact-does-charge-for-what-it-allocates: addition charges 88 allocated bytes and 97 work units across 91 meter events
 ok   a-declaration-past-its-bound-sizes-nothing: 4 entries refused with zero allocated bytes: a-constant-count-far-beyond-what-the-artifact-carries, more-constants-than-the-limits-section-admits, a-declared-maximum-above-the-formats-own-ceiling, more-frames-than-the-slice-has
 ok   allocation-is-proportional-to-the-bytes-present-not-to-what-they-declare: 118 entries under 64 allocated bytes per artifact byte; the highest is 3.3 at source-continue-reaches-the-update
-broiler-js-execution-only: 1 of 22 checks FAILED
+broiler-js-execution-only: 22 checks passed, core contract version 1
 
 
 [executiononly/trimmed] publish exit 0
 dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o /home/user/Broiler.VM/artifacts/js-publish/executiononly/trimmed -r linux-x64 --self-contained true
   Determining projects to restore...
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 369 ms).
-  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj (in 369 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 369 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 369 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 5 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 5 ms).
-  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 370 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 370 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 370 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj (in 370 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 6 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 6 ms).
   Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
   Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
   Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
   Broiler.VM.Profile.JavaScript -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
   Broiler.VM.Composition.JavaScript.ExecutionOnly -> /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.JavaScript.ExecutionOnly.dll
@@ -200,7 +201,7 @@ manifest broiler.javascript.slice broiler.javascript.wide
 format-versions 1 2
 
 
-[executiononly/trimmed/corpus] run exit 1
+[executiononly/trimmed/corpus] run exit 0
      entry addition: Normal/NormalCompleted/0/42/-/-/-
      entry division-by-zero: Normal/NormalCompleted/0/Infinity/-/-/-
      entry zero-over-zero: Normal/NormalCompleted/0/NaN/-/-/-
@@ -306,6 +307,7 @@ format-versions 1 2
      entry wide-an-async-function-that-is-also-the-program-body: InvalidArtifact/InconsistentStructure/1612/-/-/-/-
      entry wide-an-async-iteration-step-outside-an-async-function: InvalidArtifact/SemanticValidationFailed/1630/-/-/-/-
      entry wide-a-class-element-whose-flags-contradict: InvalidArtifact/InconsistentStructure/1621/-/-/-/-
+     entry wide-an-import-call-with-no-surface-declared: InvalidArtifact/UnknownFeature/1622/-/-/-/-
      entry wide-a-version-1-artifact-announced-as-version-2: InvalidArtifact/DescriptorMismatch/1003/-/-/-/-
      entry wide-a-slice-manifest-announced-as-the-wide-one: InvalidArtifact/DescriptorMismatch/1006/-/-/-/-
      entry wide-a-method-called-through-a-property: Normal/NormalCompleted/0/7/-/-/-
@@ -324,7 +326,7 @@ ok   suspended-is-declared-produced-at-js-7: neither external suspension nor asy
 ok   operand-stack-sized-from-verification: the artifact declared 16 and verification computed 2
 ok   the-caller-buffer-may-change-afterwards: the buffer was overwritten after verification and the answer did not move
 ok   the-fuzz-guidance-loop-is-wired: a new answer is kept, a repeat is not, and every offer is counted
-FAIL corpus-replay: wide-an-import-call-with-no-surface-declared: expected InvalidArtifact/UnknownFeature/1622/-/-/-/-, observed InvalidArtifact/SemanticValidationFailed/1609/-/-/-/- (hash match)
+ok   corpus-replay: 118 entries replayed to their recorded answers
 ok   corpus-replays-twice-with-no-residue: both passes agreed row for row
 ok   the-corpus-contains-passing-controls: 43 entries verify successfully
 ok   five-verifier-outcomes: Cancellation, InvalidArtifact, Normal, ResourceExhaustion, UnsupportedProfile
@@ -334,24 +336,24 @@ ok   every-dimension-this-host-can-tighten-is-pinned-by-one-entry: 7 dimensions,
 ok   two-siblings-under-one-parent-spend-one-total: 28 invocations completed and 100 were refused across two siblings; the parent spent 4000 of 4000 fuel. Which sibling was refused is not asserted: both draw on one total and the order is a race
 ok   a-parent-with-a-live-child-refuses-disposal: with 1 live child the parent answered InvalidState/AggregateBudgetHasLiveRuntimes; after the child was disposed it answered Accepted
 ok   a-sealed-parent-admits-no-further-runtime: sealing answered Accepted; a runtime created afterwards was refused with ResourceExhaustion/ParentExhausted
-ok   recycled-runtimes-reach-a-heap-plateau: 10000 of 10000 cycles completed; the heap went from 92784 bytes at the midpoint to 88064 at the end, a factor of 0.95 against a band of 1.2. Both readings are after warm-up, which is what makes them comparable in every publish mode. This is a plateau check and not a measurement. The curve, as cycle=bytes: 0=87480 625=89648 1250=89648 1875=89648 2500=89648 3125=89712 3750=92784 4375=92784 5000=92784 5625=92912 6250=92912 6875=92912 7500=92912 8125=92912 8750=92912 9375=92912 10000=88064
+ok   recycled-runtimes-reach-a-heap-plateau: 10000 of 10000 cycles completed; the heap went from 92528 bytes at the midpoint to 87808 at the end, a factor of 0.95 against a band of 1.2. Both readings are after warm-up, which is what makes them comparable in every publish mode. This is a plateau check and not a measurement. The curve, as cycle=bytes: 0=90296 625=92464 1250=92464 1875=92464 2500=92464 3125=92528 3750=92528 4375=92528 5000=92528 5625=92656 6250=92656 6875=92656 7500=92656 8125=92656 8750=92656 9375=92656 10000=87808
 ok   a composition declining modules, and one with no resolver, each refuse by name: admitted: Normal/NormalCompleted/0; surface declined: InvalidArtifact/UnsupportedFeatureManifest/1608; no resolver: InvalidArtifact/UnsupportedFeatureManifest/1619
 ok   ceilings-are-materialised-before-the-first-byte-is-read: ResourceExhaustion/ArtifactBytes over 89 bytes against a ceiling of 4, with 0 meter events; 118 corpus entries are held to the two checks below
 ok   a-well-formed-artifact-does-charge-for-what-it-allocates: addition charges 88 allocated bytes and 97 work units across 91 meter events
 ok   a-declaration-past-its-bound-sizes-nothing: 4 entries refused with zero allocated bytes: a-constant-count-far-beyond-what-the-artifact-carries, more-constants-than-the-limits-section-admits, a-declared-maximum-above-the-formats-own-ceiling, more-frames-than-the-slice-has
 ok   allocation-is-proportional-to-the-bytes-present-not-to-what-they-declare: 118 entries under 64 allocated bytes per artifact byte; the highest is 3.3 at source-continue-reaches-the-update
-broiler-js-execution-only: 1 of 22 checks FAILED
+broiler-js-execution-only: 22 checks passed, core contract version 1
 
 
 [executiononly/aot] publish exit 0
 dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o /home/user/Broiler.VM/artifacts/js-publish/executiononly/aot -r linux-x64 -p:PublishAot=true
   Determining projects to restore...
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 371 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 371 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 371 ms).
-  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj (in 371 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 16 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 16 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 353 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 353 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 353 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj (in 353 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 15 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 15 ms).
   Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
   Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
   Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
@@ -373,7 +375,7 @@ manifest broiler.javascript.slice broiler.javascript.wide
 format-versions 1 2
 
 
-[executiononly/aot/corpus] run exit 1
+[executiononly/aot/corpus] run exit 0
      entry addition: Normal/NormalCompleted/0/42/-/-/-
      entry division-by-zero: Normal/NormalCompleted/0/Infinity/-/-/-
      entry zero-over-zero: Normal/NormalCompleted/0/NaN/-/-/-
@@ -479,6 +481,7 @@ format-versions 1 2
      entry wide-an-async-function-that-is-also-the-program-body: InvalidArtifact/InconsistentStructure/1612/-/-/-/-
      entry wide-an-async-iteration-step-outside-an-async-function: InvalidArtifact/SemanticValidationFailed/1630/-/-/-/-
      entry wide-a-class-element-whose-flags-contradict: InvalidArtifact/InconsistentStructure/1621/-/-/-/-
+     entry wide-an-import-call-with-no-surface-declared: InvalidArtifact/UnknownFeature/1622/-/-/-/-
      entry wide-a-version-1-artifact-announced-as-version-2: InvalidArtifact/DescriptorMismatch/1003/-/-/-/-
      entry wide-a-slice-manifest-announced-as-the-wide-one: InvalidArtifact/DescriptorMismatch/1006/-/-/-/-
      entry wide-a-method-called-through-a-property: Normal/NormalCompleted/0/7/-/-/-
@@ -497,7 +500,7 @@ ok   suspended-is-declared-produced-at-js-7: neither external suspension nor asy
 ok   operand-stack-sized-from-verification: the artifact declared 16 and verification computed 2
 ok   the-caller-buffer-may-change-afterwards: the buffer was overwritten after verification and the answer did not move
 ok   the-fuzz-guidance-loop-is-wired: a new answer is kept, a repeat is not, and every offer is counted
-FAIL corpus-replay: wide-an-import-call-with-no-surface-declared: expected InvalidArtifact/UnknownFeature/1622/-/-/-/-, observed InvalidArtifact/SemanticValidationFailed/1609/-/-/-/- (hash match)
+ok   corpus-replay: 118 entries replayed to their recorded answers
 ok   corpus-replays-twice-with-no-residue: both passes agreed row for row
 ok   the-corpus-contains-passing-controls: 43 entries verify successfully
 ok   five-verifier-outcomes: Cancellation, InvalidArtifact, Normal, ResourceExhaustion, UnsupportedProfile
@@ -507,13 +510,13 @@ ok   every-dimension-this-host-can-tighten-is-pinned-by-one-entry: 7 dimensions,
 ok   two-siblings-under-one-parent-spend-one-total: 28 invocations completed and 100 were refused across two siblings; the parent spent 4000 of 4000 fuel. Which sibling was refused is not asserted: both draw on one total and the order is a race
 ok   a-parent-with-a-live-child-refuses-disposal: with 1 live child the parent answered InvalidState/AggregateBudgetHasLiveRuntimes; after the child was disposed it answered Accepted
 ok   a-sealed-parent-admits-no-further-runtime: sealing answered Accepted; a runtime created afterwards was refused with ResourceExhaustion/ParentExhausted
-ok   recycled-runtimes-reach-a-heap-plateau: 10000 of 10000 cycles completed; the heap went from 136376 bytes at the midpoint to 131552 at the end, a factor of 0.96 against a band of 1.2. Both readings are after warm-up, which is what makes them comparable in every publish mode. This is a plateau check and not a measurement. The curve, as cycle=bytes: 0=89632 625=136312 1250=136312 1875=136312 2500=136312 3125=136376 3750=136376 4375=136376 5000=136376 5625=136504 6250=136504 6875=136504 7500=136504 8125=136504 8750=136504 9375=136504 10000=131552
+ok   recycled-runtimes-reach-a-heap-plateau: 10000 of 10000 cycles completed; the heap went from 136120 bytes at the midpoint to 131296 at the end, a factor of 0.96 against a band of 1.2. Both readings are after warm-up, which is what makes them comparable in every publish mode. This is a plateau check and not a measurement. The curve, as cycle=bytes: 0=89376 625=136056 1250=136056 1875=136056 2500=136056 3125=136120 3750=136120 4375=136120 5000=136120 5625=136248 6250=136248 6875=136248 7500=136248 8125=136248 8750=136248 9375=136248 10000=131296
 ok   a composition declining modules, and one with no resolver, each refuse by name: admitted: Normal/NormalCompleted/0; surface declined: InvalidArtifact/UnsupportedFeatureManifest/1608; no resolver: InvalidArtifact/UnsupportedFeatureManifest/1619
 ok   ceilings-are-materialised-before-the-first-byte-is-read: ResourceExhaustion/ArtifactBytes over 89 bytes against a ceiling of 4, with 0 meter events; 118 corpus entries are held to the two checks below
 ok   a-well-formed-artifact-does-charge-for-what-it-allocates: addition charges 88 allocated bytes and 97 work units across 91 meter events
 ok   a-declaration-past-its-bound-sizes-nothing: 4 entries refused with zero allocated bytes: a-constant-count-far-beyond-what-the-artifact-carries, more-constants-than-the-limits-section-admits, a-declared-maximum-above-the-formats-own-ceiling, more-frames-than-the-slice-has
 ok   allocation-is-proportional-to-the-bytes-present-not-to-what-they-declare: 118 entries under 64 allocated bytes per artifact byte; the highest is 3.3 at source-continue-reaches-the-update
-broiler-js-execution-only: 1 of 22 checks FAILED
+broiler-js-execution-only: 22 checks passed, core contract version 1
 
 
 [executiononly] catalog tables identical across modes: True
@@ -521,18 +524,18 @@ broiler-js-execution-only: 1 of 22 checks FAILED
 [slicecompiler/jit] publish exit 0
 dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o /home/user/Broiler.VM/artifacts/js-publish/slicecompiler/jit -r linux-x64 --self-contained false -p:PublishTrimmed=false
   Determining projects to restore...
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 334 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 334 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 334 ms).
-  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj (in 334 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 6 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 7 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 6 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 321 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 320 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 320 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj (in 321 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 5 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 6 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 7 ms).
   Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
-  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
   Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
-  Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
   Broiler.VM.Profile.JavaScript.Compiler -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
   Broiler.VM.Profile.JavaScript -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
   Broiler.VM.Composition.JavaScript.SliceCompiler -> /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.JavaScript.SliceCompiler.dll
   Broiler.VM.Composition.JavaScript.SliceCompiler -> /home/user/Broiler.VM/artifacts/js-publish/slicecompiler/jit/
@@ -571,16 +574,16 @@ broiler-js-slice-compiler: 17 checks passed
 [slicecompiler/trimmed] publish exit 0
 dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o /home/user/Broiler.VM/artifacts/js-publish/slicecompiler/trimmed -r linux-x64 --self-contained true
   Determining projects to restore...
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 329 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 329 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 329 ms).
-  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj (in 329 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 6 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 7 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 8 ms).
-  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 309 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 309 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 309 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 309 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 5 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 6 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj (in 19 ms).
   Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
   Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
   Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
   Broiler.VM.Profile.JavaScript.Compiler -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
   Broiler.VM.Profile.JavaScript -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
@@ -622,18 +625,18 @@ broiler-js-slice-compiler: 17 checks passed
 [slicecompiler/aot] publish exit 0
 dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o /home/user/Broiler.VM/artifacts/js-publish/slicecompiler/aot -r linux-x64 -p:PublishAot=true
   Determining projects to restore...
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 364 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 368 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 368 ms).
-  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj (in 368 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 15 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 19 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 358 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 358 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/Broiler.VM.Composition.JavaScript.SliceCompiler.csproj (in 358 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 358 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 11 ms).
   Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 16 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 17 ms).
   Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
   Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
   Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
-  Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
   Broiler.VM.Profile.JavaScript.Compiler -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
   Broiler.VM.Profile.JavaScript -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
   Broiler.VM.Composition.JavaScript.SliceCompiler -> /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.JavaScript.SliceCompiler.dll
   Generating native code
@@ -675,13 +678,13 @@ broiler-js-slice-compiler: 17 checks passed
 [conformance/jit] publish exit 0
 dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o /home/user/Broiler.VM/artifacts/js-publish/conformance/jit -r linux-x64 --self-contained false -p:PublishTrimmed=false
   Determining projects to restore...
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 341 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 341 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 341 ms).
-  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance.csproj (in 341 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 6 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 368 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 368 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 368 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance.csproj (in 368 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 6 ms).
   Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 7 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 7 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 7 ms).
   Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
   Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
   Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
@@ -842,12 +845,12 @@ broiler-js-conformance: the harness's own checks failed; nothing was scored
 [conformance/trimmed] publish exit 0
 dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o /home/user/Broiler.VM/artifacts/js-publish/conformance/trimmed -r linux-x64 --self-contained true
   Determining projects to restore...
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 310 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 310 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 310 ms).
-  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance.csproj (in 310 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 5 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 5 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 307 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 307 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 307 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance.csproj (in 307 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 6 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 6 ms).
   Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 7 ms).
   Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
   Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
@@ -1010,18 +1013,18 @@ broiler-js-conformance: the harness's own checks failed; nothing was scored
 [conformance/aot] publish exit 0
 dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o /home/user/Broiler.VM/artifacts/js-publish/conformance/aot -r linux-x64 -p:PublishAot=true
   Determining projects to restore...
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 352 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 356 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 356 ms).
-  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance.csproj (in 356 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 20 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 20 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 20 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 336 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 341 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/Broiler.VM.Composition.JavaScript.Conformance.csproj (in 341 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 341 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 23 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 23 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 23 ms).
   Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
   Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
   Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
-  Broiler.VM.Profile.JavaScript.Compiler -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
   Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
+  Broiler.VM.Profile.JavaScript.Compiler -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
   Broiler.VM.Profile.JavaScript -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
   Broiler.VM.Composition.JavaScript.Conformance -> /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Conformance/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.JavaScript.Conformance.dll
   Generating native code
@@ -1180,18 +1183,18 @@ broiler-js-conformance: the harness's own checks failed; nothing was scored
 [cli/jit] publish exit 0
 dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o /home/user/Broiler.VM/artifacts/js-publish/cli/jit -r linux-x64 --self-contained false -p:PublishTrimmed=false
   Determining projects to restore...
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 304 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 304 ms).
-  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj (in 304 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 304 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 5 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 5 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 6 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj (in 313 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 313 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 313 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 313 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 6 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 8 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 9 ms).
   Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
   Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
   Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
-  Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
   Broiler.VM.Profile.JavaScript.Compiler -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
+  Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
   Broiler.VM.Profile.JavaScript -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
   Broiler.VM.Composition.JavaScript.Cli -> /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/linux-x64/Broiler.VM.Composition.JavaScript.Cli.dll
   Broiler.VM.Composition.JavaScript.Cli -> /home/user/Broiler.VM/artifacts/js-publish/cli/jit/
@@ -1376,16 +1379,16 @@ ok       /home/user/Broiler.VM/src/tests/cli/runs/two-parameters-with-one-name.j
 [cli/trimmed] publish exit 0
 dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o /home/user/Broiler.VM/artifacts/js-publish/cli/trimmed -r linux-x64 --self-contained true
   Determining projects to restore...
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 327 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 327 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 327 ms).
-  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj (in 327 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 6 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 8 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 8 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 316 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 316 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 316 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj (in 316 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 5 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 7 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 7 ms).
+  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
   Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
   Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
-  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
   Broiler.VM.Profile.JavaScript.Compiler -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
   Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
   Broiler.VM.Profile.JavaScript -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll
@@ -1573,16 +1576,16 @@ ok       /home/user/Broiler.VM/src/tests/cli/runs/two-parameters-with-one-name.j
 [cli/aot] publish exit 0
 dotnet publish src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj -c Release --nologo -p:TreatWarningsAsErrors=true -o /home/user/Broiler.VM/artifacts/js-publish/cli/aot -r linux-x64 -p:PublishAot=true
   Determining projects to restore...
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 341 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 341 ms).
-  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj (in 341 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 341 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 16 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 17 ms).
-  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 17 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/Broiler.VM.Profile.JavaScript.Format.csproj (in 346 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/Broiler.VM.Profile.JavaScript.Compiler.csproj (in 350 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Runtime/Broiler.VM.Runtime.csproj (in 349 ms).
+  Restored /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Cli/Broiler.VM.Composition.JavaScript.Cli.csproj (in 350 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Abstractions/Broiler.VM.Abstractions.csproj (in 15 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Binary/Broiler.VM.Binary.csproj (in 19 ms).
+  Restored /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/Broiler.VM.Profile.JavaScript.csproj (in 19 ms).
   Broiler.VM.Binary -> /home/user/Broiler.VM/src/Broiler.VM.Binary/bin/Release/net10.0/Broiler.VM.Binary.dll
-  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
   Broiler.VM.Profile.JavaScript.Format -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Format/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Format.dll
+  Broiler.VM.Abstractions -> /home/user/Broiler.VM/src/Broiler.VM.Abstractions/bin/Release/net10.0/Broiler.VM.Abstractions.dll
   Broiler.VM.Runtime -> /home/user/Broiler.VM/src/Broiler.VM.Runtime/bin/Release/net10.0/Broiler.VM.Runtime.dll
   Broiler.VM.Profile.JavaScript.Compiler -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript.Compiler/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.Compiler.dll
   Broiler.VM.Profile.JavaScript -> /home/user/Broiler.VM/src/Broiler.VM.Profile.JavaScript/bin/Release/net10.0/Broiler.VM.Profile.JavaScript.dll

@@ -26,4 +26,4 @@ e2923e9fd4af27e66db7650292faa075683d647484bc6ab783082c16f94aeaef  src/Broiler.VM
 910998fed937c647109e2d30aa0bb6ee83ae61af3ba07bbfad1b6c25fa873590  src/Broiler.VM.Profile.JavaScript/docs/roadmap.status.md
 63e3ceecdf77696c93b985e95747b0d0516b8efdcc09cc900fa0f2074778c68a  src/tests/Broiler.VM.Architecture.Tests/graph.manifest.json
 4e4533e76567eace735c5704bed9dfca0cb1e5240234562bb8b91709902281a1  src/tests/Broiler.VM.Architecture.Tests/rules.register.json
-e8a67d4e45e19eb3144937d83de274a90050281661b9cccf8a2e3985ea1096b9  src/tests/corpus/js-1/corpus.manifest
+4b8b33e54a2b30cda5493f777a839a4570422238a35ba51d488fd2b2b32cf33e  src/tests/corpus/js-1/corpus.manifest

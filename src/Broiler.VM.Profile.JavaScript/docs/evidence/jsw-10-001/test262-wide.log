@@ -1,0 +1,91 @@
+# test262 tc39/test262 at ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+# 56560 files, content 46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93 - the checkout answers to test262.pin
+# manifest broiler.javascript.wide; declined (none)
+# 12 shards across 3 processes, 100000000 fuel and 5000 ms per variant
+# retaining every shard's transcript under /tmp/wl/retained/test262-wide
+--- shard 1 of 12 exited 1; /tmp/wl/retained/test262-wide/logs/shard-0001.log
+--- shard 2 of 12 exited 1; /tmp/wl/retained/test262-wide/logs/shard-0002.log
+--- shard 0 of 12 exited 1; /tmp/wl/retained/test262-wide/logs/shard-0000.log
+--- shard 5 of 12 exited 1; /tmp/wl/retained/test262-wide/logs/shard-0005.log
+--- shard 3 of 12 exited 1; /tmp/wl/retained/test262-wide/logs/shard-0003.log
+--- shard 6 of 12 exited 1; /tmp/wl/retained/test262-wide/logs/shard-0006.log
+--- shard 4 of 12 exited 1; /tmp/wl/retained/test262-wide/logs/shard-0004.log
+--- shard 9 of 12 exited 1; /tmp/wl/retained/test262-wide/logs/shard-0009.log
+--- shard 7 of 12 exited 1; /tmp/wl/retained/test262-wide/logs/shard-0007.log
+--- shard 11 of 12 exited 1; /tmp/wl/retained/test262-wide/logs/shard-0011.log
+--- shard 8 of 12 exited 1; /tmp/wl/retained/test262-wide/logs/shard-0008.log
+--- shard 10 of 12 exited 1; /tmp/wl/retained/test262-wide/logs/shard-0010.log
+broiler-js-conformance: merged 12 test262 shard report(s)
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.modules; declined (none)
+partition FNV-1a over the normalized suite-relative path, modulo the shard count, one whole file per shard; merged from 12 shards
+selection candidates=53469 selected=53469 merged=53469
+# this run met no construct outside the manifest
+# exhausted dimensions: 4 distinct, 59 variants
+#        21  WallClock  e.g. test/built-ins/Array/prototype/lastIndexOf/length-near-integer-limit.js [sloppy]
+#        20  Fuel  e.g. test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [sloppy]
+#        16  NestedLoadFanOut  e.g. test/annexB/built-ins/RegExp/RegExp-leading-escape-BMP.js [sloppy]
+#         2  NestedLoadBytes  e.g. test/staging/sm/RegExp/unicode-class-braced.js [sloppy]
+# exhausted test/annexB/built-ins/RegExp/RegExp-leading-escape-BMP.js [sloppy] on NestedLoadFanOut
+# exhausted test/annexB/built-ins/RegExp/RegExp-leading-escape-BMP.js [strict] on NestedLoadFanOut
+# exhausted test/annexB/built-ins/RegExp/RegExp-trailing-escape-BMP.js [sloppy] on NestedLoadFanOut
+# exhausted test/annexB/built-ins/RegExp/RegExp-trailing-escape-BMP.js [strict] on NestedLoadFanOut
+# exhausted test/built-ins/Array/prototype/lastIndexOf/length-near-integer-limit.js [sloppy] on WallClock
+# exhausted test/built-ins/Array/prototype/lastIndexOf/length-near-integer-limit.js [strict] on WallClock
+# exhausted test/built-ins/Array/prototype/reduceRight/length-near-integer-limit.js [sloppy] on WallClock
+# exhausted test/built-ins/Array/prototype/reduceRight/length-near-integer-limit.js [strict] on WallClock
+# exhausted test/built-ins/Array/prototype/splice/throws-if-integer-limit-exceeded.js [sloppy] on WallClock
+# exhausted test/built-ins/Array/prototype/splice/throws-if-integer-limit-exceeded.js [strict] on WallClock
+# exhausted test/built-ins/Array/prototype/toReversed/length-casted-to-zero.js [sloppy] on WallClock
+# exhausted test/built-ins/Array/prototype/toReversed/length-casted-to-zero.js [strict] on WallClock
+# exhausted test/built-ins/Array/prototype/toSorted/length-casted-to-zero.js [sloppy] on WallClock
+# exhausted test/built-ins/Array/prototype/toSorted/length-casted-to-zero.js [strict] on WallClock
+# exhausted test/built-ins/Array/prototype/toSpliced/length-casted-to-zero.js [sloppy] on WallClock
+# exhausted test/built-ins/Array/prototype/toSpliced/length-casted-to-zero.js [strict] on WallClock
+# exhausted test/built-ins/Array/prototype/unshift/length-near-integer-limit.js [sloppy] on WallClock
+# exhausted test/built-ins/Array/prototype/unshift/length-near-integer-limit.js [strict] on WallClock
+# exhausted test/built-ins/Array/prototype/unshift/throws-if-integer-limit-exceeded.js [sloppy] on WallClock
+# exhausted test/built-ins/Array/prototype/unshift/throws-if-integer-limit-exceeded.js [strict] on WallClock
+# exhausted test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [sloppy] on Fuel
+# exhausted test/built-ins/decodeURI/S15.1.3.1_A2.5_T1.js [strict] on Fuel
+# exhausted test/built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js [sloppy] on Fuel
+# exhausted test/built-ins/decodeURIComponent/S15.1.3.2_A2.5_T1.js [strict] on Fuel
+# exhausted test/language/comments/S7.4_A5.js [sloppy] on NestedLoadFanOut
+# exhausted test/language/comments/S7.4_A5.js [strict] on NestedLoadFanOut
+# exhausted test/language/comments/S7.4_A6.js [sloppy] on NestedLoadFanOut
+# exhausted test/language/comments/S7.4_A6.js [strict] on NestedLoadFanOut
+# exhausted test/language/literals/regexp/S7.8.5_A1.1_T2.js [sloppy] on NestedLoadFanOut
+# exhausted test/language/literals/regexp/S7.8.5_A1.1_T2.js [strict] on NestedLoadFanOut
+# exhausted test/language/literals/regexp/S7.8.5_A1.4_T2.js [sloppy] on NestedLoadFanOut
+# exhausted test/language/literals/regexp/S7.8.5_A1.4_T2.js [strict] on NestedLoadFanOut
+# exhausted test/language/literals/regexp/S7.8.5_A2.1_T2.js [sloppy] on NestedLoadFanOut
+# exhausted test/language/literals/regexp/S7.8.5_A2.1_T2.js [strict] on NestedLoadFanOut
+# exhausted test/language/literals/regexp/S7.8.5_A2.4_T2.js [sloppy] on NestedLoadFanOut
+# exhausted test/language/literals/regexp/S7.8.5_A2.4_T2.js [strict] on NestedLoadFanOut
+# exhausted test/staging/sm/Array/from_basics.js [sloppy] on WallClock
+# exhausted test/staging/sm/Array/from_basics.js [strict] on WallClock
+# exhausted test/staging/sm/Date/dst-offset-caching-1-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-1-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-2-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-2-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-3-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-3-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-4-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-4-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-5-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-5-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-6-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-6-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-7-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-7-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-8-of-8.js [sloppy] on Fuel
+# exhausted test/staging/sm/Date/dst-offset-caching-8-of-8.js [strict] on Fuel
+# exhausted test/staging/sm/RegExp/unicode-class-braced.js [sloppy] on NestedLoadBytes
+# exhausted test/staging/sm/RegExp/unicode-class-braced.js [strict] on NestedLoadBytes
+# exhausted test/staging/sm/regress/regress-1507322-deep-weakmap.js [sloppy] on WallClock
+# exhausted test/staging/sm/regress/regress-610026.js [sloppy] on WallClock
+# exhausted test/staging/sm/regress/regress-610026.js [strict] on WallClock
+# test262 53469 files, 94545 variants: pass 71153, fail 14987, unsupported 0, exhausted 59, skipped 8346
+coverage whole
+# the whole-run report is /tmp/wl/retained/test262-wide/test262.report

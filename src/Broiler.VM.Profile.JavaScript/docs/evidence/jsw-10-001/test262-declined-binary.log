@@ -1,0 +1,29 @@
+# test262 tc39/test262 at ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+# 56560 files, content 46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93 - the checkout answers to test262.pin
+# manifest broiler.javascript.wide; declined ['broiler.javascript.binary']
+# 12 shards across 3 processes, 100000000 fuel and 5000 ms per variant
+# retaining every shard's transcript under /tmp/wl/retained/declined-binary
+--- shard 1 of 12 exited 0; /tmp/wl/retained/declined-binary/logs/shard-0001.log
+--- shard 0 of 12 exited 1; /tmp/wl/retained/declined-binary/logs/shard-0000.log
+--- shard 2 of 12 exited 0; /tmp/wl/retained/declined-binary/logs/shard-0002.log
+--- shard 3 of 12 exited 0; /tmp/wl/retained/declined-binary/logs/shard-0003.log
+--- shard 4 of 12 exited 0; /tmp/wl/retained/declined-binary/logs/shard-0004.log
+--- shard 5 of 12 exited 0; /tmp/wl/retained/declined-binary/logs/shard-0005.log
+--- shard 6 of 12 exited 0; /tmp/wl/retained/declined-binary/logs/shard-0006.log
+--- shard 8 of 12 exited 0; /tmp/wl/retained/declined-binary/logs/shard-0008.log
+--- shard 7 of 12 exited 0; /tmp/wl/retained/declined-binary/logs/shard-0007.log
+--- shard 9 of 12 exited 0; /tmp/wl/retained/declined-binary/logs/shard-0009.log
+--- shard 10 of 12 exited 0; /tmp/wl/retained/declined-binary/logs/shard-0010.log
+--- shard 11 of 12 exited 1; /tmp/wl/retained/declined-binary/logs/shard-0011.log
+broiler-js-conformance: merged 12 test262 shard report(s)
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93
+manifest broiler.javascript.wide at format version 2; harness loaded; admitted surfaces broiler.javascript.dynamic, broiler.javascript.modules; declined broiler.javascript.binary
+partition FNV-1a over the normalized suite-relative path, modulo the shard count, one whole file per shard; merged from 12 shards
+selection candidates=561 selected=561 merged=561
+# unsupported families: 1 distinct, 1096 variants
+#      1096  an artifact declaring broiler.javascript.binary, which this composition declines  e.g. test/built-ins/DataView/buffer-does-not-have-arraybuffer-data-throws-sab.js [sloppy]
+# no variant spent an allowance
+# test262 561 files, 1111 variants: pass 0, fail 4, unsupported 1096, exhausted 0, skipped 11
+coverage partial a named selection rather than the whole test tree: test/built-ins/DataView
+# the whole-run report is /tmp/wl/retained/declined-binary/test262.report

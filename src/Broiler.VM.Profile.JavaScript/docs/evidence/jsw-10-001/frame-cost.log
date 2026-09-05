@@ -1,0 +1,44 @@
+# measuring against /home/user/Broiler.VM/src/compositions/Broiler.VM.Composition.JavaScript.Cli/bin/Release/net10.0/Broiler.VM.Composition.JavaScript.Cli
+# declared guest stack 100663296 bytes
+#   returning 50000: bounded (the engine's own bound)
+#   returning 25000: bounded (the engine's own bound)
+#   returning 12500: bounded (the engine's own bound)
+#   returning 6250: bounded (the engine's own bound)
+#   returning 3125: completed (answered)
+#   returning 4687: completed (answered)
+#   returning 5468: completed (answered)
+#   returning 5859: completed (answered)
+#   returning 6054: bounded (the engine's own bound)
+#   returning 5956: completed (answered)
+#   returning 6005: bounded (the engine's own bound)
+#   returning 5980: completed (answered)
+#   returning 5992: completed (answered)
+#   returning 5998: completed (answered)
+#   returning 6001: bounded (the engine's own bound)
+#   returning 5999: completed (answered)
+#   returning 6000: bounded (the engine's own bound)
+#   throwing 50000: bounded (bounded RangeError)
+#   throwing 25000: bounded (bounded RangeError)
+#   throwing 12500: bounded (bounded RangeError)
+#   throwing 6250: bounded (bounded RangeError)
+#   throwing 3125: completed (answered)
+#   throwing 4687: completed (answered)
+#   throwing 5468: completed (answered)
+#   throwing 5859: completed (answered)
+#   throwing 6054: bounded (bounded RangeError)
+#   throwing 5956: completed (answered)
+#   throwing 6005: bounded (bounded RangeError)
+#   throwing 5980: completed (answered)
+#   throwing 5992: completed (answered)
+#   throwing 5998: completed (answered)
+#   throwing 6001: bounded (bounded RangeError)
+#   throwing 5999: completed (answered)
+#   throwing 6000: bounded (bounded RangeError)
+deepest-returning-recursion 5999
+stopped-by-returning bounded
+deepest-throwing-recursion 5999
+stopped-by-throwing bounded
+declared-guest-stack-bytes 100663296
+# both were stopped by a declared bound and not by the stack, so this run reports what
+# the build PROMISES rather than what the stack holds. Lift `MaximumCallDepth` and the
+# profile's declared call-depth maximum in a build of your own to measure the capacity.
