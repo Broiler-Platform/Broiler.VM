@@ -181,6 +181,18 @@ var valueNotAString = await import("./modules/counter.mjs", { with: { type: 1 } 
   function () { return "resolved"; }, function (e) { return e.name; });
 p(function () { return valueNotAString; });
 
+// A module that will not LINK and a module that will not PARSE reject with the same error, and it
+// is a `SyntaxError` rather than a `TypeError`: the language calls a name nothing exports part of
+// the module's own syntax, and a host that answered the two halves differently would be telling the
+// guest which of its own passes refused.
+var unlinkable = await import("./modules/no-such-export.mjs").then(
+  function () { return "resolved"; }, function (e) { return e.name; });
+p(function () { return unlinkable; });
+
+var unparsable = await import("./modules/unparsable.mjs").then(
+  function () { return "resolved"; }, function (e) { return e.name; });
+p(function () { return unparsable; });
+
 // --- an async generator as a module's default export, which is the one `export default` form that
 // stayed refused after the family itself was admitted.
 var fromDefault = await defaultAsyncGenerator().next();

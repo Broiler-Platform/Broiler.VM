@@ -526,6 +526,7 @@ modules/a-bare-specifier.mjs|6|resolves only a specifier that begins with
 modules/a-dynamic-import.mjs|0|same true 3
 modules/a-dynamic-import-from-a-script.js|0|loaded 40 1
 modules/a-dynamic-import-of-nothing.mjs|0|rejected true
+modules/a-dynamic-import-of-an-unlinkable-module.mjs|0|rejected true
 modules/an-import-meta.mjs|0|object true null kept
 modules/a-default-async-generator.mjs|0|first awaited false
 

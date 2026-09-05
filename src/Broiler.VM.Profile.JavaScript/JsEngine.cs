@@ -3167,7 +3167,7 @@ internal sealed class JsEngine
     /// this realm has already instanced, so an artifact that arrives carrying a module the realm
     /// has is a second VIEW of that module and not a second copy of it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=FF2EDC
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=C782B8
     // Broiler-Falsified-If: one module key is evaluated twice in one realm
     // Broiler-Human:        PENDING
     private JsModuleInstance ImportedModule(JsProgram program, string referrer, string specifier)
@@ -3216,8 +3216,24 @@ internal sealed class JsEngine
 
         if (loaded.Outcome != VmOutcome.Normal || !loaded.TryGetArtifact(out var artifact))
         {
+            // A MODULE THAT WILL NOT PARSE OR WILL NOT LINK IS A `SyntaxError`, AND THE REST IS A
+            // `TypeError`, and the two answer different questions. `ProviderRefused` is what the
+            // mediator reports when the provider's front end refused the module's SOURCE;
+            // `InvalidArtifact` is what the core reports when the graph the provider supplied did
+            // not link - a name two star re-exports supply, an import of a name nothing exports, a
+            // resolution that walks a cycle. The language calls all of those the module's own
+            // syntax, and the suite tests for it directly: a hundred and thirty variants assert
+            // `SyntaxError` on the rejection of a dynamic import, and a `TypeError` there failed
+            // cases whose subject this host answers correctly. Everything else - no such module, no
+            // provider, a surface the composition declined, an allowance spent - is this host's own
+            // plumbing rather than the module's text, and keeps the `TypeError` it had.
+            var linkage = loaded.Reason == VmReason.ProviderRefused ||
+                (loaded.Outcome == VmOutcome.InvalidArtifact &&
+                    loaded.Reason is not VmReason.UnsupportedFeatureManifest
+                        and not VmReason.UnknownFeature);
+
             throw Error(
-                "TypeError",
+                linkage ? "SyntaxError" : "TypeError",
                 "the module '" + specifier + "' could not be loaded from '" + referrer + "': " +
                     loaded.Outcome.ToString() + "/" + loaded.Reason.ToString());
         }

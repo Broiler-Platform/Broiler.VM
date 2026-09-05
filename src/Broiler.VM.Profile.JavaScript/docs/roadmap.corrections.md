@@ -6237,3 +6237,43 @@ variants are [JSC-200](#jsc-200)'s and [JSC-202](#jsc-202)'s rather than this en
 `src/tests/differential/the-module-goal.mjs`, measured against `/opt/node22/bin/node` before they
 were written down; and row `modules/a-default-async-generator.mjs` of `src/tests/cli/expected.txt`.
 2026-09-05.
+
+### JSC-204
+
+**Where:** the rejection a dynamic `import()` answers with when the module it named cannot be
+loaded — `JsEngine.ImportedModule`, in the arm [JSC-200](#jsc-200) wrote.
+
+**What was assumed.** That every way a mediated load can fail is this host's own plumbing, so every
+one of them rejects with a `TypeError`. That is what the arm was written to say, and it is what
+[JSC-200](#jsc-200)'s first measurement was taken against.
+
+**What was true.** **Two of those failures are the MODULE's and not the host's, and the language
+calls both of them the module's own syntax.** A module whose source will not parse and a module
+whose graph will not link — a name nothing exports, a resolution that walks a cycle, two star
+re-exports supplying one name — are both `SyntaxError` where they surface, and where they surface
+for a dynamic import is the rejection. It is the same distinction `JsEngine.Evaluate` already draws
+for `eval`, one step further out: there, a provider refusal is a `SyntaxError` because the front end
+refused the evaluated SOURCE; here, so is a core refusal of the ARTIFACT, because linking a graph is
+the module goal's half of parsing and the guest has no way to have caused it other than by writing
+the module that way.
+
+**What replaced it.** A load that came back `ProviderRefused`, or `InvalidArtifact` for any reason
+other than a manifest one, rejects with a `SyntaxError`; everything else keeps the `TypeError` it
+had. The exception for the manifest reasons is the part worth reading: a composition that DECLINED a
+surface refuses the inner artifact at verification, and that is a fact about the composition rather
+than about the module's text, so it stays a `TypeError` beside "there is no such module", "there is
+no provider" and "the allowance is spent".
+
+**What that cost, measured.** `test/language/expressions/dynamic-import` went from **pass 1,025,
+fail 98** — the figure [JSC-200](#jsc-200) recorded — to **pass 1,089, fail 34**, with the
+`unsupported` column still empty; sixty-four variants, all of them a `catch` asserting
+`SameValue(e.constructor.name, "SyntaxError")` on the rejection of an import of a module that does
+not link. Over the four subtrees together, 1,950 files and 2,482 variants: **pass 1,616, fail 147**
+becomes **pass 1,680, fail 83**. **That supersedes the after-figure in [JSC-200](#jsc-200)**, which
+was measured before this repair and was correct when it was taken.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; cases 72 and 73 of
+`src/tests/differential/the-module-goal.mjs` — a module that will not link and a module that will
+not parse — measured against `/opt/node22/bin/node` before they were written down, which answers
+`SyntaxError` to both; and row `modules/a-dynamic-import-of-an-unlinkable-module.mjs` of
+`src/tests/cli/expected.txt`. 2026-09-05.
