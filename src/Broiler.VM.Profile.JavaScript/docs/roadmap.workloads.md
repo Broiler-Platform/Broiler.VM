@@ -467,9 +467,16 @@ the act that would turn a stage into a milestone with a ledger row.
   its summary, so no transcript reports fourteen as though it were fifteen. **The exclusions are
   that no identifier but the Linux one has scored the whole conformance suite, that no identifier
   scores the whole Octane set on the push path — the quick lane's six do not include `zlib` — and
-  that `osx-x64` scores fourteen of the fifteen. The set is scored WHOLE on three identifiers**:
-  `linux-x64`, `linux-arm64` and `osx-arm64`. The two Windows cells have never executed the step
-  at all *([JSC-181](roadmap.corrections.md#jsc-181))*.
+  that `osx-x64` scores fourteen of the fifteen. The set is scored WHOLE on five identifiers**:
+  `linux-x64`, `linux-arm64`, `osx-arm64`, `win-arm64` and `win-x64`, the last two having reached
+  the step for the first time on 2026-09-05 once [JSC-181](roadmap.corrections.md#jsc-181)'s defect
+  was fixed. **No headroom figure here is a standing margin.** A second full lane the same day left
+  `linux-arm64` and `osx-arm64` within 0.2 per cent of their first `zlib` durations while moving
+  `linux-x64` by 21.8 per cent and `osx-x64`'s remaining benchmarks by 31.8 per cent
+  *([JSC-184](roadmap.corrections.md#jsc-184))*, so a single duration is one sample and not a
+  property of a cell. `win-x64` scored `zlib` with **148 seconds to spare — 4.1 per cent of the
+  ceiling**, which is inside that movement: it scored on that run, and a later lane failing there
+  would be that margin rather than a regression.
 - **The whole-suite runs are retained per manifest**, under
   [section 4's evidence contract](roadmap.status.md#4-required-evidence-bundle), with the harness's
   five verdicts reported rather than four — a variant that spent an allowance is neither a pass, a
