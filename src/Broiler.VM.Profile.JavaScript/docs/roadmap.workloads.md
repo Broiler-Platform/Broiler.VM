@@ -306,6 +306,22 @@ the act that would turn a stage into a milestone with a ledger row.
   makes it reachable; the benchmark's own checksum agrees; and the dialect differences that
   remain — if any survive the matcher — are published as exclusions with a deterministic failure
   each, rather than discovered by the next workload.
+- **What the stage did, and the one clause of its own gate it did not take.** The matcher is this
+  profile's, written here rather than translated onto the platform's engine, and it lives in the
+  format assembly because the front end needs it too: an invalid pattern in a literal is an early
+  error, so the same grammar has to be readable by the thing that compiles a literal and by the
+  thing that runs one. **The benchmark's checksum agrees**, which is the sentence this stage was
+  written to make true, and the closure holds no call site into the platform's engine — asserted
+  from 2026-09-05 by rule **N18**, watched failing against an injected import and passing after the
+  revert, because the state of a tree that nothing checks is a state one edit can undo.
+  **`broiler.javascript.regexp` is not declared**, and that clause is left unmet deliberately
+  rather than quietly: the surface is inside `broiler.javascript.wide`, moving it would re-scope a
+  manifest every retained artifact names, and minting an identity nothing declares would be a
+  manifest with no artifacts rather than a boundary. That is a decision for a person to take, and
+  [JSC-167](roadmap.corrections.md#jsc-167) records it as owed rather than done. **The dialect
+  differences that remain are the Unicode data's**, which the ledger's
+  [section 3](roadmap.status.md#3-open-external-dependencies) still carries as an open external
+  dependency with a holder.
 
 ### JSW-5 — The core language surface still refused by name
 

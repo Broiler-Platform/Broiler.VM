@@ -297,10 +297,14 @@ public sealed class RuleRegisterTests
         // is pinned: the pin is stated in three independently written places and the rule is what
         // makes their agreement mean something, and N15 when the conformance suite is pinned:
         // that suite is not in this tree, so its pin IS the artifact and nothing sits behind it.
-        Assert.Equal(82, byStatus["Active"]);
+        // The workload programme adds N18, which is the metadata test JSW-4's exit gate names: the
+        // profile's regular expressions are its own matcher's rather than a translation onto the
+        // platform's, and that is a state of the tree a later change can undo in one `using`
+        // without any other test noticing.
+        Assert.Equal(83, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(84, Loaded.Rules.Count);
+        Assert.Equal(85, Loaded.Rules.Count);
     }
 
     private static Register Load()

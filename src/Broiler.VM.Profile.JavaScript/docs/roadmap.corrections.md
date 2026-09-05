@@ -6798,3 +6798,45 @@ is correct by construction rather than by measurement, and a reader is entitled 
 `await`, reading a `let` the body has not reached — measured against `/opt/node22/bin/node` before
 it was written down; and rows `modules/an-empty-attribute-clause.mjs` and
 `modules/a-dynamic-import-that-waits.mjs` of `src/tests/cli/expected.txt`. 2026-09-05.
+
+---
+
+### JSC-167
+
+**Where:** JSW-4's exit gate, which asks three things of the regular-expression stage; the ledger's
+`JS-6` row, which described the surface as a translation and named the missing metadata test; and
+the rule register, which had no rule over any of it.
+
+**What the plan said.** That the stage ends when `broiler.javascript.regexp` is declared, when the
+closure contains no call site constructing a compiled-mode regular expression from the host
+platform *asserted by its own metadata test*, and when the benchmark's own checksum agrees.
+
+**What was true when the matcher landed.** Two of the three. The matcher is this profile's own and
+the Octane `regexp` benchmark's checksum agrees, which is the sentence the stage was written to make
+true and which the ledger's row still described in the past tense as an approximation that
+*neither refuses nor agrees*. **The other two clauses were both about the absence being checked
+rather than merely being true**, and neither was: no rule read the profile's source for a call into
+`System.Text.RegularExpressions`, and the manifest identity was never minted.
+
+**A state of the tree that nothing checks is a state one edit can undo.** The regression this
+guards against is not somebody replacing the matcher — it is one String method reaching for the
+nearest tool, which is how the translation got in the first time. A single
+`using System.Text.RegularExpressions;` would restore exactly the dialect the stage spent itself
+removing, and every test in this repository would stay green. **Rule N18** is that assertion: it
+reads the profile's product source for every spelling that reaches the platform engine, requires
+each of the profile's assemblies to be represented and the matcher's own file to be among them
+before it reads an empty result, and its rejecting direction is a witness source writing all three
+spellings. It has been watched failing against an injected import and passing after the revert.
+
+**The manifest clause is left unmet, and deliberately rather than quietly.** Regular expressions
+are inside `broiler.javascript.wide`; declaring `broiler.javascript.regexp` now would either
+re-scope a manifest every retained artifact names, or mint an identity nothing declares — a
+manifest with no artifacts rather than a boundary. Which of those is right is a decision a person
+takes, on the record [JSD-0021](decisions/0021-the-wide-bring-up-manifest-and-format-version-2.md)
+already holds, and this entry records the clause as owed rather than done. **The IL-emission half
+of the same gate is unasserted too**, and is named here for the same reason.
+
+**Authority and date.** Rule N18 as registered, its witness, and the injection-and-revert that was
+watched in both directions; the Octane run of 2026-09-05, in which the `regexp` benchmark reported
+a score and printed no checksum failure; and the absence of any `System.Text.RegularExpressions`
+spelling in the profile's three product assemblies, which is what the rule now holds. 2026-09-05.
