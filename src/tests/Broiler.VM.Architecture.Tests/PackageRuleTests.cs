@@ -324,6 +324,22 @@ public sealed class PackageRuleTests
             "samples/Broiler.VM.Sample.FeedConsumer/Broiler.VM.Sample.FeedConsumer.csproj",
             ComponentGraph.ProjectsOutsideTheSolution,
             StringComparer.Ordinal);
+
+        // NEITHER IS THE VENDORED-COMPONENT EXCLUSION, and this is the half that would rot. A
+        // directory named in that list and no longer on disk, or on disk and holding no project,
+        // is an exclusion that has stopped excluding anything and would let the next arrival
+        // through under a name that no longer means what it meant - which is the shape rule N7's
+        // unreachable-code list and the solution list are both written against.
+        foreach (var directory in ComponentGraph.VendoredComponents)
+        {
+            var full = Path.Combine(ComponentGraph.Root, directory.Replace('/', Path.DirectorySeparatorChar));
+
+            Assert.True(
+                Directory.Exists(full),
+                $"{directory} is excluded as a vendored component and is not in the checkout");
+
+            Assert.NotEmpty(Directory.EnumerateFiles(full, "*.csproj", SearchOption.AllDirectories));
+        }
     }
 
     [Fact]

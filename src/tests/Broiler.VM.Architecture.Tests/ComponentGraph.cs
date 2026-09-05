@@ -124,10 +124,18 @@ internal static class ComponentGraph
 
     /// <summary>Every project file on disk that the solution does not list.</summary>
     /// <remarks>
+    /// <para>
     /// The complement of <see cref="Projects"/>, so that narrowing the graph to the solution
     /// cannot become a way to hide a project from the group A rules. A rule asserts that every
     /// entry here sits under <c>samples/</c>, which is the one place ADR 0001 revision 4
     /// authorises a project outside the graph.
+    /// </para>
+    /// <para>
+    /// <b>A vendored component's projects are not in the complement, because they are not this
+    /// component's projects.</b> <see cref="VendoredComponents"/> names the directories and says
+    /// why; the rule that reads this set asserts that each of those directories is really there
+    /// and really holds projects, so the exclusion cannot quietly stop excluding anything.
+    /// </para>
     /// </remarks>
     internal static IReadOnlyList<string> ProjectsOutsideTheSolution { get; } = LoadUnlisted();
 
@@ -138,6 +146,7 @@ internal static class ComponentGraph
         return Directory
             .EnumerateFiles(Root, "*.csproj", SearchOption.AllDirectories)
             .Where(static path => !IsUnderBuildOutput(path))
+            .Where(static path => !IsVendoredComponent(path))
             .Where(path => !listed.Contains(Path.GetFullPath(path)))
             .Select(static path => Path.GetRelativePath(Root, path).Replace('\\', '/'))
             .OrderBy(static path => path, StringComparer.Ordinal)
@@ -171,6 +180,53 @@ internal static class ComponentGraph
     /// every test that touches the graph with one type-initializer exception and no clue in it.
     /// </remarks>
     internal static string[] SolutionFiles => ["Broiler.VM.slnx", "Broiler.VM.Mobile.slnx"];
+
+    /// <summary>
+    /// The directories that hold a SEPARATE component vendored into this repository, which this
+    /// component's rules do not govern.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>One entry, and it is named rather than matched by a pattern, for the same reason
+    /// <see cref="SolutionFiles"/> is.</b> That list's own remark says a glob for <c>*.slnx</c>
+    /// would let a project escape every group A rule by arriving with a solution of its own —
+    /// which is exactly what `src/Broiler.VM.HyperV/` did when it was added. Excluding it by a
+    /// pattern would grant that escape to whatever arrives next; excluding it by name is an edit
+    /// to this list, which is a review.
+    /// </para>
+    /// <para>
+    /// <b>What it is, and why this component's rules stop at its boundary.</b> It carries its own
+    /// solution, its own LICENSE and its own NuGet.config, and no project of it is listed in
+    /// either solution above. Group A governs a project graph: what may reference what, what may
+    /// pack, and that no project sits outside every rule. A second component's graph is not this
+    /// one's to hold, and the alternative — treating its projects as this component's and finding
+    /// them unannotated, unpackaged and unreferenced — would report a repository that is doing
+    /// nothing wrong.
+    /// </para>
+    /// <para>
+    /// <b>It is an exclusion and not a silence.</b> Every rule that reads this list asserts the
+    /// directory is really there and really holds projects, so an exclusion that stopped excluding
+    /// anything fails rather than passing quietly — which is what would happen if the component
+    /// were removed and the entry left behind.
+    /// </para>
+    /// </remarks>
+    internal static string[] VendoredComponents => ["src/Broiler.VM.HyperV/"];
+
+    /// <summary>Whether <paramref name="path"/> belongs to a vendored component.</summary>
+    /// <remarks>
+    /// Takes a path in either spelling and compares component-relative, because the callers hold
+    /// one absolute and one relative and a rule that agreed with only one of them would exclude
+    /// half of what it names.
+    /// </remarks>
+    internal static bool IsVendoredComponent(string path)
+    {
+        var relative = Path.IsPathRooted(path)
+            ? Path.GetRelativePath(Root, path)
+            : path;
+
+        return VendoredComponents.Any(directory =>
+            relative.Replace('\\', '/').StartsWith(directory, StringComparison.Ordinal));
+    }
 
     private static IEnumerable<string> SolutionProjectPaths() =>
         SolutionFiles.SelectMany(ProjectPathsIn);

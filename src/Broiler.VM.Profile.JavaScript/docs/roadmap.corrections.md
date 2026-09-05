@@ -7200,3 +7200,47 @@ collector runs can pass, because none of them can make the suite go from failing
 `JavaScriptVerifier.cs`; the control logs of the collection that followed it, in which twenty-nine
 controls ran and none passed; and the three suite failures, each traced to a project under
 `src/Broiler.VM.HyperV/` that no rule of this component accounts for. 2026-09-05.
+
+---
+
+### JSC-175
+
+**Where:** the three assertions [JSC-174](#jsc-174) named as failing for a reason outside this
+programme — rule A14's two halves and the assurance scanner's count of product projects on disk —
+and the decision each of them was waiting for.
+
+**What the plan said.** Nothing, and that was the point. The scanner's own comment states the
+condition rather than the answer: *a seventh product project appearing in the tree fails here until
+someone decides whether it is covered, and that decision is what the number records having been
+made.* Three had appeared, under `src/Broiler.VM.HyperV/`, when a second component was vendored into
+this repository at commit `bc15412`. The assertions did exactly what they were written to do and
+went red until somebody decided.
+
+**The decision, and on whose authority.** **The vendored component is outside this component's
+rules**, decided on 2026-09-05 by the person who asked for it, on the reading its own contents
+carry: it holds its own solution, its own LICENSE and its own NuGet.config, and no project of it
+appears in either solution this component's graph is frozen to. Group A governs a project graph —
+what may reference what, what may pack, and that no project sits outside every rule — and a second
+component's graph is not this one's to hold. **The alternative reading would have reported a
+repository that is doing nothing wrong**: three projects found unannotated, unpackaged and
+unreferenced, for the offence of being someone else's.
+
+**How the decision is written down.** `ComponentGraph.VendoredComponents` names the directory, and
+it names it rather than matching a pattern for the reason the solution list gives in its own words —
+*a glob for `*.slnx` would let a project escape every group A rule by arriving with a solution of its
+own*, which is precisely what this arrival did. An exclusion by pattern would grant that escape to
+whatever comes next; an exclusion by name is an edit to a list, which is a review. **And the
+exclusion asserts itself**: rule A14 requires each named directory to be on disk and to hold
+projects, so an exclusion that outlived its subject fails rather than passing quietly. That
+assertion was watched failing with the directory moved aside and passing after it was moved back.
+
+**What it changes beyond three red tests.** Every negative control in every bundle collected in this
+checkout is judged by the whole suite's exit code — a control passes when the suite fails while its
+defect is injected and passes after the revert — so while the suite failed for an unrelated reason
+the second half could never hold. A collection taken that morning reported twenty-nine controls run
+and none passing. **The suite now passes**, and a control matrix collected after this reports what
+it was written to report.
+
+**Authority and date.** The decision of 2026-09-05 recorded above; the three assertions, now green,
+with the vacuity guard watched in both directions; and the whole solution's suites passing with no
+failures for the first time in this programme. 2026-09-05.

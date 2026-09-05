@@ -500,6 +500,16 @@ public sealed class AssuranceScannerTests
             // contains is a host's own wiring, published and run rather than shipped as a package,
             // and annotating it would claim a review obligation over code no consumer receives.
             .Where(static path => !path.StartsWith("src/compositions/", StringComparison.Ordinal))
+
+            // Nor is a SEPARATE COMPONENT vendored into this repository. `src/Broiler.VM.HyperV/`
+            // carries its own solution, its own LICENSE and its own NuGet.config, and no project of
+            // it is listed in either solution this component's graph is frozen to. Coverage is a
+            // review obligation over code this component ships, and it ships none of that; the
+            // alternative reading - that three projects appeared in the tree unannotated - would
+            // report a repository doing nothing wrong. `ComponentGraph.VendoredComponents` names
+            // the directories and says why, and rule A14 asserts each is really there and really
+            // holds projects, so this exclusion cannot quietly stop excluding anything.
+            .Where(static path => !ComponentGraph.IsVendoredComponent(path))
             .Select(static path => Path.GetFileNameWithoutExtension(path))
             .OrderBy(static name => name, StringComparer.Ordinal)
             .ToArray();
