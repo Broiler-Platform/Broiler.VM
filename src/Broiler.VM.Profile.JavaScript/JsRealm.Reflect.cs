@@ -42,10 +42,15 @@ namespace Broiler.VM.Profile.JavaScript;
 /// before the frame carried a <c>new.target</c> of its own.
 /// </para>
 /// <para>
-/// <b>What is absent is <c>Proxy</c>, and the two are usually met together.</b> Every member here
-/// answers about an ordinary object, and the answers are the same ones the executor's own internal
-/// methods give; a <c>Proxy</c> would make them answer about a handler instead. Nothing here
-/// assumes an ordinary object in a way that would have to change.
+/// <b><c>Proxy</c> is here now, and the claim this paragraph used to make — that nothing here
+/// assumed an ordinary object in a way that would have to change — was false in four members.</b>
+/// <c>ownKeys</c> read the two key tables separately, which is two <c>ownKeys</c> trap calls for one
+/// internal method; <c>preventExtensions</c> assigned rather than asked, so it answered <c>true</c>
+/// for a trap that had refused; <c>setPrototypeOf</c> ran <c>OrdinarySetPrototypeOf</c>'s three
+/// tests against an object entitled to define its own <c>[[SetPrototypeOf]]</c>; and
+/// <c>defineProperty</c> validated the descriptor against the proxy before reaching the trap that
+/// decides. Each is repaired at the member, and
+/// [JSC-150](roadmap.corrections.md#jsc-150) records what the four cost.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=60DD8D
@@ -131,16 +136,15 @@ internal sealed partial class JsRealm
             // THE STRING KEYS COME FIRST AND THE SYMBOL KEYS AFTER, all of them, in the order the
             // object holds them. It is the one function that reports both tables, which is why a
             // program walking an object completely has to use it rather than `Object.keys`.
-            foreach (var key in target.OwnPropertyNames())
+            //
+            // IT ASKS FOR BOTH IN ONE CALL, and that is not tidiness: `[[OwnPropertyKeys]]` is ONE
+            // internal method, so asking a Proxy for its String keys and then its Symbol keys
+            // would run the `ownKeys` trap twice - visibly, and with nothing to make the two
+            // answers agree.
+            foreach (var key in target.OwnKeys())
             {
                 engine.Charge(1);
-                result.Push(JsValue.String(key));
-            }
-
-            foreach (var key in target.OwnSymbolKeys())
-            {
-                engine.Charge(1);
-                result.Push(JsValue.Symbol(key));
+                result.Push(key);
             }
 
             return JsValue.Object(result);
@@ -166,34 +170,18 @@ internal sealed partial class JsRealm
 
             var prototype = wanted.AsObjectOrNull();
 
-            // SETTING THE PROTOTYPE AN OBJECT ALREADY HAS ALWAYS SUCCEEDS, even where the object is
-            // sealed: `[[SetPrototypeOf]]` asks whether the answer would change, and a non-extensible
-            // object refuses only a change. The order matters and is the specification's.
-            if (ReferenceEquals(target.Prototype, prototype))
-            {
-                return JsValue.True;
-            }
-
-            if (!target.Extensible)
-            {
-                return JsValue.False;
-            }
-
-            // A CYCLE IS A REFUSAL HERE AND A THROW EVERYWHERE ELSE. `Object.setPrototypeOf` reports
-            // it by throwing, and this function reports every refusal the same way it reports this
-            // one, so the walk is made here rather than left to the shared helper.
-            for (var walk = prototype; walk is not null; walk = walk.Prototype)
-            {
-                engine.Charge(1);
-
-                if (ReferenceEquals(walk, target))
-                {
-                    return JsValue.False;
-                }
-            }
-
-            ObjectSetPrototype(engine, target, prototype);
-            return JsValue.True;
+            // A PROXY ANSWERS THIS ITSELF AND `OrdinarySetPrototypeOf` DOES NOT APPLY TO IT. An
+            // exotic object's `[[SetPrototypeOf]]` is not obliged to be that function, and running
+            // it first would read the proxy's prototype and extensibility through two traps the
+            // specification never says to call here.
+            //
+            // A CYCLE IS A REFUSAL HERE AND A THROW EVERYWHERE ELSE, which is why the ordinary
+            // form answers a boolean and `Object.setPrototypeOf` is the one that turns it into an
+            // exception. This member used to carry a copy of that walk for want of a shared body.
+            return JsValue.Boolean(
+                target is JsProxy proxy
+                    ? proxy.ProxySetPrototypeOf(prototype)
+                    : ObjectSetPrototypeOrdinary(engine, target, prototype));
         });
 
         Method(reflect, "isExtensible", 1, static (engine, thisValue, arguments) =>
@@ -205,8 +193,15 @@ internal sealed partial class JsRealm
         Method(reflect, "preventExtensions", 1, static (engine, thisValue, arguments) =>
         {
             _ = thisValue;
-            ReflectTarget(engine, arguments, "preventExtensions").Extensible = false;
-            return JsValue.True;
+            var target = ReflectTarget(engine, arguments, "preventExtensions");
+
+            // `[[PreventExtensions]]` ANSWERS A BOOLEAN AND AN ORDINARY OBJECT'S IS ALWAYS TRUE,
+            // which is why this read as an assignment for as long as nothing could refuse. A Proxy
+            // can refuse, and this is the member whose whole purpose is to say so rather than throw.
+            return JsValue.Boolean(
+                target is JsProxy proxy
+                    ? proxy.ProxyPreventExtensions()
+                    : ObjectPreventExtensionsOrdinary(target));
         });
 
         Method(reflect, "defineProperty", 3, (engine, thisValue, arguments) =>
@@ -221,6 +216,18 @@ internal sealed partial class JsRealm
             // inside would report a `TypeError` the guest threw as `false`.
             var name = key.IsSymbol ? null : engine.ToPropertyKey(key);
             var fields = ObjectToDescriptorFields(engine, ArgOfReflect(arguments, 2));
+
+            // A PROXY IS ASKED DIRECTLY AND ITS REFUSAL IS RETURNED RATHER THAN CAUGHT. The catch
+            // below turns a refusal into `false` by turning an exception into one, which is right
+            // for an ordinary object whose only way of refusing IS to throw - but a `defineProperty`
+            // trap answers `false` in its own voice, and routing it through the ordinary path would
+            // have validated the descriptor against the PROXY (two more trap calls the language
+            // never asks for) before ever reaching the trap that decides.
+            if (target is JsProxy proxy)
+            {
+                return JsValue.Boolean(
+                    proxy.ProxyDefineOwnProperty(name is null ? key : JsValue.String(name), fields));
+            }
 
             // THE ANSWER IS A BOOLEAN AND THE REFUSAL IS STILL A REFUSAL. `ObjectApplyDescriptor`
             // throws when the object declines, because that is what `Object.defineProperty` owes;
@@ -379,5 +386,5 @@ internal sealed partial class JsRealm
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=92F0AC
     // Broiler-Human:        PENDING
-    private const int ReflectArgumentCeiling = 1 << 20;
+    internal const int ReflectArgumentCeiling = 1 << 20;
 }

@@ -172,6 +172,7 @@ internal sealed partial class JsRealm
 
         SetupObject();
         SetupReflect();
+        SetupProxy();
         SetupFunction();
         SetupArray();
         SetupString();

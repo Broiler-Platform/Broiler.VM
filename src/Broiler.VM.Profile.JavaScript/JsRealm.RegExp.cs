@@ -926,6 +926,16 @@ internal sealed partial class JsRealm
             ? null
             : RegExpRun(engine, target, input, (int)start, target.Sticky);
 
+        // THE TWO WRITES BELOW ARE THE SPECIFICATION'S `Set(R, "lastIndex", …, true)` AND THROW
+        // WHERE THE PROPERTY IS CLOSED. `lastIndex` became closable when it gained an attribute
+        // bit of its own, and a `g` pattern that had been frozen would otherwise go on advancing a
+        // cursor it reports as non-writable. A pattern that tracks nothing never writes and is
+        // unaffected, which is why `/x/.exec` on a frozen RegExp still works.
+        if (tracks && !target.LastIndexWritable)
+        {
+            engine.ThrowTypeError("Cannot assign to read only property 'lastIndex'");
+        }
+
         if (match is null)
         {
             if (tracks)
@@ -1534,6 +1544,24 @@ internal sealed partial class JsRealm
         // Broiler-Human:        PENDING
         internal JsValue LastIndex { get; set; } = JsValue.Number(0);
 
+        /// <summary>Whether <c>lastIndex</c> may still be written.</summary>
+        /// <remarks>
+        /// <b>It is a bit of its own because the property is projected rather than stored</b>, and
+        /// a projection has nowhere to keep an attribute. Without it
+        /// <c>Object.defineProperty(re, "lastIndex", { writable: false })</c> returned having
+        /// changed nothing, and the property went on reporting itself writable and going on being
+        /// written - which is the same defect <see cref="JsArray"/> answers with
+        /// <c>lengthWritable</c>, in the same shape, for the same reason.
+        /// </remarks>
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        private bool lastIndexWritable = true;
+
+        /// <summary>Whether the <c>exec</c> protocol may still move the cursor.</summary>
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal bool LastIndexWritable => lastIndexWritable;
+
         /// <inheritdoc/>
         // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=3C7D1D
         // Broiler-Human:        PENDING
@@ -1546,7 +1574,10 @@ internal sealed partial class JsRealm
         {
             if (string.Equals(key, "lastIndex", System.StringComparison.Ordinal))
             {
-                property = JsProperty.Data(LastIndex, JsPropertyAttributes.Writable);
+                property = JsProperty.Data(
+                    LastIndex,
+                    lastIndexWritable ? JsPropertyAttributes.Writable : JsPropertyAttributes.None);
+
                 return true;
             }
 
@@ -1561,7 +1592,13 @@ internal sealed partial class JsRealm
             if (string.Equals(key, "lastIndex", System.StringComparison.Ordinal) &&
                 !property.IsAccessor)
             {
+                // A DEFINITION MAY CLOSE THE PROPERTY AND AN ASSIGNMENT MAY NOT, and both arrive
+                // here - which is the same arrangement `JsArray` makes for `length`. The checked
+                // path hands down whatever attributes the descriptor asked for, so losing
+                // `Writable` is how a definition says so; an ordinary assignment carries the
+                // attributes the property already had, which its caller read above.
                 LastIndex = property.Value;
+                lastIndexWritable = (property.Attributes & JsPropertyAttributes.Writable) != 0;
                 return;
             }
 

@@ -803,6 +803,17 @@ internal sealed class JsEngine
 
         while (current is not null)
         {
+            // A PROXY SWALLOWS THE REST OF THE WALK RATHER THAN ANSWERING ONE LINK OF IT. `[[Get]]`
+            // on a proxy is a whole operation - the `get` trap decides everything, including
+            // whether a prototype is consulted at all - so continuing the loop past it would run
+            // the trap for the own property and then walk the TARGET's chain behind its back. The
+            // test is inside the loop because a proxy is just as likely to be somebody's
+            // prototype as it is to be the object a program named.
+            if (current is JsProxy proxy)
+            {
+                return proxy.ProxyGet(JsValue.String(key), receiver);
+            }
+
             if (current.TryGetOwnProperty(key, out var property))
             {
                 if (!property.IsAccessor)
@@ -877,6 +888,19 @@ internal sealed class JsEngine
 
         while (current is not null)
         {
+            // A PROXY ANSWERS `[[Set]]` WHOLE, and the refusal it reports is turned into the
+            // language's own two answers here: `false` is silent in sloppy code and a TypeError in
+            // strict code, which is the rule every other refusal on this path already follows.
+            if (current is JsProxy proxy)
+            {
+                if (!proxy.ProxySet(JsValue.String(key), value, baseValue) && strict)
+                {
+                    ThrowTypeError("Cannot assign to read only property '" + key + "'");
+                }
+
+                return;
+            }
+
             if (current.TryGetOwnProperty(key, out var property))
             {
                 if (property.IsAccessor)
@@ -1015,6 +1039,12 @@ internal sealed class JsEngine
 
         while (current is not null)
         {
+            // THE SAME WHOLE-OPERATION RULE THE STRING WALK OBEYS, and for the same reason.
+            if (current is JsProxy proxy)
+            {
+                return proxy.ProxyGet(JsValue.Symbol(key), receiver);
+            }
+
             if (current.TryGetOwnSymbol(key, out var property))
             {
                 if (!property.IsAccessor)
@@ -1062,6 +1092,12 @@ internal sealed class JsEngine
 
         while (current is not null)
         {
+            // THE SAME WHOLE-OPERATION RULE, with the boolean this member already answers in.
+            if (current is JsProxy proxy)
+            {
+                return proxy.ProxySet(JsValue.String(key), value, receiver);
+            }
+
             if (current.TryGetOwnProperty(key, out var property))
             {
                 if (property.IsAccessor)
@@ -1098,6 +1134,12 @@ internal sealed class JsEngine
 
         while (current is not null)
         {
+            // THE SAME WHOLE-OPERATION RULE, with the boolean this member already answers in.
+            if (current is JsProxy proxy)
+            {
+                return proxy.ProxySet(JsValue.Symbol(key), value, receiver);
+            }
+
             if (current.TryGetOwnSymbol(key, out var property))
             {
                 if (property.IsAccessor)
@@ -1877,6 +1919,14 @@ internal sealed class JsEngine
 
         while (current is not null)
         {
+            // A PROXY ANSWERS `in` WHOLE. The `has` trap is asked about the chain as well as the
+            // object, so a walk that continued past it would ask the target the question the trap
+            // has already answered.
+            if (current is JsProxy proxy)
+            {
+                return proxy.ProxyHas(JsValue.String(key));
+            }
+
             if (current.TryGetOwnProperty(key, out _))
             {
                 return true;
@@ -1953,6 +2003,14 @@ internal sealed class JsEngine
         {
             switch (callee.AsObject())
             {
+                // THE PROXY CASE IS FIRST BECAUSE IT IS NOT A FUNCTION. It has no bytecode and no
+                // delegate; what it has is an `apply` trap, or a target to forward to. Reaching it
+                // through this switch rather than at the call site is what makes every route into a
+                // call - a call expression, `Function.prototype.call`, a comparator handed to
+                // `sort`, an iterator's `next` - trap alike.
+                case JsProxy proxy:
+                    return proxy.ProxyCall(thisValue, arguments);
+
                 case JsNativeFunction native:
                     return native.Call(this, thisValue, arguments);
 
@@ -2018,6 +2076,15 @@ internal sealed class JsEngine
 
         Charge(8);
         var target = callee.AsObject();
+
+        // THE `new.target` GOES THROUGH UNCHANGED AND IS NOT REPLACED BY THE PROXY. A `construct`
+        // trap is handed whatever the construction named, which is what lets a proxied base class
+        // build an instance of a derived one; substituting the proxy would make every such instance
+        // an instance of the proxy's own target.
+        if (target is JsProxy proxied)
+        {
+            return proxied.ProxyConstruct(arguments, newTarget);
+        }
 
         if (target is JsNativeFunction native)
         {
@@ -3463,12 +3530,29 @@ internal sealed class JsEngine
                             var key = stack[--sp];
                             var target = stack[--sp];
 
-                            stack[sp++] = JsValue.Boolean(
-                                !target.IsObject ||
+                            var went = !target.IsObject ||
                                 (key.IsSymbol
                                     ? target.AsObject().DeleteOwnSymbol(key.AsSymbol())
-                                    : target.AsObject().DeleteOwnProperty(ToPropertyKey(key))));
+                                    : target.AsObject().DeleteOwnProperty(ToPropertyKey(key)));
 
+                            // A REFUSED DELETE THROWS IN STRICT CODE HERE TOO, and this half was
+                            // simply missing: `delete a.x` reported the refusal and `delete a[k]`
+                            // did not, so a frozen element deleted through a computed key answered
+                            // `false` to nobody and the code after it went on as though the
+                            // property were gone. The two forms are one operation in the language
+                            // and the only difference between them is how the key was written.
+                            if (!went && strict)
+                            {
+                                // THE KEY IS NOT RE-COERCED FOR THE MESSAGE. A Symbol has no
+                                // `ToString`, so naming it would replace the refusal being
+                                // reported with a different TypeError about the report.
+                                ThrowTypeError(
+                                    key.IsSymbol
+                                        ? "Cannot delete a Symbol-keyed property"
+                                        : "Cannot delete property '" + ToPropertyKey(key) + "'");
+                            }
+
+                            stack[sp++] = JsValue.Boolean(went);
                             pc++;
                             break;
                         }
@@ -4748,6 +4832,12 @@ internal sealed class JsEngine
 
         while (current is not null)
         {
+            // THE SAME WHOLE-OPERATION RULE THE STRING WALK OBEYS, and for the same reason.
+            if (current is JsProxy proxy)
+            {
+                return proxy.ProxyGet(JsValue.Symbol(key), baseValue);
+            }
+
             if (current.TryGetOwnSymbol(key, out var property))
             {
                 if (!property.IsAccessor)
@@ -4785,6 +4875,17 @@ internal sealed class JsEngine
 
         while (current is not null)
         {
+            // THE SAME WHOLE-OPERATION RULE THE STRING WRITE OBEYS, refusal and mode included.
+            if (current is JsProxy proxy)
+            {
+                if (!proxy.ProxySet(JsValue.Symbol(key), value, baseValue) && strict)
+                {
+                    ThrowTypeError("Cannot assign to a read only Symbol-keyed property");
+                }
+
+                return;
+            }
+
             if (current.TryGetOwnSymbol(key, out var property))
             {
                 if (property.IsAccessor)
@@ -4836,6 +4937,12 @@ internal sealed class JsEngine
 
         while (current is not null)
         {
+            // THE SAME WHOLE-OPERATION RULE THE STRING WALK OBEYS, and for the same reason.
+            if (current is JsProxy proxy)
+            {
+                return proxy.ProxyHas(JsValue.Symbol(key));
+            }
+
             if (current.TryGetOwnSymbol(key, out _))
             {
                 return true;
@@ -4903,6 +5010,51 @@ internal sealed class JsEngine
         }
 
         SetProperty(target, ToPropertyKey(key), value, strict);
+    }
+
+    /// <summary>
+    /// The specification's <c>CreateListFromArrayLike</c> narrowed to the two kinds of property key.
+    /// </summary>
+    /// <remarks>
+    /// <b>An array-like and not an iterable</b>, which is the same choice <c>Reflect.apply</c> makes
+    /// and for the same reason: the specification says so, and a handler returning a Set would be
+    /// returning something with no <c>length</c>. <b>The element check is not politeness either</b> —
+    /// every caller of this treats what comes back as an own key, and a Number in the list would
+    /// become a key nothing on the target could ever match, so an <c>ownKeys</c> trap that answered
+    /// <c>[0]</c> would silently report a property called neither <c>0</c> nor anything else.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal System.Collections.Generic.List<JsValue> ProxyKeyList(JsValue list)
+    {
+        if (!list.IsObject)
+        {
+            ThrowTypeError("the 'ownKeys' trap answered a value that is not an object");
+        }
+
+        var length = JsValue.ToInteger(ToNumber(GetProperty(list, "length")));
+
+        if (length > JsRealm.ReflectArgumentCeiling)
+        {
+            ThrowRangeError("the 'ownKeys' trap answered a list longer than this profile admits");
+        }
+
+        var collected = new System.Collections.Generic.List<JsValue>();
+
+        for (var at = 0; at < length; at++)
+        {
+            Charge(1);
+            var element = GetIndexed(list, JsValue.Number(at));
+
+            if (!element.IsSymbol && element.Type != JsType.String)
+            {
+                ThrowTypeError("the 'ownKeys' trap answered a key that is neither a String nor a Symbol");
+            }
+
+            collected.Add(element);
+        }
+
+        return collected;
     }
 
     /// <summary>Renders a thrown value for a host that has to describe it in one line.</summary>

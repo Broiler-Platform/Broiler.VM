@@ -687,12 +687,11 @@ BigInt
 BigInt64Array
 BigUint64Array
 Intl
-Proxy
 SharedArrayBuffer
 Temporal
 ```
 
-**Two of the eight are absent DELIBERATELY rather than for want of work.** `SharedArrayBuffer` and
+**Two of the seven are absent DELIBERATELY rather than for want of work.** `SharedArrayBuffer` and
 `Atomics` are the multi-agent surface; they need the agent model of roadmap
 [section 13](roadmap.md#13-realms-agents-and-the-host-boundary), and folding them into the binary
 identity would let a composition that wanted an ordinary byte buffer admit cross-agent shared memory
@@ -707,7 +706,8 @@ generator, `yield`, `async` function, `await`, module, destructuring — pattern
 parameter alike — a rest parameter, a parameter default, spread, `for … of` and `with`. Absent
 **from the realm** rather than from the grammar: Proxy, Reflect and BigInt. *(That is the list as
 the manifest was minted. What has since left it is the subject of the workload programme, and the
-block above rather than this sentence is what a rule checks.)*
+block above rather than this sentence is what a rule checks — of the three named here, `Reflect` and
+`Proxy` have both left it and `BigInt` alone remains.)*
 
 **Seven entries left that list, and the list is worth reading for what leaving it means.** A
 template literal, a tagged template, an optional chain and `new.target` are admitted by the front

@@ -145,31 +145,80 @@ internal class JsObject
     // Broiler-Human:        PENDING
     private int liveCount;
 
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private JsObject? prototype;
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private bool extensible = true;
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private string className;
+
     /// <summary>Creates an object with the given prototype.</summary>
+    /// <remarks>
+    /// <b>The field is written and not the property.</b> <see cref="Prototype"/> is virtual, and a
+    /// virtual call from a constructor reaches an override before the derived type's own fields are
+    /// assigned - which for <see cref="JsProxy"/> would be a trap call against a null realm. Every
+    /// object starts with an ordinary prototype whether or not it is exotic, so the field is the
+    /// right thing to write anyway.
+    /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=2E6A46
     // Broiler-Human:        PENDING
     internal JsObject(JsObject? prototype, string className = "Object")
     {
-        Prototype = prototype;
-        ClassName = className;
+        this.prototype = prototype;
+        this.className = className;
     }
 
     /// <summary>The object's prototype, or <see langword="null"/> at the end of a chain.</summary>
+    /// <remarks>
+    /// <b>It is virtual because <c>[[GetPrototypeOf]]</c> and <c>[[SetPrototypeOf]]</c> are internal
+    /// methods and not a field</b>, which only <see cref="JsProxy"/> makes visible: a proxy answers
+    /// them with guest code. The storage is a field of this class rather than an auto-property
+    /// because a derived type overriding the pair still needs somewhere for <c>base</c> to keep an
+    /// ordinary answer.
+    /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1A016B
     // Broiler-Human:        PENDING
-    internal JsObject? Prototype { get; set; }
+    internal virtual JsObject? Prototype
+    {
+        get => prototype;
+        set => prototype = value;
+    }
 
     /// <summary>Whether new own properties may be added.</summary>
+    /// <remarks>
+    /// Virtual for the same reason <see cref="Prototype"/> is: reading it is
+    /// <c>[[IsExtensible]]</c> and clearing it is <c>[[PreventExtensions]]</c>, and a
+    /// <see cref="JsProxy"/> answers both through its handler.
+    /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=FB3EAD
     // Broiler-Human:        PENDING
-    internal bool Extensible { get; set; } = true;
+    internal virtual bool Extensible
+    {
+        get => extensible;
+        set => extensible = value;
+    }
 
     /// <summary>
     /// The specification's <c>[[Class]]</c>, which <c>Object.prototype.toString</c> reports.
     /// </summary>
+    /// <remarks>
+    /// <b>It is virtual because the tag is derived from an object's internal SLOTS, and one object
+    /// kind has none.</b> A <see cref="JsProxy"/> is not a Date because its target is one - it has
+    /// no <c>[[DateValue]]</c> - so the language gives it one of three tags rather than its target's,
+    /// and it derives them when asked rather than storing one.
+    /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=A6308F
     // Broiler-Human:        PENDING
-    internal string ClassName { get; set; }
+    internal virtual string ClassName
+    {
+        get => className;
+        set => className = value;
+    }
 
     /// <summary>Whether this object may be called.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=72C1AD
@@ -231,7 +280,7 @@ internal class JsObject
     /// <summary>Reads one Symbol-keyed own property.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1AADA8
     // Broiler-Human:        PENDING
-    internal bool TryGetOwnSymbol(JsSymbol key, out JsProperty property)
+    internal virtual bool TryGetOwnSymbol(JsSymbol key, out JsProperty property)
     {
         if (symbols is not null)
         {
@@ -252,7 +301,7 @@ internal class JsObject
     /// <summary>Defines or redefines one Symbol-keyed own property.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=2FB93A
     // Broiler-Human:        PENDING
-    internal void SetOwnSymbol(JsSymbol key, JsProperty property)
+    internal virtual void SetOwnSymbol(JsSymbol key, JsProperty property)
     {
         symbols ??= [];
 
@@ -271,7 +320,7 @@ internal class JsObject
     /// <summary>Removes one Symbol-keyed own property.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E1EBB2
     // Broiler-Human:        PENDING
-    internal bool DeleteOwnSymbol(JsSymbol key)
+    internal virtual bool DeleteOwnSymbol(JsSymbol key)
     {
         if (symbols is null)
         {
@@ -300,7 +349,7 @@ internal class JsObject
     /// <summary>Every Symbol-keyed own property key, in the order they were defined.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=16F25B
     // Broiler-Human:        PENDING
-    internal System.Collections.Generic.List<JsSymbol> OwnSymbolKeys()
+    internal virtual System.Collections.Generic.List<JsSymbol> OwnSymbolKeys()
     {
         var keys = new System.Collections.Generic.List<JsSymbol>();
 
@@ -310,6 +359,35 @@ internal class JsObject
             {
                 keys.Add(key);
             }
+        }
+
+        return keys;
+    }
+
+    /// <summary>
+    /// Every own key of both kinds, which is the specification's <c>[[OwnPropertyKeys]]</c>.
+    /// </summary>
+    /// <remarks>
+    /// <b>One method rather than the two above called in turn, and the difference is a trap
+    /// call.</b> For an ordinary object this is exactly the concatenation and exists only for
+    /// tidiness; for a <see cref="JsProxy"/> it is the operation the language actually names, and
+    /// asking for the String keys and then the Symbol keys would run the <c>ownKeys</c> trap TWICE
+    /// - which is observable, and which would let the two halves of one answer disagree.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal virtual System.Collections.Generic.List<JsValue> OwnKeys()
+    {
+        var keys = new System.Collections.Generic.List<JsValue>();
+
+        foreach (var key in OwnPropertyNames())
+        {
+            keys.Add(JsValue.String(key));
+        }
+
+        foreach (var key in OwnSymbolKeys())
+        {
+            keys.Add(JsValue.Symbol(key));
         }
 
         return keys;
