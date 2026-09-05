@@ -45,13 +45,7 @@ public sealed class N16WideSurfaceRuleTests
     private const string SecondPassPath =
         "src/Broiler.VM.Profile.JavaScript/JsVerifier.cs";
 
-    /// <summary>The descriptor declares every manifest and a range that spans both versions.</summary>
-    /// <remarks>
-    /// The module goal added a THIRD manifest at the same format version, which is the case this
-    /// clause has to keep admitting: a manifest and a format version are not the same axis, and a
-    /// rule that read the accepted set as a pair would have refused the surface that grew without
-    /// the version moving.
-    /// </remarks>
+    /// <summary>The descriptor declares both manifests and a range that spans both versions.</summary>
     [Fact]
     public void N16_Two_Versions_And_Two_Manifests_Are_Declared_Together()
     {
@@ -68,12 +62,17 @@ public sealed class N16WideSurfaceRuleTests
             System.StringComparison.Ordinal);
 
         Assert.Contains(
-            "VmFeatureManifestId.Parse(Format.JsFormat.ModulesManifestId)",
+            "ImmutableArray.Create(SliceManifest, WideManifest)",
             text,
             System.StringComparison.Ordinal);
 
+        // AND THE OPTIONAL SURFACES ARE ADDED TO THAT PAIR RATHER THAN BAKED INTO IT. An artifact
+        // still names one of the two manifests in its header; a surface is something it declares
+        // beside that, and a composition admitting none is a composition whose accepted set is
+        // exactly the pair above. A literal that listed the surfaces here would make every
+        // composition admit them.
         Assert.Contains(
-            "SliceManifest, WideManifest, ModulesManifest)",
+            "accepted = accepted.Add(VmFeatureManifestId.Parse(surface))",
             text,
             System.StringComparison.Ordinal);
 
@@ -175,8 +174,12 @@ public sealed class N16WideSurfaceRuleTests
         Assert.Contains("JsFormat.ManifestId", second, System.StringComparison.Ordinal);
         Assert.DoesNotContain("SliceManifest", second, System.StringComparison.Ordinal);
 
+        // The construction still names the manifest the FIRST pass accepts, and it now also names
+        // the optional surfaces the composition admitted - which the second pass refuses an
+        // artifact for declaring outside. Both are arguments of the one verifier object, because a
+        // second object would be a second answer to the same question.
         Assert.Contains(
-            "new JavaScriptVerifier(Id, SliceManifest)",
+            "new JavaScriptVerifier(Id, SliceManifest, admittedSurfaces)",
             AssuranceSources.File(DescriptorPath).Text,
             System.StringComparison.Ordinal);
 

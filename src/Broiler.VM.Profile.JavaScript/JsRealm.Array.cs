@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   23
-// Annotated:        23/23
+// Relevant units:   29
+// Annotated:        29/29
 // Exempt:           0
-// Human-reviewed:   0/23
+// Human-reviewed:   0/29
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
-// Resource impact:  3/10 max
-// Unverified:       23
+// Resource impact:  4/10 max
+// Unverified:       29
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -43,11 +43,12 @@ namespace Broiler.VM.Profile.JavaScript;
 internal sealed partial class JsRealm
 {
     /// <summary>Builds <c>Array</c>, its statics and <c>Array.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=745D42
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=11210D
     // Broiler-Human:        PENDING
     private void SetupArray()
     {
         var constructor = Constructor("Array", 1, ArrayPrototype, ArrayBuild, ArrayBuild);
+        SpeciesGetter(constructor);
 
         Method(constructor, "isArray", 1, (engine, thisValue, arguments) =>
             JsValue.Boolean(ArgOfArray(arguments, 0).AsObjectOrNull() is JsArray));
@@ -65,9 +66,16 @@ internal sealed partial class JsRealm
             return JsValue.Object(result);
         });
 
-        // ARRAY-LIKES ONLY: `length` plus indices. Iterables are out of this profile's scope, so a
-        // Set or a generator reaches this as an object with no `length` and produces an empty
-        // Array rather than a wrong one.
+        // THE ITERATOR COMES FIRST AND THE ARRAY-LIKE READING IS THE FALLBACK, which is the order
+        // the specification gives and the order that decides what `Array.from` of a string is.
+        //
+        // This comment used to say that iterables were out of this profile's scope, and while that
+        // was true the fallback was the whole operation. It stopped being true when JSW-6 gave the
+        // realm `Symbol` and an iteration protocol, and the difference is observable in the first
+        // case anybody tries: a String is BOTH iterable and array-like, its iterator yields CODE
+        // POINTS and its indices are CODE UNITS, so `Array.from("\u{1F600}")` is one element by the
+        // iterator and two by the length. A Set or a Map has no `length` at all and produced an
+        // empty Array - a wrong answer that looked like an empty collection.
         Method(constructor, "from", 1, (engine, thisValue, arguments) =>
         {
             var items = ArgOfArray(arguments, 0);
@@ -86,9 +94,29 @@ internal sealed partial class JsRealm
             }
 
             var thisArg = ArgOfArray(arguments, 2);
+            var result = NewArray();
+
+            if (engine.TryGetSymbolMethod(items, IteratorSymbol, out _))
+            {
+                var iterator = engine.GetIterator(items);
+                double index = 0;
+
+                while (engine.TryIterateNext(iterator, out var yielded))
+                {
+                    engine.Charge(1);
+
+                    result.Push(mapper.IsObject
+                        ? engine.Call(mapper, thisArg, [yielded, JsValue.Number(index)])
+                        : yielded);
+
+                    index++;
+                }
+
+                return JsValue.Object(result);
+            }
+
             var source = ArrayReceiver(engine, items);
             var length = ArrayLengthOf(engine, source);
-            var result = NewArray();
 
             for (double at = 0; at < length; at++)
             {
@@ -109,6 +137,386 @@ internal sealed partial class JsRealm
         SetupArrayMutators();
         SetupArrayReaders();
         SetupArrayIteration();
+        SetupArrayLaterAdditions();
+        SetupArrayUnscopables();
+    }
+
+    /// <summary>
+    /// Installs <c>Array.prototype[Symbol.unscopables]</c>, the blocklist a <c>with</c> obeys.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>This list is a compatibility rule and not a nicety, and it is the reason the Symbol
+    /// exists.</b> Adding <c>values</c> to <c>Array.prototype</c> broke pages that wrote
+    /// <c>with (someArray) { values }</c> against an outer variable of that name, so the language
+    /// made the newer members invisible to <c>with</c>. A realm without the list answers those
+    /// programs with a method where they expect their own variable.
+    /// </para>
+    /// <para>
+    /// <b>Every name the specification lists is listed, whether or not this realm has the member.</b>
+    /// The list is a fixed property of <c>Array.prototype</c> and a program may read it; trimming it
+    /// to what this realm implements would make <c>Object.keys(Array.prototype[Symbol.unscopables])</c>
+    /// a report about this build rather than about the language.
+    /// </para>
+    /// <para>
+    /// <b>Its prototype is null</b>, which is what the specification asks for and what stops a name
+    /// like <c>toString</c> — inherited from <c>Object.prototype</c> and truthy — from being
+    /// unscopable by accident.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=98F923
+    // Broiler-Human:        PENDING
+    private void SetupArrayUnscopables()
+    {
+        var blocked = new JsObject(null);
+
+        foreach (var name in ArrayUnscopableNames)
+        {
+            blocked.SetOwnProperty(name, JsProperty.Data(JsValue.True, JsPropertyAttributes.Default));
+        }
+
+        ArrayPrototype.SetOwnSymbol(
+            UnscopablesSymbol,
+            JsProperty.Data(JsValue.Object(blocked), JsPropertyAttributes.Configurable));
+    }
+
+    /// <summary>The members of <c>Array.prototype</c> a <c>with</c> statement does not bind.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FBB4CC
+    // Broiler-Human:        PENDING
+    private static readonly string[] ArrayUnscopableNames =
+    [
+        "at", "copyWithin", "entries", "fill", "find", "findIndex", "findLast", "findLastIndex",
+        "flat", "flatMap", "includes", "keys", "toReversed", "toSorted", "toSpliced", "values",
+    ];
+
+    /// <summary>
+    /// The prototype methods the language added after the ones above, and which real programs use
+    /// as though they had always been there.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>They are here because a differential probe found them absent, not because a list was
+    /// worked through.</b> Each was a <c>TypeError</c> naming a method that is not a function -
+    /// which is the least useful refusal this realm can produce, because it says nothing about
+    /// whether the manifest declines the surface or the realm simply has not got there yet.
+    /// </para>
+    /// <para>
+    /// <b>The four change-by-copy methods answer a plain Array and not the receiver's species.</b>
+    /// That is what the specification says for them, and it is the one place in this file where a
+    /// generic method deliberately does not preserve the receiver's kind: <c>toSorted</c> called on
+    /// an array-like produces an Array, because the operation's whole point is that the receiver is
+    /// left alone.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3312C8
+    // Broiler-Human:        PENDING
+    private void SetupArrayLaterAdditions()
+    {
+        Method(ArrayPrototype, "at", 1, (engine, thisValue, arguments) =>
+        {
+            var target = ArrayReceiver(engine, thisValue);
+            var length = ArrayLengthOf(engine, target);
+            var relative = engine.ToInteger(ArgOfArray(arguments, 0));
+            var at = relative < 0 ? length + relative : relative;
+
+            return at < 0 || at >= length ? JsValue.Undefined : ArrayGetAt(engine, target, at);
+        });
+
+        Method(ArrayPrototype, "findLast", 1, (engine, thisValue, arguments) =>
+            ArrayFindFromEnd(engine, thisValue, arguments, wantIndex: false));
+
+        Method(ArrayPrototype, "findLastIndex", 1, (engine, thisValue, arguments) =>
+            ArrayFindFromEnd(engine, thisValue, arguments, wantIndex: true));
+
+        Method(ArrayPrototype, "flat", 0, (engine, thisValue, arguments) =>
+        {
+            var target = ArrayReceiver(engine, thisValue);
+            var stated = ArgOfArray(arguments, 0);
+            var depth = stated.Type == JsType.Undefined ? 1 : engine.ToInteger(stated);
+            var result = NewArray();
+            ArrayFlattenInto(engine, target, depth, result, JsValue.Undefined, JsValue.Undefined);
+            return JsValue.Object(result);
+        });
+
+        Method(ArrayPrototype, "flatMap", 1, (engine, thisValue, arguments) =>
+        {
+            var target = ArrayReceiver(engine, thisValue);
+            var callback = ArrayCallbackOf(engine, arguments, "flatMap");
+            var result = NewArray();
+
+            ArrayFlattenInto(
+                engine, target, 1, result, callback, ArgOfArray(arguments, 1));
+
+            return JsValue.Object(result);
+        });
+
+        Method(ArrayPrototype, "copyWithin", 2, (engine, thisValue, arguments) =>
+        {
+            var target = ArrayReceiver(engine, thisValue);
+            var length = ArrayLengthOf(engine, target);
+            var to = ArrayRelative(engine, ArgOfArray(arguments, 0), length);
+            var from = ArrayRelative(engine, ArgOfArray(arguments, 1), length);
+            var end = ArgOfArray(arguments, 2);
+
+            var final = end.Type == JsType.Undefined
+                ? length
+                : ArrayRelative(engine, end, length);
+
+            var count = System.Math.Min(final - from, length - to);
+
+            // THE DIRECTION IS DECIDED BY THE OVERLAP AND NOT BY TASTE. Copying forwards over a
+            // region that overlaps ahead of itself would read a slot this same call had already
+            // written, which is the difference between a copy and a repeating fill.
+            var step = 1.0;
+
+            if (from < to && to < from + count)
+            {
+                step = -1;
+                from += count - 1;
+                to += count - 1;
+            }
+
+            while (count > 0)
+            {
+                engine.Charge(1);
+
+                if (ArrayHasAt(engine, target, from))
+                {
+                    ArraySetAt(engine, target, to, ArrayGetAt(engine, target, from));
+                }
+                else
+                {
+                    ArrayDeleteAt(target, to);
+                }
+
+                from += step;
+                to += step;
+                count--;
+            }
+
+            return thisValue;
+        });
+
+        SetupArrayChangeByCopy();
+    }
+
+    /// <summary>
+    /// <c>toSorted</c>, <c>toReversed</c>, <c>toSpliced</c> and <c>with</c>: the four that answer a
+    /// new Array and leave the receiver alone.
+    /// </summary>
+    /// <remarks>
+    /// <b>A hole becomes a stored <c>undefined</c> in all four</b>, which is the one thing about
+    /// them a reader is likely to get wrong. They read every index from 0 to <c>length</c> rather
+    /// than the indices the receiver has, so <c>[,1].toReversed()</c> is a dense two-element Array
+    /// and not a copy of the holes. The specification is explicit about it and the reason is that a
+    /// copy which preserved holes would have to be an Array exotic object built by a different
+    /// path than the one that produces every other result here.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=2CD841
+    // Broiler-Human:        PENDING
+    private void SetupArrayChangeByCopy()
+    {
+        Method(ArrayPrototype, "toReversed", 0, (engine, thisValue, arguments) =>
+        {
+            _ = arguments;
+            var target = ArrayReceiver(engine, thisValue);
+            var length = ArrayLengthOf(engine, target);
+            var result = NewArray();
+
+            for (double at = length - 1; at >= 0; at--)
+            {
+                engine.Charge(1);
+                result.Push(ArrayGetAt(engine, target, at));
+            }
+
+            return JsValue.Object(result);
+        });
+
+        Method(ArrayPrototype, "toSorted", 1, (engine, thisValue, arguments) =>
+        {
+            var comparator = ArgOfArray(arguments, 0);
+
+            if (comparator.Type != JsType.Undefined &&
+                (!comparator.IsObject || !comparator.AsObject().IsCallable))
+            {
+                return engine.ThrowTypeError("Array.prototype.toSorted: the comparator is not a function");
+            }
+
+            var target = ArrayReceiver(engine, thisValue);
+            var length = ArrayLengthOf(engine, target);
+            var items = new System.Collections.Generic.List<JsValue>();
+            double undefinedCount = 0;
+
+            // A HOLE AND AN `undefined` ARE THE SAME THING TO THIS ONE, unlike everywhere else in
+            // this file: the copy is dense, so both become an `undefined` sorted to the end. The
+            // sort itself is `sort`'s, so a comparator sees the same order from either.
+            for (double at = 0; at < length; at++)
+            {
+                engine.Charge(1);
+                var element = ArrayGetAt(engine, target, at);
+
+                if (element.Type == JsType.Undefined)
+                {
+                    undefinedCount++;
+                }
+                else
+                {
+                    items.Add(element);
+                }
+            }
+
+            if (items.Count > 1)
+            {
+                var buffer = new System.Collections.Generic.List<JsValue>(items);
+                ArrayMergeSort(engine, comparator, items, buffer, 0, items.Count);
+            }
+
+            var result = NewArray();
+
+            foreach (var value in items)
+            {
+                result.Push(value);
+            }
+
+            for (double at = 0; at < undefinedCount; at++)
+            {
+                result.Push(JsValue.Undefined);
+            }
+
+            return JsValue.Object(result);
+        });
+
+        Method(ArrayPrototype, "with", 2, (engine, thisValue, arguments) =>
+        {
+            var target = ArrayReceiver(engine, thisValue);
+            var length = ArrayLengthOf(engine, target);
+            var relative = engine.ToInteger(ArgOfArray(arguments, 0));
+            var at = relative < 0 ? length + relative : relative;
+
+            if (at < 0 || at >= length)
+            {
+                return engine.ThrowRangeError("Array.prototype.with: the index is out of range");
+            }
+
+            var replacement = ArgOfArray(arguments, 1);
+            var result = NewArray();
+
+            for (double index = 0; index < length; index++)
+            {
+                engine.Charge(1);
+
+                result.Push(index == at ? replacement : ArrayGetAt(engine, target, index));
+            }
+
+            return JsValue.Object(result);
+        });
+
+        Method(ArrayPrototype, "toSpliced", 2, (engine, thisValue, arguments) =>
+        {
+            var target = ArrayReceiver(engine, thisValue);
+            var length = ArrayLengthOf(engine, target);
+            var start = ArrayRelative(engine, ArgOfArray(arguments, 0), length);
+            var removed = ArraySpliceCount(engine, arguments, length, start);
+            var result = NewArray();
+
+            for (double at = 0; at < start; at++)
+            {
+                engine.Charge(1);
+                result.Push(ArrayGetAt(engine, target, at));
+            }
+
+            for (var extra = 2; extra < arguments.Length; extra++)
+            {
+                result.Push(arguments[extra]);
+            }
+
+            for (var at = start + removed; at < length; at++)
+            {
+                engine.Charge(1);
+                result.Push(ArrayGetAt(engine, target, at));
+            }
+
+            return JsValue.Object(result);
+        });
+    }
+
+    /// <summary>The walk <c>findLast</c> and <c>findLastIndex</c> share.</summary>
+    /// <remarks>
+    /// Both visit a hole and see <c>undefined</c>, exactly as <c>find</c> and <c>findIndex</c> do,
+    /// so the pair that reads from the end is the same operation with the loop reversed and not a
+    /// second reading of what an absent index means.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=530C09
+    // Broiler-Human:        PENDING
+    private static JsValue ArrayFindFromEnd(
+        JsEngine engine, JsValue thisValue, JsValue[] arguments, bool wantIndex)
+    {
+        var target = ArrayReceiver(engine, thisValue);
+        var length = ArrayLengthOf(engine, target);
+        var callback = ArrayCallbackOf(engine, arguments, wantIndex ? "findLastIndex" : "findLast");
+        var thisArg = ArgOfArray(arguments, 1);
+
+        for (var at = length - 1; at >= 0; at--)
+        {
+            engine.Charge(1);
+            var element = ArrayGetAt(engine, target, at);
+            var answered = engine.Call(callback, thisArg, [element, JsValue.Number(at), target]);
+
+            if (answered.ToBooleanValue())
+            {
+                return wantIndex ? JsValue.Number(at) : element;
+            }
+        }
+
+        return wantIndex ? JsValue.Number(-1) : JsValue.Undefined;
+    }
+
+    /// <summary>The flattening walk <c>flat</c> and <c>flatMap</c> share.</summary>
+    /// <remarks>
+    /// <b>It recurses on the CLR stack and the depth a guest can ask for is unbounded</b>, so the
+    /// recursion is charged per element rather than per array: a guest handing this a
+    /// deeply self-nesting structure meets the instruction budget on the way down. The alternative
+    /// - an explicit worklist - would be immune to that, and would also make the mapper's argument
+    /// order harder to keep right for no behaviour a program can see.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=4; Fingerprint=F0A93A
+    // Broiler-Human:        PENDING
+    private static void ArrayFlattenInto(
+        JsEngine engine,
+        JsValue source,
+        double depth,
+        JsArray into,
+        JsValue mapper,
+        JsValue thisArg)
+    {
+        var length = ArrayLengthOf(engine, source);
+
+        for (double at = 0; at < length; at++)
+        {
+            engine.Charge(1);
+
+            if (!ArrayHasAt(engine, source, at))
+            {
+                continue;
+            }
+
+            var element = ArrayGetAt(engine, source, at);
+
+            if (mapper.IsObject)
+            {
+                element = engine.Call(mapper, thisArg, [element, JsValue.Number(at), source]);
+            }
+
+            if (depth > 0 && element.AsObjectOrNull() is JsArray)
+            {
+                ArrayFlattenInto(
+                    engine, element, depth - 1, into, JsValue.Undefined, JsValue.Undefined);
+
+                continue;
+            }
+
+            into.Push(element);
+        }
     }
 
     /// <summary><c>push</c>, <c>pop</c>, <c>shift</c>, <c>unshift</c>, <c>splice</c>, <c>reverse</c>, <c>fill</c>, <c>sort</c>.</summary>
@@ -973,10 +1381,10 @@ internal sealed partial class JsRealm
         engine.GetIndexed(target, JsValue.Number(at));
 
     /// <summary>Writes index <paramref name="at"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B5AC03
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=09CE6D
     // Broiler-Human:        PENDING
     private static void ArraySetAt(JsEngine engine, JsValue target, double at, JsValue value) =>
-        engine.SetIndexed(target, JsValue.Number(at), value, false);
+        engine.SetIndexed(target, JsValue.Number(at), value, true);
 
     /// <summary>Removes index <paramref name="at"/>, leaving a hole.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FEFCDF
@@ -992,10 +1400,16 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Writes the receiver's <c>length</c> back.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FA6D19
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=01DBE3
     // Broiler-Human:        PENDING
+    /// <remarks>
+    /// <b>Strict, which is the specification's own choice for these built-ins and not a policy this
+    /// file adds.</b> Every mutator here performs <c>Set(O, key, value, true)</c>, so a receiver
+    /// that refuses the write — a frozen Array, or one whose <c>length</c> has been closed — makes
+    /// the call throw rather than answer a new length that is not the one it has.
+    /// </remarks>
     private static void ArrayWriteLength(JsEngine engine, JsValue target, double length) =>
-        engine.SetProperty(target, "length", JsValue.Number(length), false);
+        engine.SetProperty(target, "length", JsValue.Number(length), true);
 
     /// <summary>The relative-index rule a negative or out-of-range bound is clamped by.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=206341

@@ -55,7 +55,7 @@ internal sealed partial class JsRealm
     private ulong mathRandomState = 0x2545F4914F6CDD1DUL;
 
     /// <summary>Builds <c>Math</c> and defines it on the global object.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=9FBCF3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F8BFC1
     // Broiler-Human:        PENDING
     private void SetupMath()
     {
@@ -99,8 +99,20 @@ internal sealed partial class JsRealm
             JsValue.Number(System.Math.Atan2(
                 MathNumberAt(engine, arguments, 0), MathNumberAt(engine, arguments, 1))));
 
+        // THE SNAP IS NOT A TIDY-UP, it is what makes a perfect cube answer its own root. The
+        // specification leaves this function's precision implementation-defined, so both
+        // `Math.cbrt(27) === 3` and the platform's `3.0000000000000004` are conforming - but a
+        // program that indexes by a cube root, or compares one against an integer, sees the second
+        // as a defect. Snapping only when the rounded value cubes back EXACTLY means no result that
+        // was not already a perfect cube is moved.
         Method(math, "cbrt", 1, static (engine, _, arguments) =>
-            JsValue.Number(System.Math.Cbrt(MathNumberAt(engine, arguments, 0))));
+        {
+            var value = MathNumberAt(engine, arguments, 0);
+            var root = System.Math.Cbrt(value);
+            var near = System.Math.Round(root);
+
+            return JsValue.Number(near * near * near == value ? near : root);
+        });
 
         Method(math, "ceil", 1, static (engine, _, arguments) =>
             JsValue.Number(System.Math.Ceiling(MathNumberAt(engine, arguments, 0))));

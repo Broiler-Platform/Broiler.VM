@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   8
-// Annotated:        8/8
-// Exempt:           25
-// Human-reviewed:   0/8
+// Relevant units:   14
+// Annotated:        14/14
+// Exempt:           26
+// Human-reviewed:   0/14
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
-// Resource impact:  1/10 max
-// Unverified:       8
+// Resource impact:  2/10 max
+// Unverified:       14
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -99,6 +99,51 @@ internal sealed class JsCodeUnit
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=AA2DE3
     // Broiler-Human:        PENDING
     internal bool UsesArguments => (Flags & Format.JsFormat.FunctionFlags.UsesArguments) != 0;
+
+    /// <summary>Whether the unit is a class constructor, which no call may reach.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C4661A
+    // Broiler-Human:        PENDING
+    internal bool IsClassConstructor =>
+        (Flags & Format.JsFormat.FunctionFlags.ClassConstructor) != 0;
+
+    /// <summary>Whether the unit's <c>this</c> is created by its <c>super()</c> rather than by its caller.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=7FD2F4
+    // Broiler-Human:        PENDING
+    internal bool IsDerivedConstructor =>
+        (Flags & Format.JsFormat.FunctionFlags.DerivedConstructor) != 0;
+
+    /// <summary>Whether the unit's own prologue binds its parameters, so the frame copies none.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=EF5279
+    // Broiler-Human:        PENDING
+    internal bool BindsParameters =>
+        (Flags & Format.JsFormat.FunctionFlags.BindsParameters) != 0;
+
+    /// <summary>
+    /// Whether calling the unit builds a generator object instead of running its code.
+    /// </summary>
+    /// <remarks>
+    /// <b>This bit test is the WHOLE of what the ordinary call path pays for generators
+    /// existing.</b> It reads a field the invocation had already loaded, and it decides whether the
+    /// frame lives in the interpreter's own locals - which is what every ordinary call still gets,
+    /// unchanged - or on the heap where a suspension can leave it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CF19D5
+    // Broiler-Human:        PENDING
+    internal bool IsGenerator => (Flags & Format.JsFormat.FunctionFlags.Generator) != 0;
+
+    /// <summary>
+    /// Whether calling the unit STARTS its code on a heap frame and answers a promise.
+    /// </summary>
+    /// <remarks>
+    /// <b>The verb is what separates this from <see cref="IsGenerator"/>.</b> A generator's call
+    /// runs no instruction of its body; an async function's call runs the body straight through to
+    /// its first <c>await</c>, on the same native stack the caller is on, and only then returns.
+    /// The two share the frame representation and share none of the timing, and a program can see
+    /// the difference on its very first line.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=91E0E7
+    // Broiler-Human:        PENDING
+    internal bool IsAsync => (Flags & Format.JsFormat.FunctionFlags.Async) != 0;
 }
 
 /// <summary>One verified exception region.</summary>
@@ -179,7 +224,7 @@ internal readonly struct JsEntry(string name, uint unit)
 internal sealed class JsProgram : IVmVerifiedState
 {
     /// <summary>Creates a verified program.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F22AF3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A12776
     // Broiler-Human:        PENDING
     internal JsProgram(
         JsValue[] constants,
@@ -189,6 +234,7 @@ internal sealed class JsProgram : IVmVerifiedState
         JsRegion[] regions,
         JsEntry[] entries,
         int positionRowCount,
+        System.Collections.Immutable.ImmutableArray<string> admittedSurfaces,
         JsModuleRecord[]? modules = null,
         JsBinding[]? importBindings = null)
     {
@@ -199,6 +245,7 @@ internal sealed class JsProgram : IVmVerifiedState
         Regions = regions;
         Entries = entries;
         PositionRowCount = positionRowCount;
+        AdmittedSurfaces = admittedSurfaces;
         Modules = modules ?? [];
         ImportBindings = importBindings ?? [];
         ModuleOfUnit = MapUnits(Modules, functions.Length);
@@ -241,6 +288,22 @@ internal sealed class JsProgram : IVmVerifiedState
 
         return map;
     }
+
+    /// <summary>The optional feature manifests the composition that verified this admits.</summary>
+    /// <remarks>
+    /// It travels on the verified state rather than being asked for again at execution, because the
+    /// composition's answer is fixed the moment it registers a profile descriptor and asking twice
+    /// is how two answers happen. The realm reads it to decide which intrinsics exist.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CAB5B1
+    // Broiler-Human:        PENDING
+    internal System.Collections.Immutable.ImmutableArray<string> AdmittedSurfaces { get; }
+
+    /// <summary>Whether the composition admitted <paramref name="manifestId"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9D7A37
+    // Broiler-Human:        PENDING
+    internal bool Admits(string manifestId) =>
+        !AdmittedSurfaces.IsDefault && AdmittedSurfaces.Contains(manifestId);
 
     /// <summary>The constant pool, as values.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4D5B5E

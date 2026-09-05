@@ -3,6 +3,8 @@
 
 using Broiler.VM.Profile.JavaScript.Compiler;
 
+using Broiler.VM.Profile.JavaScript.Format;
+
 namespace Broiler.VM.Composition.JavaScript.Conformance;
 
 /// <summary>
@@ -104,7 +106,7 @@ internal static class Test262Modules
     /// <summary>Rules on one resolution request the profile put to this harness.</summary>
     internal static bool Confirms(ReadOnlySpan<byte> request)
     {
-        var parts = System.Text.Encoding.UTF8.GetString(request).Split('\0');
+        var parts = JsFormat.DecodeText(request).Split('\0');
 
         return parts.Length == 3 &&
             string.Equals(Resolve(parts[0], parts[1]), parts[2], StringComparison.Ordinal);

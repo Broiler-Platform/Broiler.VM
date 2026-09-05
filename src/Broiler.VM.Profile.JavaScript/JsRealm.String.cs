@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   14
-// Annotated:        14/14
+// Relevant units:   15
+// Annotated:        15/15
 // Exempt:           0
-// Human-reviewed:   0/14
+// Human-reviewed:   0/15
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       14
+// Unverified:       15
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -56,7 +56,7 @@ internal sealed partial class JsRealm
     private const int StringLengthCeiling = 1 << 24;
 
     /// <summary>Builds <c>String</c>, <c>String.fromCharCode</c> and <c>String.prototype</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B794C9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=795264
     // Broiler-Human:        PENDING
     private void SetupString()
     {
@@ -73,6 +73,14 @@ internal sealed partial class JsRealm
                 if (arguments.Length == 0)
                 {
                     return JsValue.String(string.Empty);
+                }
+
+                // `String(symbol)` IS THE ONE EXPLICIT COERCION A SYMBOL ALLOWS, and it is here
+                // rather than in `ToString` on purpose: every implicit path must keep throwing, so
+                // the exception is spelled out at the one call site the language exempts.
+                if (arguments[0].IsSymbol)
+                {
+                    return JsValue.String(arguments[0].AsSymbol().Rendered);
                 }
 
                 var text = engine.ToStringValue(ArgOfString(arguments, 0));
@@ -108,10 +116,110 @@ internal sealed partial class JsRealm
             return JsValue.String(builder.ToString());
         });
 
+        Method(constructor, "fromCodePoint", 1, static (engine, thisValue, arguments) =>
+        {
+            _ = thisValue;
+            StringCharge(engine, arguments.Length);
+            var builder = new System.Text.StringBuilder(arguments.Length);
+
+            foreach (var argument in arguments)
+            {
+                var code = engine.ToNumber(argument);
+
+                // THE RANGE CHECK IS THE WHOLE DIFFERENCE FROM `fromCharCode`, which truncates to
+                // sixteen bits and cannot fail. A code point outside the Unicode range, or one that
+                // is not an integer, is a `RangeError` naming the value rather than a replacement
+                // character a caller would carry around without knowing.
+                if (code != System.Math.Floor(code) || code < 0 || code > 0x10FFFF ||
+                    double.IsNaN(code))
+                {
+                    return engine.ThrowRangeError(
+                        JsNumberFormat.ToJsString(code) + " is not a valid code point");
+                }
+
+                builder.Append(char.ConvertFromUtf32((int)code));
+            }
+
+            return JsValue.String(builder.ToString());
+        });
+
+        // `String.raw` IS THE TAG A TAGGED TEMPLATE EXISTS FOR, and it is written against the
+        // public shape of a template's strings object rather than against anything the lowering
+        // knows: `raw` and `length` read off the first argument, the substitutions after it. So a
+        // hand-built object works exactly as a template site does, which is what the specification
+        // says and what a conformance suite checks first.
+        Method(constructor, "raw", 1, static (engine, thisValue, arguments) =>
+        {
+            _ = thisValue;
+            var cooked = ArgOfString(arguments, 0);
+            var raw = engine.GetProperty(cooked, "raw");
+            var length = engine.ToInteger(engine.GetProperty(raw, "length"));
+            var builder = new System.Text.StringBuilder();
+
+            for (double at = 0; at < length; at++)
+            {
+                engine.Charge(1);
+                builder.Append(engine.ToStringValue(engine.GetIndexed(raw, JsValue.Number(at))));
+
+                if (at + 1 < length && at + 1 < arguments.Length)
+                {
+                    builder.Append(engine.ToStringValue(arguments[(int)at + 1]));
+                }
+            }
+
+            StringCharge(engine, builder.Length);
+            return JsValue.String(builder.ToString());
+        });
+
         Method(prototype, "toString", 0, static (engine, thisValue, arguments) =>
         {
             _ = arguments;
             return JsValue.String(StringThis(engine, thisValue));
+        });
+
+        // `normalize` EXISTS, VALIDATES ITS FORM, AND REFUSES THE CASE IT CANNOT ANSWER.
+        //
+        // Every composition here runs with globalization-invariant mode on, and in that mode the
+        // platform's own `String.Normalize` RETURNS THE INPUT UNCHANGED and reports that it is
+        // already normalized. That is not an approximation, it is a wrong answer that looks like a
+        // right one - the exact shape this profile refused for regular expressions and for `Date`.
+        // Implementing normalization properly needs the Unicode decomposition and composition
+        // tables, which is a data set this component does not hold.
+        //
+        // So: the four forms are validated, because an unknown form is a `RangeError` in every
+        // engine and that clause is answerable without any table. A string that is entirely ASCII
+        // is returned unchanged, because all four forms are the identity over ASCII and that is
+        // provable rather than assumed. Anything else is refused BY NAME, so a program that needs
+        // real normalization is told so rather than handed its input back.
+        Method(prototype, "normalize", 0, static (engine, thisValue, arguments) =>
+        {
+            var text = StringThis(engine, thisValue);
+            var stated = ArgOfString(arguments, 0);
+
+            var form = stated.Type == JsType.Undefined
+                ? "NFC"
+                : engine.ToStringValue(stated);
+
+            if (form is not ("NFC" or "NFD" or "NFKC" or "NFKD"))
+            {
+                return engine.ThrowRangeError(
+                    "the normalization form must be one of NFC, NFD, NFKC and NFKD");
+            }
+
+            StringCharge(engine, text.Length);
+
+            foreach (var unit in text)
+            {
+                if (unit > 0x7F)
+                {
+                    return engine.ThrowTypeError(
+                        "String.prototype.normalize is implemented for ASCII only in this build, " +
+                        "and this string is not ASCII; the Unicode normalization tables are not " +
+                        "held by this component");
+                }
+            }
+
+            return JsValue.String(text);
         });
 
         Method(prototype, "valueOf", 0, static (engine, thisValue, arguments) =>
@@ -176,6 +284,55 @@ internal sealed partial class JsRealm
             return at < 0 || at >= text.Length
                 ? JsValue.Undefined
                 : JsValue.String(text[(int)at].ToString());
+        });
+
+        // A STRING IS A SEQUENCE OF UTF-16 UNITS AND NOT OF TEXT, and these two are where the
+        // language admits it. A lone surrogate is a legal String and an illegal scalar sequence, so
+        // a program handing one to anything that encodes - a URL, a file, a socket - has to know
+        // first, and until these existed the only way to ask was to write the surrogate arithmetic
+        // by hand.
+        Method(prototype, "isWellFormed", 0, static (engine, thisValue, arguments) =>
+        {
+            _ = arguments;
+            var text = StringThis(engine, thisValue);
+            StringCharge(engine, text.Length + 1);
+            return JsValue.Boolean(StringWellFormed(text));
+        });
+
+        Method(prototype, "toWellFormed", 0, static (engine, thisValue, arguments) =>
+        {
+            _ = arguments;
+            var text = StringThis(engine, thisValue);
+            StringCharge(engine, text.Length + 1);
+
+            if (StringWellFormed(text))
+            {
+                return JsValue.String(text);
+            }
+
+            var built = new System.Text.StringBuilder(text.Length);
+
+            for (var at = 0; at < text.Length; at++)
+            {
+                var unit = text[at];
+
+                if (char.IsHighSurrogate(unit) &&
+                    at + 1 < text.Length &&
+                    char.IsLowSurrogate(text[at + 1]))
+                {
+                    built.Append(unit).Append(text[at + 1]);
+                    at++;
+                    continue;
+                }
+
+                // THE REPLACEMENT IS ONE UNIT PER LONE SURROGATE, so the answer has the same length
+                // as the receiver. That is the language's rule and it is worth stating, because a
+                // reader who expects an encoder's behaviour would expect a lone surrogate to become
+                // three bytes and the two lengths to differ.
+                built.Append(char.IsSurrogate(unit) ? '\ufffd' : unit);
+            }
+
+            return JsValue.String(built.ToString());
         });
 
         Method(prototype, "indexOf", 1, static (engine, thisValue, arguments) =>
@@ -495,6 +652,33 @@ internal sealed partial class JsRealm
             // An ordinal one is consistent, reproducible across hosts, and the same order `<` uses.
             return JsValue.Number(System.Math.Sign(string.CompareOrdinal(text, other)));
         });
+    }
+
+    /// <summary>Whether every surrogate in the text is half of a pair.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E44D92
+    // Broiler-Human:        PENDING
+    private static bool StringWellFormed(string text)
+    {
+        for (var at = 0; at < text.Length; at++)
+        {
+            var unit = text[at];
+
+            if (!char.IsSurrogate(unit))
+            {
+                continue;
+            }
+
+            if (!char.IsHighSurrogate(unit) ||
+                at + 1 >= text.Length ||
+                !char.IsLowSurrogate(text[at + 1]))
+            {
+                return false;
+            }
+
+            at++;
+        }
+
+        return true;
     }
 
     /// <summary>Reads one argument, which may not have been passed.</summary>

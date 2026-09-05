@@ -15,6 +15,9 @@
 
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptCompletion.Identity : Broiler.VM.VmPayloadIdentity { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptCompletion.Value : Broiler.VM.Profile.JavaScript.JavaScriptValue { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.AsyncFlagsInconsistent : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1612
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.AwaitOutsideAsync : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1611
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.ClassElementFlagsInconsistent : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1621
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.CodeUnitRangeInvalid : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1603
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.ConstantCountExceedsDeclaredMaximum : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1303
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.ConstantIndexOutOfRange : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1407
@@ -23,12 +26,14 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.DescriptorFormatVersionMismatch : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1003
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.DescriptorManifestMismatch : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1006
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.DuplicateEntryPoint : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1502
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.DuplicateSurface : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1606
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.EmptyCode : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1410
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.EntryOffsetNotAnInstructionBoundary : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1503
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.EntryStackNotEmpty : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1505
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.ExceptionRegionOutsideManifest : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1507
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.FallsOffTheEnd : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1409
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.FunctionIndexOutOfRange : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1602
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.GeneratorFlagsInconsistent : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1610
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.InconsistentStackHeightAtJoin : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1404
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.InternedNameOutsideManifest : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1304
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.JumpTargetNotAnInstructionBoundary : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1403
@@ -57,6 +62,7 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.ScopeDepthOutOfRange : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1604
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.SectionLengthMismatch : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1105
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.SectionOrder : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1102
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.SurfaceOutsideComposition : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1608
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.SuspensionTargetOutsideManifest : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1508
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.TrailingBytes : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1104
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.Truncated : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1901
@@ -64,10 +70,12 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.UnknownConstantTag : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1301
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.UnknownOpcode : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1401
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.UnknownSectionKind : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1101
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.UnknownSurface : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1607
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.UnreachableCode : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1411
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.UnsupportedFeatureManifest : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1004
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.UnsupportedFormatVersion : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1002
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.WrongMagic : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1001
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.YieldOutsideGenerator : const Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode = 1609
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode.value__ : System.Int32
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptEntryPoint.CodeOffset : System.Int32 { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptErrorKind.RangeError : const Broiler.VM.Profile.JavaScript.JavaScriptErrorKind = 3
@@ -95,14 +103,19 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptLanguageEdition.Standard : const System.String = "ECMA-262"
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptLanguageEdition.Tag : const System.String = "es2026"
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptLanguageEdition.Year : const System.String = "ES2026"
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.BinaryManifest : static Broiler.VM.VmFeatureManifestId { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.CompletionKindId : const System.Int32 = 1001
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.Descriptor : static Broiler.VM.VmProfileDescriptor { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DescriptorAdmitting(Broiler.VM.VmFeatureManifestId[] surfaces) : static Broiler.VM.VmProfileDescriptor
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DrainEntryPoint : const System.String = "#drain-jobs"
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.DynamicManifest : static Broiler.VM.VmFeatureManifestId { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.FaultKindId : const System.Int32 = 1002
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.Id : static Broiler.VM.VmProfileId { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.ModulesManifest : static Broiler.VM.VmFeatureManifestId { get; }
-  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.ResolveBindingIndex : const System.Int32 = 1
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.ResolveBindingIndex : const System.Int32 = 2
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.ResolveCapability : static Broiler.VM.VmHostCapabilityDescriptor { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.SliceManifest : static Broiler.VM.VmFeatureManifestId { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.SourceProviderCapability : static Broiler.VM.VmHostCapabilityDescriptor { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.TryGetCompletion(in Broiler.VM.VmInvocationResult result, out Broiler.VM.Profile.JavaScript.JavaScriptCompletion completion) : static System.Boolean
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.TryGetFault(in Broiler.VM.VmInvocationResult result, out Broiler.VM.Profile.JavaScript.JavaScriptFault fault) : static System.Boolean
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.TryGetUncaught(in Broiler.VM.VmInvocationResult result, out Broiler.VM.Profile.JavaScript.JsUncaught uncaught) : static System.Boolean
@@ -149,7 +162,7 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptValueKind.Number : const Broiler.VM.Profile.JavaScript.JavaScriptValueKind = 2
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptValueKind.Undefined : const Broiler.VM.Profile.JavaScript.JavaScriptValueKind = 0
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptValueKind.value__ : System.Byte
-  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptVerifier..ctor(Broiler.VM.VmProfileId profileId, Broiler.VM.VmFeatureManifestId manifest) : void
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptVerifier..ctor(Broiler.VM.VmProfileId profileId, Broiler.VM.VmFeatureManifestId manifest, System.Collections.Immutable.ImmutableArray<System.String> admittedSurfaces) : void
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptVerifier.AuthoredCoreContractVersion : System.Int32 { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptVerifier.BuiltAgainstCoreContractVersion : System.Int32 { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptVerifier.ProfileId : Broiler.VM.VmProfileId { get; }
@@ -1069,6 +1082,7 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsArtifactWriter.PatchBranch(System.Collections.Generic.List<System.Byte> code, System.Int32 at, System.UInt32 target) : static System.Void
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsArtifactWriter.Positions(System.ValueTuple<System.UInt32, System.UInt32, System.UInt32>[] rows, System.Nullable<System.UInt32> declaredCount) : static System.Byte[]
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsArtifactWriter.StringConstant(System.String value) : static System.Byte[]
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsArtifactWriter.Surfaces(System.String[] manifestIds, System.Nullable<System.UInt32> declaredCount) : static System.Byte[]
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsArtifactWriter.UndefinedConstant() : static System.Byte[]
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsArtifactWriter.Write(System.String manifestId, Broiler.VM.Profile.JavaScript.Format.JavaScriptArtifactWriter.Section[] sections, System.UInt32 formatVersion, System.Nullable<System.UInt32> declaredSectionCount) : static System.Byte[]
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsExceptionRegionRow..ctor(System.UInt32 FunctionIndex, System.UInt32 TryStart, System.UInt32 TryEnd, System.UInt32 HandlerOffset, System.UInt32 ScopeDepth, System.UInt32 StackHeight, Broiler.VM.Profile.JavaScript.Format.JsFormat.HandlerKind Kind) : void
@@ -1100,6 +1114,7 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.CeilingPositions : const System.UInt32 = 4194304
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.CeilingScopeDepth : const System.UInt32 = 255
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.CeilingScopeSlots : const System.UInt32 = 65535
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.CeilingSurfaces : const System.UInt32 = 16
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.ConstantTag.Boolean : const Broiler.VM.Profile.JavaScript.Format.JsFormat.ConstantTag = 2
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.ConstantTag.InternedName : const Broiler.VM.Profile.JavaScript.Format.JsFormat.ConstantTag = 4
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.ConstantTag.Null : const Broiler.VM.Profile.JavaScript.Format.JsFormat.ConstantTag = 6
@@ -1107,9 +1122,16 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.ConstantTag.String : const Broiler.VM.Profile.JavaScript.Format.JsFormat.ConstantTag = 5
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.ConstantTag.Undefined : const Broiler.VM.Profile.JavaScript.Format.JsFormat.ConstantTag = 1
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.ConstantTag.value__ : System.Byte
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.DecodeText(System.ReadOnlySpan<System.Byte> bytes) : static System.String
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.EncodeText(System.String value) : static System.Byte[]
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FormatVersion : const System.UInt32 = 2
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags.Arrow : const Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags = 2
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags.Async : const Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags = 512
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags.BindsParameters : const Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags = 128
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags.ClassConstructor : const Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags = 32
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags.Constructible : const Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags = 16
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags.DerivedConstructor : const Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags = 64
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags.Generator : const Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags = 256
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags.None : const Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags = 0
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags.ProgramBody : const Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags = 8
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags.Strict : const Broiler.VM.Profile.JavaScript.Format.JsFormat.FunctionFlags = 1
@@ -1122,15 +1144,15 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.ImportKind.Namespace : const Broiler.VM.Profile.JavaScript.Format.JsFormat.ImportKind = 1
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.ImportKind.value__ : System.Byte
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.ManifestId : const System.String = "broiler.javascript.wide"
-  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.ModulesManifestId : const System.String = "broiler.javascript.modules"
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind.Code : const Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind = 3
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind.Constants : const Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind = 2
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind.Entries : const Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind = 4
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind.ExceptionRegions : const Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind = 5
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind.Functions : const Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind = 8
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind.Limits : const Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind = 1
-  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind.Modules : const Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind = 9
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind.Modules : const Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind = 10
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind.Positions : const Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind = 7
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind.Surfaces : const Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind = 9
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind.SuspensionTargets : const Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind = 6
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFormat.SectionKind.value__ : System.UInt32
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsFunctionRow..ctor(System.UInt32 NameConstant, System.UInt32 ParameterCount, System.UInt32 ScopeSlots, System.UInt32 MaxOperandStack, System.UInt32 CodeOffset, System.UInt32 CodeLength, System.UInt32 Flags) : void
@@ -1200,18 +1222,26 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsModuleRow.op_Equality(Broiler.VM.Profile.JavaScript.Format.JsModuleRow left, Broiler.VM.Profile.JavaScript.Format.JsModuleRow right) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsModuleRow.op_Inequality(Broiler.VM.Profile.JavaScript.Format.JsModuleRow left, Broiler.VM.Profile.JavaScript.Format.JsModuleRow right) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Add : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 64
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ArrayAppend : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 47
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ArrayHoles : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 57
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Await : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 108
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.BitwiseAnd : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 83
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.BitwiseNot : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 73
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.BitwiseOr : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 82
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.BitwiseXor : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 84
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Call : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 49
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.CallEval : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 53
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.CallSpread : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 60
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Closure : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 48
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Construct : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 50
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ConstructSpread : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 61
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.CopyScope : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 24
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.DeclareGlobal : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 25
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.DefineClassElement : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 111
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.DefineField : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 38
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.DefineGetter : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 42
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.DefineIndexed : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 39
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.DefineMethod : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 44
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.DefineSetter : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 43
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.DeleteIndex : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 41
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.DeleteProperty : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 40
@@ -1225,21 +1255,30 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.GetProperty : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 34
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.GreaterThan : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 76
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.GreaterThanOrEqual : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 77
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.HasPrivate : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 120
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.In : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 90
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.InitialiseScoped : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 18
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.InstanceOf : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 89
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.IterateClose : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 105
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.IterateNext : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 103
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.IterateRest : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 104
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.IterateStart : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 102
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Jump : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 96
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.JumpIfFalse : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 97
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.JumpIfTrue : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 98
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.LessThan : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 74
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.LessThanOrEqual : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 75
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.LoadArgument : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 9
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.LoadConstant : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 5
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.LoadFalse : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 4
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.LoadGlobal : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 19
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.LoadGlobalOrUndefined : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 21
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.LoadImport : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 109
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.LoadNewTarget : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 8
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.LoadNull : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 2
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.LoadPrivate : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 118
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.LoadScoped : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 16
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.LoadSuperProperty : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 45
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.LoadThis : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 6
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.LoadTrue : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 3
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.LoadUndefined : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 1
@@ -1249,38 +1288,67 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Negate : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 70
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.NewArguments : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 7
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.NewArray : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 33
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.NewClass : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 56
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.NewObject : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 32
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.NewPrivateName : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 117
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Nop : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 0
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Not : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 72
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Pick : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 116
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Pop : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 112
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.PopScope : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 23
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.PushObjectScope : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 26
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.PushScope : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 22
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Remainder : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 68
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.RequireCoercible : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 92
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ResolveName : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 27
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.RestArguments : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 10
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Return : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 51
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ReturnUndefined : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 52
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.RunStaticElements : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 121
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.SetIndex : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 37
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.SetProperty : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 35
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.SetPrototypeLiteral : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 63
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ShiftLeft : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 85
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ShiftRight : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 86
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ShiftRightUnsigned : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 87
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.SpreadArray : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 58
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.SpreadObject : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 59
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.StoreGlobal : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 20
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.StorePrivate : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 119
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.StoreScoped : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 17
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.StoreSuperProperty : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 46
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.StrictEquals : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 78
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.StrictNotEquals : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 79
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Subtract : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 65
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.SuperCall : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 54
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.SuperCallForwarded : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 55
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.SuperCallSpread : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 62
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Swap : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 115
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Throw : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 99
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ThrowImmutable : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 110
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.ToNumber : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 71
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.TypeOf : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 88
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Void : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 91
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Yield : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 106
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.YieldDelegate : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 107
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.value__ : System.Byte
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcodes.All : static readonly Broiler.VM.Profile.JavaScript.Format.JsOpcode[]
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcodes.ClassIsDerived : const System.Byte = 1
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcodes.ElementBits : const System.Byte = 63
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcodes.ElementIsBlock : const System.Byte = 4
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcodes.ElementIsGetter : const System.Byte = 16
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcodes.ElementIsMethod : const System.Byte = 8
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcodes.ElementIsPrivate : const System.Byte = 2
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcodes.ElementIsSetter : const System.Byte = 32
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcodes.ElementIsStatic : const System.Byte = 1
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcodes.HasCodeTarget(Broiler.VM.Profile.JavaScript.Format.JsOpcode opcode) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcodes.InstructionWidth(Broiler.VM.Profile.JavaScript.Format.JsOpcode opcode) : static System.Int32
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcodes.IsDefined(System.Byte value) : static System.Boolean
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcodes.IsTerminal(Broiler.VM.Profile.JavaScript.Format.JsOpcode opcode) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcodes.MemberBits : const System.Byte = 7
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcodes.MemberIsEnumerable : const System.Byte = 4
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcodes.MemberIsGetter : const System.Byte = 1
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcodes.MemberIsSetter : const System.Byte = 2
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcodes.OperandWidth(Broiler.VM.Profile.JavaScript.Format.JsOpcode opcode) : static System.Int32
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcodes.Shape(Broiler.VM.Profile.JavaScript.Format.JsOpcode opcode) : static System.Nullable<Broiler.VM.Profile.JavaScript.Format.JsOperandShape>
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcodes.TryDescribe(Broiler.VM.Profile.JavaScript.Format.JsOpcode opcode, System.UInt32 operand, out System.Int32 pops, out System.Int32 pushes) : static System.Boolean
@@ -1290,6 +1358,14 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOperandShape.U8 : const Broiler.VM.Profile.JavaScript.Format.JsOperandShape = 1
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOperandShape.U8U16 : const Broiler.VM.Profile.JavaScript.Format.JsOperandShape = 4
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOperandShape.value__ : System.Byte
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.All : static readonly System.String[]
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.Binary : const System.String = "broiler.javascript.binary"
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.BinaryGlobals : static readonly System.String[]
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.Dynamic : const System.String = "broiler.javascript.dynamic"
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.DynamicGlobals : static readonly System.String[]
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.IsKnown(System.String manifestId) : static System.Boolean
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.Modules : const System.String = "broiler.javascript.modules"
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces.TryOwner(System.String globalName, out System.String manifestId) : static System.Boolean
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptCompletion : sealed class Broiler.VM.IVmProfilePayload
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptContinuation : sealed class Broiler.VM.IVmProfileContinuation
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptDiagnosticCode : enum
@@ -1387,3 +1463,4 @@ type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.J
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode : enum
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcodes : static class
 type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOperandShape : enum
+type Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsSurfaces : static class

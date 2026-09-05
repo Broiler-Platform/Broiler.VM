@@ -47,16 +47,41 @@ public sealed class DiagnosticRegistryRuleTests
     {
         Assert.Empty(ArchitectureRules.N5(Registry, Vocabulary, SeamVocabulary, DiagnosticRegistry.Revision));
 
-        // Non-vacuous: fifty-three core-result codes and twenty-seven embedder-seam ones, eighty
-        // rows, so a clean result is a comparison over two real sets rather than over an empty one.
-        // The seam half was declared and empty at revision 1 and is the half at revision 2;
-        // revision 3 is the five structural refusals format version 2 adds, and revision 4 is the
-        // module goal - eight ways a module GRAPH can be wrong, which no single row can state, and
-        // three early errors about source presented as a module.
-        Assert.Equal(53, Vocabulary.Count);
+        // Non-vacuous: fifty-three core-result codes and twenty-four embedder-seam ones,
+        // seventy-seven rows, so a clean result is a comparison over two real sets rather than over
+        // an empty one. The seam half was declared and empty at revision 1 and is the half at
+        // revision 2; revision 3 is the five structural refusals format version 2 adds, revision 4
+        // the three ways an artifact's declaration of an optional surface can be wrong, revision 5
+        // the two ways an artifact can ask for a GENERATOR suspension in a unit the executor gave
+        // no frame, and revision 6 the same two for an ASYNC one. That pair is two codes rather
+        // than a second use of the first pair because the two suspensions are resumed by different
+        // drivers - a `next` the guest calls, and a job the host drains - so a unit carrying the
+        // wrong flag would be handed to a driver with no way to reach it again, and an author told
+        // the wrong flag is missing looks in the wrong place.
+        //
+        // Revision 7 is ONE code and it is about a bit set rather than a missing flag: the class
+        // body's `DefineClassElement` defines six operand bits with rules between them, and a
+        // combination the instruction has no reading for is not an unknown feature - every bit in
+        // it is defined by this format version - so an author told "unknown opcode" would go
+        // looking for a version of the format that has one. THE SEAM HALF DID NOT GROW WITH IT,
+        // which is the finding worth keeping: the class body's own early errors reach existing seam
+        // codes rather than new ones, because a code minted for the wide front end alone would have
+        // had no reachability value the registry admits - the retained SOURCE corpus is the slice
+        // surface's, and rule N7 requires every seam row to be reached by an entry of it.
+        //
+        // Revision 8 is the module goal, and it is the first revision to grow BOTH halves. Eight
+        // core codes, because linking a graph is a verification pass with refusals no script
+        // artifact has a vocabulary for - a request naming no module, an import of a name nothing
+        // exports, two star re-exports supplying one name, a resolution that walks a cycle - and
+        // three seam codes, because a module's early errors are the front end's. The observation
+        // recorded at revision 7, that a seam code minted for the wide front end alone would have
+        // had no reachability the registry admits, is what changed here rather than what held: the
+        // retained SOURCE corpus now carries module-goal entries too, so those three rows are
+        // reached by a named source the same way every other seam row is.
+        Assert.Equal(61, Vocabulary.Count);
         Assert.Equal(27, SeamVocabulary.Count);
         Assert.Equal(Vocabulary.Count + SeamVocabulary.Count, Registry.Count);
-        Assert.Equal(4, DiagnosticRegistry.Revision);
+        Assert.Equal(8, DiagnosticRegistry.Revision);
 
         // The two vocabularies live in two assemblies that cannot see each other, so the one thing
         // no compiler could catch is a number used in both. Nothing else in the build reads both
@@ -138,17 +163,27 @@ public sealed class DiagnosticRegistryRuleTests
 
         Assert.Empty(ArchitectureRules.N7(Registry, corpus, sourceCorpus));
 
-        // Non-vacuous, and the figures that matter: fifty-two of the fifty-three core-result rows
-        // are reached by a retained corpus entry and one is not, which is the count rule N7 fixes
-        // rather than the registry; and every embedder-seam row but one is reached by a retained
-        // source entry. Seven of the fifty-two arrived with format version 2 and eight with the
-        // module goal, and two of those eight vary the COMPOSITION rather than the bytes - a
-        // module artifact a composition declined is a well-formed artifact, so the entry that
-        // reaches it differs in its host. The seam half has one defensive row and it is not a
-        // format-ceiling one: all three of those ARE reachable by a program.
+        // Non-vacuous, and the figures that matter: sixty of the sixty-one core-result rows are
+        // reached by a retained corpus entry and one is not, which is the count rule N7 fixes
+        // rather than the registry; and every one of the twenty-six embedder-seam rows that is not
+        // defensive is reached by a retained source entry. Twenty-three of the sixty arrived with
+        // format version 2: five refusals the version adds, three about the optional surfaces,
+        // FOUR about the two unit kinds that may suspend - a generator and an async function, each
+        // with a suspension in the wrong unit and a flag pairing that contradicts itself - ONE
+        // about the class body's own operand bits, whose six flags have rules between them that a
+        // combination can break without any single bit being unknown, EIGHT about linking a module
+        // graph, and two that registering a second version and a second manifest made observable
+        // at all. The seam half has no defensive row beyond the one below on purpose - its
+        // format-ceiling codes ARE reachable by a program, and recording them as unreachable would
+        // have been recording something untrue to avoid generating three sources.
+        //
+        // TWO OF THE EIGHT MODULE ROWS ARE REACHED BY VARYING THE HOST AND NOT THE BYTES, which is
+        // a shape only the exhaustion rows had before: a composition that registers no module
+        // resolver refuses a perfectly well-formed artifact, so the entry that pins that refusal
+        // carries a replay mode of its own rather than malformed bytes.
         Assert.Equal(2, ArchitectureRules.DefensiveCodes.Length);
         Assert.Equal(
-            52,
+            60,
             Registry.Count(static row => row.Reachability == "corpus"));
         Assert.Equal(
             26,

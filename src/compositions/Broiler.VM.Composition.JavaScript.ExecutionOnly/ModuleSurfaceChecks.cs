@@ -7,27 +7,28 @@ using Broiler.VM.Profile.JavaScript;
 namespace Broiler.VM.Composition.JavaScript.ExecutionOnly;
 
 /// <summary>
-/// The one property that makes the module surface declinable: two hosts, one artifact, two answers.
+/// The two ways a composition can fail to run a module, over one artifact, in one check.
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>Both directions, over the same bytes, in one check.</b> A check that only showed the refusal
-/// would pass just as well against a build that refused every module artifact, and one that only
-/// showed the acceptance would pass against a build with no decline at all. What roadmap section 6
-/// asks for is that the composition decides, so what is asserted is that the SAME payload verifies
-/// under a host that registered a resolver and is refused, by name, under one that did not.
+/// <b>Three hosts, one payload, three answers.</b> A check that only showed a refusal would pass
+/// just as well against a build that refused every module artifact, and one that only showed the
+/// acceptance would pass against a build with no decline at all. So the SAME bytes are put to a
+/// composition that admits the module surface and registers a resolver, to one that declines the
+/// surface, and to one that admits it and registers nothing - and each has to answer differently.
 /// </para>
 /// <para>
-/// <b>The refusal is at verification and not at the first import</b>, which is the clause the
-/// module manifest is minted for. A run-time <c>ReferenceError</c> would be a composition
-/// discovering after instantiation that it could not do what it had already admitted, and bundle
-/// JS-4-001 records exactly that difference as the outstanding gap for <c>eval</c>.
+/// <b>The two refusals are not the same event and the codes say which is which.</b> Declining the
+/// surface is <c>SurfaceOutsideComposition</c>, which every optional surface answers with;
+/// admitting it and registering no resolver is <c>ModuleResolverAbsent</c>, which only this one
+/// can. Both are at verification rather than at the first import, which is the property roadmap
+/// section 6 distinguishes from a run-time refusal the guest may catch.
 /// </para>
 /// </remarks>
 internal static class ModuleSurfaceChecks
 {
-    /// <summary>The retained entry both halves of the check are run over.</summary>
-    private const string Entry = "modules-a-module-artifact-a-composition-declined";
+    /// <summary>The retained entry every part of the check is run over.</summary>
+    private const string Entry = "modules-a-module-artifact-with-no-resolver";
 
     /// <summary>Runs the check.</summary>
     internal static (string Name, bool Passed, string Detail)[] Run(string corpus)
@@ -50,21 +51,26 @@ internal static class ModuleSurfaceChecks
         var descriptor = Hosts.Descriptor(Hosts.ModuleAdmittedMode);
 
         var admitted = Verify(Hosts.ModuleAdmittedMode, descriptor, bytes);
-        var declined = Verify(Hosts.ModuleDeclinedMode, descriptor, bytes);
+        var declined = Verify("wide-declining", descriptor, bytes);
+        var unresolved = Verify(Hosts.ModuleUnresolvedMode, descriptor, bytes);
 
         var passed =
             admitted.Outcome == VmOutcome.Normal &&
             declined.Outcome == VmOutcome.InvalidArtifact &&
             declined.Reason == VmReason.UnsupportedFeatureManifest &&
-            declined.Code == (int)JavaScriptDiagnosticCode.ModuleResolverAbsent;
+            declined.Code == (int)JavaScriptDiagnosticCode.SurfaceOutsideComposition &&
+            unresolved.Outcome == VmOutcome.InvalidArtifact &&
+            unresolved.Reason == VmReason.UnsupportedFeatureManifest &&
+            unresolved.Code == (int)JavaScriptDiagnosticCode.ModuleResolverAbsent;
 
         return
         [
             (
-                "a composition that registers no module resolver refuses a module artifact",
+                "a composition declining modules, and one with no resolver, each refuse by name",
                 passed,
-                $"registered: {admitted.Outcome}/{admitted.Reason}/{admitted.Code}; " +
-                $"not registered: {declined.Outcome}/{declined.Reason}/{declined.Code}"
+                $"admitted: {admitted.Outcome}/{admitted.Reason}/{admitted.Code}; " +
+                $"surface declined: {declined.Outcome}/{declined.Reason}/{declined.Code}; " +
+                $"no resolver: {unresolved.Outcome}/{unresolved.Reason}/{unresolved.Code}"
             ),
         ];
     }

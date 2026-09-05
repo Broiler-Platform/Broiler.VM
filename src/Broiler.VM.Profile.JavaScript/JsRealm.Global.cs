@@ -166,7 +166,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Defines <c>print</c>, <c>$262</c> and <c>console</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7FDFB6
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=DCC649
     // Broiler-Human:        PENDING
     private void SetupGlobalHostFunctions(JsObject host)
     {
@@ -179,6 +179,32 @@ internal sealed partial class JsRealm
             GlobalWriteLine(engine, arguments);
             return JsValue.Undefined;
         });
+
+        // `read` EXISTS AND REFUSES, AND BOTH HALVES OF THAT ARE DELIBERATE.
+        //
+        // It exists because a shell-shaped environment probe assigns it without calling it. The
+        // emscripten runtime an asm.js workload carries decides which host it is on by asking for
+        // `window`, `process` and `importScripts`, concludes "a shell" when it finds none of them,
+        // and then reads the global `read` to wire it into its own module object. It never calls
+        // it: the data such a workload needs is embedded in the file. A host that made that
+        // assignment throw would be refusing a whole program over a capability the program does not
+        // use, and would answer a `ReferenceError` that names nothing a reader could act on.
+        //
+        // It refuses because THIS PROFILE HAS NO SHAPE IN WHICH A HOST COULD ANSWER WITH A FILE'S
+        // CONTENTS. A value capability takes bytes and answers a `long` or an opaque reference, and
+        // an opaque reference is by construction not dereferenceable - so there is no registration
+        // any composition could make that would let this function return text. That is a limit of
+        // core contract version 1 rather than a decision of this profile's, and roadmap section 18
+        // is where a profile asks the core for an amendment. Until one lands, this refuses by name.
+        //
+        // The shape is `$262.agent`'s, one line below, and for the same stated reason: answering
+        // `undefined` would let a program proceed on a false premise.
+        GlobalRefuse(
+            host,
+            "read",
+            1,
+            "read: this profile's host-capability surface cannot carry a file's contents back to a " +
+            "guest, so no composition can register a reader");
 
         var agent = new JsObject(ObjectPrototype);
 

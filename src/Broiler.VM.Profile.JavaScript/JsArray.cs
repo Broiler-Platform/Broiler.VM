@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   13
 // Annotated:        13/13
-// Exempt:           3
+// Exempt:           4
 // Human-reviewed:   0/13
 // IP risk:          Low
 // Security risk:    Medium
@@ -52,6 +52,18 @@ internal sealed class JsArray : JsObject
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7CB409
     // Broiler-Human:        PENDING
     private uint length;
+
+    /// <summary>Whether <c>length</c> may still move.</summary>
+    /// <remarks>
+    /// <b>It is a field rather than an ordinary property because <c>length</c> is not an ordinary
+    /// property.</b> An Array's length is derived from the elements, so there is nowhere in the
+    /// property store for its attributes to live; without this, <c>defineProperty(a, "length",
+    /// { writable: false })</c> was accepted, reported as accepted, and then ignored by the next
+    /// <c>push</c>. A refusal that reports success is the one answer this profile refuses to give.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9667EC
+    // Broiler-Human:        PENDING
+    private bool lengthWritable = true;
 
     /// <summary>Creates an empty Array.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A4EEE4
@@ -134,10 +146,17 @@ internal sealed class JsArray : JsObject
     }
 
     /// <summary>Writes one indexed element.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=AD3D77
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=89F663
     // Broiler-Human:        PENDING
     internal void SetIndex(uint at, JsValue value)
     {
+        // THE SAME REFUSAL AS THE ONE ABOVE, on the fast path the engine reaches directly. A write
+        // that would extend a length nobody may move is not a write.
+        if (!lengthWritable && at >= length)
+        {
+            return;
+        }
+
         if (at < elements.Count)
         {
             elements[(int)at] = value;
@@ -164,7 +183,7 @@ internal sealed class JsArray : JsObject
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=CA1D6A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=AF68DC
     // Broiler-Human:        PENDING
     internal override bool TryGetOwnProperty(string key, out JsProperty property)
     {
@@ -190,7 +209,8 @@ internal sealed class JsArray : JsObject
         else if (string.Equals(key, "length", System.StringComparison.Ordinal))
         {
             property = JsProperty.Data(
-                JsValue.Number(length), JsPropertyAttributes.Writable);
+                JsValue.Number(length),
+                lengthWritable ? JsPropertyAttributes.Writable : JsPropertyAttributes.None);
 
             return true;
         }
@@ -199,16 +219,35 @@ internal sealed class JsArray : JsObject
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C3B289
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B28009
     // Broiler-Human:        PENDING
     internal override void SetOwnProperty(string key, JsProperty property)
     {
         if (string.Equals(key, "length", System.StringComparison.Ordinal) && !property.IsAccessor)
         {
-            SetLength(JsValue.ToUint32(property.Value.Type == JsType.Number
+            var wanted = JsValue.ToUint32(property.Value.Type == JsType.Number
                 ? property.Value.AsNumber()
-                : 0));
+                : 0);
 
+            // A DEFINITION MAY CLOSE THE LENGTH AND AN ASSIGNMENT MAY NOT, and both arrive here.
+            // The checked path hands down whatever attributes the descriptor asked for, so losing
+            // `Writable` is how a definition says so; an ordinary assignment carries the attributes
+            // the property already had, which the caller read from `TryGetOwnProperty` above.
+            if (!lengthWritable && wanted != length)
+            {
+                return;
+            }
+
+            SetLength(wanted);
+            lengthWritable = (property.Attributes & JsPropertyAttributes.Writable) != 0;
+            return;
+        }
+
+        // AN ELEMENT PAST A CLOSED LENGTH IS REFUSED, because writing it would move the length that
+        // was just made immovable. An element INSIDE the length is unaffected: closing the length
+        // says nothing about the elements, and freezing those is what `Object.freeze` is for.
+        if (!lengthWritable && IsArrayIndex(key, out var beyond) && beyond >= length)
+        {
             return;
         }
 

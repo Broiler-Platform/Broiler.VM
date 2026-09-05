@@ -1,12 +1,11 @@
 # broiler.javascript.slice diagnostic-code registry
 #
-# registry-revision: 4
-# published-at-milestone: JS-3a (revision 1), JS-3b (revision 2), JS-4 (revision 3),
-#                         JS-7/JSW-8 (revision 4)
+# registry-revision: 8
+# published-at-milestone: JS-3a (revision 1), JS-3b (revision 2), JS-4 (revision 3), JSW-2 (revision 4),
+#                         JSW-5 (revisions 5, 6 and 7), JSW-8 (revision 8)
 # owning-decision: JSD-0009
 # format-version: 1, 2
-# feature-manifest: broiler.javascript.slice, broiler.javascript.wide,
-#                   broiler.javascript.modules
+# feature-manifest: broiler.javascript.slice, broiler.javascript.wide
 #
 # code|name|half|reason|stage|reachability|case|since
 #
@@ -31,9 +30,9 @@
 #                limits, constants, code, entries, functions, modules, positions, reserved,
 #                reader. For the embedder-seam half: tokenizer, parser, semantics, lowering.
 #                `functions` arrived with format version 2, which is the first version to have a
-#                function table, and `modules` with revision 4, which is the first to have a
-#                module graph - a stage that reads no bytes of its own and rules on the relations
-#                between rows other stages read.
+#                function table. `modules` arrived with revision 8: it is the LINK, which runs
+#                after every other structural pass and before the artifact is accepted, and it is
+#                the only pass whose answer depends on the composition as well as on the bytes.
 # reachability   corpus     a named entry of the retained corpus produces this code.
 #                source     a named entry of the retained SOURCE corpus is refused with this code.
 #                           The source corpus is src/tests/corpus/js-1/source/source.manifest, and
@@ -86,29 +85,34 @@
 #
 # 1600: the structural refusals format version 2 adds. Version 1 has one frame, one flat set of
 # locals and no exception region a manifest admits; version 2 has a function table, an environment
-# model addressed by depth and slot, and regions that carry a scope depth. Each of the five is a
-# way an artifact can be wrong that version 1 has no vocabulary for, so each takes a NEW number
-# rather than borrowing one whose published meaning is about something else.
+# model addressed by depth and slot, regions that carry a scope depth, the optional surfaces an
+# artifact declares, and the one unit kind whose code may suspend. Each is a way an artifact can be
+# wrong that version 1 has no vocabulary for, so each takes a NEW number rather than borrowing one
+# whose published meaning is about something else. The last two arrived with the generator family
+# and were renumbered on the way in: the bundle that wrote them minted 1606 and 1607, which this
+# registry had already published for two of the surface refusals, and a number published once is
+# never published again for something else.
 1601|MalformedFunctionRow|core-result|InconsistentStructure|functions|corpus|wide-a-function-row-the-format-cannot-represent|3
 1602|FunctionIndexOutOfRange|core-result|InconsistentStructure|functions|corpus|wide-an-entry-point-naming-no-code-unit|3
 1603|CodeUnitRangeInvalid|core-result|InconsistentStructure|functions|corpus|wide-code-units-that-do-not-tile-the-code-section|3
 1604|ScopeDepthOutOfRange|core-result|InconsistentStructure|code|corpus|wide-a-scope-popped-past-the-frame|3
 1605|MalformedExceptionRegion|core-result|InconsistentStructure|reserved|corpus|wide-an-exception-handler-outside-its-code-unit|3
-#
-# 1613: the module goal, which is a graph rather than a table. Every code below is about a
-# relation BETWEEN modules - what a request names, what an export resolves to, whether the
-# composition admits the surface at all - and none of them can be stated about one row, which is
-# why they take a block of their own rather than continuing the one above. The numbering starts
-# above 1612 and leaves 1606 to 1612 unused rather than packing them, so a reader holding one of
-# these numbers can tell from the number alone that the artifact carried module records.
-1613|ModuleSectionOutsideManifest|core-result|UnknownFeature|modules|corpus|modules-a-module-section-the-manifest-excludes|4
-1614|MalformedModuleRow|core-result|InconsistentStructure|modules|corpus|modules-a-module-row-the-format-cannot-represent|4
-1615|ModuleRequestUnresolved|core-result|InconsistentStructure|modules|corpus|modules-a-request-naming-no-module|4
-1616|ModuleExportNotFound|core-result|InconsistentStructure|modules|corpus|modules-an-import-of-a-name-nothing-exports|4
-1617|ModuleExportAmbiguous|core-result|InconsistentStructure|modules|corpus|modules-a-name-two-star-re-exports-supply|4
-1618|ModuleExportCircular|core-result|InconsistentStructure|modules|corpus|modules-a-cyclic-export-resolution|4
-1619|ModuleResolverAbsent|core-result|UnsupportedFeatureManifest|modules|corpus|modules-a-module-artifact-a-composition-declined|4
-1620|ModuleSectionMissing|core-result|InconsistentStructure|modules|corpus|modules-the-module-manifest-with-no-module-records|4
+1606|DuplicateSurface|core-result|InconsistentStructure|manifest|corpus|wide-a-surface-declared-twice|4
+1607|UnknownSurface|core-result|UnknownFeature|manifest|corpus|wide-a-surface-this-build-does-not-implement|4
+1608|SurfaceOutsideComposition|core-result|UnsupportedFeatureManifest|manifest|corpus|wide-a-surface-the-composition-declined|4
+1609|YieldOutsideGenerator|core-result|SemanticValidationFailed|code|corpus|wide-a-suspension-outside-a-generator|5
+1610|GeneratorFlagsInconsistent|core-result|InconsistentStructure|functions|corpus|wide-a-generator-that-is-also-the-program-body|5
+1611|AwaitOutsideAsync|core-result|SemanticValidationFailed|code|corpus|wide-an-await-outside-an-async-function|6
+1612|AsyncFlagsInconsistent|core-result|InconsistentStructure|functions|corpus|wide-an-async-function-that-is-also-a-generator|6
+1613|ModuleSectionOutsideManifest|core-result|UnknownFeature|modules|corpus|modules-a-module-section-no-surface-declares|8
+1614|MalformedModuleRow|core-result|InconsistentStructure|modules|corpus|modules-a-module-row-the-format-cannot-represent|8
+1615|ModuleRequestUnresolved|core-result|InconsistentStructure|modules|corpus|modules-a-request-naming-no-module|8
+1616|ModuleExportNotFound|core-result|InconsistentStructure|modules|corpus|modules-an-import-of-a-name-nothing-exports|8
+1617|ModuleExportAmbiguous|core-result|InconsistentStructure|modules|corpus|modules-a-name-two-star-re-exports-supply|8
+1618|ModuleExportCircular|core-result|InconsistentStructure|modules|corpus|modules-a-cyclic-export-resolution|8
+1619|ModuleResolverAbsent|core-result|UnsupportedFeatureManifest|modules|corpus|modules-a-module-artifact-with-no-resolver|8
+1620|ModuleSectionMissing|core-result|InconsistentStructure|modules|corpus|modules-the-module-surface-with-no-module-records|8
+1621|ClassElementFlagsInconsistent|core-result|InconsistentStructure|code|corpus|wide-a-class-element-whose-flags-contradict|7
 1901|Truncated|core-result|Truncated|reader|corpus|a-truncated-payload|1
 1902|MalformedEncoding|core-result|MalformedEncoding|reader|corpus|an-overlong-variable-length-integer|1
 1903|ReaderStopped|core-result|InconsistentStructure|reader|defensive|every bounded-read status this build was compiled against has its own arm, so this one answers a status the reader does not currently have|1
@@ -136,11 +140,6 @@
 2301|TooManyLocals|embedder-seam|-|lowering|source|refuse-more-locals-than-the-frame-admits|2
 2302|TooManyConstants|embedder-seam|-|lowering|source|refuse-more-constants-than-the-pool-admits|2
 2303|OperandStackTooDeep|embedder-seam|-|lowering|defensive|no source reaches it: the operand stack grows only with right-nested operators, the format's ceiling is 1024 operands, and the parse depth bound refuses at a measured maximum of about 170 levels of source - the parse bound dominates the stack ceiling|2
-#
-# 2400: the module goal's early errors. A new block rather than a continuation of 2200, because
-# every one of these is an error about source presented as a MODULE - a goal symbol the front end
-# did not have when 2201 through 2210 were minted - and the goal is the fact that makes the
-# rejection make sense.
-2401|ModuleDeclarationOutsideModuleGoal|embedder-seam|-|parser|source|refuse-an-import-in-a-script|4
-2402|DuplicateExportName|embedder-seam|-|semantics|source|refuse-a-name-exported-twice|4
-2403|ExportNameNotDeclared|embedder-seam|-|semantics|source|refuse-an-export-of-a-name-nothing-declares|4
+2401|ModuleDeclarationOutsideModuleGoal|embedder-seam|-|parser|source|refuse-an-import-in-a-script|8
+2402|DuplicateExportName|embedder-seam|-|semantics|source|refuse-a-name-exported-twice|8
+2403|ExportNameNotDeclared|embedder-seam|-|semantics|source|refuse-an-export-of-a-name-nothing-declares|8

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   36
-// Annotated:        36/36
+// Relevant units:   38
+// Annotated:        38/38
 // Exempt:           100
-// Human-reviewed:   0/36
+// Human-reviewed:   0/38
 // IP risk:          None
 // Security risk:    High
 // Criteria:         22/18
 // Resource impact:  2/10 max
-// Unverified:       36
+// Unverified:       38
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -1605,7 +1605,7 @@ public sealed class SliceTokenizer
     /// silently turn an unsigned right shift into two comparisons, which is a program that parses
     /// and means something else.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=1F2B04
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E57116
     // Broiler-Falsified-If: a shorter punctuator is matched where a longer one starting at the same character exists
     // Broiler-Human:        PENDING
     private SliceToken ReadPunctuator(int startLine, int startColumn, bool sawNewline)
@@ -1620,6 +1620,27 @@ public sealed class SliceTokenizer
                 return new SliceToken(
                     kind, text, 0, string.Empty, startLine, startColumn, sawNewline, false);
             }
+        }
+
+        // A DECORATOR IS A CONSTRUCT AND NOT A STRAY CHARACTER, and it is named here because it is
+        // the only place that ever sees it: `@` begins no token either grammar defines, so the
+        // parser is never reached. While no class was admitted the whole decorated declaration was
+        // refused by name as a class; admitting the class family would otherwise have moved every
+        // decorator to an unexpected-character diagnostic, which a conformance runner scores as a
+        // failure rather than as a construct this manifest declines.
+        if (source[index] == '@')
+        {
+            Refuse(
+                SliceSourceDiagnosticCode.ConstructOutsideManifest,
+                "a decorator is not admitted by the declared feature manifest",
+                startLine,
+                startColumn);
+
+            index++;
+
+            return new SliceToken(
+                SliceTokenKind.EndOfSource, string.Empty, 0, string.Empty,
+                startLine, startColumn, false, false);
         }
 
         Refuse(
@@ -1734,24 +1755,88 @@ public sealed class SliceTokenizer
     /// Whether <paramref name="c"/> may start an identifier.
     /// </summary>
     /// <remarks>
-    /// <b>ASCII plus <c>$</c> and <c>_</c>, and this is an exclusion rather than an omission.</b>
-    /// The language's answer is the Unicode <c>ID_Start</c> property, which needs the Unicode data
-    /// this component has not acquired - it is an open dependency with a named holder. A
-    /// non-ASCII identifier is therefore refused as an unexpected character, which is a refusal
-    /// rather than a silent acceptance, and the decision record carries it as a conformance
-    /// exclusion.
+    /// <para>
+    /// <b>It is <c>ID_Start</c> and not "a letter", and the difference is a thousand refusals.</b>
+    /// This predicate read <c>char.IsLetter</c>, whose answer is the general categories
+    /// <c>Lu Ll Lt Lm Lo</c>; the language's answer adds <c>Nl</c> - a Roman numeral is an
+    /// identifier - and the six characters Unicode lists as <c>Other_ID_Start</c>, of which
+    /// <c>U+2118</c> is the one a conformance suite reaches for. A valid identifier was refused as
+    /// <b>an unexpected character</b>, which is the one refusal this front end may not make about a
+    /// construct the language admits: a reader is sent looking for a typo, and the harness scores it
+    /// a failure rather than an unsupported construct.
+    /// </para>
+    /// <para>
+    /// <b>The remark this replaces said ASCII only, and the code had not agreed with it for some
+    /// time.</b> It described the Unicode data as an open dependency and the exclusion as
+    /// deliberate. What that dependency is actually needed for is case folding, normalisation and
+    /// the property escapes in a pattern - none of which is this, because the identifier properties
+    /// are derivable from the general categories the platform already carries plus two small
+    /// literal sets.
+    /// </para>
+    /// <para>
+    /// <b>What is still excluded is stated rather than implied</b>: an identifier character outside
+    /// the basic plane, which needs a surrogate pair and therefore a predicate over code points
+    /// rather than over UTF-16 units.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=C6B56B
-    // Broiler-Falsified-If: this admits a character outside ASCII while the Unicode data dependency is open
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=7A9065
+    // Broiler-Falsified-If: a character the language admits to start an identifier is refused as an unexpected character
     // Broiler-Human:        PENDING
     private static bool IsIdentifierStart(char c) =>
-        char.IsAsciiLetter(c) || c is '$' or '_' || (c > '\u007f' && char.IsLetter(c));
+        char.IsAsciiLetter(c) || c is '$' or '_' ||
+        (c > '\u007f' &&
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=320347
+            // U+2E2F IS THE ONE SUBTRACTION, and it is a subtraction rather than an omission.
+            // `ID_Start` is the letter categories MINUS `Pattern_Syntax`, and the vertical tilde is
+            // the only character in both: a modifier letter that Unicode reserves for pattern
+            // syntax. Every other character the subtraction would remove is put back by
+            // `Other_ID_Start`, which is why that set exists and why this is a single test rather
+            // than a second table.
+            c != '\u2e2f' &&
+            (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) is
+                System.Globalization.UnicodeCategory.UppercaseLetter or
+                System.Globalization.UnicodeCategory.LowercaseLetter or
+                System.Globalization.UnicodeCategory.TitlecaseLetter or
+                System.Globalization.UnicodeCategory.ModifierLetter or
+                System.Globalization.UnicodeCategory.OtherLetter or
+                System.Globalization.UnicodeCategory.LetterNumber ||
+             IsOtherIdentifierStart(c)));
+
+    /// <summary>The six characters Unicode carries as <c>Other_ID_Start</c>.</summary>
+    /// <remarks>
+    /// They are a literal list because Unicode publishes them as one: they are the characters kept
+    /// startable for stability after their general category changed, so no category test can find
+    /// them and no future one will.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=DCA0EA
+    // Broiler-Human:        PENDING
+    private static bool IsOtherIdentifierStart(char c) =>
+        c is '\u1885' or '\u1886' or '\u2118' or '\u212e' or '\u309b' or '\u309c';
+
+    /// <summary>Whether <paramref name="c"/> may continue an identifier.</summary>
+    /// <remarks>
+    /// <b>A zero-width joiner and non-joiner are identifier characters</b>, which is the clause most
+    /// often missed: the grammar names them in <c>IdentifierPart</c> outright rather than reaching
+    /// them through a property, because they are format characters and every category test says so.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=7886AC
     // Broiler-Human:        PENDING
     private static bool IsIdentifierPart(char c) =>
         IsIdentifierStart(c) || char.IsAsciiDigit(c) ||
-        (c > '' && char.IsLetterOrDigit(c));
+        (c > '\u007f' &&
+            (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) is
+                System.Globalization.UnicodeCategory.NonSpacingMark or
+                System.Globalization.UnicodeCategory.SpacingCombiningMark or
+                System.Globalization.UnicodeCategory.DecimalDigitNumber or
+                System.Globalization.UnicodeCategory.ConnectorPunctuation ||
+             c is '\u200c' or '\u200d' ||
+             IsOtherIdentifierContinue(c)));
+
+    /// <summary>The characters Unicode carries as <c>Other_ID_Continue</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=90CBE1
+    // Broiler-Human:        PENDING
+    private static bool IsOtherIdentifierContinue(char c) =>
+        c is '\u00b7' or '\u0387' or '\u19da' || (c >= '\u1369' && c <= '\u1371');
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=F0264A
     // Broiler-Human:        PENDING

@@ -1,0 +1,35 @@
+# broiler-js retained workload pin 1
+#
+# A pin this repository holds for a workload it now also holds. `revision` is the immutable
+# upstream commit - never a branch name - and `content-sha256` is the digest over every path and
+# content the checkout of that revision produces.
+#
+# WHY THE AUTHORITY IS HERE AND NOT IN THE CHECKOUT. The workload roadmap's JSW-10 asks that the
+# Octane checkout be "retrieved, hashed and archived so a run against it means something the next
+# reader can check", the way the conformance suite's pin already works. Until this file existed the
+# end-user host took a path and kept no copy, so no digest stood behind any benchmark answer and
+# pointing a tool at a directory performed none of the retrieve-hash-archive the ledger records as
+# the human action.
+#
+# HOW IT WAS TAKEN. Cloned from the upstream repository on 2026-09-04 and archived by `git archive`
+# at the named commit, so the bytes are a function of the commit rather than of the filesystem that
+# held it: no mtimes, no ordering that depends on a directory read, and `gzip -n` so the archive
+# carries no timestamp of its own. `content-sha256` was then computed over the archive's own
+# members, which is the digest a reader can recompute without a network.
+#
+# WHAT IT IS NOT. It is not a benchmark result and it authorises none. Octane is RETIRED upstream -
+# the pinned commit is the retirement commit - and a score from it is a number about this
+# configuration rather than a comparison with anything. Roadmap section 17's measurement discipline
+# is JS-10's and nothing here anticipates it.
+#
+# It is separately licensed; the upstream terms are retained beside this file.
+
+suite octane
+upstream chromium/octane
+revision 570ad1ccfe86e3eecba0636c8f932ac08edec517
+revision-date 2017-04-12
+archive-sha256 7bcf54bdaa32475eadb09bbed4283f46cb2e11ee69c10b3b79524d568db841c4
+content-sha256 aab618b86ebe2f18229c18f0147943e9a1bac69967582563e120d4cea273b4c4
+files 37
+archived yes
+archived-at src/tests/octane/pins/octane-570ad1ccfe86e3eecba0636c8f932ac08edec517.tar.gz

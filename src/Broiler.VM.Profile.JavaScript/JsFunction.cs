@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   21
-// Annotated:        21/21
-// Exempt:           19
-// Human-reviewed:   0/21
+// Relevant units:   25
+// Annotated:        25/25
+// Exempt:           30
+// Human-reviewed:   0/25
 // IP risk:          Low
-// Security risk:    Medium
-// Criteria:         0/0
+// Security risk:    High
+// Criteria:         1/1
 // Resource impact:  2/10 max
-// Unverified:       21
+// Unverified:       25
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -30,8 +30,19 @@ namespace Broiler.VM.Profile.JavaScript;
 /// throws a <c>ReferenceError</c>, which is the behaviour <c>let</c> and <c>const</c> need and
 /// which no representation without a distinguished empty value can produce.
 /// </para>
+/// <para>
+/// <b>ONE record kind is the exception, and it is the only one with names in it: the object
+/// environment record a <c>with</c> makes.</b> It holds a guest object in <see cref="Binding"/> and
+/// no slots at all, and a name is asked of it through the object's own property lookup. It sits on
+/// the same chain as every other record and is counted by <see cref="Ancestor"/> like any other, so
+/// a <c>(depth, slot)</c> pair emitted inside a <c>with</c> body still reaches what it was compiled
+/// to reach. <b>A declarative record cannot be searched by name and that is deliberate</b>: there
+/// are no names in one to search, so a dynamic lookup can reach an object a <c>with</c> put on the
+/// chain and can reach nothing else.
+/// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=D0AAD1
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=D0AAD1
+// Broiler-Falsified-If: a lookup by name reaches a slot of a declarative record
 // Broiler-Human:        PENDING
 internal sealed class JsEnvironment
 {
@@ -44,18 +55,43 @@ internal sealed class JsEnvironment
         Parent = parent;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=3991BD
+    /// <summary>Creates the object environment record a <c>with</c> statement puts on the chain.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=3A6E29
     // Broiler-Human:        PENDING
-    private JsEnvironment(JsValue[] slots, JsEnvironment? parent)
+    internal JsEnvironment(JsObject binding, JsEnvironment? parent)
+    {
+        Slots = System.Array.Empty<JsValue>();
+        Parent = parent;
+        Binding = binding;
+    }
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=7EE350
+    // Broiler-Human:        PENDING
+    private JsEnvironment(JsValue[] slots, JsEnvironment? parent, JsObject? binding)
     {
         Slots = slots;
         Parent = parent;
+        Binding = binding;
     }
 
     /// <summary>The slots this record holds.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=C8800E
     // Broiler-Human:        PENDING
     internal JsValue[] Slots { get; }
+
+    /// <summary>
+    /// The object this record binds names through, or <see langword="null"/> in a declarative one.
+    /// </summary>
+    /// <remarks>
+    /// It is the whole of what makes this record kind different, and it is READ-ONLY here: the
+    /// record never rebinds, so an object a <c>with</c> put on the chain is the object every name
+    /// resolved through that record asks, for as long as the record is on it. What CAN change is
+    /// the object's own properties, which is why nothing about a name resolved through one is
+    /// cached anywhere.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=A86796
+    // Broiler-Human:        PENDING
+    internal JsObject? Binding { get; }
 
     /// <summary>The enclosing record, or <see langword="null"/> at the top.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=6449D8
@@ -71,7 +107,7 @@ internal sealed class JsEnvironment
     /// value the loop finished with. Copying is the specification's <c>CreatePerIterationEnvironment</c>,
     /// and getting it wrong is the single most-reproduced closure bug in the language.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=EB2301
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=DEB6B7
     // Broiler-Human:        PENDING
     internal JsEnvironment Copy(int slots)
     {
@@ -83,7 +119,11 @@ internal sealed class JsEnvironment
             copied[at] = Slots[at];
         }
 
-        return new JsEnvironment(copied, Parent);
+        // The binding travels with the copy. A per-iteration copy is only ever emitted for a
+        // declarative record, so this arm is unreachable from this lowering - and dropping the
+        // binding rather than carrying it would turn an artifact that copied an object record into
+        // one whose names silently stopped resolving, which is a worse answer than the honest one.
+        return new JsEnvironment(copied, Parent, Binding);
     }
 
     /// <summary>Walks <paramref name="depth"/> records outward from this one.</summary>
@@ -238,11 +278,159 @@ internal sealed class JsScriptFunction : JsFunction
     // Broiler-Human:        PENDING
     internal JsValue LexicalThis { get; set; } = JsValue.Undefined;
 
+    /// <summary>
+    /// The object this function's <c>super</c> lookups start from, or <see langword="null"/> when
+    /// it is not a method.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is a property of the FUNCTION and not of the call.</b> A method extracted from a
+    /// prototype and called against an unrelated receiver still resolves <c>super</c> through the
+    /// object it was defined on, which is the whole reason the specification gives a method a home
+    /// object rather than deriving <c>super</c> from <c>this</c>. A lookup through the receiver's
+    /// prototype would also be an infinite regress: a method on <c>C.prototype</c> called on an
+    /// instance of a subclass would find itself.
+    /// </para>
+    /// <para>
+    /// It is the class prototype for a prototype method, the constructor itself for a
+    /// <c>static</c> method, and the object literal for a shorthand method. An arrow function has
+    /// none of its own and reaches the enclosing method's through
+    /// <see cref="LexicalActiveFunction"/>.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E71C47
+    // Broiler-Human:        PENDING
+    internal JsObject? HomeObject { get; set; }
+
+    /// <summary>
+    /// The box holding the <c>this</c> an arrow function inherited, when the frame it closed over
+    /// had one that could still change.
+    /// </summary>
+    /// <remarks>
+    /// A derived constructor's <c>this</c> does not exist until <c>super()</c> returns, so an
+    /// arrow created before that point cannot capture a value - there is none - and must capture
+    /// the BINDING. Copying the value would have given every such arrow a permanently dead
+    /// <c>this</c>, which is the shape of defect that only shows up in a constructor that creates
+    /// its callbacks before it calls up.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=34A6ED
+    // Broiler-Human:        PENDING
+    internal JsCell? LexicalThisBinding { get; set; }
+
+    /// <summary>The <c>new.target</c> an arrow function inherited, when it is one.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=04494B
+    // Broiler-Human:        PENDING
+    internal JsValue LexicalNewTarget { get; set; } = JsValue.Undefined;
+
+    /// <summary>
+    /// The function an arrow's <c>super</c> belongs to, which is the nearest enclosing
+    /// non-arrow function.
+    /// </summary>
+    /// <remarks>
+    /// One field rather than two: the home object a <c>super</c> property needs and the superclass
+    /// a <c>super()</c> needs are both reached from the same function object, so carrying that
+    /// function is what an arrow inherits and the two answers follow from it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=101961
+    // Broiler-Human:        PENDING
+    internal JsScriptFunction? LexicalActiveFunction { get; set; }
+
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=0AB323
     // Broiler-Human:        PENDING
     internal override bool IsConstructor =>
         (Program.Functions[Unit].Flags & Format.JsFormat.FunctionFlags.Constructible) != 0;
+
+    /// <summary>Whether calling this function without <c>new</c> is a <c>TypeError</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=A7DFE0
+    // Broiler-Human:        PENDING
+    internal bool IsClassConstructor => Program.Functions[Unit].IsClassConstructor;
+
+    /// <summary>Whether this function's <c>this</c> is created by its own <c>super()</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=57770B
+    // Broiler-Human:        PENDING
+    internal bool IsDerivedConstructor => Program.Functions[Unit].IsDerivedConstructor;
+
+    /// <summary>
+    /// The class elements every instance of this constructor is given, in the order the class body
+    /// wrote them.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>They live on the CONSTRUCTOR and not on the prototype, and the difference is which class
+    /// of a chain answers.</b> <c>class B { x = 1 } class D extends B { y = 2 }</c> gives an
+    /// instance both fields because B's constructor runs and installs its own, then D's
+    /// <c>super()</c> returns and D's are installed - two lists, one per class, applied by the
+    /// constructor each belongs to. A list on the prototype would have been found by a prototype
+    /// walk and applied once with whatever it found first.
+    /// </para>
+    /// <para>
+    /// <b>It is null on every function that is not a class constructor</b>, which is nearly all of
+    /// them, so an ordinary closure carries one null field and no list.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=578942
+    // Broiler-Human:        PENDING
+    internal System.Collections.Generic.List<JsClassElement>? InstanceElements { get; set; }
+
+    /// <summary>
+    /// The class elements that run once, on the constructor itself, when the class is defined.
+    /// </summary>
+    /// <remarks>
+    /// <b>Static fields and static blocks share ONE list because their order is one order.</b>
+    /// <c>class C { static a = 1; static { this.b = this.a } static c = 2 }</c> runs the three in
+    /// the order written, and two lists would have had to be merged by something that knew where
+    /// each element came from.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=35D9A1
+    // Broiler-Human:        PENDING
+    internal System.Collections.Generic.List<JsClassElement>? StaticElements { get; set; }
+}
+
+/// <summary>
+/// One recorded class element: what <c>DefineClassElement</c> stored and what applying it needs.
+/// </summary>
+/// <remarks>
+/// <b>A record of an element and not the element itself</b>, which is the whole reason it exists.
+/// A field's key is known when the class is defined and its value is not; a static block has a body
+/// and no key at all. Holding the three things a class body settled early - the key, the function,
+/// and which kind of element the flags say it is - is what lets the value be produced at the time
+/// the language says it is produced rather than at the time the syntax was read.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F94DCE
+// Broiler-Human:        PENDING
+internal sealed class JsClassElement
+{
+    /// <summary>
+    /// The property key, the private name, or <c>undefined</c> for a static block.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=3EE4B3
+    // Broiler-Human:        PENDING
+    internal JsValue Key { get; init; }
+
+    /// <summary>
+    /// The initialiser to call, the method to install, or <c>undefined</c> for a field written with
+    /// no initialiser.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=0206C2
+    // Broiler-Human:        PENDING
+    internal JsValue Body { get; set; }
+
+    /// <summary>The setter half, when this element is a private accessor that has one.</summary>
+    /// <remarks>
+    /// <b>One element carries both halves rather than the list carrying two elements.</b>
+    /// <c>get #a</c> and <c>set #a</c> declare one private name, so the second half found merges
+    /// into the first's record - and an instance then gets ONE element with two functions, which is
+    /// what makes reading and writing <c>this.#a</c> reach the pair the class wrote.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=679B2F
+    // Broiler-Human:        PENDING
+    internal JsValue Setter { get; set; }
+
+    /// <summary>The <c>DefineClassElement</c> operand bits this element was recorded with.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=00F3FD
+    // Broiler-Human:        PENDING
+    internal byte Flags { get; set; }
 }
 
 /// <summary>The result of <c>Function.prototype.bind</c>.</summary>

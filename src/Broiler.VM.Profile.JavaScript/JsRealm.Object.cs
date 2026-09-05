@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   17
-// Annotated:        17/17
+// Relevant units:   18
+// Annotated:        18/18
 // Exempt:           15
-// Human-reviewed:   0/17
+// Human-reviewed:   0/18
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
-// Resource impact:  2/10 max
-// Unverified:       17
+// Resource impact:  3/10 max
+// Unverified:       18
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -58,7 +58,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>Object</c>, <c>Object.prototype</c> and the statics on the constructor.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=D03199
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F6551E
     // Broiler-Human:        PENDING
     private void SetupObject()
     {
@@ -79,7 +79,17 @@ internal sealed partial class JsRealm
                 return JsValue.String("[object Null]");
             }
 
-            return JsValue.String("[object " + engine.ToObject(thisValue).ClassName + "]");
+            var host = engine.ToObject(thisValue);
+
+            // `Symbol.toStringTag` OVERRIDES THE CLASS AND IS WHAT MAKES THIS EXTENSIBLE. A guest
+            // object carrying one reports it — which is how `[object Generator]`, `[object Map]`
+            // and every tag a program sets on a class of its own are produced. A tag that is not a
+            // String is ignored rather than coerced, because a tag is a name and coercing one would
+            // let `[object 42]` through.
+            var tagged = engine.GetSymbol(thisValue, engine.Realm.ToStringTagSymbol);
+
+            return JsValue.String(
+                "[object " + (tagged.Type == JsType.String ? tagged.AsString() : host.ClassName) + "]");
         });
 
         Method(ObjectPrototype, "toLocaleString", 0, static (engine, thisValue, arguments) =>
@@ -95,10 +105,55 @@ internal sealed partial class JsRealm
             return JsValue.Object(engine.ToObject(thisValue));
         });
 
+        // `__proto__` IS AN ACCESSOR ON THIS PROTOTYPE AND NOT A DATA PROPERTY OF EVERY OBJECT.
+        //
+        // It is Annex B and it is not going anywhere: `o.__proto__ = null` and
+        // `({}).__proto__ === Object.prototype` are written by real programs, and an object literal
+        // with a `__proto__` key is how a great deal of code sets a prototype. Without it, the
+        // assignment created an ORDINARY OWN PROPERTY NAMED `__proto__` - a wrong answer that looks
+        // like a right one, because every later read of `o.__proto__` returns what was stored and
+        // nothing reports that the prototype never moved.
+        //
+        // The getter and the setter are the specification's, which is why the setter answers
+        // `undefined` rather than throwing for a primitive receiver or a non-object value: the two
+        // ways to be a no-op are distinguished by the receiver, not by the argument.
+        ObjectPrototype.SetOwnProperty(
+            "__proto__",
+            JsProperty.Accessor(
+                Native("get __proto__", 0, static (engine, thisValue, arguments) =>
+                {
+                    _ = arguments;
+                    var held = engine.ToObject(thisValue).Prototype;
+                    return held is null ? JsValue.Null : JsValue.Object(held);
+                }),
+                Native("set __proto__", 1, static (engine, thisValue, arguments) =>
+                {
+                    var value = ArgOfObject(arguments, 0);
+
+                    if (!thisValue.IsObject || (!value.IsObject && value.Type != JsType.Null))
+                    {
+                        return JsValue.Undefined;
+                    }
+
+                    ObjectSetPrototype(
+                        engine, thisValue.AsObject(), value.Type == JsType.Null ? null : value.AsObject());
+
+                    return JsValue.Undefined;
+                }),
+                JsPropertyAttributes.Configurable));
+
         Method(ObjectPrototype, "hasOwnProperty", 1, static (engine, thisValue, arguments) =>
         {
-            var key = engine.ToPropertyKey(ArgOfObject(arguments, 0));
-            return JsValue.Boolean(engine.ToObject(thisValue).HasOwnProperty(key));
+            var requested = ArgOfObject(arguments, 0);
+            var host = engine.ToObject(thisValue);
+
+            // A SYMBOL KEY IS A DIFFERENT TABLE AND SO A DIFFERENT QUESTION. Coercing it to a
+            // String first would ask about a property named `Symbol(x)`, which no object has and
+            // every object could.
+            return JsValue.Boolean(
+                requested.IsSymbol
+                    ? host.TryGetOwnSymbol(requested.AsSymbol(), out _)
+                    : host.HasOwnProperty(engine.ToPropertyKey(requested)));
         });
 
         Method(ObjectPrototype, "isPrototypeOf", 1, static (engine, thisValue, arguments) =>
@@ -130,8 +185,16 @@ internal sealed partial class JsRealm
 
         Method(ObjectPrototype, "propertyIsEnumerable", 1, static (engine, thisValue, arguments) =>
         {
-            var key = engine.ToPropertyKey(ArgOfObject(arguments, 0));
+            var requested = ArgOfObject(arguments, 0);
             var target = engine.ToObject(thisValue);
+
+            if (requested.IsSymbol)
+            {
+                return JsValue.Boolean(
+                    target.TryGetOwnSymbol(requested.AsSymbol(), out var owned) && owned.Enumerable);
+            }
+
+            var key = engine.ToPropertyKey(requested);
             return JsValue.Boolean(target.TryGetOwnProperty(key, out var property) && property.Enumerable);
         });
 
@@ -167,6 +230,91 @@ internal sealed partial class JsRealm
             return ObjectEnumerate(engine, ArgOfObject(arguments, 0), ObjectEntryKind.Pair);
         });
 
+        // THE INVERSE OF `entries`, AND IT TAKES AN ITERABLE RATHER THAN AN ARRAY. That is what
+        // makes `Object.fromEntries(map)` work, which is the shape most programs use it in: a Map
+        // iterates as [key, value] pairs and needs no conversion first.
+        Method(constructor, "fromEntries", 1, (engine, thisValue, arguments) =>
+        {
+            _ = thisValue;
+            var source = ArgOfObject(arguments, 0);
+
+            if (source.IsNullish)
+            {
+                return engine.ThrowTypeError("Object.fromEntries requires an iterable argument");
+            }
+
+            var made = new JsObject(ObjectPrototype);
+
+            foreach (var entry in CollectionElements(engine, source))
+            {
+                engine.Charge(1);
+
+                if (!entry.IsObject)
+                {
+                    return engine.ThrowTypeError("Iterator value " + engine.ToStringValue(entry) +
+                        " is not an entry object");
+                }
+
+                var key = engine.GetIndexed(entry, JsValue.Number(0));
+                var value = engine.GetIndexed(entry, JsValue.Number(1));
+
+                // A DEFINITION AND NOT AN ASSIGNMENT, which is the same distinction a computed
+                // member of an object literal makes: a key of `__proto__` becomes an own property
+                // here rather than moving the object's prototype.
+                if (key.IsSymbol)
+                {
+                    made.SetOwnSymbol(
+                        key.AsSymbol(), JsProperty.Data(value, JsPropertyAttributes.Default));
+                }
+                else
+                {
+                    made.SetOwnProperty(
+                        engine.ToPropertyKey(key),
+                        JsProperty.Data(value, JsPropertyAttributes.Default));
+                }
+            }
+
+            return JsValue.Object(made);
+        });
+
+        // THE GROUPS ARE AN OBJECT WITH A NULL PROTOTYPE, and that is the whole reason this method
+        // is worth having over the four lines a program would write instead: a group key of
+        // `toString` or `constructor` does not collide with anything, because there is nothing on
+        // the chain to collide with.
+        Method(constructor, "groupBy", 2, (engine, thisValue, arguments) =>
+        {
+            _ = thisValue;
+            var source = ArgOfObject(arguments, 0);
+            var chooser = ArgOfObject(arguments, 1);
+
+            if (!chooser.IsObject || !chooser.AsObject().IsCallable)
+            {
+                return engine.ThrowTypeError("Object.groupBy: the callback is not a function");
+            }
+
+            var groups = new JsObject(null);
+            var at = 0;
+
+            foreach (var element in CollectionElements(engine, source))
+            {
+                engine.Charge(1);
+                var key = engine.ToPropertyKey(
+                    engine.Call(chooser, JsValue.Undefined, [element, JsValue.Number(at)]));
+
+                if (!groups.TryGetOwnProperty(key, out var held) || held.Value.AsObjectOrNull() is not JsArray bucket)
+                {
+                    bucket = NewArray();
+                    groups.SetOwnProperty(
+                        key, JsProperty.Data(JsValue.Object(bucket), JsPropertyAttributes.Default));
+                }
+
+                bucket.Push(element);
+                at++;
+            }
+
+            return JsValue.Object(groups);
+        });
+
         Method(constructor, "getOwnPropertyNames", 1, (engine, thisValue, arguments) =>
         {
             _ = thisValue;
@@ -177,6 +325,24 @@ internal sealed partial class JsRealm
             {
                 engine.Charge(1);
                 result.Push(JsValue.String(key));
+            }
+
+            return JsValue.Object(result);
+        });
+
+        // THE SYMBOL KEYS ARE A SEPARATE TABLE AND THEREFORE A SEPARATE ANSWER. `getOwnPropertyNames`
+        // must not report them and this must report nothing else, which is the whole reason the
+        // language has two functions where a reader might expect one filter.
+        Method(constructor, "getOwnPropertySymbols", 1, (engine, thisValue, arguments) =>
+        {
+            _ = thisValue;
+            var target = engine.ToObject(ArgOfObject(arguments, 0));
+            var result = NewArray();
+
+            foreach (var key in target.OwnSymbolKeys())
+            {
+                engine.Charge(1);
+                result.Push(JsValue.Symbol(key));
             }
 
             return JsValue.Object(result);
@@ -245,9 +411,22 @@ internal sealed partial class JsRealm
                 return engine.ThrowTypeError("Object.defineProperty called on non-object");
             }
 
-            var key = engine.ToPropertyKey(ArgOfObject(arguments, 1));
+            var requested = ArgOfObject(arguments, 1);
             var fields = ObjectToDescriptorFields(engine, ArgOfObject(arguments, 2));
-            ObjectApplyDescriptor(engine, target.AsObject(), key, fields);
+
+            if (requested.IsSymbol)
+            {
+                // THE SYMBOL TABLE HAS NO REDEFINITION RULES OF ITS OWN YET, so this defines
+                // rather than validating against a current descriptor the way the String path does.
+                // A Symbol-keyed property is either absent or defined by the code that owns the
+                // Symbol, and nothing in this surface can redefine one it did not create.
+                target.AsObject().SetOwnSymbol(
+                    requested.AsSymbol(), ObjectPropertyFromFields(engine, target.AsObject(), fields));
+
+                return target;
+            }
+
+            ObjectApplyDescriptor(engine, target.AsObject(), engine.ToPropertyKey(requested), fields);
             return target;
         });
 
@@ -269,7 +448,16 @@ internal sealed partial class JsRealm
         {
             _ = thisValue;
             var target = engine.ToObject(ArgOfObject(arguments, 0));
-            var key = engine.ToPropertyKey(ArgOfObject(arguments, 1));
+            var requested = ArgOfObject(arguments, 1);
+
+            if (requested.IsSymbol)
+            {
+                return target.TryGetOwnSymbol(requested.AsSymbol(), out var owned)
+                    ? JsValue.Object(ObjectDescriptorFor(owned))
+                    : JsValue.Undefined;
+            }
+
+            var key = engine.ToPropertyKey(requested);
 
             return target.TryGetOwnProperty(key, out var property)
                 ? JsValue.Object(ObjectDescriptorFor(property))
@@ -587,11 +775,49 @@ internal sealed partial class JsRealm
         return fields;
     }
 
+    /// <summary>The property a descriptor's fields describe, with nothing to redefine.</summary>
+    /// <remarks>
+    /// The Symbol-keyed path uses it: there is no current descriptor to validate against, so the
+    /// fields are read straight into a property. Absent attribute fields default to false, which is
+    /// what <c>DefinePropertyOrThrow</c> says for a property that did not exist.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BFF4D5
+    // Broiler-Human:        PENDING
+    private static JsProperty ObjectPropertyFromFields(
+        JsEngine engine, JsObject target, ObjectDescriptorFields fields)
+    {
+        _ = engine;
+        _ = target;
+        var attributes = JsPropertyAttributes.None;
+
+        if (fields.HasEnumerable && fields.Enumerable)
+        {
+            attributes |= JsPropertyAttributes.Enumerable;
+        }
+
+        if (fields.HasConfigurable && fields.Configurable)
+        {
+            attributes |= JsPropertyAttributes.Configurable;
+        }
+
+        if (fields.HasGet || fields.HasSet)
+        {
+            return JsProperty.Accessor(fields.Getter, fields.Setter, attributes);
+        }
+
+        if (fields.HasWritable && fields.Writable)
+        {
+            attributes |= JsPropertyAttributes.Writable;
+        }
+
+        return JsProperty.Data(fields.HasValue ? fields.Value : JsValue.Undefined, attributes);
+    }
+
     /// <summary>
     /// The specification's <c>ValidateAndApplyPropertyDescriptor</c>: refuse what the existing
     /// property forbids, then write the merge of the two.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=A520F1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A520F1
     // Broiler-Human:        PENDING
     private static void ObjectApplyDescriptor(
         JsEngine engine, JsObject target, string key, ObjectDescriptorFields fields)

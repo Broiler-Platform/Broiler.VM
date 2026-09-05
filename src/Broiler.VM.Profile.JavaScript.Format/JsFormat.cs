@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   17
-// Annotated:        17/17
-// Exempt:           22
-// Human-reviewed:   0/17
+// Relevant units:   20
+// Annotated:        20/20
+// Exempt:           28
+// Human-reviewed:   0/20
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
-// Resource impact:  0/10 max
-// Unverified:       17
+// Resource impact:  1/10 max
+// Unverified:       20
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -63,7 +63,7 @@ public static class JsFormat
     /// version-1 meanings; their bodies are read under version 2's rules where those differ, and
     /// the two places they differ - the limits body and the exception-region body - say so.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=8895FC
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=01A16C
     // Broiler-Human:        PENDING
     public enum SectionKind : uint
     {
@@ -91,22 +91,27 @@ public static class JsFormat
         /// <summary>The code units: one row per function, plus row zero for the program body.</summary>
         Functions = 8,
 
-        /// <summary>The module records. Admitted by <c>broiler.javascript.modules</c> alone.</summary>
-        Modules = 9,
-    }
+        /// <summary>
+        /// The optional feature manifests this artifact declares beside the one it names in its
+        /// header.
+        /// </summary>
+        /// <remarks>
+        /// It is optional and its absence means the artifact declares none, which is what every
+        /// artifact written before this kind existed says. See <see cref="JsSurfaces"/> for why a
+        /// surface made only of globals has to be declared at all.
+        /// </remarks>
+        Surfaces = 9,
 
-    /// <summary>The feature manifest the module goal is admitted under.</summary>
-    /// <remarks>
-    /// <b>A THIRD IDENTITY RATHER THAN A WIDER SECOND ONE</b>, for the reason the wide manifest is
-    /// not a wider slice: a module carries a resolution question a script does not, and a
-    /// composition has to be able to answer that question separately from whether it admits objects
-    /// and closures. The format version is version 2 either way - a module artifact is a version-2
-    /// artifact with one more section - so the two identities share a reader and differ only in
-    /// which sections that reader admits.
-    /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=TBF
-    // Broiler-Human:        PENDING
-    public const string ModulesManifestId = "broiler.javascript.modules";
+        /// <summary>
+        /// The module records: what each module of a graph requests, imports and exports.
+        /// </summary>
+        /// <remarks>
+        /// Admitted only by an artifact that declares <see cref="JsSurfaces.Modules"/> beside its
+        /// manifest, for the reason every optional surface is declared: a composition has to be
+        /// able to decline module resolution separately from admitting objects and closures.
+        /// </remarks>
+        Modules = 10,
+    }
 
     /// <summary>What one import entry binds its local name to.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=TBF
@@ -151,7 +156,7 @@ public static class JsFormat
     }
 
     /// <summary>The flag bits a code-unit row carries.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=2E646A
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=5140F2
     // Broiler-Human:        PENDING
     [System.Flags]
     public enum FunctionFlags : uint
@@ -173,6 +178,83 @@ public static class JsFormat
 
         /// <summary>The unit may be used as a constructor.</summary>
         Constructible = 16,
+
+        /// <summary>
+        /// The unit is a class constructor: calling it without <c>new</c> is a <c>TypeError</c>.
+        /// </summary>
+        /// <remarks>
+        /// It is a flag on the unit rather than a check the lowering emits, because the refusal has
+        /// to happen at every call site including the ones the lowering never sees - a method
+        /// handed to <c>Array.prototype.map</c>, a constructor reached through
+        /// <c>Function.prototype.call</c>. A guard in the callee's own first instruction would
+        /// answer for none of them, since the call never reaches the callee's code.
+        /// </remarks>
+        ClassConstructor = 32,
+
+        /// <summary>
+        /// The unit is the constructor of a class with a heritage: its <c>this</c> does not exist
+        /// until <c>super()</c> returns.
+        /// </summary>
+        /// <remarks>
+        /// This is what makes a derived constructor more than sugar. The frame is entered with no
+        /// <c>this</c> at all rather than with a fresh object, so reading <c>this</c> early is a
+        /// <c>ReferenceError</c> and the object the constructor ends up with is the one the BASE
+        /// constructor made from <c>new.target</c> - which is how an instance of a three-deep chain
+        /// gets the prototype of the class that was actually constructed.
+        /// </remarks>
+        DerivedConstructor = 64,
+
+        /// <summary>
+        /// The unit binds its own parameters, so the frame copies no argument into a slot.
+        /// </summary>
+        /// <remarks>
+        /// <b>Without this flag <c>ParameterCount</c> means two things at once, and they part
+        /// company the moment a parameter list stops being simple.</b> It is the arity the function
+        /// reports as <c>length</c> - which counts nothing at or after the first default and never
+        /// counts a rest parameter - and it is how many arguments the frame copies into slots zero
+        /// upward. A default has to run code, a rest parameter has to build an Array and a pattern
+        /// has to destructure, so those units bind their parameters in their own prologue and this
+        /// flag is what tells the frame to keep its hands off. The slots then start EMPTY, which is
+        /// what makes a default reading a later parameter the <c>ReferenceError</c> the
+        /// specification says it is rather than a read of <c>undefined</c>.
+        /// </remarks>
+        BindsParameters = 128,
+
+        /// <summary>
+        /// The unit is a generator body: calling it builds a generator object rather than running
+        /// it, and it is the only kind of unit whose code may suspend.
+        /// </summary>
+        /// <remarks>
+        /// <b>It is a flag on the unit and not a property of the call site</b>, because whether an
+        /// invocation gets a heap-allocated frame has to be decidable before any of its code runs.
+        /// The verifier refuses a suspension opcode in a unit without this bit, so a frame the
+        /// executor did not allocate can never be the frame an instruction tries to suspend.
+        /// </remarks>
+        Generator = 256,
+
+        /// <summary>
+        /// The unit is an async function body: calling it STARTS the body and answers a promise,
+        /// and it is the only kind of unit whose code may <c>await</c>.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// <b>It is not <see cref="Generator"/> with a different driver, and the difference is
+        /// observable from the first line.</b> A generator is suspended-start: calling it runs no
+        /// instruction. An async function is not: its body runs synchronously up to the first
+        /// <c>await</c>, so <c>async function f(){ print(1); await 0; } f(); print(2)</c> prints
+        /// <c>1</c> before <c>2</c>, and a unit flagged as both would have to be one of the two.
+        /// The verifier refuses the pairing rather than choosing.
+        /// </para>
+        /// <para>
+        /// <b>It pairs with <see cref="Arrow"/> and <see cref="Generator"/> does not.</b> An async
+        /// arrow is an ordinary arrow whose body may suspend - it has no <c>this</c>,
+        /// <c>new.target</c> or <c>super</c> of its own and reads the enclosing function's - so the
+        /// frame it suspends on has to carry what an arrow's frame is entered with, which is why
+        /// the frame records a <c>new.target</c> and a <c>this</c> box that a generator's never
+        /// needs.
+        /// </para>
+        /// </remarks>
+        Async = 512,
     }
 
     /// <summary>What an exception region does when control reaches its handler.</summary>
@@ -248,12 +330,22 @@ public static class JsFormat
     // Broiler-Human:        PENDING
     public const uint CeilingCodeBytes = 67_108_864;
 
+    /// <summary>The most optional surfaces one artifact may declare.</summary>
+    /// <remarks>
+    /// It is deliberately smaller than the number of names it bounds. An artifact declaring more
+    /// surfaces than this build has is declaring something nobody wrote, and a ceiling that
+    /// tracked the roster would have to move every time the roster did.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=6A8F76
+    // Broiler-Human:        PENDING
+    public const uint CeilingSurfaces = 16;
+
     /// <summary>The most module records one artifact may declare.</summary>
     /// <remarks>
     /// A module graph is resolved whole at verification, and export resolution walks it, so this
-    /// ceiling bounds a walk rather than a table. It is stated here and not derived from the
-    /// function ceiling because a module and a code unit are not the same thing: every module has a
-    /// code unit and most code units are not modules.
+    /// ceiling bounds a walk rather than a table. It is stated separately from the function ceiling
+    /// because a module and a code unit are not the same thing: every module has two code units and
+    /// most code units are not a module's.
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=TBF
     // Broiler-Human:        PENDING
@@ -278,4 +370,145 @@ public static class JsFormat
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=TBF
     // Broiler-Human:        PENDING
     public const uint CeilingExportEntries = 65_536;
+
+    /// <summary>Encodes a JavaScript String for the constant and name tables.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A JavaScript String is a sequence of UTF-16 code UNITS and not of scalar values, and UTF-8
+    /// cannot carry one.</b> <c>"\uD800"</c> is a legal String with a legal length and a legal
+    /// <c>charCodeAt</c>; it is also an unpaired surrogate, which no UTF-8 sequence encodes. The
+    /// platform's encoder answers a replacement character for it, silently, so a literal containing
+    /// one reached the artifact as <c>U+FFFD</c> and every later answer about it — its length, its
+    /// units, its comparison with another such literal — was about the replacement instead.
+    /// </para>
+    /// <para>
+    /// <b>So a surrogate is written as its own three bytes, which UTF-8 forbids and this format
+    /// therefore defines.</b> The encoding is WTF-8: identical to UTF-8 for every well-formed
+    /// String, so an artifact that carries no unpaired surrogate has exactly the bytes it had
+    /// before, byte for byte and digest for digest, and only a String no UTF-8 encoder could have
+    /// carried is written differently.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=B10193
+    // Broiler-Human:        PENDING
+    public static byte[] EncodeText(string value)
+    {
+        var buffer = new System.Collections.Generic.List<byte>(value.Length + 8);
+
+        for (var at = 0; at < value.Length; at++)
+        {
+            var unit = value[at];
+
+            if (char.IsHighSurrogate(unit) && at + 1 < value.Length && char.IsLowSurrogate(value[at + 1]))
+            {
+                var scalar = char.ConvertToUtf32(unit, value[at + 1]);
+                buffer.Add((byte)(0xF0 | (scalar >> 18)));
+                buffer.Add((byte)(0x80 | ((scalar >> 12) & 0x3F)));
+                buffer.Add((byte)(0x80 | ((scalar >> 6) & 0x3F)));
+                buffer.Add((byte)(0x80 | (scalar & 0x3F)));
+                at++;
+                continue;
+            }
+
+            if (unit < 0x80)
+            {
+                buffer.Add((byte)unit);
+                continue;
+            }
+
+            if (unit < 0x800)
+            {
+                buffer.Add((byte)(0xC0 | (unit >> 6)));
+                buffer.Add((byte)(0x80 | (unit & 0x3F)));
+                continue;
+            }
+
+            // THE UNPAIRED SURROGATE TAKES THIS PATH AND SO DOES EVERY ORDINARY THREE-BYTE
+            // CHARACTER: the arithmetic is the same, and the only difference is that UTF-8 forbids
+            // the result for one of them.
+            buffer.Add((byte)(0xE0 | (unit >> 12)));
+            buffer.Add((byte)(0x80 | ((unit >> 6) & 0x3F)));
+            buffer.Add((byte)(0x80 | (unit & 0x3F)));
+        }
+
+        return buffer.ToArray();
+    }
+
+    /// <summary>Decodes what <see cref="EncodeText"/> wrote.</summary>
+    /// <remarks>
+    /// <b>Malformed input answers with replacement characters rather than throwing</b>, exactly as
+    /// the platform's decoder does, because this runs on bytes a caller supplied: an artifact is
+    /// untrusted input, and a decoder that threw would be a second way to end a verification that
+    /// the verifier already ends by diagnosis.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=489A01
+    // Broiler-Human:        PENDING
+    public static string DecodeText(System.ReadOnlySpan<byte> bytes)
+    {
+        var built = new System.Text.StringBuilder(bytes.Length);
+
+        for (var at = 0; at < bytes.Length;)
+        {
+            var lead = bytes[at];
+
+            if (lead < 0x80)
+            {
+                built.Append((char)lead);
+                at++;
+                continue;
+            }
+
+            var width = lead >= 0xF0 ? 4 : lead >= 0xE0 ? 3 : lead >= 0xC0 ? 2 : 0;
+
+            if (width == 0 || at + width > bytes.Length)
+            {
+                built.Append('\ufffd');
+                at++;
+                continue;
+            }
+
+            var scalar = lead & (0xFF >> (width + 1));
+            var ok = true;
+
+            for (var step = 1; step < width; step++)
+            {
+                var trail = bytes[at + step];
+
+                if ((trail & 0xC0) != 0x80)
+                {
+                    ok = false;
+                    break;
+                }
+
+                scalar = (scalar << 6) | (trail & 0x3F);
+            }
+
+            if (!ok)
+            {
+                built.Append('\ufffd');
+                at++;
+                continue;
+            }
+
+            at += width;
+
+            if (scalar > 0x10FFFF)
+            {
+                built.Append('\ufffd');
+                continue;
+            }
+
+            if (scalar > 0xFFFF)
+            {
+                built.Append(char.ConvertFromUtf32(scalar));
+                continue;
+            }
+
+            // A SURROGATE ARRIVES AS ITSELF, which is the whole point of the pair: the unit the
+            // encoder could not put through UTF-8 comes back as the unit it was.
+            built.Append((char)scalar);
+        }
+
+        return built.ToString();
+    }
 }

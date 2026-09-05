@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   17
-// Annotated:        17/17
+// Relevant units:   19
+// Annotated:        19/19
 // Exempt:           0
-// Human-reviewed:   0/17
+// Human-reviewed:   0/19
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       17
+// Unverified:       19
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -93,7 +93,7 @@ internal static class JsNumberFormat
             : value.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
     /// <summary>The specification's <c>Number::toString</c> in a radix other than 10.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E181E7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=764D80
     // Broiler-Human:        PENDING
     internal static string ToRadixString(double value, int radix)
     {
@@ -126,47 +126,131 @@ internal static class JsNumberFormat
 
         var integral = System.Math.Floor(value);
         var fraction = value - integral;
-        var text = new System.Text.StringBuilder();
+
+        // THE STOPPING RULE IS THE VALUE'S OWN PRECISION AND NOT A DIGIT COUNT.
+        //
+        // This loop used to stop after twenty digits, with a comment saying that twenty is past the
+        // point where a binary64 fraction carries information in any radix. That is true of radix
+        // 36, where a digit carries five and a sixth bits, and false of radix 3, where it carries
+        // one and a half: `(0.1).toString(3)` needs thirty-four digits and got twenty, so the
+        // answer was a PREFIX of the right one - the shape a truncation always has, and the reason
+        // a fixed count cannot be right for a range of radices.
+        //
+        // `delta` is half the distance to the next representable double, scaled by the same radix
+        // at every step. Digits are produced while the remaining fraction is larger than the
+        // uncertainty in the value itself, so the expansion stops exactly where it stops saying
+        // anything - and the half-way case rounds up and carries, which is why the digits are held
+        // in a list rather than appended to a builder.
+        var delta = System.Math.Max(
+            0.5 * (System.Math.BitIncrement(value) - value), double.Epsilon);
+
+        var head = new System.Collections.Generic.List<char>();
 
         if (integral == 0)
         {
-            text.Append('0');
+            head.Add('0');
         }
         else
         {
-            var head = new System.Text.StringBuilder();
-
             while (integral >= 1)
             {
-                var digit = (int)(integral % radix);
-                head.Append(Digit(digit));
+                head.Add(Digit((int)(integral % radix)));
                 integral = System.Math.Floor(integral / radix);
             }
 
-            for (var at = head.Length - 1; at >= 0; at--)
+            head.Reverse();
+        }
+
+        var tail = new System.Collections.Generic.List<char>();
+
+        if (fraction >= delta)
+        {
+            while (true)
             {
-                text.Append(head[at]);
+                fraction *= radix;
+                delta *= radix;
+                var digit = (int)fraction;
+                tail.Add(Digit(digit));
+                fraction -= digit;
+
+                if (fraction > 0.5 || (fraction == 0.5 && (digit & 1) != 0))
+                {
+                    if (fraction + delta > 1)
+                    {
+                        RoundUpRadix(head, tail, radix);
+                        break;
+                    }
+                }
+
+                if (fraction < delta)
+                {
+                    break;
+                }
             }
         }
 
-        if (fraction > 0)
-        {
-            text.Append('.');
+        var text = new System.Text.StringBuilder();
+        text.Append(head.ToArray());
 
-            // Twenty digits is past the point where a binary64 fraction carries information in any
-            // radix this accepts, and stopping there is what keeps an irrational-looking expansion
-            // from running forever.
-            for (var produced = 0; produced < 20 && fraction > 0; produced++)
-            {
-                fraction *= radix;
-                var digit = (int)System.Math.Floor(fraction);
-                text.Append(Digit(digit));
-                fraction -= digit;
-            }
+        if (tail.Count != 0)
+        {
+            text.Append('.').Append(tail.ToArray());
         }
 
         return negative ? "-" + text : text.ToString();
     }
+
+    /// <summary>
+    /// Adds one to the last digit produced, carrying through the fraction and into the integer.
+    /// </summary>
+    /// <remarks>
+    /// <b>The carry has to be able to leave the fraction entirely</b>, which is the case a
+    /// round-up written in place would get wrong: rounding the last digit of <c>0.ff</c> in radix
+    /// 16 makes the answer <c>1</c>, not <c>0.100</c> and not <c>1.00</c>. So trailing digits that
+    /// wrapped are dropped rather than written as zeroes, and a carry that runs off the front of
+    /// the integer part prepends a digit.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E62621
+    // Broiler-Human:        PENDING
+    private static void RoundUpRadix(
+        System.Collections.Generic.List<char> head,
+        System.Collections.Generic.List<char> tail,
+        int radix)
+    {
+        for (var at = tail.Count - 1; at >= 0; at--)
+        {
+            var digit = Value(tail[at]) + 1;
+
+            if (digit < radix)
+            {
+                tail[at] = Digit(digit);
+                return;
+            }
+
+            tail.RemoveAt(at);
+        }
+
+        for (var at = head.Count - 1; at >= 0; at--)
+        {
+            var digit = Value(head[at]) + 1;
+
+            if (digit < radix)
+            {
+                head[at] = Digit(digit);
+                return;
+            }
+
+            head[at] = '0';
+        }
+
+        head.Insert(0, '1');
+    }
+
+    /// <summary>The value a digit character carries, in any radix this accepts.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=140182
+    // Broiler-Human:        PENDING
+    private static int Value(char digit) =>
+        digit <= '9' ? digit - '0' : digit - 'a' + 10;
 
     /// <summary>The specification's <c>StringToNumber</c>, including the whitespace it trims.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E860DD

@@ -39,7 +39,9 @@ internal static class WideHost
         bool forceStrict,
         ulong? fuel,
         ulong? wallClock,
-        int? maximumDepth)
+        int? maximumDepth,
+        ulong? callDepth = null,
+        ulong? liveBytes = null)
     {
         foreach (var file in files)
         {
@@ -105,7 +107,7 @@ internal static class WideHost
                 lines);
         }
 
-        var created = VmRuntime.Create(Catalog(), Options(fuel, wallClock));
+        var created = VmRuntime.Create(Catalog(), Options(fuel, wallClock, callDepth, liveBytes));
 
         if (!created.TryGetRuntime(out var runtime))
         {
@@ -118,20 +120,20 @@ internal static class WideHost
 
         using (runtime)
         {
-            return Run(runtime, compiled.Artifact, scripts.Count, modules.Count != 0, checkOnly);
+            return Run(
+                runtime, compiled.Artifact, scripts.Count, modules.Count != 0, checkOnly);
         }
     }
 
     private static RunResult Run(
-        VmRuntime runtime, byte[] artifact, int count, bool hasModules, bool checkOnly)
+        VmRuntime runtime, byte[] artifact, int scripts, bool hasModules, bool checkOnly)
     {
-        // THE DESCRIPTOR NAMES THE MANIFEST THE ARTIFACT NAMES. A module artifact carries module
-        // records and says so in its own header; presenting it under the wide manifest would be
-        // refused for the mismatch, which is the caller's mistake rather than the payload's.
+        var count = scripts + (hasModules ? 1 : 0);
+
         var descriptor = new VmArtifactDescriptor(
             JavaScriptProfile.Id,
             Broiler.VM.Profile.JavaScript.Format.JsFormat.FormatVersion,
-            hasModules ? JavaScriptProfile.ModulesManifest : JavaScriptProfile.WideManifest,
+            JavaScriptProfile.WideManifest,
             default,
             VmCallerIdentity.FromCanonicalIdentity(Caller));
 
@@ -189,14 +191,21 @@ internal static class WideHost
 
         for (var index = 0; index <= count; index++)
         {
-            if (index == count && !hasModules)
-            {
-                break;
-            }
-
+            // THE LAST TIME ROUND IS THE JOB QUEUE, AND THIS HOST STATES THAT AS ITS DRAIN POINT.
+            // A queue drained at a point nobody stated is a behaviour no embedder can reason about,
+            // so the profile never chooses; this host chooses after the last script, which is what
+            // a shell does and what makes `Promise.resolve(1).then(print)` print before the process
+            // ends. A host that wanted a drain between scripts would ask between them instead.
+            // A MODULE GRAPH IS ONE MORE INVOCATION AND IT COMES BEFORE THE DRAIN. It is a
+            // separate entry point rather than another script because a module is not called: what
+            // this asks for is the root, and the linker reaches the rest of the graph from it. It
+            // must precede the drain, because a module that awaits leaves the rest of its own
+            // evaluation on the queue.
             var name = index == count
-                ? JsCompiler.ModuleEntry
-                : "script" + index.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                ? JavaScriptProfile.DrainEntryPoint
+                : index == scripts && hasModules
+                    ? JsCompiler.ModuleEntry
+                    : "script" + index.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
             var request = new VmInvocationRequest(
                 new VmUtf8Text(System.Text.Encoding.UTF8.GetBytes(name)));
@@ -233,7 +242,14 @@ internal static class WideHost
                 // value forward meant an earlier script's 42 outlived a later script's `undefined`,
                 // so the printed value was not any script's completion but the last interesting
                 // one, which is not a rule anybody could state.
-                value = completion.Value;
+                // THE DRAIN IS NOT A SCRIPT AND ITS COMPLETION IS NOT THE PROGRAM'S. It always
+                // answers `undefined`, and letting that overwrite the last script's value would
+                // make every program print `undefined` the day the queue existed.
+                if (index != count)
+                {
+                    value = completion.Value;
+                }
+
                 continue;
             }
 
@@ -261,7 +277,8 @@ internal static class WideHost
     /// and their <c>print</c> reaches nowhere - which is the difference registration is supposed to
     /// make.
     /// </remarks>
-    private static VmRuntimeCreationOptions Options(ulong? fuel, ulong? wallClock)
+    private static VmRuntimeCreationOptions Options(
+        ulong? fuel, ulong? wallClock, ulong? callDepth, ulong? liveBytes)
     {
         var ceilings = ImmutableArray.CreateBuilder<VmCeilingSpec>();
 
@@ -273,6 +290,10 @@ internal static class WideHost
                 VmBudgetDimension.Fuel when fuel is { } stated => VmCeilingSpec.Value(dimension, stated),
                 VmBudgetDimension.WallClock when wallClock is { } budget =>
                     VmCeilingSpec.Value(dimension, budget),
+                VmBudgetDimension.CallDepth when callDepth is { } frames =>
+                    VmCeilingSpec.Value(dimension, frames),
+                VmBudgetDimension.LiveBytes when liveBytes is { } bytes =>
+                    VmCeilingSpec.Value(dimension, bytes),
                 _ => VmCeilingSpec.AdoptProfileDefault(dimension),
             });
         }
@@ -283,12 +304,21 @@ internal static class WideHost
             JavaScriptProfile.WriteCapability,
             Write));
 
-        // REGISTERING THE RESOLVER IS THIS COMPOSITION ADMITTING THE MODULE SURFACE. There is no
-        // second switch: a sibling root that wants no modules registers nothing here and every
-        // module artifact it is handed is refused at verification, by name, before it runs.
+        // THE SECOND REGISTRATION, AND THE ONE THAT DECIDES WHETHER `eval` CAN ANSWER. An end-user
+        // host that refused to evaluate source would be refusing what a person pointing a
+        // JavaScript host at a file expects; a sibling root that registers nothing gets the
+        // deterministic refusal instead, and both are correct compositions of the same profile.
+        // REGISTERING THE RESOLVER IS THIS COMPOSITION ANSWERING THE MODULE SURFACE'S OWN
+        // QUESTION. Admitting the surface is the descriptor's act; saying what a specifier names is
+        // this one, and a sibling root that wanted modules on other terms would answer differently
+        // here and nowhere else.
         capabilities.Add(VmCapabilityRegistration.Value(
             JavaScriptProfile.ResolveCapability,
             Resolve));
+
+        capabilities.Add(VmCapabilityRegistration.ArtifactProvider(
+            JavaScriptProfile.SourceProviderCapability,
+            new SourceProvider()));
 
         return new VmRuntimeCreationOptions(
             aggregateBudget: null,
@@ -300,16 +330,8 @@ internal static class WideHost
             capabilities: capabilities.ToImmutable());
     }
 
-    /// <summary>The first host capability this root registers: write a line to standard output.</summary>
-    private static VmHostCallOutcome Write(VmBytes argument, out VmOpaqueRef result)
-    {
-        result = default;
-        Console.Out.WriteLine(System.Text.Encoding.UTF8.GetString(argument.Span));
-        return VmHostCallOutcome.Completed;
-    }
-
     /// <summary>
-    /// The second: rule on whether a module request resolves the way this composition resolves it.
+    /// Rules on whether a module request resolves the way this composition resolves it.
     /// </summary>
     /// <remarks>
     /// <c>Refused</c> is a policy answer and not a failure of the call, which is exactly what it
@@ -323,5 +345,13 @@ internal static class WideHost
         return ModuleGraph.Confirms(argument.Span)
             ? VmHostCallOutcome.Completed
             : VmHostCallOutcome.Refused;
+    }
+
+    /// <summary>The first host capability this root registers: write a line to standard output.</summary>
+    private static VmHostCallOutcome Write(VmBytes argument, out VmOpaqueRef result)
+    {
+        result = default;
+        Console.Out.WriteLine(System.Text.Encoding.UTF8.GetString(argument.Span));
+        return VmHostCallOutcome.Completed;
     }
 }

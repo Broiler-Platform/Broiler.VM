@@ -108,7 +108,7 @@ the exact closure this register exists to describe.
 | `Broiler.VM.Composition.JavaScript.SliceCompiler` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler` | `broiler.javascript.write` (optional import of `broiler.javascript`) | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-1` |
 | `Broiler.VM.Composition.JavaScript.Android` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format` | `broiler.javascript.write` (optional import of `broiler.javascript`) | none registered | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-android-001` |
 | `Broiler.VM.Composition.JavaScript.Conformance` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler` | `broiler.javascript.write` (optional import of `broiler.javascript`) | `broiler.javascript.write` | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-3a-004` |
-| `Broiler.VM.Composition.JavaScript.Cli` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler` | `broiler.javascript.write` (optional import of `broiler.javascript`) | `broiler.javascript.write` | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-3b-001` |
+| `Broiler.VM.Composition.JavaScript.Cli` | demonstration | `broiler.javascript` | `Broiler.VM.Profile.JavaScript` | `Broiler.VM.Profile.JavaScript.Format`, `Broiler.VM.Profile.JavaScript.Compiler` | `broiler.javascript.write`, `broiler.javascript.source-provider` (both optional imports of `broiler.javascript`) | `broiler.javascript.source-provider`, answered by this root's own compiler | `src/Broiler.VM.Profile.JavaScript/docs/evidence/js-3b-001` |
 
 **The Android head composes exactly what the execution-only root composes**, and
 that is the point of it rather than an accident: it names the profile and not the
@@ -228,22 +228,32 @@ verifies it, runs it, and reports; a reader comparing its closure against sectio
 15's row for the label finds the assemblies the label names and no others. That
 property is why the label could not simply have been asserted of a sibling.
 
-**What it registers is one capability, and what it does NOT register is its content
-policy.** From 2026-09-04 it registers `broiler.javascript.write`, which is how a
+**What it registers is two things, and both are content policy rather than
+plumbing.** From 2026-09-04 it registers `broiler.javascript.write`, which is how a
 program's `print` reaches standard output; the import is optional, so a sibling that
 registers nothing composes the same profile, runs the same programs, and has a
-`print` that reaches nowhere. What it still registers is no artifact provider, and
-that is the policy: no capability
-and no artifact provider, so every guest-initiated load is refused
-deterministically — the only policy a manifest with no `eval`, no `Function`
-constructor and no dynamic `import()` could have. It states no ceiling either: the
-instruction allowance is the profile's own declared default unless a caller passes
-`--fuel`, because a host with an opinion about how long a program may run is a
-host imposing a policy the profile did not declare.
+`print` that reaches nowhere. From the same date it also registers an **artifact
+provider** for `broiler.javascript.source`, which is what lets `eval` and the
+`Function` constructor answer at all. That is a decision and not a default: a
+person pointing a JavaScript host at a file expects it to evaluate source, and a
+sibling root that registers nothing gets the deterministic refusal instead. Both are
+correct compositions of the same profile, which is the whole argument for putting the
+dynamic surface behind an identity a composition can decline.
+
+**It states its ceilings only when a caller does.** The instruction allowance, the
+wall clock, the call depth and the live-memory allowance are each the profile's own
+declared default unless a caller passes `--fuel`, `--wall`, `--call-depth` or
+`--live-bytes`, because a host with an opinion about how long a program may run — or
+how much it may hold — is a host imposing a policy the profile did not declare. The
+last two exist because a ceiling nobody can move from outside is a ceiling that
+decides what may be measured: `--call-depth` so the per-frame cost can be measured
+against the real binary rather than estimated, and `--live-bytes` so a workload whose
+working set is larger than a typed program's is a run a caller can ask for rather
+than a benchmark that scores and then exhausts.
 
 **Its acceptance suite is input files and not injected code.** `src/tests/cli/`
 holds the programs and `eng/run-cli-acceptance.py` drives the built binary over
-eighteen command lines, judging exit codes and output. No source of this
+the command lines the table declares, judging exit codes and output. No source of this
 component is patched to make a case fail and no internal type is reached for:
 what is under test is the binary a person would run, including its argument
 parsing, which of its two streams carries which message, and what it does with a

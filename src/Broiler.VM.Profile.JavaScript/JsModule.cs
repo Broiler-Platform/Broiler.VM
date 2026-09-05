@@ -108,6 +108,17 @@ internal enum JsModuleState
     /// <summary>Its environment exists and holds nothing.</summary>
     Created = 0,
 
+    /// <summary>
+    /// It has been put into an evaluation order and its body has not been entered.
+    /// </summary>
+    /// <remarks>
+    /// A state of its own rather than a second use of <see cref="Evaluating"/>, because the walk
+    /// that builds the order runs before any body does: a module marked as under way by the
+    /// ORDERING walk would be indistinguishable from one whose body had actually started, and the
+    /// difference is what a cyclic graph is decided on.
+    /// </remarks>
+    Ordered = 4,
+
     /// <summary>Its declarations are in place and its body has not run.</summary>
     Initialised = 1,
 
@@ -185,9 +196,25 @@ internal sealed class JsModuleNamespace : JsObject
 
     /// <summary>Builds the namespace of one module.</summary>
     /// <remarks>
+    /// <para>
     /// The prototype is <see langword="null"/>, which the specification requires: a namespace
     /// inherits nothing, so <c>ns.toString</c> is <c>undefined</c> rather than
     /// <c>Object.prototype</c>'s.
+    /// </para>
+    /// <para>
+    /// <b>IT IS NOT EXTENSIBLE FROM THE MOMENT IT EXISTS, and nothing ever makes it so.</b> A
+    /// namespace's property set is the module's export set and that set is fixed at link; a
+    /// namespace left extensible would let a program add a property that shadows nothing, and then
+    /// answer <c>Object.isExtensible</c> and <c>Reflect.setPrototypeOf</c> the way an ordinary
+    /// object does rather than the way the language says a namespace does.
+    /// </para>
+    /// <para>
+    /// <b><c>@@toStringTag</c> is an own property of the namespace and not of a prototype</b>,
+    /// because a namespace has no prototype to carry it. It is the one Symbol-keyed property a
+    /// namespace has, it is <c>"Module"</c>, and it is frozen: the specification pins all three
+    /// attributes off, which is what makes <c>Object.prototype.toString.call(ns)</c> answer
+    /// <c>[object Module]</c> and makes a redefinition of it a refusal.
+    /// </para>
     /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=TBF
     // Broiler-Human:        PENDING
@@ -198,6 +225,33 @@ internal sealed class JsModuleNamespace : JsObject
         record = module;
         instances = moduleInstances;
         engine = realm;
+        Extensible = false;
+
+        SetOwnSymbol(
+            realm.Realm.ToStringTagSymbol,
+            JsProperty.Data(JsValue.String("Module"), JsPropertyAttributes.None));
+    }
+
+    /// <summary>Whether this namespace publishes a name, without reading what it is bound to.</summary>
+    /// <remarks>
+    /// <b>ASKING WHETHER A NAME IS EXPORTED IS NOT READING IT, and a namespace is where the two
+    /// come apart.</b> <c>'x' in ns</c> is true for an export whose module has not run, while
+    /// <c>ns.x</c> on the same name is a <c>ReferenceError</c>; answering the first by attempting
+    /// the second turns a question about the export set into a throw.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    internal bool Exports(string key)
+    {
+        foreach (var name in record.ExportNames)
+        {
+            if (string.Equals(name, key, System.StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /// <inheritdoc/>
@@ -253,12 +307,19 @@ internal sealed class JsModuleNamespace : JsObject
     }
 
     /// <inheritdoc/>
+    /// <remarks>
+    /// <b>THE ORDER IS SORTED AND NOT THE ORDER THE EXPORTS WERE WRITTEN IN.</b> Every other
+    /// object answers this in insertion order, and a namespace is the one place the language says
+    /// otherwise: its keys are the export names in code-unit order, so two modules that export the
+    /// same names in different orders have namespaces a program cannot tell apart.
+    /// </remarks>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=TBF
     // Broiler-Human:        PENDING
     internal override System.Collections.Generic.List<string> OwnPropertyNames()
     {
         var names = new System.Collections.Generic.List<string>(record.ExportNames.Length);
         names.AddRange(record.ExportNames);
+        names.Sort(System.StringComparer.Ordinal);
         return names;
     }
 

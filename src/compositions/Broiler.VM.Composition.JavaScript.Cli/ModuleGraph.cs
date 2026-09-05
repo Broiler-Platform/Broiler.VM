@@ -3,6 +3,8 @@
 
 using Broiler.VM.Profile.JavaScript.Compiler;
 
+using Broiler.VM.Profile.JavaScript.Format;
+
 namespace Broiler.VM.Composition.JavaScript.Cli;
 
 /// <summary>
@@ -123,8 +125,7 @@ internal static class ModuleGraph
     /// </remarks>
     internal static bool Confirms(ReadOnlySpan<byte> request)
     {
-        var text = System.Text.Encoding.UTF8.GetString(request);
-        var parts = text.Split('\0');
+        var parts = JsFormat.DecodeText(request).Split('\0');
 
         if (parts.Length != 3)
         {

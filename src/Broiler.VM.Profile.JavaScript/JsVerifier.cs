@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   27
-// Annotated:        27/27
-// Exempt:           20
-// Human-reviewed:   0/27
+// Relevant units:   29
+// Annotated:        29/29
+// Exempt:           21
+// Human-reviewed:   0/29
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       27
+// Unverified:       29
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -44,6 +44,19 @@ namespace Broiler.VM.Profile.JavaScript;
 /// so a handler whose declared height disagrees with what the code at it does is a join
 /// disagreement and is refused, rather than an operand-stack corruption at the first throw.
 /// </para>
+/// <para>
+/// <b>What a <c>with</c> body costs this pass is one thing and not the model.</b> An object
+/// environment record is a scope like any other here: <see cref="JsOpcode.PushObjectScope"/> raises
+/// the depth, <see cref="JsOpcode.PopScope"/> lowers it, and the two branches a dynamically
+/// resolved name lowers to are held to the same join rule every other branch is. Every read, write
+/// and deletion inside such a body is an ordinary property instruction, so this pass checks them.
+/// <b>What it stops being able to check is which environment a NAME reaches</b>: outside a
+/// <c>with</c> body a read names a slot and a depth this pass bounds, and inside one the answer
+/// depends on what an object holds when the instruction runs. That is not a check this pass gave
+/// up - it is a question the language stopped answering statically - and what keeps it harmless is
+/// that <see cref="JsOpcode.ResolveName"/> can only ever answer with an OBJECT that is already on
+/// the chain, never with a slot.
+/// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B42A78
 // Broiler-Human:        PENDING
@@ -55,12 +68,13 @@ internal sealed class JsVerifier
 
 
     /// <summary>Verifies a version-2 payload and produces the program the executor runs.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=DD5485
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=DEEDF7
     // Broiler-Human:        PENDING
     internal static VmVerifierOutcome Verify(
         in VmArtifactDescriptor descriptor,
         System.ReadOnlySpan<byte> payload,
         IVmVerificationContext context,
+        System.Collections.Immutable.ImmutableArray<string> admittedSurfaces,
         System.Threading.CancellationToken cancellationToken)
     {
         var adapter = new JavaScriptReadAdapter(context.Meter);
@@ -106,7 +120,7 @@ internal sealed class JsVerifier
                 reader.Position);
         }
 
-        var manifest = ReadManifest(in descriptor, ref reader, state);
+        var manifest = ReadManifest(in descriptor, ref reader);
 
         if (manifest.Category != VmOutcome.Normal)
         {
@@ -127,7 +141,7 @@ internal sealed class JsVerifier
                 return Stopped(cancellationToken);
             }
 
-            var outcome = ReadSection(ref reader, adapter, ref previousKind, state);
+            var outcome = ReadSection(ref reader, adapter, ref previousKind, state, admittedSurfaces);
 
             if (outcome.Category != VmOutcome.Normal)
             {
@@ -146,13 +160,13 @@ internal sealed class JsVerifier
             return VmVerifierOutcome.Cancellation();
         }
 
-        return Link(state, adapter, context, cancellationToken);
+        return Link(state, adapter, context, admittedSurfaces, cancellationToken);
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BB9BC8
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome ReadManifest(
-        in VmArtifactDescriptor descriptor, ref VmBoundedReader reader, Sections state)
+        in VmArtifactDescriptor descriptor, ref VmBoundedReader reader)
     {
         if (!reader.TryReadVarUInt32(out var length))
         {
@@ -186,12 +200,6 @@ internal sealed class JsVerifier
                 reader.Position);
         }
 
-        if (string.Equals(text, JsFormat.ModulesManifestId, System.StringComparison.Ordinal))
-        {
-            state.IsModuleArtifact = true;
-            return Ok;
-        }
-
         if (!string.Equals(text, JsFormat.ManifestId, System.StringComparison.Ordinal))
         {
             return Invalid(
@@ -200,16 +208,17 @@ internal sealed class JsVerifier
                 reader.Position);
         }
 
-        return Ok;
+        return VmVerifierOutcome.Verified(EmptyState.Instance, VmArtifactSharing.Shareable);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4E4B50
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=8C2539
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome ReadSection(
         ref VmBoundedReader reader,
         JavaScriptReadAdapter adapter,
         ref uint previousKind,
-        Sections state)
+        Sections state,
+        System.Collections.Immutable.ImmutableArray<string> admittedSurfaces)
     {
         var at = reader.Position;
 
@@ -223,7 +232,7 @@ internal sealed class JsVerifier
             return FromReader(ref reader, reader.Position);
         }
 
-        if (kind is < 1 or > 9)
+        if (kind is < 1 or > 10)
         {
             return Invalid(
                 VmReason.UnknownFeature, JavaScriptDiagnosticCode.UnknownSectionKind, at);
@@ -250,6 +259,7 @@ internal sealed class JsVerifier
             JsFormat.SectionKind.ExceptionRegions => ReadRegions(ref reader, state),
             JsFormat.SectionKind.Positions => ReadPositions(ref reader, state),
             JsFormat.SectionKind.Functions => ReadFunctions(ref reader, state),
+            JsFormat.SectionKind.Surfaces => ReadSurfaces(ref reader, state, admittedSurfaces),
             JsFormat.SectionKind.Modules => ReadModules(ref reader, adapter, state),
             _ => Invalid(
                 VmReason.UnknownFeature,
@@ -304,7 +314,7 @@ internal sealed class JsVerifier
         return Ok;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7CCEA8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=58E734
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome ReadConstants(
         ref VmBoundedReader reader, JavaScriptReadAdapter adapter, Sections state)
@@ -388,7 +398,7 @@ internal sealed class JsVerifier
                         return FromReader(ref reader, reader.Position);
                     }
 
-                    names[index] = System.Text.Encoding.UTF8.GetString(text);
+                    names[index] = Format.JsFormat.DecodeText(text);
                     values[index] = JsValue.String(names[index]);
                     break;
 
@@ -534,6 +544,105 @@ internal sealed class JsVerifier
         return Ok;
     }
 
+    /// <summary>
+    /// Reads the optional surfaces this artifact declares, and refuses one the composition has not
+    /// admitted.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>This is where a composition declining a surface refuses an artifact, and it is at
+    /// verification rather than at run time on purpose.</b> Roadmap section 6 draws the
+    /// distinction: a composition that declines a manifest produces an invalid artifact the guest
+    /// never sees, and a composition that admits one while registering no provider produces a
+    /// run-time refusal the guest may catch. Two outcomes, two catchabilities, and reading them off
+    /// one behaviour is how a policy boundary quietly stops being one.
+    /// </para>
+    /// <para>
+    /// <b>Two refusals rather than one, and the difference is who is wrong.</b> A name this build
+    /// does not know is an artifact naming a surface nobody wrote; a name this build knows and this
+    /// composition did not admit is an artifact naming a surface somebody declined. The first is a
+    /// defect in whatever produced the bytes and the second is the composition doing its job, and a
+    /// reader of a diagnostic code should not have to guess which happened.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=2F6AFE
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome ReadSurfaces(
+        ref VmBoundedReader reader,
+        Sections state,
+        System.Collections.Immutable.ImmutableArray<string> admittedSurfaces)
+    {
+        if (!reader.TryReadDeclaredCount(out var count))
+        {
+            return FromReader(ref reader, reader.Position);
+        }
+
+        if (count > JsFormat.CeilingSurfaces)
+        {
+            return Invalid(
+                VmReason.InconsistentStructure,
+                JavaScriptDiagnosticCode.DeclaredMaximumTooLarge,
+                reader.Position);
+        }
+
+        var declared = new string[count];
+
+        for (var index = 0u; index < count; index++)
+        {
+            if (!reader.TryReadVarUInt32(out var length))
+            {
+                return FromReader(ref reader, reader.Position);
+            }
+
+            if (length is 0 or > JavaScriptFormat.MaximumManifestIdBytes)
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.ManifestIdTooLong,
+                    reader.Position);
+            }
+
+            if (!reader.TryReadBytes(length, out var bytes))
+            {
+                return FromReader(ref reader, reader.Position);
+            }
+
+            var identity = System.Text.Encoding.UTF8.GetString(bytes);
+
+            for (var earlier = 0u; earlier < index; earlier++)
+            {
+                if (string.Equals(declared[earlier], identity, System.StringComparison.Ordinal))
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.DuplicateSurface,
+                        reader.Position);
+                }
+            }
+
+            if (!JsSurfaces.IsKnown(identity))
+            {
+                return Invalid(
+                    VmReason.UnknownFeature,
+                    JavaScriptDiagnosticCode.UnknownSurface,
+                    reader.Position);
+            }
+
+            if (!admittedSurfaces.Contains(identity))
+            {
+                return Invalid(
+                    VmReason.UnsupportedFeatureManifest,
+                    JavaScriptDiagnosticCode.SurfaceOutsideComposition,
+                    reader.Position);
+            }
+
+            declared[index] = identity;
+        }
+
+        state.Surfaces = declared;
+        return Ok;
+    }
+
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9E02CD
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome ReadRegions(ref VmBoundedReader reader, Sections state)
@@ -665,6 +774,32 @@ internal sealed class JsVerifier
         return Ok;
     }
 
+    /// <summary>Whether the module rows name <paramref name="unit"/> as a module's body.</summary>
+    /// <remarks>
+    /// Read off the rows rather than off a flag on the unit, because a flag would be a second place
+    /// the same fact is stated and the two could disagree; the records are what make a unit a
+    /// module's body, so they are what the question is put to.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+    // Broiler-Human:        PENDING
+    private static bool IsModuleBody(Sections state, uint unit)
+    {
+        if (state.ModuleRows is not { } rows)
+        {
+            return false;
+        }
+
+        foreach (var row in rows)
+        {
+            if (row.UnitIndex == unit)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /// <summary>Reads the module records exactly as the payload declares them.</summary>
     /// <remarks>
     /// <b>Nothing is resolved here.</b> This pass answers only whether the bytes are a sequence of
@@ -677,14 +812,6 @@ internal sealed class JsVerifier
     private static VmVerifierOutcome ReadModules(
         ref VmBoundedReader reader, JavaScriptReadAdapter adapter, Sections state)
     {
-        if (!state.IsModuleArtifact)
-        {
-            return Invalid(
-                VmReason.UnknownFeature,
-                JavaScriptDiagnosticCode.ModuleSectionOutsideManifest,
-                reader.Position);
-        }
-
         if (!reader.TryReadDeclaredCount(out var count))
         {
             return FromReader(ref reader, reader.Position);
@@ -873,12 +1000,13 @@ internal sealed class JsVerifier
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9A3477
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=78B3BA
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome Link(
         Sections state,
         JavaScriptReadAdapter adapter,
         IVmVerificationContext context,
+        System.Collections.Immutable.ImmutableArray<string> admittedSurfaces,
         System.Threading.CancellationToken cancellationToken)
     {
         if (!state.SawLimits || !state.SawConstants || !state.SawCode ||
@@ -897,9 +1025,17 @@ internal sealed class JsVerifier
         {
             var row = rows[index];
 
+            // `ParameterCount` MEANS TWO THINGS AND ONLY ONE OF THEM IS A SLOT COUNT. Without
+            // `BindsParameters` the frame copies that many arguments into slots zero upward, so it
+            // must fit in the scope; with it, no copy happens and the figure is only the arity the
+            // function reports as `length` - which a pattern with no bindings, `function f({}) {}`,
+            // makes larger than the slots.
+            var binds = ((JsFormat.FunctionFlags)row.Flags &
+                JsFormat.FunctionFlags.BindsParameters) != 0;
+
             if (row.ScopeSlots > state.DeclaredScopeSlots ||
                 row.MaxOperandStack > state.DeclaredOperandStack ||
-                row.ParameterCount > row.ScopeSlots ||
+                (!binds && row.ParameterCount > row.ScopeSlots) ||
                 row.ParameterCount > JsFormat.CeilingCallArguments)
             {
                 return Invalid(
@@ -919,6 +1055,47 @@ internal sealed class JsVerifier
             if (row.CodeLength == 0)
             {
                 return Invalid(VmReason.InconsistentStructure, JavaScriptDiagnosticCode.EmptyCode, (ulong)index);
+            }
+
+            // A GENERATOR IS NONE OF THE OTHER THREE THINGS A FLAG CAN SAY IT IS. The executor
+            // decides whether an invocation gets a heap frame from this bit alone, and each of the
+            // three it is refused with here would have already sent the invocation somewhere else.
+            var unitFlags = (JsFormat.FunctionFlags)row.Flags;
+
+            if ((unitFlags & JsFormat.FunctionFlags.Generator) != 0 &&
+                (unitFlags & (JsFormat.FunctionFlags.Arrow |
+                    JsFormat.FunctionFlags.ProgramBody |
+                    JsFormat.FunctionFlags.Constructible)) != 0)
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.GeneratorFlagsInconsistent,
+                    (ulong)index);
+            }
+
+            // AN ASYNC UNIT IS NONE OF THE OTHER THREE EITHER, AND THE ARROW IS NOT ON THE LIST.
+            // That is the whole difference from the check above: an async ARROW is an ordinary
+            // arrow whose body may suspend, and the executor enters it exactly as it enters any
+            // arrow - with the lexical `this` and `new.target` its closure recorded - so nothing
+            // about the pairing is contradictory. The generator flag IS on the list, because this
+            // profile admits no async generator and the two bits name two different drivers.
+            // A MODULE BODY IS THE ONE PROGRAM BODY THAT MAY BE ASYNC, and until the module goal
+            // existed no program body could be. `ProgramBody | Async` was refused here because the
+            // only program bodies were scripts, which have no driver and no caller to hand a
+            // promise to; a module has both - it is entered by the linker, which holds the promise
+            // its evaluation answers with and orders the graph on it. So the combination is
+            // admitted exactly for a unit the module records name as a body, and refused everywhere
+            // else, which is what keeps a script from claiming a driver nothing would supply.
+            if ((unitFlags & JsFormat.FunctionFlags.Async) != 0 &&
+                ((unitFlags & (JsFormat.FunctionFlags.Generator |
+                    JsFormat.FunctionFlags.Constructible)) != 0 ||
+                    ((unitFlags & JsFormat.FunctionFlags.ProgramBody) != 0 &&
+                        !IsModuleBody(state, (uint)index))))
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.AsyncFlagsInconsistent,
+                    (ulong)index);
             }
 
             // DISJOINT AND ASCENDING, both. Two units whose ranges overlapped would let a branch
@@ -1010,10 +1187,21 @@ internal sealed class JsVerifier
             }
         }
 
+        // THE REALM IS BUILT FROM WHAT THE COMPOSITION ADMITS, NOT FROM WHAT THE ARTIFACT DECLARED.
+        // The two sets are different questions and only one of them is a policy: the artifact's
+        // declaration is what this pass has just refused an unadmitted entry of, and the
+        // composition's is what the guest may find on the global object. Installing only what a
+        // particular artifact declared would make `typeof Uint8Array` answer differently for two
+        // programs a composition admits equally, which is a difference no embedder asked for.
         var modules = System.Array.Empty<JsModuleRecord>();
         var bindings = System.Array.Empty<JsBinding>();
 
-        if (state.IsModuleArtifact)
+        // A MODULE SECTION AND A MODULE SURFACE ARE TWO DECLARATIONS AND EITHER WITHOUT THE OTHER
+        // IS AN ARTIFACT THAT CONTRADICTS ITSELF. The section says the graph is here; the surface
+        // says the composition was asked whether it admits one. Records without the declaration
+        // would run a module graph in a composition that declined modules, and the declaration
+        // without records would be a program declaring a surface it does not reach.
+        if (state.DeclaresModules())
         {
             var linked = LinkModules(state, units, context, adapter, out modules, out bindings);
 
@@ -1021,6 +1209,13 @@ internal sealed class JsVerifier
             {
                 return linked;
             }
+        }
+        else if (state.ModuleRows is not null)
+        {
+            return Invalid(
+                VmReason.UnknownFeature,
+                JavaScriptDiagnosticCode.ModuleSectionOutsideManifest,
+                0);
         }
 
         var program = new JsProgram(
@@ -1031,6 +1226,7 @@ internal sealed class JsVerifier
             state.Regions,
             state.Entries,
             state.PositionRows,
+            admittedSurfaces,
             modules,
             bindings);
 
@@ -1071,9 +1267,12 @@ internal sealed class JsVerifier
         modules = [];
         bindings = [];
 
-        // THE COMPOSITION'S DECLINE IS CHECKED FIRST AND ON ITS OWN. A composition that registered
-        // no resolver has declined the module surface, and every refusal below would be a remark
-        // about an artifact it was never going to run.
+        // THE RESOLVER IS CHECKED FIRST AND ON ITS OWN. Declining the surface is already answered
+        // by the time this runs - an artifact declaring a surface the composition did not admit was
+        // refused where the surfaces were read - so what is left to ask is the surface's one
+        // question: a composition that admits modules and registers no resolver has said it will
+        // run a graph and supplied no way to say what a specifier names. Every refusal below would
+        // otherwise be a remark about an artifact it was never going to evaluate.
         if (!context.TryGetCapabilityDescriptor(
                 JavaScriptProfile.ResolveCapability.CapabilityId,
                 JavaScriptProfile.ResolveCapability.Version,
@@ -1764,6 +1963,36 @@ internal sealed class JsVerifier
         // Broiler-Human:        PENDING
         internal int PositionRows { get; set; }
 
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9FAFA3
+        // Broiler-Human:        PENDING
+        internal string[] Surfaces { get; set; } = [];
+
+        /// <summary>The module rows as the payload declares them, before any resolution.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal JsModuleRow[]? ModuleRows { get; set; }
+
+        /// <summary>How many import entries the module rows declare between them.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal int ImportCount { get; set; }
+
+        /// <summary>Whether the artifact declared the module surface beside its manifest.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
+        // Broiler-Human:        PENDING
+        internal bool DeclaresModules()
+        {
+            foreach (var surface in Surfaces)
+            {
+                if (string.Equals(surface, JsSurfaces.Modules, System.StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4F7CE5
         // Broiler-Human:        PENDING
         internal bool SawLimits { get; set; }
@@ -1783,21 +2012,6 @@ internal sealed class JsVerifier
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=56B6A0
         // Broiler-Human:        PENDING
         internal bool SawFunctions { get; set; }
-
-        /// <summary>Whether the payload names the module manifest.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
-        // Broiler-Human:        PENDING
-        internal bool IsModuleArtifact { get; set; }
-
-        /// <summary>The module rows as the payload declares them, before any resolution.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
-        // Broiler-Human:        PENDING
-        internal JsModuleRow[]? ModuleRows { get; set; }
-
-        /// <summary>How many import entries the module rows declare between them.</summary>
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=TBF
-        // Broiler-Human:        PENDING
-        internal int ImportCount { get; set; }
     }
 
     /// <summary>
@@ -1819,7 +2033,7 @@ internal sealed class JsVerifier
         // Broiler-Human:        PENDING
         private int[] depths = [];
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1AD602
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B99CD9
         // Broiler-Human:        PENDING
         internal VmVerifierOutcome Walk(int index)
         {
@@ -1964,7 +2178,13 @@ internal sealed class JsVerifier
 
                     switch (opcode)
                     {
+                        // AN OBJECT ENVIRONMENT RECORD IS A SCOPE AND IS COUNTED AS ONE. It holds an
+                        // object where a declarative record holds slots, and nothing about the
+                        // abstract state distinguishes the two: a `with` body's exits - falling
+                        // through, `break`, `continue`, `return` and an exception unwinding to a
+                        // region - are checked against the same depth arithmetic every block gets.
                         case JsOpcode.PushScope:
+                        case JsOpcode.PushObjectScope:
                             afterDepth = depth + 1;
 
                             if (afterDepth > MaxScopeDepth)
@@ -1997,7 +2217,12 @@ internal sealed class JsVerifier
 
                     if (JsOpcodes.HasCodeTarget(opcode))
                     {
-                        var targetHeight = opcode == JsOpcode.ForInNext ? height - 1 : after;
+                        // The two stepping opcodes have a different height on the taken branch than
+                        // on the fall-through: a name or a value arrives only when there was one.
+                        var targetHeight =
+                            opcode is JsOpcode.ForInNext or JsOpcode.IterateNext
+                                ? height - 1
+                                : after;
                         var seeded = Seed(
                             unit, code, (int)operand, targetHeight, afterDepth, pending, offset);
 
@@ -2119,7 +2344,7 @@ internal sealed class JsVerifier
             return Ok;
         }
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=74562B
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6EE799
         // Broiler-Human:        PENDING
         private VmVerifierOutcome Check(JsCodeUnit unit, JsOpcode opcode, uint operand, int offset)
         {
@@ -2143,6 +2368,7 @@ internal sealed class JsVerifier
                 case JsOpcode.DeleteProperty:
                 case JsOpcode.DefineGetter:
                 case JsOpcode.DefineSetter:
+                case JsOpcode.RequireCoercible:
                 case JsOpcode.ThrowImmutable:
                     if (operand >= state.Constants!.Length)
                     {
@@ -2155,19 +2381,31 @@ internal sealed class JsVerifier
                     // A NAME OPERAND MUST NAME A NAME. Reading a Number constant as a property key
                     // would work by accident here and be a type confusion the first time somebody
                     // changed how a key is stored, so it is refused where it is representable.
-                    return state.Names![operand].Length != 0 || IsEmptyStringConstant(operand)
+                    return NamesAName(operand)
                         ? Ok
                         : Invalid(
                             VmReason.SemanticValidationFailed,
                             JavaScriptDiagnosticCode.ConstantIndexOutOfRange,
                             (ulong)offset);
 
-                case JsOpcode.Closure:
-                    return operand < units.Length
+                // A PRIVATE NAME'S CONSTANT IS ITS DESCRIPTION AND NOTHING READS IT AS A KEY, but it
+                // is checked as a name anyway: a Number constant there would be a description no
+                // diagnostic could print, and the check costs one comparison at verification time
+                // rather than a surprise at the first `TypeError` a private access reports.
+                case JsOpcode.NewPrivateName:
+                    if (operand >= state.Constants!.Length)
+                    {
+                        return Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.ConstantIndexOutOfRange,
+                            (ulong)offset);
+                    }
+
+                    return NamesAName(operand)
                         ? Ok
                         : Invalid(
-                            VmReason.InconsistentStructure,
-                            JavaScriptDiagnosticCode.FunctionIndexOutOfRange,
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.ConstantIndexOutOfRange,
                             (ulong)offset);
 
                 // AN IMPORT READ IN AN ARTIFACT WITH NO IMPORTS IS REFUSED BY THE SAME CHECK.
@@ -2179,6 +2417,41 @@ internal sealed class JsVerifier
                         : Invalid(
                             VmReason.InconsistentStructure,
                             JavaScriptDiagnosticCode.MalformedModuleRow,
+                            (ulong)offset);
+
+                case JsOpcode.Closure:
+                    return operand < units.Length
+                        ? Ok
+                        : Invalid(
+                            VmReason.InconsistentStructure,
+                            JavaScriptDiagnosticCode.FunctionIndexOutOfRange,
+                            (ulong)offset);
+
+                // ONLY A GENERATOR BODY MAY SUSPEND. The executor allocates the frame a suspension
+                // saves itself into from the unit's flag, before a single instruction runs, so an
+                // artifact that yields anywhere else is refused here rather than met by a null
+                // frame in the middle of the dispatch loop.
+                case JsOpcode.Yield:
+                case JsOpcode.YieldDelegate:
+                    return (unit.Flags & JsFormat.FunctionFlags.Generator) != 0
+                        ? Ok
+                        : Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.YieldOutsideGenerator,
+                            (ulong)offset);
+
+                // AND ONLY AN ASYNC BODY MAY AWAIT, checked against the OTHER flag. Two bits and
+                // two codes rather than one predicate over "may suspend", because the frame an
+                // await suspends into is resumed by the job queue and the frame a yield suspends
+                // into is resumed by the guest's own `next` - so a unit with the wrong bit would
+                // be handed to a driver that has no way to reach it again, and an author told the
+                // wrong bit is missing looks in the wrong place.
+                case JsOpcode.Await:
+                    return (unit.Flags & JsFormat.FunctionFlags.Async) != 0
+                        ? Ok
+                        : Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.AwaitOutsideAsync,
                             (ulong)offset);
 
                 case JsOpcode.PushScope:
@@ -2198,6 +2471,60 @@ internal sealed class JsVerifier
                             JavaScriptDiagnosticCode.OperandStackOverflow,
                             (ulong)offset);
 
+                // AN OPERAND BIT THIS VERSION DOES NOT DEFINE IS AN UNKNOWN FEATURE, and it is
+                // answered with the unknown-opcode reason for that reason: the byte names an
+                // instruction this reader knows and asks it for behaviour this reader does not
+                // have. A `NewClass` whose flags carried an undefined bit would also have a stack
+                // effect nothing has agreed on, since the defined bit is what decides it.
+                case JsOpcode.NewClass:
+                    return operand <= JsOpcodes.ClassIsDerived
+                        ? Ok
+                        : Invalid(
+                            VmReason.UnknownFeature,
+                            JavaScriptDiagnosticCode.UnknownOpcode,
+                            (ulong)offset);
+
+                // A CLASS ELEMENT'S FLAGS ARE A SET WITH RULES BETWEEN ITS MEMBERS, and the rules
+                // are checked rather than resolved. Each of the three pairs below names a bit
+                // combination the executor has no behaviour for, and letting one through would mean
+                // choosing an arm at run time for an encoding nothing agreed on: a static block
+                // that lands on an instance has no `this` to run against; a getter that is also a
+                // setter is one function asked to be two; and a public element reaching this
+                // instruction at all is one `DefineMethod` should have defined, since only a
+                // private element and a field are recorded rather than defined.
+                case JsOpcode.DefineClassElement:
+                {
+                    var block = (operand & JsOpcodes.ElementIsBlock) != 0;
+                    var accessor = operand & (JsOpcodes.ElementIsGetter | JsOpcodes.ElementIsSetter);
+                    var method = (operand & JsOpcodes.ElementIsMethod) != 0;
+                    var isPrivate = (operand & JsOpcodes.ElementIsPrivate) != 0;
+
+                    var consistent = operand <= JsOpcodes.ElementBits &&
+                        accessor != (JsOpcodes.ElementIsGetter | JsOpcodes.ElementIsSetter) &&
+                        (!block || operand == (JsOpcodes.ElementIsBlock | JsOpcodes.ElementIsStatic)) &&
+                        (accessor == 0 || (method && isPrivate)) &&
+                        (!method || isPrivate);
+
+                    return consistent
+                        ? Ok
+                        : Invalid(
+                            VmReason.InconsistentStructure,
+                            JavaScriptDiagnosticCode.ClassElementFlagsInconsistent,
+                            (ulong)offset);
+                }
+
+                // A member is a getter, or a setter, or neither - never both. Resolving the pair
+                // by precedence would give one encoding two readings.
+                case JsOpcode.DefineMethod:
+                    return operand <= JsOpcodes.MemberBits &&
+                        (operand & (JsOpcodes.MemberIsGetter | JsOpcodes.MemberIsSetter)) !=
+                            (JsOpcodes.MemberIsGetter | JsOpcodes.MemberIsSetter)
+                        ? Ok
+                        : Invalid(
+                            VmReason.UnknownFeature,
+                            JavaScriptDiagnosticCode.UnknownOpcode,
+                            (ulong)offset);
+
                 // A CALL'S ARGUMENT COUNT NEEDS NO CHECK, and saying so is better than a check
                 // that cannot fail: the operand is one byte and the format's ceiling is 255, so
                 // every encodable count is admissible. A branch here would be a row in the
@@ -2215,11 +2542,40 @@ internal sealed class JsVerifier
                             JavaScriptDiagnosticCode.ScopeDepthOutOfRange,
                             (ulong)offset);
 
+                // WHAT IS CHECKABLE HERE IS THE ENCODING AND NOT THE RESOLUTION. The low half must
+                // name a name, exactly as every other name-carrying instruction's operand must, so
+                // an artifact asking this instruction to search for a Number constant is refused
+                // where it is representable. The high half needs no check, for the reason a call's
+                // argument count needs none: it is one byte and the scope-depth ceiling is 255, so
+                // every encodable bound is admissible.
+                //
+                // What this pass CANNOT check is the bound's CORRECTNESS - whether it stops at the
+                // record the language's own scope rules stop at - because that is a fact about the
+                // source the lowering read and not about the bytes. A bound that is too small
+                // resolves fewer names dynamically and falls through to the static address, which is
+                // the safe direction; a bound that is too large lets an outer `with` shadow a
+                // binding, which is a wrong ANSWER and never a reachable slot, because the search
+                // reads object records and a declarative record has no names in it to match.
+                case JsOpcode.ResolveName:
+                    return NamesAName(operand & 0xFFFF)
+                        ? Ok
+                        : Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.ConstantIndexOutOfRange,
+                            (ulong)offset);
+
                 default:
                     _ = unit;
                     return Ok;
             }
         }
+
+        /// <summary>Whether constant <paramref name="operand"/> exists and is a name.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0AB6AF
+        // Broiler-Human:        PENDING
+        private bool NamesAName(uint operand) =>
+            operand < state.Constants!.Length &&
+            (state.Names![operand].Length != 0 || IsEmptyStringConstant(operand));
 
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3676ED
         // Broiler-Human:        PENDING

@@ -355,10 +355,12 @@ internal static class CorpusBuilder
         // row's bytes are.
         ..WideCorpus.Build(),
 
-        // ---- the module goal: a graph rather than a table --------------------------------------
+        // ---- the module goal: the refusals a graph adds, and one graph that runs --------------
         //
-        // Spliced in for the reason the version-2 rows are: one manifest, one integrity check. Two
-        // of these rows vary the COMPOSITION rather than the bytes, which their mode column says.
+        // Spliced in for the same reason the wide rows are, and kept in a file of their own for a
+        // second one: two of them vary the HOST rather than the bytes. A composition that admits
+        // the module surface and registers no resolver refuses a perfectly well-formed artifact,
+        // and a row about that cannot be written as bytes at all.
         ..ModuleCorpus.Build(),
     ];
 
@@ -1063,7 +1065,7 @@ internal static class JavaScriptDiagnosticCodes
     /// <summary>An exception region states a range, a handler or a kind this format refuses.</summary>
     internal const int MalformedExceptionRegion = 1605;
 
-    /// <summary>Module records under a manifest that does not admit them.</summary>
+    /// <summary>Module records under an artifact that declares no module surface.</summary>
     internal const int ModuleSectionOutsideManifest = 1613;
 
     /// <summary>A module record states an index, a count or a slot this format refuses.</summary>
@@ -1081,11 +1083,35 @@ internal static class JavaScriptDiagnosticCodes
     /// <summary>Resolving an export re-entered the module and name it started from.</summary>
     internal const int ModuleExportCircular = 1618;
 
-    /// <summary>The composition registered no module resolver and so declined the surface.</summary>
+    /// <summary>The artifact declares the module surface and the composition registered no resolver.</summary>
     internal const int ModuleResolverAbsent = 1619;
 
-    /// <summary>The artifact names the module manifest and declares no module records.</summary>
+    /// <summary>The artifact declares the module surface and carries no module records.</summary>
     internal const int ModuleSectionMissing = 1620;
+
+    /// <summary>The artifact declares one optional surface twice.</summary>
+    internal const int DuplicateSurface = 1606;
+
+    /// <summary>The artifact declares an optional surface this build does not implement.</summary>
+    internal const int UnknownSurface = 1607;
+
+    /// <summary>The artifact declares an optional surface this composition did not admit.</summary>
+    internal const int SurfaceOutsideComposition = 1608;
+
+    /// <summary>A suspension instruction appears in a code unit that is not a generator body.</summary>
+    internal const int YieldOutsideGenerator = 1609;
+
+    /// <summary>A code-unit row combines the generator flag with a flag that contradicts it.</summary>
+    internal const int GeneratorFlagsInconsistent = 1610;
+
+    /// <summary>An `Await` instruction appears in a code unit that is not an async function body.</summary>
+    internal const int AwaitOutsideAsync = 1611;
+
+    /// <summary>A code-unit row combines the async flag with a flag that contradicts it.</summary>
+    internal const int AsyncFlagsInconsistent = 1612;
+
+    /// <summary>A `DefineClassElement` operand carries a bit set the instruction has no reading for.</summary>
+    internal const int ClassElementFlagsInconsistent = 1621;
 
     internal const int WrongMagic = 1001;
     internal const int UnsupportedFormatVersion = 1002;

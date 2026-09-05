@@ -31,30 +31,21 @@ internal static class ModuleCorpus
     /// <summary>The replay mode a module entry is presented under, with a resolver registered.</summary>
     internal const string Mode = "modules";
 
-    /// <summary>
-    /// The replay mode of a composition that registered no resolver and so declined the surface.
-    /// </summary>
-    internal const string DeclinedMode = "modules-declined";
+    /// <summary>The replay mode of a composition that admits the surface and registers no resolver.</summary>
+    internal const string UnresolvedMode = "modules-no-resolver";
 
     /// <summary>Every module entry, in the order the registry publishes their codes.</summary>
     internal static CorpusEntry[] Build() =>
     [
-        // ITS MODE IS THE WIDE ONE AND THAT IS WHAT THE ROW IS ABOUT. The payload names the wide
-        // manifest and carries module records, so the descriptor has to name the wide manifest
-        // too - presenting it under the module one would be refused for the descriptor mismatch
-        // first, and the row would then be about a caller's mistake rather than about a section a
-        // manifest does not admit.
-        new CorpusEntry(
-            "modules-a-module-section-the-manifest-excludes",
-            WideCorpus.Mode,
-            "InvalidArtifact",
+        // AN ARTIFACT THAT CARRIES MODULE RECORDS AND DECLARES NO MODULE SURFACE contradicts
+        // itself: the records say a graph is here and the missing declaration says the composition
+        // was never asked whether it admits one. Its mode is the ordinary module one, because what
+        // the row varies is the BYTES rather than the host.
+        Entry(
+            "modules-a-module-section-no-surface-declares",
+            Artifact(declareSurface: false),
             "UnknownFeature",
-            JavaScriptDiagnosticCodes.ModuleSectionOutsideManifest,
-            "-",
-            "-",
-            "-",
-            "-",
-            Artifact(manifest: JsFormat.ManifestId)),
+            JavaScriptDiagnosticCodes.ModuleSectionOutsideManifest),
         Entry(
             "modules-a-module-row-the-format-cannot-represent",
             Artifact(bodyUnit: 7),
@@ -100,9 +91,14 @@ internal static class ModuleCorpus
                     "other", "export { spin } from './main.mjs';\n", ("./main.mjs", "main"))),
             "InconsistentStructure",
             JavaScriptDiagnosticCodes.ModuleExportCircular),
+        // WHAT THIS ROW VARIES IS THE HOST AND NOT THE BYTES. The artifact is well formed and the
+        // composition admits the module surface; what it has not done is register a resolver, so it
+        // has said it will run a graph and supplied no way to say what a specifier names. A
+        // composition that declines the surface outright is a different refusal with a different
+        // code, and the retained `wide-declining` entry is where that one is pinned.
         new CorpusEntry(
-            "modules-a-module-artifact-a-composition-declined",
-            DeclinedMode,
+            "modules-a-module-artifact-with-no-resolver",
+            UnresolvedMode,
             "InvalidArtifact",
             "UnsupportedFeatureManifest",
             JavaScriptDiagnosticCodes.ModuleResolverAbsent,
@@ -112,7 +108,7 @@ internal static class ModuleCorpus
             "-",
             Compiled(new Module("main", "export const answer = 42;\nanswer;\n"))),
         Entry(
-            "modules-the-module-manifest-with-no-module-records",
+            "modules-the-module-surface-with-no-module-records",
             Artifact(omitModuleSection: true),
             "InconsistentStructure",
             JavaScriptDiagnosticCodes.ModuleSectionMissing),
@@ -201,10 +197,10 @@ internal static class ModuleCorpus
     /// could emit any of the three would be the defect the verifier exists to catch.
     /// </remarks>
     private static byte[] Artifact(
-        string? manifest = null,
         uint bodyUnit = 1,
         string requestKey = "",
-        bool omitModuleSection = false)
+        bool omitModuleSection = false,
+        bool declareSurface = true)
     {
         var body = new byte[]
         {
@@ -254,6 +250,13 @@ internal static class ModuleCorpus
                 ])),
         };
 
+        if (declareSurface)
+        {
+            sections.Add(new JavaScriptArtifactWriter.Section(
+                (JavaScriptFormat.SectionKind)JsFormat.SectionKind.Surfaces,
+                JsArtifactWriter.Surfaces([JsSurfaces.Modules])));
+        }
+
         if (!omitModuleSection)
         {
             sections.Add(new JavaScriptArtifactWriter.Section(
@@ -273,7 +276,6 @@ internal static class ModuleCorpus
                 ])));
         }
 
-        return JsArtifactWriter.Write(
-            manifest ?? JsFormat.ModulesManifestId, sections.ToArray());
+        return JsArtifactWriter.Write(JsFormat.ManifestId, sections.ToArray());
     }
 }

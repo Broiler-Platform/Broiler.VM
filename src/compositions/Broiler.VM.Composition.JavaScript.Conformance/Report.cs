@@ -342,12 +342,20 @@ internal sealed record Report(
     /// A cell: one line, with the separator removed rather than escaped.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// A detail carrying a newline or a pipe would silently produce a row nobody wrote, which is
     /// the defect the composition register's own reader was found to have. Removing is chosen over
     /// escaping because nothing reads a detail back into a decision - it is prose for a human - and
     /// an escape nobody unescapes is worse than a character nobody wrote.
+    /// </para>
+    /// <para>
+    /// <b>Internal so that the second report in this composition uses this rule rather than its
+    /// own copy of it.</b> <see cref="Test262Report"/> is a different document counting different
+    /// things, but a cell is a cell: two implementations of one escaping rule is how one of them
+    /// quietly stops matching the other's reader.
+    /// </para>
     /// </remarks>
-    private static string Cell(string value) => value
+    internal static string Cell(string value) => value
         .Replace('\r', ' ')
         .Replace('\n', ' ')
         .Replace('|', '/')
