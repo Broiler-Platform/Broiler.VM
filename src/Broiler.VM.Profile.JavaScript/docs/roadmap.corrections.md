@@ -6277,3 +6277,63 @@ was measured before this repair and was correct when it was taken.
 not parse — measured against `/opt/node22/bin/node` before they were written down, which answers
 `SyntaxError` to both; and row `modules/a-dynamic-import-of-an-unlinkable-module.mjs` of
 `src/tests/cli/expected.txt`. 2026-09-05.
+
+### JSC-205
+
+**Where:** two things [JSC-200](#jsc-200) got wrong about a module the guest asks for at run time —
+`JsParser.ParseImportDeclaration`'s bindingless arm, and when `JsEngine.DynamicImport` settles its
+promise.
+
+**What was assumed.** First, that the import forms which carry an attribute clause are the ones with
+a binding list. Second, that a graph is finished when the walk that started it returns.
+
+**What was true.** **`import './m.mjs' with {};` is a form, and the clause goes on the REQUEST rather
+than on the bindings.** The bindingless arm returns from the import parser as soon as it has read
+the specifier, so the clause was never looked for there and the answer was `` `;` was expected and
+`with` was found `` — a missing semicolon reported against a program the grammar admits, which is
+the shape of refusal [JSC-200](#jsc-200)'s whole family exists to stop giving.
+
+**And a graph containing a top-level `await` is NOT finished when the walk returns.** `Step` walks
+the evaluation order, and where a module suspends it registers a continuation on that module's own
+promise and RETURNS — that is what makes a top-level `await` an ordering guarantee rather than a
+blocked host. Settling the import's promise at that point handed the guest a namespace whose module
+had not run, and a read through it answered the temporal dead zone's `ReferenceError` for a binding
+that was about to exist. A rejection from a module that failed after suspending reached nobody at
+all: it was raised inside a job, where a graph entered through the artifact's entry point has
+nowhere else to put it, rather than through the promise the guest was holding.
+
+**What replaced it.** The bindingless arm reads a clause like every other arm. And `Step` takes a
+completion callback: a graph entered through a dynamic import passes one, so the promise is settled
+where the walk RUNS OUT rather than where it returns, and a failure anywhere in the graph reaches
+the guest through that promise instead of through a throw inside a job. A graph entered through the
+entry point passes none and keeps exactly the behaviour it had, because it has nobody holding a
+promise for it — which is also why `JsModuleInstance.Evaluation` is asked only by a walk that
+carries a callback: a module that is still awaiting reads as `Evaluated` (the state is set the
+moment an async body is entered, or a second walk would enter the body twice), and only a walk
+somebody is waiting on can afford to wait for it.
+
+**What that cost, measured.** Over `test/language/module-code` and
+`test/language/expressions/dynamic-import` together, 1,745 files and 2,272 variants: **60 failures
+before and 60 after**, and the four that changed on each side are what the entry is about. Recovered:
+`import-attributes/import-attribute-empty.js`, `top-level-await/await-dynamic-import-resolution.js`,
+`top-level-await/dynamic-import-rejection.js` and `top-level-await/dynamic-import-resolution.js` —
+the last of which is precisely the dead-zone read the early settle produced. Newly failing:
+`top-level-await/fulfillment-order.js`, `top-level-await/rejection-order.js` and both variants of
+`top-level-await/dynamic-import-of-waiting-module.js`, which were passing because everything settled
+at once and now ask a question this engine has no model for. **That is the finding and it is left
+open**: those three name `AsyncModuleExecutionFulfilled`, `GatherAvailableAncestors` and
+`[[AsyncEvaluationOrder]]`, which are the async module graph's own machinery — a list of available
+ancestors settled leaf-to-root — and this engine has a depth-first order and a per-module promise
+instead. It belongs to the asynchronous-module family rather than to the dynamic import, and closing
+it means giving a module record an evaluation capability and a pending-dependency count.
+
+**The `Evaluation` field moves no measurement and is here anyway**, which is worth saying plainly: a
+second dynamic import of a module that is still awaiting walks past it and settles early without it,
+and the two cases of the suite that would witness that fail on the ordering model above instead. It
+is correct by construction rather than by measurement, and a reader is entitled to know which.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; case 74 of
+`src/tests/differential/the-module-goal.mjs` — a dynamic import of a module with a top-level
+`await`, reading a `let` the body has not reached — measured against `/opt/node22/bin/node` before
+it was written down; and rows `modules/an-empty-attribute-clause.mjs` and
+`modules/a-dynamic-import-that-waits.mjs` of `src/tests/cli/expected.txt`. 2026-09-05.

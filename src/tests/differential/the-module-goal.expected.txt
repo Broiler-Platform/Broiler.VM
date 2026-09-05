@@ -75,5 +75,6 @@
 71 "TypeError"
 72 "SyntaxError"
 73 "SyntaxError"
-74 "default,false"
-75 "named,false"
+74 "ready"
+75 "default,false"
+76 "named,false"

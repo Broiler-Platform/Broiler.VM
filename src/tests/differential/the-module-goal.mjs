@@ -193,6 +193,12 @@ var unparsable = await import("./modules/unparsable.mjs").then(
   function () { return "resolved"; }, function (e) { return e.name; });
 p(function () { return unparsable; });
 
+// A module with a top-level `await` finishes a turn after it starts, and the promise settles when
+// it has FINISHED: the namespace the guest is handed is one whose body has run, so the binding it
+// reads is the one the body wrote rather than the dead zone the body has not reached.
+var late = await import("./modules/late.mjs");
+p(function () { return late.ready; });
+
 // --- an async generator as a module's default export, which is the one `export default` form that
 // stayed refused after the family itself was admitted.
 var fromDefault = await defaultAsyncGenerator().next();

@@ -2854,14 +2854,15 @@ internal sealed class JsEngine
     /// top-level <c>await</c> exists to give. Nothing here drains the queue: the host does that, at
     /// a point the host chooses, exactly as it does for any other asynchronous program.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=3C8278
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=DFDCE7
     // Broiler-Falsified-If: a module body runs before a module it requested has finished awaiting
     // Broiler-Human:        PENDING
     private void Step(
         JsProgram program,
         JsModuleInstance[] instances,
         System.Collections.Generic.List<int> order,
-        int at)
+        int at,
+        System.Action<JsEngine, JsValue, bool>? settled = null)
     {
         for (var position = at; position < order.Count; position++)
         {
@@ -2870,6 +2871,34 @@ internal sealed class JsEngine
 
             if (instance.State == JsModuleState.Evaluated)
             {
+                // A MODULE THAT IS STILL AWAITING READS AS EVALUATED, and a walk somebody is
+                // waiting on has to wait for it rather than walk past it. The state is set the
+                // moment an async body is entered - it must be, or a second walk would enter the
+                // body twice - so the state alone cannot say whether the body has finished, and the
+                // promise it settles is what can. Only a dynamic import asks: the entry point's own
+                // walk has nobody holding a promise for it and keeps the behaviour it had.
+                if (settled is not null &&
+                    instance.Evaluation is { State: JsPromiseState.Pending } waiting)
+                {
+                    var next = position + 1;
+
+                    Realm.AwaitOn(
+                        this,
+                        JsValue.Object(waiting),
+                        (engine, value, threw) =>
+                        {
+                            if (threw)
+                            {
+                                settled(engine, value, true);
+                                return;
+                            }
+
+                            engine.Step(program, instances, order, next, settled);
+                        });
+
+                    return;
+                }
+
                 continue;
             }
 
@@ -2896,6 +2925,7 @@ internal sealed class JsEngine
 
             var promise = StartAsyncModule(program, record, instance);
             instance.State = JsModuleState.Evaluated;
+            instance.Evaluation = promise;
 
             // A MODULE THAT RAN TO ITS END WITHOUT SUSPENDING NEEDS NO CONTINUATION, and taking
             // one anyway would put the rest of the graph on the job queue for no reason - which is
@@ -2914,14 +2944,32 @@ internal sealed class JsEngine
                 {
                     if (threw)
                     {
+                        // A GRAPH SOMEBODY IS WAITING ON HANDS ITS FAILURE TO THEM RATHER THAN
+                        // RAISING IT INSIDE A JOB. A graph entered through the artifact's entry
+                        // point has nobody waiting, so the throw is the only place it can go and it
+                        // goes there; a graph entered through a dynamic `import()` has a promise
+                        // that was answered before it started, and the language says that promise
+                        // is what a failure anywhere in the graph reaches the guest through.
+                        if (settled is not null)
+                        {
+                            settled(engine, value, true);
+                            return;
+                        }
+
                         throw new JsThrow(value, engine.Render(value));
                     }
 
-                    engine.Step(program, instances, order, resume);
+                    engine.Step(program, instances, order, resume, settled);
                 });
 
             return;
         }
+
+        // THE WALK IS OVER ONLY WHERE THE LOOP RUNS OUT, which is why this is here and not beside
+        // the call. Every `return` above is a graph that has SUSPENDED, and a caller told the graph
+        // was finished at the point a module awaited would have answered a namespace whose module
+        // has not run - which is exactly the read the temporal dead zone exists to refuse.
+        settled?.Invoke(this, JsValue.Undefined, false);
     }
 
     /// <summary>Enters one module body as an async frame and answers the promise it settles.</summary>
@@ -3053,7 +3101,7 @@ internal sealed class JsEngine
     /// <c>catch</c> can be written against.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=FBD9F7
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=166A0A
     // Broiler-Falsified-If: this throws instead of rejecting, or a specifier reaches bytes without passing through the mediator or the artifact's own records
     // Broiler-Human:        PENDING
     internal JsValue DynamicImport(
@@ -3069,10 +3117,27 @@ internal sealed class JsEngine
             // rejects with `a`.
             var specifier = ToStringValue(specifierValue);
             RequireHonourableAttributes(optionsValue);
-            var instance = ImportedModule(program, referrer, specifier);
+            var found = ImportedModule(program, referrer, specifier);
+            var instances = Graph(found.Program);
+            var order = new System.Collections.Generic.List<int>(found.Program.Modules.Length);
+            Order(found.Program, instances, found.Index, order);
 
-            Realm.SettleAsyncPromise(
-                this, promise, JsValue.Object(instance.Namespace!), rejected: false);
+            // THE PROMISE IS SETTLED WHEN THE GRAPH IS FINISHED AND NOT WHEN IT IS STARTED, which
+            // is the whole of what a module with a top-level `await` costs a dynamic import. The
+            // walk suspends where a module awaits and resumes from a job; settling here rather than
+            // from that walk's own end would have handed the guest a namespace whose module has not
+            // run, and a read through it would answer the dead zone's `ReferenceError` for a
+            // binding that is about to exist.
+            Step(
+                found.Program,
+                instances,
+                order,
+                0,
+                (engine, value, threw) => engine.Realm.SettleAsyncPromise(
+                    engine,
+                    promise,
+                    threw ? value : JsValue.Object(instances[found.Index].Namespace!),
+                    threw));
         }
         catch (JsThrow thrown)
         {
@@ -3167,10 +3232,11 @@ internal sealed class JsEngine
     /// this realm has already instanced, so an artifact that arrives carrying a module the realm
     /// has is a second VIEW of that module and not a second copy of it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=C782B8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=0713ED
     // Broiler-Falsified-If: one module key is evaluated twice in one realm
     // Broiler-Human:        PENDING
-    private JsModuleInstance ImportedModule(JsProgram program, string referrer, string specifier)
+    private (JsProgram Program, int Index) ImportedModule(
+        JsProgram program, string referrer, string specifier)
     {
         foreach (var record in program.Modules)
         {
@@ -3186,7 +3252,7 @@ internal sealed class JsEngine
                 if (string.Equals(
                     record.RequestSpecifiers[index], specifier, System.StringComparison.Ordinal))
                 {
-                    return Evaluated(program, record.Requests[index]);
+                    return (program, record.Requests[index]);
                 }
             }
 
@@ -3240,8 +3306,7 @@ internal sealed class JsEngine
 
         if (!artifact.TryGetState(out var state) || state is not JsProgram loadedProgram)
         {
-            ThrowTypeError("the artifact provider answered with a foreign program");
-            return null!;
+            throw Error("TypeError", "the artifact provider answered with a foreign program");
         }
 
         if (!loadedProgram.TryFindEntry(ModuleEntryName, out var unit) ||
@@ -3251,7 +3316,7 @@ internal sealed class JsEngine
                 "the artifact answered for '" + specifier + "' carries no module graph");
         }
 
-        return Evaluated(loadedProgram, loadedProgram.ModuleOfUnit[(int)unit]);
+        return (loadedProgram, loadedProgram.ModuleOfUnit[(int)unit]);
     }
 
     /// <summary>The entry point a module artifact names its root module by.</summary>

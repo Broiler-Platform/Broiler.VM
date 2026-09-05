@@ -520,7 +520,7 @@ internal sealed class JsParser
     /// clause would refuse a program the language admits - and the request still has to reach the
     /// module record, because the whole point of the statement is that the module is evaluated.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=B18689
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9ADEFA
     // Broiler-Human:        PENDING
     private JsStatement ParseImportDeclaration(SliceSourceSpan span)
     {
@@ -532,12 +532,17 @@ internal sealed class JsParser
         Advance();
         var specifiers = new System.Collections.Generic.List<JsImportSpecifier>();
 
+        // THE BINDINGLESS FORM CARRIES A CLAUSE TOO. `import './m.mjs' with {};` requests a module
+        // for what evaluating it does and binds nothing, and the attributes go on the REQUEST
+        // rather than on the bindings - so a reading that returned here without looking for one
+        // reported a missing semicolon against a program the grammar admits.
         if (Current.Kind == SliceTokenKind.StringLiteral)
         {
             var only = Current.StringValue;
             Advance();
+            var bare = Attributes();
             Semicolon();
-            return new JsImportDeclaration(span, only, specifiers);
+            return new JsImportDeclaration(span, only, specifiers, bare);
         }
 
         if (IsIdentifierName(Current.Kind))
