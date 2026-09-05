@@ -7452,10 +7452,13 @@ benchmark's wall-clock duration beside its exit code, and a total beside the wal
 
 **What replaced it.** Three things.
 
-- **The wall is a hang guard and is stated as one.** Forty-five minutes per benchmark, which a run
-  that finishes never spends: an allowance is paid only by something that was not going to finish,
-  and the job's own timeout sits behind it. The number to tighten it from is now printed by every
-  run, taken on the runner rather than on a workstation.
+- **The wall is the profile's own hard maximum, so it is not a number anybody picked.**
+  `JavaScriptProfile.Maxima()` sets `WallClock` at 3,600,000 ms and calls it a maximum "a host may
+  tighten and may never loosen", so an hour is the most any composition of this profile can be
+  granted. A larger figure buys nothing and is not merely unwise: a run of this driver asking for
+  ninety minutes was **bounded at sixty and reported the shorter one met**, which is how the
+  ceiling was found. A benchmark that meets THIS bound has met the profile's ceiling rather than a
+  lane's preference — a finding worth reporting rather than a bound worth moving.
 - **The Octane selection is the caller's, the way the fuzz iteration count already is.** A fourth
   lane input, `octane-benchmarks`: six benchmarks on the quick lane's two cells, all fifteen on the
   full lane's six. It is a DEPTH and not a switch — the workload runs on every cell of every
@@ -7473,14 +7476,34 @@ this one retains none — so what the run establishes is that the benchmark **re
 how long that took on the machine it took it on. Whether that duration should be smaller is
 `JS-10`'s question and not this one's.
 
-**Nor that forty-five minutes is enough**, and the honest form of that is worth writing down.
-`zlib`'s duration on a runner is still not known: the only run that could have measured it was cut
-at ten minutes, and the quick lane's six do not include it, so **the first full lane after this is
-also the first reading of it**. A bound that turns out to be short is then a number to move, with a
-duration beside it to move it to — which is the difference between this bound and the one it
-replaces.
+**Nor that an hour is enough**, and the honest form of that is the point of this paragraph.
+**`zlib` has no known duration on any machine here**, because on the one it was measured on it does
+not settle inside the profile's maximum at all: cut at 3,600s under the JIT build and again at
+3,600s on the published Native AOT image, 0 of 1 scored both times. What is known is a ratio.
+`richards` scores **32.0** on that AOT image on that machine and **46.3** on `ubuntu-latest`, so a
+runner is about **1.45 times faster** and needs somewhere **above forty-one minutes** for `zlib` —
+a lower bound, not a duration, because the numerator is itself a bound.
+
+So whether `zlib` fits inside the hour on a runner is **not known, and cannot be made known from
+here**: the bound is already the largest one this profile permits, and the first full lane is the
+first thing that can answer it. Three things follow, and the third is the one a reader should hold
+onto. The quick lane's six do not include `zlib`, so the push path does not depend on the answer.
+A benchmark that meets this bound is reported as meeting the profile's ceiling, which is a true
+statement about this engine on that runtime identifier. And **if that is what the full lane says,
+the decision it calls for is whether the lane may claim the whole set at all** — an exclusion
+stated by name, the way the conformance step states its own — which is a decision about what this
+component CLAIMS, and this component has no reviewer to take one.
+
+**And not that the machine is a constant.** The same box scored `richards` at 64.7 when bundle
+JSW-10-001 was collected and 35.4 ninety minutes later, on a binary that had not changed — only
+`LanguageErrors.cs` moved in between, in a composition the end-user host does not reference. Every
+duration in this entry is a reading of one machine at one moment, and the ratio above is the only
+part of it that travels.
 
 **Authority and date.** The `quick / publish and run` jobs of 2026-09-05 on `da01b75`, both Linux
 cells, which scored fourteen of fifteen and named `zlib` and the allowance it met; the 23m28s the
-same step took between its own log's first and last line; and a workstation run of `zlib` alone
-under the default hour-long allowance, which was still running at twelve minutes. 2026-09-05.
+same step took between its own log's first and last line; the same two jobs **green** on `fe1324d`
+with the workload step at 8m55s on `linux-x64` and 9m53s on `linux-arm64`, six benchmarks and the
+four-subtree conformance selection between them; and two workstation runs of `zlib` alone, one on
+the JIT build and one on the published Native AOT image, each cut at 3,600s with `richards` scored
+beside the second at 32.0 against that lane's 46.3. 2026-09-05.

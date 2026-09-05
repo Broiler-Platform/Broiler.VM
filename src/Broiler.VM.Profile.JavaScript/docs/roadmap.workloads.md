@@ -452,9 +452,14 @@ the act that would turn a stage into a milestone with a ledger row.
   six benchmarks on the quick lane's two cells, all fifteen on the full lane's six — and that
   asymmetry is a **measurement rather than a plan**: the step's first run scored fifteen benchmarks
   in 23m28s on `ubuntu-latest`, on a job whose every other step totals 78 to 208 seconds
-  *([JSC-180](roadmap.corrections.md#jsc-180))*. **The exclusions are that no identifier but the
-  Linux one has scored the whole conformance suite, and that no identifier scores the whole Octane
-  set on the push path.**
+  *([JSC-180](roadmap.corrections.md#jsc-180))*. The per-benchmark allowance is the profile's own
+  `WallClock` maximum rather than a figure the lane chose, because an hour is the most any
+  composition of this profile may be granted — so a benchmark that meets it has met **this
+  engine's ceiling**, which is a finding rather than a bound to move. **The exclusions are that no
+  identifier but the Linux one has scored the whole conformance suite, that no identifier scores
+  the whole Octane set on the push path, and that `zlib` has no known duration on any machine here
+  — it meets that ceiling on the one it was measured on, and whether it fits inside the hour on a
+  runner is what the first full lane answers.**
 - **The whole-suite runs are retained per manifest**, under
   [section 4's evidence contract](roadmap.status.md#4-required-evidence-bundle), with the harness's
   five verdicts reported rather than four — a variant that spent an allowance is neither a pass, a

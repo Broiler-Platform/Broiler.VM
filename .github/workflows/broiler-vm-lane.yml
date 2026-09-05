@@ -415,12 +415,16 @@ jobs:
       # of the published image took 23m28s on `ubuntu-latest`, on a job whose every other step
       # totals 78 to 208 seconds, and that is not a cost the push path can carry twice per push.
       #
-      # THE WALL IS A HANG GUARD AND NOT A BUDGET, which is the second correction. The first bound
-      # here was ten minutes per benchmark, chosen from nothing, and `zlib` walked through it on
-      # both Linux cells while reporting a score on a workstation - a red lane over a bound nobody
-      # had measured. It is forty-five minutes now, which is a bound on a HANG, and the driver
-      # prints each benchmark's duration beside its exit code so the next reader tightens it from a
-      # reading taken on a runner rather than from another guess.
+      # THE WALL IS THE PROFILE'S OWN MAXIMUM, which is the second correction and the one that took
+      # two attempts. The first bound was ten minutes, chosen from nothing, and `zlib` walked
+      # through it on both Linux cells while reporting a score on a workstation - a red lane over a
+      # number nobody had measured. The second was forty-five minutes, which was an estimate made
+      # because the measurement kept refusing to arrive: `zlib` does not settle inside the hour
+      # that `JavaScriptProfile.Maxima()` declares, on the JIT build or on the published AOT image,
+      # so no completion exists on this machine to size a bound from. The hour IS the bound now,
+      # because it is the most any composition of this profile may be granted - and the driver
+      # prints each benchmark's duration beside its exit code, so the reading a runner gives is
+      # there whether or not the benchmark scores.
       #
       # THE EXCLUSIONS, STATED HERE RATHER THAN DISCOVERED. No RID but the Linux one has scored the
       # whole conformance suite. No RID has scored the whole Octane set on the push path, and only
@@ -455,16 +459,26 @@ jobs:
             set -- "$@" --only "$name"
           done
 
-          # The wall clock is bounded per benchmark because a lane may not hang, and forty-five
-          # minutes is a HANG GUARD rather than a budget. The bound before it was ten minutes,
-          # which was not a measurement of anything: `zlib` walked through it on both Linux cells
-          # while reporting a score on a workstation, so the lane went red over a number somebody
-          # had picked. A wall costs nothing when nothing hangs - it is spent only by a benchmark
-          # that was never going to finish - and the job's own timeout is behind it. What the next
-          # reader tightens this from is the DURATION the driver now prints beside every exit code,
-          # which is a reading off the runner rather than off a workstation.
+          # THE WALL IS THE PROFILE'S OWN HARD MAXIMUM, WHICH IS WHY IT IS NOT A NUMBER SOMEBODY
+          # PICKED. `JavaScriptProfile.Maxima()` sets `WallClock` at 3,600,000 ms and calls it a
+          # maximum "a host may tighten and may never loosen", so one hour is the most any
+          # composition of this profile can be granted and a larger figure here would buy nothing -
+          # a run asking for ninety minutes is bounded at sixty and reports the shorter one met.
+          # The bound before this was ten minutes and then forty-five, and neither was a
+          # measurement: the first went red on both Linux cells, and the second was an estimate
+          # made because no completion could be obtained to size it from.
+          #
+          # WHY NO COMPLETION COULD BE OBTAINED. `zlib` does not settle within that hour on the
+          # published Native AOT image on the machine this was measured on - it met the ceiling,
+          # under both the JIT and the AOT image, at 3,600s each time. `richards` scores 32.0 on
+          # that image on that machine and 46.3 on `ubuntu-latest`, so a runner is about 1.45 times
+          # faster and needs somewhere above forty-one minutes for `zlib`. WHETHER THAT FITS INSIDE
+          # THE HOUR IS NOT KNOWN, and the full lane is the first thing that will find out; the
+          # quick lane's selection does not include `zlib`. A benchmark that meets THIS bound has
+          # met the profile's own ceiling rather than a lane's preference, which is a finding worth
+          # reporting rather than a bound worth moving.
           "$py" eng/run-octane.py --binary-directory artifacts/ci-aot-JavaScript.Cli \
-            --wall 2700000 "$@"
+            --wall 3600000 "$@"
 
           # The selection is four subtrees that between them reach the front end, the executor,
           # the realm's own objects and the suspension machinery, which is what makes a published

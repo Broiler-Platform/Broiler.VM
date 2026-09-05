@@ -31,6 +31,14 @@
 # `--only` may be repeated and names a SELECTION; with none of them the fifteen in the pin all run.
 # Each benchmark's wall-clock duration is printed beside its exit code, because `--wall` is an
 # allowance a caller has to state and there was nothing to state one from.
+#
+# `--wall` IS A REQUEST AND THE PROFILE BOUNDS IT. `JavaScriptProfile.Maxima()` sets the
+# `WallClock` maximum at 3,600,000 ms and calls it a maximum a host may tighten and may never
+# loosen, so an hour is the most any composition of this profile can be granted: a run asking for
+# ninety minutes is bounded at sixty and reports the shorter one met. The figure is not repeated
+# here as a constant, because a copy of it in another language is a copy that goes stale; what the
+# summary line says is what was REQUESTED, and what actually bound the run is in the run's own
+# answer beside the duration.
 
 import argparse
 import hashlib
@@ -217,7 +225,7 @@ def main():
 
         print(f"# {scored} of {len(wanted)} benchmarks reported a score and exited zero")
         print(f"# {spent:.0f}s over {len(wanted)} benchmarks, "
-              f"under a wall of {arguments.wall // 1000}s each")
+              f"under a REQUESTED wall of {arguments.wall // 1000}s each")
         return 0 if scored == len(wanted) else 1
     finally:
         shutil.rmtree(scratch, ignore_errors=True)
