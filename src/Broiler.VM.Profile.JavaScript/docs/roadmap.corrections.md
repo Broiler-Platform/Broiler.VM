@@ -7286,3 +7286,48 @@ reason.
 **Authority and date.** The corpus replay of 2026-09-05 before and after the regeneration, the
 manifest digest that changed with it, and the two readings of the plateau check on one commit
 under load and at rest. 2026-09-05.
+
+---
+
+### JSC-177
+
+**Where:** the ledger's [section 2](roadmap.status.md#2-current-milestone-status), and the two rows
+in it that had stopped describing the checkout.
+
+**What the plan said.** That `JS-7 — suspension` and `JS-8 — guest-initiated loads and the three
+compositions` are **`Not started`**, with `[NONE]` evidence, and that their immediate
+evidence-producing action is *after JS-5 and JS-6* and *after JS-7*.
+
+**What was true.** Both had been built and neither row had moved. A generator, an async function, an
+async generator and `for await` are all admitted and are exercised by a third-party corpus rather
+than by fixtures written here; a suspension saves itself into the executor's own frame, and the
+three drivers are told apart by a flag the instruction that left the dispatch loop writes. `eval`,
+the `Function` constructor, the module goal and a dynamic `import()` all exist, each behind the
+surface roadmap section 11 allocates to it, and **a composition that declines one refuses every
+artifact declaring it, at verification** — which is the clause bundle
+[JS-4-001](evidence/js-4-001/README.md) recorded as unmet for `eval` and which section 3 of
+[bundle JSW-10-001](evidence/jsw-10-001/README.md) demonstrates over three surfaces.
+
+**A row that says `Not started` about work that is done is worse than a row that says nothing.** The
+ledger's own update rule 1 asks that a row move in the same change that materially changes what it
+claims, and the workload programme changed both without moving either: the stages that built this
+mint `JSW-` identifiers and move no ledger row *by design*, and the obligation that leaves is on
+whoever does the work rather than on the document that proposed it. **Nine stages went by before
+anybody noticed**, which is the failure mode a status table has when nothing checks it against the
+tree.
+
+**What replaced it.** Both rows are `[PARTIAL]`, `In progress`, citing the bundle, with what the
+bundle's own exclusions name written into the row rather than left in the bundle: no reviewer
+decision, one machine and one runtime identifier, the direct `eval` inside a function still refused
+by name as a published exclusion, the asynchronous module graph with no evaluation-order model, and
+the obligation a module resolver carries that this profile states rather than enforces. The count
+above the table moves with them, and the `JS-6` row's clause that `broiler.javascript.wide` has no
+whole-suite run of its own is answered by the same bundle.
+
+**What this entry does NOT do.** It does not accept anything. Both rows stay short of `[FULL]`, no
+reviewer decision exists anywhere in this component, and the release gate refuses — which is the
+correct answer while every relevant unit is `HUMAN_PENDING`.
+
+**Authority and date.** Bundle JSW-10-001, retained on 2026-09-05, and the clauses of each gate its
+sections demonstrate; the ledger's update rule 1, which is what makes a stale row a defect rather
+than an omission. 2026-09-05.
