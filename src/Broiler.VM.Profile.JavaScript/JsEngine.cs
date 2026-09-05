@@ -3712,7 +3712,7 @@ internal sealed class JsEngine
     /// have run for a throw from the instruction itself, and no unwinding is reimplemented.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=557FC2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=605A6B
     // Broiler-Human:        PENDING
     private JsValue Execute(
         JsProgram program,
@@ -4032,6 +4032,23 @@ internal sealed class JsEngine
                                 target,
                                 stack[--sp],
                                 strict);
+
+                            pc += 3;
+                            break;
+                        }
+
+                        case JsOpcode.DeleteGlobalBinding:
+                        {
+                            var name = names[U16(code, pc)];
+
+                            // A LEXICAL BINDING IS NOT A PROPERTY AND IS NOT DELETABLE, and a name
+                            // neither half carries was never there to keep - which the language
+                            // answers `true` for, not with the `ReferenceError` a READ of the same
+                            // name would give.
+                            stack[sp++] = JsValue.Boolean(
+                                (!Realm.HasLexicals || !Realm.TryLexical(name, out _)) &&
+                                (!Realm.GlobalObject.HasOwnProperty(name) ||
+                                    Realm.GlobalObject.DeleteOwnProperty(name)));
 
                             pc += 3;
                             break;

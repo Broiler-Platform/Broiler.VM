@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   160
-// Annotated:        160/160
+// Relevant units:   162
+// Annotated:        162/162
 // Exempt:           82
-// Human-reviewed:   0/160
+// Human-reviewed:   0/162
 // IP risk:          None
 // Security risk:    High
 // Criteria:         6/6
 // Resource impact:  3/10 max
-// Unverified:       160
+// Unverified:       162
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -4730,7 +4730,7 @@ public sealed class JsCompiler
         CompileExpression(value);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=492435
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D1EE4A
     // Broiler-Human:        PENDING
     private void CompileUnary(JsUnaryExpression unary)
     {
@@ -4781,7 +4781,14 @@ public sealed class JsCompiler
 
                 Mark(enclosing);
                 Emit(JsOpcode.Pop);
-                Emit(Resolvable(bare.Name) ? JsOpcode.LoadFalse : JsOpcode.LoadTrue);
+                if (Resolvable(bare.Name))
+                {
+                    Emit(JsOpcode.LoadFalse);
+                }
+                else
+                {
+                    Emit(JsOpcode.DeleteGlobalBinding, InternedName(bare.Name));
+                }
                 Mark(settled);
                 buffer.Rejoin(live + 1);
                 return;
@@ -4844,6 +4851,22 @@ public sealed class JsCompiler
                     "a private element cannot be deleted");
 
                 Emit(JsOpcode.LoadTrue);
+                return;
+
+            // `delete x` FOR A BARE NAME NEVER EVALUATES `x`. The operator takes a reference and
+            // asks whether it can be removed, so a lowering that read the name and threw the value
+            // away answered `true` for a `var` the language says is not deletable and threw a
+            // `ReferenceError` for a name nobody declared - where the language answers `true`. A
+            // name this unit resolves to a SLOT is answered here, because a slot binding is never
+            // deletable and the compiler already knows which names those are.
+            case SliceTokenKind.Delete when unary.Operand is JsIdentifier plain:
+                if (Resolvable(plain.Name))
+                {
+                    Emit(JsOpcode.LoadFalse);
+                    return;
+                }
+
+                Emit(JsOpcode.DeleteGlobalBinding, InternedName(plain.Name));
                 return;
 
             case SliceTokenKind.Delete:
@@ -5189,13 +5212,25 @@ public sealed class JsCompiler
         Emit(JsOpcode.LoadUndefined);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=94D203
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=9394AE
     // Broiler-Human:        PENDING
     private void CompileLogicalAssignment(JsAssignmentExpression assignment)
     {
         if (assignment.Target is JsMemberExpression member)
         {
             CompileLogicalMemberAssignment(assignment, member);
+            return;
+        }
+
+        if (assignment.Target is JsPrivateMemberExpression privateTarget)
+        {
+            CompileLogicalPrivateAssignment(assignment, privateTarget);
+            return;
+        }
+
+        if (assignment.Target is JsSuperMemberExpression superTarget)
+        {
+            CompileLogicalSuperAssignment(assignment, superTarget);
             return;
         }
 
@@ -5321,6 +5356,112 @@ public sealed class JsCompiler
             Emit(JsOpcode.Pop);
         }
 
+        Mark(end);
+    }
+
+    /// <summary>Lowers <c>super.x ||= v</c> and its two siblings.</summary>
+    /// <remarks>
+    /// <b>The key is computed once and kept</b>, which is what the compound form beside this one
+    /// already does and for the same reason: <c>super[f()] ||= v</c> calls <c>f</c> once, and the
+    /// read and the write have to agree about the key it answered. A <c>super</c> reference carries
+    /// no base on the stack — the home object and the receiver are the frame's — so this is the
+    /// narrowest of the four shapes and the only one whose short circuit drops a single value.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=673298
+    // Broiler-Human:        PENDING
+    private void CompileLogicalSuperAssignment(
+        JsAssignmentExpression assignment, JsSuperMemberExpression member)
+    {
+        var end = NewLabel();
+        var kept = NewLabel();
+
+        CompileSuperKey(member);
+        Emit(JsOpcode.Duplicate);
+        Emit(JsOpcode.LoadSuperProperty);
+        Emit(JsOpcode.Duplicate);
+
+        switch (assignment.Operator)
+        {
+            case SliceTokenKind.AmpersandAmpersand:
+                Branch(JsOpcode.JumpIfFalse, kept);
+                break;
+
+            case SliceTokenKind.BarBar:
+                Branch(JsOpcode.JumpIfTrue, kept);
+                break;
+
+            default:
+                Emit(JsOpcode.LoadNull);
+                Emit(JsOpcode.LooseEquals);
+                Emit(JsOpcode.Not);
+                Branch(JsOpcode.JumpIfTrue, kept);
+                break;
+        }
+
+        Emit(JsOpcode.Pop);
+        CompileExpression(assignment.Value);
+        Emit(JsOpcode.StoreSuperProperty);
+        Branch(JsOpcode.Jump, end);
+        Mark(kept);
+
+        Emit(JsOpcode.Swap);
+        Emit(JsOpcode.Pop);
+        Mark(end);
+    }
+
+    /// <summary>Lowers <c>o.#x ||= v</c> and its two siblings.</summary>
+    /// <remarks>
+    /// <b>It is the computed member's shape with the private pair in place of the index pair</b>,
+    /// and it is a method of its own rather than a branch inside that one because the two carry
+    /// different things on the stack under the value they read: a base and a KEY there, a base and a
+    /// PRIVATE NAME here. <b>The short circuit is what the suite tests</b>: <c>o.#m ??= v</c> where
+    /// <c>#m</c> is a private METHOD is a program when <c>#m</c> is not nullish, because the store
+    /// that would refuse never runs — so the assigning path must be the only one that stores.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=C3CB76
+    // Broiler-Human:        PENDING
+    private void CompileLogicalPrivateAssignment(
+        JsAssignmentExpression assignment, JsPrivateMemberExpression member)
+    {
+        var end = NewLabel();
+        var kept = NewLabel();
+
+        CompileExpression(member.Target);
+        EmitPrivateName(member.Span, member.Name);
+        Emit(JsOpcode.DuplicateTwo);
+        Emit(JsOpcode.LoadPrivate);
+        Emit(JsOpcode.Duplicate);
+
+        switch (assignment.Operator)
+        {
+            case SliceTokenKind.AmpersandAmpersand:
+                Branch(JsOpcode.JumpIfFalse, kept);
+                break;
+
+            case SliceTokenKind.BarBar:
+                Branch(JsOpcode.JumpIfTrue, kept);
+                break;
+
+            default:
+                Emit(JsOpcode.LoadNull);
+                Emit(JsOpcode.LooseEquals);
+                Emit(JsOpcode.Not);
+                Branch(JsOpcode.JumpIfTrue, kept);
+                break;
+        }
+
+        Emit(JsOpcode.Pop);
+        CompileExpression(assignment.Value);
+        Emit(JsOpcode.StorePrivate);
+        Branch(JsOpcode.Jump, end);
+        Mark(kept);
+
+        // The base and the private name are this lowering's own working, and the value that was
+        // already there is the answer, so both are dropped from under it.
+        Emit(JsOpcode.Swap);
+        Emit(JsOpcode.Pop);
+        Emit(JsOpcode.Swap);
+        Emit(JsOpcode.Pop);
         Mark(end);
     }
 

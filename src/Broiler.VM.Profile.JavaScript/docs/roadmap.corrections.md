@@ -5535,3 +5535,55 @@ pinned the deviation now answer `1|ReferenceError`, which is what the same three
 before and after, the comparison against the second engine for each of the three answers above, and
 the acceptance table's own dead-zone block, whose comment recorded in advance that these rows would
 have to be moved deliberately. 2026-09-05.
+
+---
+
+### JSC-143
+
+**Where:** three shapes the wide front end had no production for, found by reading the `unsupported`
+and failing columns of a subtree run rather than by an audit: the logical assignment operators over
+the two targets they were not admitted for, the strict-mode restrictions on `eval` and `arguments`,
+and `delete` applied to a bare name.
+
+**What was assumed about the logical assignment.** That its targets are a name and a property. The
+grammar says its target is a `LeftHandSideExpression`, and two more of those are references:
+`super.x` and `this.#x`. Both were refused as *a target that is neither a name nor a property* —
+which is a MANIFEST refusal, and a conformance runner scores it as a construct declined rather than
+as a defect, so it is exactly the shape [bundle JS-4-001](evidence/js-4-001/README.md) section 4
+exists to catch. **The private target is the one worth writing down**: `o.#m ??= v` where `#m` is a
+private METHOD is a program when `#m` is not nullish, because the store that would refuse it never
+runs, and only a lowering whose assigning path is the sole path that stores answers it.
+
+**What was assumed about `eval` and `arguments`.** That strictness changes what a name RESOLVES to.
+It also changes what a name may BE. Strict code binds neither of them and assigns to neither, and
+both rules are early errors: `"use strict"; var eval = 1;`, `arguments = 1`, `++eval` and
+`arguments ||= 1` are programs that do not parse. This front end parsed all four and answered a
+run-time `ReferenceError` at script level, where the language answers a `SyntaxError` before
+anything runs — and a conformance file written for the rule carries `negative: { phase: parse }`,
+so the wrong phase is a failure even when the program does throw. The two names are RESTRICTED and
+not reserved, which is why the test is on a string rather than on a token kind: `eval("1")` and
+`arguments.length` are strict-mode programs, and the refusal is exactly where the program would
+change what the name stands for.
+
+**What was assumed about `delete`.** That its operand is an expression. It is a REFERENCE, and the
+operator never evaluates it. The lowering compiled the operand, discarded the value and pushed
+`true`, so `delete undeclared` — which the language answers `true` for — threw a `ReferenceError`
+about the name, and `var v = 1; delete v` answered `true` where every engine answers `false`,
+because a `var` of the global object is not configurable. A name that reaches a slot is answered at
+compile time, because a slot binding is never deletable and the compiler already knows which names
+those are; everything else reaches the new `DeleteGlobalBinding`, whose three answers are three
+different facts about the name — a lexical binding is not deletable, a property answers what its own
+`[[Delete]]` answers, and a name neither half carries answers `true` because nothing was there.
+
+**And `delete x` is itself a syntax error in strict code**, whatever `x` names, which is the fourth
+early error this entry adds.
+
+**Measured, on the pinned suite.** `test/language/expressions/logical-assignment` went from 120 of
+132 variants to **126**, with its `unsupported` column emptied. The six that remain are one shape:
+a member reference whose base is nullish must throw before its key is converted, which is an
+ordering this executor's indexed access does not have and which is not this entry's.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the subtree sweeps before
+and after, ten cases appended to `src/tests/differential/the-statement-and-object-surface.js` whose
+answers were taken from the comparison engine before they were written down, and the comparison of
+`delete` over five kinds of name against that engine. 2026-09-05.

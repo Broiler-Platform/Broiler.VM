@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   122
-// Annotated:        122/122
+// Relevant units:   124
+// Annotated:        124/124
 // Exempt:           17
-// Human-reviewed:   0/122
+// Human-reviewed:   0/124
 // IP risk:          None
 // Security risk:    High
 // Criteria:         2/2
 // Resource impact:  3/10 max
-// Unverified:       122
+// Unverified:       124
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -2519,7 +2519,7 @@ internal sealed class JsParser
         return new JsSequenceExpression(span, all);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=18AB0B
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5D9CD7
     // Broiler-Human:        PENDING
     private JsExpression ParseAssignment(bool noIn = false)
     {
@@ -2584,6 +2584,19 @@ internal sealed class JsParser
                         span,
                         SliceSourceDiagnosticCode.InvalidAssignmentTarget,
                         "the left-hand side of an assignment is not a reference");
+                }
+
+                // AND IN STRICT CODE THE TWO RESTRICTED NAMES ARE NOT TARGETS. It is the same rule
+                // the binding names obey, on the other side of the reference: a program may read
+                // `arguments` in strict code and may not replace it.
+                if (strict && target is JsIdentifier assigned &&
+                    IsRestrictedInStrictCode(assigned.Name))
+                {
+                    Refuse(
+                        span,
+                        SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+                        "`" + assigned.Name +
+                            "` is not the target of an assignment in strict code");
                 }
 
                 Advance();
@@ -3047,7 +3060,7 @@ internal sealed class JsParser
         _ => 0,
     };
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=04EEB4
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5C81EB
     // Broiler-Human:        PENDING
     private JsExpression ParseUnary()
     {
@@ -3083,7 +3096,22 @@ internal sealed class JsParser
             {
                 var op = Current.Kind;
                 Advance();
-                return new JsUnaryExpression(span, op, ParseUnary());
+                var operand = ParseUnary();
+
+                // `delete x` IS A SYNTAX ERROR IN STRICT CODE, whatever `x` names. The operator
+                // deletes a PROPERTY, and a bare name is a binding: sloppy code answers `false`
+                // for one that is not configurable and strict code refuses to ask, because the
+                // question was almost certainly meant about something else.
+                if (strict && op == SliceTokenKind.Delete && operand is JsIdentifier deleted)
+                {
+                    Refuse(
+                        span,
+                        SliceSourceDiagnosticCode.UnexpectedToken,
+                        "`delete " + deleted.Name + "` is a syntax error in strict code: a bare " +
+                            "name is a binding and `delete` removes a property");
+                }
+
+                return new JsUnaryExpression(span, op, operand);
             }
 
             case SliceTokenKind.PlusPlus:
@@ -3091,7 +3119,9 @@ internal sealed class JsParser
             {
                 var op = Current.Kind;
                 Advance();
-                return new JsUpdateExpression(span, op, ParseUnary(), Prefix: true);
+                var operand = ParseUnary();
+                RefuseRestrictedUpdate(span, operand);
+                return new JsUpdateExpression(span, op, operand, Prefix: true);
             }
 
             default:
@@ -3099,7 +3129,28 @@ internal sealed class JsParser
         }
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=29102D
+    /// <summary>
+    /// Refuses <c>++eval</c> and its three siblings, which strict code has no production for.
+    /// </summary>
+    /// <remarks>
+    /// An update is a read and a write of the same reference, so the write half is what the rule is
+    /// about and it is the same rule an assignment obeys. Both prefix and postfix ask, because the
+    /// difference between them is what the expression ANSWERS and not what it writes.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=9EE713
+    // Broiler-Human:        PENDING
+    private void RefuseRestrictedUpdate(SliceSourceSpan span, JsExpression operand)
+    {
+        if (strict && operand is JsIdentifier name && IsRestrictedInStrictCode(name.Name))
+        {
+            Refuse(
+                span,
+                SliceSourceDiagnosticCode.InvalidAssignmentTarget,
+                "`" + name.Name + "` is not the operand of an update in strict code");
+        }
+    }
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=EC4727
     // Broiler-Human:        PENDING
     private JsExpression ParsePostfix()
     {
@@ -3111,6 +3162,7 @@ internal sealed class JsParser
         {
             var op = Current.Kind;
             Advance();
+            RefuseRestrictedUpdate(span, operand);
             return new JsUpdateExpression(span, op, operand, Prefix: false);
         }
 
@@ -3872,7 +3924,24 @@ internal sealed class JsParser
     private static bool IsPrivateName(SliceToken token) =>
         token.RawText.Length > 1 && token.RawText[0] == '#';
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3664C9
+    /// <summary>
+    /// Whether <paramref name="name"/> is one of the two names strict code neither binds nor
+    /// assigns to.
+    /// </summary>
+    /// <remarks>
+    /// <b>They are restricted rather than reserved, and the difference is what makes this a test on
+    /// a string rather than a token kind.</b> `eval` and `arguments` are ordinary identifiers in
+    /// every position that only READS them - `"use strict"; eval("1")` and `arguments.length` are
+    /// programs - and are refused exactly where a program would change what they name: a binding
+    /// that shadows one, and an assignment that replaces one.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=7C2BA8
+    // Broiler-Human:        PENDING
+    private static bool IsRestrictedInStrictCode(string name) =>
+        string.Equals(name, "eval", System.StringComparison.Ordinal) ||
+        string.Equals(name, "arguments", System.StringComparison.Ordinal);
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=999E9F
     // Broiler-Human:        PENDING
     private string BindingName()
     {
@@ -3880,6 +3949,19 @@ internal sealed class JsParser
 
         if (IsIdentifierName(token.Kind))
         {
+            // STRICT CODE BINDS NEITHER `eval` NOR `arguments`, and this is the one funnel every
+            // binding name passes through - a declarator, a parameter, a catch parameter, a
+            // pattern's leaf and an import's local name - so the rule is stated once. It is an
+            // EARLY error and not a manifest refusal: the manifest admits `var`, and a program
+            // that writes `"use strict"; var eval = 1;` is wrong about the language.
+            if (strict && IsRestrictedInStrictCode(token.RawText))
+            {
+                Refuse(
+                    Span(),
+                    SliceSourceDiagnosticCode.ReservedWordAsBinding,
+                    "`" + token.RawText + "` is not a binding name in strict code");
+            }
+
             Advance();
             return token.RawText;
         }

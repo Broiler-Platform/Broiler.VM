@@ -1246,6 +1246,7 @@
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.DefineIndexed : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 39
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.DefineMethod : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 44
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.DefineSetter : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 43
+  Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.DeleteGlobalBinding : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 130
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.DeleteIndex : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 41
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.DeleteProperty : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 40
   Broiler.VM.Profile.JavaScript.Format Broiler.VM.Profile.JavaScript.Format.JsOpcode.Divide : const Broiler.VM.Profile.JavaScript.Format.JsOpcode = 67

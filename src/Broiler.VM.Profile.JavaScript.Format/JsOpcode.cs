@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   23
 // Annotated:        23/23
-// Exempt:           123
+// Exempt:           124
 // Human-reviewed:   0/23
 // IP risk:          None
 // Security risk:    Medium
@@ -98,7 +98,7 @@ namespace Broiler.VM.Profile.JavaScript.Format;
 /// queue the host drains.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=E28925
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=CD604C
 // Broiler-Human:        PENDING
 public enum JsOpcode : byte
 {
@@ -1024,6 +1024,30 @@ public enum JsOpcode : byte
     /// declaration is written - which is exactly the gap the temporal dead zone occupies.
     /// </remarks>
     InitialiseGlobalLexical = 0x81,
+
+    /// <summary>
+    /// Push whether the binding named by constant <c>u16</c> was deleted, deleting it when it is a
+    /// configurable property of the global object.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b><c>delete x</c> NEVER EVALUATES <c>x</c>, which is what makes this an instruction rather
+    /// than a lowering over the ones beside it.</b> The operator takes a REFERENCE and asks whether
+    /// it can be removed; a lowering that read the name and discarded the value answered
+    /// <c>true</c> for every deletable name and threw a <c>ReferenceError</c> for a name nobody
+    /// declared - where the language says <c>delete undeclared</c> is <c>true</c>.
+    /// </para>
+    /// <para>
+    /// <b>The three answers are three different facts about the name.</b> A binding of the global
+    /// LEXICAL environment is not deletable and answers <c>false</c>; a property of the global
+    /// object answers what its own <c>[[Delete]]</c> answers, so a <c>var</c> - which is
+    /// non-configurable - answers <c>false</c> and an assigned global answers <c>true</c>; and a
+    /// name neither half carries answers <c>true</c>, because there was nothing there to keep.
+    /// A name that reaches a SLOT never reaches this instruction: the lowering knows that
+    /// statically and emits the constant <c>false</c> the language gives it.
+    /// </para>
+    /// </remarks>
+    DeleteGlobalBinding = 0x82,
 }
 
 /// <summary>The operand shape that follows an opcode byte.</summary>
@@ -1176,7 +1200,7 @@ public static class JsOpcodes
         ElementIsMethod | ElementIsGetter | ElementIsSetter;
 
     /// <summary>Every opcode format version 2 defines, in ascending numeric order.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=D95E87
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=4DE284
     // Broiler-Human:        PENDING
     public static readonly JsOpcode[] All =
     [
@@ -1222,6 +1246,7 @@ public static class JsOpcodes
         JsOpcode.RunStaticElements,
         JsOpcode.Pop, JsOpcode.Duplicate, JsOpcode.DuplicateTwo, JsOpcode.Swap, JsOpcode.Pick,
         JsOpcode.DeclareGlobalLet, JsOpcode.DeclareGlobalConst, JsOpcode.InitialiseGlobalLexical,
+        JsOpcode.DeleteGlobalBinding,
     ];
 
     /// <summary>Whether <paramref name="value"/> is an opcode format version 2 defines.</summary>
@@ -1270,7 +1295,7 @@ public static class JsOpcodes
     /// The operand shape of <paramref name="opcode"/>, or <see langword="null"/> when this format
     /// version does not define it.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B0A4BC
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=338D43
     // Broiler-Human:        PENDING
     public static JsOperandShape? Shape(JsOpcode opcode) => opcode switch
     {
@@ -1319,7 +1344,7 @@ public static class JsOpcodes
         JsOpcode.NewPrivateName or
         JsOpcode.LoadImport or JsOpcode.ThrowImmutable or
         JsOpcode.DeclareGlobalLet or JsOpcode.DeclareGlobalConst or
-        JsOpcode.InitialiseGlobalLexical
+        JsOpcode.InitialiseGlobalLexical or JsOpcode.DeleteGlobalBinding
             => JsOperandShape.U16,
 
         JsOpcode.Jump or JsOpcode.JumpIfFalse or JsOpcode.JumpIfTrue or
@@ -1346,7 +1371,7 @@ public static class JsOpcodes
     /// and the verifier's abstract height is computed from them alone. A false answer means the
     /// opcode is not one this format version defines - not that its effect is unknown.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=3ADC1F
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=3A5CC1
     // Broiler-Human:        PENDING
     public static bool TryDescribe(JsOpcode opcode, uint operand, out int pops, out int pushes)
     {
@@ -1377,6 +1402,7 @@ public static class JsOpcodes
             case JsOpcode.ResolveName:
             case JsOpcode.LoadGlobal:
             case JsOpcode.LoadGlobalOrUndefined:
+            case JsOpcode.DeleteGlobalBinding:
             case JsOpcode.NewObject:
             case JsOpcode.Closure:
             case JsOpcode.LoadImport:

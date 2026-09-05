@@ -384,3 +384,25 @@ p(function(){ (0, eval)("let gl9 = 1;"); (0, eval)("function readsGl9(){ return 
 p(function(){ (0, eval)("let glA = 1;"); return (0, eval)("typeof glA"); });
 p(function(){ return (0, eval)("typeof notDeclaredAnywhereAtAll"); });
 p(function(){ (0, eval)("const glB = 1;"); var keys = Object.getOwnPropertyNames(globalThis); return String(keys.indexOf("glB") < 0); });
+
+// --- a logical assignment whose target is a PRIVATE member, which was the one target shape the
+// operator's admission left refused. The short circuit is the case worth writing down: a private
+// METHOD is not writable, and `??=` over a method that is not nullish never reaches the store.
+p(function(){ class K { #x = 0; run(){ this.#x ||= 7; return this.#x; } } return new K().run(); });
+p(function(){ class K { #y = 5; run(){ this.#y &&= 9; return this.#y; } } return new K().run(); });
+p(function(){ class K { #n = null; run(){ this.#n ??= 3; return this.#n; } } return new K().run(); });
+p(function(){ class K { #m(){ return 1; } run(){ this.#m ??= 2; return typeof this.#m; } } return new K().run(); });
+p(function(){ class K { #m(){ return 1; } run(){ try { this.#m &&= 2; return "no-throw"; } catch(e){ return e.name; } } } return new K().run(); });
+p(function(){ var n = 0; class K { #x = 0; base(){ n++; return this; } run(){ this.base().#x ||= 1; return n; } } return new K().run(); });
+p(function(){ class A { constructor(){ this.x = 0; } } class B extends A { run(){ super.x ||= 7; return this.x + "," + (super.x === undefined); } } return new B().run(); });
+p(function(){ class A {} A.prototype.v = 0; class B extends A { run(){ super.v ||= 4; return this.v + "," + A.prototype.v; } } return new B().run(); });
+p(function(){ var n = 0; class A {} A.prototype.k = null; class B extends A { run(){ function key(){ n++; return "k"; } super[key()] ??= 6; return n + "," + this.k; } } return new B().run(); });
+p(function(){ class A {} A.prototype.t = 1; class B extends A { run(){ super.t &&= 8; return this.t + "," + A.prototype.t; } } return new B().run(); });
+
+// --- `delete` over a bare name, which is a REFERENCE and is never evaluated. Each case is asked
+// through an indirect eval so that the name it asks about is the global scope's, which is the only
+// scope where the answer is about anything but a slot.
+p(function(){ (0, eval)("var delv = 1;"); return String((0, eval)("delete delv")) + "," + (0, eval)("typeof delv"); });
+p(function(){ globalThis.delg = 2; return String((0, eval)("delete delg")) + "," + typeof globalThis.delg; });
+p(function(){ return String((0, eval)("delete neverEverDeclared")); });
+p(function(){ return (function(){ var local = 1; return String(delete local); })(); });
