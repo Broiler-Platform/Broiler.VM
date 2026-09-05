@@ -1210,10 +1210,17 @@ FUZZ_SESSIONS = ((1, 25_000), (2, 25_000), (3, 25_000), (4, 25_000))
 def fuzz(out, corpus):
     """Run the retained fuzz sessions and keep everything they printed, findings included."""
     log = [
-        "Seeded mutation fuzzing over the two of roadmap section 7's four surfaces that exist:",
-        "the verifier, and the executor over verified-but-adversarial artifacts. The source",
-        "tokenizer and parser and the regular-expression matcher are surfaces this profile has",
-        "not written, and a session may not be read as covering them.",
+        "Seeded mutation fuzzing over two of roadmap section 7's four surfaces: the verifier, and",
+        "the executor over verified-but-adversarial artifacts. A session may not be read as",
+        "covering the other two.",
+        "",
+        "THAT SENTENCE USED TO SAY WHY, AND THE REASON STOPPED BEING TRUE. It read that the source",
+        "tokenizer and parser and the regular-expression matcher are surfaces this profile has not",
+        "written. All three are written here now - the front end since JS-3b, and the matcher since",
+        "the workload programme replaced the translation onto the platform's engine - so what",
+        "leaves them uncovered is that these sessions mutate ARTIFACTS and those surfaces consume",
+        "SOURCE. The scope is the same and the reason for it is not, which is exactly the shape of",
+        "claim a retained log must not carry after it stops holding.",
         "",
         "ANSWER-GUIDED, AND NOT COVERAGE-GUIDED. The adjective is the whole of the claim. A",
         "mutant whose published answer no seed artifact produces is kept as a further seed; the",

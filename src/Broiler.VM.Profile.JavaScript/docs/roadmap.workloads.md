@@ -436,6 +436,26 @@ the act that would turn a stage into a milestone with a ledger row.
   result has an identity; and a lane that runs both workloads on every claimed runtime identifier,
   since a workload that has only ever run on one machine under a JIT is what let a failing Native
   AOT run reach two retained bundles before anything noticed.
+- **What the stage did.** The Octane checkout was retrieved, hashed and archived on 2026-09-04 the
+  way [section 14](roadmap.md#14-the-conformance-oracle)'s pinning already works — the archive
+  `git archive` produced at the pinned commit, a digest over its own members, and the upstream
+  licence retained beside it — and the obligation that archive triggers was discharged a day later,
+  when `THIRD_PARTY_NOTICES.md` gained its row and rule N13 gained the directory that makes the
+  row's own mechanism sentence true *([JSC-145](roadmap.corrections.md#jsc-145))*.
+- **Both workloads run out of the published image on every claimed runtime identifier**, in the
+  publish job of the lane, beside the component's own suites. Octane runs whole there and the
+  conformance suite runs over a named selection, and the asymmetry is stated in the step rather
+  than left to be inferred: the Octane pin is small enough to extract on every cell, the
+  conformance archive is not, and what changes with the runtime identifier is whether the published
+  image can execute a corpus rather than what the engine answers about it. **The exclusion is that
+  no identifier but the Linux one has scored the whole suite.**
+- **The whole-suite runs are retained per manifest**, under
+  [section 4's evidence contract](roadmap.status.md#4-required-evidence-bundle), with the harness's
+  five verdicts reported rather than four — a variant that spent an allowance is neither a pass, a
+  failure, a construct outside the manifest nor a skip, and folding it into any of those would hide
+  the one outcome a reader can act on by raising a number. **Every family the `unsupported` column
+  names is named in the bundle**, and for `broiler.javascript.wide` there are none to name: the
+  column is empty, which is what section 1 asked for and the form it asked for it in.
 
 ---
 
