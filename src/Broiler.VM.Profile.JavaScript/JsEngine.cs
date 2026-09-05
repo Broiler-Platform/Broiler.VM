@@ -5948,10 +5948,23 @@ internal sealed class JsEngine
     }
 
     /// <summary>Reads an indexed property, with the fast path an Array element deserves.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=B503B0
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=383EFA
     // Broiler-Human:        PENDING
     internal JsValue GetIndexed(JsValue target, JsValue key)
     {
+        // THE BASE IS CHECKED BEFORE THE KEY IS CONVERTED, and the order is observable. The
+        // language builds a Reference from `base[expr]` WITHOUT converting the key, and converts it
+        // where the reference is read - so `null[{ toString(){ throw x; } }]` is the `TypeError`
+        // about the base and never the exception the conversion would have raised. A key that needs
+        // no user code is still named in the message, because naming it costs nothing and runs
+        // nothing.
+        if (target.IsNullish && !key.IsSymbol && key.Type is not JsType.String and not JsType.Number)
+        {
+            ThrowTypeError(
+                "Cannot read properties of " +
+                    (target.Type == JsType.Null ? "null" : "undefined"));
+        }
+
         if (target.IsObject && target.AsObject() is JsArray array && key.Type == JsType.Number)
         {
             var number = key.AsNumber();
@@ -6112,10 +6125,20 @@ internal sealed class JsEngine
     }
 
     /// <summary>Writes an indexed property, with the fast path an Array element deserves.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=715A35
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=240C80
     // Broiler-Human:        PENDING
     internal void SetIndexed(JsValue target, JsValue key, JsValue value, bool strict)
     {
+        // The same ordering the read half performs, for the same reason: a write through a
+        // reference whose base is nullish is a `TypeError` about the base, decided before anything
+        // the key's conversion could run.
+        if (target.IsNullish && !key.IsSymbol && key.Type is not JsType.String and not JsType.Number)
+        {
+            ThrowTypeError(
+                "Cannot set properties of " +
+                    (target.Type == JsType.Null ? "null" : "undefined"));
+        }
+
         if (target.IsObject && target.AsObject() is JsArray array && key.Type == JsType.Number)
         {
             var number = key.AsNumber();

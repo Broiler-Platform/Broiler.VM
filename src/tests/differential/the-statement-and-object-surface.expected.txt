@@ -5,8 +5,8 @@
 #diverges 295 evaluated source gets a lexical environment of its own in the comparison engine and this realm gives it the realm's, so a script-level `let` or `const` declared by one indirect eval is visible to the next; the narrower deviation JSC-142 leaves in place of the one it closed
 #diverges 296 evaluated source gets a lexical environment of its own in the comparison engine and this realm gives it the realm's, so a script-level `let` or `const` declared by one indirect eval is visible to the next; the narrower deviation JSC-142 leaves in place of the one it closed
 #diverges 298 evaluated source gets a lexical environment of its own in the comparison engine and this realm gives it the realm's, so a script-level `let` or `const` declared by one indirect eval is visible to the next; the narrower deviation JSC-142 leaves in place of the one it closed
-#diverges 62 the comparison engine gives a sloppy-mode function own `caller` and `arguments` properties for web compatibility; the language removed them and this realm does not have them
 #diverges 311 a `var` created by EVAL code is configurable and one created by a script is not; this profile compiles evaluated source as a script, so the deletion the comparison engine performs is refused here - the same seam JSC-142 records for the lexical half
+#diverges 62 the comparison engine gives a sloppy-mode function own `caller` and `arguments` properties for web compatibility; the language removed them and this realm does not have them
 1 "0123"
 2 "33"
 3 "02"
@@ -321,3 +321,6 @@
 312 "true,undefined"
 313 "true"
 314 "false"
+315 "TypeError"
+316 "TypeError"
+317 "threw:0"

@@ -5587,3 +5587,35 @@ ordering this executor's indexed access does not have and which is not this entr
 and after, ten cases appended to `src/tests/differential/the-statement-and-object-surface.js` whose
 answers were taken from the comparison engine before they were written down, and the comparison of
 `delete` over five kinds of name against that engine. 2026-09-05.
+
+---
+
+### JSC-144
+
+**Where:** the executor's indexed read and write — `JsEngine.GetIndexed` and `SetIndexed` — and the
+six variants of `test/language/expressions/logical-assignment` that [JSC-143](#jsc-143) measured and
+left, whose failure was not the operator's.
+
+**What was assumed.** That a computed member access is a base and a key, and that converting the key
+to a property key is part of reading it.
+
+**What was true.** **`base[expr]` builds a REFERENCE without converting the key**, and the
+conversion happens where the reference is read or written. The order is observable whenever the key
+is an object: `null[{ toString() { throw new RangeError(); } }]` is the `TypeError` about the base
+and the `RangeError` never happens, because there is nothing to convert a key for. This executor
+converted first, so it answered a program's own exception where the language answers a `TypeError`
+— and the conformance suite writes the case with a distinguishable exception on both sides
+precisely so an engine cannot pass it by accident.
+
+**What replaced it.** Both halves check the base for nullishness before anything the key could run.
+**A key that needs no user code is still named in the message** — a String or a Number is converted
+by nothing a program wrote — so `null["x"]` keeps the message it had and only the object-keyed case
+loses the name it could not have obtained without running code the language does not run.
+
+**Measured, on the pinned suite.** `test/language/expressions/logical-assignment` went from 126 of
+132 variants to **132**: the subtree passes whole, and the six that remained after JSC-143 were all
+this one ordering.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the subtree sweep before
+and after, and three cases appended to `src/tests/differential/the-statement-and-object-surface.js`
+whose answers were taken from the comparison engine before they were written down. 2026-09-05.

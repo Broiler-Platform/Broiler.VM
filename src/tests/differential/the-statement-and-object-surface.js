@@ -406,3 +406,10 @@ p(function(){ (0, eval)("var delv = 1;"); return String((0, eval)("delete delv")
 p(function(){ globalThis.delg = 2; return String((0, eval)("delete delg")) + "," + typeof globalThis.delg; });
 p(function(){ return String((0, eval)("delete neverEverDeclared")); });
 p(function(){ return (function(){ var local = 1; return String(delete local); })(); });
+
+// --- the order a computed member reference performs its two steps in. The base is checked before
+// the key is converted, so a nullish base is a TypeError about the base and the key's own `toString`
+// never runs - which a program can tell apart, because that `toString` can throw something else.
+p(function(){ try { var b = null; var k = { toString: function(){ throw new RangeError("key"); } }; return String(b[k]); } catch(e){ return e.name; } });
+p(function(){ try { var b = undefined; var k = { toString: function(){ throw new RangeError("key"); } }; b[k] = 1; return "no-throw"; } catch(e){ return e.name; } });
+p(function(){ var seen = 0; try { var b = null; var k = { toString: function(){ seen = 1; return "x"; } }; return String(b[k]); } catch(e){ return "threw:" + seen; } });
