@@ -587,7 +587,7 @@ section 8's extraction gate forbids, so VM-0 does not.
 | `assurance.manifest.json` | exists since VM-1: `assurance.manifest.json` | **Generated.** One entry per code unit in the three product assemblies, exempt and relevant alike, and one per covered file, each with a fingerprint. A change-detection record and not a review: an entry says what a declaration hashed to, never that anyone read it. Rule J7 holds it to the tree. |
 | `.gitattributes` | not created (VM-0 decision on paper; no file at VM-0) | The component contains no shell script, so there is no line-ending rule to fix yet. |
 | `global.json` | not created (VM-0 decision on paper; no file at VM-0) | No SDK pin; see Exclusion EX-03. |
-| `.github/workflows/` | exists since VM-1: `.github/workflows/` | Four files and three lanes, and none publishes. **The component lane was split on 2026-09-03 and is two files plus a definition**: `broiler-vm-lane.yml` holds every job and is entered by nothing directly; `broiler-vm.yml` calls it on every push and pull request over two of the six declared RIDs with short fuzz sessions; `broiler-vm-full.yml` calls it over all six with the full sessions and the emulator, on a `v*` tag, a weekly schedule and a button. One definition and two callers, because two copies of it would have drifted apart, and a caller chooses a matrix and an iteration count and can disable no check. `review.yml` regenerates every assurance artefact on a pull request, commits what moved, and then asserts that what is on disk is what the generator would write. `release.yml` runs that same gate and then the release gate - Rule J11 - before it packs, and stops at `dotnet pack`: pushing to a feed needs a credential this repository does not hold. The component ran no CI of its own at VM-0, which Exclusion EX-06 records; these lanes discharge that early and only in part, because they fire on a pull request and on a tag and nothing else. `broiler-vm.yml` was added at VM-6 to run the graph, catalog, AOT and drift checks. **It has now run on hosted runners and passes**, on `ubuntu-latest` and `windows-latest`, publishing and running every composition root as Native AOT on `linux-x64` and `win-x64`; it did the same on `macos-latest` and `osx-arm64` until the second 2026-09-01 revision withdrew that entry as outside ADR 0012's declared matrix, and it gained jobs for `linux-arm64`, `win-arm64`, `osx-arm64` and `osx-x64` as the third, fourth and fifth revisions of that date widened the matrix to every cell of a three-toolchain by two-architecture grid - which readmits the `osx-arm64` the second revision had withdrawn, by an argument rather than by a job. No revision settles **any RID claim**, because a lane is not an evidence bundle. |
+| `.github/workflows/` | exists since VM-1: `.github/workflows/` | Four files and three lanes, and none publishes. **The component lane was split on 2026-09-03 and is two files plus a definition**: `broiler-vm-lane.yml` holds every job and is entered by nothing directly; `broiler-vm.yml` calls it on every push and pull request over two of the six declared RIDs with short fuzz sessions; `broiler-vm-full.yml` calls it over all six with the full sessions and the emulator, on a `v*` tag, a weekly schedule and a button. One definition and two callers, because two copies of it would have drifted apart, and a caller chooses a matrix, an iteration count, an Octane benchmark selection and whether the emulator boots - four depths, and no check among them. `review.yml` regenerates every assurance artefact on a pull request, commits what moved, and then asserts that what is on disk is what the generator would write. `release.yml` runs that same gate and then the release gate - Rule J11 - before it packs, and stops at `dotnet pack`: pushing to a feed needs a credential this repository does not hold. The component ran no CI of its own at VM-0, which Exclusion EX-06 records; these lanes discharge that early and only in part, because they fire on a pull request and on a tag and nothing else. `broiler-vm.yml` was added at VM-6 to run the graph, catalog, AOT and drift checks. **It has now run on hosted runners and passes**, on `ubuntu-latest` and `windows-latest`, publishing and running every composition root as Native AOT on `linux-x64` and `win-x64`; it did the same on `macos-latest` and `osx-arm64` until the second 2026-09-01 revision withdrew that entry as outside ADR 0012's declared matrix, and it gained jobs for `linux-arm64`, `win-arm64`, `osx-arm64` and `osx-x64` as the third, fourth and fifth revisions of that date widened the matrix to every cell of a three-toolchain by two-architecture grid - which readmits the `osx-arm64` the second revision had withdrawn, by an argument rather than by a job. No revision settles **any RID claim**, because a lane is not an evidence bundle. |
 | `docs/compositions.md` | exists at VM-3: docs/compositions.md | The composition and RID register. It carries the schema, the advertised set - empty at core contract version 1 - the two demonstration compositions, and what each was published and run for. Rule A11's allow-list is a path rather than a constant now, and group K holds the register to the checkout. Exclusion EX-08 is closed; revision 1 records it. |
 | `docs/platform-references.md` | not created (VM-0 decision on paper; no file at VM-0) | The section 17 pinned-revision table. ADR 0012 records why it is absent and what closes it. |
 | `docs/support.md` | deferred to VM-6 | The public support table. ADR 0012 records that none is published at VM-0. |
@@ -1579,3 +1579,39 @@ files. Advertising it would be the untruthful support claim roadmap section 16
 makes a stop condition, and section 1 of the register stays as it is.
 
 **What is not edited.** Every revision above stands as written.
+
+### 2026-09-05 - the lane gains a fourth input, and it is a depth rather than a switch
+
+**What changes.** No project is added and no edge moves. `broiler-vm-lane.yml`
+gains `octane-benchmarks`, a space-separated selection of the Octane pin's
+fifteen benchmarks that each publish cell runs, empty meaning all of them.
+`broiler-vm.yml` passes six; `broiler-vm-full.yml` passes none and therefore
+runs the set whole on all six cells.
+
+**Why, and the number is the whole argument.** The revision of 2026-09-03 above
+says the lane definition takes a matrix, an iteration count and the emulator
+switch **and nothing else**, so that no caller could disable a check. That
+sentence was written before this lane ran a third-party workload out of the
+published image at all. It does now, and the first run measured what that costs:
+**fifteen benchmarks in 23m28s on `ubuntu-latest`**, in a publish job whose every
+other step totals 78 to 208 seconds. Two cells of that on every push is the same
+trade the fuzz split already refused, made with a bigger number.
+
+**The rule the third input follows is the rule the second one follows.** A
+caller chooses a DEPTH and never a check: the sessions run at whatever the count
+is, the workload runs on every cell whatever the selection is, and the false
+branch of the emulator switch still builds the head. There is still no input by
+which one caller runs a check the other skips, which is the property the earlier
+sentence was protecting; what has changed is that "and nothing else" was a
+statement about the input list rather than about that property, and an input list
+is not what makes two gates one name.
+
+**What is now true, and what is not.** The push path scores six of fifteen
+benchmarks on two cells and the full lane scores fifteen on six. **The exclusion
+is that no runtime identifier scores the whole Octane set on the push path**, and
+it is stated in the step rather than left to be inferred. **No RID claim moves**:
+a lane is not an evidence bundle, and neither a benchmark that scores nor one
+that does not is retained by one.
+
+**What is not edited.** Every revision above stands as written - including the
+sentence this one corrects, which was true of the lane it described.

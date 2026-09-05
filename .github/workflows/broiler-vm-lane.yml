@@ -43,9 +43,11 @@
 # This is one lane definition with two callers - broiler-vm.yml on every push and pull request,
 # broiler-vm-full.yml on a release tag, a schedule and a button - because the alternative was two
 # copies of six hundred lines of prose that would have drifted apart on the first edit. What a
-# caller chooses is the RID matrix, the fuzz iteration count and whether the emulator runs. It
-# does not choose what any check MEANS, and it cannot skip one: a lane that could disable a check
-# per caller would be two gates wearing one name.
+# caller chooses is the RID matrix, the fuzz iteration count, the Octane benchmark selection and
+# whether the emulator runs. It does not choose what any check MEANS, and it cannot skip one: a
+# lane that could disable a check per caller would be two gates wearing one name. Each of those
+# four is a DEPTH - the sessions run at whatever the count is, the workload runs on every cell
+# whatever the selection is, and the false branch of the emulator switch still builds the head.
 #
 # WHY THERE ARE TWO CALLERS AT ALL, measured rather than assumed. On 2026-09-03 the whole matrix
 # took 26m56s, and the breakdown says where it went: the six publish jobs spent 759, 882, 917,
@@ -87,6 +89,14 @@ on:
           that stops compiling is a red job on every push rather than a discovery at release.
         required: true
         type: boolean
+      octane-benchmarks:
+        description: >
+          The Octane benchmarks each publish cell runs, space-separated, or empty for all fifteen.
+          A DEPTH and not a switch: the workload runs on every cell whatever this is, the same way
+          the fuzz sessions run at whatever `fuzz-iterations` says. The names are checked against
+          the pin, so a typo fails the step rather than shrinking the question it answers.
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -390,29 +400,71 @@ jobs:
       # trimming or an AOT-shaped failure that the component's suites do not reach is caught by
       # the corpora that do.
       #
-      # OCTANE RUNS WHOLE AND test262 RUNS OVER A NAMED SELECTION, and the asymmetry is the
-      # extraction. The Octane pin is 37 files and extracting it costs nothing; the test262
-      # archive is 232 MB extracted, and the step on the build job above already records why that
-      # extraction happens on one Linux runner rather than on every publish cell - the ENGINE's
-      # answers over a fixed corpus are what a whole run measures, and no runtime identifier
-      # changes them. What DOES change with the identifier is whether the published image can
-      # execute the corpus at all, and a named selection answers that at a hundredth of the cost.
+      # BOTH WORKLOADS RUN OVER A SELECTION THE CALLER SIZES, and for the same reason the fuzz
+      # sessions run at an iteration count the caller sizes: the quick lane is on the push path and
+      # the full lane is the gate. Neither caller may turn either workload OFF - the step below
+      # runs on every cell of every caller - and what a caller chooses is how far it reaches.
       #
-      # THE EXCLUSION, STATED HERE RATHER THAN DISCOVERED: no RID but the Linux one has scored the
-      # whole suite, and the selection below is a reading about execution rather than about
-      # conformance. A figure from this step is retained by no bundle and stated by no document.
+      # THE test262 SELECTION IS FIXED HERE AND THE OCTANE ONE IS AN INPUT, and the difference is
+      # the extraction. The test262 archive is 232 MB extracted, so the step on the build job above
+      # scores the whole suite once on one Linux runner and this step names four subtrees: the
+      # ENGINE's answers over a fixed corpus are what a whole run measures, and no runtime
+      # identifier changes them, while what DOES change with the identifier is whether the
+      # published image can execute the corpus at all. The Octane pin is 37 files and extracting it
+      # costs nothing - but RUNNING it is not free, which is the correction. Fifteen benchmarks out
+      # of the published image took 23m28s on `ubuntu-latest`, on a job whose every other step
+      # totals 78 to 208 seconds, and that is not a cost the push path can carry twice per push.
+      #
+      # THE WALL IS A HANG GUARD AND NOT A BUDGET, which is the second correction. The first bound
+      # here was ten minutes per benchmark, chosen from nothing, and `zlib` walked through it on
+      # both Linux cells while reporting a score on a workstation - a red lane over a bound nobody
+      # had measured. It is forty-five minutes now, which is a bound on a HANG, and the driver
+      # prints each benchmark's duration beside its exit code so the next reader tightens it from a
+      # reading taken on a runner rather than from another guess.
+      #
+      # THE EXCLUSIONS, STATED HERE RATHER THAN DISCOVERED. No RID but the Linux one has scored the
+      # whole conformance suite. No RID has scored the whole Octane set on the push path, and only
+      # the full lane's cells score it at all. Both selections are readings about EXECUTION rather
+      # than about conformance or about speed, and a figure from this step is retained by no bundle
+      # and stated by no document.
       - name: Run the two third-party workloads out of the published image
         shell: bash
+        # THE INPUT REACHES THE SCRIPT THROUGH THE ENVIRONMENT AND NOT THROUGH `${{ }}`. An
+        # expression is expanded into the script's TEXT before bash sees it, so a caller's string
+        # would be shell source rather than shell data. Both callers here pass literals and the
+        # lane is not reusable outside this repository, so this is the habit rather than a hole -
+        # and the habit is what stops the next input from being one.
+        env:
+          OCTANE_BENCHMARKS: ${{ inputs.octane-benchmarks }}
         run: |
           set -euo pipefail
           py=python3
           command -v "$py" >/dev/null 2>&1 || py=python
 
-          # The wall clock is bounded per benchmark because a lane may not hang: the driver's own
-          # default is an hour, which is a workstation's answer and not a runner's. A benchmark
-          # that meets the bound reports no score and the driver exits non-zero, which is the
-          # answer this step wants - a benchmark that cannot finish on this RID is a finding.
-          "$py" eng/run-octane.py --binary-directory artifacts/ci-aot-JavaScript.Cli --wall 600000
+          # The selection the caller sized, one `--only` per name. An empty input is all fifteen,
+          # and the driver refuses a name that is not a benchmark in the pin, so a typo here is a
+          # red step rather than a smaller question answered green.
+          #
+          # POSITIONAL PARAMETERS RATHER THAN AN ARRAY, and the reason is a cell of this matrix.
+          # `shell: bash` on the macOS images is bash 3.2, where `"${a[@]}"` on an EMPTY array is
+          # an unbound-variable error under `set -u` - so the full lane, which passes no selection
+          # at all, would fail on exactly the two cells the quick lane never runs. `"$@"` with no
+          # parameters expands to nothing in every bash there is.
+          set --
+          for name in $OCTANE_BENCHMARKS; do
+            set -- "$@" --only "$name"
+          done
+
+          # The wall clock is bounded per benchmark because a lane may not hang, and forty-five
+          # minutes is a HANG GUARD rather than a budget. The bound before it was ten minutes,
+          # which was not a measurement of anything: `zlib` walked through it on both Linux cells
+          # while reporting a score on a workstation, so the lane went red over a number somebody
+          # had picked. A wall costs nothing when nothing hangs - it is spent only by a benchmark
+          # that was never going to finish - and the job's own timeout is behind it. What the next
+          # reader tightens this from is the DURATION the driver now prints beside every exit code,
+          # which is a reading off the runner rather than off a workstation.
+          "$py" eng/run-octane.py --binary-directory artifacts/ci-aot-JavaScript.Cli \
+            --wall 2700000 "$@"
 
           # The selection is four subtrees that between them reach the front end, the executor,
           # the realm's own objects and the suspension machinery, which is what makes a published

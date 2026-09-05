@@ -7423,3 +7423,64 @@ thing that could enforce it was a lane step nobody could run locally.
 that reported `# Faulted: 4`, the same sweep reproduced locally before the move and answering
 `# 88 files / # Completed: 88` after it, and 187 of 187 acceptance rows on the run that follows.
 2026-09-05.
+
+### JSC-180
+
+**Where:** the lane step JSW-10 added — the two third-party workloads run out of the published
+image on every claimed runtime identifier — and the two numbers in it that were not measurements:
+the per-benchmark wall clock, and the size of the Octane run itself.
+
+**What was assumed.** That a ten-minute wall clock per benchmark is generous, and that running
+Octane whole on every publish cell is free because *extracting* it is. The step's own comment said
+both in as many words: the pin is 37 files and extracting it "costs nothing", and a benchmark that
+meets the bound "is a finding".
+
+**What was true.** Neither number came from a run. **`zlib` needs more than ten minutes on a hosted
+runner** — it exhausted the allowance on `linux-x64` and on `linux-arm64` alike, in the same run,
+having reported a score on the workstation the bound was written on; the other fourteen benchmarks
+scored on both. So the first thing the new step found was its own bound. And **the set is not
+cheap to RUN**: fifteen benchmarks out of the published image took **23m28s** on `ubuntu-latest`,
+in a publish job whose every other step totals 78 to 208 seconds. That is the same trade the lane
+split of 2026-09-03 already refused once, arriving with a bigger number: the quick lane runs on
+every push, over two cells, so running the set whole there is very nearly an hour of runner time
+per push spent on a corpus whose answers no runtime identifier changes.
+
+**Nothing local could have found either.** `eng/run-octane.py` printed an exit code per benchmark
+and no duration, so there was no reading a bound could be sized from — on any machine, by anybody,
+including the person who wrote the bound. The driver is what changed first: it prints each
+benchmark's wall-clock duration beside its exit code, and a total beside the wall it ran under.
+
+**What replaced it.** Three things.
+
+- **The wall is a hang guard and is stated as one.** Forty-five minutes per benchmark, which a run
+  that finishes never spends: an allowance is paid only by something that was not going to finish,
+  and the job's own timeout sits behind it. The number to tighten it from is now printed by every
+  run, taken on the runner rather than on a workstation.
+- **The Octane selection is the caller's, the way the fuzz iteration count already is.** A fourth
+  lane input, `octane-benchmarks`: six benchmarks on the quick lane's two cells, all fifteen on the
+  full lane's six. It is a DEPTH and not a switch — the workload runs on every cell of every
+  caller whatever the selection is — and the six are chosen by what they reach rather than by what
+  they cost: dispatch, integer arithmetic, allocation through prototypes, the matcher JSW-4 wrote,
+  a live heap with its latency path, and the front end on a large source.
+- **`--only` may be repeated and refuses a name that is not in the pin.** A driver that could be
+  asked for one benchmark or for all fifteen is what made the selection an all-or-nothing choice in
+  the first place, and a typo in a selection that ran what it recognised would report "6 of 6
+  benchmarks reported a score" over five.
+
+**What this does not claim.** Not that `zlib` is slow *because of* a defect. This programme
+promises no speed and measures none — roadmap section 17 governs any figure a document retains and
+this one retains none — so what the run establishes is that the benchmark **reports a score** and
+how long that took on the machine it took it on. Whether that duration should be smaller is
+`JS-10`'s question and not this one's.
+
+**Nor that forty-five minutes is enough**, and the honest form of that is worth writing down.
+`zlib`'s duration on a runner is still not known: the only run that could have measured it was cut
+at ten minutes, and the quick lane's six do not include it, so **the first full lane after this is
+also the first reading of it**. A bound that turns out to be short is then a number to move, with a
+duration beside it to move it to — which is the difference between this bound and the one it
+replaces.
+
+**Authority and date.** The `quick / publish and run` jobs of 2026-09-05 on `da01b75`, both Linux
+cells, which scored fourteen of fifteen and named `zlib` and the allowance it met; the 23m28s the
+same step took between its own log's first and last line; and a workstation run of `zlib` alone
+under the default hour-long allowance, which was still running at twelve minutes. 2026-09-05.

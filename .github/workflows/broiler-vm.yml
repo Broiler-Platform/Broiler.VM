@@ -31,12 +31,20 @@
 # session. **A green quick lane is a fast signal and not the gate**, and a release goes through
 # broiler-vm-full.yml.
 #
-# Everything this lane DOES run is unabridged: the whole suite, the graph and drift rules, the
+# WHAT IS ABRIDGED HERE, IN FULL. Two things, and both are a DEPTH the caller names rather than a
+# check it turns off: the fuzz sessions run at 2,000 iterations rather than 25,000, and the Octane
+# workload runs six of its fifteen benchmarks rather than all of them. The Octane entry was added
+# on 2026-09-05 after the workload step's first run measured what it costs - 23m28s for fifteen
+# benchmarks on `ubuntu-latest`, on a job whose every other step totals 78 to 208 seconds - and
+# the six are named below by what they reach.
+#
+# Everything else this lane runs is unabridged: the whole suite, the graph and drift rules, the
 # pack and feed-consumer checks, every composition root published as Native AOT and run, the
-# conformance suite scored in shards against its floor, the corpus-integrity mutation, and the
-# mobile head compiled. No check is disabled anywhere - the lane definition takes a matrix and an
-# iteration count and nothing else, so there is no way for one caller to quietly skip a check the
-# other runs.
+# conformance suite scored in shards against its floor, the corpus-integrity mutation, the mobile
+# head compiled, and both third-party workloads run out of the published image on both cells. No
+# check is disabled anywhere - the lane definition takes a matrix, an iteration count, a benchmark
+# selection and one emulator switch whose false branch still BUILDS the head, so there is no input
+# by which one caller can skip a check the other runs.
 
 name: broiler-vm
 
@@ -76,3 +84,14 @@ jobs:
       # The emulator is the full lane's. The head is still COMPILED here, because a head that
       # stops building is a defect a pull request introduced.
       android: false
+      # SIX OF OCTANE'S FIFTEEN, AND THE FULL SET IS THE FULL LANE'S. All fifteen out of the
+      # published image took 23m28s on `ubuntu-latest`, on a job whose every other step totals 78
+      # to 208 seconds; twice that per push is the cost this split exists to refuse. The six are
+      # chosen by what they REACH rather than by what they cost, because what changes with a
+      # runtime identifier is whether the published image can execute a corpus at all: `richards`
+      # is property and method dispatch, `crypto` integer arithmetic over arrays, `raytrace`
+      # allocation through prototypes and closures, `regexp` the matcher JSW-4 wrote from scratch,
+      # `splay` a live heap and the latency path, and `code-load` the FRONT END on a large source
+      # rather than the executor. A benchmark this selection drops is one the full lane still runs
+      # on all six cells.
+      octane-benchmarks: richards crypto raytrace regexp splay code-load

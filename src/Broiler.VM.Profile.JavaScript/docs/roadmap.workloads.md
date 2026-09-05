@@ -444,12 +444,17 @@ the act that would turn a stage into a milestone with a ledger row.
   when `THIRD_PARTY_NOTICES.md` gained its row and rule N13 gained the directory that makes the
   row's own mechanism sentence true *([JSC-145](roadmap.corrections.md#jsc-145))*.
 - **Both workloads run out of the published image on every claimed runtime identifier**, in the
-  publish job of the lane, beside the component's own suites. Octane runs whole there and the
-  conformance suite runs over a named selection, and the asymmetry is stated in the step rather
-  than left to be inferred: the Octane pin is small enough to extract on every cell, the
-  conformance archive is not, and what changes with the runtime identifier is whether the published
-  image can execute a corpus rather than what the engine answers about it. **The exclusion is that
-  no identifier but the Linux one has scored the whole suite.**
+  publish job of the lane, beside the component's own suites. Each runs over a selection, and each
+  selection is stated in the step rather than left to be inferred: what changes with the runtime
+  identifier is whether the published image can execute a corpus, not what the engine answers about
+  it. The conformance selection is four subtrees on every cell and the whole suite once on one
+  Linux runner, because the archive is 232 MB extracted. The Octane selection is the caller's —
+  six benchmarks on the quick lane's two cells, all fifteen on the full lane's six — and that
+  asymmetry is a **measurement rather than a plan**: the step's first run scored fifteen benchmarks
+  in 23m28s on `ubuntu-latest`, on a job whose every other step totals 78 to 208 seconds
+  *([JSC-180](roadmap.corrections.md#jsc-180))*. **The exclusions are that no identifier but the
+  Linux one has scored the whole conformance suite, and that no identifier scores the whole Octane
+  set on the push path.**
 - **The whole-suite runs are retained per manifest**, under
   [section 4's evidence contract](roadmap.status.md#4-required-evidence-bundle), with the harness's
   five verdicts reported rather than four — a variant that spent an allowance is neither a pass, a

@@ -25,8 +25,12 @@
 # `JS-10`'s, and roadmap section 17 governs any figure that is ever retained. What this answers is
 # the question section 1 asks: does the benchmark REPORT a score, or does it meet something.
 #
-#   python3 eng/run-octane.py [--binary-directory <dir>] [--only <name>] [--fuel <n>] [--wall <ms>]
-#                             [--live-bytes <n>]
+#   python3 eng/run-octane.py [--binary-directory <dir>] [--only <name>]... [--fuel <n>]
+#                             [--wall <ms>] [--live-bytes <n>]
+#
+# `--only` may be repeated and names a SELECTION; with none of them the fifteen in the pin all run.
+# Each benchmark's wall-clock duration is printed beside its exit code, because `--wall` is an
+# allowance a caller has to state and there was nothing to state one from.
 
 import argparse
 import hashlib
@@ -36,6 +40,7 @@ import subprocess
 import sys
 import tarfile
 import tempfile
+import time
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PINS = ROOT / "src/tests/octane/pins"
@@ -126,14 +131,30 @@ def run(binary, checkout, name, fuel, wall, live_bytes):
     # discovering it from a run in which the harness had not been defined yet.
     command = [str(binary)] + files + [
         DRIVER, "--fuel", str(fuel), "--wall", str(wall), "--live-bytes", str(live_bytes)]
+
+    # WHAT THE BENCHMARK COST, WHICH THIS SCRIPT DID NOT REPORT AND SHOULD HAVE. The `--wall`
+    # above is an allowance a caller states in milliseconds, and a caller with no per-benchmark
+    # duration in front of them has nothing to state it from: the lane's first bound was ten
+    # minutes, chosen from nothing, and `zlib` walked through it on a hosted runner while
+    # reporting a score on a workstation. A run that says how long each benchmark took turns the
+    # next bound into a reading. It is a DURATION and not a score - roadmap section 17 governs a
+    # figure a document retains, and this script retains none - so it is printed beside the exit
+    # code where a score never goes.
+    started = time.monotonic()
     done = subprocess.run(command, cwd=str(ROOT), capture_output=True, text=True)
-    return done.returncode, (done.stdout + done.stderr).rstrip()
+    return done.returncode, (done.stdout + done.stderr).rstrip(), time.monotonic() - started
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--binary-directory", default=str(DEFAULT_BINARY_DIRECTORY))
-    parser.add_argument("--only", default=None)
+
+    # `--only` NAMES A SELECTION AND MAY BE REPEATED, which it could not before. One benchmark was
+    # enough while this script was a workstation's; a lane is the caller that needs a few, and the
+    # alternative - a caller that can only ask for one benchmark or for all fifteen - is what put
+    # 23m28s of Octane on every publish cell of a lane that runs on every push. A name that is not
+    # a benchmark is refused rather than silently running nothing.
+    parser.add_argument("--only", action="append", default=None, metavar="NAME")
     parser.add_argument("--fuel", type=int, default=1_000_000_000_000)
     parser.add_argument("--wall", type=int, default=3_600_000)
 
@@ -145,6 +166,17 @@ def main():
     # measurement, and the profile's hard maximum still bounds it.
     parser.add_argument("--live-bytes", type=int, default=1_000_000_000)
     arguments = parser.parse_args()
+
+    # A NAME THAT IS NOT A BENCHMARK IS REFUSED HERE, before the archive is even read. A lane
+    # passes this selection through a shell, and a typo in one that ran what it could and said
+    # nothing would report "3 of 3 benchmarks reported a score" over a selection missing the
+    # fourth - a green step for a smaller question than the one it was asked.
+    unknown = [name for name in (arguments.only or []) if name not in BENCHMARKS]
+
+    if unknown:
+        raise SystemExit(
+            "# not a benchmark in the pin: " + ", ".join(unknown)
+            + "\n# the fifteen are: " + ", ".join(BENCHMARKS))
 
     binary = pathlib.Path(arguments.binary_directory) / "Broiler.VM.Composition.JavaScript.Cli"
 
@@ -167,13 +199,15 @@ def main():
         print(f"# {fields['files']} files, content {fields['content-sha256']}")
         print(f"# judging {binary}")
 
-        wanted = [arguments.only] if arguments.only else BENCHMARKS
+        wanted = arguments.only or BENCHMARKS
         scored = 0
+        spent = 0.0
 
         for name in wanted:
-            code, output = run(
+            code, output, seconds = run(
                 binary, checkout, name, arguments.fuel, arguments.wall, arguments.live_bytes)
-            print(f"--- {name} (exit {code})")
+            spent += seconds
+            print(f"--- {name} (exit {code}, {seconds:.0f}s)")
 
             for line in output.splitlines():
                 print(f"    {line}")
@@ -182,6 +216,8 @@ def main():
                 scored += 1
 
         print(f"# {scored} of {len(wanted)} benchmarks reported a score and exited zero")
+        print(f"# {spent:.0f}s over {len(wanted)} benchmarks, "
+              f"under a wall of {arguments.wall // 1000}s each")
         return 0 if scored == len(wanted) else 1
     finally:
         shutil.rmtree(scratch, ignore_errors=True)
