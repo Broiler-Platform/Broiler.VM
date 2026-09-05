@@ -43,9 +43,11 @@
 # This is one lane definition with two callers - broiler-vm.yml on every push and pull request,
 # broiler-vm-full.yml on a release tag, a schedule and a button - because the alternative was two
 # copies of six hundred lines of prose that would have drifted apart on the first edit. What a
-# caller chooses is the RID matrix, the fuzz iteration count and whether the emulator runs. It
-# does not choose what any check MEANS, and it cannot skip one: a lane that could disable a check
-# per caller would be two gates wearing one name.
+# caller chooses is the RID matrix, the fuzz iteration count, the Octane benchmark selection and
+# whether the emulator runs. It does not choose what any check MEANS, and it cannot skip one: a
+# lane that could disable a check per caller would be two gates wearing one name. Each of those
+# four is a DEPTH - the sessions run at whatever the count is, the workload runs on every cell
+# whatever the selection is, and the false branch of the emulator switch still builds the head.
 #
 # WHY THERE ARE TWO CALLERS AT ALL, measured rather than assumed. On 2026-09-03 the whole matrix
 # took 26m56s, and the breakdown says where it went: the six publish jobs spent 759, 882, 917,
@@ -87,6 +89,14 @@ on:
           that stops compiling is a red job on every push rather than a discovery at release.
         required: true
         type: boolean
+      octane-benchmarks:
+        description: >
+          The Octane benchmarks each publish cell runs, space-separated, or empty for all fifteen.
+          A DEPTH and not a switch: the workload runs on every cell whatever this is, the same way
+          the fuzz sessions run at whatever `fuzz-iterations` says. The names are checked against
+          the pin, so a typo fails the step rather than shrinking the question it answers.
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -379,6 +389,132 @@ jobs:
                 ;;
             esac
           done
+
+      # THE TWO THIRD-PARTY WORKLOADS, OUT OF THE PUBLISHED IMAGE, ON EVERY CLAIMED RID.
+      #
+      # This step exists because of a specific failure and not for symmetry. A workload that has
+      # only ever run on one machine under a JIT is what let a failing Native AOT run reach two
+      # retained bundles before anything noticed, and the workload roadmap's last stage asks for
+      # exactly this lane in those words. Both workloads run out of `artifacts/ci-aot-*`, which is
+      # the image the step above published and ran the component's own suites through, so a
+      # trimming or an AOT-shaped failure that the component's suites do not reach is caught by
+      # the corpora that do.
+      #
+      # BOTH WORKLOADS RUN OVER A SELECTION THE CALLER SIZES, and for the same reason the fuzz
+      # sessions run at an iteration count the caller sizes: the quick lane is on the push path and
+      # the full lane is the gate. Neither caller may turn either workload OFF - the step below
+      # runs on every cell of every caller - and what a caller chooses is how far it reaches.
+      #
+      # THE test262 SELECTION IS FIXED HERE AND THE OCTANE ONE IS AN INPUT, and the difference is
+      # the extraction. The test262 archive is 232 MB extracted, so the step on the build job above
+      # scores the whole suite once on one Linux runner and this step names four subtrees: the
+      # ENGINE's answers over a fixed corpus are what a whole run measures, and no runtime
+      # identifier changes them, while what DOES change with the identifier is whether the
+      # published image can execute the corpus at all. The Octane pin is 37 files and extracting it
+      # costs nothing - but RUNNING it is not free, which is the correction. Fifteen benchmarks out
+      # of the published image took 23m28s on `ubuntu-latest`, on a job whose every other step
+      # totals 78 to 208 seconds, and that is not a cost the push path can carry twice per push.
+      #
+      # THE WALL IS THE PROFILE'S OWN MAXIMUM, which is the second correction and the one that took
+      # two attempts. The first bound was ten minutes, chosen from nothing, and `zlib` walked
+      # through it on both Linux cells while reporting a score on a workstation - a red lane over a
+      # number nobody had measured. The second was forty-five minutes, which was an estimate made
+      # because the measurement kept refusing to arrive: `zlib` does not settle inside the hour
+      # that `JavaScriptProfile.Maxima()` declares, on the JIT build or on the published AOT image,
+      # so no completion exists on this machine to size a bound from. The hour IS the bound now,
+      # because it is the most any composition of this profile may be granted - and the driver
+      # prints each benchmark's duration beside its exit code, so the reading a runner gives is
+      # there whether or not the benchmark scores.
+      #
+      # THE EXCLUSIONS, STATED HERE RATHER THAN DISCOVERED. No RID but the Linux one has scored the
+      # whole conformance suite. No RID has scored the whole Octane set on the push path, and only
+      # the full lane's cells score it at all. Both selections are readings about EXECUTION rather
+      # than about conformance or about speed, and a figure from this step is retained by no bundle
+      # and stated by no document.
+      - name: Run the two third-party workloads out of the published image
+        shell: bash
+        # THE INPUT REACHES THE SCRIPT THROUGH THE ENVIRONMENT AND NOT THROUGH `${{ }}`. An
+        # expression is expanded into the script's TEXT before bash sees it, so a caller's string
+        # would be shell source rather than shell data. Both callers here pass literals and the
+        # lane is not reusable outside this repository, so this is the habit rather than a hole -
+        # and the habit is what stops the next input from being one.
+        env:
+          OCTANE_BENCHMARKS: ${{ inputs.octane-benchmarks }}
+        run: |
+          set -euo pipefail
+          py=python3
+          command -v "$py" >/dev/null 2>&1 || py=python
+
+          # The selection the caller sized, one `--only` per name. An empty input is all fifteen,
+          # and the driver refuses a name that is not a benchmark in the pin, so a typo here is a
+          # red step rather than a smaller question answered green.
+          #
+          # POSITIONAL PARAMETERS RATHER THAN AN ARRAY, and the reason is a cell of this matrix.
+          # `shell: bash` on the macOS images is bash 3.2, where `"${a[@]}"` on an EMPTY array is
+          # an unbound-variable error under `set -u` - so the full lane, which passes no selection
+          # at all, would fail on exactly the two cells the quick lane never runs. `"$@"` with no
+          # parameters expands to nothing in every bash there is.
+          set --
+          for name in $OCTANE_BENCHMARKS; do
+            set -- "$@" --only "$name"
+          done
+
+          # THE WALL IS THE PROFILE'S OWN HARD MAXIMUM, WHICH IS WHY IT IS NOT A NUMBER SOMEBODY
+          # PICKED. `JavaScriptProfile.Maxima()` sets `WallClock` at 3,600,000 ms and calls it a
+          # maximum "a host may tighten and may never loosen", so one hour is the most any
+          # composition of this profile can be granted and a larger figure here would buy nothing -
+          # a run asking for ninety minutes is bounded at sixty and reports the shorter one met.
+          # The bound before this was ten minutes and then forty-five, and neither was a
+          # measurement: the first went red on both Linux cells, and the second was an estimate
+          # made because no completion could be obtained to size it from.
+          #
+          # WHY NO COMPLETION COULD BE OBTAINED. `zlib` does not settle within that hour on the
+          # published Native AOT image on the machine this was measured on - it met the ceiling,
+          # under both the JIT and the AOT image, at 3,600s each time. `richards` scores 32.0 on
+          # that image on that machine and 46.3 on `ubuntu-latest`, so a runner is about 1.45 times
+          # faster and needs somewhere above forty-one minutes for `zlib`. WHETHER THAT FITS INSIDE
+          # THE HOUR IS NOT KNOWN, and the full lane is the first thing that will find out; the
+          # quick lane's selection does not include `zlib`. A benchmark that meets THIS bound has
+          # met the profile's own ceiling rather than a lane's preference, which is a finding worth
+          # reporting rather than a bound worth moving.
+          "$py" eng/run-octane.py --binary-directory artifacts/ci-aot-JavaScript.Cli \
+            --wall 3600000 "$@"
+
+          # The selection is four subtrees that between them reach the front end, the executor,
+          # the realm's own objects and the suspension machinery, which is what makes a published
+          # image's failure visible here rather than only in the whole run. `--expect` is what
+          # makes the extraction answerable to the pin rather than to itself.
+          pins="src/tests/conformance/pins"
+          rm -rf artifacts/t262-rid && mkdir -p artifacts/t262-rid
+          tar xzf "$pins"/test262-*.tar.gz -C artifacts/t262-rid
+          suite=$(find artifacts/t262-rid -maxdepth 1 -mindepth 1 -type d)
+
+          # THE EXIT CODE IS NOT THE ASSERTION HERE, and the driver's own header says why: 1 means
+          # cases failed, which a whole run of this suite does today and which is a result rather
+          # than a reason to stop. What this step asserts is that the run was MEASURED - the
+          # driver stops before the merge when a shard reports the harness's own defect code, so a
+          # merged report that exists and carries a total is the discriminator, and its absence
+          # fails the lane.
+          set +e
+          "$py" eng/run-test262.py --suite "$suite" \
+            --binary-directory artifacts/ci-aot-JavaScript.Conformance \
+            --jobs 2 --out artifacts/test262-rid \
+            --dir test/language/statements/class \
+            --dir test/language/expressions/object \
+            --dir test/built-ins/Array \
+            --dir test/built-ins/Promise
+          measured=$?
+          set -e
+
+          if [ ! -f artifacts/test262-rid/test262.report ]; then
+            echo "the published image did not produce a merged report (driver exit $measured)" >&2
+            exit 1
+          fi
+
+          grep -q '^total|' artifacts/test262-rid/test262.report || {
+            echo "the merged report carries no total, so nothing was measured" >&2
+            exit 1
+          }
 
       # THE SHARDED RUN, WHICH IS A DIFFERENT QUESTION FROM THE STEP ABOVE.
       #

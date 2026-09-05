@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   15
-// Annotated:        15/15
-// Exempt:           15
-// Human-reviewed:   0/15
+// Relevant units:   18
+// Annotated:        18/18
+// Exempt:           19
+// Human-reviewed:   0/18
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       15
+// Unverified:       18
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -58,6 +58,60 @@ internal sealed class JsEnumerator : JsObject
 }
 
 /// <summary>
+/// One iterator record: the iterator the guest handed over, its <c>next</c>, and whether it is done.
+/// </summary>
+/// <remarks>
+/// <para>
+/// <b>It is an object for the same reason <see cref="JsEnumerator"/> is</b> - the operand stack
+/// holds values - and guest code can never reach it, because nothing stores it in a property and
+/// only the four <c>Iterate…</c> opcodes accept one.
+/// </para>
+/// <para>
+/// <b>The done flag is the whole of why <c>IteratorClose</c> is safe to emit unconditionally.</b>
+/// The specification says an iterator that has already reported completion, or whose <c>next</c>
+/// threw, is not asked for its <c>return</c>; carrying that here rather than in the lowering means
+/// a <c>break</c>, a rest element and an exhausted loop all emit the same instruction and the
+/// record decides.
+/// </para>
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=87F67B
+// Broiler-Human:        PENDING
+internal sealed class JsIteratorRecord : JsObject
+{
+    /// <summary>Creates a record over an iterator object and the <c>next</c> read off it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=46425A
+    // Broiler-Human:        PENDING
+    internal JsIteratorRecord(JsValue iterator, JsValue next)
+        : base(null, "Iterator")
+    {
+        Iterator = iterator;
+        Next = next;
+    }
+
+    /// <summary>The iterator object the guest's <c>[Symbol.iterator]</c> answered with.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=DA1E9E
+    // Broiler-Human:        PENDING
+    internal JsValue Iterator { get; }
+
+    /// <summary>
+    /// The <c>next</c> method, read ONCE when the record was made.
+    /// </summary>
+    /// <remarks>
+    /// The specification reads it once at <c>GetIterator</c> and calls that same function for every
+    /// step, so an iterator that replaces its own <c>next</c> mid-loop does not change what the loop
+    /// calls. Re-reading each turn is the obvious implementation and it is observably wrong.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6ED865
+    // Broiler-Human:        PENDING
+    internal JsValue Next { get; }
+
+    /// <summary>Whether this iterator has finished, or failed, and is owed no <c>return</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=08F038
+    // Broiler-Human:        PENDING
+    internal bool Done { get; set; }
+}
+
+/// <summary>
 /// One realm: the global object, the intrinsics, and the factories the engine builds values with.
 /// </summary>
 /// <remarks>
@@ -82,8 +136,21 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     private readonly JsEngine engine;
 
+    /// <summary>
+    /// The one <c>%Array.prototype.values%</c>, which <c>arguments</c> borrows.
+    /// </summary>
+    /// <remarks>
+    /// <b>It is cached rather than read back off <c>Array.prototype</c></b>, because the
+    /// specification gives an <c>arguments</c> object the INTRINSIC function: a guest that deletes
+    /// or replaces <c>Array.prototype[Symbol.iterator]</c> does not thereby make its own
+    /// <c>arguments</c> uniterable.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=460DFC
+    // Broiler-Human:        PENDING
+    private JsValue arrayIterator = JsValue.Undefined;
+
     /// <summary>Builds a realm on <paramref name="owner"/>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6AAA1A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0DE3DE
     // Broiler-Human:        PENDING
     internal JsRealm(JsEngine owner)
     {
@@ -104,6 +171,8 @@ internal sealed partial class JsRealm
         RegExpPrototype = new JsObject(ObjectPrototype, "RegExp");
 
         SetupObject();
+        SetupReflect();
+        SetupProxy();
         SetupFunction();
         SetupArray();
         SetupString();
@@ -114,7 +183,32 @@ internal sealed partial class JsRealm
         SetupJson();
         SetupDate();
         SetupRegExp();
+
+        // THE OPTIONAL SURFACES ARE BUILT BEFORE THE GLOBAL SETUP AND ONLY WHEN ADMITTED. A
+        // composition that declined one has already had every artifact declaring it refused at
+        // verification, so nothing that runs here can reach these names; building them anyway would
+        // put a global on the object that no admitted program may use and that a `typeof` would
+        // nonetheless find.
+        if (owner.Admits(Format.JsSurfaces.Binary))
+        {
+            SetupBinary();
+        }
+
+        if (owner.Admits(Format.JsSurfaces.Dynamic))
+        {
+            SetupDynamic();
+        }
+
+        SetupSymbol();
+        SetupCollections();
+        SetupCollectionIterators();
+        SetupPromise();
         SetupGlobal();
+
+        // LAST, BECAUSE IT READS `Function` BACK OFF THE GLOBAL. `%GeneratorFunction%` inherits
+        // from the `Function` constructor the way the specification says it does, and that
+        // constructor is published by SetupFunction into the global object above.
+        SetupGenerator();
     }
 
     /// <summary>The realm's global object.</summary>
@@ -172,6 +266,38 @@ internal sealed partial class JsRealm
     // Broiler-Human:        PENDING
     internal System.Collections.Generic.Dictionary<string, JsNativeFunction> ErrorConstructors { get; } =
         new(System.StringComparer.Ordinal);
+
+    /// <summary>Installs <c>get [Symbol.species]</c>, which answers the receiver.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is a getter and not a data property, and that is the point of it.</b> A subclass
+    /// overrides it — <c>static get [Symbol.species]() { return Array; }</c> — to say what its
+    /// methods should build, and a program reads it to find out. Absent, both of those are a
+    /// <c>TypeError</c> about a member that should be there.
+    /// </para>
+    /// <para>
+    /// <b>What this realm's built-ins do with the answer is nothing, and that is stated rather than
+    /// implied.</b> <c>map</c>, <c>filter</c>, <c>slice</c> and their neighbours here build a result
+    /// of the receiver's own kind rather than consulting the species of its constructor, which is a
+    /// declared divergence *(the remarks in `JsRealm.Array.cs` and `JsRealm.Binary.cs` carry it)*.
+    /// Installing the accessor makes the member readable and overridable; it does not claim the
+    /// methods obey it.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A44252
+    // Broiler-Human:        PENDING
+    internal void SpeciesGetter(JsObject constructor) =>
+        constructor.SetOwnSymbol(
+            SpeciesSymbol,
+            JsProperty.Accessor(
+                Native("get [Symbol.species]", 0, static (engine, thisValue, arguments) =>
+                {
+                    _ = engine;
+                    _ = arguments;
+                    return thisValue;
+                }),
+                null,
+                JsPropertyAttributes.Configurable));
 
     /// <summary>Builds a built-in function object.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=87A99A
@@ -267,9 +393,9 @@ internal sealed partial class JsRealm
     /// only exists in sloppy-mode functions with simple parameter lists, and nothing this profile
     /// is built to run depends on it.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=47016A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=410437
     // Broiler-Human:        PENDING
-    internal JsObject CreateArguments(JsValue[] arguments, JsScriptFunction? callee)
+    internal JsObject CreateArguments(JsValue[] arguments, JsScriptFunction? callee, bool strict)
     {
         var value = new JsObject(ObjectPrototype, "Arguments");
 
@@ -284,25 +410,118 @@ internal sealed partial class JsRealm
             "length",
             JsProperty.Data(JsValue.Number(arguments.Length), JsPropertyAttributes.BuiltIn));
 
-        if (callee is not null)
+        // STRICT CODE MAY NOT ASK WHICH FUNCTION IT IS IN, and the refusal is a property rather
+        // than an absence: `callee` is an accessor pair whose halves both throw, so
+        // `arguments.callee` is a TypeError and `"callee" in arguments` is still true. Leaving the
+        // property out would have made the second one false, and a program that tests for the
+        // feature before using it would have taken the wrong branch.
+        if (strict)
+        {
+            var poison = Native("callee", 0, static (engine, thisValue, arguments) =>
+            {
+                _ = thisValue;
+                _ = arguments;
+
+                return engine.ThrowTypeError(
+                    "'caller', 'callee', and 'arguments' properties may not be accessed on strict " +
+                    "mode functions or the arguments objects for calls to them");
+            });
+
+            value.SetOwnProperty(
+                "callee",
+                JsProperty.Accessor(poison, poison, JsPropertyAttributes.Configurable));
+        }
+        else if (callee is not null)
         {
             value.SetOwnProperty(
                 "callee", JsProperty.Data(JsValue.Object(callee), JsPropertyAttributes.BuiltIn));
         }
 
+        // `arguments` IS ITERABLE, ON THE REAL `Symbol.iterator`, which is what makes
+        // `f(...arguments)` and `[...arguments]` the ordinary forwarding idioms they are in the
+        // wild. It gets `%Array.prototype.values%` because it is an array-like with a `length`,
+        // which is all that iterator reads.
+        value.SetOwnSymbol(
+            IteratorSymbol, JsProperty.Data(arrayIterator, JsPropertyAttributes.BuiltIn));
+
         return value;
     }
 
     /// <summary>Builds a closure over a code unit.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0C1A55
+    /// <param name="program">The verified program the body lives in.</param>
+    /// <param name="unit">Which code unit the body is.</param>
+    /// <param name="environment">The environment record the closure captures.</param>
+    /// <param name="lexicalThis">The creating frame's <c>this</c>.</param>
+    /// <param name="lexicalThisBinding">The creating frame's <c>this</c> box, when it has one.</param>
+    /// <param name="lexicalNewTarget">The creating frame's <c>new.target</c>.</param>
+    /// <param name="lexicalActive">The creating frame's active function.</param>
+    /// <remarks>
+    /// <b>The four lexical values are recorded only for an arrow</b>, because an arrow is the one
+    /// unit that has none of them of its own: <c>this</c>, <c>new.target</c> and both halves of
+    /// <c>super</c> come from where it was written rather than from how it is called. Recording
+    /// them on every closure would cost nothing and mean nothing, and it would make a reader think
+    /// an ordinary function consults them.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4F06CE
     // Broiler-Human:        PENDING
     internal JsObject CreateClosure(
-        JsProgram program, int unit, JsEnvironment environment, JsValue lexicalThis)
+        JsProgram program,
+        int unit,
+        JsEnvironment environment,
+        JsValue lexicalThis,
+        JsCell? lexicalThisBinding,
+        JsValue lexicalNewTarget,
+        JsScriptFunction? lexicalActive)
     {
-        var function = new JsScriptFunction(FunctionPrototype, program, unit, environment)
+        // A GENERATOR FUNCTION INHERITS FROM `%GeneratorFunction.prototype%` AND NOT FROM
+        // `Function.prototype`, and it is two hops rather than one to the latter. That is what
+        // makes `Object.getPrototypeOf(g).constructor.name` answer `GeneratorFunction`, and it is
+        // what `[object GeneratorFunction]` is reported through.
+        var isGenerator = program.Functions[unit].IsGenerator;
+
+        // AN ASYNC FUNCTION INHERITS FROM `%AsyncFunction.prototype%` FOR THE SAME REASON, and an
+        // async ARROW is an async function: the two bits are independent and the prototype is
+        // decided by the async one alone, which is what makes
+        // `Object.prototype.toString.call(async () => {})` answer `[object AsyncFunction]`.
+        var isAsync = program.Functions[unit].IsAsync;
+
+        // AN ASYNC GENERATOR FUNCTION IS NEITHER OF THE OTHER TWO AND INHERITS FROM NEITHER. The
+        // two bits are independent and their conjunction names a third intrinsic, so the test for
+        // it comes FIRST: an arm that asked `isGenerator` alone would have given
+        // `async function* () {}` the SYNCHRONOUS generator's prototype, and
+        // `Object.getPrototypeOf(g).constructor.name` would have answered `GeneratorFunction` for a
+        // function whose calls answer async generators.
+        var isAsyncGenerator = isGenerator && isAsync;
+
+        var function = new JsScriptFunction(
+            isAsyncGenerator ? AsyncGeneratorFunctionPrototype
+                : isGenerator ? GeneratorFunctionPrototype
+                : isAsync ? AsyncFunctionPrototype
+                : FunctionPrototype,
+            program,
+            unit,
+            environment);
+
+        if (program.Functions[unit].IsArrow)
         {
-            LexicalThis = lexicalThis,
-        };
+            function.LexicalThis = lexicalThis;
+            function.LexicalThisBinding = lexicalThisBinding;
+            function.LexicalNewTarget = lexicalNewTarget;
+            function.LexicalActiveFunction = lexicalActive;
+        }
+
+        if (isAsyncGenerator)
+        {
+            function.ClassName = "AsyncGeneratorFunction";
+        }
+        else if (isGenerator)
+        {
+            function.ClassName = "GeneratorFunction";
+        }
+        else if (isAsync)
+        {
+            function.ClassName = "AsyncFunction";
+        }
 
         function.SetOwnProperty(
             "length",
@@ -315,7 +534,43 @@ internal sealed partial class JsRealm
             JsProperty.Data(
                 JsValue.String(program.Functions[unit].Name), JsPropertyAttributes.Configurable));
 
-        if (function.IsConstructor)
+        if (isAsyncGenerator)
+        {
+            // THE SAME DESCRIPTOR AND A DIFFERENT PROTOTYPE, which is the whole of the difference
+            // between the two kinds here: writable, not enumerable, not configurable, and no
+            // `constructor` back-link, because nothing is ever constructed from it either.
+            function.SetOwnProperty(
+                "prototype",
+                JsProperty.Data(
+                    JsValue.Object(new JsObject(AsyncGeneratorPrototype, "AsyncGenerator")),
+                    JsPropertyAttributes.Writable));
+
+            return function;
+        }
+
+        if (isGenerator)
+        {
+            // A GENERATOR FUNCTION'S `prototype` HAS NO `constructor` BACK-LINK, and giving it one
+            // would be the natural mistake: nothing is ever constructed from it, so there is
+            // nothing for a back-link to name. What a program reads as `g.prototype.constructor`
+            // is INHERITED from `%GeneratorPrototype%` and is an object rather than a function.
+            // The property is writable and neither enumerable nor configurable, which is the one
+            // descriptor shape a generator function's `prototype` has.
+            function.SetOwnProperty(
+                "prototype",
+                JsProperty.Data(
+                    JsValue.Object(new JsObject(GeneratorPrototype, "Generator")),
+                    JsPropertyAttributes.Writable));
+
+            return function;
+        }
+
+        // A CLASS CONSTRUCTOR'S `prototype` IS NOT THIS ONE. It is built by the instruction that
+        // builds the class, with the attributes the language gives it - not writable, not
+        // enumerable, not configurable - and creating an ordinary one here first would be an
+        // allocation nothing keeps and a writable property momentarily standing where a
+        // non-writable one belongs.
+        if (function.IsConstructor && !program.Functions[unit].IsClassConstructor)
         {
             // EVERY ORDINARY FUNCTION GETS A FRESH `prototype` WITH A `constructor` BACK-LINK.
             // The conformance harness compares `thrown.constructor` against the constructor it

@@ -17,6 +17,15 @@ namespace Broiler.VM.Composition.JavaScript.Conformance;
 /// If the merged case count is not that figure, tests went missing between the selection and the
 /// report, whatever the per-shard numbers add up to.
 /// </para>
+/// <para>
+/// <b>Two report kinds and one set of arguments.</b> The <c>--test262</c> mode counts different
+/// things over a different tree, but every question this file asks about a set of shards is the
+/// same one: are these the shards of ONE run, did they cover the whole selection, and did any test
+/// get scored twice. The second <see cref="Combine(IReadOnlyList{Test262Report})"/> therefore reuses
+/// the same helpers and the same closed set of named failures rather than growing a second copy of
+/// the argument - the alternative, a merge per mode, is how two implementations of one rule end up
+/// disagreeing about what a complete run is.
+/// </para>
 /// </remarks>
 internal static class Merge
 {
@@ -42,16 +51,7 @@ internal static class Merge
         }
 
         var first = shards[0];
-
-        foreach (var (field, values) in Fields(shards))
-        {
-            if (values.Count > 1)
-            {
-                findings.Add(new ConfigurationFinding(
-                    ConfigurationFailure.InconsistentShardConfiguration,
-                    $"shard reports disagree about {field}: {string.Join(", ", values)}"));
-            }
-        }
+        Disagreements(findings, Fields(shards));
 
         // A MERGED REPORT IS NOT A SHARD, and saying so is cheaper than the alternative. A merge
         // reads every report it is handed, so a merged one among them would be counted as a shard
@@ -122,6 +122,167 @@ internal static class Merge
             Distinct(findings));
     }
 
+    /// <summary>Merges <c>--test262</c> shard reports, or names why they are not one run's.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The manifest is one of the fields that must agree, and it is the one this mode adds.</b>
+    /// JSW-10 asks for a run PER MANIFEST; two shards taken under two manifests are two runs whose
+    /// <c>unsupported</c> columns are not about the same question, and adding them would publish a
+    /// family table describing neither composition. The admitted and declined surfaces are in the
+    /// list for the same reason, one step down.
+    /// </para>
+    /// <para>
+    /// <b>A merged whole run is a merge of every shard and nothing else.</b> The coverage field the
+    /// merged report carries is derived from the shard index, the narrowings the shards recorded and
+    /// the findings this merge raised, so a merge that was handed sixty-three of sixty-four shards
+    /// produces <see cref="ConfigurationFailure.IncompleteShardCoverage"/> and a report that says
+    /// <c>partial</c> - not a smaller total that reads as a whole run of a smaller suite.
+    /// </para>
+    /// </remarks>
+    internal static Test262Report Combine(IReadOnlyList<Test262Report> shards)
+    {
+        var findings = new List<ConfigurationFinding>();
+
+        if (shards.Count == 0)
+        {
+            return new Test262Report(
+                new SuiteRevision("unnamed", string.Empty),
+                Test262Manifest.Default,
+                0,
+                LoadsHarness: false,
+                [],
+                [],
+                Sharding.AllShards,
+                0,
+                Test262Partition.Rule,
+                [],
+                0,
+                0,
+                0,
+                0,
+                [],
+                [
+                    new ConfigurationFinding(
+                        ConfigurationFailure.IncompleteShardCoverage,
+                        "no shard report was given to merge"),
+                ]);
+        }
+
+        var first = shards[0];
+        Disagreements(findings, Fields(shards));
+
+        foreach (var whole in shards.Where(static shard => shard.ShardIndex == Sharding.AllShards))
+        {
+            findings.Add(new ConfigurationFinding(
+                ConfigurationFailure.InconsistentShardConfiguration,
+                $"a report covering all {whole.ShardCount} shards was handed to a merge; a merged " +
+                "report is not a shard"));
+        }
+
+        var present = shards
+            .Select(static shard => shard.ShardIndex)
+            .OrderBy(static index => index)
+            .ToArray();
+
+        foreach (var missing in Enumerable.Range(0, first.ShardCount).Except(present))
+        {
+            findings.Add(new ConfigurationFinding(
+                ConfigurationFailure.IncompleteShardCoverage,
+                $"shard {missing} of {first.ShardCount} reported nothing"));
+        }
+
+        foreach (var duplicate in present
+                     .GroupBy(static index => index)
+                     .Where(static group => group.Count() > 1))
+        {
+            findings.Add(new ConfigurationFinding(
+                ConfigurationFailure.InconsistentShardConfiguration,
+                $"shard {duplicate.Key} reported {duplicate.Count()} times"));
+        }
+
+        var results = shards.SelectMany(static shard => shard.Results).ToArray();
+
+        // Keyed on the path AND the variant, because a file is run in the variants its own flags
+        // call for and two rows for one path are the normal case. What must not happen is one
+        // variant of one file being scored twice, which is the partition having stopped being a
+        // partition.
+        foreach (var duplicate in results
+                     .GroupBy(
+                         static result => result.Path + " [" + result.Variant + "]",
+                         StringComparer.Ordinal)
+                     .Where(static group => group.Count() > 1))
+        {
+            findings.Add(new ConfigurationFinding(
+                ConfigurationFailure.InconsistentShardConfiguration,
+                $"`{duplicate.Key}` was scored by {duplicate.Count()} shards"));
+        }
+
+        var files = results.Select(static result => result.Path).Distinct(StringComparer.Ordinal).Count();
+
+        if (files != first.Selected)
+        {
+            findings.Add(new ConfigurationFinding(
+                ConfigurationFailure.IncompleteShardCoverage,
+                $"the selection named {first.Selected} files and the shards between them ran {files}"));
+        }
+
+        findings.AddRange(Test262Report.Validate(first.Suite, first.Selected, results));
+
+        return new Test262Report(
+            first.Suite,
+            first.ManifestId,
+            first.FormatVersion,
+            first.LoadsHarness,
+            first.Admitted,
+            first.Declined,
+            Sharding.AllShards,
+            first.ShardCount,
+            first.Partition,
+            first.Narrowings,
+            first.Candidates,
+            first.Selected,
+            first.Fuel,
+            first.WallClock,
+            results,
+            Distinct(findings));
+    }
+
+    /// <summary>Every field two shards of one run must agree on, with what they actually said.</summary>
+    private static IEnumerable<(string Field, IReadOnlyCollection<string> Values)> Fields(
+        IReadOnlyList<Test262Report> shards)
+    {
+        yield return ("suite", Distinct(shards, static shard => shard.Suite.Name));
+        yield return ("suiteRevision", Distinct(shards, static shard => shard.Suite.ToString()));
+        yield return ("manifest", Distinct(shards, static shard => shard.ManifestId));
+        yield return ("formatVersion", Distinct(shards, static shard => shard.FormatVersion.ToString()));
+        yield return ("harness", Distinct(shards, static shard => shard.LoadsHarness.ToString()));
+        yield return ("admitted", Distinct(shards, static shard => string.Join(",", shard.Admitted)));
+        yield return ("declined", Distinct(shards, static shard => string.Join(",", shard.Declined)));
+        yield return ("shardCount", Distinct(shards, static shard => shard.ShardCount.ToString()));
+        yield return ("partition", Distinct(shards, static shard => shard.Partition));
+        yield return ("narrowings", Distinct(shards, static shard => string.Join("; ", shard.Narrowings)));
+        yield return ("candidates", Distinct(shards, static shard => shard.Candidates.ToString()));
+        yield return ("selected", Distinct(shards, static shard => shard.Selected.ToString()));
+        yield return ("fuel", Distinct(shards, static shard => shard.Fuel.ToString()));
+        yield return ("wallClock", Distinct(shards, static shard => shard.WallClock.ToString()));
+    }
+
+    /// <summary>Records one finding per field two shards of one run disagreed about.</summary>
+    private static void Disagreements(
+        List<ConfigurationFinding> findings,
+        IEnumerable<(string Field, IReadOnlyCollection<string> Values)> fields)
+    {
+        foreach (var (field, values) in fields)
+        {
+            if (values.Count > 1)
+            {
+                findings.Add(new ConfigurationFinding(
+                    ConfigurationFailure.InconsistentShardConfiguration,
+                    $"shard reports disagree about {field}: {string.Join(", ", values)}"));
+            }
+        }
+    }
+
     /// <summary>
     /// The fields every shard of one run must state identically, with what they actually stated.
     /// </summary>
@@ -158,9 +319,15 @@ internal static class Merge
         yield return ("unselectable", Distinct(shards, static shard => shard.Selection.Unselectable.ToString()));
     }
 
-    private static IReadOnlyCollection<string> Distinct(
-        IReadOnlyList<Report> shards,
-        Func<Report, string> field) =>
+    /// <summary>What a set of shards said for one field, de-duplicated and ordered.</summary>
+    /// <remarks>
+    /// Generic over the report kind rather than written twice, because "these shards disagree about
+    /// a field every shard of one run must share" is one rule and the two modes differ only in
+    /// which fields those are.
+    /// </remarks>
+    private static IReadOnlyCollection<string> Distinct<TReport>(
+        IReadOnlyList<TReport> shards,
+        Func<TReport, string> field) =>
         shards.Select(field).Distinct(StringComparer.Ordinal).OrderBy(static value => value, StringComparer.Ordinal).ToArray();
 
     /// <summary>One finding per failure and detail, so a repeated cause is reported once.</summary>

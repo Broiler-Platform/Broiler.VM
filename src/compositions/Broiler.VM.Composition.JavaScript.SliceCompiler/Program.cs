@@ -44,6 +44,15 @@ internal static class Program
                 return RunChecks(args.Contains("--verbose", StringComparer.Ordinal));
             }
 
+            // WHAT THE REALM ADMITS, ASKED OF THE REALM. A document's list of absent globals is
+            // checked against the answer this mode publishes rather than against another document,
+            // which is the whole reason the mode exists: bundle JS-4-001's list was true and not
+            // exhaustive, and a later reader mistaking one for the other is how a gap survives.
+            if (args.Contains("--globals", StringComparer.Ordinal))
+            {
+                return RealmGlobals.Run(Argument(args, "--write"));
+            }
+
             if (args.Length >= 2 && string.Equals(args[0], "--census", StringComparison.Ordinal))
             {
                 return Census(args[1..]);
@@ -62,7 +71,8 @@ internal static class Program
             }
 
             Console.WriteLine(
-                "usage: --write <directory> | --checks [--verbose] | --closure | " +
+                "usage: --write <directory> | --checks [--verbose] | --closure | --globals " +
+                "[--write <file>] | " +
                 "--census <directory> [<directory> ...] | " +
                 "--fuzz <source directory> [--seed <n>] [--iterations <n>]");
 
@@ -218,6 +228,22 @@ internal static class Program
                 .Append(Sha256(System.Text.Encoding.UTF8.GetBytes(text))).Append('|')
                 .Append(program.Code).Append('|')
                 .Append(retain ? "file" : "generated").Append(Eol);
+        }
+
+        // THE MODULE-GOAL REFUSALS ARE RETAINED BESIDE THE OTHERS AND UNDER THE SAME KIND, because
+        // the registry's `source` reachability is a claim that a named retained source is refused
+        // with a code, and it is the same claim whichever goal the source was presented under. The
+        // extension is what records the goal: a `.mjs` here is read back as module source, which is
+        // the same convention the CLI composition applies to a path it is handed.
+        foreach (var program in SliceSourcePrograms.RefusedModules)
+        {
+            var text = Normalise(program.Source);
+            var extension = program.Options.Goal == SliceGoal.Module ? ".mjs" : ".js";
+            File.WriteAllText(Path.Combine(refused, program.Name + extension), text);
+
+            manifest.Append("refused|").Append(program.Name).Append('|')
+                .Append(Sha256(System.Text.Encoding.UTF8.GetBytes(text))).Append('|')
+                .Append(program.Code).Append("|file").Append(Eol);
         }
 
         File.WriteAllText(Path.Combine(root, "source.manifest"), manifest.ToString());
@@ -393,7 +419,10 @@ internal static class Program
     /// <summary>Runs the claims that need a neighbour profile, and the claims about the front end.</summary>
     private static int RunChecks(bool verbose)
     {
-        var checks = CrossProfileChecks.Run().Concat(SourceFrontEndChecks.Run()).ToArray();
+        var checks = CrossProfileChecks.Run()
+            .Concat(SourceFrontEndChecks.Run())
+            .Concat(SurfaceChecks.Run())
+            .ToArray();
         var failed = 0;
 
         foreach (var (name, passed, detail) in checks)

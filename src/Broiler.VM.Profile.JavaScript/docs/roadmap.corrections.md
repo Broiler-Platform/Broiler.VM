@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap — corrections and rejections
 
-**Last updated:** 2026-09-03
+**Last updated:** 2026-09-05
 
 **This file is part of the [Broiler.VM.Profile.JavaScript roadmap](roadmap.md)**, which
 [names every file](roadmap.md#how-this-roadmap-is-split). It carries no numbered section of the
@@ -3425,3 +3425,4132 @@ that everything knowable is checked.
 variant `test/language/future-reserved-words/yield-strict.js`, whose movement in both directions is
 in [Bundle JS-4-001](evidence/js-4-001/README.md).
 
+
+### JSC-81
+
+**Where:** the workload roadmap's
+[section 3.4](roadmap.workloads.md#34-the-two-failures-that-are-defects-rather-than-absences), which
+states that `pdfjs` is refused by this component's own verifier on bytes this component's own
+lowering produced, and asks which of two components was wrong.
+
+**What the plan said.** That the answer was one of two: *either* the lowering emits something the
+format does not admit, *or* the format admits something the verifier's semantic stage then rejects.
+The stage's objective is written around that fork, and its first clause is to decide it.
+
+**Which of the two it was.** **Neither, and the fork was drawn one level too high.** The lowering
+emitted only instructions the format admits and the verifier decodes, and the verifier's semantic
+stage was right to refuse them. What was wrong was the *composition* of instructions the lowering
+chose for one construct: an array literal that is not dense-and-under-a-thousand-elements is built
+element by element and then has its `length` set, and `SetProperty` **pops a value and a base and
+pushes the value back**. Setting `length` on the array under construction therefore replaced the
+array with the count, and the `Pop` that followed discarded the count — leaving the literal
+expression with **nothing** on the operand stack where every caller expects one value. The verifier
+reported an operand-stack underflow, at whatever later instruction first popped one value too many,
+which is a position a long way from the cause.
+
+**What replaced it.** The array is duplicated before its `length` is set, so the literal leaves
+exactly one value. Section 3.4's fork stands as a question a reader should ask; what this entry adds
+is the third answer it did not offer — **a lowering that is internally inconsistent while emitting
+nothing the format or the verifier could object to on its own**. A stage that had only looked for a
+disagreement between the two components named would not have found this.
+
+**What the repair does not do.** It does not make the verifier's position any nearer the cause. A
+version-2 artifact carries a position table that the verifier parses and discards, so a refusal
+still names a code-section offset and never a line — which is how a defect in eleven lines of
+JavaScript took a benchmark of thirty-three thousand to expose.
+
+**Retained as a fixture rather than as a benchmark.** `src/tests/cli/runs/an-array-literal-with-holes.js`
+is the same construct with no third-party file behind it, and its rows in
+`src/tests/cli/expected.txt` assert the answers rather than the exit code alone.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, and the Octane `pdfjs`
+run through the ordinary command line that moved from an exit-4 refusal to a named absent
+constructor. 2026-09-04.
+
+### JSC-82
+
+**Where:** the workload roadmap's
+[section 3.4](roadmap.workloads.md#34-the-two-failures-that-are-defects-rather-than-absences),
+which records the `typescript` benchmark failing with a type error against a value the program did
+not expect to be `undefined`, and the ledger's
+[section 2](roadmap.status.md#2-current-milestone-status) statement that **`arguments` is unmapped**.
+
+**What the plan said.** That the divergence in this area is the *mapping* — that the arguments
+object of a sloppy-mode function does not alias its parameters, which is a declared approximation
+and an observable one. Nothing said the binding itself could be wrong.
+
+**What was actually built.** A function whose formal parameter list contains the name `arguments`
+had that parameter's value **destroyed on entry**. The lowering declares the parameters into slots,
+then declares `arguments` for the object — and the compile-time scope answers a repeat declaration
+with the slot it already has, so the object was written into the parameter's own slot before the
+first statement ran. The actual the caller passed was simply gone. The specification says the
+opposite from the other end: function declaration instantiation sets `argumentsObjectNeeded` to
+false when `arguments` is one of the parameter names, precisely so that the parameter is the
+binding.
+
+**How it was found, which is the part worth keeping.** By a machine-generated program, exactly as
+[section 3.4](roadmap.workloads.md#34-the-two-failures-that-are-defects-rather-than-absences)
+predicted such a defect would be. The Octane TypeScript benchmark carries a compiler with
+`function FuncDecl(name, bod, isConstructor, arguments, vars, scopes, statics, nodeType)` and a
+body that reads `this.arguments`, so `arguments.members.length` read a property of the arguments
+object and threw. **No hand-written test in this repository would have contained that function**,
+and the shape is not exotic: naming a parameter `arguments` is legal sloppy-mode JavaScript that a
+code generator has no reason to avoid.
+
+**What replaced it.** A parameter named `arguments` suppresses the object entirely. A `var
+arguments` or a function declaration of that name is deliberately **not** this case: each is
+initialised after the object is, which is the order the specification asks for and the order the
+lowering already produced.
+
+**What is still true, and must not be read as repaired.** The arguments object is still **unmapped**
+— writing `arguments[0]` does not change the first parameter and vice versa. That divergence is the
+ledger's and this entry does not touch it.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the Octane `typescript`
+benchmark moving from a type error to a score through the ordinary command line, and the fixture
+`src/tests/cli/runs/a-parameter-named-arguments.js`. 2026-09-04.
+
+### JSC-83
+
+**Where:** roadmap [section 9](roadmap.md#9-the-semantic-front-end-and-lowering)'s account of the
+front end's static walks, and the same ledger sentence [JSC-82](#jsc-82) cites.
+
+**What the plan said.** Nothing that was wrong, and that is why this is a correction to a *reading*
+rather than to a sentence. The walk that decides whether a function must materialise an `arguments`
+object stops at every function-like node, because a nested function has an `arguments` of its own
+and a mention inside one is not a mention of the enclosing function's. That reading is correct for
+every function-like node **except one**.
+
+**What was actually built.** An arrow function is parsed as a function expression carrying an arrow
+flag, so the walk stopped at arrows too. An arrow has **no `arguments` of its own**: a mention
+inside one is a mention of the enclosing function's, which is the whole of what makes
+`function f() { return () => arguments[0]; }` a legal and ordinary program. The enclosing function
+therefore declared no slot, the inner reference fell through to a global read, and the program threw
+a `ReferenceError` naming `arguments` at run time — a refusal that looks exactly like an absent
+global rather than like a defect in a walk.
+
+**What replaced it.** The walk descends into an arrow's body and stops only at an ordinary function.
+
+**Why it is recorded beside [JSC-82](#jsc-82) rather than folded into it.** They are two defects in
+one binding, found by the same repair session, and only the first was reachable from either
+workload. The second was found by asking what *else* the same walk answers wrongly, which is the
+habit — not the benchmark — that produced it, and a record that collapsed them would say the
+workload found both.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, and the fixture
+`src/tests/cli/runs/a-parameter-named-arguments.js`, whose fourth and fifth lines are the arrow
+cases. 2026-09-04.
+
+### JSC-84
+
+**Where:** the workload roadmap's [section 1](roadmap.workloads.md#1-the-target-stated-as-behaviour-rather-than-as-a-score),
+which states the Octane target as *every benchmark reports a score through the ordinary command
+line*, and roadmap [section 18](roadmap.md#18-amendments-this-profile-expects-to-ask-of-the-core).
+
+**What the plan said.** That the gap between this profile and a whole Octane run is a gap in the
+**language** surface, and that section 3.1's table — a manifest identity per row — names all of it.
+
+**What one benchmark showed instead.** `zlib` carries an asm.js module whose emscripten runtime
+decides which host it is on by asking for `window`, `process` and `importScripts`, concludes "a
+shell" when it finds none, and then reads the global **`read`** to wire into its own module object.
+It never calls it. That is not a language surface and no manifest owns it: it is the **host shell**,
+and a profile that answered a `ReferenceError` there was refusing a whole program over a capability
+the program does not use.
+
+**What replaced it.** The realm has a `read` that exists and refuses, in the shape
+`$262.agent`'s members already established: answering `undefined` would let a program proceed on a
+false premise, and refusing to exist makes an environment probe fail rather than answer.
+
+**And why it refuses rather than working, which is the part that belongs in section 18.** A value
+capability takes bytes and answers a `long` or an opaque reference, and an opaque reference is by
+construction not dereferenceable. **There is no registration any composition could make that would
+let a host answer a guest with a file's contents.** That is a limit of core contract version 1, not
+a decision of this profile's, and it is the first amendment this profile has an observed reason to
+ask for: a value capability that answers with bytes.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, and the Octane `zlib`
+benchmark, whose failure moved from a language absence to this. 2026-09-04.
+
+### JSC-85
+
+**Where:** roadmap [section 8](roadmap.md#8-the-value-frame-and-call-model)'s *`CallDepth` is
+measured, not chosen*, the workload roadmap's
+[JSW-9](roadmap.workloads.md#jsw-9--the-depth-a-generated-program-needs), and
+[JSC-79](#jsc-79), which recorded the repair this entry corrects.
+
+**What the plan said, and what JSC-79 left standing.** That a recursing program is refused as a
+resource exhaustion naming `CallDepth` and never terminates the process; and that the repair for the
+conformance case that DID terminate the process was a counted bound compared against a limit.
+[JSC-79](#jsc-79) recorded what that repair did not do: *measure the per-frame cost the declared
+stack was chosen against*. The bound stood at three thousand frames on a sixteen-megabyte stack.
+
+**What the measurement found.** Two things, and the second is the one nobody would have guessed.
+
+**First, the per-frame cost.** `eng/measure-frame-cost.py` bisects the published binary against a
+recursion with no base case, raising the call-depth ceiling one step at a time and asking of each
+child process whether it ANSWERED or DIED. This interpreter survives **8,666** JavaScript calls on
+the declared stack: **1,936 bytes of native stack per call** — and the same figure for a frame
+holding nineteen live values across a call as for one holding none, because the operand stack and
+the environment are heap objects and only `Call`, `Invoke` and `Execute` are on the stack. So the
+three-thousand-frame bound was not too generous. It was **too small by a factor of nearly three**,
+which is a defect of a different kind: it refused programs the stack could have run.
+
+**Second, and this is the correction.** With the bound at three thousand, a recursion **terminated
+the process at three thousand frames** — on a stack holding 8,666 of them. Not because the frames
+did not fit, but because **the refusal did not**: the bound was reported by throwing a
+`RangeError`, and building and dispatching that exception from that depth needed stack the program
+had spent getting there. The bound was checked before the runtime's own stack probe, so the probe
+never ran. **A counted bound that reports itself by throwing is a bound whose safety depends on the
+cost of the throw**, and nothing in the plan said so because nobody had measured it.
+
+**What replaced it.** Three changes that only make sense together. The backstop **ends the
+operation as a resource exhaustion** rather than throwing a value the guest could catch, which is
+what section 8 asked for in those words and what makes the report survive the depth it reports on.
+The backstop is set to 6,000 — a third short of what the stack holds. And the profile's declared
+call-depth **maximum** comes down from 16,384 to 4,096, which is short of the backstop, so the
+ordinary answer is always the budget ceiling's named exhaustion and the backstop is reached only by
+a host that granted more than the profile said it could. Sixteen thousand frames was four times what
+the stack holds and had never been reached by anything.
+
+**What is still open.** The measurement was taken on one machine, on Linux, under the JIT. The gate
+asks for the recursive workload under Native AOT on every claimed runtime identifier, and that is a
+collection rather than a change to this checkout; until one exists, the figures above are a
+measurement of this configuration and the margins are what carry the rest.
+
+**Authority and date.** The measurement of 2026-09-04, retained as `eng/measure-frame-cost.py` and
+reproducible against `src/tests/cli/limits/an-unbounded-recursion.js`, and the four acceptance rows
+that pin the answers. 2026-09-04.
+
+### JSC-86
+
+**Where:** roadmap [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s
+allocation table and its rule that *a well-formed artifact that uses a construct outside its declared
+manifest is rejected at verification*.
+
+**What the plan said.** That a feature manifest is a thing an artifact **names**, one per artifact,
+and that the rule above follows from that: a composition declines a manifest by not accepting it,
+and an artifact naming it is refused before it runs. The table listed seven identities and read as
+though every one of them worked that way. The whole of the reasoning is sound for a surface made of
+**constructs** — a module declaration, a `class`, `eval` as a spelled call site — because the front
+end refuses those by name and they never reach an artifact at all.
+
+**What implementing two of the identities showed.** It does not work for a surface made of
+**globals**. A program that constructs a `Uint8Array` is, byte for byte, a program that reads a
+name; there is no construct to refuse, no section that says which names matter, and an artifact
+using the binary surface is indistinguishable from one that does not. A composition could decline
+`broiler.javascript.binary` and the artifact would verify and then meet an absent constructor at run
+time — which is exactly the run-time refusal section 6 distinguishes a declined manifest FROM.
+
+**What replaced it.** A second kind of identity, named as such in section 6. An **optional surface**
+is declared by the artifact **beside** the manifest it names, in a section of its own that the
+verifier reads and refuses an unadmitted entry of. The lowering records a surface when a free name
+that belongs to one resolves to a global; a `typeof` deliberately records nothing, so
+`typeof Uint8Array === "undefined"` stays a question rather than becoming a refusal. A composition
+declines by naming the surfaces it admits when it builds the descriptor it registers, and there is
+no other door.
+
+**What that costs, stated plainly.** The artifact format grew a section kind and the diagnostic
+registry grew three codes — one for a surface declared twice, one for a surface this build does not
+implement, one for a surface the composition declined — and the three are distinguished because a
+reader of a refusal should not have to guess whether the artifact or the composition was the reason.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the three retained corpus
+entries `wide-a-surface-declared-twice`, `wide-a-surface-this-build-does-not-implement` and
+`wide-a-surface-the-composition-declined`, and the four composition-root checks that record what
+each configuration answers. 2026-09-04.
+
+### JSC-87
+
+**Where:** the workload roadmap's
+[section 3.1](roadmap.workloads.md#31-what-each-workload-meets-today), titled *what each workload
+meets today*, and [section 3.2](roadmap.workloads.md#32-the-surface-that-is-absent-from-the-realm)'s
+list of what is absent from the realm.
+
+**What the plan said.** Both sections state facts in the present tense about a checkout, which is
+what makes them checkable — and what makes them go out of date the moment the work they describe is
+done. Section 3.1 named, for each workload, the absence it met and the stage that owned it; section
+3.2 named the globals the realm did not have.
+
+**What replaced it.** Both now carry **two readings**: what the workload met when the document was
+written, and what it meets now. That shape is deliberate and is not tidiness. The document's own
+method is that "every row above is a behaviour, and every one of them is reproducible" — a row
+rewritten in place would still be reproducible and would have destroyed the only evidence that the
+programme did anything. A reader who wants to know whether the binary surface was worth building
+needs both columns.
+
+**One row changed kind rather than closing**, and the document says so where a reader meets it:
+`zlib` no longer meets a language absence, it meets a **shell** the benchmark assumes — the global
+`read` — which no manifest in section 6's allocation owns and which core contract version 1 has no
+shape for ([JSC-84](#jsc-84)).
+
+**What is NOT corrected.** Sections 1 and 7 are unchanged. The target is still that the suite RUNS
+with the `unsupported` column empty for the claiming manifest, no stage's exit gate has been
+accepted by anybody, and nothing here moves a row in the ledger — which section 5's own preamble
+says and which stays true however much of section 5 is built.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout and the Octane runs
+through the ordinary command line that produced the second column. 2026-09-04.
+
+### JSC-88
+
+**Where:** roadmap [section 10](roadmap.md#10-the-executor-and-the-realm)'s abstract operations, and
+the property [JSC-79](#jsc-79) and [JSC-85](#jsc-85) both exist to hold: **a refusal is an answer and
+a process termination is not one.**
+
+**What the code said.** `ToNumber` named the five primitives it converts and sent everything else
+through `ToNumber(ToPrimitive(value, "number"))`. That is the specification's own shape and it was
+right for as long as the only remaining case was an object.
+
+**What `Symbol` did to it.** `ToPrimitive` of a primitive is that primitive — it is the operation's
+first clause. So a Symbol reaching that arm converted to itself, for ever: not a hang, not a budget
+exhaustion, but a stack overflow, which is the one failure the runtime cannot turn into an exception
+and the one outcome this profile may never produce. `+Symbol()`, `Symbol() - 0`, `Math.abs(symbol)`
+and every other numeric coercion terminated the process. The suite found it three times in one
+afternoon — `built-ins/Array`, `built-ins/Symbol` and `built-ins/TypedArray` each died mid-run — and
+nothing written in this repository had.
+
+**What replaced it.** `ToNumber` refuses a Symbol **by name**, exactly as `ToString` already did,
+and the reason is the same one rather than a defensive addition: a Symbol is a key nobody can forge,
+and a key that silently became a number would be forgeable by arithmetic.
+
+**The shape of the defect is worth more than the defect.** `ToString` had the Symbol arm because
+`String(symbol)` is a case somebody thought about; `ToNumber` did not, because `Number(symbol)` is a
+case nobody writes. **A conversion table with a recursive default arm is safe only while the set of
+primitives is closed**, and JSW-6 opened it. Any future primitive — `BigInt` is the one this profile
+expects — must be given its arm in both operations at the moment the type is added, not at the
+moment a suite dies of it.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the twelve-case
+differential probe against the comparison engine, and the three test262 subtree runs that terminated
+before it and completed after. 2026-09-04.
+
+### JSC-89
+
+**Where:** [JSW-5](roadmap.workloads.md#jsw-5--the-core-language-surface-still-refused-by-name)'s
+clause that a family moves from *refused by name* to *admitted and exercised*, **and no family moves
+to refused as an unexpected token on the way**.
+
+**What the front end did.** `new.target` was admitted and parsed, and the parse **returned** it from
+the call-chain reader rather than handing it to the loop that reads member accesses and calls. So
+`new.target` alone was right and `new.target.name` was a syntax error at the `.`, reported as an
+expected-token diagnostic — a construct the language admits, refused as an unexpected token, by the
+very stage that had just admitted the family.
+
+**What replaced it.** `new.target` joins the suffix loop like any other head. It is a
+*MemberExpression* in the grammar and not a finished expression, which is what makes
+`new.target.name`, `new.target === C` and `new.target.prototype` ordinary.
+
+**Why it survived a bundle that verified the family against a comparison engine.** Every probe case
+used `new.target` bare or compared it, and none read a property off it. **A family's audit has to
+walk the syntactic positions the construct can appear in, not the ones a probe author thought of** —
+which is the audit section 4 of bundle JS-4-001 describes, and this is the second time that audit
+has been the thing that would have caught a refusal produced for the wrong reason.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout and the differential probe
+that reported `E` for `new.target.name` under the comparison engine and a syntax error here. 2026-09-04.
+
+### JSC-90
+
+**Where:** the workload roadmap's
+[JSW-10](roadmap.workloads.md#jsw-10--the-runs-per-manifest-whole), whose objective is a run over the
+Octane checkout in which **every benchmark reports a score through the ordinary command line**.
+
+**What the host offered.** Three of the four ceilings a person meets were settable from the command
+line — `--fuel`, `--wall` and, since [JSC-85](#jsc-85), `--call-depth`. The memory allowance was not,
+so the profile's default — sized for a program a person types — decided which workloads could be run
+at all.
+
+**What that produced, which is worse than a refusal.** `zlib` printed its score and *then* met a
+`LiveBytes` ceiling, so the process exited non-zero on a run that had produced exactly the thing the
+target asks for. A caller reading the exit code was told the run failed; a caller reading the output
+was told it succeeded. **Neither reading was wrong, which is what made it the least useful of the
+outcomes.**
+
+**What replaced it.** `--live-bytes <n>`, beside the other three, with the same shape and the same
+refusal for a value that is not a positive count. It widens what a **caller may ask for** and not
+what the profile permits: the profile's hard maximum still bounds it, and a composition that wants a
+smaller ceiling still gets one.
+
+**What is NOT corrected.** The default is unchanged. A benchmark needing a gigabyte is a fact about
+the benchmark, and moving the default to accommodate it would make every program this host runs pay
+for one workload's working set.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout and the `zlib` run that
+scored and then exhausted. 2026-09-04.
+
+### JSC-91
+
+**Where:** the workload roadmap's
+[section 3.2](roadmap.workloads.md#32-the-surface-that-is-absent-from-the-realm), which lists what
+is absent from the realm, and [JSW-6](roadmap.workloads.md#jsw-6--the-core-library-still-absent-from-the-realm),
+whose objective is that the core library stops being absent.
+
+**What both said.** That what the realm lacked was a set of **globals** — the keyed collections,
+`Symbol`, `Promise`, the weak references — and that a published global set checked against the
+documents closes the question. Rule N17 makes that check mechanical and it passes.
+
+**What a probe found anyway.** A global being present says nothing about the methods on its
+prototype. A 230-case differential probe against the comparison engine, written to cover the surface
+rather than to confirm it, found seven absences and one wrong answer inside globals the realm has:
+`Array.prototype.at`, `flat`, `flatMap`, `findLast`, `findLastIndex` and `copyWithin`; the four
+change-by-copy methods `toSorted`, `toReversed`, `toSpliced` and `with`; `String.fromCodePoint`,
+`String.raw` and `String.prototype.normalize`; and **`Array.from` reading only the array-like shape**,
+which had been true and correct until JSW-6 gave the realm an iteration protocol and stopped being
+either. `Array.from(new Set([1,2]))` answered an empty Array — not a refusal, an empty collection —
+and `Array.from` of a string outside the basic plane counted code units where the iterator counts
+code points.
+
+**What replaced it.** All of them, with `Array.from` consulting `Symbol.iterator` first and falling
+back to the array-like reading. The probe now differs from the comparison engine in two places and
+both are declared.
+
+**`normalize` is the interesting one, because it is a refusal rather than an implementation.** Every
+composition here runs in globalization-invariant mode, and in that mode the platform's own
+`String.Normalize` **returns the input unchanged and reports that it is already normalized**. Wiring
+the method to it would have produced a wrong answer that looks like a right one — the shape this
+profile refused for regular expressions *(JSC-75)* and still carries for `Date`. So `normalize`
+validates its form, answers an ASCII string unchanged because all four forms are provably the
+identity there, and **refuses anything else by name**, saying that the Unicode tables are not held
+by this component.
+
+**The finding worth keeping is about the rule and not about the methods.** N17 compares a set of
+NAMES. A rule over names cannot see a missing method, a wrong argument count or a method that reads
+the wrong protocol, and a reader who watched N17 pass would reasonably have concluded the library
+question was closed. **The probe is the instrument for that layer and there is no rule for it**,
+which is stated here rather than left for the next reader to rediscover.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the 230-case probe and the
+52-case probe over the additions, both run against the comparison engine. 2026-09-04.
+
+### JSC-92
+
+**Where:** [JSC-81](#jsc-81), which records the lowering emitting a composition of instructions the
+verifier was right to refuse, and states that the fork between *the format admits too little* and
+*the verifier rejects too much* had been drawn one level too high.
+
+**What that entry implied.** That the case was closed: the array literal's stack effect was repaired
+and the workload that found it reported a score.
+
+**What the same shape did again.** `try { } catch (e) { }` — an empty protected block — lowered to
+an exception region whose start offset **equalled** its end offset, and the verifier refused an
+artifact this lowering had just produced, at `InconsistentStructure`. Every program containing an
+empty `try` was refused whole, and nothing in the front end had a word to say about it, because
+nothing about the program is outside the manifest.
+
+**The verifier is right and the lowering is wrong, again.** A region protecting no instruction is a
+region nothing can enter, and its handler is code the abstract pass seeds as an entry at a height
+nothing establishes. So the repair puts an instruction inside the range rather than weakening the
+rule: a `Nop`, emitted only when the block lowered to nothing.
+
+**The alternative was considered and is worse.** Emitting no region and no handler would leave the
+handler's instructions in the unit reached by nothing, and **an instruction stream carrying code no
+entry seeds is how unverified code gets into a verified artifact**. A `Nop` costs one instruction in
+a block that had none; every non-empty `try` is unchanged.
+
+**What this says about the class rather than the case.** JSC-81's defect and this one are the same
+defect: a lowering that is internally inconsistent while emitting nothing either named component
+could object to on its own. Both were found by a program written to cover the surface rather than to
+confirm it, and neither by a fixture written here.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout and
+`src/tests/differential/the-statement-and-object-surface.js`, whose case 43 is the empty `try`.
+2026-09-04.
+
+### JSC-93
+
+**Where:** roadmap [section 9](roadmap.md#9-the-semantic-front-end-and-lowering)'s treatment of
+strict mode, and [JSC-80](#jsc-80), which records strictness a caller imposes not reaching the parse.
+
+**What was repaired then, and what was not.** JSC-80 made a caller's `--strict` reach the **grammar**,
+so strict-only early errors became visible. It said nothing about the *runtime* half, and two of
+those were missing.
+
+**Assigning to an undeclared name in strict code created a global.** `"use strict"; undeclared = 1`
+answered normally and put a property on the global object, where the language gives a
+`ReferenceError`. That is the single thing `"use strict"` buys a reader of an unfamiliar program,
+and this profile did not give it.
+
+**Deleting a non-configurable property in strict code answered `false`.** The object refused, the
+refusal was reported as a value, and a program that did not read the value carried on as though the
+property were gone.
+
+**What replaced it.** Both are the same rule and are now written as one: an operation the object
+refused is a value where a program may not have asked and an exception where it said it wanted to
+know.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, cases 12 and 58 of
+`src/tests/differential/the-statement-and-object-surface.js`. 2026-09-04.
+
+### JSC-94
+
+**Where:** the realm's `Object` intrinsic, and
+[section 3.2](roadmap.workloads.md#32-the-surface-that-is-absent-from-the-realm)'s reading that what
+is absent from the realm is a set of **globals**.
+
+**What was absent.** `Object.prototype.__proto__`. It is Annex B rather than the core language, and
+it is what a great deal of real code uses to read or set a prototype.
+
+**What that produced, which is the part that matters.** `o.__proto__ = null` created **an ordinary
+own property named `__proto__`**. Every later read answered what was stored, so the program saw its
+assignment take effect and the prototype never moved. Not a refusal, not an absence: a wrong answer
+that looks like a right one — the third state this profile keeps having to name.
+
+**What replaced it.** The accessor pair the specification gives, on `Object.prototype`, configurable
+and non-enumerable. The setter is a no-op rather than a throw for a non-object value, because the two
+ways of being a no-op are distinguished by the receiver and not by the argument.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, cases 59 and 60 of
+`src/tests/differential/the-statement-and-object-surface.js`. 2026-09-04.
+
+### JSC-95
+
+**Where:** `JsNumberFormat.ToRadixString`, whose own comment stated the deviation being corrected.
+
+**What the code said.** That twenty fraction digits is "past the point where a binary64 fraction
+carries information in any radix this accepts", and that stopping there keeps an irrational-looking
+expansion from running for ever.
+
+**Why the first half is false.** A digit carries `log2(radix)` bits. At radix 36 that is over five,
+so twenty digits is more than a double holds; at radix 3 it is one and a half, so fifty-three bits
+need **thirty-four** digits. `(0.1).toString(3)` was a fourteen-digit **prefix** of its own answer —
+the shape a truncation always has, and the reason a fixed digit count cannot be right across a range
+of radices.
+
+**What replaced it.** The stopping rule is the value's own precision: half the distance to the next
+representable double, scaled by the radix at each step, with digits produced while the remaining
+fraction exceeds it and a half-way case that rounds up and carries — through the fraction and, when
+it runs off the front, into the integer part. Twenty-three cases across every radix and both
+extremes of the range now agree with the comparison engine exactly.
+
+**The second half of the old comment was right and is kept**: an expansion that ran while the
+fraction was non-zero would not terminate. What replaced it is a bound that means something rather
+than a bound that was convenient.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, case 97 of
+`src/tests/differential/the-statement-and-object-surface.js` and the twenty-three-case radix probe.
+2026-09-04.
+
+### JSC-96
+
+**Where:** [JSC-85](#jsc-85), which set the profile's declared call-depth maximum below the engine's
+own bound **so that the budget ceiling always answers first**, and roadmap
+[section 8](roadmap.md#8-the-value-frame-and-call-model)'s *`CallDepth` is measured, not chosen*.
+
+**What that arrangement bought and what it cost.** It bought the property JSC-79 exists for: a
+runaway recursion ends as a named resource exhaustion rather than terminating the process. It cost
+the language's own answer. A budget exhaustion is an **abort the guest cannot catch**, so
+`try { recurse(); } catch (e) { }` — written by a recursive descent probing its own depth, by a
+benchmark sizing a workload, and by every conformance case that asserts the error's type — never ran
+its own guard. `Maximum call stack size exceeded` is a catchable exception in every engine, and this
+profile did not have it at all.
+
+**What replaced it: two bounds answering two different questions, in the right order.**
+
+- The **runtime's stack probe** answers *is there room to do anything here*. When it says no there is
+  no safe action left, so the operation ends. That is the case JSC-85 diagnosed.
+- The **engine's counted bound** answers *has this interpreter recursed further than it promises*. It
+  is reached with the probe still satisfied, so a `RangeError` can be built and thrown — and it is
+  thrown, because that is what the language says. Folding the two into one condition, which is what
+  the code did, gave the unsafe case's answer to the safe one.
+- The **budget's `CallDepth` ceiling** is the host's own limit and stays an abort, because a budget a
+  guest could swallow is not a budget. What changed is that the profile's default now sits **above**
+  the engine's bound, so a host that states nothing gets the language's behaviour and a host that
+  wants a program refused at a hundred frames states that and gets it.
+
+**A third fault was hiding behind the first**, and only the split exposed it: building the
+`RangeError` runs `CreateError`, which constructs an object, which re-enters the bound at a depth
+already past it and throws again — a recursion with no base case inside the code that exists to
+refuse one. A flag is the base case, cleared as the exception unwinds.
+
+**The figures are re-measured rather than carried over**, because [JSC-97](#jsc-97) moved one of
+them by a factor of eight. `eng/measure-frame-cost.py` now reports two depths and refuses a build
+where they disagree.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the bisections
+`eng/measure-frame-cost.py` performs, and six rows of the CLI acceptance table pinning all three
+answers. 2026-09-04.
+
+### JSC-97
+
+**Where:** roadmap [section 10](roadmap.md#10-the-executor-and-the-realm)'s statement that a
+JavaScript `throw` travels on the CLR's own exception mechanism and each frame catches it and looks
+for a region covering the instruction that was executing.
+
+**What that described, and what it did.** The description is accurate and the implementation was
+literal: `Execute` wrapped its whole dispatch loop in `try { … } catch (JsThrow) { … throw; }`, and a
+frame with no region for the current instruction **rethrew**.
+
+**What a rethrow costs, which nothing here had measured.** A frame with a `catch` is entered during
+the runtime's *second* pass: the handler runs as a funclet above the current stack, and the rethrow
+starts a fresh dispatch from there. A throw crossing a thousand interpreter frames accumulated a
+thousand funclets and their dispatchers — **and the process died**, on a stack that holds eight
+thousand ordinary calls. **A guest `throw` from any depth past about five hundred was fatal**,
+whether or not the guest had a `catch` waiting for it. That is not a bound anybody chose; it is a
+cost nobody had looked for, and it made every deep recursive algorithm that reports failure by
+throwing unusable.
+
+**What replaced it.** An exception **filter**: `catch (JsThrow) when (TryFindHandler(…))`. A filter
+runs in the *first* pass, without unwinding and without a funclet per frame, so a frame with no
+region for this instruction answers false and is passed over and exactly one dispatch reaches the
+frame that has one. `TryFindHandler` is a pure search, which is what a filter has to be.
+
+**The two depths agree now and did not before**, which is the fact worth keeping rather than the
+repair: a recursion returns from 8,061 frames and a throw unwinds from 8,047. `eng/measure-frame-cost.py`
+measures both and fails a build where they diverge, because a divergence is this defect back.
+
+**What this says about the class.** The executor's exception handling had been read, reviewed and
+documented, and the documentation was *true*. What nobody had asked is what the described mechanism
+costs when there are a thousand of it. A per-frame cost that only appears at depth is invisible to
+every fixture written at depth one.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the bisection over a
+guest `throw` at increasing depths, and case 79 of
+`src/tests/differential/the-json-date-and-regexp-surface.js`, which is the recursion-inside-a-`try`
+that found it. 2026-09-04.
+
+### JSC-98
+
+**Where:** the realm's `Date` intrinsic, and the workload roadmap's own method of comparing
+behaviour against a second engine rather than against a document.
+
+**Two things a Date could not do.**
+
+**`date + ""` produced the epoch milliseconds.** A Date is the only object in the language whose
+*default* hint means `"string"`, and without `Date.prototype[Symbol.toPrimitive]` the ordinary
+conversion answered the default hint with `valueOf`. So a Date concatenated with a string became a
+number that looks like an answer and is not the one every program expects, while `String(date)` —
+which asks with the string hint — was right the whole time. The pair passing and failing together is
+what makes this the kind of defect a probe finds and a reader does not.
+
+**`Date.parse` refused this realm's own output.** The specification requires it to accept whatever
+`toString`, `toUTCString` and `toISOString` produced; only the ISO form was implemented, so
+`Date.parse(d.toUTCString())` was `NaN` and a round trip through the format a program is most likely
+to have stored did not come back.
+
+**What replaced them.** The exotic `Symbol.toPrimitive` the specification gives, installed where the
+realm has a Symbol to key it with rather than where Date is built; and a textual reader for the two
+forms this realm renders, written to accept what it produces and a little either side rather than to
+be a date-string parser — because every non-ISO format is implementation-defined, and accepting more
+would be inventing a dialect that every program relying on it would be relying on this
+implementation for.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, cases 34 and 36 of
+`src/tests/differential/the-json-date-and-regexp-surface.js`, and a twenty-case round-trip probe.
+2026-09-04.
+
+### JSC-99
+
+**Where:** the object model's treatment of an Array's <c>length</c>, and roadmap
+[section 8](roadmap.md#8-the-value-frame-and-call-model)'s exotic-object rules.
+
+**What the code did.** An Array's <c>length</c> was reported as always writable, because it is
+derived from the elements and there is nowhere in the property store for its attributes to live.
+So <c>Object.defineProperty(a, "length", { writable: false })</c> was **accepted, reported as
+accepted, and then ignored by the next <c>push</c>**.
+
+**That is the one answer this profile refuses to give**: not a refusal and not an absence, but a
+refusal that reports success. A program that closes an Array's length is doing so because something
+downstream depends on it not moving, and every such program was told it had.
+
+**What replaced it.** The Array carries the attribute itself, reports it, and refuses both a length
+change and an element write past the length while it is closed. The prototype mutators now write
+strictly — <c>Set(O, key, value, true)</c>, which is the specification's own choice for them and not
+a policy added here — so a receiver that refuses makes the call throw rather than answer a new length
+it does not have. A twenty-three-case probe over the closed length, <c>Object.freeze</c> and
+<c>Object.seal</c> agrees with the comparison engine throughout.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout and cases 51 to 73 of
+`src/tests/differential/the-later-library-methods.js`. 2026-09-04.
+
+### JSC-100
+
+**Where:** [JSC-76](#jsc-76), which records the `--test262` mode arriving, and the ledger's reading
+of it: *a run over named subtrees measures those subtrees*.
+
+**What was true and insufficient.** The mode ran what a caller named, reported four verdicts, and
+scored nothing on its own. Every word of that is still right. What it could not do is the thing
+[JSW-10](roadmap.workloads.md#jsw-10--the-runs-per-manifest-whole) asks for, and the gap was not
+size: **a run could not say what it had been run under.**
+
+**Three things a transcript has to carry that this one did not.**
+
+**The manifest.** The mode had no notion of one. A run under a composition admitting every optional
+surface and a run under one declining the binary surface produced transcripts that looked identical,
+and roadmap [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s rule
+is *per manifest*. A run now states the manifest, the format version, the admitted surfaces and the
+declined ones before it scores anything, and `--decline` exercises the verification refusal that
+identity exists for.
+
+**What the `unsupported` column is made of.** A number says a manifest declined *something*. The
+column is a table now — each construct family with its count and an example, derived from the front
+end's own refusal message rather than from a list somebody maintains, so a family that falls to zero
+stops appearing and one nobody predicted still shows up.
+
+**Whether the run was whole.** A run of a subtree, a sharded run, a run `--limit` truncated and a
+merge missing a shard all used to look like a run. Each renders `coverage partial` with its reason
+now, in a field a rule can read. **A transcript of half the suite that reads as a whole-suite run is
+the failure this repository's records exist against**, and until this change nothing but a reader's
+memory stood between the two.
+
+**And one verdict was missing rather than mis-stated.** A variant that spent a budget was counted as
+a **failure**, so *we did not wait long enough* and *this engine is wrong* were the same number. It
+is a fifth verdict now, carrying its dimension, with every exhausted variant named — and a run in
+which no variant reached a verdict about the engine is a configuration failure rather than a green
+run of nothing.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the nine harness checks
+added with it, and the four-shard merge watched to equal an unsharded run over the same list.
+2026-09-04.
+
+### JSC-101
+
+**Where:** [JSC-85](#jsc-85) and [JSC-96](#jsc-96), which measure the depth this interpreter survives
+and set the engine's bound from the measurement, and `JsExecution.GuestStackBytes`, which declares
+the native stack one guest invocation runs on.
+
+**What both entries assumed without saying so.** That a per-frame cost measured once stays measured.
+The figure JSC-96 recorded — 1,936 bytes per JavaScript call, 8,061 calls on a sixteen-megabyte
+stack — was taken against the executor as it stood that morning.
+
+**What admitting three construct families did to it.** Each bundle added cases to the executor's
+dispatch loop, and a switch's frame is sized for the widest live set across all of its arms. The
+frame grew from 1,936 bytes to 3,158, so the same sixteen megabytes held **5,278** calls — below the
+engine's own bound of 6,000. The bound therefore could not be reached, and a runaway recursion
+**terminated the process** again, which is the outcome JSC-79, JSC-85 and JSC-96 each exist to
+prevent. Nothing in the language surface changed; the measurement did.
+
+**What replaced it.** The stack is 64 MB and the measurement is re-taken: 21,246 calls, against a
+call-depth maximum a host may be granted of 8,192 — a factor of 2.6 rather than the factor of 1.34
+that had silently become a factor of 0.88. The figures are recorded beside the bound they justify.
+
+**The finding is about the shape of the claim rather than about the number.** A bound derived from a
+measurement of the code is a bound that goes stale when the code changes, and it goes stale
+SILENTLY — a build in which it is wrong compiles, verifies, passes every fixture written at depth
+one, and dies only on a program that recurses. So the ratio between the measurement and the declared
+maximum is now stated where the bound is, and `eng/measure-frame-cost.py` reports both depths and
+fails a build in which they disagree. **A number nobody re-measures is an estimate with a date on
+it.**
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the bisections
+`eng/measure-frame-cost.py` performs before and after the merge, and the acceptance rows that
+distinguish the catchable refusal from the host's ceiling. 2026-09-04.
+
+### JSC-102
+
+**Where:** [JSC-91](#jsc-91), which records a differential probe finding eight things wrong inside
+globals the realm has, and states that the instrument for that layer is the probe because no rule
+can see it.
+
+**What JSC-91 did not reach, and why.** A probe finds what its cases compose. JSC-91's cases were
+written when the realm had an iteration protocol and three construct families that use one — spread,
+`for … of` and destructuring — were still refused by name. **The seam between a protocol and the
+constructs that consume it cannot be probed until both exist**, so two absences sat in the realm
+unreachable by any case anybody could write.
+
+**What the seam showed the moment `for … of`, spread and generators landed.** `new Map(g())` and
+`new Set(userIterable)` answered a `TypeError` **saying the argument is not iterable**, about an
+argument that is: the collection constructors read an array-like and never consulted
+`Symbol.iterator`. And a typed array was indexable and not iterable — `[...bytes]`,
+`for (const b of bytes)` and `yield* bytes` all failed — because `%TypedArray%.prototype` carried no
+`[Symbol.iterator]`, `values`, `keys` or `entries`.
+
+**Both were correct when they were written and stopped being correct without being edited.** The
+collection reader's own remarks called it *this realm's stand-in for iterating an iterable*, which
+was the only reading available while the realm had no `Symbol`; the typed arrays were built before
+the symbols existed. Neither was a mistake. **A component that grows a capability has to be re-asked
+the questions its earlier answers were conditioned on**, and nothing here asks that question
+automatically.
+
+**What replaced them.** The collection constructors consult `Symbol.iterator` first and keep the
+array-like reading as the fallback; `%TypedArray%.prototype` has `values`, `keys`, `entries` and
+`[Symbol.iterator]`, with `values` and `[Symbol.iterator]` **the same function object**, as
+`Array.prototype` has them. A twenty-one-case probe over both agrees with the comparison engine
+throughout, and the cases are retained.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the merge of the
+generator bundle whose seam probe reported both, and the retained cases appended to
+`src/tests/differential/the-later-library-methods.js`. 2026-09-04.
+
+### JSC-103
+
+**Where:** [JSW-5](roadmap.workloads.md#jsw-5--the-core-language-surface-still-refused-by-name)'s
+clause that a family is *admitted and exercised*, and the parameter-binding prologue the
+non-simple-parameter-list lowering uses.
+
+**What is admitted and what is not quite right.** A generator with a **non-simple** parameter list —
+a default, a rest parameter or a pattern — binds its parameters in the unit's own prologue, and a
+generator's prologue is body code. So the defaults run at the **first `next()`** where the language
+runs them at the **call**: `function* g(a = side()) {}` orders the side effect after the call here
+and before it everywhere else, and a default that throws throws from `next()` rather than from
+`g()`. A simple parameter list is unaffected.
+
+**It is recorded rather than repaired, and the reason is the format.** Separating the two would need
+the code unit to declare where its prologue ends, so a generator's construction could run the
+prologue and suspend after it. That is a format change with a verifier rule attached, and it is not
+a merge's to make. **A fixture pins the current answer** — `runs/a-generator-default-runs-at-the-first-next.js`
+— and goes red the day it is repaired, which is the point of pinning it.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout and the 113-case probe
+over the seam between generators and the constructs merged beside them, retained as
+`src/tests/differential/the-seam-between-generators-and-the-rest.js`. 2026-09-04.
+
+### JSC-104
+
+**Where:** [JSC-93](#jsc-93), which made an assignment to an undeclared name in strict code a
+`ReferenceError` — *the single thing `"use strict"` buys a reader of an unfamiliar program* — and the
+program-level hoisting the lowering performs.
+
+**What JSC-93 did not check, and what it broke.** A function declaration at the top level of a script
+was **written** to the global object and never **declared** there: the lowering emitted a closure and
+a store, and the store created the property. That worked for as long as a store could create one. The
+moment strict code was forbidden from creating a global by assigning to one, **every strict script
+containing a function declaration threw a `ReferenceError` about the function it was declaring**.
+
+**It survived four differential probes, an acceptance table and a full architecture suite**, and the
+reason is worth more than the repair: every probe here is a sloppy script, and the acceptance table's
+strict rows exercised refusals rather than declarations. A repair that narrows what a program may do
+has to be checked against the programs that were *already* doing the narrower thing, and nothing here
+was.
+
+**What found it.** A test262 sweep over the subtrees this programme has just admitted, where the
+`[strict]` variant of case after case failed with *`g` is not defined* about a generator declared two
+lines above. The suite runs every test in both strictnesses; nothing written in this repository did.
+
+**What replaced it.** The declaration is emitted separately from the write, which is what the
+specification does and for this reason: the binding exists before anything assigns to it. Fourteen
+cases covering strict declarations, strict refusals and the sloppy forms beside them are retained,
+and two acceptance rows pin a strict script with a function declaration in both directions.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the sweep that found it,
+and the cases appended to `src/tests/differential/the-statement-and-object-surface.js`. 2026-09-04.
+
+### JSC-105
+
+**Where:** the tokenizer's identifier predicate, its own remark, and section 3 of the ledger, which
+carries **the Unicode data acquisition as an open external dependency** with a named holder.
+
+**What the remark said.** That identifiers are ASCII plus `$` and `_`; that the language's answer is
+the Unicode `ID_Start` property, which needs data this component has not acquired; and that a
+non-ASCII identifier is therefore refused as an unexpected character, recorded as a conformance
+exclusion.
+
+**Two things were wrong with that, and they point in opposite directions.** The code had not matched
+the remark for some time — it admitted any character `char.IsLetter` accepts. And the dependency the
+remark leaned on is not the one this needs: **the identifier properties are derivable from the
+general categories the platform already carries**, plus two small literal sets Unicode publishes as
+lists. What the unacquired data is actually for is case folding, normalisation and the property
+escapes in a pattern.
+
+**What that cost, measured.** `char.IsLetter` answers the letter categories and nothing else, so
+`Nl` — a Roman numeral is an identifier — and the six characters Unicode lists as `Other_ID_Start`
+were refused, along with every combining mark, connector punctuation, non-ASCII digit, and the
+zero-width joiner and non-joiner in continuation position. A sweep of the subtrees this programme has
+just admitted found **1,012 variants refused as an unexpected character**, `U+2118` alone accounting
+for 980. That is the one refusal this front end may not make about a construct the language admits:
+a reader is sent looking for a typo, and the harness scores a failure rather than an unsupported
+construct.
+
+**What replaced it.** `ID_Start` and `ID_Continue` as the specification derives them, with one
+subtraction stated where it is made: `U+2E2F` is the only character in both the letter categories
+and `Pattern_Syntax`, and every other character that subtraction would remove is put back by
+`Other_ID_Start` — which is why that set exists. Fifty-three code points spanning every category
+involved agree with the comparison engine, and the cases are retained.
+
+**What is still excluded is now stated rather than implied**: an identifier character outside the
+basic plane, which needs a predicate over code points rather than over UTF-16 units.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the sweep that counted the
+refusals, and the cases appended to `src/tests/differential/the-general-surface.js`. 2026-09-04.
+
+### JSC-106
+
+**Where:** the lowering of an object literal, and the instruction set it lowers to.
+
+**Two members of an object literal were compiled as assignments, and neither of them is one.** The
+computed member `{ [k]: v }` was lowered to the ordinary store, and `{ __proto__: p }` to an ordinary
+property definition. Both were invisible for as long as nothing on `Object.prototype` had an opinion
+about a key.
+
+**What made them visible was a repair.** `Object.prototype.__proto__` is an accessor pair, and this
+realm did not have it until the same day; the moment it did, `{ [k]: v }` with `k` of `"__proto__"`
+stopped defining a property and started moving the object's prototype, because a store walks the
+chain and finds a setter where a definition does not look. The second member had been wrong from the
+beginning and in the other direction: `{ __proto__: p }` set no prototype and made an own property
+called `__proto__`, which `Object.keys` reported, `JSON.stringify` serialised, and every program that
+expected `p` to be the prototype read as an ordinary object.
+
+**Neither is an assignment, and the language says so in different ways.** A computed member is
+`CreateDataPropertyOrThrow`, which is why it answers to nothing on the chain — not a setter, not a
+read-only property inherited from a frozen prototype. The `__proto__` member is a *separate
+production*: it is not a property definition at all, it sets `[[Prototype]]` directly, and it
+answers to nothing on the chain either — not even to the accessor of the same name, which a program
+may delete without changing what a literal means.
+
+**Three spellings that look like it are not it, and the lowering has to tell them apart**:
+`{ ["__proto__"]: p }` and `{ __proto__() {} }` define properties, and so does the shorthand
+`{ __proto__ }` — which is the one the parser had no way to distinguish by the time the lowering
+saw it, so the entry now records that it was written shorthand. Writing the member twice is an early
+error, because a literal that set its prototype twice would have an order nobody could read off the
+source.
+
+**What replaced them.** `SetPrototypeLiteral`, an instruction rather than a store, for the reason
+above: the operation the language performs here answers to nothing that a store would consult. The
+computed member defines. Twenty cases covering all four spellings, both directions of
+`Object.getPrototypeOf`, a spread of a `__proto__` own property, `JSON.parse` — which makes an own
+property and not a prototype — and the destructuring pattern that reuses the same syntax, agree with
+the comparison engine and are retained.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the probe that found the
+first while checking the repair that caused it, and the cases appended to
+`src/tests/differential/the-statement-and-object-surface.js`. 2026-09-04.
+
+### JSC-107
+
+**Where:** `Reflect.construct`, and what an engine answers when asked whether its own built-ins are
+constructors.
+
+**`Reflect.construct` checked that its target and its new target were CALLABLE.** The language says
+constructor, and the two are not the same set: an arrow, a method, a getter and every built-in in
+this realm that has no `[[Construct]]` are all callable and none of them may be `new`ed.
+
+**The cost is larger than the function, because the suite asks this question THROUGH it.** test262's
+own `isConstructor` is written as a call to `Reflect.construct` with the function under test as the
+new target, so a callable check here makes the realm answer *"yes, that is a constructor"* about
+thirteen of its own built-ins — every function whose test asserts the opposite. Twenty-eight variants
+failed for one wrong predicate, and the same predicate would have let a guest write
+`Reflect.construct(C, [], Math.max)` and get an instance whose prototype came from a function that
+has none.
+
+**Two neighbours were wrong in the same file and found by the same sweep.**
+`Reflect.setPrototypeOf` reported `false` for setting the prototype an object already has when the
+object was not extensible — `[[SetPrototypeOf]]` asks whether the answer would *change*, and a
+non-extensible object refuses only a change — and it let a cycle throw where this namespace answers
+every refusal with `false`. `Reflect.defineProperty` read its property key inside the `try` that
+turns a refusal into `false`, so a `toString` on the key that threw was reported as the object
+declining rather than as the program's own exception.
+
+**What replaced them.** The constructor predicate the object model already carries, the two
+`[[SetPrototypeOf]]` steps in the specification's order, and the key and descriptor read before the
+`try` that may swallow. The pinned suite's `built-ins/Reflect` subtree moved from 250 of 306 variants
+to 286; the twenty that remain all name `Proxy`, which this realm does not have.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout and the sweep of
+`test/built-ins/Reflect` that found all three. 2026-09-04.
+
+### JSC-108
+
+**Where:** the lowering of every position where the language infers a function's name, and the
+remark on `CompileNamedValue` that said only a class takes one.
+
+**What the remark said, and what it left out.** That `const C = class { }` names the class `C`,
+that this is done in the lowering because the name is baked into the code unit, and that *an
+anonymous function expression still reports the empty name it always has, which is a divergence this
+profile already carried*. The divergence was stated. What was not stated is its size: **every
+anonymous function in the realm reported the empty string**, which is the answer for
+`var f = function () {}`, for `{ m: function () {} }`, for `[a = () => {}]`, for a parameter default,
+and for a logical assignment — six positions the language names and this lowering did not.
+
+**What that cost, measured.** A sweep of `test/language/expressions/object` found **eighty variants
+failing on the name alone**, in five families — arrow, function, generator, class and the cover
+grammar — each asserting the name a destructuring default infers. The same five appear under every
+other subtree that has a destructuring pattern in it. It is the shape of failure that is easy to
+leave: nothing crashes, no program stops, and a suite reports a number.
+
+**Why a lowering rather than the executor.** A code unit belongs to exactly one syntactic site, so
+the name a site infers is the name every closure over that site has — there is no case where two
+closures over one unit need different names. **The closure is emitted directly rather than through
+the named-function-expression path, and the difference is a binding**: a name in the TEXT of a
+function expression is bound inside its own body, and an inferred one is not.
+`var f = function () { f = 1; }` assigns the outer `f`, and routing an inferred name through the
+path that creates the self-binding would have made that assignment silently write a binding nobody
+can see.
+
+**Two positions are still not named, and they have the same cause.** A computed member —
+`{ [k]: function () {} }` — infers its name from a key that is not known until it is evaluated, and
+this lowering names units rather than function objects. Naming it would need either an instruction
+that names the object on the stack or a marker saying that this particular value was written
+anonymously *here*; naming every unnamed function a computed member happens to receive would rename
+`{ [k]: alreadyAnonymous }`, which the language leaves alone. Both are retained as declared
+divergences rather than left for a reader to find.
+
+**A third divergence was found while checking this one and is now stated.**
+`Function.prototype.toString` answers `function f() { [native code] }` for a function written in the
+guest, where the language says the source text. The artifact carries no source — the position table
+maps offsets to positions, not to characters — so this cannot be produced from what the executor
+holds. It was undocumented until the inferred name changed which name appeared in it.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the sweep that counted
+the eighty, and the thirty cases appended to `src/tests/differential/the-general-surface.js`.
+2026-09-04.
+
+### JSC-109
+
+**Where:** the `[Yield]` and `[Await]` grammar contexts the wide front end tracks, and the
+sub-parser `JsParser.ParseInterpolation` builds for a template substitution.
+
+**What was assumed.** That a template substitution's tokens could be parsed by a parser told the
+enclosing strictness and the enclosing function depth, and nothing else. Those were the two contexts
+that had ever mattered, because they were the two the substitution's own grammar could observe.
+
+**What was true.** A substitution inherits every parameter of the production it sits in, and two of
+them are `[Yield]` and `[Await]`. The sub-parser was built without either, so `` `x${yield 1}` ``
+inside a generator read `yield` as an identifier and answered "`1` follows the expression of a
+template substitution" — a surprise token where the language has an ordinary yield expression. The
+same hole would have swallowed every `` `x${await p}` `` the day async functions were admitted, and
+that is how it was found: by writing the case, not by auditing the parser.
+
+**What the shape of it is, and why it is worth an entry.** The hole was invisible while the
+constructs it hid were refused. `yield` was admitted before the substitution's context was, and
+nothing failed, because a program that writes a suspension inside a template is rare enough that no
+fixture had one. **A context threaded through one path and not through another is a defect that
+waits for a construct to become legal**, and the two-year-old half of it was found by the change
+that would have created the second half.
+
+**What replaced it.** The sub-parser is handed both flags, exactly as it is handed the strictness
+and the function depth, and a suspension inside a template substitution now parses in a generator
+and in an async function alike.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, and the differential
+probe over the async family, which is where the case was written. 2026-09-04.
+
+### JSC-110
+
+**Where:** [JSC-101](#jsc-101), and the figures it left recorded in `JsEngine.MaximumCallDepth`,
+`JavaScriptProfile` and `JsExecution.GuestStackBytes`.
+
+**What JSC-101 asked for, and what this is.** It asked that the per-frame cost be re-measured
+whenever the instruction set moves, because the executor's frame is sized for the widest live set
+across every arm of one switch. Admitting `async` and `await` added an arm and two locals the async
+driver carries across its own `try`, so the measurement was re-taken rather than reasoned about.
+
+**What it found.** 3,671 bytes per JavaScript call, against 3,463 before the family and 3,158 before
+the generators. The sixty-four-megabyte stack holds **18,277** calls, against 19,377 before. The
+engine's own bound is 6,000 and the call-depth maximum a host may be granted is 8,192, so the
+ordering both figures exist to guarantee still holds — the capacity is still more than twice the
+maximum a host can ask for — and neither the stack nor either bound had to move.
+
+**What is worth saying rather than the number.** An `await`'s resumption does NOT stack. A `yield*`
+chain holds one interpreter frame per level, because each resumption is nested inside the last; an
+async chain holds one at a time, because every resumption starts from the job queue with the
+previous frame already returned. So the family that grew the per-frame cost is also the family least
+able to spend it, and what an async program exhausts is `Fuel` — which is the dimension its own
+acceptance row names.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, and the bisection
+`eng/measure-frame-cost.py` performs against a build with both bounds lifted, which is the only
+arrangement that measures the stack rather than the promise. 2026-09-04.
+
+### JSC-111
+
+**Where:** the lowering's refusal of `return` outside a function, which asked the CURRENT compile-time
+scope rather than the enclosing hoisting one.
+
+**What it let through.** `return` at the top level of a script is an early error in the language, and
+the lowering refused it by testing `scope.Kind == ScopeKind.Program`. That test is true only when no
+scope has been pushed since the program's own — so `{ let a; return 1; }` at the top of a script,
+whose block pushes a scope because it declares a lexical name, was **admitted**: the lowering emitted
+a `Return` in the program's code unit, the verifier accepted it because a `Return` at height one is a
+legal instruction there, and the script completed with the returned value. The same shape with no
+lexical declaration in the block was refused, because that block pushes nothing. **A refusal that
+depends on whether an unrelated declaration is present is not a refusal anybody can predict.**
+
+**Why admitting `with` is what found it.** A `with` pushes a scope unconditionally, so it opened a
+second way in — `with ({}) { return 1; }` at the top of a script — and writing the fixture for that
+position is what made the first case visible. The defect is older than the construct that exposed it,
+which is the shape [JSC-82](#jsc-82) and [JSC-83](#jsc-83) also have.
+
+**What replaced it.** The test is `FunctionScope().Kind == ScopeKind.Program`, which walks past every
+block and every object environment record to the hoisting scope the `return` would return from. That
+is the question the rule was always asking; the old test answered it only when nothing was in the way.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, and the acceptance fixtures
+for the `with` family, which exercise a `return` out of two nested object environment records.
+2026-09-04.
+
+### JSC-112
+
+**Where:** [JSC-101](#jsc-101), which measures the per-frame cost of the executor's dispatch loop and
+derives the call-depth bound from it, re-taken for the fourth time.
+
+**What the measurement says now.** Admitting `with` adds two arms to the dispatch loop, one of which
+holds a walk of the scope chain, and the executor's own frame grew from **3,463 bytes to 3,479**. The
+sixty-four-megabyte guest stack holds **19,288** calls where it held 19,377, against an engine bound
+of 6,000 and a call-depth maximum a host may be granted of 8,192 — a factor of 2.35, so nothing had to
+move. `eng/measure-frame-cost.py` reports both depths stopped by the declared bound rather than by the
+stack, which is the outcome the script exists to require.
+
+**It is recorded even though nothing changed, and that is the point.** JSC-101's finding was that a
+bound derived from a measurement goes stale silently, and a bundle that skipped the measurement because
+it expected no change would be making exactly the assumption JSC-101 named. The figures are recorded
+beside the bound in `JsEngine.MaximumCallDepth`, in `JavaScriptProfile`'s maxima and in
+`JsExecution.GuestStackBytes`.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout and the two bisections
+`eng/measure-frame-cost.py` performs — one against the published binary, one against a build with the
+engine's bound and the profile's call-depth maximum lifted, which is what reports the capacity rather
+than the promise. 2026-09-04.
+
+### JSC-113
+
+**Where:** `JsRealm.CreateListIterator`, which every iterator over a keyed collection is built from,
+and the remark on it that said the list is the live one.
+
+**What was assumed.** That the iterator could hold the cursor and step it by one per call, and that
+the reader it was given would answer about the slot it was handed.
+
+**What was true.** A keyed collection's table does not compact — it keeps a deleted entry as a
+tombstone precisely so that an iterator's position stays meaningful — so its reader walks *past* a
+tombstone to the next live slot and answers about a slot the caller did not name. A cursor stepped
+by one then re-read the entry the reader had just answered with. **A Map with one deleted entry
+yielded its last entry twice**, and did so through `keys`, `values`, `entries`, the spread, and
+`for … of` — every path except `forEach`, which walks the table itself and was right all along.
+`size` said two while the iterator produced three.
+
+**Two things kept it hidden.** The realm's own tests build collections and read them; they do not
+delete from one and then iterate it. And `forEach` — the shape a program written by a person is
+most likely to use — took the other path.
+
+**What replaced it.** The reader answers with the slot the cursor should land on, which is the only
+party that knows. Exhaustion is latched at the same time, because the language retires the iterator
+when it runs out — it drops the reference to what it was iterating — and a cursor that merely sat at
+the end would have reached an entry appended afterwards. Both directions agree with the comparison
+engine and are retained.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout and the probe over the
+collections that found it, retained in `src/tests/differential/the-later-library-methods.js`.
+2026-09-04.
+
+### JSC-114
+
+**Where:** `%TypedArray%`, its prototype, and the nine constructors under it.
+
+**What the code said.** That `Int8Array.from` is reachable through the superclass *(the remark on
+`constructor.Prototype = superclass` says exactly that)* — and then defined `from` and `of` on each
+of the nine constructors, so nothing was ever reached through the superclass. A program that asks
+`Int8Array.from === Uint8Array.from` got `false` where the language says `true`, and
+`Object.getOwnPropertyNames(Int8Array)` listed two members the language does not put there.
+
+**What else was missing, measured against the comparison engine.** Six members of
+`%TypedArray%.prototype`: `findLast`, `findLastIndex`, `toLocaleString`, and the change-by-copy trio
+`toReversed`, `toSorted` and `with`. `toSpliced` is **not** among them and its absence is correct —
+splicing changes a length, and a view over a buffer has none to change.
+
+**And `from` read only an array-like**, which its own remark defended on the grounds that iterables
+were out of this profile's scope. They stopped being out of scope when `for … of` and
+`Symbol.iterator` were admitted, and the remark outlived the reason: `Int8Array.from(new Set([1,2]))`
+answered with an empty view rather than with two elements.
+
+**What replaced them.** One `from` and one `of`, on the superclass, resolving the kind from the
+receiver through a map from constructor to kind — so a receiver that is not one of the nine is
+refused by name rather than answered with a view of some default kind. The six members are defined,
+each returning a view of the receiver's own kind. Twenty cases covering the member lists, the
+identity of the shared functions, the iterable source and the copying methods agree with the
+comparison engine and are retained.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout and the probe over the
+binary surface, retained in `src/tests/differential/the-later-library-methods.js`. 2026-09-04.
+
+### JSC-115
+
+**Where:** the constant and name tables of format version 2 — how a String is written into an
+artifact and read back out of one.
+
+**What was assumed.** That a JavaScript String is text, and that the platform's UTF-8 encoder
+therefore carries one.
+
+**What was true.** A JavaScript String is a sequence of UTF-16 code **units**, not of scalar values.
+`"\uD800"` is a legal String with a legal length, a legal `charCodeAt` and a legal comparison; it is
+also an unpaired surrogate, which **no UTF-8 sequence encodes**. `System.Text.Encoding.UTF8` answers
+a replacement character for it and says nothing, so the literal reached the artifact as `U+FFFD` and
+every later answer about it was about the replacement: its units, its length in a comparison, its
+equality with another such literal, and what `JSON.stringify` escaped.
+
+**It was silent in both directions, which is what makes it worth an entry.** Nothing threw, no
+verification failed, and the corruption happened between a front end that had the right units and an
+executor that never saw them. The probe that found it was not looking for it: an unpaired surrogate
+reached a case by accident, and the case answered `true` where the comparison engine answered
+`false`.
+
+**What replaced it.** WTF-8, defined in the format rather than borrowed from the platform: a
+surrogate is written as its own three bytes, which UTF-8 forbids and this format therefore states.
+**Every well-formed String encodes to exactly the bytes it encoded before** — byte for byte, digest
+for digest, so the retained corpus is untouched — and only a String no UTF-8 encoder could have
+carried is written differently. The decoder answers replacement characters for malformed input
+rather than throwing, because an artifact is untrusted input and the verifier already ends a bad one
+by diagnosis.
+
+**Two members were missing beside it and are now present**: `String.prototype.isWellFormed` and
+`toWellFormed`, which are the language's own way to ask this question — and which could not have
+answered it truthfully while the artifact was destroying the evidence.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout and the probe over the
+pattern, text, instant and number surfaces, retained in
+`src/tests/differential/the-json-date-and-regexp-surface.js`. 2026-09-04.
+
+### JSC-116
+
+**Where:** `String.prototype.matchAll`, which was absent.
+
+**What its absence cost.** A global `match` answers the matched TEXT of each match and throws the
+captures away, so a program that wants every match *with* its groups has to loop `exec` and manage
+`lastIndex` by hand — which is the loop `matchAll` exists to be, and the loop a program written
+against a modern engine simply does not contain. A workload using it got a `TypeError` about a
+method the prototype did not have.
+
+**What it is, and the two things that are easy to get wrong.** It iterates over a **copy** of the
+pattern, so a program that interleaves `matchAll` with `exec` on one RegExp sees neither disturb the
+other's `lastIndex`; and it refuses a non-global RegExp with a `TypeError` rather than answering an
+iterator of one, because the loop would not terminate without the `lastIndex` a global pattern
+keeps. An empty match advances the cursor by hand, for the same reason the global `match` beside it
+does.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, and the twelve cases
+retained in `src/tests/differential/the-json-date-and-regexp-surface.js`. 2026-09-04.
+
+### JSC-117
+
+**Where:** four members of the realm that were absent, and one that answered where it should have
+refused. Found by one probe pass over the error objects, the global functions, the `Object` statics,
+the function objects and the Array.
+
+**`AggregateError` was absent**, and it is the one error subtype with a different shape: its first
+argument is the errors and its second is the message, where every other subtype takes the message
+first. That is not a wart — the type exists for `Promise.any`, which has a LIST of reasons and no one
+reason to report — and a program that catches what `Promise.any` rejects with had no constructor to
+test against.
+
+**`Object.fromEntries` was absent**, which is the inverse of `Object.entries` and takes an *iterable*
+rather than an Array, so `Object.fromEntries(map)` is the shape most programs use it in.
+**`Object.groupBy` and `Map.groupBy` were absent**: the first answers an object with a **null
+prototype**, which is the whole reason it beats the four lines a program would write instead — a
+group key of `toString` collides with nothing — and the second keeps a key that is not a string as
+itself.
+
+**And a strict `arguments.callee` answered with the function.** The language poisons it: `callee` on
+a strict arguments object is an accessor pair whose halves both throw, and the property is present
+so that `"callee" in arguments` stays true. This realm gave every arguments object the ordinary data
+property, so strict code could ask which function it was in — a question strict mode exists to
+refuse, and one a program can use to reach a function that was never handed to it.
+
+**One divergence found in the same pass is declared rather than repaired.** An error object here
+carries no `stack`. It is not a member the language defines, and producing one would need the
+executor to keep a frame list it does not keep — the depth is a counter, and the interpreter's frames
+are the host's own. It is now a declared divergence rather than an unstated absence.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, and the ninety-eight cases
+appended to `src/tests/differential/the-general-surface.js`. 2026-09-04.
+
+### JSC-118
+
+**Where:** the four keyed-collection constructors, and the iterator protocol they reach their
+arguments through.
+
+**What was assumed.** That `new Map(entries)` may read the entries and store them, because storing
+them is what it does.
+
+**What was true.** The language builds a Map by reading the collection's **own `set`** once and
+CALLING it per entry, and a Set by calling its own `add`. Two things follow that this realm did not
+do. A subclass that overrides `set` sees its override used by the constructor — observable, and the
+reason the rule exists. And **a `set` that throws stops the walk**, which is the only thing that ends
+`new Map(iterable)` over an iterator that never reports done.
+
+**What that cost, measured.** This realm collected the whole iterable into a list first and stored
+second. Over an infinite iterator that never returns, so the pinned suite's
+`Map/iterator-close-after-set-failure.js` and its four neighbours spent the wall clock rather than
+answering — **ten variants of `built-ins/Map` ended in exhaustion**, which is the verdict this
+harness reserves for a program that ran out of allowance rather than one that was wrong.
+
+**What replaced it.** A walk that hands one element at a time to a step, closing the iterator when
+the step is abrupt, and constructors that read their own adder and call it. `built-ins/Map` went from
+326 of 405 variants to 399, with no exhaustion left.
+
+**Three absences and a species accessor were found in the same sweep.** `Map.prototype.getOrInsert`
+and `getOrInsertComputed` are ES2026 members the pinned suite tests and the comparison engine does
+not have — the one direction where the suite is the oracle and the comparison is behind. The seven
+**set operations** — `union`, `intersection`, `difference`, `symmetricDifference`, `isSubsetOf`,
+`isSupersetOf` and `isDisjointFrom` — were absent, and `built-ins/Set` went from 456 of 764 variants
+to 730 when they arrived. `Symbol.species` had no accessor on any constructor; it is installed now,
+with the divergence stated where it is installed: the methods here still build a result of the
+receiver's own kind rather than consulting it.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout, the sweeps of
+`test/built-ins/Map` and `test/built-ins/Set` before and after, and the thirty-one cases appended to
+`src/tests/differential/the-later-library-methods.js`. 2026-09-04.
+
+### JSC-119
+
+**Where:** `JsEngine.TryIterateNext`, which is every `for … of`, every spread, every destructuring
+and every built-in that iterates.
+
+**What it did.** Read `value` off an iterator result that had just said it was `done`.
+
+**What the language says.** `IteratorStep` reads `done`; the `value` of a done result is read by
+`IteratorValue`, which only a caller that WANTS the return value calls — and there is exactly one
+such caller, the `yield*` delegation, whose own value is the inner iterator's return value.
+
+**Why an extra property read is a defect rather than a waste.** It is observable. A result object
+with a `value` **getter** counts the read, and the pinned suite counts exactly that: its set-like
+iterators record every `getting done` and `getting value`, and compare the trace with the one the
+specification prescribes. Twelve variants across the Set operations failed on a trace that was right
+except for one read at the end.
+
+**What replaced it.** The caller says whether it wants the completion value, and only the delegation
+does.
+
+**Authority and date.** The implementation of 2026-09-04 in this checkout and the
+`set-like-class-order` cases of the pinned suite, which are what the trace comes from. 2026-09-04.
+
+### JSC-120
+
+**Where:** the conformance harness's `--test262` command, and every whole-suite figure it has ever
+produced.
+
+**Two things it did not do, and both moved the numbers.**
+
+**It never drained the job queue.** test262's asynchronous tests call `$DONE` from a promise
+reaction, so the line the runner reads its verdict off is printed by a JOB and not by the script. The
+runner invoked the scripts and stopped, saw no completion, and reported *"an asynchronous test
+printed no completion, and this profile has no job queue"* — a sentence that was true when it was
+written and stopped being true the day JSW-7 built one. **710 variants of `built-ins/Promise` alone**
+were scored as failures for a queue nobody asked to run. The drain point is the host's to choose;
+this one now chooses where the end-user host chooses, after the last script.
+
+**It scored tests about proposals.** The suite's own `features.txt` separates proposed flags from
+standard ones and says in its prose that the proposed ones exist so consumers may omit them. The
+ingested-dialect command reads that file and excludes them; this command did not, so a run reported
+an engine as failing the language over constructs no published edition contains — and would have
+reported a PASS as conformance the same way. Two selection paths that disagree about what is scored
+make one checkout answer two different numbers.
+
+**Neither is a defect in the engine, and that is the point.** A harness that under-reports is worse
+than one that over-reports, because the work it invents is work somebody does.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout and the
+`test/built-ins/Promise` sweeps either side of it. 2026-09-05.
+
+### JSC-121
+
+**Where:** `Promise` — its statics, its `then`, its `finally`, and what they build their answers
+with.
+
+**What was assumed.** That a promise this realm answers with is a promise this realm made.
+
+**What was true.** Every static on `Promise` builds its answer through `NewPromiseCapability(this)`,
+so the RECEIVER decides what is constructed: `Promise.all.call(C, xs)` answers a `C`, and
+`Promise.resolve` called on something that is not a constructor is a `TypeError` rather than a
+promise. `then` builds its result through `SpeciesConstructor(this, %Promise%)`, which is the one
+hook a library has to make its own promise type survive a chain. This realm reached for its own
+constructor everywhere, so the combinators were reachable from a subclass and useless to one.
+
+**Five smaller things were wrong in the same place, each observable.** The combinators walked their
+argument by collecting it first — so an infinite iterator whose walk should stop at the first `then`
+that throws never stopped. Each element's handlers had no latch, so a thenable calling its
+`onFulfilled` twice counted twice and settled a result while elements were still outstanding.
+`Promise.all` and `race` build one handler per element where the language passes the capability's
+own function to every element — which a test can see by comparing the two it was handed.
+`Promise.any` rejected with an object SHAPED like an `AggregateError`, because the realm had none
+when it was written. And `Promise.withResolvers`, `Promise.try` and
+`Promise.prototype[Symbol.toStringTag]` were absent.
+
+**What that cost, measured.** `test/built-ins/Promise` scored **250 of 1,348 variants** before this
+work and **1,268 of 1,311** after it, with nothing exhausted; the six that remain name `Proxy`,
+a nested realm, or one thenable-identity rule.
+
+**A crash was found on the way and is the reason this entry names `JsEngine` too.**
+`Describe` — which builds the message of *"… is not a function"* — asked any value that was not one
+of five primitives whether it was callable, which reads it as an OBJECT. A **Symbol** is not one, so
+`Symbol()()` failed the cast while building the very `TypeError` it was about, and ended the whole
+invocation as `ProfileFault/ProfileContractViolation`: an internal fault, uncatchable, in place of
+the language's own error.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the sweeps of
+`test/built-ins/Promise` before and after, and the twenty-seven cases retained as
+`src/tests/differential/the-settling-of-promises.js`. 2026-09-05.
+### JSC-122
+
+**Where:** `JsParser.ParseClassMember`, the arm that reads an `async` modifier in a class body, and
+`JsCompiler.FindConstructor`, which decides which member is the class's own constructor.
+
+**What was assumed.** That a member named `constructor` is the class's constructor, and that the
+question is answered by three things: that the member is not static, that its key is not computed,
+and that the key is the string `constructor`. The `async` arm was written to the same shape as the
+ordinary method arm and produced a member of kind `Method`, so it satisfied all three.
+
+**What was true.** The language settles this on a fourth thing the check did not ask: whether the
+member is a SPECIAL method. `class C { async constructor() { } }` is a Syntax Error, and so are
+`get constructor`, `set constructor` and `*constructor`. This front end accepted all four. The
+`async` one is the worst of them, because it did not merely accept a member the language refuses — it
+made that member the CLASS CONSTRUCTOR and compiled it with `ClassConstructor`, `Constructible` and
+`Async` at once, and the constructible bit is dropped from an async unit. So
+`class C { async constructor(){} }` compiled, and `new C()` answered
+`TypeError: function is not a constructor` — a run-time refusal, naming nothing the source wrote,
+for a program the front end owed a Syntax Error.
+
+**What that cost, measured.** The four shapes are reachable from three characters of source, and the
+outcome was an error about a function where the language says an error about a class. In the pinned
+suite's `test/language/statements/class` subtree the `definition` directory contributed **10** of the
+parse-phase failures before the repair, and the early-error rows under `elements/syntax/early-errors`
+another **36**.
+
+**What replaced it.** `ValidateClassBody`, run over the parsed member list, refuses a non-static
+non-computed `constructor` that is anything but a plain method, refuses a static member named
+`prototype`, and refuses a private name declared twice. `FindConstructor` additionally asks that the
+member is not private, so `#constructor` cannot become one either. The code is
+`2201:DuplicateLexicalDeclaration` in each case, because each is the second declaration of a name
+something has already declared — the class definition's own for `constructor` and `prototype`, the
+body's own for a repeated private name.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the comparison engine at
+`/opt/node22/bin/node` — which answers `SyntaxError: Class constructor may not be an async method`
+for the first shape and `SyntaxError` for the other three — and the differential probe's cases 241
+and 242, taken from that engine before they were written down. 2026-09-05.
+
+### JSC-123
+
+**Where:** `JsEngine.Evaluate`, the arm that answers when the artifact provider does not supply a
+program.
+
+**What was assumed.** That every way a guest-initiated load can fail is this host's own plumbing, so
+one `EvalError` naming the outcome and the reason serves them all.
+
+**What was true.** One of those ways is not plumbing at all. The mediator answers `ProviderRefused`
+when the provider it asked declined, and the only providers this profile's compositions register are
+source compilers — so `ProviderRefused` means *the front end refused the source*, which is the one
+case the language has its own answer for: `eval` of text that is not a program throws a
+**`SyntaxError`**. Programs test for it, and a conformance case that writes
+`assert.throws(SyntaxError, function () { eval(src); })` is asking about the language rather than
+about this host's load path.
+
+**What that cost, measured.** In `test/language/statements/class` alone, **136 variants** failed with
+`Expected a SyntaxError but got a EvalError` — every one of them a case whose subject this host
+answers correctly and whose verdict was decided by the wrapper around the answer. The subtree's
+failures fell from **998 to 926** when this was repaired. The difference that remains is the cases
+that use a DIRECT `eval`, which this profile refuses for a reason of its own that is published and
+which is not this defect.
+
+**What replaced it.** `ProviderRefused` is tested before the outcome and answered with
+`ThrowSyntaxError`. Every other way a load can fail — no provider registered, a budget exhausted, the
+mediator out of scope, a foreign artifact, no entry point — keeps the `EvalError` it had, because
+each of those really is this host's plumbing and none of them is a statement about the source.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the two sweeps of
+`test/language/statements/class` that bracket it, and the differential probe's cases 234 to 244 —
+the eleven that disagreed with the comparison engine before the repair and agree after it.
+2026-09-05.
+
+### JSC-124
+
+**Where:** `JsParser.ParseClassMember`, the arm that decides whether `get` and `set` are modifiers.
+
+**What was assumed.** That `get` and `set` are member names rather than modifiers exactly when the
+token after them ends a member name — `(`, `=`, `;` or `}` — which is what `IsMemberNameEnd` lists.
+
+**What was true.** There is a fifth token that makes them names, and it is not an ending: `*`.
+`class C { get` / newline / `*a(){} }` declares a FIELD called `get` and then a generator method
+called `a`, because `get` is a modifier only before a *PropertyName* and `*` is not one. With `*`
+absent from the list the parser read `get` as an accessor modifier, took `*` as the key, and reported
+that a class element with a `get` modifier needs a parameter list — a diagnostic about a construct
+the source did not write.
+
+**What that cost, measured.** **Four variants** of the pinned suite's
+`elements/syntax/valid/grammar-field-named-get-followed-by-generator-asi.js` and its `set` twin, each
+of which is a VALID program this front end refused. It was reachable only once class fields were
+admitted, because without them `get` alone was refused as a field before the `*` was reached.
+
+**What replaced it.** The `get`/`set` arm additionally requires that the next token is not `*`.
+`static` and `async` are deliberately unchanged: `static *m(){}` is a static generator and
+`async *m(){}` is an async generator, so for those two the `*` keeps them modifiers.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout and the two suite sweeps
+that bracket it. 2026-09-05.
+
+### JSC-125
+
+**Where:** `SliceSourcePrograms.Refused`, the row `refuse-an-unexpected-character`, and through it the
+retained source corpus and the registry's reachability claim for code `2001`.
+
+**What was assumed.** That `1 @ 2` is a source refused for an unexpected character, and that the
+registry row
+`2001|UnexpectedCharacter|embedder-seam|-|tokenizer|source|refuse-an-unexpected-character` therefore
+names a case that produces the code.
+
+**What was true.** Since commit `b6bda26` — the bundle that admitted class declarations — the
+tokenizer refuses `@` **by name, as a decorator**, with `2104:ConstructOutsideManifest`. That was the
+right change and it is documented where it was made; what nobody re-ran was the check that depends on
+it. So the retained manifest recorded a code the front end had stopped producing for that source, and
+the registry claimed a reachability code `2001` no longer had.
+
+**What that cost, measured.** **One of the sixteen** checks
+`Broiler.VM.Composition.JavaScript.SliceCompiler --checks` performs was failing, and had been since
+that commit: `every source the manifest excludes is refused by name: refuse-an-unexpected-character:
+wanted UnexpectedCharacter, got ConstructOutsideManifest`. It is not one of the gates the workload
+stages run, which is how it survived. Rule N7 was green throughout, because N7 reads the manifest
+rather than re-running the front end — so the rule that exists to keep the registry honest could not
+see the one thing that had made it dishonest.
+
+**What replaced it.** The source is `1 ¡ 2`. An inverted exclamation mark is not an identifier start,
+begins no token either grammar defines, and — unlike `@` — is not a character any proposal is going to
+give a meaning to, which is the property the row needs and `@` never had. The corpus was regenerated
+and all sixteen checks pass.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout and
+`Broiler.VM.Composition.JavaScript.SliceCompiler --checks`, run before and after. 2026-09-05.
+
+### JSC-126
+
+**Where:** [JSC-101](#jsc-101), which measures the per-frame cost of the executor's dispatch loop and
+derives the call-depth bound from it, re-taken for the fifth time.
+
+**What the measurement says now.** Admitting the class body adds six arms to the dispatch loop —
+`DefineClassElement`, `RunStaticElements`, `NewPrivateName`, `LoadPrivate`, `StorePrivate` and
+`HasPrivate` — and the executor's own frame grew from **3,736 bytes to 4,073**. The
+sixty-four-megabyte guest stack holds **16,478** calls where it held 17,963, against an engine bound
+of 6,000 and a call-depth maximum a host may be granted of 8,192. That is **2.75** times the bound and
+**2.01** times the ceiling, so nothing had to move. The returning and throwing depths agree exactly,
+at 16,478 apiece, which is the property [JSC-97](#jsc-97) established and this measurement
+re-confirms.
+
+**It is recorded even though nothing moved, and the narrowing is why.** JSC-101's finding was that a
+bound derived from a measurement goes stale silently. This is the first re-measurement where the
+factor against the ceiling a host may be granted reached two: one more family of this size takes it
+under, and at that point either the stack is re-declared or the ceiling is. Saying so now is cheaper
+than discovering it from a terminated process. The figures are recorded beside the bound in
+`JsEngine.MaximumCallDepth`, in `JavaScriptProfile`'s maxima and in `JsExecution.GuestStackBytes`.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout and the two bisections
+`eng/measure-frame-cost.py` performs — one against the published binary, which reports both depths
+stopped by the declared bound, and one against a build with `JsEngine.MaximumCallDepth` and both of
+the profile's call-depth maxima lifted to 400,000, which is what reports the capacity rather than the
+promise. 2026-09-05.
+
+### JSC-127
+
+**Where:** the lowering of `&&=`, `||=` and `??=`, which admitted them against a NAME and refused
+them against a property.
+
+**What the refusal said.** *"a logical assignment to a property is not admitted"* —
+`2104:ConstructOutsideManifest`, at the front end, for `o.x ||= v`.
+
+**Why it was there and why that reason had expired.** The three operators were admitted against a
+name, where the lowering is a load, a test and a store. Against a property it is not, and the
+difference is the whole of it: the reference has to be evaluated ONCE and the write has to happen
+only when the test asks for it. `f().x ||= v` calls `f` exactly once, and `o.x ||= v` over a truthy
+`o.x` performs no `[[Set]]` at all — so a setter does not run, and a read-only property does not
+throw in strict mode. The rewrite this looks like, `o.x = o.x || v`, gets both of those wrong, which
+is presumably why the refusal was written rather than the lowering.
+
+**What replaced it.** The base — and the key, when the member is computed — is evaluated once and
+kept beneath the value the test reads, and the two paths meet at one operand height, which is what
+lets the verifier check a construct whose two halves leave different things behind. Twenty-four
+cases agree with the comparison engine, including the two frozen-object cases that distinguish the
+lowerings: `o.x ||= 2` on a frozen truthy property is silent in strict mode, and on a frozen falsy
+one it is a `TypeError`.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout and the cases appended to
+`src/tests/differential/the-statement-and-object-surface.js`. 2026-09-05.
+
+### JSC-128
+
+**Where:** `Object.freeze` and `Object.seal` over an Array, and the predicate that told them to skip
+its `length`.
+
+**What the predicate said.** That an Array's `length` is *unattributable* — a property whose
+attributes may not be set — so the integrity walk stepped over it.
+
+**What was true.** It is attributable like any other property; what it is not is *deletable*, which
+is a different question asked somewhere else. Skipping it left **a frozen Array whose length was
+still writable**, so `Object.freeze([1,2,3])` produced an object that could still be truncated to
+nothing — and `Object.isFrozen` answered `true` about it, because it consulted the same predicate.
+An integrity guarantee that reports itself held while not holding is worse than one that is absent.
+
+**Three neighbours were wrong in the same area, and the pinned suite counts all four together.**
+An Array's `length` was neither checked nor coerced on the way in: `a.length = -1` and
+`a.length = 1.5` were silently accepted where the language raises a `RangeError`, and
+`a.length = "2"` set nothing rather than two — the check is that `ToUint32` and `ToNumber` agree,
+which is what refuses the first two and accepts the third. A shortening deleted every element above
+the new length regardless of whether it MAY delete them, where the language stops at the first
+non-configurable element and leaves the length there — a partial result rather than either extreme.
+And a write past a length that had been made non-writable was dropped silently in strict code, where
+it owes a `TypeError`: the object model cannot know the mode, so the refusal was only half made.
+
+**Two absences were found in the same sweep**: `Object.hasOwn` — which is
+`Object.prototype.hasOwnProperty.call(o, k)` with a name, and works for an object with a null
+prototype — and the four Annex B accessor helpers `__defineGetter__`, `__defineSetter__`,
+`__lookupGetter__` and `__lookupSetter__`, which the language keeps because the web does.
+
+**What that cost, measured.** `test/built-ins/Object` scored **6,175 of 6,802 variants** before this
+work and **6,511** after it. Of the 289 that remain, 116 name `Proxy`.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the sweeps of
+`test/built-ins/Object` before and after, and the forty-one cases appended to
+`src/tests/differential/the-later-library-methods.js`. 2026-09-05.
+
+### JSC-129
+
+**Where:** the pattern protocol — the five Symbols a String method dispatches through — and the
+header remark in `JsRealm.RegExp.cs` that explained its absence.
+
+**What the remark said.** *"No `Symbol.match`, `Symbol.replace`, `Symbol.search` or `Symbol.split`
+protocol. This surface has no Symbols at all, so the six built-ins here test for a RegExp object
+rather than dispatching on a method."*
+
+**The first sentence of the reason stopped being true when the realm acquired `Symbol`**, and the
+remark outlived it — the same shape as [JSC-105](#jsc-105) and [JSC-114](#jsc-114): a stated
+limitation whose stated cause has gone, which is harder to notice than an unstated one because the
+document looks like it was thought about.
+
+**What that cost.** A pattern in this language is *an object with the right Symbol*, not a RegExp:
+`"x".replace(p, r)` asks `p` for `Symbol.replace` and calls it, and a program's own object answering
+that Symbol is a pattern. Testing for a RegExp object refused every such object, and
+`Symbol.matchAll` was not even minted.
+
+**What replaced it.** The five methods on `RegExp.prototype`, under their Symbols, and the five on
+`String.prototype` dispatching through `GetMethod` in the specification's order — a nullish pattern
+is not asked at all, so `"null".replace(null, "X")` still replaces the text; a Symbol that is present
+and not callable is a `TypeError` rather than a fall-through.
+
+**What is still not done is now stated precisely rather than by a sentence that had rotted.** The
+five methods on `RegExp.prototype` run the matcher directly instead of reading the receiver's own
+`exec`, so a subclass overriding `exec` changes what `re.exec(s)` answers and not what
+`s.match(re)` answers. That is worth about 170 variants of `built-ins/RegExp` and is a separate
+piece of work.
+
+**One crash was found in the same sweep.** `String.fromCodePoint(0xD800)` ended the invocation as
+`ProfileFault/ProfileContractViolation`: the platform's converter encodes SCALAR values and refuses
+a surrogate, and the exception it raises is not a JavaScript error. The language says a surrogate
+code point is a legal argument and one code unit — the same thing `fromCharCode` answers — and
+twenty-four variants of the suite build strings that way.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the sweeps of
+`test/built-ins/String` and `test/built-ins/RegExp`, and the thirty cases appended to
+`src/tests/differential/the-json-date-and-regexp-surface.js`. 2026-09-05.
+
+### JSC-130
+
+**Where:** [JSC-105](#jsc-105), which recorded that the Unicode character database is an open
+external dependency and that what it is needed for is *case folding, normalisation and the property
+escapes in a pattern*. That entry named the dependency; this one prices it.
+
+**Measured, on the pinned suite.** `test/built-ins/RegExp` scores 1,660 of 3,743 variants. Of the
+2,070 that fail:
+
+- **1,170 are property escapes** — `\p{…}`. The generated tests are 442 files: **350 name a Script
+  or a Script_Extensions**, 54 name a binary property, and 38 name a General_Category. The platform
+  this component runs on publishes General_Category and nothing else, so **the 38 are reachable
+  without acquiring anything and the other 404 are not**.
+- **302 are the `v` flag** and the set notation it brings, which is a feature rather than a data
+  gap.
+- **124 are inline modifiers** — `(?i:…)` — likewise.
+
+**What that says about the dependency.** Acquiring the UCD would move about a thousand variants of
+one subtree, and nothing else in the suite is waiting on it except normalisation *(JSC-91)* and case
+folding. It is the largest single conformance figure attributable to one unmade decision, and the
+decision is a licensing and provenance one that the ledger's
+[section 3](roadmap.status.md#3-open-external-dependencies) records as a human action rather than a
+piece of work anybody here can do.
+
+**Authority and date.** The sweep of `test/built-ins/RegExp` on 2026-09-05 in this checkout, and the
+file counts under `test/built-ins/RegExp/property-escapes/generated`. 2026-09-05.
+
+### JSC-131
+
+**Where:** `Function.prototype`, which had no `caller` and no `arguments` at all, and `Math`, which
+was missing the two members the language added last and a `Symbol.toStringTag`.
+
+**What was assumed about the two restricted properties.** That removing them is the same as not
+having them.
+
+**What was true.** They exist **in order to refuse**. `caller` and `arguments` were how a function
+reached its caller's frame; the language took the capability away and put an accessor pair in its
+place on `Function.prototype`, both halves of which throw. A strict function reading `f.caller`
+therefore gets a `TypeError` — through inheritance, without every function carrying its own
+property. Leaving them out answers `undefined`, which is a different answer to the same question,
+and **thirty-four variants of `built-ins/Function` look at exactly that**. The subtree went from 733
+of 893 variants to 754.
+
+**`Math.sumPrecise` is the one arithmetic method here that a loop cannot implement.** Its answer is
+the exactly rounded sum, which a running total does not give: adding left to right rounds at every
+step, so `0.1 + 0.2 + 0.3` and `0.3 + 0.2 + 0.1` differ. It keeps a list of non-overlapping partial
+sums and rounds once — and **three things about it are easy to get wrong and are each worth a test
+the suite has**: an intermediate sum may overflow where the answer does not, so a list with a term
+near the top of the range is distilled in a scaled domain and scaled back; the final addition needs
+the half-even correction across two partials, without which one of the suite's cases is two units in
+the last place out; and `-0` is the identity, so an empty list and a list of nothing but negative
+zeros sum to `-0` while one `+0` anywhere makes it `+0`. Nothing is coerced — an element that is not
+a Number is a `TypeError` — and the walk stops at that element and closes the iterator.
+
+**`Math.f16round` and `Object.prototype.toString.call(Math)`** complete the namespace: the first is
+`fround`'s half-precision twin, and the second answered `[object Object]` for want of a tag.
+`built-ins/Math` went from 622 of 654 variants to 652; the two that remain need `BigInt`.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the sweeps of
+`test/built-ins/Function` and `test/built-ins/Math` before and after, and the seventeen cases
+appended to `src/tests/differential/the-later-library-methods.js`, ten of which are declared
+divergences because the comparison engine predates the two members. 2026-09-05.
+
+### JSC-132
+
+**Where:** the tokenizer's numeric literal, and the front end's treatment of a regular expression
+literal — both of which accepted text the language rejects before it ever runs.
+
+**What was assumed.** That a literal is a value the front end reads and hands on, and that whether
+its text is well formed is a question the runtime answers when the value is built.
+
+**What was true of both.** *An early error is not a late error that arrives sooner.* It is a
+different observable: a script containing one produces **no side effect at all**, because it is
+never evaluated. `try { eval("var x = /(/;") } catch (e) {}` leaves no `x` and no output; a build
+that constructs the pattern at the point the literal is reached has already run everything above it.
+The suite tests exactly that shape — a `negative: { phase: parse }` file is a file that must not run
+— and neither of these two was answering it.
+
+**The pattern.** `/(/`, `/a{2,1}/`, `/[z-a]/` and `/\p{Nonsense}/u` are each a `SyntaxError` at parse
+time. This build compiled a literal into a `RegExp` construction and left the pattern for the
+matcher to reject at run time, so all four ran the program above them first. The front end now
+compiles the pattern while it is compiling the literal and **discards the result**: the compilation
+is performed for its refusal, not for its output, because the value the guest gets must still be
+built by the same constructor the guest could have called itself. That required the matcher to be
+visible to the compiler, and it was in the profile assembly, which the compiler must not reference —
+so `JsRegExpMatcher` moved to `Broiler.VM.Profile.JavaScript.Format`, where the tokenizer and the
+realm can both see it. It became public rather than internal-visible because **rule A10 of
+[ADR 0001](decisions/0001-what-this-component-is.md) forbids `InternalsVisibleTo` in a product
+project**; a type two assemblies need is a type with a surface, and pretending otherwise is what that
+rule exists to stop.
+
+**The separator.** `1_000_000` is a number and `1__0`, `1_`, `_1`, `0x_1` and `1e_5` are each a
+syntax error. This tokenizer stripped every underscore and parsed what was left, so **all five were
+numbers**. The rule is not that a numeric literal may contain underscores; it is that an underscore
+may sit *between two digits of the literal's own radix* — checked per radix, before the digits are
+folded into a value. `0_1` is refused for a second reason and refused first: a leading zero followed
+by a digit is the legacy octal shape, and the language declines to grow a form it is retiring, so the
+test is on the literal's kind and is made ahead of the placement rule that `0_1` would otherwise
+satisfy.
+
+**Measured, on the pinned suite.** `test/language/literals` went from 516 of 1,037 variants to
+**944**; `test/built-ins/RegExp` from 1,660 of 3,743 to **1,986**. Eleven cases were appended to
+`src/tests/differential/the-statement-and-object-surface.js`, each using an indirect `eval` because
+this manifest refuses a direct one — which is itself the reason a probe can ask a parse-time question
+at all.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the sweeps of
+`test/language/literals` and `test/built-ins/RegExp` before and after, and the comparison against
+the second engine for every separator form named above. 2026-09-05.
+---
+
+### JSC-133
+
+**Where:** the wide surface's lowering — `JsCompiler.EmitStaticStore` — and the remark on it that
+defended refusing an assignment to a `const` at compile time as consistency with every other
+occurrence of the same mistake.
+
+**What the plan said.** That an assignment to an immutable binding is an early error. The seam half
+of [the diagnostic registry](diagnostics/registry.txt) has carried `2204:AssignmentToConstant` since
+revision 2, a retained source entry is refused with it, and the source corpus's own remark says a
+front end that accepted `const x = 1; x = 2;` would be a front end whose `const` means nothing.
+
+**What was true.** **The language makes it a run-time `TypeError`.** `const x = 1; x = 2;` parses,
+compiles and runs, and the failure happens when the assignment executes. Every engine does this, and
+it is not a nicety: it is what makes `assert.throws(TypeError, function () { x = 1; })` a program —
+a program the conformance suite writes repeatedly, because that is the only way to observe the rule
+the specification states. Refusing it at the front end said this manifest does not admit an
+assignment, when what it does not admit is the assignment **succeeding**.
+
+**What that cost, measured.** `test/language/statements/const` of the pinned suite — a subtree that
+has nothing to do with modules and that this checkout could already run — went from **42 passing and
+33 failing to 46 passing and 29 failing** on this repair alone, with no case moving the other way.
+Four cases had been failing for as long as the wide surface has had a `const`, and every one of them
+is the same shape: `assert.throws(TypeError, function () { x = 1; })`.
+
+Seven further cases of `test/language/module-code` were scored `fail` with the front end's own
+refusal as the reason — `instn-iee-bndng-fun`, `instn-iee-bndng-var`, `instn-named-bndng-fun`,
+`instn-named-bndng-trlng-comma`, `instn-named-bndng-var`, `instn-star-binding` and
+`instn-local-bndng-const`. Six of those are about an **imported** binding and would have been
+introduced by this stage had it copied the rule; the seventh is the `const` one again. The cost
+outside the suite is a program shape this host could not run at all: the ordinary way to test that a
+binding is immutable.
+
+**How it was found.** By writing the immutable-import rule the same way, and then reading what the
+module subtree said about it. The suite is emphatic where a person's intuition is not: seven tests
+disagreed in the same words, and the seventh named `const` rather than an import — which is what
+turned "my new rule is wrong" into "the rule it was copied from is wrong too".
+
+**What replaced it.** One opcode, `ThrowImmutable`, which pops a value and throws a `TypeError`
+naming the binding. An assignment to a constant or to an import lowers to a duplicate and that
+instruction, so the expression still has its value and the store never happens. **It is deliberately
+not terminal**: it always throws, but reachability is a property of the instruction stream, and
+marking it terminal would make the return after an assignment at the end of a function body
+unreachable code and refuse a correct program.
+
+**What this does NOT change, stated because a reader would reasonably assume it did.** The slice
+front end still refuses the assignment at compile time, its retained source entry still records
+`2204`, and the registry row is untouched. The slice's manifest has no exceptions and no `try`, so a
+run-time `TypeError` there would be an unconditional failure with no way to observe it; the two
+front ends genuinely differ, and the code stays reachable through the one that still emits it.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, and two runs of the
+pinned suite at `ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e` taken either side of the repair — one over
+`test/language/statements/const` and one over `test/language/module-code`. The acceptance row
+`runs/an-assignment-to-a-class-binding.js` is the same program from the other side: it was a
+`refused/` row asserting `2204` and is now a `runs/` row asserting the `TypeError`. 2026-09-05.
+
+---
+
+### JSC-134
+
+**Where:** [the workload roadmap](roadmap.workloads.md#jsw-8--the-module-goal)'s JSW-8 exit gate:
+"a cyclic import terminates with a named diagnostic rather than by exhausting a budget".
+
+**What the plan said.** Read plainly, that a cyclic import is a thing this profile answers with a
+named refusal. The contrast the sentence draws is with a budget exhaustion, which is the failure
+mode of a resolver that follows specifiers without a module map, and the clause is right to name
+that as the outcome to avoid.
+
+**What was true.** **A cycle in the module graph is ordinary, and a correct implementation runs
+it.** `a` importing `b` while `b` imports `a` is a legal program every engine evaluates: the module
+map stops the second visit, the bodies are evaluated in the order a depth-first walk leaves them,
+and what a module of the cycle observes about the other is the temporal dead zone. Refusing every
+cycle in order to satisfy the sentence would have refused a program family the pinned suite has a
+subtree for, and would have been a conformance exclusion adopted to make a gate read true.
+
+**What is genuinely a cycle with no answer** is a cycle in an export **resolution** — `a`
+re-exporting a name from `b` while `b` re-exports the same name from `a` — which names a binding
+that exists nowhere, and which a resolver following the chain would walk until something ran out.
+That is the case the gate's contrast is about, and it is the one that takes the named diagnostic.
+
+**What that cost, measured.** Nothing was built wrong, because the distinction was drawn before the
+linker was written. What it would have cost is stated instead, since that is the decision this entry
+records: the `test/language/module-code` subtree of the pinned suite contains cyclic-import cases
+that pass in this checkout and would each have been a refusal.
+
+**What replaced it.** Two mechanisms, and both are exercised. Evaluation marks a module as under way
+**before** walking its requests, so the module that closes a cycle finds its starting point already
+running and returns — which is what makes an ordinary cycle terminate at all. Export resolution
+carries the (module, name) pairs it has visited and answers `1618:ModuleExportCircular` on re-entry,
+at verification, before anything runs. The retained corpus holds one entry for each, and the
+command-line acceptance table holds a row for each — a graph cycle that reaches a value and a
+resolution cycle refused by that code.
+
+**And one exclusion this stage does NOT add, recorded because it was drafted and is wrong.** An
+earlier draft of this entry excluded top-level `await` from `broiler.javascript.modules`, on the
+ground that settling a promise needs a job queue this profile did not have. **That ground stopped
+being true before this stage landed.** The surface it was written against had neither `async`
+functions nor a queue; the one this stage was re-expressed onto has both, and the conformance
+harness drains the queue between invocations. So top-level `await` is **admitted**: a module body
+whose parse saw an `await` outside any function carries `FunctionFlags.Async`, graph evaluation is
+an ordered list rather than a recursive walk, and a body that suspends registers a continuation that
+resumes the list where it stopped — which is what makes an importer wait for a dependency that
+awaits. The `top-level-await` subtree of the pinned suite is run rather than skipped, and the
+differential probe's ordering cases were compared against the comparison engine before they were
+written down.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the
+`test/language/module-code` run this stage records, the acceptance rows `modules/cycle-a.mjs`,
+`modules/circular-a.mjs` and `modules/top-level-await.mjs`, and the retained probe
+`src/tests/differential/the-module-goal.mjs`. 2026-09-05.
+
+---
+
+### JSC-135
+
+**Where:** the executor's `DeleteIndex` arm — the computed form of `delete`, `delete o[k]`.
+
+**What was assumed.** That the two spellings of one operator need one implementation each, and that
+the difference between them is only where the key comes from.
+
+**What was true.** They are one operator and the language has one rule for it: a `delete` the object
+refuses answers `false` in sloppy code and throws a `TypeError` in strict code. The static arm,
+`DeleteProperty`, has carried that rule and a remark explaining it since it was written. The
+computed arm dropped the answer on the floor: it pushed `false` and went on, **in strict code as
+well**. So `delete o.frozen` threw and `delete o["frozen"]` did not, and a program that reached a
+refused delete through a computed key — which is every program that deletes a key it holds in a
+variable — was told nothing and carried on as though the property were gone.
+
+**What that cost, measured.** Two cases of `test/language/module-code/namespace/internals` in the
+pinned suite, which delete a Symbol-keyed property of a module namespace and expect the throw; a
+Symbol key can only be written computed, which is what makes those two reach this arm. The wider
+cost is not measured here and is not claimed: the arm is reached by every computed `delete` in the
+suite, and the subtree this stage ran is the only figure this entry has.
+
+**How it was found.** By implementing the module namespace's own refusals and finding that the test
+asserting `delete ns[Symbol.toStringTag]` throws still failed after the namespace had been made to
+refuse it. The namespace was refusing correctly; the operator was discarding the refusal.
+
+**What replaced it.** The computed arm keeps the answer, throws in strict code with the key in the
+message, and pushes the same boolean it always did. Nothing about the static arm moved.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout and the
+`test/language/module-code` run this stage records. 2026-09-05.
+
+---
+
+### JSC-136
+
+**Where:** the conformance composition — `Test262Command`, which writes each shard's transcript — and
+the module resolvers, which encode a specifier to hand across the capability seam.
+
+**What was assumed.** That a JavaScript string is UTF-8 text, so `Encoding.UTF8.GetBytes` and
+`File.WriteAllText` are the way to move one.
+
+**What was true.** A JavaScript string is a sequence of UTF-16 code units and an unpaired surrogate
+is a legal one. `Encoding.UTF8` throws `EncoderFallbackException` on it by default, and this
+component already knows that: `JsFormat.EncodeText` and `JsFormat.DecodeText` exist because the
+constant pool had to carry exactly such a string, and they are WTF-8 for that reason. The
+conformance harness did not use them.
+
+**What that cost, measured.** A whole shard of the pinned suite aborted with
+`EncoderFallbackException: 55356` **after it had scored every file it was given**, so the run lost
+one eighth of its results and reported a crash rather than a score. The suite has a family of module
+tests whose export names are deliberately unpaired surrogates — `export-expname-unpaired-surrogate`
+and its four neighbours — which is what reaches the specifier encoding; a source file's own text can
+contain one too, which is what reaches the transcript writer.
+
+**How it was found.** By running `test/language/module-code`, which is the first subtree this
+component has run that contains such a name at all.
+
+**What replaced it.** The engine's specifier encoding and the resolvers' decoding go through
+`JsFormat.EncodeText` and `JsFormat.DecodeText`, which is what those functions are for; and the
+transcript writer holds one `UTF8Encoding` built with `throwOnInvalidBytes: false`, so a transcript
+substitutes where it cannot encode rather than taking the run down with it. A transcript is a report,
+and a substitution in one is a legible loss; a crash after the work is done is not.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout and the
+`test/language/module-code` run this stage records, which completes on all eight shards. 2026-09-05.
+
+---
+
+### JSC-137
+
+**Where:** the parser's three tests for whether a `let` at the cursor begins a lexical DECLARATION or
+is an ordinary identifier — one at statement position and one in each of the two `for` heads.
+
+**What was assumed.** That the set of tokens a binding name can begin with could be written out as a
+literal list, and that writing it three times was harmless because the list does not change.
+
+**What was true.** The list was short by two, and by the two whose membership is CONTEXTUAL rather
+than fixed. `yield` is a binding name in sloppy code outside a generator, and `await` is one outside
+an async function and outside the module goal — both of which the parser already decides correctly,
+in `IsIdentifierName`, for every other position a name may stand in. `let yield = 4;` therefore fell
+through to the identifier arm, `let` became an expression statement, and the name after it became the
+surprise: `2102:ExpectedToken`, *"`;` was expected and `yield` was found"*, on a program every engine
+runs.
+
+**What that cost, measured.** Twelve variants of `test/language/statements/for-await-of` in the
+pinned suite, all of them generated from templates that declare `let yield` or `let await` at the top
+of the file and never reach the construct under test at all. A conformance runner scores a refused
+source as a FAILURE rather than as unsupported, so all twelve were counted against a family that had
+nothing to do with them. The same refusal is reachable from a two-line program with no `for await` in
+it, which is what makes it a defect in the parser rather than in the family that surfaced it.
+
+**What replaced it.** One predicate, `BeginsLetDeclaration`, asked in all three places: the token
+after the `let` is a declaration head when `IsIdentifierName` admits it or when it opens a
+destructuring pattern. The contextual rules are then stated once, where they already were, and the
+next name added to the identifier set cannot be added to two of the three sites.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, and the subtree run of
+`test/language/statements/for-await-of` before and after, in which the twelve refusals become passes.
+2026-09-05.
+
+### JSC-138
+
+**Where:** the lowering of a function DECLARATION written inside a block, and the environment its
+closure captures.
+
+**What was assumed.** That a block-scoped function declaration behaves like the function expression a
+reader would substitute for it, so that a body naming a `let` of the enclosing block reaches it.
+
+**What was true.** It does not. The shortest witness is one line and needs no family this stage
+admits: `{ let n = 0; function fn() { n += 1; } fn(); print(n); }` answers
+`uncaught ReferenceError: n is not defined`, where the same block with
+`var fn = function () { n += 1; };` answers `1`. The declaration is hoisted to the enclosing FUNCTION
+scope and its closure captures that scope, so the block's own environment record — which is where `n`
+lives — is not on the chain the body resolves against.
+
+**What that cost, measured.** Four variants of `test/language/statements/for-await-of`, each of the
+shape `{ let iterCount = 0; async function fn() { … } … }`, which the suite generates inside a block
+so that the file's own bindings do not leak. The four fail on `iterCount` rather than on anything
+they test. The cost outside the suite is not measured here and is not small: the shape is what every
+`if (…) { function f() {} }` in sloppy code produces.
+
+**What replaced it.** Nothing, in this bundle. The repair is in the hoisting pass rather than in the
+family this stage admits, and it needs the block-level function semantics of Annex B decided before
+it is written — a declaration hoisted to the block, with a `var`-scoped alias assigned where the
+declaration stands. Recording it is what stops the next reader treating the four failures as an
+async-iteration defect.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the witness above run
+through the published binary, and the subtree run that names the four. 2026-09-05.
+
+### JSC-139
+
+**Where:** [JSC-101](#jsc-101), which measures the per-frame cost of the executor's dispatch loop and
+derives the call-depth bound from it, re-taken for the sixth time — and, this time, the first at
+which something had to move.
+
+**What the measurement says now.** Asynchronous iteration adds five arms to the dispatch loop — the
+four steps of a `for await` head and the check its close owes — and the executor's own frame grew
+from **4,073 bytes to 4,551**. On the sixty-four megabytes `JsExecution.GuestStackBytes` declared,
+that is **14,737** calls against a call-depth maximum a host may be granted of 8,192: a factor of
+**1.80**, where [JSC-126](#jsc-126) had already recorded 2.01 as the narrowest the margin had ever
+been. Below two is not a margin that has narrowed; it is the ordering the ceiling depends on no
+longer holding, because a program granted the maximum could reach the stack before it reached the
+ceiling and a stack overflow is the one failure the CLR cannot turn into an exception.
+
+**What replaced it.** The guest stack, raised from sixty-four megabytes to **ninety-six**, at which
+the same bisection measures **22,122** calls — 2.70 times the grantable ceiling and 3.69 times
+`JsEngine.MaximumCallDepth`. The stack is a reservation of ADDRESS SPACE committed a page at a time,
+so a program that never recurses pays for none of it; the alternative, lowering the grantable
+ceiling, would have answered a question about the machine by changing what a program is allowed to
+do, which is the choice [JSC-85](#jsc-85) already declined.
+
+**Both figures are measured on a build with the bounds lifted**, because a bisection that stops at a
+declared bound reports the promise rather than the capacity — which is the distinction
+`eng/measure-frame-cost.py` prints in as many words when both depths are stopped by the bound. The
+script's own `DEFAULT_STACK_BYTES` is stated rather than read, so it moved with the constant.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout and three bisections: one
+against the published binary, which reports both depths stopped by the declared bound; one against a
+build with `JsEngine.MaximumCallDepth` and the profile's call-depth maximum lifted, on the
+sixty-four-megabyte stack, which reports 14,737; and one against the same build on ninety-six, which
+reports 22,122. 2026-09-05.
+
+### JSC-140
+
+**Where:** the lowering of a `const` declared at the top level of a PROGRAM, and every write to it.
+
+**What was assumed.** That the refusal `2204:AssignmentToConstant` covers assignment to a constant
+binding wherever one is written, which is what the refusal's own message says.
+
+**What was true.** It covers a constant that resolves to a SLOT. A `const` at program scope with a
+block depth of zero is published as a property of the global object instead — which is what makes it
+reachable across entry points — and a write to it therefore resolves to no slot at all and is
+lowered to `StoreGlobal`, where nothing asks whether the binding was constant. `const c = 1; c = 9;`
+answers `9` at the top level of a script and is refused inside a function. A destructuring target
+takes the same path, so `[c] = [9]` mutates it too; the pattern is not the cause and the constant is
+not protected either way.
+
+**What that cost, measured.** Four variants of `test/language/statements/for-await-of` whose
+generated body assigns to a `const` through a `for await` head and asserts the `TypeError` the
+language owes — reported as *"Promise incorrectly fulfilled"*, because the assignment succeeded.
+Beyond the suite the cost is a silent one: a program that writes to a top-level `const` gets the
+write rather than the error, and nothing anywhere reports it.
+
+**What replaced it.** Nothing, in this bundle. The repair belongs with the global binding model
+rather than with this stage's families: the specification gives the global environment a DECLARATIVE
+part precisely so that `let` and `const` at the top level are not properties, and adding a constant
+flag to the global object's property table would answer the assignment while leaving both
+enumerable in `for…in`, which they are not. Recording it is what keeps the four failures from being
+read as an async-iteration defect.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the witness
+`const c = 1; c = 9; c` run through the published binary, and the subtree run that names the four.
+2026-09-05.
+
+### JSC-141
+
+**Where:** the parse of a `for` head, which accepts an initialiser on a head that iterates.
+
+**What was assumed.** That a `for … of` or `for … in` head with a declarator carrying an initialiser
+is a shape the grammar cannot produce, so the parser could take the single declarator and drop
+whatever else was on it.
+
+**What was true.** The grammar cannot produce it and a PROGRAM can write it, which is the difference
+between a production and an early error. `for (var x = 1 of []) ;` is a Syntax Error in the language
+and this front end accepts it, discards the `= 1` and runs the loop; the same holds for `let` and
+`const`.
+
+**What that cost, measured.** Six variants of `test/language/statements/for-await-of` —
+`head-var-init`, `head-let-init` and `head-const-init`, each in both modes — which expect a
+parse-phase `SyntaxError` and get a program that runs. It is one of several parse-phase early errors
+this front end does not implement, and it is recorded rather than repaired because it is the one this
+stage's subtree runs measured: the other twenty refusals in the same subtree are escaped keywords, a
+strict directive under a non-simple parameter list, and a `let` followed by a line terminator.
+
+**What replaced it.** Nothing, in this bundle. The repair is one test at each of the two head sites —
+a declarator with an initialiser reaching an `of` or `in` head is `2101:UnexpectedToken` — and it is
+not taken here because the whole class deserves one pass over the early errors rather than the two
+this bundle happened to trip over.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the witness
+`for (var x = 1 of []) ;` run through the published binary, and the subtree run that names the six.
+2026-09-05.
+
+---
+
+### JSC-142
+
+**Where:** the fourth divergence of the [ledger's section 2](roadmap.status.md#2-what-the-runs-found),
+the remark at the head of `JsCompiler` that declared it, and the three `dead-zone/` rows of
+`src/tests/cli/expected.txt` that pinned it so the day it moved would be a day something went red.
+
+**What the plan said.** That a script-level `let` and `const` may be properties of the global object
+rather than bindings of a separate global lexical environment, that the observable difference is a
+read before the declaration answering `undefined` instead of throwing, and that **nothing this
+profile is built to run depends on either**.
+
+**What was true.** The difference is not one answer, it is three, and the third is the one that
+makes the deviation a defect rather than a simplification:
+
+- **`globalThis` shows them.** `const x = 1; Object.getOwnPropertyDescriptor(globalThis, "x")`
+  answered a descriptor where every engine answers `undefined`, and `for … in` over the global
+  object enumerated them.
+- **There is no dead zone.** A read before the declaration answered `undefined`. The temporal dead
+  zone was repaired for every other lexical binding on 2026-09-03
+  *([JSC-62](#jsc-62))*, and the repair could not reach this one because a property has no
+  uninitialised state to be in.
+- **A `const` was not constant.** `const c = 1; c = 9;` answered `9`. The assignment reached
+  `StoreGlobal`, which writes a property, and the immutability lived in the compiler's slot table —
+  which a script-level name never enters. The correction that made a `const` reassignment a
+  run-time `TypeError` rather than an early error *([JSC-133](#jsc-133))* said every path through
+  the store emits `ThrowImmutable`; at script level there was no path to emit it on, and the
+  sibling stage that found this *([JSC-140](#jsc-140))* recorded it against the binding model
+  rather than repairing it.
+
+**What replaced it.** The realm carries **the declarative half of the global environment record**
+beside its global object: a table of bindings, each with a mutability and an initialised state, in
+`JsRealm.Lexical.cs`. Three instructions reach it — `DeclareGlobalLet`, `DeclareGlobalConst` and
+`InitialiseGlobalLexical` — and `LoadGlobal`, `LoadGlobalOrUndefined` and `StoreGlobal` ask it
+before they ask the object, which is the order the specification's global environment record has
+and the reason a script-level `let Array` shadows the intrinsic rather than replacing it.
+
+**It is the REALM's and not the unit's, and that is the whole design.** A slot in the declaring
+script's frame would have been simpler and is what this profile does for every other lexical
+binding, and it cannot work here: a conformance run evaluates its harness files as separate scripts
+in one realm, seven of the pinned suite's harness files publish a helper with a top-level `const`,
+and a binding in the declaring frame would be gone before the test that reads it ran.
+
+**One narrower deviation is left in its place, and it is stated rather than removed.** A
+re-declaration REPLACES the binding where the language raises a `SyntaxError` before the script
+runs. The same lowering serves evaluated source — the dynamic surface hands a String to the
+composition's provider and gets a program back, compiled as a script — and the language gives eval
+code a lexical environment of its own that is discarded afterwards, so a second
+`(0, eval)("let x = 1")` is a program and not an error. Replacing is right for that caller and
+lenient for the other; refusing would be right for one and wrong for the other.
+
+**Measured, on the pinned suite.** `test/language/global-code` went from 45 of 75 variants to
+**49**, `test/language/statements/const` from 248 of 271 to **254**, and
+`test/language/statements/let` from 241 of 287 to **249**. The three `dead-zone/` command lines that
+pinned the deviation now answer `1|ReferenceError`, which is what the same three files under
+`--slice` have always answered: the two manifests stopped disagreeing about the language.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the three subtree sweeps
+before and after, the comparison against the second engine for each of the three answers above, and
+the acceptance table's own dead-zone block, whose comment recorded in advance that these rows would
+have to be moved deliberately. 2026-09-05.
+
+---
+
+### JSC-143
+
+**Where:** three shapes the wide front end had no production for, found by reading the `unsupported`
+and failing columns of a subtree run rather than by an audit: the logical assignment operators over
+the two targets they were not admitted for, the strict-mode restrictions on `eval` and `arguments`,
+and `delete` applied to a bare name.
+
+**What was assumed about the logical assignment.** That its targets are a name and a property. The
+grammar says its target is a `LeftHandSideExpression`, and two more of those are references:
+`super.x` and `this.#x`. Both were refused as *a target that is neither a name nor a property* —
+which is a MANIFEST refusal, and a conformance runner scores it as a construct declined rather than
+as a defect, so it is exactly the shape [bundle JS-4-001](evidence/js-4-001/README.md) section 4
+exists to catch. **The private target is the one worth writing down**: `o.#m ??= v` where `#m` is a
+private METHOD is a program when `#m` is not nullish, because the store that would refuse it never
+runs, and only a lowering whose assigning path is the sole path that stores answers it.
+
+**What was assumed about `eval` and `arguments`.** That strictness changes what a name RESOLVES to.
+It also changes what a name may BE. Strict code binds neither of them and assigns to neither, and
+both rules are early errors: `"use strict"; var eval = 1;`, `arguments = 1`, `++eval` and
+`arguments ||= 1` are programs that do not parse. This front end parsed all four and answered a
+run-time `ReferenceError` at script level, where the language answers a `SyntaxError` before
+anything runs — and a conformance file written for the rule carries `negative: { phase: parse }`,
+so the wrong phase is a failure even when the program does throw. The two names are RESTRICTED and
+not reserved, which is why the test is on a string rather than on a token kind: `eval("1")` and
+`arguments.length` are strict-mode programs, and the refusal is exactly where the program would
+change what the name stands for.
+
+**What was assumed about `delete`.** That its operand is an expression. It is a REFERENCE, and the
+operator never evaluates it. The lowering compiled the operand, discarded the value and pushed
+`true`, so `delete undeclared` — which the language answers `true` for — threw a `ReferenceError`
+about the name, and `var v = 1; delete v` answered `true` where every engine answers `false`,
+because a `var` of the global object is not configurable. A name that reaches a slot is answered at
+compile time, because a slot binding is never deletable and the compiler already knows which names
+those are; everything else reaches the new `DeleteGlobalBinding`, whose three answers are three
+different facts about the name — a lexical binding is not deletable, a property answers what its own
+`[[Delete]]` answers, and a name neither half carries answers `true` because nothing was there.
+
+**And `delete x` is itself a syntax error in strict code**, whatever `x` names, which is the fourth
+early error this entry adds.
+
+**Measured, on the pinned suite.** `test/language/expressions/logical-assignment` went from 120 of
+132 variants to **126**, with its `unsupported` column emptied. The six that remain are one shape:
+a member reference whose base is nullish must throw before its key is converted, which is an
+ordering this executor's indexed access does not have and which is not this entry's.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the subtree sweeps before
+and after, ten cases appended to `src/tests/differential/the-statement-and-object-surface.js` whose
+answers were taken from the comparison engine before they were written down, and the comparison of
+`delete` over five kinds of name against that engine. 2026-09-05.
+
+---
+
+### JSC-144
+
+**Where:** the executor's indexed read and write — `JsEngine.GetIndexed` and `SetIndexed` — and the
+six variants of `test/language/expressions/logical-assignment` that [JSC-143](#jsc-143) measured and
+left, whose failure was not the operator's.
+
+**What was assumed.** That a computed member access is a base and a key, and that converting the key
+to a property key is part of reading it.
+
+**What was true.** **`base[expr]` builds a REFERENCE without converting the key**, and the
+conversion happens where the reference is read or written. The order is observable whenever the key
+is an object: `null[{ toString() { throw new RangeError(); } }]` is the `TypeError` about the base
+and the `RangeError` never happens, because there is nothing to convert a key for. This executor
+converted first, so it answered a program's own exception where the language answers a `TypeError`
+— and the conformance suite writes the case with a distinguishable exception on both sides
+precisely so an engine cannot pass it by accident.
+
+**What replaced it.** Both halves check the base for nullishness before anything the key could run.
+**A key that needs no user code is still named in the message** — a String or a Number is converted
+by nothing a program wrote — so `null["x"]` keeps the message it had and only the object-keyed case
+loses the name it could not have obtained without running code the language does not run.
+
+**Measured, on the pinned suite.** `test/language/expressions/logical-assignment` went from 126 of
+132 variants to **132**: the subtree passes whole, and the six that remained after JSC-143 were all
+this one ordering.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the subtree sweep before
+and after, and three cases appended to `src/tests/differential/the-statement-and-object-surface.js`
+whose answers were taken from the comparison engine before they were written down. 2026-09-05.
+
+---
+
+### JSC-145
+
+**Where:** `THIRD_PARTY_NOTICES.md`, whose ingestion table named two pieces of third-party material
+and not the third, and rule N13's list of suite directories, which named one of the two the notice
+file's mechanism sentence would have to be true of.
+
+**What the plan said, and what was done instead.** The notice file states an obligation in its own
+words: *a component that ingests or copies third-party source confirms this scoping, or amends this
+file, in the change that introduces the material.* The retained Octane workload — 37 files of
+BSD 3-Clause JavaScript, archived at `src/tests/octane/pins/` on 2026-09-04 under the workload
+roadmap's last stage — was committed with its upstream licence beside it and **without the notice
+entry the same paragraph asks for**. The pin's own README cites the stage that asked for the
+archive; nothing cited the obligation the archive triggers.
+
+**What was true, and why it is not merely a missing row.** The mechanism sentence the notice file
+writes for the conformance suite — *no project file names the suite directory, and rule N13 asserts
+it* — **was not true of this material**, because N13's list held `tests/conformance` alone. Writing
+the row without the list entry would have published a claim about a rule that was not making it,
+which is the failure mode the whole file is arranged to avoid. So the list gained `tests/octane`
+first, and the row follows it.
+
+**The confirmation is recorded as owed rather than supplied.** The row's third column reads
+`not yet confirmed`, because the confirmation is a release-facing statement a person makes and this
+change is not a person making it. The two rows above it carry a date and a named co-signature; this
+one carries the reason it does not.
+
+**Authority and date.** The notice file's own obligation paragraph, the pin at
+`src/tests/octane/pins/octane.pin` and the licence retained beside it, and rule N13 as it now
+stands, which passes with the second directory in its list and would report a violation for a
+project file naming either. 2026-09-05.
+
+---
+
+### JSC-146
+
+**Where:** `JsRealm.Reflect.cs`, and specifically the paragraph of its own header remark that read
+*"What is absent is `Proxy`, and the two are usually met together. … Nothing here assumes an ordinary
+object in a way that would have to change."*
+
+**What was assumed.** That a namespace whose members are named after the internal methods was
+therefore written in terms of them, so an object that answers those methods differently would need
+nothing here.
+
+**What was true.** Four of the thirteen members were written in terms of an ordinary object's
+STORAGE rather than in terms of its internal method, and each of the four is a different way for the
+same assumption to fail.
+
+- **`ownKeys` read the two key tables separately.** `[[OwnPropertyKeys]]` is one internal method and
+  this asked for the String keys and then the Symbol keys — which for a Proxy is the `ownKeys` trap
+  called **twice**, visibly, with nothing to make the two answers agree.
+- **`preventExtensions` assigned instead of asking.** Its whole body was `target.Extensible = false;
+  return JsValue.True`, which is right for an object that cannot refuse and is a false report for
+  one that can. A refusing trap got `true`.
+- **`setPrototypeOf` ran `OrdinarySetPrototypeOf`'s three tests inline** — already-the-same,
+  non-extensible, cyclic — against an object entitled to define its own `[[SetPrototypeOf]]`. Two of
+  the three also read the proxy's prototype and its extensibility, which is two trap calls the
+  language never asks for at that point.
+- **`defineProperty` validated the descriptor against the proxy** before reaching the trap that
+  decides, for the same reason and at the same cost.
+
+**What that cost, measured.** `test/built-ins/Reflect` scored **286 of 306 variants**, and every one
+of the twenty failures was a Proxy case: thirteen `return-abrupt-from-result.js` files that assert a
+trap's exception propagates, `preventExtensions/return-boolean-from-proxy-object.js`, and their
+strict twins. The entry is not "these could not run for want of `Proxy`": with `Proxy` present and
+these four members unchanged they would have gone on failing, which is what makes this a defect in
+existing code rather than a gap. The subtree is now **306 of 306**.
+
+**What replaced it.** Each member at its own site. `ownKeys` asks `JsObject.OwnKeys`, a new virtual
+that is the concatenation for an ordinary object and one trap call for a proxy.
+`preventExtensions` returns what the operation answered. `setPrototypeOf` and
+`Object.setPrototypeOf` now share one `ObjectSetPrototypeOrdinary`, which answers the boolean the
+specification gives it and which `Object.setPrototypeOf` turns into the two `TypeError`s it owes —
+the copy of the cycle walk that stood in `Reflect` for want of a shared body is gone.
+`defineProperty` asks a proxy directly and returns its `false` rather than catching a `TypeError` it
+should never have provoked.
+
+**One thing the paragraph got right is worth keeping.** The other nine members needed nothing,
+because they were already written through the engine's own property paths — which is the arrangement
+the paragraph was describing, and it was true of most of the file.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the sweep of
+`test/built-ins/Reflect` before and after, and the cases of
+`src/tests/differential/the-proxy-and-its-invariants.js`. 2026-09-05.
+
+### JSC-147
+
+**Where:** the realm, which had no `Proxy` — the last named absence in the `absent-globals` block of
+[the status ledger](roadmap.status.md) besides `BigInt` and the two typed arrays that depend on it.
+
+**What was assumed by everything that had to change to admit it.** That the object model's virtual
+methods answer about an object's own storage, cheaply, without running anything.
+
+**What was true.** A Proxy answers them with guest code. That is the whole difficulty, and it decides
+the shape of the implementation: thirteen internal methods, every one of which may call a function
+the program wrote, which may throw, may re-enter, may itself be a Proxy, and **may lie**.
+
+**Where each trap is invoked, and why there.** The decision was taken once per internal method rather
+than once for all of them, because the language does not put them in one place.
+
+- **Nine are `JsObject` virtuals**, because for those the specification's internal method and this
+  profile's own-property operation are the same operation: `[[GetOwnProperty]]` over both key kinds,
+  `[[DefineOwnProperty]]` over both, `[[Delete]]` over both, `[[OwnPropertyKeys]]`,
+  `[[GetPrototypeOf]]`, `[[SetPrototypeOf]]`, `[[IsExtensible]]` and `[[PreventExtensions]]`.
+  Overriding them means every existing caller — `Object.keys`, `JSON.stringify`, `for…in`, the
+  spread of an object literal, all of `Reflect` — traps without being told about proxies at all.
+  `Prototype` and `Extensible` became virtual for this, and the storage behind them moved from an
+  auto-property to a field so that `base` still has somewhere ordinary to keep an answer, and so that
+  the constructor can write the field rather than call an override before the derived type is built.
+- **Five are invoked from `JsEngine`**: `[[Get]]`, `[[Set]]`, `[[HasProperty]]`, `[[Call]]` and
+  `[[Construct]]`. These are operations over a WHOLE prototype chain or a whole call, and the walk
+  belongs to the engine. The test is inside each walk's loop rather than before it, because a proxy
+  is as likely to be somebody's prototype as to be the object a program named — and once the walk
+  reaches one, the trap decides the rest of it, including whether a prototype is consulted at all.
+- **The proxy holds its realm**, because those nine virtuals have no engine parameter to pass one
+  through, and adding one would have changed the signature of every property operation in the profile
+  for the sake of one object kind.
+
+**The invariants are most of the work and all of the value.** A proxy that forwarded each trap's
+answer without checking passes every easy test. What it breaks is everything downstream that had
+already looked at the target: a `get` trap may not report a value other than the target's
+non-configurable, non-writable one, nor a value at all for a non-configurable accessor with no
+getter; `getOwnPropertyDescriptor` may not report a non-configurable property the target does not
+have, nor an existing non-configurable one as absent, nor a writable one as non-writable and
+non-configurable; `ownKeys` must include every non-configurable own key, may not repeat a key, and on
+a non-extensible target must report exactly the target's set; `isExtensible` must simply agree, which
+makes it the one trap with no freedom at all; `preventExtensions` may not report a success the target
+did not take; and `defineProperty`, `has`, `set` and `deleteProperty` each have their own. **The
+duplicate check in `ownKeys` is ordered first on purpose**: every check after it removes keys from a
+working copy of the trap's list, and a repeated key would let one target key satisfy two removals,
+which is a way to hide a real one.
+
+**What that cost, measured.** `test/built-ins/Proxy` scored **0 of 606 variants** and now scores
+**533**. Every one of the 73 that remain fails on `$262.createRealm`, which this profile does not
+have and which roadmap [section 13](roadmap.md#13-realms-agents-and-the-host-boundary) owns: each is
+the `-realm.js` twin of a case whose single-realm form passes. That is the ceiling for this subtree
+until this profile creates nested realms, and no invariant is behind it.
+
+**What a Proxy made the rest of the realm say** is [JSC-148](#jsc-148), [JSC-149](#jsc-149) and
+[JSC-150](#jsc-150). The Proxy suite is unusually good at finding that class of defect, because a
+trap is a way to ask an operation what it is really doing.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the sweeps of
+`test/built-ins/Proxy`, `test/built-ins/Reflect` and `test/built-ins/Object` before and after, and
+the 154 cases of `src/tests/differential/the-proxy-and-its-invariants.js`, every one of which agrees
+with `/opt/node22/bin/node` and none of which is a declared divergence. 2026-09-05.
+
+### JSC-148
+
+**Where:** three exotic objects that project an own property instead of storing one —
+`JsArray`'s `length`, a String wrapper's `length` and its character indices, and a RegExp's
+`lastIndex` — and the `DeleteIndex` opcode.
+
+**What was assumed.** That an override which answers `TryGetOwnProperty` for a synthesised property
+has made that property real.
+
+**What was true.** `JsObject.DeleteOwnProperty` answers **`true` for every key it does not find**,
+which is correct — deleting an absent property succeeds — and is exactly wrong for a property that is
+present but not in the map it searches. All three of these are non-configurable, so:
+
+- **`delete [].length` answered `true`** and deleted nothing; in strict code it answered `true` where
+  the language owes a `TypeError`.
+- **`delete new String("str").length` and `delete new String("str")[0]`** did the same.
+- **A frozen Array's element did the same.** `Object.freeze` moves an element out of the dense store
+  into the ordinary map, leaving a hole; the delete saw an index inside the dense range, cleared the
+  hole again and answered `true`. `TryGetOwnProperty` beside it already fell through to the map for
+  exactly this case and said so in a comment.
+
+**And the refusal had nowhere to go anyway.** `delete a.x` reported a refusal as a `TypeError` in
+strict code and **`delete a[k]` did not** — the `DeleteIndex` opcode never consulted the mode — so
+the two spellings of one operation gave different answers, and code after a refused computed delete
+went on as though the property were gone.
+
+**`lastIndex` is the other half of the same shape.** It is projected from a field, so
+`Object.defineProperty(re, "lastIndex", { writable: false })` was accepted, changed nothing, and the
+property went on reporting itself writable and going on being written — which is what
+`Object.freeze` on a RegExp did too. It now carries a writability bit of its own, in the same shape
+`JsArray` already uses for `length`, and the `exec` protocol's two writes are the specification's
+`Set(R, "lastIndex", …, true)` and throw where the property is closed.
+
+**What that cost, measured.** These are the last failures of `test/built-ins/Proxy` outside the
+realm-gated set. `test/built-ins/String` went from **2,271 to 2,273 of 2,441** and
+`test/built-ins/RegExp` from **1,660 to 1,678 of 3,743**. Both subtrees were measured again after
+[JSC-149](#jsc-149) and [JSC-150](#jsc-150) and neither moved further, so both figures are this
+entry's and `Proxy`'s alone. `test/built-ins/Array` went from **5,232 to 5,276 of 6,115**, summed
+over the run's eight shards because the merged report was written in neither run — a shard of that
+subtree ends by raising an unhandled `EncoderFallbackException` out of the harness while rendering
+a case that builds an astral character, which is a defect in the harness rather than in the
+profile, is present at the base commit as well, and is not this bundle's to fix.
+
+**What replaced it.** A refusal at each of the four projections, a hole test in the Array delete, and
+the mode check in `DeleteIndex`. The message there does not re-coerce the key, because a Symbol has
+no `ToString` and naming it would replace the refusal being reported with a different `TypeError`
+about the report.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the sweeps of
+`test/built-ins/Proxy`, `test/built-ins/RegExp` and `test/built-ins/String` before and after, and
+cases 125 to 134 of `src/tests/differential/the-proxy-and-its-invariants.js`, each of which was taken
+from `/opt/node22/bin/node` before it was written down. 2026-09-05.
+
+### JSC-149
+
+**Where:** `Array.isArray`, and the three other places that asked the same question by asking a
+different one.
+
+**What was assumed.** That `IsArray(v)` is `v is JsArray`.
+
+**What was true.** It is a predicate about the object at the END of a chain of proxies, and the
+language branches on it in four places that must all agree: `Array.isArray` itself,
+`Array.prototype.concat`'s spreading, `Array.prototype.flat`'s descent, and `JSON.stringify`'s choice
+between a list and an object.
+
+**And `Object.prototype.toString` asks it too**, which is where the same assumption produced a
+second wrong answer of its own. A proxy first carried its TARGET's class name, so
+`Object.prototype.toString.call(new Proxy(new Date(), {}))` answered `[object Date]`. It is not a
+Date: the tag comes from internal SLOTS and a proxy has none of the ones that make one, so the
+language asks it exactly two questions — is it callable, is it an Array — and gives it one of three
+tags. `ClassName` is now virtual for that, and a proxy derives it on each read rather than at
+creation, because `IsArray` may throw for a proxy over an already-revoked proxy and the
+specification puts that refusal at the `toString` call.
+
+**What that cost, measured.** `Array.isArray(new Proxy([], {}))` answered `false`.
+`[].concat(new Proxy([1, 2], {}))` appended the proxy whole and had length 1 where the language gives
+2. And **`JSON.stringify(new Proxy([1, 2], {}))` produced `{"0":1,"1":2}`** — valid JSON of the wrong
+shape, which is the worst kind of wrong answer a serialiser can give, because nothing downstream
+fails on it. Three of the four were found by the differential probe against `/opt/node22/bin/node`
+rather than by the suite.
+
+**What replaced it.** One `ArrayIsArray` that walks through proxies and refuses a revoked one, and
+four callers of it. `SerializeJSONArray` now reads its length as a PROPERTY — which is
+`LengthOfArrayLike`, what the specification says, and the only way to ask a proxy how long it is.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, and cases 98 to 106 and
+147 to 154 of `src/tests/differential/the-proxy-and-its-invariants.js` — the `Array.isArray` cases,
+the `JSON.stringify` cases, `concat`, `Array.from`, `Object.assign` and the eight tag cases — every
+one of them measured against `/opt/node22/bin/node` before it was written down. 2026-09-05.
+
+### JSC-150
+
+**Where:** the `Object` statics that walk an object's own keys — `freeze`, `seal`, `isFrozen`,
+`isSealed`, `getOwnPropertyDescriptors`, `assign`, and the shared body behind `defineProperties` and
+`create`.
+
+**What was assumed.** That `OwnPropertyNames()` is an object's own keys.
+
+**What was true.** It is half of them. The Symbol-keyed table is separate storage —
+`JsObject` explains at length why, and the reasons are good — but `[[OwnPropertyKeys]]` is **one**
+internal method, and every static that means to walk an object completely has to ask for both. Each
+of these asked for one, and the branch that would have asked for the other was written at none of the
+seven sites.
+
+**What that cost.** A Symbol-keyed property survived `Object.freeze` writable and configurable, and
+`Object.isFrozen` agreed the object was frozen — because it asked the same half-question. So an
+object keeping state under a Symbol was never frozen by either, and nothing said so. `Object.assign`
+silently dropped every Symbol-keyed property, which is how a great deal of code copies an object.
+`Object.getOwnPropertyDescriptors`, whose plural is the only thing distinguishing it from its
+singular, answered the descriptors of half the object. And `Object.create(p, { [Symbol()]: … })`
+returned the object having defined nothing.
+
+**What that cost, measured.** `test/built-ins/Object` went from **6,511 to 6,656 of 6,802 variants**
+over the whole of this work, and the subtree was measured again between the two rounds to divide it:
+**99 of the 145 recovered variants are `Proxy` existing** (with [JSC-146](#jsc-146) and
+[JSC-148](#jsc-148)), and **46 are this entry and [JSC-149](#jsc-149)**. Nothing in the subtree
+regressed. The named files are the six `proxy-no-ownkeys-returned-keys-order.js`,
+`freeze/frozen-object-contains-symbol-properties-{,non-}strict.js`,
+`getOwnPropertyDescriptors/symbols-included.js` and `assign/strings-and-symbol-order.js`.
+
+**What replaced it.** `JsObject.OwnKeys`, the virtual added for `[[OwnPropertyKeys]]`, and two
+key-agnostic helpers beside the statics so the branch is written once rather than seven times.
+
+**Two dead predicates went with it.** `ObjectShadowsDenseSlot` had no caller at all;
+`ObjectIsUnattributable` had two, and its entire body was `return false` — a question whose answer
+had become "nothing" when an earlier correction let an Array's `length` carry attributes after all,
+leaving behind a named predicate that read as though it still excluded something. Removing them is
+the second half of that correction rather than a new one.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the sweep of
+`test/built-ins/Object` before and after (and once between the two rounds, to divide the movement),
+the six `proxy-no-ownkeys-returned-keys-order.js` files of that subtree, which are what named the
+defect, and cases 135 to 141 of `src/tests/differential/the-proxy-and-its-invariants.js`.
+2026-09-05.
+
+
+### JSC-151
+
+**Where:** `JsCompiler.BindArrayPattern`, and the region rows every lowering in this compiler emits.
+
+**What was assumed.** That an exception region cannot guard an expression. The remark on the array
+pattern's lowering said so in as many words: a `for … of` body that throws closes its iterator
+because that path has a region, and a pattern *"cannot have one, because a region's handler is
+entered at a fixed operand-stack height and a pattern is applied in the middle of an expression
+whose stack is not empty."* On that reasoning the lowering declared a divergence and left the
+iterator open.
+
+**What was true.** The height is not fixed. It is a FIELD of the region row — `StackHeight` has been
+in the exception-region section since format version 1, the verifier has always seeded a handler's
+abstract entry at that height plus the one value the executor pushes, and the executor has always
+unwound to it rather than to zero. Every one of the three agreed about a mechanism no lowering had
+ever used, because until this pattern every region a lowering opened began at a statement boundary,
+where the operand stack is empty and zero is the right answer. The compiler wrote a literal `0` into
+every row it emitted. **The objection was to the constant, not to the mechanism** — and the compiler
+already tracks the operand height it would have needed, in `UnitBuffer.Height`, which is the number
+`MaximumStack` is derived from.
+
+The second half of the assumption was that the iterator record had to stay on the operand stack,
+because *"a pattern nests, so two of them can be live at once and each nesting level would need a
+slot of its own chosen at compile time."* Both halves of that sentence are true and the conclusion
+does not follow: the nesting depth is known **while the pattern is being lowered**, so each level
+declares a temporary of its own exactly as a computed member target already does, and two live
+records never share one.
+
+**What that cost.** An iterator abandoned part-way through a pattern was never given its `return`.
+The three completions the language distinguishes were all wrong together: a throw completion left it
+open, a normal completion over an unexhausted iterator left it open, and a generator's `return()`
+arriving at a `yield` inside a pattern left it open and completed the generator as though nothing
+had been abandoned.
+
+**What replaced it.** The record goes to a slot, and the pattern is wrapped in **two** regions whose
+declared height is the height the pattern began at. Two and not one because the completion decides
+how the iterator is closed: a `catch`-kind region closes it QUIETLY, discarding whatever `return`
+raises because the exception already travelling is the one the program is owed, and a
+`finally`-kind region closes it LOUDLY, letting an error from `return` through and making a
+non-object answer a `TypeError` of its own. The catch region is recorded first so a throw finds it;
+the finally region second so a forced return, which passes catch regions over, finds that one. An
+iterator that is already done is closed by neither, because `IterateClose` reads the record's own
+flag — which is why a rest element, which runs the iterator out, still closes nothing.
+
+**The other design, and why it was refused.** The executor could have closed what an exception left
+behind: when a throw unwinds to a handler at height `H`, the values in `stack[H..sp)` are exactly
+what the abandoned expression had built, `JsIteratorRecord` is a `JsObject` and so is identifiable
+at run time, and its done flag already prevents a second close. It needs no lowering at all, which
+is its whole appeal. It was refused for three reasons, in order of weight. **It has nowhere to do
+the work in the frame that unwinds without a handler**, and that is the case these tests turn on: a
+forced return with no `finally` in the frame leaves through the executor's own dispatch, where `sp`
+is a local that never reaches anybody, and buying the case back needs a filter or a catch in every
+frame — the shape whose removal that dispatch's own remark records, having killed the process at a
+guest `throw` from depth five hundred. **It moves a rule of the language into the executor**, where
+the artifact no longer says what closes an iterator and the verifier can no longer check that
+anything does. And **it grows the executor**, which is the one budget a lowering-only change leaves
+untouched: this change adds no opcode, no dispatch arm and no diagnostic, so the native frame is
+byte-for-byte what it was and the call-depth margin re-measured at 2.70× today stands unmoved.
+`eng/measure-frame-cost.py` stopped both depths at the declared bound of 5,999, as it did before.
+
+**What that cost, measured.** `test/language/expressions/assignment/dstr` went from **505 to 537 of
+640 variants** and `test/language/statements/for-of/dstr` from **1,030 to 1,062 of 1,095**; the whole
+of `test/language/statements/for-of` went from 1,294 to 1,326 of 1,436. Sixty-four variants
+recovered, none regressed. The named files are the sixteen each tree carries under both names —
+`array-elem-iter-{thrw,rtrn}-close{,-err}.js`, `array-elem-trlg-iter-list-thrw-close{,-err}.js`,
+`array-elem-trlg-iter-rest-{thrw,rtrn}-close{,-err,-null}.js`,
+`array-rest-iter-{thrw,rtrn}-close{,-err,-null}.js` and `array-rest-lref-err.js`.
+
+**`test/built-ins/Array` was measured at both ends and did not move**, at 5,276 of 6,115 variants —
+which is the check that matters for this correction, because closing an iterator that should not be
+closed is what a change of this shape gets wrong, and the Array built-ins are where a spurious
+`return` call would show.
+
+**The remark that declared the divergence is gone**, replaced by one that says what the two regions
+are for, why the height is read where it is read, and why the executor-side design was refused. A
+reader who finds this entry and the old remark would otherwise still believe the mechanism was
+unavailable.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; the sweeps of
+`test/language/expressions/assignment/dstr`, `test/language/statements/for-of` and
+`test/built-ins/Array` before and after; and cases 318 to 334 of
+`src/tests/differential/the-statement-and-object-surface.js`, every one of them measured against
+`/opt/node22/bin/node` before it was written down. 2026-09-05.
+
+### JSC-152
+
+**Where:** the same lowering, one step earlier: what an array ASSIGNMENT pattern does before it
+steps the iterator.
+
+**What was assumed.** That a destructuring assignment stores the way every other assignment in this
+compiler stores — value first, reference second. `CompileStoreTo` parks the value in a temporary and
+then evaluates the target's base and key, and the pattern called straight into it.
+
+**What was true.** `AssignmentElement` evaluates the target reference **first**, before the iterator
+is stepped at all, and it does so for every target that is not itself an object or array literal.
+The order is observable with nothing more exotic than a getter: `[ {}[f()] ] = iterable` calls `f`,
+`f` throws, and `next` is never called even once.
+
+**What that cost.** One extra `next` per element whose reference throws, which the suite counts
+directly. It was worse at a rest element, where the lowering drained the WHOLE iterator into an
+Array before evaluating the reference that was going to fail — `[...{}[f()]] = iterable` stepped an
+iterator eleven times where the language steps it none, and the same shape with one bound element
+ahead of it stepped eleven where the language steps one. These are the counts the recovered files
+assert; a lowering that closed the iterator correctly but stepped it first would still have failed
+every one of them.
+
+**What replaced it.** `PrepareTarget` evaluates the base, and then the computed key, into temporaries
+before the step; `BindPrepared` stores through them afterwards. A name and a nested pattern prepare
+nothing, and that is the language's rule rather than an optimisation — an identifier reference is
+resolved where it is stored, which is why an assignment to an undeclared name in strict code still
+fails at the store.
+
+**What it does NOT change.** An ordinary assignment `o.x = v` still evaluates its value before its
+reference. That is a divergence of the same family and it is left standing, because nothing measured
+here reaches it and correcting it touches every assignment this compiler lowers rather than the
+pattern that this entry is about.
+
+**What that cost, measured.** Not separable from [JSC-151](#jsc-151) and not measured apart from it:
+the sixty-four variants that entry names need both corrections, and neither alone recovers any of
+them. It is a separate entry because it is a separate assumption, found by reading what the
+recovered files assert about `nextCount` rather than about `returnCount`.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the same sweeps
+[JSC-151](#jsc-151) names, and cases 318 to 321 and 333 of
+`src/tests/differential/the-statement-and-object-surface.js` — the four that count `next` and the one
+that counts a computed key's evaluations — measured against `/opt/node22/bin/node` before they were
+written down. 2026-09-05.
+
+---
+
+### JSC-153
+
+**Where:** the wide front end's parse of every declarative scope — `JsParser.Parse`,
+`ParseBlock`, `ParseSwitch`, `ParseFunctionBody`, `ParseTry`, `ParseFor` and
+`ParseVariableStatement` — and the 183 variants of
+`test/language/block-scope/syntax/redeclaration`, the 125 of
+`test/language/statements/switch/syntax/redeclaration` and the rest of the family that a whole run
+of `test/language` reported as *"expected a parse-phase SyntaxError and it threw at run time"*.
+
+**What was assumed.** That a redeclaration is the lowering's problem: the lowering declares a slot
+per name, and a second declaration of a name it already has either finds that slot or overwrites the
+entry, so nothing is lost and nothing needs saying. The module goal was the exception and had rules
+of its own in `JsCompiler.DeclareModuleBindings`, written as if the script goal genuinely had none.
+
+**What was true.** **A lexical binding is created BY its declaration, so a second declaration of the
+same name has nothing to do — and the language refuses the source rather than choosing which
+declaration wins.** That is a whole family of early errors and not a corner of one. Within one
+declarative scope a lexically declared name may not be declared twice, may not collide with a `var`
+or a function declaration of the same scope, a `catch` parameter may not be redeclared by its
+handler's lexical declarations, a parameter may not be redeclared at the top of the body it belongs
+to, and a loop head's lexical bindings may not be redeclared with `var` by the body. Every one of
+those is a source no conforming engine accepts, and this front end ran all of them.
+
+**Three things make the rule harder than "the same name twice", and each was a way to get it
+wrong.** A FUNCTION DECLARATION is a lexical name inside a block and a `var` name at the top of a
+body, which is why `function f() {} function f() {}` is a program at a script's top level and
+`{ function f() {} let f; }` is not. The web-compatibility annex removes the duplicate error for a
+block whose duplicate names are ALL bound by plain function declarations in sloppy code — the shape
+the web is full of — and removes it for nothing else, so an async or generator declaration of the
+same name is still refused and a `var` colliding with any of them still is. And a `switch` shares
+ONE block scope across every one of its clauses, so `switch (x) { case 1: let a; case 2: let a; }`
+declares one name twice where a reader sees two scopes; a check written per clause would have found
+nothing wrong with either.
+
+**What replaced it.** A section of `JsParser` that answers, for one statement list, which names it
+declares lexically and which it declares with `var`, and applies the two rules to the pair.
+`ValidateBlockScope` runs where a `Block` closes, `ValidateVarScope` where a script, a module, a
+function body or a class static block closes, `ValidateCatchParameter` where a handler closes,
+`ValidateLoopHead` where a loop body closes, and `ValidateBindingList` on each `let` or `const`
+declaration's own binding list — which is also where `let x, x;` and `let let;` are refused. **The
+`var` walk is deliberately NOT the one `JsCompiler.CollectVarScope` already had.** That one collects
+what a hoisting prologue must declare, so it takes a function declaration at every level, which is
+the web-compatibility behaviour of a block-level function; this one answers a question about the
+grammar, where a block-level function declaration is a lexical name and not a `var` one, and folding
+the two together would have refused `{ function f() {} } var f;`, which every engine runs.
+
+**Measured, on the pinned suite, before and after the whole bundle
+([JSC-153](#jsc-153) to [JSC-158](#jsc-158)).** `test/language/block-scope` went from 88 of 287
+variants to **281**, and its `syntax/redeclaration` subtree from 6 of 189 to **189** — that subtree
+now passes whole. `test/language/statements/switch` went from 54 of 216 to **181**.
+`test/language/statements` as a whole went from 15,630 of 17,818 to **16,322**, and
+`test/language/expressions` from 16,860 of 20,902 to **17,428**. `test/built-ins/Array`, run as a
+control because a wrongly-fired early error shows up in a subtree that has nothing to do with the
+rule, was unchanged at 5,232 of 6,115. **No variant that passed before the bundle fails after it**,
+in any of the five sweeps.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, five subtree sweeps taken
+either side of this bundle on the checkout it was written against, thirty-five cases appended to
+`src/tests/differential/the-statement-and-object-surface.js` whose answers were taken from the
+comparison engine before they were written down, and six acceptance rows — five refusals and one
+that RUNS every shape one scope may legally hold twice, because an early error that fires where the
+language has none turns a working program into a refusal and is the worse failure of the two.
+2026-09-05.
+
+---
+
+### JSC-154
+
+**Where:** `JsParser.ParseIf`, `ParseWhile`, `ParseDoWhile`, `ParseFor` and the labelled-statement
+arm of `ParseStatement`, and the 65 variants of `test/language/statements/if` together with the
+statement-position half of `test/language/statements/let/syntax`.
+
+**What was assumed.** That the body of an `if`, a loop or a label is a statement, and that
+`ParseStatement` is the production that parses one. It is the production that parses a
+`StatementListItem`, which is a wider thing.
+
+**What was true.** **The grammar gives these five positions a `Statement`, and a declaration is not
+one.** `if (x) let y;`, `while (x) class C {}` and `label: const z = 1;` are syntax errors in every
+engine, and the reason is not tidiness: a lexical declaration whose only enclosing scope is the
+clause itself would have nowhere to put its slot and nothing could ever read it. The `with` body
+already refused a declaration for exactly this reason; the other five positions did not, and parsed
+one into a scope that could not hold it.
+
+**The one exception is the web-compatibility annex's, and it is narrower than it looks.** A PLAIN
+function declaration is admitted in an `if` clause, in an `else` clause and under a label, in sloppy
+code — and nowhere else and in no other form. So `while (x) function f() {}` is refused in sloppy
+code too, and a generator, an async function and an async generator are refused in all five
+positions in both modes.
+
+**What replaced it.** `ParseNestedStatement`, which each of the five positions now calls, with a
+flag saying whether the annex's function declaration is admitted here. **Its hardest case is a line
+break.** An `ExpressionStatement` may not BEGIN with `let [` and may begin with `let` followed by
+anything else, so `if (false) let` followed by a newline and `x = 1;` is the identifier `let`, a
+semicolon nobody wrote, and a separate assignment — a program the suite writes down in seven places.
+The first implementation refused all seven, which is the direction that matters, because it turned
+working programs into refusals; the arm that recognises them is spelled out before the refusal.
+
+**Measured, on the pinned suite.** `test/language/statements/if` went from 43 of 125 variants to
+**104**, `test/language/statements/labeled` from 16 of 37 to **33**,
+`test/language/statements/while` from 45 of 72 to **62**, `test/language/statements/do-while` from
+46 of 70 to **62**, and `test/language/statements/let` from 249 of 287 to **280**. The intermediate
+sweep taken with the rule and without the line-break arm is what measured that arm's worth: seven
+variants across `for`, `for-in`, `for-of`, `for-await-of`, `if`, `labeled` and `while` had gone from
+passing to refused, and the arm returns all seven.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the subtree sweeps either
+side of it, nine cases appended to
+`src/tests/differential/the-statement-and-object-surface.js`, and two acceptance rows — one refusing
+a declaration as an `if` body, and one running the three positions the annex still admits.
+2026-09-05.
+
+---
+
+### JSC-155
+
+**Where:** `JsParser.ParseFunctionBody`, `ParseArrowBody`, `ParseClassMember` and `ParseObjectEntry`,
+and `ParseDirectives` — the last of which is the reason none of the other four could have been
+written first.
+
+**What was assumed.** That a formal parameter list is a list of bindings and that a duplicate in one
+is a sloppy-mode curiosity the lowering settles by letting the last one win. And that a directive
+prologue is a run of string literals each followed by a semicolon, a newline, or the end of the
+source.
+
+**What was true.** **Whether one name may be bound twice by a parameter list turns on three separate
+things, and the answer is "no" if any of them says so.** A method, an accessor and an arrow take
+`UniqueFormalParameters`, so `({ m(a, a) {} })` and `(a, a) => 1` are refused however sloppy the
+code around them is; strict code refuses a duplicate in any function; and a parameter list that is
+not SIMPLE — one with a default, a rest parameter or a pattern in it — refuses a duplicate in sloppy
+code too, because the arguments object can no longer be the mapped one that gave the legacy
+behaviour its meaning. Only the plain sloppy function with a plain list keeps
+`function f(a, a) {}`.
+
+**And a body may not declare `use strict` over a parameter list that is not simple**, which is an
+ordering the specification could not resolve rather than a restriction it chose: a default's
+expression is evaluated as the function is entered, so it would have to be strict or sloppy code
+before the directive that decides which had been reached.
+
+**A DIRECTIVE MAY BE THE LAST THING IN A BODY, and one was not recognised there.**
+`function f() { "use strict" }` has a prologue — the string is an expression statement whose
+semicolon the closing brace inserts — and this parser read it as an ordinary statement, so the body
+was sloppy. That is a whole strictness silently lost, and it also hid the rule above, because the
+directive the rule is about had not been seen. The prologue now ends at a closing brace as well as
+at a semicolon, at a line break and at the end of the source.
+
+**And an accessor's arity is grammar rather than convention.** A getter is written with an empty
+parameter list in the production itself, and a setter with exactly one `FormalParameter`, which
+admits a pattern and a default and admits no rest — because a setter is called with one argument and
+a rest parameter would be asking for a count the caller never varies.
+
+**Measured, on the pinned suite.** `test/language/expressions/object` went from 1,853 of 2,252
+variants to **1,929**, `test/language/expressions/arrow-function` from 506 of 643 to **612**,
+`test/language/expressions/function` from 447 of 484 to **463**, and
+`test/language/statements/function` from 727 of 783 to **745**.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the subtree sweeps either
+side of it, ten cases appended to
+`src/tests/differential/the-statement-and-object-surface.js`, and one acceptance row refusing a name
+bound twice by a list that carries a default. 2026-09-05.
+
+---
+
+### JSC-156
+
+**Where:** `SliceTokenizer.ReadIdentifierOrKeyword` and the `SliceToken` it returns, and every
+position in `JsParser` that reads an `Identifier` rather than an `IdentifierName`: `BindingName`, a
+function's and a class's own name, an identifier reference, a label, a `break` or `continue` label,
+an object pattern's shorthand and an object literal's shorthand.
+
+**What was assumed.** Written down on the tokenizer's own declaration, and half right: *"an escaped
+keyword is not a keyword … the language forbids it in keyword position and this grammar has no
+production where the distinction changes what is parsed, so it is read as the identifier its
+characters spell."*
+
+**What was true.** The first half holds and the second does not. **An escape changes how a name is
+written and not what it is, and the language nevertheless refuses the escaped spelling wherever the
+plain one is reserved** — so that a program cannot smuggle a keyword into an identifier position.
+The tokenizer resolves the escape, so `await` spelled with one and `await` spelled without one are
+the same characters by the time the parser sees them, and this front end therefore accepted an
+escaped `break` as a variable, an escaped `let` as a class name and an escaped `await` as a binding
+inside an async function — three sources no engine accepts. The suite writes the case out for every
+reserved word and every position it can appear in, which is why one bit on the token is worth
+carrying.
+
+**The rule is about the POSITION and the tokenizer cannot know the position**, which is why the fact
+is carried rather than decided there. An `IdentifierName` may be spelled with escapes freely — a
+property key and a member name both admit one — and only an `Identifier` may not reach a reserved
+word that way.
+
+**What replaced it.** `SliceToken` carries `IsEscaped`, set by the one place that reads an
+identifier's characters, and `JsParser.RefuseEscapedReservedWord` asks
+`SliceTokenizer.KeywordKind` which word the escape spells and then asks the SAME predicate every
+ordinary identifier position asks — so a word that is a name here stays a name here however it was
+spelled. An escaped `await` in a sloppy script is an ordinary identifier, and the same two spellings
+inside an async function are both refused. The two words that predicate cannot answer for are
+`let` and `static`, which strict code reserves and which it otherwise calls names because a property
+key may spell them.
+
+**Measured, on the pinned suite.** `test/language/identifiers` went from 263 of 535 variants to
+**407** and `test/language/reserved-words` from 35 of 53 to **47**, and both are this entry's alone:
+the sweep taken immediately before this rule and immediately after it moved `test/language`'s
+remaining subtrees from 3,812 of 5,100 to 3,977 and moved nothing outside those two directories.
+`test/language/expressions/assignment` went from 698 of 850 to **770** when the object literal's
+shorthand was included, which is where a destructuring assignment writes its targets.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the sweep taken either
+side of the rule alone, thirteen cases appended to
+`src/tests/differential/the-statement-and-object-surface.js` — written in PAIRS, because the rule is
+about a context and a case that only ever refuses cannot show one — and two acceptance rows, one
+refusing an escaped `enum` as a binding and one running a source that spells a property key, a
+member name and two unreserved words with escapes. 2026-09-05.
+
+---
+
+### JSC-157
+
+**Where:** `JsParser.ValidateClassBody`, the enumerating head of `JsParser.ParseFor`, and
+`ParseSwitch`.
+
+**What was assumed.** That a static member of a class body needs checking only against `prototype`,
+that a `for … in` or `for … of` head is a binding and an expression, and that a second `default`
+clause is a clause that never runs.
+
+**What was true.** **A static METHOD may be called `constructor` and a static FIELD may not.**
+`static constructor() {}` is an ordinary method of the constructor object that happens to carry that
+name; `static constructor;` is a field of the name the class definition owns. The check skipped
+every static member after testing it for `prototype`, so the field went through.
+
+**An enumerating head declares a binding and does not initialise it**, because the value comes from
+the object or the iterator — so `for (let x = 3 in o)` names a value nothing could ever read. The
+one form the language keeps is the web-compatibility annex's, and it is narrow: a `var`, a plain
+name, an `in` head, and sloppy code, which is the exact shape the web was written with before the
+rule existed.
+
+**And a `CaseBlock` is case clauses, one optional default clause, and case clauses again**, so a
+second `default` is a syntax error rather than a clause the dispatch will never reach.
+
+**What replaced it.** Three tests, each at the place that already had the facts in hand: the
+class-body validator falls through to the field case after the `prototype` test rather than
+continuing past it, the enumerating head refuses an initialiser outside the annex's shape, and the
+clause loop carries one bit saying whether a default has been seen.
+
+**Measured, on the pinned suite.** These three are small by design, and are recorded because each is
+a RULE rather than a file: `test/language/block-scope/syntax/for-in` went from 12 of 16 variants to
+**14**, `test/language/statements/class/elements` and `test/language/expressions/class/elements` lose
+four parse-phase failures each, and `test/language/statements/switch` loses the last of its
+`S12.11` pair. All are inside the bundle figures [JSC-153](#jsc-153) reports.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the sweeps either side of
+it, and thirteen cases appended to
+`src/tests/differential/the-statement-and-object-surface.js` whose answers were taken from the
+comparison engine before they were written down. 2026-09-05.
+
+---
+
+### JSC-158
+
+**Where:** `JsCompiler.CompileReturn`, and the 22 variants a whole-suite run reported in its
+`unsupported` column with the construct named — `test/language/global-code/return.js` among them.
+
+**What was assumed.** That `return` outside a function is a construct this manifest declines, which
+is what `SliceSourceDiagnosticCode.ConstructOutsideManifest` says.
+
+**What was true.** **It is an early error the language states, and a conformance runner grades the
+two answers differently.** `2104` says this profile could run the construct and has chosen not to,
+so every case of a top-level `return` was taken out of both the pass and the fail column; what the
+language says is that the source is not a program at all. The refusal itself was right —
+[JSC-111](#jsc-111) fixed the scope test it asks — and only the code it carried was wrong, which is
+the kind of error that survives precisely because nothing about the observable behaviour changes.
+
+**It was the only member of that column that was not a surface.** The rest of a whole run's
+`unsupported` total is a dynamic `import()`, an import attribute clause and `import.meta`, and each
+of those genuinely is a construct this manifest has not built.
+
+**What replaced it.** `SliceSourceDiagnosticCode.UnexpectedToken`, which is what a source wrong
+about the LANGUAGE gets — the same code `with` in strict code and a `super` property outside a
+method already carry — with a message that says what the source asked for rather than what this
+profile has.
+
+**Measured, on the pinned suite.** `test/language/statements/return` went from 10 of 31 variants to
+**30**, and the `unsupported` column of a sweep of `test/language/statements` went from 20 variants
+to **empty**. `test/language/global-code` carries the other two and went from 49 of 73 to **51**.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the sweep either side of
+it, and one acceptance row pinning the new code against the block-scoped shape
+[JSC-111](#jsc-111) records. 2026-09-05.
+
+---
+
+### JSC-159
+
+**Where:** [JSC-103](#jsc-103), which recorded this deviation rather than repairing it and said the
+reason was the format; and `JsEngine.Invoke`'s two generator arms, whose remark said in as many
+words that *the parameters are bound — both are observable, and both happen at the call*.
+
+**What was assumed.** That a generator's frame is built, its parameters bound, and the frame then
+handed to a generator object without a single instruction running — one sentence covering both
+halves of the entry. The sentence was true of the arm it was written on: for a SIMPLE parameter list
+the frame copies arguments into slots and there is no code at all.
+
+**What was true.** It held only for a simple list. A parameter list with a default, a rest parameter
+or a pattern cannot be copied — a default is an expression, a rest parameter is an Array, a pattern
+is a destructuring — so the unit carries `BindsParameters` and the whole of the binding is emitted as
+the first instructions of its own body. A generator's body does not run until the first `next`, so
+the binding did not either: `function* g([x = boom()]) {}` answered a generator object for
+`g([undefined])` and threw from `it.next()` instead of from the call. **The language runs the
+binding at the call and says so twice**: `EvaluateGeneratorBody` and `EvaluateAsyncGeneratorBody`
+each perform `FunctionDeclarationInstantiation` before `OrdinaryCreateFromConstructor`, the first
+with a `?` and the second with a `?`, so a failing default throws where it is written and there is
+no generator object for anything to be thrown out of later.
+
+**The three suspendable arms were checked separately and only two of them were wrong**, which is why
+this entry names two. A sync generator and an ASYNC generator each throw at the call. An async
+FUNCTION does not: `EvaluateAsyncFunctionBody` makes the promise capability FIRST and rejects it with
+whatever the instantiation raised, so `(async function ([x]) {})(undefined)` answers a rejected
+promise and throws nothing — which is what this engine already did, by running the body synchronously
+to its first `await` and settling on the way out. Assuming the three were one rule would have made
+that arm wrong in the other direction.
+
+**What replaced it.** One opcode, `EnterBody` (`0x83`), which is the SEAM between a unit's parameter
+list and its body, and one flag on the heap frame that says which of the two a given entry into the
+dispatch loop is running. The lowering emits the seam immediately after the parameter binding and
+only in a generator unit — the one kind of unit whose two halves run at two different times — and
+the engine's generator arms enter the loop once at the call with the flag set, which stops at the
+seam and leaves the frame pointing at the first instruction of the body. The first `next` starts
+there. `Started` stays false across that entry, so a `return` or a `throw` arriving before it still
+completes the generator without running any of the body, which is the specification's
+`suspendedStart` and is what `ResumeGenerator`'s existing state check already answered.
+
+**[JSC-103](#jsc-103) was right that this is a format change and wrong about which one.** It said the
+code unit would have to *declare where its prologue ends*, which is a field on the function row: a
+second number the reader parses, the writer emits, the verifier bounds against the code range, and
+every artifact of format version 2 carries whether it has a prologue or not. An INSTRUCTION says the
+same thing where the thing is, costs a byte in the units that have one and nothing in the units that
+do not, and is checked by the pass that already checks every other opcode against the unit's flags.
+That is the difference between the reading that entry recorded and this one.
+
+**One instruction stream and not two, which is the decision rather than the detail.** A code unit of
+its own for the prologue was the obvious alternative and it was refused: the prologue and the body
+share one scope, one set of slots and one set of exception regions, so a second unit would have had
+to duplicate all three and agree with the first about every one of them, and a disagreement would be
+a verifier refusal of an artifact this compiler had just produced. A second interpreter over the same
+frame was refused for the same reason in smaller: it is a second place that knows what every opcode
+does. What the seam costs instead is one dispatch and one fuel unit, paid only by a generator that
+binds its own parameters, and paid once per call.
+
+**The verifier checks it exactly as it checks a `yield`.** `EnterBody` is legal only in a unit
+carrying `Generator`, refused with `1609:YieldOutsideGenerator` — the same code, because it is the
+same fact about the executor: the frame this instruction suspends is the heap frame the generator arm
+allocated, and a unit without the bit is entered on the native stack by a call that has nowhere to
+leave one. It moves no operand, so the abstract height either side of the seam is the same height and
+the frame the call leaves behind is at exactly the height the pass computed for the instruction the
+resumption enters at. **A prologue that never reaches the seam is refused at the point it would have
+been handed on** rather than being allowed to reach a generator object: the flag is still set, and a
+frame stopped at a suspension it has not started would be re-entered at a height nothing computed
+for it.
+
+**What that cost, measured.** **1,582 variants across the nine trees measured at both ends, and not
+one regressed.** The seven `dstr` trees the failure was concentrated in account for 1,560 of them:
+`test/language/statements/class/dstr` and `test/language/expressions/class/dstr` each went from
+**3,424 to 3,840 of 3,840** — every remaining failure in both trees; `test/language/expressions/object/dstr`
+from **908 to 1,116 of 1,122**; `test/language/expressions/async-generator/dstr` from **536 to 744 of
+744**; and `test/language/statements/generators/dstr`, `test/language/statements/async-generator/dstr`
+and `test/language/expressions/generators/dstr` each from **268 to 372 of 372**. Every one of those
+variants is a generator or async-generator template and no plain-function template was among them,
+which is what identified the cause before a line was changed. Outside the `dstr` subtrees,
+`test/language/statements/generators` went from **373 to 485 of 510** and
+`test/language/expressions/async-generator` from **926 to 1,148 of 1,212**, the extra twenty-two being
+`dflt-params-abrupt`, `dflt-params-ref-later`, `dflt-params-ref-self`,
+`generator-created-after-decl-inst` and the three `named-` variants of the first three —
+files that assert this order directly rather than through a template.
+
+**`test/built-ins/Array` was measured at both ends and did not move**, at 5,276 of 6,115 variants,
+which is the regression cover that matters: moving when a generator's frame is created is exactly
+the kind of change that breaks iteration that used to work.
+
+**The call-depth margin was re-measured because this adds a dispatch arm**, by the procedure
+[JSC-139](#jsc-139) describes — `JsEngine.MaximumCallDepth` and the profile's declared call-depth
+maximum lifted in a build of no one's, the bisection taken, the lift reverted. The same bisection
+reports **20,201 calls before and 20,136 after** on the ninety-six-megabyte guest stack: **2.47 times
+the grantable ceiling of 8,192 before and 2.46 after**, sixteen bytes of native frame for the arm.
+Both are below the **2.70** [JSC-139](#jsc-139) recorded and both were taken here, on this machine,
+minutes apart — so what moved between that entry and this one is not this change, and the pair of
+figures rather than the difference from a figure taken elsewhere is what this entry stands on. The
+published binary stops both depths at the declared bound of 5,999, as it did before.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; the sweeps of the nine
+trees above before and after; and cases 114 to 127 of
+`src/tests/differential/the-seam-between-generators-and-the-rest.js`, every one of them measured
+against `/opt/node22/bin/node` before it was written down. The CLI acceptance row that pinned the
+deviation — `runs/a-generator-default-runs-at-the-first-next.js`, whose own header said it *goes red
+the day that is repaired* — went red and was moved deliberately, to
+`runs/a-generator-default-runs-at-the-call.js` and to the answer the comparison engine gives.
+2026-09-05.
+
+### JSC-160
+
+**Where:** [JSC-152](#jsc-152)'s closing paragraph, which left a divergence standing and named it
+wrongly.
+
+**What was assumed.** That *an ordinary assignment `o.x = v` still evaluates its value before its
+reference*, and that correcting it would touch every assignment form this compiler lowers.
+
+**What was true.** `o.x = v` was never wrong. `CompileAssignment`'s simple-`=` arm compiles the
+member's base, then its computed key, then the value, and has since the unit was written:
+`f().x = g()` calls `f` before `g`, a base that throws never runs the value, and a computed key that
+throws never runs it either. Fifteen ordering cases over the member, identifier, super, private,
+compound, logical, `for…of`-head and chained forms were put through both engines and every one of them
+already agreed. **The divergence was real and it was somewhere else.** An OBJECT assignment pattern
+reads the property that feeds a target before it evaluates the target's reference:
+`({ a: o[k()] } = src)` read `src.a` and then called `k`, where
+`KeyedDestructuringAssignmentEvaluation` evaluates the target first and the `GetV` second. The rest
+property had the same shape one step larger — `({ ...o[k()] } = src)` ran `CopyDataProperties` over
+the whole source before evaluating the reference the result was about to be stored through.
+
+**What replaced it.** `BindObjectPattern` prepares each property's target with the same
+`PrepareTarget`/`BindPrepared` pair [JSC-151](#jsc-151) built for the array pattern, and prepares the
+rest target before the rest object exists. A pattern's own computed key is parked in a temporary
+first, so that the three run in the order the language states them: the property name, then the
+target reference, then the read. **The key is parked only where there is a reference to put between
+it and the read** — a name and a nested pattern evaluate nothing, which is every shorthand property
+and every plain `{ a: x }` — so the common shapes cost no slot and emit what they emitted before.
+
+**Nothing in `CompileAssignment` moved, and that is the refusal this entry records.** The risk of the
+correction as [JSC-152](#jsc-152) described it was that changing the order changes what is on the
+operand stack at the store, so every assignment form would have to be re-checked and the compound and
+logical forms — which already evaluate the reference first — must not be disturbed. That risk belongs
+to a change to `CompileAssignment`, and measuring showed no such change was owed: the arm was already
+right. The change that WAS owed is confined to one method's assignment arm and reuses machinery that
+already existed.
+
+**What that cost, measured.** **Nothing the pinned suite counts.**
+`test/language/expressions/assignment/dstr` was measured at both ends at **537 of 640 variants**,
+`test/language/statements/for-of/dstr` at **1,062 of 1,095** and the whole of
+`test/language/statements/for-of` at **1,326 of 1,436** — the figures [JSC-151](#jsc-151) recorded,
+unmoved in either direction. The suite has files that assert an object pattern's target IS evaluated
+and none that assert WHEN, so the correction is carried by the differential probe rather than by a
+suite figure. It is recorded here rather than declined because the divergence is real, it is
+reachable with a getter and no error at all, and it is the half of a family the ledger already says
+was left open.
+
+**One divergence in the same neighbourhood is NOT closed here and is not this correction's.** A rest
+property builds its object by copying every own enumerable property of the source and then deleting
+the ones the pattern named, so a getter on an excluded property runs and its value is thrown away —
+`({ a: x, ...rest } = src)` invokes `src`'s `a` getter twice where the language invokes it once.
+Closing it needs `CopyDataProperties` to take an exclusion set, which is an operand this format's
+`SpreadObject` does not have; it is a format change rather than a lowering change, and it is not the
+ordering defect this entry is about.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; the sweeps of
+`test/language/expressions/assignment/dstr`, `test/language/statements/for-of/dstr` and
+`test/language/statements/for-of` before and after; fifteen ordering cases over every assignment form
+this compiler lowers, run against `/opt/node22/bin/node` to establish that
+[JSC-152](#jsc-152)'s reading was wrong before anything was changed; and cases 335 to 345 of
+`src/tests/differential/the-statement-and-object-surface.js`, every one of them measured against the
+same engine before it was written down. 2026-09-05.
+
+---
+
+### JSC-161
+
+**Where:** the dynamic `import()`, which had no lowering at all: `JsParser.ParsePrimary` refused it
+by name wherever it appeared, and `JsRealm.Dynamic.cs` said in as many words that it was not there
+because "it belongs to the module goal, which this profile does not have".
+
+**What was assumed.** That the two ways a guest of this profile can reach code are the two that
+already existed, and that a dynamic import would have to be one of them. `eval` and the `Function`
+constructor put a String to the mediator and run what the composition's artifact provider answers;
+the static module graph is resolved BEFORE the bytes are written, so a specifier has already become
+a key and the artifact carries what the key names. A dynamic import looked like a third thing that
+would have to be forced into one of those two shapes.
+
+**What was true.** **It is both of them, and which one a particular call is cannot be known until it
+runs.** The specifier of `import(x)` is a value. When that value happens to be one the referring
+module already requested — `import('./m.mjs')` in a module that also wrote `import y from
+'./m.mjs'` — the answer is sitting in the artifact's own module records, resolved and confirmed by
+the composition at link, and putting it to the mediator would be a host round trip to be told
+something the artifact already says. When it does not — `import(x + y)`, `import(obj)` with a
+`toString`, a specifier assembled from a table — nobody has resolved it, nothing has compiled it,
+and there is no answer inside the artifact at all. Of the 595 files of the pinned suite that call
+`import()`, 461 use only literal specifiers and 134 compute at least one; a design that served only
+the first would have declined a fifth of the family by construction, and a design that served only
+the second would have gone to the host for four fifths of it and, worse, would have had to be told
+separately that the module it was handed back is one the realm already has.
+
+**What replaced it.** Both routes, with the artifact's own records as the fast path, which is
+`JsEngine.DynamicImport` and `JsEngine.ImportedModule`. A new instruction, `ImportCall` at `0x83`,
+pops an attributes value and a specifier and pushes a promise; its `u16` operand is a constant
+holding the REFERRER, because the specifier is on the stack and what the instruction cannot get from
+the stack is which module or script wrote it. The fast path scans the referring module's own request
+table, which the composition already ruled on at link, and answers the instance that table names.
+The slow path is `eval`'s door: `JsFormat.ModuleRequest` builds a payload of the referrer and the
+specifier behind a leading `NUL`, the composition's provider resolves, reads and compiles a module
+graph, the core verifies it, and this realm links it beside its own.
+
+**Why the two single-route designs were refused, and not merely not chosen.** A mediator-only design
+answers everything and is wrong about identity: `import('./m')` in a module that statically imports
+`./m` would have gone to the host, come back with a second compilation of the same module, and built
+a second environment for it — so an exported `let` would have had two values in one realm, which is
+the one thing a module registry exists to prevent. It also spends a host call on a question the
+artifact already answers. An artifact-only design is honest about everything it can answer and
+cannot answer a computed specifier at all, because answering one means turning a run-time string
+into bytes and this profile compiles nothing at run time; it would have left the largest half of the
+family declined for a reason the roadmap does not give.
+
+**What the surfaces are, and why it is not the pair a reader expects.** An artifact containing an
+`ImportCall` declares `broiler.javascript.dynamic` and does NOT declare
+`broiler.javascript.modules`. The first is roadmap section 6's own allocation — the table there has
+listed `eval`, the `Function` constructor and dynamic `import()` under that one identity since
+JS-8 — and it is declared whichever route a given call turns out to take, because which route it
+takes is a property of a run-time value and a declaration cannot be. The second is not declared
+because **the module surface is declared by CARRYING RECORDS and by nothing else**, and a SCRIPT may
+write `import()` and carries none: 1,046 of the 1,079 dynamic-import variants of the pinned suite
+are script variants. Declaring it from the call site would have made every one of those an artifact
+claiming to hold a graph it does not hold, which the verifier refuses as `ModuleSectionMissing`.
+The refusals stay in the three shapes that already existed: a composition that DECLINES the dynamic
+surface has its artifact refused at verification, as an invalid artifact the guest never sees; a
+composition that admits it and registers no provider is refused at run time; and a composition whose
+provider cannot answer for this specifier is refused at run time with a different message naming the
+specifier. Nothing here is a fourth shape. One new core code, `1622 ImportCallOutsideManifest`,
+covers the case those three do not: an artifact that reached the instruction without declaring
+anything, which is a program buying a host round trip with an opcode. It is the first optional
+surface an artifact can reach without reading a name or carrying a section, which is why it needs a
+code of its own.
+
+**What it does NOT change, and the one constraint it puts on a composition.** A module the realm has
+already instanced is ADOPTED by a later artifact rather than rebuilt — `JsEngine.Instantiate` keys on
+the module's key, which is the composition's own answer — so an artifact the mediator supplies is a
+second VIEW of a graph and not a second graph. That makes the composition responsible for one thing
+it was not visibly responsible for before: two artifacts answered under one key must be two
+compilations of the same source, because the second artifact's import bindings index the first one's
+environment. It is the same class of obligation as "the composition resolves a specifier to a key",
+and it is stated here rather than enforced, because enforcing it would mean comparing two
+compilations of a module the profile is not allowed to compile.
+
+**What that cost, measured.** `test/language/expressions/dynamic-import`, 997 files and 1,522
+variants: **pass 40, fail 4, unsupported 1,079, skipped 399** before, and **pass 1,025, fail 98,
+unsupported 0, skipped 399** after. The `unsupported` column is the figure the programme is about
+and it is empty; the 98 failures are a family that is admitted and imperfect, which is the outcome
+that column exists to make visible. Measured with
+`python3 eng/run-test262.py --suite /tmp/wl/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e --dir
+test/language/expressions/dynamic-import --jobs 2`, both figures on this checkout, the before with
+the refusal restored.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; cases 53 to 65 of
+`src/tests/differential/the-module-goal.mjs`, every one of them taken from `/opt/node22/bin/node`
+before it was written down; and rows `modules/a-dynamic-import.mjs`,
+`modules/a-dynamic-import-from-a-script.js` and `modules/a-dynamic-import-of-nothing.mjs` of
+`src/tests/cli/expected.txt`, which are the two routes and a rejection. 2026-09-05.
+
+### JSC-162
+
+**Where:** `import.meta`, refused by name in `JsParser.ParsePrimary` beside the dynamic import.
+
+**What was assumed.** That it is a third form of the same family, and that admitting it means
+admitting whatever a host would put in it. The refusal read `` `import.meta` is not admitted by the
+declared feature manifest``, which says the manifest is what forbids it.
+
+**What was true.** **What a host puts in `import.meta` is the host's, and none of it is what the
+language fixes.** The language fixes four things: it is an ordinary object with a null prototype, it
+is extensible, a guest may add to it and read back what it added, and two evaluations of it in one
+module answer the SAME object. A host that populates it with nothing satisfies all four. So the
+manifest was never what forbade it; what forbade it was that no code unit had anywhere to keep an
+object per module instance.
+
+**What replaced it.** `ImportMeta` at `0x84`, whose `u16` operand is a module INDEX rather than a key
+constant — unlike `ImportCall`, this production is admitted only inside a module, so the module it
+belongs to is fixed when the code unit is lowered. The object hangs off `JsModuleInstance.Meta` and
+is built the first time it is asked for, which is what makes the second evaluation answer the first
+one's object; building it in the module's initialiser would have made one for every module of every
+graph whether or not a line of the module mentions it. It lives on the INSTANCE and not on the
+record, so two realms running one artifact get two of them.
+
+**And a diagnostic of its own, `2404 ImportMetaOutsideModuleGoal`.** `import.meta` in a script is a
+syntax error in every engine, and the code that already existed for a module goal's refusals is
+`ModuleDeclarationOutsideModuleGoal` — which would have told a reader to go looking for an import
+statement that is not there. `import.meta` declares nothing, binds nothing and requests nothing.
+
+**What that cost, measured.** `test/language/expressions/import.meta`, 23 files and 28 variants:
+**pass 2, fail 8, unsupported 17, skipped 1** before, and **pass 17, fail 10, unsupported 0,
+skipped 1** after. The ten failures are the suite asking what THIS host put in the object — a `url`,
+a resolver — which is the half a host decides and this one has decided is nothing.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, and cases 46 to 52 of
+`src/tests/differential/the-module-goal.mjs` measured against `/opt/node22/bin/node` before they
+were written down. Case 52 is the declared divergence and it is the whole of the difference: this
+realm's object is empty and the comparison engine's holds five names. 2026-09-05.
+
+### JSC-163
+
+**Where:** `JsParser.Attributes`, which refused `import x from './m' with { type: 'json' }` as a
+construct outside the manifest, with the family name "an import attribute clause".
+
+**What was assumed.** That refusing the clause and declining the attribute are the same act. The
+comment beside the refusal said the point of the clause "is to change what the host loads — which is
+the composition's decision, so admitting it would mean carrying an assertion this profile has no way
+to honour".
+
+**What was true.** **The grammar is ordinary and this front end can read it perfectly well.**
+Refusing it as a construct outside the manifest said the SYNTAX was not admitted, and that was
+false: `2104` is graded by the conformance runner as `unsupported`, a verdict reserved for a
+construct this front end does not read, and the clause is a brace, a key, a colon and a string
+literal. What no composition of this profile has is a LOADER for a module of a type — a JSON module
+is a module whose default export is a parsed document rather than an evaluated program — and that is
+a fact about loading.
+
+**What replaced it.** The clause is parsed in full, with the two early errors the grammar states —
+an attribute value must be a string literal, and a key may not be written twice — and the attribute
+is declined where the module is LOADED. For a static import that is compile time, because the graph
+of an artifact is resolved before a byte of it is written; the code is `2405
+UnsupportedImportAttribute`, which is not `2104` and is therefore scored as a refusal of the program
+rather than as a construct outside the manifest. For a dynamic import loading happens at run time,
+so the same attribute is declined there, by rejecting the promise the call has already answered
+with — and the second argument's SHAPE is checked in full first, because
+`import('./m', null)`, `import('./m', {with: 1})` and `import('./m', {with: {type: 1}})` are three
+programs the language rejects for three reasons and none of those reasons is "no loader for that
+type".
+
+**What it does NOT change.** The legacy `assert` spelling is not accepted at all, and that is a
+straightforward reading of the edition this front end is written against rather than a decision: the
+keyword was removed, so `assert` after a specifier is an identifier where a semicolon is expected,
+which is the ordinary syntax error.
+
+**What that cost, measured.** `test/language/import`, 182 files and 182 variants: **pass 1, fail 3,
+unsupported 12, skipped 166** before, and **pass 3, fail 13, unsupported 0, skipped 166** after. Ten
+of the twelve became failures and that is the intended shape of this entry: every one of them is a
+`json-modules` or `text-modules` test asking this host to load a document, which it cannot and now
+says so at the load rather than at the parse.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; cases 66 to 71 of
+`src/tests/differential/the-module-goal.mjs`, taken from `/opt/node22/bin/node` before they were
+written down — the comparison engine rejects the same three shapes with the same three error
+constructors and rejects the `type` attribute for its own reasons; and row
+`modules/an-import-attribute.mjs` of `src/tests/cli/expected.txt`. 2026-09-05.
+
+### JSC-164
+
+**Where:** `JsParser.ParseExportDefault` and `JsParser.ParseExportDeclared`, each of which carried an
+arm refusing `async function*` by name.
+
+**What was assumed.** That the async generator family still needed a refusal in `export`. Both arms
+were written when the family was outside the manifest and both tested for the `*` AHEAD of the arm
+that admits `async function`, so they kept working — and kept refusing — after the family was
+admitted everywhere else.
+
+**What was true.** `ParseFunctionRest` reads the `*` exactly as it does for `function*` and has done
+since the async generator was merged; the two constructs differ in one bit of the node and in no
+branch of the parser. The refusal was a superseded case nobody removed, which is why this is a gap in
+`export default` rather than a gap in the family.
+
+**What replaced it.** Both arms are gone, and `export default async function* () {}` reaches the
+same `ParseFunctionRest` every other function form reaches. The anonymous default form takes the
+synthetic name `default` from the rule about declarations, exactly as the anonymous class and the
+anonymous async function beside it do.
+
+**What that cost, measured.** Two variants of `test/language/module-code`, which were the whole of
+the family's `unsupported` count; the subtree went from **pass 551, fail 20, unsupported 26,
+skipped 153** to **pass 571, fail 26, unsupported 0, skipped 153**, and the other 24 recovered
+variants are [JSC-161](#jsc-161)'s and [JSC-163](#jsc-163)'s rather than this entry's.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; cases 72 and 73 of
+`src/tests/differential/the-module-goal.mjs`, measured against `/opt/node22/bin/node` before they
+were written down; and row `modules/a-default-async-generator.mjs` of `src/tests/cli/expected.txt`.
+2026-09-05.
+
+### JSC-165
+
+**Where:** the rejection a dynamic `import()` answers with when the module it named cannot be
+loaded — `JsEngine.ImportedModule`, in the arm [JSC-161](#jsc-161) wrote.
+
+**What was assumed.** That every way a mediated load can fail is this host's own plumbing, so every
+one of them rejects with a `TypeError`. That is what the arm was written to say, and it is what
+[JSC-161](#jsc-161)'s first measurement was taken against.
+
+**What was true.** **Two of those failures are the MODULE's and not the host's, and the language
+calls both of them the module's own syntax.** A module whose source will not parse and a module
+whose graph will not link — a name nothing exports, a resolution that walks a cycle, two star
+re-exports supplying one name — are both `SyntaxError` where they surface, and where they surface
+for a dynamic import is the rejection. It is the same distinction `JsEngine.Evaluate` already draws
+for `eval`, one step further out: there, a provider refusal is a `SyntaxError` because the front end
+refused the evaluated SOURCE; here, so is a core refusal of the ARTIFACT, because linking a graph is
+the module goal's half of parsing and the guest has no way to have caused it other than by writing
+the module that way.
+
+**What replaced it.** A load that came back `ProviderRefused`, or `InvalidArtifact` for any reason
+other than a manifest one, rejects with a `SyntaxError`; everything else keeps the `TypeError` it
+had. The exception for the manifest reasons is the part worth reading: a composition that DECLINED a
+surface refuses the inner artifact at verification, and that is a fact about the composition rather
+than about the module's text, so it stays a `TypeError` beside "there is no such module", "there is
+no provider" and "the allowance is spent".
+
+**What that cost, measured.** `test/language/expressions/dynamic-import` went from **pass 1,025,
+fail 98** — the figure [JSC-161](#jsc-161) recorded — to **pass 1,089, fail 34**, with the
+`unsupported` column still empty; sixty-four variants, all of them a `catch` asserting
+`SameValue(e.constructor.name, "SyntaxError")` on the rejection of an import of a module that does
+not link. Over the four subtrees together, 1,950 files and 2,482 variants: **pass 1,616, fail 147**
+becomes **pass 1,680, fail 83**. **That supersedes the after-figure in [JSC-161](#jsc-161)**, which
+was measured before this repair and was correct when it was taken.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; cases 72 and 73 of
+`src/tests/differential/the-module-goal.mjs` — a module that will not link and a module that will
+not parse — measured against `/opt/node22/bin/node` before they were written down, which answers
+`SyntaxError` to both; and row `modules/a-dynamic-import-of-an-unlinkable-module.mjs` of
+`src/tests/cli/expected.txt`. 2026-09-05.
+
+### JSC-166
+
+**Where:** two things [JSC-161](#jsc-161) got wrong about a module the guest asks for at run time —
+`JsParser.ParseImportDeclaration`'s bindingless arm, and when `JsEngine.DynamicImport` settles its
+promise.
+
+**What was assumed.** First, that the import forms which carry an attribute clause are the ones with
+a binding list. Second, that a graph is finished when the walk that started it returns.
+
+**What was true.** **`import './m.mjs' with {};` is a form, and the clause goes on the REQUEST rather
+than on the bindings.** The bindingless arm returns from the import parser as soon as it has read
+the specifier, so the clause was never looked for there and the answer was `` `;` was expected and
+`with` was found `` — a missing semicolon reported against a program the grammar admits, which is
+the shape of refusal [JSC-161](#jsc-161)'s whole family exists to stop giving.
+
+**And a graph containing a top-level `await` is NOT finished when the walk returns.** `Step` walks
+the evaluation order, and where a module suspends it registers a continuation on that module's own
+promise and RETURNS — that is what makes a top-level `await` an ordering guarantee rather than a
+blocked host. Settling the import's promise at that point handed the guest a namespace whose module
+had not run, and a read through it answered the temporal dead zone's `ReferenceError` for a binding
+that was about to exist. A rejection from a module that failed after suspending reached nobody at
+all: it was raised inside a job, where a graph entered through the artifact's entry point has
+nowhere else to put it, rather than through the promise the guest was holding.
+
+**What replaced it.** The bindingless arm reads a clause like every other arm. And `Step` takes a
+completion callback: a graph entered through a dynamic import passes one, so the promise is settled
+where the walk RUNS OUT rather than where it returns, and a failure anywhere in the graph reaches
+the guest through that promise instead of through a throw inside a job. A graph entered through the
+entry point passes none and keeps exactly the behaviour it had, because it has nobody holding a
+promise for it — which is also why `JsModuleInstance.Evaluation` is asked only by a walk that
+carries a callback: a module that is still awaiting reads as `Evaluated` (the state is set the
+moment an async body is entered, or a second walk would enter the body twice), and only a walk
+somebody is waiting on can afford to wait for it.
+
+**What that cost, measured.** Over `test/language/module-code` and
+`test/language/expressions/dynamic-import` together, 1,745 files and 2,272 variants: **60 failures
+before and 60 after**, and the four that changed on each side are what the entry is about. Recovered:
+`import-attributes/import-attribute-empty.js`, `top-level-await/await-dynamic-import-resolution.js`,
+`top-level-await/dynamic-import-rejection.js` and `top-level-await/dynamic-import-resolution.js` —
+the last of which is precisely the dead-zone read the early settle produced. Newly failing:
+`top-level-await/fulfillment-order.js`, `top-level-await/rejection-order.js` and both variants of
+`top-level-await/dynamic-import-of-waiting-module.js`, which were passing because everything settled
+at once and now ask a question this engine has no model for. **That is the finding and it is left
+open**: those three name `AsyncModuleExecutionFulfilled`, `GatherAvailableAncestors` and
+`[[AsyncEvaluationOrder]]`, which are the async module graph's own machinery — a list of available
+ancestors settled leaf-to-root — and this engine has a depth-first order and a per-module promise
+instead. It belongs to the asynchronous-module family rather than to the dynamic import, and closing
+it means giving a module record an evaluation capability and a pending-dependency count.
+
+**The `Evaluation` field moves no measurement and is here anyway**, which is worth saying plainly: a
+second dynamic import of a module that is still awaiting walks past it and settles early without it,
+and the two cases of the suite that would witness that fail on the ordering model above instead. It
+is correct by construction rather than by measurement, and a reader is entitled to know which.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; case 74 of
+`src/tests/differential/the-module-goal.mjs` — a dynamic import of a module with a top-level
+`await`, reading a `let` the body has not reached — measured against `/opt/node22/bin/node` before
+it was written down; and rows `modules/an-empty-attribute-clause.mjs` and
+`modules/a-dynamic-import-that-waits.mjs` of `src/tests/cli/expected.txt`. 2026-09-05.
+
+---
+
+### JSC-167
+
+**Where:** JSW-4's exit gate, which asks three things of the regular-expression stage; the ledger's
+`JS-6` row, which described the surface as a translation and named the missing metadata test; and
+the rule register, which had no rule over any of it.
+
+**What the plan said.** That the stage ends when `broiler.javascript.regexp` is declared, when the
+closure contains no call site constructing a compiled-mode regular expression from the host
+platform *asserted by its own metadata test*, and when the benchmark's own checksum agrees.
+
+**What was true when the matcher landed.** Two of the three. The matcher is this profile's own and
+the Octane `regexp` benchmark's checksum agrees, which is the sentence the stage was written to make
+true and which the ledger's row still described in the past tense as an approximation that
+*neither refuses nor agrees*. **The other two clauses were both about the absence being checked
+rather than merely being true**, and neither was: no rule read the profile's source for a call into
+`System.Text.RegularExpressions`, and the manifest identity was never minted.
+
+**A state of the tree that nothing checks is a state one edit can undo.** The regression this
+guards against is not somebody replacing the matcher — it is one String method reaching for the
+nearest tool, which is how the translation got in the first time. A single
+`using System.Text.RegularExpressions;` would restore exactly the dialect the stage spent itself
+removing, and every test in this repository would stay green. **Rule N18** is that assertion: it
+reads the profile's product source for every spelling that reaches the platform engine, requires
+each of the profile's assemblies to be represented and the matcher's own file to be among them
+before it reads an empty result, and its rejecting direction is a witness source writing all three
+spellings. It has been watched failing against an injected import and passing after the revert.
+
+**The manifest clause is left unmet, and deliberately rather than quietly.** Regular expressions
+are inside `broiler.javascript.wide`; declaring `broiler.javascript.regexp` now would either
+re-scope a manifest every retained artifact names, or mint an identity nothing declares — a
+manifest with no artifacts rather than a boundary. Which of those is right is a decision a person
+takes, on the record [JSD-0021](decisions/0021-the-wide-bring-up-manifest-and-format-version-2.md)
+already holds, and this entry records the clause as owed rather than done. **The IL-emission half
+of the same gate is unasserted too**, and is named here for the same reason.
+
+**Authority and date.** Rule N18 as registered, its witness, and the injection-and-revert that was
+watched in both directions; the Octane run of 2026-09-05, in which the `regexp` benchmark reported
+a score and printed no checksum failure; and the absence of any `System.Text.RegularExpressions`
+spelling in the profile's three product assemblies, which is what the rule now holds. 2026-09-05.
+
+---
+
+### JSC-168
+
+**Where:** [JSC-138](#jsc-138), which recorded that a function declaration written inside a block
+does not close over the block's bindings and left the repair to a later bundle. This is that bundle.
+
+**What was assumed.** That a function declaration is a `var` in every respect but its initialiser —
+hoisted to the enclosing body, initialised before the first statement runs — so one collector could
+answer for both. `CollectVarScope` descended through blocks, loops, `try` and `switch` gathering
+declarations into the enclosing body's list, and `CompileBlock` had nothing to do with them.
+
+**What was true.** The two part company at exactly one point, and it is the point that decides which
+environment a closure captures. **A function declaration written inside a block is a LEXICAL binding
+of that block**, so its closure is built while the block's record is current; a `var` anywhere in a
+body binds in the body. Hoisting the declaration out built the closure against a chain the block's
+record was not on, and a body naming a `let` of the same block resolved it to a global:
+`{ let n = 0; function fn() { n += 1; } fn(); }` answered `uncaught ReferenceError: n is not defined`
+where the same block written with a function EXPRESSION answered `1`. The same defect had a second
+face nobody had connected to it — two sibling blocks each declaring `function* g()` share one hoisted
+binding, so the second declaration wins in both blocks and the first block's `[...g()]` yields the
+second's value. A second agent met that face, wrote it down as `undefined is not iterable`, and
+worked around it.
+
+**And the language's answer has a second half that cannot be shipped separately.** Annex B
+additionally gives sloppy code a `var`-scoped binding of the same name, initialised to `undefined`
+when the body is entered and assigned the block's binding WHERE THE DECLARATION STANDS. Doing only
+the lexical half was measured before it was extended: it turns `if (x) { function f() { } } f();` —
+which every engine runs — into a `ReferenceError`, and it cost **59 variants of `test/annexB`
+outside the excluded eval families** that had been passing, against 209 it fixed. An early error or
+a lost binding where the language has neither is worse than the failure being closed, so the two
+halves are one correction.
+
+**What replaced it.** `CollectVarScope` collects a function declaration at the TOP LEVEL of a
+hoisting scope and nowhere below it, looking through a label because
+`TopLevelVarScopedDeclarations` does; `CollectLexical` answers with the block's function names
+beside its `let`, `const` and `class` names, and with the constness of each, so `CompileBlock`
+declares the whole lexical set before the block's first instruction — which is also the temporal
+dead zone the block always owed and did not have. `HoistBlockFunctions` then builds every closure at
+block entry with the block's record current, slots first so two functions in one block can call each
+other. A `switch` gets the same treatment over its clauses read as one list, because its clauses are
+one record. `ParseIf` gives a bare declaration in an `if` or `else` clause the block Annex B says it
+is, once, so that every rule about a declaration in a block applies to it without being restated.
+
+**Annex B's own clause is a question about an EARLY ERROR, and `ScanAnnexB` asks exactly that
+question.** The alias is created when replacing the declaration with `var F` would not have been a
+syntax error, so the walk carries the set of names such a `var` would have collided with, adds each
+enclosing block's lexical names on the way down, and admits a declaration when its name is not in
+the set its ENCLOSING blocks give. A simple catch parameter does not block it and a destructuring one
+does, which is not this walk's invention but B.3.4's exemption. A parameter name blocks it, and so
+does `arguments`. **A generator, an async function and an async generator get no alias at all** —
+the clause names `FunctionDeclaration` and not the three productions that look like it — and
+admitting them cost three conforming refusals in `test/language/statements/switch` before it was
+noticed.
+
+**What that cost, measured.** `test/annexB/language/function-code` **61 of 159 variants to 159 of
+159**; `test/annexB/language/global-code` **48 of 153 to 136 of 153**, the remaining seventeen all
+waiting on `$262.evalScript`, which this manifest declines as a guest-initiated load. The whole of
+`test/annexB/language` outside the excluded eval families goes **167 of 425 to 353 of 425**, and the
+excluded eval families themselves — measured but not claimed — **116 of 470 to 308 of 470**.
+`test/language/statements/for-await-of` goes **2,420 of 2,427 to 2,427 of 2,427**, which includes
+the four variants [JSC-138](#jsc-138) named. `test/language/statements/switch` goes **181 of 216 to
+213 of 216** and `test/language/statements/block` loses its two failures. Nothing regressed:
+`test/language/statements`, `test/language/expressions`, `test/annexB/language` and
+`test/built-ins/Array` were each read variant by variant at both ends and **no variant that passed
+before fails after**.
+
+**Two of the suite's own files disagree with the comparison engine, and this profile follows the
+suite.** `annexB/language/function-code/block-decl-nested-blocks-with-fun-decl.js` asserts that a
+declaration in a nested block whose name an enclosing block declares lexically gets NO alias, and
+`block-decl-func-skip-arguments.js` asserts that a declaration named `arguments` gets none;
+`/opt/node22/bin/node` fails both when they are run through the suite's own harness. Both shapes are
+therefore kept OUT of the differential probes, which take their answers from that engine, and are
+carried by the suite figures instead.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; the subtree runs named
+above, taken before any change, again after the lexical half alone, and again after both halves;
+cases 426 to 448 of `src/tests/differential/the-statement-and-object-surface.js`, every one of them
+measured against `/opt/node22/bin/node` before it was written down; and the acceptance rows
+`runs/a-function-a-block-declares.js` and
+`runs/the-declarations-a-clause-still-admits.js`. 2026-09-05.
+
+### JSC-169
+
+**Where:** `ToPattern` in `JsParser`, the cover grammar's reinterpretation of an array or object
+LITERAL as an assignment pattern, and the early errors an assignment pattern carries.
+
+**What was assumed.** That the reinterpretation is a shape change and the rules had already been
+stated on the declaration path — so `ToPattern` needed to refuse only what could not be a reference
+at all.
+
+**What was true.** The two paths deliberately differ, which is why sharing them is refused, and the
+difference cuts both ways: `ParseBindingPattern` had rules `ToPattern` also owed, and `ToPattern`
+had a refusal the language does not have. **Four rules, three missing and one invented.**
+
+**A rest element is last with nothing after it, and a comma is something.** An array literal may end
+with a comma and an `ArrayAssignmentPattern` may not, so `var a = [...x,];` is a value and
+`0, [...x,] = [];` is a syntax error — and the comma is gone from the tree by the time the
+reinterpretation runs, so the literal now records whether there was one. The object case reads the
+same way.
+
+**A shorthand property's key is an `IdentifierReference` and a written-out key is an
+`IdentifierName`.** `({ default: 42 })` is a property and `({ default })` is a reference to a word no
+binding may be called. The rule is stated where the literal's entry is parsed rather than in the
+reinterpretation, because the same braces cover both readings and the rule is the same on either.
+
+**Strict code replaces neither restricted name, and a bracket does not change that.**
+`"use strict"; arguments = 1;` was refused where the `=` was read; `"use strict"; [arguments] = [];`
+reached no such place, because the bracket settled the left-hand side as a pattern before the rule
+was asked. The rule belongs on every LEAF of a pattern, which is what also refuses `[...eval]` and
+`({ a: arguments })`.
+
+**And the invented refusal is the one that mattered most.** An element whose target is itself a
+pattern arrives at `ToPatternElement` ALREADY reinterpreted — `[a] = 1` and `{} = 1` are settled as
+destructuring assignments the moment their `=` is read — so it was a `JsDestructuringAssignment`
+where the code looked for a `JsAssignmentExpression`, fell through to `ToPattern`, and met a node
+that is neither a literal nor a reference. `[ [a] = 1 ] = []` — an ordinary program, and the shape
+the suite uses to test that an iterator is closed when a nested default throws — was REFUSED. A
+refusal of a correct program is worse than an accepted incorrect one, and this one was reachable
+from three families at once.
+
+**What that cost, measured.** `test/language/expressions/assignment/dstr` **609 of 640 variants to
+632 of 640**; `test/language/statements/for-of/dstr` **1,074 of 1,095 to 1,093 of 1,095**;
+`test/language/statements/for-in/dstr` **40 of 49 to 49 of 49**. Nothing regressed in
+`test/language/expressions` or anywhere else measured.
+
+**What is NOT closed here.** The `syntax-error-ident-ref-*-escaped` variants of the same families
+need the STRICT-reserved word set — `implements`, `interface`, `package`, `private`, `protected`,
+`public` — which this front end does not have at all; [JSC-173](#jsc-173) records that separately,
+because it is a rule about identifiers everywhere rather than about patterns.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; the subtree runs named
+above at both ends; twenty-four shapes put through `/opt/node22/bin/node` and this host side by side
+before anything was changed, covering both directions of every rule; cases 471 to 485 of
+`src/tests/differential/the-statement-and-object-surface.js`; and the acceptance rows
+`refused/a-rest-element-with-a-comma-after-it.js`,
+`refused/a-reserved-word-as-a-shorthand-property.js`,
+`refused/a-restricted-name-as-a-pattern-target.js` and
+`runs/the-patterns-a-rest-and-a-shorthand-still-admit.js`. 2026-09-05.
+
+### JSC-170
+
+**Where:** the completion value a script answers with, which slot zero of a script unit holds and
+`CompileStatements` threads.
+
+**What was assumed.** That a statement either produces a value or leaves the one before it standing,
+so an expression statement writes the slot and nothing else touches it.
+
+**What was true.** That is the rule for a statement LIST and for a block, and it is not the rule for
+most statements. `UpdateEmpty(C, undefined)` appears on `if`, on every iteration statement, on
+`with`, on `try` and on `switch`: each answers with its own body's value, and with `undefined` —
+not with the value of whatever ran before it — when its body produced none. So `1; if (true) { }` is
+`undefined` and was `1`, `1; while (false) { }` is `undefined` and was `1`, and
+`1; switch ("a") { case null: }` is `undefined` and was `1`. **A `finally` that completes normally
+contributes no value of its own either**: the `try` statement's value is its block's or its `catch`'s
+and survives the finaliser, so `2; try { 3; } finally { }` is `3` and
+`4; try { } catch (e) { } finally { 5; }` is `undefined` — and the finaliser was being compiled with
+the enclosing script's completion slot, so its statements overwrote an answer that was already
+settled.
+
+**A BLOCK IS THE EXCEPTION, and it is the one a list of these gets wrong.** `Block : { }` answers
+`empty` and a statement list carries the value forward across an empty one, so `1; { }` is `1`. That
+is why the reset is written at the eight statements that own it rather than once in
+`CompileStatements`.
+
+**What replaced it.** Two instructions at the head of each of those statements, putting the slot back
+to `undefined` before the statement runs. A slot the body overwrites when it produces a value and
+leaves alone when it does not IS `UpdateEmpty`, so the whole rule costs nothing per iteration and a
+`break` out of the middle of a loop body needs no arm of its own — the slot already holds what the
+language says it holds. The finaliser is compiled with no completion slot at all on both of its
+normal-path emissions.
+
+**What that cost, measured.** The `cptn-*` families of `test/language/statements` go **42 of 148
+variants to 148 of 148**, which is every one of them: `do-while`, `for`, `for-in`, `for-of`, `if`,
+`switch`, `try`, `while` and `with`, each measured as its own family rather than in aggregate.
+`test/language/statements/if` goes **104 of 125 to 120 of 125** and
+`test/language/statements/try` **353 of 388 to 375 of 388**.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; the subtree run of
+`test/language/statements` before and after; twenty-five completion values put through
+`/opt/node22/bin/node` and this host and compared whole; and cases 449 to 470 of
+`src/tests/differential/the-statement-and-object-surface.js`, which reach the value through an
+INDIRECT eval because a direct one is a published exclusion of this manifest. 2026-09-05.
+
+### JSC-171
+
+**Where:** `ParseOrdinaryParameters` and the `[Yield]` and `[Await]` contexts a parameter list and a
+body are parsed in.
+
+**What was assumed.** That an arrow's parameters are `[~Await]` like a method's, and that clearing
+the flag was the safe answer because an `await` there would lower an `Await` into a unit with no
+async flag and the verifier would refuse it. The declaration said so in those words.
+
+**What was true.** The reasoning was right about the consequence and wrong about the rule.
+`ArrowParameters[?Yield, ?Await]` inherits the enclosing context, so
+`async function f() { (await) => { }; }` is a syntax error every engine gives and was accepted here.
+**The language's answer is both halves at once**: the context reserves the NAME, and a separate early
+error — `ArrowParameters Contains AwaitExpression` — refuses the EXPRESSION. Only the two together
+are safe; the first alone produces exactly the artifact that declaration warned about.
+
+**And the same sentence is written three more times in the grammar.** A generator's
+`FormalParameters` may not contain a `YieldExpression`, an async function's and an async method's may
+not contain an `AwaitExpression`, and an `AsyncArrowHead` may not either. All four are one rule about
+one position, so they are one flag set by `ParseParameters` and one refusal at each of the two
+expressions.
+
+**The rule had already cost this component the failure it exists to prevent, in the half nobody was
+looking at.** `ParseOrdinaryParameters` cleared `[Await]` and left `[Yield]` alone, and
+`ParseFunctionBody` decided `[Await]` for every body and left `[Yield]` to its callers — so an
+ordinary method written inside a generator kept the ENCLOSING generator's context in both its
+parameter list and its body. `function* g() { ({ m(x = yield) { } }); }` and
+`function* g() { ({ m(yield) { return yield; } }); }` are programs the comparison engine runs, and
+this host answered **`1609 (InvalidArtifact/SemanticValidationFailed)`** — the verifier refusing
+bytes this component had just produced, which roadmap section 3.4 records as the worst failure shape
+this component has. A `MethodDefinition` passes neither parameter down, so both are now `[~Yield,
+~Await]`, and a generator METHOD's list — which really is `[+Yield]` — sets the flag itself instead
+of borrowing an answer meant for ordinary methods.
+
+**What that cost, measured.** The rule reaches every family that has a parameter list, so the
+figures are small and wide rather than concentrated:
+`test/language/expressions/async-arrow-function` **105 of 110 variants to 109 of 110**,
+`test/language/expressions/arrow-function` **612 of 643 to 614 of 643**,
+`test/language/expressions/generators` **526 of 546 to 528 of 546**,
+`test/language/statements/generators` **501 of 510 to 503 of 510**,
+`test/language/statements/class` **8,405 of 8,635 to 8,411 of 8,635** and
+`test/language/expressions/class` **7,822 of 8,010 to 7,828 of 8,010**;
+`test/language/expressions/object/method-definition` goes **518 of 557 to 551 of 557** together with
+[JSC-172](#jsc-172). Forty-four variants across those families pass that did not, and none that
+passed fails. The figure worth reading is the one that is not a suite number: two shapes that
+produced an artifact this component's own verifier refused now produce a program.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; twenty shapes over the
+arrow, method, generator, async and async-generator forms put through `/opt/node22/bin/node` and this
+host before anything was changed and again after, in both directions; cases 486 to 497 of
+`src/tests/differential/the-statement-and-object-surface.js`; and the acceptance rows
+`refused/a-suspension-in-a-parameter-list.js` and
+`runs/a-suspension-a-parameter-list-still-admits.js`. 2026-09-05.
+
+### JSC-172
+
+**Where:** `PropertyKey` in `JsParser`, and the entry a generator method builds in an object literal.
+
+**What was assumed.** That a private name is refused wherever it does not belong, and that
+`MemberName` — whose own comment says it is refusing the object literal's key — was that place.
+
+**What was true.** `MemberName` reads what follows a `.`, and the object literal's key is read by
+`PropertyKey`, which took any token's raw text. So `({ #m() { } })` — and the getter, setter,
+generator, async and plain-entry spellings of it — were accepted, and the language has no such
+production in any edition. It holds INSIDE a class as much as outside one, because the private names
+a class body binds belong to the class and an object literal written in a field's initialiser is
+still an object literal. Stating it once where the key is read covers five entry forms at once, and a
+class member never passes through there: the member parser recognises its own private name before it
+asks for a key.
+
+**And beside it, one entry form did not say what it was.** The object literal's generator arm built
+its entry without the method bit that its ordinary, accessor, async and async-generator siblings all
+set — so the lowering emitted `DefineField` rather than `DefineMethod`, the function had no home
+object, and `({ *g() { super.x; } })` was refused with "`super` is only admitted inside a method"
+while `({ async *g() { super.x; } })` beside it was accepted. That is a refusal of a correct program,
+found from the other direction while measuring the family the private-name rule lives in.
+
+**What that cost, measured.** `test/language/expressions/object/method-definition` **518 of 557
+variants to 551 of 557** together with [JSC-171](#jsc-171), and
+`test/language/expressions/object/concise-generator.js` passes at both variants where it passed at
+neither. The six that remain are four direct-`eval` variants this manifest excludes and two
+`yield`-in-a-spread cases inside a generator method's body, which are neither this correction's nor
+[JSC-171](#jsc-171)'s. Two name-inference variants that had been failing —
+`fn-name-gen.js` and `generator-name-prop-symbol.js` — pass now, because the entry a generator
+method builds finally reaches `DefineMethod`.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; the subtree run named
+above at both ends; nineteen shapes over the five entry forms and the class members they must not
+reach, put through `/opt/node22/bin/node` and this host before and after; cases 498 to 506 of
+`src/tests/differential/the-statement-and-object-surface.js`; and the acceptance rows
+`refused/a-private-name-as-a-property-key.js` and
+`runs/the-keys-an-object-literal-still-admits.js`. 2026-09-05.
+
+### JSC-173
+
+**Where:** the words strict code reserves and this front end does not, recorded and NOT repaired
+here, so that the next reader does not find it by measuring the family it hides in.
+
+**What was assumed.** Nothing was assumed; the set was never written. `IsIdentifierName` answers for
+the contextual keywords and `BindingName` refuses `eval`, `arguments` and `let`, and there the
+reservation stops.
+
+**What was true.** Strict code reserves six more words outright — `implements`, `interface`,
+`package`, `private`, `protected` and `public` — and reserves `yield` and `static` as well. This
+front end accepts all of them everywhere: `"use strict"; package;` compiles, and so does
+`"use strict"; var package = 1;`. The gap surfaces in the `syntax-error-ident-ref-*-escaped` variants
+of the destructuring families [JSC-169](#jsc-169) closed the rest of, because those spell the word
+through a unicode escape and `RefuseEscapedReservedWord` asks a keyword table the words are not in;
+twelve variants across `test/language/expressions/assignment/dstr` and
+`test/language/expressions/arrow-function/dstr` are waiting on it, and the `identifiers` families
+hold more.
+
+**What replaced it.** Nothing, in this bundle, and the reason is a measurement rather than a
+preference. The repair is an EARLY ERROR over a set of ordinary identifiers, so its blast radius is
+every strict-mode program in the suite and every strict-mode program a host runs — the direction in
+which a mistake turns working programs into refusals. It wants its own two-direction audit against
+the comparison engine, over every position an identifier may stand in, and it is worth more than the
+twelve variants it would close here. Recording it is what stops the next reader treating those twelve
+as a pattern defect.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; six shapes over `package`,
+`yield`, `let` and `static` in binding, reference and shorthand positions, put through
+`/opt/node22/bin/node` and this host, in which this host accepts every one the engine refuses; and
+the subtree runs of the two families named above, in which the twelve remain failures at both ends.
+2026-09-05.
+
+---
+
+### JSC-174
+
+**Where:** `eng/collect-js-evidence.py`'s four control loops, each of which injects a defect into the
+real checkout, judges it, and reverts — and each of which reports *the anchor has moved* when the
+injection changes nothing.
+
+**What was assumed.** That an injection changing nothing means the code it names has been
+refactored. Every loop carries a byte-for-byte guard that stops the run if a revert does not restore
+its file, so the loops were written as though a control could only fail to apply for that one
+reason.
+
+**What was true.** There is a second reason and it is the one that arrived. **A collection
+interrupted between an injection and its revert leaves the injection in the working tree**, and the
+next collection reads that as the file's original text. The mutation is then a no-op, the control
+reports the anchor as moved, and the tree stays wrong — a skip naming the wrong cause, and a control
+matrix that reads like a refactor rather than like an interrupted run. **The byte-for-byte guard
+cannot see it**, because it compares a revert only against what that same run read.
+
+**It was found by its consequence rather than by reading the script.** A collection of this
+programme's own bundle reported two controls skipped and twenty-nine controls run with none passing,
+and `JavaScriptVerifier.cs` was carrying the allocator-ordering injection one of those two skipped
+controls makes. **A control that judged nothing had been reported as a control whose subject had
+moved on**, which is the same defect bundle
+[JS-9-004](evidence/js-9-004/README.md) records of a retained log describing sessions that no longer
+existed, and the same defect the `JS-3a` collection found when a refactor moved an anchor and
+nothing said so.
+
+**What replaced it.** Each loop asks git which tracked files are modified before it starts, and a
+skip now says which of the two reasons applies: an anchor that moved, or a file already modified in
+this checkout, *so what was read as the original is not the committed text*. **The skip is still a
+gap and still a skip** — the collector does not repair the tree, because a script that reverted a
+change it did not make would be undoing whatever the person running it was doing — but the log now
+names the thing a reader has to fix.
+
+**And the rest of that matrix was unreadable for a second reason, which is stated here rather than
+repaired.** Every control in the whole-suite loop is judged by the suite's exit code, and this
+checkout's suite fails three tests that belong to a different component vendored under
+`src/Broiler.VM.HyperV/`: two package rules about projects outside the solution, and the assurance
+scanner's count of product projects on disk. **Those assertions are working**: the scanner's says in
+its own comment that a seventh product project appearing in the tree fails there *until someone
+decides whether it is covered*, and that decision is a person's. Until it is taken, no control this
+collector runs can pass, because none of them can make the suite go from failing to passing.
+
+**Authority and date.** The interrupted collection of 2026-09-05 and the injection it left in
+`JavaScriptVerifier.cs`; the control logs of the collection that followed it, in which twenty-nine
+controls ran and none passed; and the three suite failures, each traced to a project under
+`src/Broiler.VM.HyperV/` that no rule of this component accounts for. 2026-09-05.
+
+---
+
+### JSC-175
+
+**Where:** the three assertions [JSC-174](#jsc-174) named as failing for a reason outside this
+programme — rule A14's two halves and the assurance scanner's count of product projects on disk —
+and the decision each of them was waiting for.
+
+**What the plan said.** Nothing, and that was the point. The scanner's own comment states the
+condition rather than the answer: *a seventh product project appearing in the tree fails here until
+someone decides whether it is covered, and that decision is what the number records having been
+made.* Three had appeared, under `src/Broiler.VM.HyperV/`, when a second component was vendored into
+this repository at commit `bc15412`. The assertions did exactly what they were written to do and
+went red until somebody decided.
+
+**The decision, and on whose authority.** **The vendored component is outside this component's
+rules**, decided on 2026-09-05 by the person who asked for it, on the reading its own contents
+carry: it holds its own solution, its own LICENSE and its own NuGet.config, and no project of it
+appears in either solution this component's graph is frozen to. Group A governs a project graph —
+what may reference what, what may pack, and that no project sits outside every rule — and a second
+component's graph is not this one's to hold. **The alternative reading would have reported a
+repository that is doing nothing wrong**: three projects found unannotated, unpackaged and
+unreferenced, for the offence of being someone else's.
+
+**How the decision is written down.** `ComponentGraph.VendoredComponents` names the directory, and
+it names it rather than matching a pattern for the reason the solution list gives in its own words —
+*a glob for `*.slnx` would let a project escape every group A rule by arriving with a solution of its
+own*, which is precisely what this arrival did. An exclusion by pattern would grant that escape to
+whatever comes next; an exclusion by name is an edit to a list, which is a review. **And the
+exclusion asserts itself**: rule A14 requires each named directory to be on disk and to hold
+projects, so an exclusion that outlived its subject fails rather than passing quietly. That
+assertion was watched failing with the directory moved aside and passing after it was moved back.
+
+**What it changes beyond three red tests.** Every negative control in every bundle collected in this
+checkout is judged by the whole suite's exit code — a control passes when the suite fails while its
+defect is injected and passes after the revert — so while the suite failed for an unrelated reason
+the second half could never hold. A collection taken that morning reported twenty-nine controls run
+and none passing. **The suite now passes**, and a control matrix collected after this reports what
+it was written to report.
+
+**Authority and date.** The decision of 2026-09-05 recorded above; the three assertions, now green,
+with the vacuity guard watched in both directions; and the whole solution's suites passing with no
+failures for the first time in this programme. 2026-09-05.
+
+---
+
+### JSC-176
+
+**Where:** the retained corpus entry `wide-an-import-call-with-no-surface-declared`, and the
+opcode renumbering this branch performed when two stages allocated the same byte.
+
+**What was assumed.** That renumbering an opcode is a change to the code that emits it and the code
+that reads it. Both were updated in the same change and the whole test suite stayed green.
+
+**What was true.** **The retained corpus is BYTES, and bytes do not follow a rename.** The dynamic
+import allocated `ImportCall` at `0x83`; the generator parameter split, merged first, had already
+taken `0x83` for `EnterBody`; so the merge moved `ImportCall` to `0x85`. The corpus BUILDER writes
+`(byte)JsOpcode.ImportCall` and was therefore correct from the moment of the merge — and the
+committed `.bjsb` file still carried `0x83`, which now means `EnterBody`. The artifact that was
+written to be refused as *an import call in an artifact declaring no dynamic surface* was refused as
+*a body seam outside a generator*: the right kind of answer, from the wrong instruction, about a
+program nobody wrote.
+
+**Nothing in the ordinary gates could see it.** The suite passes, the differential probes pass, the
+acceptance table passes, and the refusal audit passes, because every one of them compiles source
+through the current lowering. **The retained corpus is the only gate that replays BYTES nobody is
+compiling**, which is exactly what it is for: bundle JS-1-002 records it as the check that a change
+to the front end cannot quietly redefine what a stored artifact means. It was found by the corpus
+replay inside an evidence collection, which is the first time this programme had run one.
+
+**What replaced it.** The corpus was regenerated from its builder, which rewrote the one entry's
+bytes and its digest in the manifest; the replay then agreed on all 118 entries.
+
+**A second finding from the same replay is NOT a defect, and it is recorded so the next reader does
+not chase it.** The soak's plateau check read a factor of 1.79 against a band of 1.2 during that
+collection and 0.96 immediately afterwards, on the same commit — the heap climbing steadily under
+load and flat when idle. The check says of itself that it is *a plateau check and not a
+measurement*, and what a busy machine changes is when the collector runs rather than what the
+program retains. **A collection taken while other work shares the machine is not a collection of
+this check**, which is the same hazard the Octane wall clock has and is recorded for the same
+reason.
+
+**Authority and date.** The corpus replay of 2026-09-05 before and after the regeneration, the
+manifest digest that changed with it, and the two readings of the plateau check on one commit
+under load and at rest. 2026-09-05.
+
+---
+
+### JSC-177
+
+**Where:** the ledger's [section 2](roadmap.status.md#2-current-milestone-status), and the two rows
+in it that had stopped describing the checkout.
+
+**What the plan said.** That `JS-7 — suspension` and `JS-8 — guest-initiated loads and the three
+compositions` are **`Not started`**, with `[NONE]` evidence, and that their immediate
+evidence-producing action is *after JS-5 and JS-6* and *after JS-7*.
+
+**What was true.** Both had been built and neither row had moved. A generator, an async function, an
+async generator and `for await` are all admitted and are exercised by a third-party corpus rather
+than by fixtures written here; a suspension saves itself into the executor's own frame, and the
+three drivers are told apart by a flag the instruction that left the dispatch loop writes. `eval`,
+the `Function` constructor, the module goal and a dynamic `import()` all exist, each behind the
+surface roadmap section 11 allocates to it, and **a composition that declines one refuses every
+artifact declaring it, at verification** — which is the clause bundle
+[JS-4-001](evidence/js-4-001/README.md) recorded as unmet for `eval` and which section 3 of
+[bundle JSW-10-001](evidence/jsw-10-001/README.md) demonstrates over three surfaces.
+
+**A row that says `Not started` about work that is done is worse than a row that says nothing.** The
+ledger's own update rule 1 asks that a row move in the same change that materially changes what it
+claims, and the workload programme changed both without moving either: the stages that built this
+mint `JSW-` identifiers and move no ledger row *by design*, and the obligation that leaves is on
+whoever does the work rather than on the document that proposed it. **Nine stages went by before
+anybody noticed**, which is the failure mode a status table has when nothing checks it against the
+tree.
+
+**What replaced it.** Both rows are `[PARTIAL]`, `In progress`, citing the bundle, with what the
+bundle's own exclusions name written into the row rather than left in the bundle: no reviewer
+decision, one machine and one runtime identifier, the direct `eval` inside a function still refused
+by name as a published exclusion, the asynchronous module graph with no evaluation-order model, and
+the obligation a module resolver carries that this profile states rather than enforces. The count
+above the table moves with them, and the `JS-6` row's clause that `broiler.javascript.wide` has no
+whole-suite run of its own is answered by the same bundle.
+
+**What this entry does NOT do.** It does not accept anything. Both rows stay short of `[FULL]`, no
+reviewer decision exists anywhere in this component, and the release gate refuses — which is the
+correct answer while every relevant unit is `HUMAN_PENDING`.
+
+**Authority and date.** Bundle JSW-10-001, retained on 2026-09-05, and the clauses of each gate its
+sections demonstrate; the ledger's update rule 1, which is what makes a stale row a defect rather
+than an omission. 2026-09-05.
+
+---
+
+### JSC-178
+
+**Where:** the conformance harness's classification of a source refusal —
+`LanguageErrors.Classify` and the `Classified` set beside it — and the five seam codes the module
+goal and the dynamic import minted without rows there.
+
+**What was assumed.** That minting a seam diagnostic is a change to the front end and to the
+registry. Both were done: each of the five carries a registry row, a corpus entry that reaches it,
+and a declaration whose remark says what the language does about it.
+
+**What was true.** **The conformance harness classifies a refusal before it may score one**, and
+that map is a third place, in the composition rather than in the profile. A code with no row there
+is *unclassified*, which the harness treats as a divergence so that it under-reports rather than
+inventing a pass — and its own self-check then fails, because a silent under-report is a defect too.
+So the harness refused to score anything at all: `the harness's own checks failed; nothing was
+scored`.
+
+**Nothing this programme ran locally could have caught it.** The build, the whole test suite, the
+differential probes, the acceptance table and the refusal audit all passed on the same commit; the
+whole-suite runs retained in [bundle JSW-10-001](evidence/jsw-10-001/README.md) passed too, because
+`eng/run-test262.py` drives the harness's `--test262` mode and the check that failed belongs to the
+INGESTED dialect's self-check, which only the lane runs. **It was found by CI, on the first run of
+the branch**, in all three jobs that touch the harness.
+
+**What replaced it.** Four of the five are early errors of a MODULE — a script containing `import`,
+a duplicate export name, an export clause naming a binding the module does not declare, and
+`import.meta` in a script — and each is scorable, because a conformance file asserting a parse-phase
+`SyntaxError` over one of those shapes asserts exactly what this front end answers. **The fifth is
+not.** An unsupported import attribute is *a fact about loading rather than about parsing*, which
+that code's own declaration says in those words: the clause parses and the grammar is ordinary, and
+what no composition of this profile can do is load a module of a type it has no loader for. The
+language fails the load rather than the parse, so the refusal is the right kind of answer at the
+wrong time and may not satisfy a test declaring a parse-phase error — the same reading
+`AssignmentToConstant` and `UnresolvableIdentifier` already carry, and the dynamic form refuses the
+same attribute where the language does, by rejecting the promise.
+
+**Authority and date.** The three CI jobs of 2026-09-05 that reported the same unclassified set, the
+failure reproduced locally before the change and the same command scoring after it, and the two
+floors — the pinned suite's and the ingest-shape suite's — holding on the run that follows.
+2026-09-05.
+
+### JSC-179
+
+**Where:** `src/tests/cli/runs`, the directory the lane hands to the end-user host whole, and the
+five fixtures JSW-5 and JSW-7 filed there — three that end in an uncaught throw by design and a
+pair of scripts that are one program between them.
+
+**What was assumed.** That `src/tests/cli/runs` is where a fixture for the end-user host goes, and
+that a fixture is judged by the row naming it in `src/tests/cli/expected.txt`. Both readings are in
+the tree: `refused/`, `limits/`, `dead-zone/` and `unreachable/` each hold a family the host answers
+differently, and every one of the 185 rows in the acceptance table names files.
+
+**What was true.** **The directory is itself an assertion, and one no row was making.** A path
+naming a directory is *swept* — a fresh realm per file, a row per file, and an exit code that is the
+worst status any of them gave — and the lane has a step that sweeps this one out of the published
+Native AOT image: `"$binary" src/tests/cli/runs`. Three fixtures whose point is an uncaught throw
+and a second script that reads a binding its partner declares make that sweep exit 1, correctly and
+for four different reasons, none of them a defect in the engine.
+
+**Nothing local ran that command.** `eng/run-cli-acceptance.py` runs one command line per row with
+a declared exit code, so the three throwing fixtures passed there as exit 1 and the script pair
+passed there as one command naming both files. 185 of 185 rows answered as declared on the same
+commit whose sweep exited 1. The collector ran the sweep and recorded it — bundle JSW-10-001's
+`publish-and-run.log` carries the four `threw` rows and the non-zero exit, three times over, once
+per publish mode — and **discarded the answer**: `compositions()` computes whether every published
+image ran clean and `main` called it without reading the result. So the gate that would have caught
+this was already written, already run, and already right; nobody read it. It was found by the
+`quick / publish and run (linux-x64)` job.
+
+**What replaced it.** Two things, and the second is the one that matters. The five fixtures moved to
+directories that state what they are — `threw/` for the three that end in an uncaught throw, beside
+`refused/` and `limits/` which are the other two families that do not produce a value, and
+`one-realm/` for the pair, whose second file is not a program by itself. And the acceptance table
+gained the two rows it never had: `runs|0|# Completed: 88` and `threw|1|# Faulted: 3`, each naming a
+DIRECTORY rather than files, so the command the lane runs is now a command the local suite runs.
+The counts are pinned because a sweep that silently stopped reading half a tree would still exit 0.
+`compositions()`'s answer is now read, and a collection whose publish-and-run transcript is not
+clean retains the bundle and exits non-zero, the same shape the skipped-control complaint beside it
+already used.
+
+**What this does not claim.** Not that the three fixtures were in the wrong place as evidence — each
+still asserts what it asserted, on the same exit code and the same message, from its new path. What
+was wrong is that a directory carrying a contract had no row asserting the contract, so the only
+thing that could enforce it was a lane step nobody could run locally.
+
+**Authority and date.** The `quick / publish and run (linux-x64)` job of 2026-09-05 on `bd07aa7`
+that reported `# Faulted: 4`, the same sweep reproduced locally before the move and answering
+`# 88 files / # Completed: 88` after it, and 187 of 187 acceptance rows on the run that follows.
+2026-09-05.
+
+### JSC-180
+
+**Where:** the lane step JSW-10 added — the two third-party workloads run out of the published
+image on every claimed runtime identifier — and the two numbers in it that were not measurements:
+the per-benchmark wall clock, and the size of the Octane run itself.
+
+**What was assumed.** That a ten-minute wall clock per benchmark is generous, and that running
+Octane whole on every publish cell is free because *extracting* it is. The step's own comment said
+both in as many words: the pin is 37 files and extracting it "costs nothing", and a benchmark that
+meets the bound "is a finding".
+
+**What was true.** Neither number came from a run. **`zlib` needs more than ten minutes on a hosted
+runner** — it exhausted the allowance on `linux-x64` and on `linux-arm64` alike, in the same run,
+having reported a score on the workstation the bound was written on; the other fourteen benchmarks
+scored on both. So the first thing the new step found was its own bound. And **the set is not
+cheap to RUN**: fifteen benchmarks out of the published image took **23m28s** on `ubuntu-latest`,
+in a publish job whose every other step totals 78 to 208 seconds. That is the same trade the lane
+split of 2026-09-03 already refused once, arriving with a bigger number: the quick lane runs on
+every push, over two cells, so running the set whole there is very nearly an hour of runner time
+per push spent on a corpus whose answers no runtime identifier changes.
+
+**Nothing local could have found either.** `eng/run-octane.py` printed an exit code per benchmark
+and no duration, so there was no reading a bound could be sized from — on any machine, by anybody,
+including the person who wrote the bound. The driver is what changed first: it prints each
+benchmark's wall-clock duration beside its exit code, and a total beside the wall it ran under.
+
+**What replaced it.** Three things.
+
+- **The wall is the profile's own hard maximum, so it is not a number anybody picked.**
+  `JavaScriptProfile.Maxima()` sets `WallClock` at 3,600,000 ms and calls it a maximum "a host may
+  tighten and may never loosen", so an hour is the most any composition of this profile can be
+  granted. A larger figure buys nothing and is not merely unwise: a run of this driver asking for
+  ninety minutes was **bounded at sixty and reported the shorter one met**, which is how the
+  ceiling was found. A benchmark that meets THIS bound has met the profile's ceiling rather than a
+  lane's preference — a finding worth reporting rather than a bound worth moving.
+- **The Octane selection is the caller's, the way the fuzz iteration count already is.** A fourth
+  lane input, `octane-benchmarks`: six benchmarks on the quick lane's two cells, all fifteen on the
+  full lane's six. It is a DEPTH and not a switch — the workload runs on every cell of every
+  caller whatever the selection is — and the six are chosen by what they reach rather than by what
+  they cost: dispatch, integer arithmetic, allocation through prototypes, the matcher JSW-4 wrote,
+  a live heap with its latency path, and the front end on a large source.
+- **`--only` may be repeated and refuses a name that is not in the pin.** A driver that could be
+  asked for one benchmark or for all fifteen is what made the selection an all-or-nothing choice in
+  the first place, and a typo in a selection that ran what it recognised would report "6 of 6
+  benchmarks reported a score" over five.
+
+**What this does not claim.** Not that `zlib` is slow *because of* a defect. This programme
+promises no speed and measures none — roadmap section 17 governs any figure a document retains and
+this one retains none — so what the run establishes is that the benchmark **reports a score** and
+how long that took on the machine it took it on. Whether that duration should be smaller is
+`JS-10`'s question and not this one's.
+
+**Nor that an hour is enough**, and the honest form of that is the point of this paragraph.
+**`zlib` has no known duration on any machine here**, because on the one it was measured on it does
+not settle inside the profile's maximum at all: cut at 3,600s under the JIT build and again at
+3,600s on the published Native AOT image, 0 of 1 scored both times. What is known is a ratio.
+`richards` scores **32.0** on that AOT image on that machine and **46.3** on `ubuntu-latest`, so a
+runner is about **1.45 times faster** and needs somewhere **above forty-one minutes** for `zlib` —
+a lower bound, not a duration, because the numerator is itself a bound.
+
+So whether `zlib` fits inside the hour on a runner is **not known, and cannot be made known from
+here**: the bound is already the largest one this profile permits, and the first full lane is the
+first thing that can answer it. Three things follow, and the third is the one a reader should hold
+onto. The quick lane's six do not include `zlib`, so the push path does not depend on the answer.
+A benchmark that meets this bound is reported as meeting the profile's ceiling, which is a true
+statement about this engine on that runtime identifier. And **if that is what the full lane says,
+the decision it calls for is whether the lane may claim the whole set at all** — an exclusion
+stated by name, the way the conformance step states its own — which is a decision about what this
+component CLAIMS, and this component has no reviewer to take one.
+
+**And not that the machine is a constant.** The same box scored `richards` at 64.7 when bundle
+JSW-10-001 was collected and 35.4 ninety minutes later, on a binary that had not changed — only
+`LanguageErrors.cs` moved in between, in a composition the end-user host does not reference. Every
+duration in this entry is a reading of one machine at one moment, and the ratio above is the only
+part of it that travels.
+
+**Authority and date.** The `quick / publish and run` jobs of 2026-09-05 on `da01b75`, both Linux
+cells, which scored fourteen of fifteen and named `zlib` and the allowance it met; the 23m28s the
+same step took between its own log's first and last line; the same two jobs **green** on `fe1324d`
+with the workload step at 8m55s on `linux-x64` and 9m53s on `linux-arm64`, six benchmarks and the
+four-subtree conformance selection between them; and two workstation runs of `zlib` alone, one on
+the JIT build and one on the published Native AOT image, each cut at 3,600s with `richards` scored
+beside the second at 32.0 against that lane's 46.3. 2026-09-05.
+
+### JSC-181
+
+**Where:** the Windows fallback in `eng/run-octane.py` and `eng/run-test262.py` — the two lines that
+look for a published image carrying a `.exe` suffix.
+
+**What was assumed.** That `pathlib.Path.with_suffix(".exe")` adds the suffix a Windows publish
+carries. The comment above the line said so in as many words — *a published image carries a suffix
+on one of the three claimed platforms and not on the other two, so the suffix is tried rather than
+assumed* — and named the failure it was there to prevent: **"the shape of a matrix that looks
+filled and is not."**
+
+**What was true.** `with_suffix` **replaces** the last dotted segment rather than appending one, and
+every composition root in this repository is named with dots. So the candidate it built for the
+end-user host was `Broiler.VM.Composition.JavaScript.exe` — dropping `.Cli` — which is a path no
+publish has ever produced. The fallback could not fire. The conformance root's driver carried the
+same line and the same defect. `eng/run-cli-acceptance.py` never had it, and the difference is
+instructive: it builds its candidates from the assembly NAME and appends, rather than mutating a
+path.
+
+**Nothing local could have found it.** There is no Windows machine here, and neither driver has a
+test — they are exercised by the lane and by a person, and every exercise until now was on Linux or
+macOS, where the first candidate exists and the fallback is never reached. The comment was correct
+about the intent and correct about the risk; what nobody had was a run on the platform it was
+written for.
+
+**It was found by the first full lane that carried the workload step**, dispatched deliberately on
+2026-09-05. Both Windows cells failed **one second into the step**, at 11:46:10 and 11:46:50, with
+`# no binary at artifacts\ci-aot-JavaScript.Cli\Broiler.VM.Composition.JavaScript.Cli` — and the
+cost was larger than the step: the fuzz sessions, the sharded conformance run and the package
+consumer all sit AFTER it in the job, so `set -e` skipped them and the run lost its Windows
+coverage entirely. The four Unix cells reached Octane and were unaffected.
+
+**What replaced it.** `binary.with_name(binary.name + ".exe")` in both drivers, which appends. And
+the message that reports the absence now names **both** candidates rather than one: a driver that
+looked in the wrong place and a publish that did not happen are indistinguishable from
+`no binary at <path>`, which is why this defect read as the second for as long as it did.
+
+**What this does not claim.** Not that the Windows cells now pass the workload step — nothing has
+run it there yet. What the fix establishes is that the step will get as far as executing the image,
+which is further than either cell has ever reached.
+
+**Authority and date.** Run 33964028317 of 2026-09-05, `broiler-vm (full)` on `1910c6f`, in which
+`full / publish and run (win-x64)` and `(win-arm64)` both failed at the workload step in one second
+while `linux-x64`, `linux-arm64`, `osx-arm64` and `osx-x64` proceeded into it; and a local
+reproduction against a directory holding only `Broiler.VM.Composition.JavaScript.Cli.exe`, which
+the driver failed to resolve before the change and resolves after it. 2026-09-05.

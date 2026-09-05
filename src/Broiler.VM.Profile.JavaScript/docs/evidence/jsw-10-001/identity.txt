@@ -1,0 +1,37 @@
+bundle:                JSW-10-001
+milestone:             JSW-10
+collected (UTC):       2026-09-05T07:54:18+00:00
+component commit:      2a8fc06c4637aea3bbdc8537a0c55a61ceefbcb2
+branch:                claude/roadmap-workloads-impl-lgp1tb
+working tree:          DIRTY
+dirty entries:         23
+owner:                 profile architecture owner (unassigned identity)
+reviewer:              NONE - nothing here has been reviewed
+
+Every path below is relative to the component root. A figure in this bundle is this
+component's own; no result from any other component is evidence here.
+
+Dirty entries at collection time, listed rather than summarised:
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/jsw-10-001/android-controls.log
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/jsw-10-001/assurance-gate.log
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/jsw-10-001/assurance-release.log
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/jsw-10-001/build.log
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/jsw-10-001/catalog-cli.txt
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/jsw-10-001/catalog-conformance.txt
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/jsw-10-001/catalog-executiononly.txt
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/jsw-10-001/catalog-slicecompiler.txt
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/jsw-10-001/closure-cli.txt
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/jsw-10-001/closure-conformance.txt
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/jsw-10-001/closure-executiononly.txt
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/jsw-10-001/closure-slicecompiler.txt
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/jsw-10-001/corpus-controls.log
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/jsw-10-001/corpus-integrity.log
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/jsw-10-001/environment.txt
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/jsw-10-001/fuzz-controls.log
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/jsw-10-001/fuzz.log
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/jsw-10-001/hashes.txt
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/jsw-10-001/identity.txt
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/jsw-10-001/negative-controls.log
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/jsw-10-001/publish-and-run.log
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/jsw-10-001/snapshot-identity.txt
+   D src/Broiler.VM.Profile.JavaScript/docs/evidence/jsw-10-001/suite.log

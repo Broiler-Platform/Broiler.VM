@@ -26,6 +26,7 @@ internal static class SourceFrontEndChecks
     [
         EverySourceTheManifestAdmitsCompiles(),
         EverySourceTheManifestExcludesIsRefusedByName(),
+        EveryModuleEarlyErrorIsRefusedByName(),
         TheLoweringIsDeterministic(),
         TwoGoalsInOneProcessDoNotReachEachOther(),
         DeepNestingIsRefusedRatherThanSurvived(),
@@ -46,6 +47,48 @@ internal static class SourceFrontEndChecks
     {
         var (wired, detail) = SourceFuzzing.GuidanceLoopIsWired();
         return ("the source fuzz guidance loop keeps a new answer and refuses a repeat", wired, detail);
+    }
+
+    /// <summary>
+    /// Every module-goal early error is refused by the wide front end, with its own code.
+    /// </summary>
+    /// <remarks>
+    /// A separate check from the one below rather than an extension of it, because the compiler
+    /// differs: these sources are put to the wide front end, which is the only one with a module
+    /// goal, and the two lists would otherwise be one list whose rows go to two compilers.
+    /// </remarks>
+    private static (string, bool, string) EveryModuleEarlyErrorIsRefusedByName()
+    {
+        var failed = new List<string>();
+
+        foreach (var program in SliceSourcePrograms.RefusedModules)
+        {
+            var compiled = program.Options.Goal == SliceGoal.Module
+                ? JsCompiler.Compile(
+                    [],
+                    [new JsModuleUnit("retained", program.Source, program.Options)])
+                : JsCompiler.Compile(program.Source, program.Options);
+
+            if (compiled.Succeeded)
+            {
+                failed.Add($"{program.Name}: compiled, and should not have");
+                continue;
+            }
+
+            if (!compiled.Diagnostics.Any(diagnostic => diagnostic.Code == program.Code))
+            {
+                failed.Add(
+                    $"{program.Name}: expected {program.Code} and got " +
+                    string.Join(", ", compiled.Diagnostics.Select(diagnostic => diagnostic.Code)));
+            }
+        }
+
+        return (
+            "every module-goal early error is refused with its own code",
+            failed.Count == 0,
+            failed.Count == 0
+                ? $"{SliceSourcePrograms.RefusedModules.Length} sources, each refused by name"
+                : string.Join("; ", failed));
     }
 
     /// <summary>Every accepted source compiles to an artifact.</summary>

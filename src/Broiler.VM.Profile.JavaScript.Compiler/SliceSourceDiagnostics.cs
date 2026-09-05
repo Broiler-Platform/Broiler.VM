@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   3
 // Annotated:        3/3
-// Exempt:           24
+// Exempt:           29
 // Human-reviewed:   0/3
 // IP risk:          None
 // Security risk:    Medium
@@ -44,7 +44,7 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// dated it.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=4E385D
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=212A90
 // Broiler-Human:        PENDING
 public enum SliceSourceDiagnosticCode
 {
@@ -97,6 +97,15 @@ public enum SliceSourceDiagnosticCode
     // ---- 2200: static semantics ------------------------------------------------------------
 
     /// <summary>One scope declares a lexical name twice.</summary>
+    /// <remarks>
+    /// <b>A CLASS BODY is a scope of this kind and its element names are declarations in it</b>,
+    /// which is the second thing this code answers for and the one a reader would not guess. A
+    /// private name is a lexical binding of the class's own scope in this front end - that is how
+    /// a method captures one - so two <c>#x</c> in one body are two declarations of one name; and
+    /// <c>constructor</c> and <c>prototype</c> are declared by the class DEFINITION rather than by
+    /// its body, so a body element of either name is the second declaration of a name the
+    /// definition has already made. All four are the same fact and take the same code.
+    /// </remarks>
     DuplicateLexicalDeclaration = 2201,
 
     /// <summary>
@@ -117,12 +126,22 @@ public enum SliceSourceDiagnosticCode
     /// An identifier reference that resolves to no binding, in a manifest with no global object.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// <b>This is a deliberate divergence and is recorded as one.</b> In the language a free name
     /// is a runtime <c>ReferenceError</c>, because it might be a property of the global object.
     /// <c>broiler.javascript.slice</c> declares no global object and no property access at all, so
     /// a free name can never resolve at run time either and deferring the answer would only move
     /// the same refusal later. It becomes a language-conformance exclusion the moment the manifest
     /// grows a global, and the decision record says so.
+    /// </para>
+    /// <para>
+    /// <b>A PRIVATE NAME no enclosing class declares is the same fact where the manifest DOES have
+    /// a global object</b>, and it is the case that makes the paragraph above general rather than
+    /// slice-specific. There is no global object of private names and there could not be: a private
+    /// name is minted by the class evaluation that declares it, so a spelling no enclosing class
+    /// declares names nothing that was ever created and can no more resolve at run time than at
+    /// compile time. The language says the same thing by making it a Syntax Error.
+    /// </para>
     /// </remarks>
     UnresolvableIdentifier = 2206,
 
@@ -158,6 +177,69 @@ public enum SliceSourceDiagnosticCode
 
     /// <summary>The program needs a deeper operand stack than the format admits.</summary>
     OperandStackTooDeep = 2303,
+
+    // ---- 2400: the module goal's early errors ----------------------------------------------
+    //
+    // A NEW BLOCK RATHER THAN A CONTINUATION OF 2200, and the reason is what the numbers are for.
+    // Every one of these is an error about a MODULE, which is a goal symbol the front end did not
+    // have when 2201 through 2210 were minted; a reader holding one of these numbers should be
+    // able to tell from the number alone that the source was presented as a module, because that
+    // is the fact that makes the rejection make sense.
+
+    /// <summary>An <c>import</c> or <c>export</c> declaration in source presented as a script.</summary>
+    /// <remarks>
+    /// <b>This is a syntax error and NOT a construct outside the manifest, and until the module
+    /// goal existed it was the other one.</b> The distinction is what the conformance runner grades
+    /// on: a manifest refusal is scored <c>unsupported</c> and kept out of both columns, and a
+    /// script containing <c>import</c> is a program every engine rejects - so scoring it
+    /// <c>unsupported</c> would have declined a test this profile can answer. The manifest admits
+    /// the declaration; this goal does not.
+    /// </remarks>
+    ModuleDeclarationOutsideModuleGoal = 2401,
+
+    /// <summary>One module publishes the same export name twice.</summary>
+    DuplicateExportName = 2402,
+
+    /// <summary>An export clause names a binding the module does not declare.</summary>
+    /// <remarks>
+    /// <c>export { a };</c> with no <c>a</c> in the module is an early error rather than a run-time
+    /// <c>ReferenceError</c>, because the clause names a BINDING and not an expression - there is
+    /// no evaluation in which it could come to exist. A re-export - <c>export { a } from './m'</c> -
+    /// names a binding of the OTHER module and never reaches this code; whether that name exists
+    /// there is settled at verification, where the whole graph is present.
+    /// </remarks>
+    ExportNameNotDeclared = 2403,
+
+    /// <summary><c>import.meta</c> in source presented as a script.</summary>
+    /// <remarks>
+    /// <b>It is a sibling of <see cref="ModuleDeclarationOutsideModuleGoal"/> and not the same
+    /// code, because <c>import.meta</c> is not a declaration.</b> It declares nothing, binds
+    /// nothing and requests nothing; what makes it a module's is that its value IS the module
+    /// record's own metadata, so a script has no object for it to answer with rather than an empty
+    /// one. Giving it the declaration code would have told a reader to look for an import
+    /// statement that is not there.
+    /// </remarks>
+    ImportMetaOutsideModuleGoal = 2404,
+
+    /// <summary>A static import carries an attribute this host cannot honour.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The clause parsed and the ATTRIBUTE is what is declined, which is the distinction this
+    /// code exists to draw.</b> Until it existed, <c>import x from './m' with { type: 'json' }</c>
+    /// was refused as a construct outside the manifest — which said the SYNTAX was not admitted,
+    /// and that was false: the grammar is ordinary and this front end reads it. What no composition
+    /// of this profile can do is load a module of a type it has no loader for, and that is a fact
+    /// about loading rather than about parsing.
+    /// </para>
+    /// <para>
+    /// <b>It is refused here because for a STATIC import this host loads here.</b> The module graph
+    /// of an artifact is resolved before a byte of it is written — a specifier becomes a key and
+    /// the artifact carries what the key names — so an attribute the loader cannot honour is
+    /// discovered at the same moment an unresolvable specifier is. The DYNAMIC form loads at run
+    /// time, and refuses the same attribute there, by rejecting the promise it answered with.
+    /// </para>
+    /// </remarks>
+    UnsupportedImportAttribute = 2405,
 }
 
 /// <summary>One refusal of source text: a code, a message, and where in the source it happened.</summary>

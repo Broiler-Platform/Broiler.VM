@@ -5,11 +5,11 @@
 // ----------------------
 // Relevant units:   32
 // Annotated:        32/32
-// Exempt:           27
+// Exempt:           28
 // Human-reviewed:   0/32
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         11/11
+// Criteria:         12/12
 // Resource impact:  7/10 max
 // Unverified:       32
 //
@@ -194,13 +194,28 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
     // Broiler-Human:        PENDING
     private readonly VmFeatureManifestId acceptedManifest;
 
-    /// <summary>Creates the verifier for one profile identity and its one accepted manifest.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=EA6B8A
+    /// <summary>The optional surfaces the composition that built this descriptor admitted.</summary>
+    /// <remarks>
+    /// It is a field of the one verifier object rather than a parameter of the pass, because a
+    /// composition's answer is fixed when it registers its descriptor and a verifier that could be
+    /// asked twice could be given two answers.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=60EEF1
+    // Broiler-Falsified-If: this set differs from the accepted feature manifests of the descriptor that carries this verifier
     // Broiler-Human:        PENDING
-    public JavaScriptVerifier(VmProfileId profileId, VmFeatureManifestId manifest)
+    private readonly System.Collections.Immutable.ImmutableArray<string> surfaces;
+
+    /// <summary>Creates the verifier for one profile identity and its one accepted manifest.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2C702C
+    // Broiler-Human:        PENDING
+    public JavaScriptVerifier(
+        VmProfileId profileId,
+        VmFeatureManifestId manifest,
+        System.Collections.Immutable.ImmutableArray<string> admittedSurfaces)
     {
         ProfileId = profileId;
         acceptedManifest = manifest;
+        surfaces = admittedSurfaces;
     }
 
     /// <inheritdoc/>
@@ -230,7 +245,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
     /// examining a payload byte. That ordering is asserted by a named case rather than left to be
     /// read off this file.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=284671
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=1557EA
     // Broiler-Falsified-If: a payload byte is read on a path that answers UnsupportedProfile
     // Broiler-Human:        PENDING
     public VmVerifierOutcome Verify(
@@ -252,7 +267,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
         // this component refuses to have.
         if (descriptor.FormatVersion == Format.JsFormat.FormatVersion)
         {
-            return JsVerifier.Verify(in descriptor, payload, context, cancellationToken);
+            return JsVerifier.Verify(in descriptor, payload, context, surfaces, cancellationToken);
         }
 
         var adapter = new JavaScriptReadAdapter(context.Meter);

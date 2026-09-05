@@ -678,6 +678,40 @@ CONTROLS = [
 ]
 
 
+def dirty_tracked_files():
+    """
+    The tracked files git reports as modified, as component-relative paths.
+
+    A CONTROL CANNOT BE JUDGED ON A FILE THAT IS ALREADY MODIFIED, and the failure this exists for
+    is not hypothetical: a collection killed between an injection and its revert leaves the
+    injection in the tree, and the next collection reads it as the ORIGINAL. The mutation is then a
+    no-op, the control reports "the anchor has moved", and the tree stays wrong - a skip that names
+    the wrong cause and a matrix that reads like a refactor rather than like an interrupted run.
+    The byte-for-byte guard inside each loop cannot see this, because it only compares a revert
+    against what that same run read.
+    """
+    code, output = run(["git", "status", "--porcelain", "--untracked-files=no"])
+
+    if code != 0:
+        return set()
+
+    return {
+        line[3:].strip().replace("\\", "/")
+        for line in output.splitlines()
+        if line.strip()
+    }
+
+
+def skip_reason(path, dirty):
+    """Which of the two reasons an injection changed nothing."""
+    return (
+        "the file is ALREADY MODIFIED in this checkout, so what was read as the original is not "
+        "the committed text - a previous collection was interrupted between an injection and its "
+        "revert, and this control has judged nothing"
+        if path.replace("\\", "/") in dirty
+        else "the anchor has moved")
+
+
 def controls(out):
     """Each control is injected into the real checkout, judged by the suite, and reverted."""
     log = [
@@ -689,6 +723,7 @@ def controls(out):
 
     passed = 0
     skipped = 0
+    dirty = dirty_tracked_files()
 
     for name, why, path, mutate in CONTROLS:
         original = read(path)
@@ -696,7 +731,9 @@ def controls(out):
 
         if mutated == original:
             skipped += 1
-            log.append(f"[{name}] SKIPPED - the injection changed nothing; the anchor has moved.")
+            log.append(
+                f"[{name}] SKIPPED - the injection changed nothing; "
+                + skip_reason(path, dirty))
             log.append(f"    file: {path}")
             log.append("")
             continue
@@ -1151,6 +1188,7 @@ def corpus_controls(out, corpus, arguments):
 
     passed = 0
     skipped = 0
+    dirty = dirty_tracked_files()
 
     for name, why, path, mutate in CORPUS_CONTROLS:
         original = read(path)
@@ -1158,7 +1196,9 @@ def corpus_controls(out, corpus, arguments):
 
         if mutated == original:
             skipped += 1
-            log.append("[" + name + "] SKIPPED - the injection changed nothing; the anchor moved.")
+            log.append(
+                "[" + name + "] SKIPPED - the injection changed nothing; "
+                + skip_reason(path, dirty))
             log.append("    file: " + path)
             log.append("")
             continue
@@ -1210,10 +1250,17 @@ FUZZ_SESSIONS = ((1, 25_000), (2, 25_000), (3, 25_000), (4, 25_000))
 def fuzz(out, corpus):
     """Run the retained fuzz sessions and keep everything they printed, findings included."""
     log = [
-        "Seeded mutation fuzzing over the two of roadmap section 7's four surfaces that exist:",
-        "the verifier, and the executor over verified-but-adversarial artifacts. The source",
-        "tokenizer and parser and the regular-expression matcher are surfaces this profile has",
-        "not written, and a session may not be read as covering them.",
+        "Seeded mutation fuzzing over two of roadmap section 7's four surfaces: the verifier, and",
+        "the executor over verified-but-adversarial artifacts. A session may not be read as",
+        "covering the other two.",
+        "",
+        "THAT SENTENCE USED TO SAY WHY, AND THE REASON STOPPED BEING TRUE. It read that the source",
+        "tokenizer and parser and the regular-expression matcher are surfaces this profile has not",
+        "written. All three are written here now - the front end since JS-3b, and the matcher since",
+        "the workload programme replaced the translation onto the platform's engine - so what",
+        "leaves them uncovered is that these sessions mutate ARTIFACTS and those surfaces consume",
+        "SOURCE. The scope is the same and the reason for it is not, which is exactly the shape of",
+        "claim a retained log must not carry after it stops holding.",
         "",
         "ANSWER-GUIDED, AND NOT COVERAGE-GUIDED. The adjective is the whole of the claim. A",
         "mutant whose published answer no seed artifact produces is kept as a further seed; the",
@@ -1322,6 +1369,7 @@ def fuzz_controls(out, corpus):
 
     passed = 0
     skipped = 0
+    dirty = dirty_tracked_files()
 
     for name, why, path, mutate, expected in FUZZ_CONTROLS:
         original = read(path)
@@ -1329,7 +1377,9 @@ def fuzz_controls(out, corpus):
 
         if mutated == original:
             skipped += 1
-            log.append("[" + name + "] SKIPPED - the injection changed nothing; the anchor moved.")
+            log.append(
+                "[" + name + "] SKIPPED - the injection changed nothing; "
+                + skip_reason(path, dirty))
             log.append("    file: " + path)
             log.append("")
             continue
@@ -1517,6 +1567,7 @@ def android_controls(out):
 
     passed = 0
     skipped = 0
+    dirty = dirty_tracked_files()
 
     for name, why, path, mutate in ANDROID_CONTROLS:
         original = read(path)
@@ -1524,7 +1575,9 @@ def android_controls(out):
 
         if mutated == original:
             skipped += 1
-            log.append("[" + name + "] SKIPPED - the injection changed nothing; the anchor moved.")
+            log.append(
+                "[" + name + "] SKIPPED - the injection changed nothing; "
+                + skip_reason(path, dirty))
             log.append("    file: " + path)
             log.append("")
             continue
@@ -1689,8 +1742,18 @@ def main():
 
     corpus = os.path.join(ROOT, arguments.corpus)
 
+    # THE ANSWER `compositions` ALREADY COMPUTED, READ RATHER THAN DISCARDED. It publishes each
+    # composition root in three modes and runs it, and it has always tracked whether every one of
+    # those runs exited zero - and this call has always thrown that away. So a published image
+    # whose run FAILED was written into `publish-and-run.log` beside every image whose run passed,
+    # the bundle was retained, and the collection reported success. Bundle JSW-10-001 was retained
+    # that way: its transcript carries four `threw` rows and a non-zero exit from the end-user
+    # host's sweep, and the first thing to notice was a CI publish job. A gate whose result nobody
+    # reads is a log.
+    published = True
+
     if not arguments.skip_publish:
-        compositions(arguments, out, corpus)
+        published = compositions(arguments, out, corpus)
 
     skipped = 0
 
@@ -1739,17 +1802,32 @@ def main():
 
     print(f"collected {arguments.bundle} into {arguments.out}")
 
+    # BOTH COMPLAINTS ARE PRINTED, not the first of them. A collection that failed two ways and
+    # reported one would send a reader to fix that one and re-run for the other.
+    complaints = []
+
+    if not published:
+        # Same shape as the skipped-control complaint and for the same reason: everything is
+        # written, and the exit code is what stops a failed publish-and-run from being read as one
+        # that passed. Which of the runs failed is in `publish-and-run.log`, named with its exit
+        # code, rather than summarised here.
+        complaints.append(
+            "broiler-js-evidence: a published image did not publish, did not run clean, or "
+            "composed a different catalog than another mode. The bundle is retained and its "
+            "publish-and-run transcript is NOT a clean one.")
+
     if skipped:
         # Everything is written; the exit code is what stops a skipped control from being read as
         # a control that passed. The JS-3a collection found this the hard way: a refactor moved an
         # anchor, the log said SKIPPED, and nothing else did.
-        print(
+        complaints.append(
             f"broiler-js-evidence: {skipped} control(s) SKIPPED because their anchors have moved. "
             "The bundle is retained and is NOT a complete control matrix.")
 
-        return 1
+    for complaint in complaints:
+        print(complaint)
 
-    return 0
+    return 1 if complaints else 0
 
 
 if __name__ == "__main__":

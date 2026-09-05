@@ -1,0 +1,30 @@
+JS-9's exit gate asks that a MUTATED CORPUS ENTRY prove the replay detects a changed
+observed triple. Every other control in this bundle injects into SOURCE; this one injects
+into the retained bytes, which is the other direction and the one that would otherwise be
+taken on trust - a corpus is only evidence while the thing that reads it would notice if
+the bytes moved.
+
+Each entry is mutated by one byte, replayed, restored byte for byte, and replayed again.
+A restore that does not reproduce the original stops the run rather than leaving the
+corpus modified.
+
+replay command: dotnet run --project src/compositions/Broiler.VM.Composition.JavaScript.ExecutionOnly/Broiler.VM.Composition.JavaScript.ExecutionOnly.csproj -c Release --no-build --corpus /home/user/Broiler.VM/src/tests/corpus/js-1
+
+[addition] PASS
+    file:      src/tests/corpus/js-1/addition.bjsb
+    mutation:  the last byte, exclusive-or 0xFF
+    injected:  exit 1
+    reverted:  exit 0
+      FAIL execution-step-kinds: verification InvalidArtifact/Truncated
+      FAIL operand-stack-sized-from-verification: verification InvalidArtifact/Truncated
+      FAIL the-caller-buffer-may-change-afterwards: verification InvalidArtifact/Truncated
+      FAIL corpus-replay: addition: expected Normal/NormalCompleted/0/42/-/-/-, observed InvalidArtifact/Truncated/1901/-/-/-/- (hash MISMATCH)
+
+[an-unknown-opcode] PASS
+    file:      src/tests/corpus/js-1/an-unknown-opcode.bjsb
+    mutation:  the last byte, exclusive-or 0xFF
+    injected:  exit 1
+    reverted:  exit 0
+      FAIL corpus-replay: an-unknown-opcode: expected InvalidArtifact/UnknownFeature/1401/-/2:0:0:0/-/-, observed InvalidArtifact/Truncated/1901/-/-1:61:0:0/-/- (hash MISMATCH)
+
+entries mutated: 2; detected: 2

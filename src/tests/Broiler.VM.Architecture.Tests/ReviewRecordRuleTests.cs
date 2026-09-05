@@ -936,17 +936,42 @@ public sealed class ReviewRecordRuleTests
         Assert.Empty(CoverageViolations(HumanReview, AssuranceSources.Files, AssuranceScanner.Units));
         Assert.Empty(FileCountViolations(HumanReview, AssuranceSources.Files));
 
-        // Non-vacuous: the table is 73 rows over a tree of 73 files, so a clean result is a
-        // comparison and not a quantifier over nothing. JS-0 added three assembly markers, JS-1
-        // added seven more files - the format, the profile and the lowering - JS-3a adds the
-        // position encoding, JS-3b adds the eight files of the source front end - the parse
-        // options, the seam diagnostics, the tokenizer, the syntax tree, the parser, the
-        // validation stage, the source lowering and the source corpus - and the seventy-second is
-        // the control-flow analysis the lowering grew when it stopped emitting a loop continuation
-        // nothing could reach, and the seventy-third is the pinned language edition. Each is
-        // covered for the same reason every other product file is, which is that it compiles into
-        // an assembly this component builds.
-        Assert.Equal(102, AssuranceSources.Files.Count);
+        // Non-vacuous: the table has a row for each of the tree's files, so a clean result is a
+        // comparison and not a quantifier over nothing. The literal is the point of the assertion -
+        // a file appearing in a product assembly fails here until someone decides whether it is
+        // covered, and the number records that the decision was made.
+        //
+        // The workload programme added nineteen, each for a reason the number should carry: the
+        // optional-surface names and the four files of the binary surface and its realm setup; the
+        // dynamic surface's realm setup; the regular-expression matcher, which the front end needs
+        // in order to refuse an invalid pattern where the literal is written and which therefore
+        // lives in the format assembly; the keyed collections, their realm setup and their
+        // iterators; the promise; Symbol as a primitive together with the realm setup that installs
+        // the well-known ones; the suspended frame a generator is, with the realm setup for its
+        // prototypes; the `Reflect` namespace; and the module record. Each is covered for the same
+        // reason every other product file is, which is that it compiles into an assembly this
+        // component builds.
+        //
+        // The sixteenth is the ASYNCHRONOUS half of the iteration protocol: the intrinsics an async
+        // generator and a `for await` reach - `%AsyncIteratorPrototype%`,
+        // `%AsyncGeneratorPrototype%`, `%AsyncGeneratorFunction%` and the wrapper that turns a
+        // synchronous iterator into an asynchronous one. It is a file of its own for the reason the
+        // synchronous generator's realm setup is: it is reached by walking up from a value rather
+        // than from any global, and putting it in the global setup would have hidden that.
+        //
+        // The seventeenth is the global LEXICAL environment: the bindings a script-level `let`,
+        // `const` or `class` makes, which are not properties of the global object and outlive the
+        // script that declared them. It is a file of its own because the distinction it draws is
+        // the entire reason it exists - a table beside the global object rather than a set of
+        // properties with a flag on them.
+        //
+        // The last two are the `Proxy`: the exotic object whose thirteen internal methods are a
+        // guest's to answer, and the realm setup that publishes the constructor and `revocable`.
+        // They are two files because they are two subjects - one is an object's behaviour and the
+        // other is a global's shape - and the first is the largest single file in the profile for
+        // a reason that belongs to it rather than to this count: every trap carries the invariant
+        // checks the language makes the proxy's answers pass before they leave it.
+        Assert.Equal(121, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

@@ -1,0 +1,26 @@
+A PRODUCT SOURCE THAT REACHES THE HOST PLATFORM'S REGULAR-EXPRESSION ENGINE, so rule N18's
+rejecting direction is decided by an input rather than by a comment. It is written the way the
+regression would actually arrive: not as somebody replacing the matcher, but as one String method
+reaching for the nearest tool, which is how the dialect got in the first time.
+
+It writes all three spellings the rule knows, because a rule that caught only the one a reader
+thought of first would report this file and miss the next one.
+
+```csharp
+using System.Text.RegularExpressions;
+
+namespace Broiler.VM.Profile.JavaScript;
+
+internal sealed partial class JsRealm
+{
+    private static bool LooksLikeAnIdentifier(string text) =>
+        new Regex("^[A-Za-z_$][A-Za-z0-9_$]*$").IsMatch(text);
+
+    private static bool LooksLikeANumber(string text) =>
+        System.Text.RegularExpressions.Regex.IsMatch(text, "^-?[0-9]+$");
+}
+```
+
+This file is a witness and is never compiled. It lives here rather than in a product project for
+the reason every rejecting witness does: a file that would make the rule fail cannot live where the
+rule looks.

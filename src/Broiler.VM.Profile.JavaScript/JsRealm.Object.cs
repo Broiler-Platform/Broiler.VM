@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   17
-// Annotated:        17/17
+// Relevant units:   25
+// Annotated:        25/25
 // Exempt:           15
-// Human-reviewed:   0/17
+// Human-reviewed:   0/25
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
-// Resource impact:  2/10 max
-// Unverified:       17
+// Resource impact:  3/10 max
+// Unverified:       25
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -58,7 +58,7 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>Builds <c>Object</c>, <c>Object.prototype</c> and the statics on the constructor.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=D03199
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=EA7390
     // Broiler-Human:        PENDING
     private void SetupObject()
     {
@@ -79,7 +79,17 @@ internal sealed partial class JsRealm
                 return JsValue.String("[object Null]");
             }
 
-            return JsValue.String("[object " + engine.ToObject(thisValue).ClassName + "]");
+            var host = engine.ToObject(thisValue);
+
+            // `Symbol.toStringTag` OVERRIDES THE CLASS AND IS WHAT MAKES THIS EXTENSIBLE. A guest
+            // object carrying one reports it — which is how `[object Generator]`, `[object Map]`
+            // and every tag a program sets on a class of its own are produced. A tag that is not a
+            // String is ignored rather than coerced, because a tag is a name and coercing one would
+            // let `[object 42]` through.
+            var tagged = engine.GetSymbol(thisValue, engine.Realm.ToStringTagSymbol);
+
+            return JsValue.String(
+                "[object " + (tagged.Type == JsType.String ? tagged.AsString() : host.ClassName) + "]");
         });
 
         Method(ObjectPrototype, "toLocaleString", 0, static (engine, thisValue, arguments) =>
@@ -95,10 +105,96 @@ internal sealed partial class JsRealm
             return JsValue.Object(engine.ToObject(thisValue));
         });
 
+        // `__proto__` IS AN ACCESSOR ON THIS PROTOTYPE AND NOT A DATA PROPERTY OF EVERY OBJECT.
+        //
+        // It is Annex B and it is not going anywhere: `o.__proto__ = null` and
+        // `({}).__proto__ === Object.prototype` are written by real programs, and an object literal
+        // with a `__proto__` key is how a great deal of code sets a prototype. Without it, the
+        // assignment created an ORDINARY OWN PROPERTY NAMED `__proto__` - a wrong answer that looks
+        // like a right one, because every later read of `o.__proto__` returns what was stored and
+        // nothing reports that the prototype never moved.
+        //
+        // The getter and the setter are the specification's, which is why the setter answers
+        // `undefined` rather than throwing for a primitive receiver or a non-object value: the two
+        // ways to be a no-op are distinguished by the receiver, not by the argument.
+        ObjectPrototype.SetOwnProperty(
+            "__proto__",
+            JsProperty.Accessor(
+                Native("get __proto__", 0, static (engine, thisValue, arguments) =>
+                {
+                    _ = arguments;
+                    var held = engine.ToObject(thisValue).Prototype;
+                    return held is null ? JsValue.Null : JsValue.Object(held);
+                }),
+                Native("set __proto__", 1, static (engine, thisValue, arguments) =>
+                {
+                    var value = ArgOfObject(arguments, 0);
+
+                    if (!thisValue.IsObject || (!value.IsObject && value.Type != JsType.Null))
+                    {
+                        return JsValue.Undefined;
+                    }
+
+                    ObjectSetPrototype(
+                        engine, thisValue.AsObject(), value.Type == JsType.Null ? null : value.AsObject());
+
+                    return JsValue.Undefined;
+                }),
+                JsPropertyAttributes.Configurable));
+
+        // THE FOUR ANNEX B ACCESSOR HELPERS. They are older than `Object.defineProperty` and the
+        // language keeps them because the web does; a program that uses one is usually old rather
+        // than wrong, and answering `undefined is not a function` for it is a refusal dressed as a
+        // bug. `__defineGetter__` DEFINES rather than assigns, so it replaces a data property with
+        // an accessor - which is the whole reason it exists.
+        Method(ObjectPrototype, "__defineGetter__", 2, static (engine, thisValue, arguments) =>
+        {
+            var host = engine.ToObject(thisValue);
+            var accessor = ArgOfObject(arguments, 1);
+
+            if (!accessor.IsObject || !accessor.AsObject().IsCallable)
+            {
+                return engine.ThrowTypeError("Object.prototype.__defineGetter__: the getter is not callable");
+            }
+
+            ObjectDefineAccessorHalf(engine, host, ArgOfObject(arguments, 0), accessor, getter: true);
+            return JsValue.Undefined;
+        });
+
+        Method(ObjectPrototype, "__defineSetter__", 2, static (engine, thisValue, arguments) =>
+        {
+            var host = engine.ToObject(thisValue);
+            var accessor = ArgOfObject(arguments, 1);
+
+            if (!accessor.IsObject || !accessor.AsObject().IsCallable)
+            {
+                return engine.ThrowTypeError("Object.prototype.__defineSetter__: the setter is not callable");
+            }
+
+            ObjectDefineAccessorHalf(engine, host, ArgOfObject(arguments, 0), accessor, getter: false);
+            return JsValue.Undefined;
+        });
+
+        // THE LOOKUP PAIR WALKS THE PROTOTYPE CHAIN, which is what distinguishes them from
+        // `getOwnPropertyDescriptor`: they answer about the property a read would REACH.
+        Method(ObjectPrototype, "__lookupGetter__", 1, static (engine, thisValue, arguments) =>
+            ObjectLookupAccessorHalf(engine, thisValue, ArgOfObject(arguments, 0), getter: true));
+
+        Method(ObjectPrototype, "__lookupSetter__", 1, static (engine, thisValue, arguments) =>
+            ObjectLookupAccessorHalf(engine, thisValue, ArgOfObject(arguments, 0), getter: false));
+
         Method(ObjectPrototype, "hasOwnProperty", 1, static (engine, thisValue, arguments) =>
         {
-            var key = engine.ToPropertyKey(ArgOfObject(arguments, 0));
-            return JsValue.Boolean(engine.ToObject(thisValue).HasOwnProperty(key));
+            var requested = ArgOfObject(arguments, 0);
+            var host = engine.ToObject(thisValue);
+
+            // A SYMBOL KEY IS A DIFFERENT TABLE AND SO A DIFFERENT QUESTION. Coercing it to a
+            // String first would ask about a property named `Symbol(x)`, which no object has and
+            // every object could.
+            return JsValue.Boolean(
+                requested.IsSymbol
+                    ? host.TryGetOwnSymbol(requested.AsSymbol(), out _)
+                    : host.HasOwnProperty(engine.ToPropertyKey(requested)));
         });
 
         Method(ObjectPrototype, "isPrototypeOf", 1, static (engine, thisValue, arguments) =>
@@ -130,8 +226,16 @@ internal sealed partial class JsRealm
 
         Method(ObjectPrototype, "propertyIsEnumerable", 1, static (engine, thisValue, arguments) =>
         {
-            var key = engine.ToPropertyKey(ArgOfObject(arguments, 0));
+            var requested = ArgOfObject(arguments, 0);
             var target = engine.ToObject(thisValue);
+
+            if (requested.IsSymbol)
+            {
+                return JsValue.Boolean(
+                    target.TryGetOwnSymbol(requested.AsSymbol(), out var owned) && owned.Enumerable);
+            }
+
+            var key = engine.ToPropertyKey(requested);
             return JsValue.Boolean(target.TryGetOwnProperty(key, out var property) && property.Enumerable);
         });
 
@@ -167,6 +271,107 @@ internal sealed partial class JsRealm
             return ObjectEnumerate(engine, ArgOfObject(arguments, 0), ObjectEntryKind.Pair);
         });
 
+        // THE INVERSE OF `entries`, AND IT TAKES AN ITERABLE RATHER THAN AN ARRAY. That is what
+        // makes `Object.fromEntries(map)` work, which is the shape most programs use it in: a Map
+        // iterates as [key, value] pairs and needs no conversion first.
+        Method(constructor, "fromEntries", 1, (engine, thisValue, arguments) =>
+        {
+            _ = thisValue;
+            var source = ArgOfObject(arguments, 0);
+
+            if (source.IsNullish)
+            {
+                return engine.ThrowTypeError("Object.fromEntries requires an iterable argument");
+            }
+
+            var made = new JsObject(ObjectPrototype);
+
+            foreach (var entry in CollectionElements(engine, source))
+            {
+                engine.Charge(1);
+
+                if (!entry.IsObject)
+                {
+                    return engine.ThrowTypeError("Iterator value " + engine.ToStringValue(entry) +
+                        " is not an entry object");
+                }
+
+                var key = engine.GetIndexed(entry, JsValue.Number(0));
+                var value = engine.GetIndexed(entry, JsValue.Number(1));
+
+                // A DEFINITION AND NOT AN ASSIGNMENT, which is the same distinction a computed
+                // member of an object literal makes: a key of `__proto__` becomes an own property
+                // here rather than moving the object's prototype.
+                if (key.IsSymbol)
+                {
+                    made.SetOwnSymbol(
+                        key.AsSymbol(), JsProperty.Data(value, JsPropertyAttributes.Default));
+                }
+                else
+                {
+                    made.SetOwnProperty(
+                        engine.ToPropertyKey(key),
+                        JsProperty.Data(value, JsPropertyAttributes.Default));
+                }
+            }
+
+            return JsValue.Object(made);
+        });
+
+        // THE GROUPS ARE AN OBJECT WITH A NULL PROTOTYPE, and that is the whole reason this method
+        // is worth having over the four lines a program would write instead: a group key of
+        // `toString` or `constructor` does not collide with anything, because there is nothing on
+        // the chain to collide with.
+        Method(constructor, "groupBy", 2, (engine, thisValue, arguments) =>
+        {
+            _ = thisValue;
+            var source = ArgOfObject(arguments, 0);
+            var chooser = ArgOfObject(arguments, 1);
+
+            if (!chooser.IsObject || !chooser.AsObject().IsCallable)
+            {
+                return engine.ThrowTypeError("Object.groupBy: the callback is not a function");
+            }
+
+            var groups = new JsObject(null);
+            var at = 0;
+
+            foreach (var element in CollectionElements(engine, source))
+            {
+                engine.Charge(1);
+                var key = engine.ToPropertyKey(
+                    engine.Call(chooser, JsValue.Undefined, [element, JsValue.Number(at)]));
+
+                if (!groups.TryGetOwnProperty(key, out var held) || held.Value.AsObjectOrNull() is not JsArray bucket)
+                {
+                    bucket = NewArray();
+                    groups.SetOwnProperty(
+                        key, JsProperty.Data(JsValue.Object(bucket), JsPropertyAttributes.Default));
+                }
+
+                bucket.Push(element);
+                at++;
+            }
+
+            return JsValue.Object(groups);
+        });
+
+        // `hasOwnProperty` WITHOUT THE RECEIVER, which is the point: `o.hasOwnProperty(k)` is a
+        // method call on `o`, so it fails for an object with a null prototype and lies for one that
+        // shadowed the name. The idiom that worked was
+        // `Object.prototype.hasOwnProperty.call(o, k)`, and this is that idiom with a name.
+        Method(constructor, "hasOwn", 2, (engine, thisValue, arguments) =>
+        {
+            _ = thisValue;
+            var host = engine.ToObject(ArgOfObject(arguments, 0));
+            var requested = ArgOfObject(arguments, 1);
+
+            return JsValue.Boolean(
+                requested.IsSymbol
+                    ? host.TryGetOwnSymbol(requested.AsSymbol(), out _)
+                    : host.HasOwnProperty(engine.ToPropertyKey(requested)));
+        });
+
         Method(constructor, "getOwnPropertyNames", 1, (engine, thisValue, arguments) =>
         {
             _ = thisValue;
@@ -177,6 +382,24 @@ internal sealed partial class JsRealm
             {
                 engine.Charge(1);
                 result.Push(JsValue.String(key));
+            }
+
+            return JsValue.Object(result);
+        });
+
+        // THE SYMBOL KEYS ARE A SEPARATE TABLE AND THEREFORE A SEPARATE ANSWER. `getOwnPropertyNames`
+        // must not report them and this must report nothing else, which is the whole reason the
+        // language has two functions where a reader might expect one filter.
+        Method(constructor, "getOwnPropertySymbols", 1, (engine, thisValue, arguments) =>
+        {
+            _ = thisValue;
+            var target = engine.ToObject(ArgOfObject(arguments, 0));
+            var result = NewArray();
+
+            foreach (var key in target.OwnSymbolKeys())
+            {
+                engine.Charge(1);
+                result.Push(JsValue.Symbol(key));
             }
 
             return JsValue.Object(result);
@@ -245,9 +468,31 @@ internal sealed partial class JsRealm
                 return engine.ThrowTypeError("Object.defineProperty called on non-object");
             }
 
-            var key = engine.ToPropertyKey(ArgOfObject(arguments, 1));
+            var requested = ArgOfObject(arguments, 1);
             var fields = ObjectToDescriptorFields(engine, ArgOfObject(arguments, 2));
-            ObjectApplyDescriptor(engine, target.AsObject(), key, fields);
+
+            if (requested.IsSymbol)
+            {
+                // A PROXY IS ASKED THROUGH ITS TRAP, with the fields the caller actually wrote:
+                // an unchecked `SetOwnSymbol` would reach the same trap but with a descriptor
+                // completed to four keys, and the trap is entitled to see the one it was given.
+                if (target.AsObject() is JsProxy proxy)
+                {
+                    ObjectDefinedOrThrow(engine, proxy, requested, fields);
+                    return target;
+                }
+
+                // THE SYMBOL TABLE HAS NO REDEFINITION RULES OF ITS OWN YET, so this defines
+                // rather than validating against a current descriptor the way the String path does.
+                // A Symbol-keyed property is either absent or defined by the code that owns the
+                // Symbol, and nothing in this surface can redefine one it did not create.
+                target.AsObject().SetOwnSymbol(
+                    requested.AsSymbol(), ObjectPropertyFromFields(engine, target.AsObject(), fields));
+
+                return target;
+            }
+
+            ObjectApplyDescriptor(engine, target.AsObject(), engine.ToPropertyKey(requested), fields);
             return target;
         });
 
@@ -269,7 +514,16 @@ internal sealed partial class JsRealm
         {
             _ = thisValue;
             var target = engine.ToObject(ArgOfObject(arguments, 0));
-            var key = engine.ToPropertyKey(ArgOfObject(arguments, 1));
+            var requested = ArgOfObject(arguments, 1);
+
+            if (requested.IsSymbol)
+            {
+                return target.TryGetOwnSymbol(requested.AsSymbol(), out var owned)
+                    ? JsValue.Object(ObjectDescriptorFor(owned))
+                    : JsValue.Undefined;
+            }
+
+            var key = engine.ToPropertyKey(requested);
 
             return target.TryGetOwnProperty(key, out var property)
                 ? JsValue.Object(ObjectDescriptorFor(property))
@@ -282,13 +536,21 @@ internal sealed partial class JsRealm
             var target = engine.ToObject(ArgOfObject(arguments, 0));
             var result = new JsObject(ObjectPrototype);
 
-            foreach (var key in target.OwnPropertyNames())
+            // BOTH KEY TABLES. The plural in the name is the whole difference from
+            // `getOwnPropertyDescriptor`, and an answer that omitted the Symbol-keyed properties
+            // was not the descriptors of the object but the descriptors of half of it.
+            foreach (var key in target.OwnKeys())
             {
                 engine.Charge(1);
 
-                if (target.TryGetOwnProperty(key, out var property))
+                if (ObjectOwnAt(target, key, out var property))
                 {
-                    result.DefineOrdinary(key, JsValue.Object(ObjectDescriptorFor(property)));
+                    ObjectSetOwnAt(
+                        result,
+                        key,
+                        JsProperty.Data(
+                            JsValue.Object(ObjectDescriptorFor(property)),
+                            JsPropertyAttributes.Default));
                 }
             }
 
@@ -312,16 +574,31 @@ internal sealed partial class JsRealm
                 var source = engine.ToObject(next);
                 var reader = JsValue.Object(source);
 
-                foreach (var key in source.OwnPropertyNames())
+                // BOTH KEY TABLES, in the specification's order: String keys and then Symbol keys.
+                // Copying only the String half meant a Symbol-keyed property never survived an
+                // `Object.assign`, which is how a great deal of code copies an object.
+                foreach (var key in source.OwnKeys())
                 {
                     engine.Charge(1);
 
-                    if (!source.TryGetOwnProperty(key, out var property) || !property.Enumerable)
+                    if (!ObjectOwnAt(source, key, out var property) || !property.Enumerable)
                     {
                         continue;
                     }
 
-                    engine.SetProperty(receiver, key, engine.GetProperty(reader, key), strict: true);
+                    if (key.IsSymbol)
+                    {
+                        engine.SetSymbol(
+                            receiver,
+                            key.AsSymbol(),
+                            engine.GetSymbol(reader, key.AsSymbol()),
+                            strict: true);
+
+                        continue;
+                    }
+
+                    engine.SetProperty(
+                        receiver, key.AsString(), engine.GetProperty(reader, key.AsString()), strict: true);
                 }
             }
 
@@ -406,6 +683,74 @@ internal sealed partial class JsRealm
             return JsValue.Boolean(
                 ObjectSameValue(ArgOfObject(arguments, 0), ArgOfObject(arguments, 1)));
         });
+    }
+
+    /// <summary>Defines one half of an accessor, leaving the other half as it stands.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=595FB1
+    // Broiler-Human:        PENDING
+    private static void ObjectDefineAccessorHalf(
+        JsEngine engine, JsObject host, JsValue key, JsValue accessor, bool getter)
+    {
+        var function = accessor.AsObject();
+
+        if (key.IsSymbol)
+        {
+            host.TryGetOwnSymbol(key.AsSymbol(), out var held);
+
+            host.SetOwnSymbol(
+                key.AsSymbol(),
+                JsProperty.Accessor(
+                    getter ? function : held.Getter,
+                    getter ? held.Setter : function,
+                    JsPropertyAttributes.Enumerable | JsPropertyAttributes.Configurable));
+
+            return;
+        }
+
+        var name = engine.ToPropertyKey(key);
+        host.TryGetOwnProperty(name, out var existing);
+
+        host.SetOwnProperty(
+            name,
+            JsProperty.Accessor(
+                getter ? function : existing.Getter,
+                getter ? existing.Setter : function,
+                JsPropertyAttributes.Enumerable | JsPropertyAttributes.Configurable));
+    }
+
+    /// <summary>Finds one half of the accessor a read of <paramref name="key"/> would reach.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B0B2B3
+    // Broiler-Human:        PENDING
+    private static JsValue ObjectLookupAccessorHalf(
+        JsEngine engine, JsValue receiver, JsValue key, bool getter)
+    {
+        var current = engine.ToObject(receiver);
+        var symbol = key.IsSymbol ? key.AsSymbol() : null;
+        var name = symbol is null ? engine.ToPropertyKey(key) : string.Empty;
+
+        while (current is not null)
+        {
+            engine.Charge(1);
+
+            var found = symbol is null
+                ? current.TryGetOwnProperty(name, out var property)
+                : current.TryGetOwnSymbol(symbol, out property);
+
+            if (found)
+            {
+                if (!property.IsAccessor)
+                {
+                    return JsValue.Undefined;
+                }
+
+                var half = getter ? property.Getter : property.Setter;
+                return half is null ? JsValue.Undefined : JsValue.Object(half);
+            }
+
+            current = current.Prototype;
+        }
+
+        return JsValue.Undefined;
     }
 
     /// <summary>Reads argument <paramref name="at"/>, which the caller may not have supplied.</summary>
@@ -587,17 +932,78 @@ internal sealed partial class JsRealm
         return fields;
     }
 
+    /// <summary>The property a descriptor's fields describe, with nothing to redefine.</summary>
+    /// <remarks>
+    /// The Symbol-keyed path uses it: there is no current descriptor to validate against, so the
+    /// fields are read straight into a property. Absent attribute fields default to false, which is
+    /// what <c>DefinePropertyOrThrow</c> says for a property that did not exist.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BFF4D5
+    // Broiler-Human:        PENDING
+    private static JsProperty ObjectPropertyFromFields(
+        JsEngine engine, JsObject target, ObjectDescriptorFields fields)
+    {
+        _ = engine;
+        _ = target;
+        var attributes = JsPropertyAttributes.None;
+
+        if (fields.HasEnumerable && fields.Enumerable)
+        {
+            attributes |= JsPropertyAttributes.Enumerable;
+        }
+
+        if (fields.HasConfigurable && fields.Configurable)
+        {
+            attributes |= JsPropertyAttributes.Configurable;
+        }
+
+        if (fields.HasGet || fields.HasSet)
+        {
+            return JsProperty.Accessor(fields.Getter, fields.Setter, attributes);
+        }
+
+        if (fields.HasWritable && fields.Writable)
+        {
+            attributes |= JsPropertyAttributes.Writable;
+        }
+
+        return JsProperty.Data(fields.HasValue ? fields.Value : JsValue.Undefined, attributes);
+    }
+
     /// <summary>
     /// The specification's <c>ValidateAndApplyPropertyDescriptor</c>: refuse what the existing
     /// property forbids, then write the merge of the two.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=A520F1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7CC38E
     // Broiler-Human:        PENDING
     private static void ObjectApplyDescriptor(
         JsEngine engine, JsObject target, string key, ObjectDescriptorFields fields)
     {
+        // A PROXY DEFINES THROUGH ITS TRAP AND NONE OF THIS FUNCTION APPLIES TO IT. Everything
+        // below is `ValidateAndApplyPropertyDescriptor`, which is what an ORDINARY object's
+        // `[[DefineOwnProperty]]` is; an exotic object may define its own, and this one does. The
+        // validation would also read the proxy's current descriptor and extensibility through two
+        // traps the language never says to call here, before reaching the trap that decides.
+        if (target is JsProxy proxy)
+        {
+            ObjectDefinedOrThrow(engine, proxy, JsValue.String(key), fields);
+            return;
+        }
+
         var wantsAccessor = fields.HasGet || fields.HasSet;
         var wantsData = fields.HasValue || fields.HasWritable;
+
+        // AN ARRAY'S `length` IS CHECKED AND COERCED BEFORE IT IS DEFINED, exactly as an assignment
+        // to it is: a definition is the other way a program reaches it, and the two may not
+        // disagree about which values are lengths.
+        if (target is JsArray sized && fields.HasValue &&
+            string.Equals(key, "length", System.StringComparison.Ordinal))
+        {
+            var wanted = engine.ArrayLengthOrRefuse(fields.Value);
+            fields.Value = JsValue.Number(wanted);
+            ObjectApplyLength(engine, sized, wanted, fields);
+            return;
+        }
 
         if (!target.TryGetOwnProperty(key, out var current))
         {
@@ -779,33 +1185,203 @@ internal sealed partial class JsRealm
     /// Both passes are the specification's: every descriptor is read and validated before any of
     /// them is written, so a malformed later descriptor leaves none of the earlier ones applied.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=0D1D2E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=58216D
     // Broiler-Human:        PENDING
     private static void ObjectDefineFromProperties(
         JsEngine engine, JsObject target, JsValue properties)
     {
         var source = engine.ToObject(properties);
         var reader = JsValue.Object(source);
-        var keys = new System.Collections.Generic.List<string>();
+        var keys = new System.Collections.Generic.List<JsValue>();
         var descriptors = new System.Collections.Generic.List<ObjectDescriptorFields>();
 
-        foreach (var key in source.OwnPropertyNames())
+        // BOTH KEY TABLES. `Object.create(p, { [Symbol()]: … })` and `Object.defineProperties` with
+        // a Symbol-keyed descriptor both reach here, and walking the String table alone dropped
+        // those definitions silently - the call returned the object, having defined nothing.
+        foreach (var key in source.OwnKeys())
         {
             engine.Charge(1);
 
-            if (!source.TryGetOwnProperty(key, out var property) || !property.Enumerable)
+            if (!ObjectOwnAt(source, key, out var property) || !property.Enumerable)
             {
                 continue;
             }
 
             keys.Add(key);
-            descriptors.Add(ObjectToDescriptorFields(engine, engine.GetProperty(reader, key)));
+
+            descriptors.Add(
+                ObjectToDescriptorFields(
+                    engine,
+                    key.IsSymbol
+                        ? engine.GetSymbol(reader, key.AsSymbol())
+                        : engine.GetProperty(reader, key.AsString())));
         }
 
         for (var at = 0; at < keys.Count; at++)
         {
             engine.Charge(1);
-            ObjectApplyDescriptor(engine, target, keys[at], descriptors[at]);
+            var key = keys[at];
+
+            if (target is JsProxy proxy)
+            {
+                ObjectDefinedOrThrow(engine, proxy, key, descriptors[at]);
+                continue;
+            }
+
+            if (key.IsSymbol)
+            {
+                target.SetOwnSymbol(
+                    key.AsSymbol(), ObjectPropertyFromFields(engine, target, descriptors[at]));
+
+                continue;
+            }
+
+            ObjectApplyDescriptor(engine, target, key.AsString(), descriptors[at]);
+        }
+    }
+
+    /// <summary>Reads one own property under a key of either kind.</summary>
+    /// <remarks>
+    /// <b>The two key tables are a storage decision and <c>[[OwnPropertyKeys]]</c> is one
+    /// operation</b>, so every static that walks an object completely needs to ask about whichever
+    /// kind of key came back. Writing the branch at each of those sites is how five of them came to
+    /// walk the String table only.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=82FDAC
+    // Broiler-Human:        PENDING
+    private static bool ObjectOwnAt(JsObject target, JsValue key, out JsProperty property) =>
+        key.IsSymbol
+            ? target.TryGetOwnSymbol(key.AsSymbol(), out property)
+            : target.TryGetOwnProperty(key.AsString(), out property);
+
+    /// <summary>Defines one own property under a key of either kind.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=8EF211
+    // Broiler-Human:        PENDING
+    private static void ObjectSetOwnAt(JsObject target, JsValue key, JsProperty property)
+    {
+        if (key.IsSymbol)
+        {
+            target.SetOwnSymbol(key.AsSymbol(), property);
+            return;
+        }
+
+        target.SetOwnProperty(key.AsString(), property);
+    }
+
+    /// <summary>
+    /// <c>OrdinaryDefineOwnProperty</c>, answering the boolean rather than throwing the refusal.
+    /// </summary>
+    /// <remarks>
+    /// <b>It exists because a missing Proxy trap forwards the INTERNAL METHOD.</b> A proxy with no
+    /// <c>defineProperty</c> trap must do to its target exactly what <c>Reflect.defineProperty</c>
+    /// would — validate, and answer whether it took — and an unchecked write instead of this is how
+    /// a proxy over a frozen object would have let a redefinition through.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=BE8B4A
+    // Broiler-Human:        PENDING
+    internal static bool ObjectDefineOrdinary(
+        JsEngine engine, JsObject target, JsValue key, ObjectDescriptorFields fields)
+    {
+        try
+        {
+            if (key.IsSymbol)
+            {
+                target.SetOwnSymbol(key.AsSymbol(), ObjectPropertyFromFields(engine, target, fields));
+                return true;
+            }
+
+            ObjectApplyDescriptor(engine, target, key.AsString(), fields);
+            return true;
+        }
+        catch (JsThrow)
+        {
+            return false;
+        }
+    }
+
+    /// <summary><c>OrdinaryPreventExtensions</c>, which cannot fail and says so.</summary>
+    /// <remarks>
+    /// It is a function rather than an assignment only because <c>Reflect.preventExtensions</c> has
+    /// to answer the boolean that an exotic <c>[[PreventExtensions]]</c> may make <c>false</c>, and
+    /// the two branches read better as one expression than as an assignment and a constant.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=5C5577
+    // Broiler-Human:        PENDING
+    internal static bool ObjectPreventExtensionsOrdinary(JsObject target)
+    {
+        target.Extensible = false;
+        return true;
+    }
+
+    /// <summary>
+    /// <c>OrdinarySetPrototypeOf</c>, likewise as a boolean, and likewise for two callers.
+    /// </summary>
+    /// <remarks>
+    /// <b>Refusing a change and refusing a NO-OP are different, and the order below is the
+    /// specification's.</b> Setting the prototype an object already has succeeds even where the
+    /// object is sealed, because <c>[[SetPrototypeOf]]</c> asks whether the answer would change and
+    /// a non-extensible object refuses only a change.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=638EFE
+    // Broiler-Human:        PENDING
+    internal static bool ObjectSetPrototypeOrdinary(
+        JsEngine engine, JsObject target, JsObject? prototype)
+    {
+        if (ReferenceEquals(target.Prototype, prototype))
+        {
+            return true;
+        }
+
+        if (!target.Extensible)
+        {
+            return false;
+        }
+
+        for (var walk = prototype; walk is not null; walk = walk.Prototype)
+        {
+            engine.Charge(1);
+
+            if (ReferenceEquals(walk, target))
+            {
+                return false;
+            }
+
+            // THE WALK STOPS AT A PROXY. Reading the next link would run a `getPrototypeOf` trap
+            // the specification does not ask for at this point - guest code, in the middle of an
+            // operation that has not yet decided whether it will happen - and the specification
+            // ends the cycle check at the first object whose `[[GetPrototypeOf]]` is not the
+            // ordinary one. A cycle through a proxy is therefore undetected here, which is the
+            // language's own answer: a trap may invent a chain with no fixed shape to be cyclic
+            // in, and the lookups that walk it are bounded by the fuel meter instead.
+            if (walk is JsProxy)
+            {
+                break;
+            }
+        }
+
+        target.Prototype = prototype;
+        return true;
+    }
+
+    /// <summary>
+    /// <c>DefinePropertyOrThrow</c> against a Proxy: the trap's refusal, as the <c>TypeError</c> the
+    /// <c>Object</c> statics owe.
+    /// </summary>
+    /// <remarks>
+    /// The pairing is the one this whole file is built around — <c>Object.defineProperty</c> throws
+    /// where <c>Reflect.defineProperty</c> answers <c>false</c> — so the boolean is read HERE and
+    /// not inside the proxy, which answers in the specification's own currency and lets each caller
+    /// spend it the way it must.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=DC325B
+    // Broiler-Human:        PENDING
+    private static void ObjectDefinedOrThrow(
+        JsEngine engine, JsProxy proxy, JsValue key, ObjectDescriptorFields fields)
+    {
+        if (!proxy.ProxyDefineOwnProperty(key, fields))
+        {
+            throw engine.Error(
+                "TypeError", "the 'defineProperty' trap refused the definition");
         }
     }
 
@@ -814,50 +1390,53 @@ internal sealed partial class JsRealm
     /// The cycle check is not politeness. Every property lookup walks the chain with a plain loop,
     /// so a chain that closed on itself would be an unkillable spin rather than a wrong answer.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1453A9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=91BA7B
     // Broiler-Human:        PENDING
     private static void ObjectSetPrototype(JsEngine engine, JsObject target, JsObject? prototype)
     {
-        if (ReferenceEquals(target.Prototype, prototype))
+        // A PROXY IS ASKED THROUGH ITS TRAP AND THROWS WHERE IT REFUSES, which is what
+        // `Object.setPrototypeOf` owes and what `Reflect.setPrototypeOf` - which does not come this
+        // way - must not do. None of the three ordinary tests below is an exotic object's to obey.
+        if (target is JsProxy proxy)
+        {
+            if (!proxy.ProxySetPrototypeOf(prototype))
+            {
+                throw engine.Error("TypeError", "the 'setPrototypeOf' trap refused the prototype");
+            }
+
+            return;
+        }
+
+        // THE TWO REFUSALS ARE ONE ANSWER HERE AND TWO MESSAGES, which is the only reason this is
+        // not simply a call. `Object.setPrototypeOf` throws for both a closed object and a cycle
+        // and the language names each; the ordinary internal method answers one boolean, so the
+        // reason is recovered by asking which of the two it was.
+        if (ObjectSetPrototypeOrdinary(engine, target, prototype))
         {
             return;
         }
 
-        if (!target.Extensible)
-        {
-            throw engine.Error("TypeError", "#<Object> is not extensible");
-        }
-
-        var walk = prototype;
-
-        while (walk is not null)
-        {
-            engine.Charge(1);
-
-            if (ReferenceEquals(walk, target))
-            {
-                throw engine.Error("TypeError", "Cyclic __proto__ value");
-            }
-
-            walk = walk.Prototype;
-        }
-
-        target.Prototype = prototype;
+        throw engine.Error(
+            "TypeError",
+            target.Extensible ? "Cyclic __proto__ value" : "#<Object> is not extensible");
     }
 
     /// <summary>Applies <c>Object.freeze</c> or <c>Object.seal</c> to every own property.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=2A86BF
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=AC3A6B
     // Broiler-Human:        PENDING
     private static void ObjectSetIntegrity(JsEngine engine, JsObject target, bool freeze)
     {
         target.Extensible = false;
 
-        foreach (var key in target.OwnPropertyNames())
+        // IT WALKS BOTH KEY TABLES, and it walked only the String one until 2026-09-05. A
+        // Symbol-keyed property survived `Object.freeze` writable and configurable, and
+        // `Object.isFrozen` agreed the object was frozen because it asked the same half-question -
+        // so a class keeping state under a Symbol was never actually frozen by either.
+        foreach (var key in target.OwnKeys())
         {
             engine.Charge(1);
 
-            if (ObjectIsUnattributable(target, key) ||
-                !target.TryGetOwnProperty(key, out var property))
+            if (!ObjectOwnAt(target, key, out var property))
             {
                 continue;
             }
@@ -875,12 +1454,12 @@ internal sealed partial class JsRealm
             }
 
             property.Attributes = attributes;
-            target.SetOwnProperty(key, property);
+            ObjectSetOwnAt(target, key, property);
         }
     }
 
     /// <summary>Answers <c>Object.isFrozen</c> or <c>Object.isSealed</c> for an object.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=803DCB
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=526896
     // Broiler-Human:        PENDING
     private static bool ObjectTestIntegrity(JsEngine engine, JsObject target, bool freeze)
     {
@@ -889,12 +1468,13 @@ internal sealed partial class JsRealm
             return false;
         }
 
-        foreach (var key in target.OwnPropertyNames())
+        // BOTH KEY TABLES, for the reason `ObjectSetIntegrity` gives: the two predicates have to
+        // ask the same question or one of them reports an integrity the other never applied.
+        foreach (var key in target.OwnKeys())
         {
             engine.Charge(1);
 
-            if (ObjectIsUnattributable(target, key) ||
-                !target.TryGetOwnProperty(key, out var property))
+            if (!ObjectOwnAt(target, key, out var property))
             {
                 continue;
             }
@@ -913,28 +1493,53 @@ internal sealed partial class JsRealm
         return true;
     }
 
-    /// <summary>Whether an Array's dense element store would shadow a descriptor written here.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=72ECC6
-    // Broiler-Human:        PENDING
-    private static bool ObjectShadowsDenseSlot(JsObject target, string key) =>
-        target is JsArray array &&
-        JsObject.IsArrayIndex(key, out var at) &&
-        at < (uint)array.DenseCount;
+    // TWO PREDICATES USED TO STAND HERE AND BOTH ARE GONE. `ObjectShadowsDenseSlot` had no caller
+    // at all; `ObjectIsUnattributable` had two, and its whole body was `return false` - a question
+    // whose answer had become "nothing" when an earlier correction let an Array's `length` carry
+    // attributes after all, leaving a named predicate that read as though it still excluded
+    // something. Removing them is the second half of that correction rather than a new one.
 
-    /// <summary>Whether <paramref name="target"/> cannot carry property attributes at this key.</summary>
+    /// <summary>Applies a definition of an Array's <c>length</c>, which may only partly succeed.</summary>
     /// <remarks>
-    /// One key on an Array cannot: <c>length</c>, which <see cref="JsArray"/> synthesises rather
-    /// than stores, so writing its descriptor sets the length and drops the attributes. Freezing
-    /// and sealing step over it, and <c>isFrozen</c> and <c>isSealed</c> step over it too so that
-    /// the pair agree - a freeze that reported itself undone would be worse than one that admits
-    /// what it could not reach. A dense ELEMENT used to be in this list and no longer is: the array
-    /// vacates the slot and writes the ordinary map when it is handed a descriptor the slot cannot
-    /// express, so an element can carry attributes after all.
+    /// <b>A shortening that meets a non-configurable element stops there</b>, and the definition has
+    /// then failed even though it did something: the length is left where the walk stopped and the
+    /// <c>TypeError</c> says the definition did not take. Reporting success would tell a program the
+    /// length is what it asked for when it is not.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1FA36A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=794CB0
     // Broiler-Human:        PENDING
-    private static bool ObjectIsUnattributable(JsObject target, string key) =>
-        target is JsArray && string.Equals(key, "length", System.StringComparison.Ordinal);
+    private static void ObjectApplyLength(
+        JsEngine engine, JsArray target, uint wanted, ObjectDescriptorFields fields)
+    {
+        if (fields.HasEnumerable && fields.Enumerable)
+        {
+            throw engine.Error("TypeError", "Cannot redefine property: length");
+        }
+
+        if (fields.HasConfigurable && fields.Configurable)
+        {
+            throw engine.Error("TypeError", "Cannot redefine property: length");
+        }
+
+        if (!target.LengthWritable && wanted != target.Length)
+        {
+            throw engine.Error("TypeError", "Cannot assign to read only property 'length'");
+        }
+
+        var applied = target.TrySetLength(wanted);
+
+        if (fields.HasWritable && !fields.Writable)
+        {
+            target.TryGetOwnProperty("length", out var held);
+            held.Attributes &= ~JsPropertyAttributes.Writable;
+            target.SetOwnProperty("length", held);
+        }
+
+        if (!applied)
+        {
+            throw engine.Error("TypeError", "Cannot redefine property: length");
+        }
+    }
 
     /// <summary>Which fields a descriptor object actually carried, and what they said.</summary>
     /// <remarks>
@@ -942,9 +1547,9 @@ internal sealed partial class JsRealm
     /// representation that only held the six values could not tell them apart, and the difference
     /// decides whether a redefinition is a change or a no-op.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=1C9173
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=9BF883
     // Broiler-Human:        PENDING
-    private sealed class ObjectDescriptorFields
+    internal sealed class ObjectDescriptorFields
     {
         /// <summary>Whether the descriptor carried <c>enumerable</c>.</summary>
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=8D9CF0

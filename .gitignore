@@ -7,3 +7,6 @@ artifacts/
 # Python bytecode, from running the scripts in eng/ directly.
 __pycache__/
 *.pyc
+
+# Agent worktrees, created by the tooling that runs work in an isolated copy of this checkout.
+.claude/worktrees/

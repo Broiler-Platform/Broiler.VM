@@ -552,7 +552,7 @@ internal sealed partial class JsRealm
     /// rewritten children rather than the raw ones. A reviver that returns <c>undefined</c> deletes
     /// the property, which is the only way it can remove one.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=43725B
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B2A289
     // Broiler-Human:        PENDING
     private static JsValue JsonInternalize(
         JsEngine engine, JsObject holder, string key, JsValue reviver, int depth)
@@ -570,15 +570,16 @@ internal sealed partial class JsRealm
         {
             var target = value.AsObject();
 
-            if (target is JsArray array)
+            // `IsArray` HERE TOO. A reviver may return a Proxy over an Array, and walking it as an
+            // ordinary object would visit its own keys rather than its indices.
+            if (ArrayIsArray(engine, target))
             {
-                var length = array.Length;
+                var length = ArrayLengthOf(engine, value);
 
-                for (uint at = 0; at < length; at++)
+                for (double at = 0; at < length; at++)
                 {
                     engine.Charge(1);
-                    var name = JsNumberFormat.ToUintString(at);
-                    JsonReviveInto(engine, target, name, reviver, depth);
+                    JsonReviveInto(engine, target, ArrayKeyOf(at), reviver, depth);
                 }
             }
             else
@@ -733,7 +734,7 @@ internal sealed partial class JsRealm
     /// The specification's <c>SerializeJSONProperty</c>, returning <see langword="null"/> for the
     /// values that have no JSON text at all.
     /// </summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=101A3A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A42B0C
     // Broiler-Human:        PENDING
     private static string? JsonSerialize(
         JsEngine engine, JsonWriter state, string key, JsObject holder)
@@ -805,8 +806,11 @@ internal sealed partial class JsRealm
             return null;
         }
 
-        return target is JsArray array
-            ? JsonSerializeArray(engine, state, array)
+        // `IsArray` AND NOT A TYPE TEST, because a Proxy over an Array must serialise as an Array.
+        // A type test here wrote `{"0":1,"1":2}` for a proxied `[1, 2]` - valid JSON of the wrong
+        // shape, which is the worst kind of wrong answer a serialiser can give.
+        return ArrayIsArray(engine, target)
+            ? JsonSerializeArray(engine, state, target)
             : JsonSerializeObject(engine, state, target);
     }
 
@@ -841,24 +845,28 @@ internal sealed partial class JsRealm
     }
 
     /// <summary>The specification's <c>SerializeJSONArray</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BC8246
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7CEE41
     // Broiler-Human:        PENDING
-    private static string JsonSerializeArray(JsEngine engine, JsonWriter state, JsArray value)
+    private static string JsonSerializeArray(JsEngine engine, JsonWriter state, JsObject value)
     {
         JsonEnter(engine, state, value);
         var stepback = state.Indent;
         state.Indent += state.Gap;
 
         var parts = new System.Collections.Generic.List<string>();
-        var length = value.Length;
 
-        for (uint at = 0; at < length; at++)
+        // THE LENGTH IS READ AS A PROPERTY AND NOT OFF THE STORE, which is `LengthOfArrayLike` and
+        // is what the specification says. It matters for a Proxy, whose `length` is whatever its
+        // `get` trap answers and which has no store of its own to ask.
+        var length = ArrayLengthOf(engine, JsValue.Object(value));
+
+        for (double at = 0; at < length; at++)
         {
             engine.Charge(1);
 
             // In an Array, a value with no JSON text is `null` rather than a gap: an Array's shape
             // is its indices, and omitting one would renumber every element after it.
-            parts.Add(JsonSerialize(engine, state, JsNumberFormat.ToUintString(at), value) ?? "null");
+            parts.Add(JsonSerialize(engine, state, ArrayKeyOf(at), value) ?? "null");
         }
 
         var rendered = JsonJoin(state, stepback, parts, "[", "]");

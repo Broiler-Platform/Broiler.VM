@@ -3,19 +3,21 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   32
-// Annotated:        32/32
-// Exempt:           6
-// Human-reviewed:   0/32
+// Relevant units:   39
+// Annotated:        39/39
+// Exempt:           10
+// Human-reviewed:   0/39
 // IP risk:          Medium
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  4/10 max
-// Unverified:       32
+// Unverified:       39
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
 namespace Broiler.VM.Profile.JavaScript;
+
+using Broiler.VM.Profile.JavaScript.Format;
 
 /// <summary>
 /// The <c>RegExp</c> intrinsic, its prototype, and the four <c>String.prototype</c> methods that
@@ -23,70 +25,88 @@ namespace Broiler.VM.Profile.JavaScript;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>THIS IS AN EXPLICIT APPROXIMATION, DECLARED HERE RATHER THAN DISCOVERED IN THE FIELD.</b>
-/// The pattern is not compiled by a matcher this profile owns: it is translated, lightly, and
-/// handed to <see cref="System.Text.RegularExpressions.Regex"/> with
-/// <see cref="System.Text.RegularExpressions.RegexOptions.ECMAScript"/> set, which is what puts
-/// <c>\d</c>, <c>\w</c>, <c>\s</c>, backreferences and quantifiers onto the language's meanings
-/// rather than .NET's. What that buys is a working <c>exec</c>, <c>test</c>, <c>match</c>,
-/// <c>search</c>, <c>replace</c> and <c>split</c> for a fraction of the cost of writing a
-/// backtracking matcher. What it costs is the list below, which is the whole of what is known to
-/// differ - anything found later belongs on it.
+/// <b>The pattern is compiled by a matcher this profile owns.</b> <see cref="JsRegExpMatcher"/>
+/// parses the ECMAScript pattern grammar - Annex B included, because real code uses it - lowers it
+/// to an instruction array and runs it on a backtracking machine with an explicit stack. Nothing
+/// here translates a pattern into another engine's dialect, and no host regular-expression type is
+/// named anywhere in this file or in that one. What that buys is the list of things the translation
+/// got wrong and this does not: capture numbering is by opening parenthesis whether a group is
+/// named or not; a quantified group is reset to <c>undefined</c> on each repetition, so
+/// <c>/(?:(a)|b)+/.exec("ab")</c> reports <c>undefined</c> for its group; <c>$</c> without <c>m</c>
+/// matches at the very end and not before a trailing newline; <c>y</c> is a real anchored attempt
+/// at <c>lastIndex</c> that costs one attempt rather than a forward search whose answer is thrown
+/// away, and <c>match</c>, <c>search</c>, <c>replace</c> and <c>split</c> all honour it; <c>u</c>
+/// matches code point by code point, takes <c>\u{...}</c>, folds with the full simple case folding
+/// and steps over a surrogate pair as one position; <c>s</c> is a flag rather than a reason to
+/// re-parse; and an <c>exec</c> result carries <c>groups</c> when the pattern named any.
+/// </para>
+/// <para>
+/// <b>Backtracking is metered rather than timed.</b> Every instruction the machine dispatches is
+/// charged to the engine's fuel meter, which is where a spent allowance becomes an abort the guest
+/// cannot catch and where cancellation is polled. A catastrophically backtracking pattern therefore
+/// spends the guest's allowance and ends as a resource exhaustion with a named dimension - not as a
+/// hang, and no longer as the wall-clock <c>RangeError</c> the translation carried, which was a
+/// value the language does not have. The matcher's own two ceilings on the backtrack stack and the
+/// undo trail are reported the same way, for a host that granted an unbounded allowance.
+/// </para>
+/// <para>
+/// <b>What is still not here.</b> The list is shorter than it was and it is the whole of what is
+/// known to differ; anything found later belongs on it.
 /// </para>
 /// <list type="bullet">
 /// <item>
-/// <b>Capture numbering when named groups are present.</b> .NET numbers the unnamed groups first
-/// and the named groups after them; the language numbers every group left to right. A pattern
-/// mixing <c>(a)</c> with <c>(?&lt;n&gt;b)</c> therefore reports its captures - and its
-/// <c>$1</c>..<c>$9</c> substitutions - in an order the language does not. Patterns with no named
-/// groups are unaffected, and there is no <c>groups</c> property on a result either way.
+/// <b>No <c>\p{...}</c> or <c>\P{...}</c> property escapes.</b> Under <c>u</c> a pattern carrying
+/// one is a <c>SyntaxError</c> naming the escape, which is a refusal the language does not make;
+/// outside <c>u</c> it is the identity escape Annex B already makes it. Implementing them needs the
+/// Unicode property tables and those are not shipped here.
 /// </item>
 /// <item>
-/// <b><c>$</c> before a final newline.</b> .NET's <c>$</c> matches at the end of the input and
-/// also immediately before a trailing <c>\n</c>; the language's, without <c>m</c>, matches only at
-/// the very end.
+/// <b>No <c>v</c> flag</b>, and none of the set operations, string properties or nested classes it
+/// brings. A <c>v</c> in a flag string is a <c>SyntaxError</c>.
 /// </item>
 /// <item>
-/// <b><c>y</c> is emulated, not native, and only by <c>exec</c> and <c>test</c>.</b> .NET has no
-/// sticky mode, so a sticky match is a forward search whose result is discarded unless it began
-/// exactly at <c>lastIndex</c>. The answer is right; the cost is not, because a failing sticky
-/// match still scans to the end. The four String methods below do not apply that anchoring at
-/// all - to <c>match</c>, <c>search</c>, <c>replace</c> and <c>split</c>, <c>y</c> reads as
-/// absent.
+/// <b><c>d</c> is parsed, ordered and reported, and builds no <c>indices</c>.</b> The flag is
+/// accepted, appears in <c>flags</c> in the specification's position, and <c>hasIndices</c> answers
+/// for it - but an <c>exec</c> result has no <c>indices</c> property, so code that reads one gets
+/// <c>undefined</c> rather than the array of offset pairs. The offsets exist inside the matcher;
+/// what is missing is the object, and it is missing because nothing this profile runs asks for it.
 /// </item>
 /// <item>
-/// <b><c>u</c> is recorded and otherwise inert.</b> No code-point-wise matching, no
-/// <c>\u{...}</c>, no <c>\p{...}</c> property escapes, and a surrogate pair is still two units to
-/// every index this file produces.
+/// <b>Case folding is computed, not tabulated.</b> Canonicalize is built from the invariant
+/// culture's simple case mappings rather than from a shipped <c>CaseFolding</c> table, with three
+/// characters written in by hand: the dotted capital I and the dotless small i, which fold to
+/// themselves, and the long s, which the host's globalization-invariant mode leaves alone where
+/// Unicode folds it to <c>s</c>. The whole plane was compared with those mappings present and
+/// absent and nothing else moved, but a character Unicode folds differently from the invariant
+/// table would be a case-insensitive match this makes and the comparison engine does not.
 /// </item>
 /// <item>
-/// <b>The ECMAScript option is dropped when .NET refuses it.</b> .NET forbids
-/// <c>Singleline</c> in combination with <c>ECMAScript</c>, so every pattern carrying the <c>s</c>
-/// flag takes the retry path, as does any pattern .NET's ECMAScript parser rejects. On that path
-/// <c>\d</c>, <c>\w</c> and <c>\s</c> widen to their Unicode meanings, which is visible: under
-/// <c>/\d/s</c> a Devanagari digit matches and under <c>/\d/</c> it does not.
+/// <b>A pattern may not nest more than 128 groups deep.</b> Past that the parser raises a
+/// <c>SyntaxError</c> the language would not have raised. It is the declared price of a recursive
+/// descent parser in a profile that has already lost a process to a stack it could not translate,
+/// and it is far past anything a person writes.
 /// </item>
 /// <item>
-/// <b>The accepted grammar is neither a subset nor a superset.</b> .NET accepts constructs the
-/// language has no syntax for - <c>\p{L}</c>, character-class subtraction, conditionals,
-/// balancing groups - and rejects some Annex B leniencies the language accepts, such as a lone
-/// <c>{</c> used as a literal or a backreference to a group that does not exist. The first is
-/// silently permitted here; the second is a <c>SyntaxError</c> the language would not have
-/// raised. Two classes .NET rejects outright are translated instead: <c>[]</c> becomes an
-/// assertion that never matches and <c>[^]</c> becomes <c>[\s\S]</c>, and <c>[</c> inside a class
-/// is escaped so .NET's subtraction syntax cannot capture it.
+/// <b>A group name spelled with a <c>\u</c> escape is refused</b>, and so is a duplicate group
+/// name in alternatives that cannot both match - which the specification now admits. The second
+/// refusal is what the comparison engine at the version measured against does too, so it costs
+/// nothing today and will cost something the day that engine moves.
 /// </item>
 /// <item>
-/// <b>No <c>Symbol.match</c>, <c>Symbol.replace</c>, <c>Symbol.search</c> or <c>Symbol.split</c>
-/// protocol.</b> This surface has no Symbols at all, so the six built-ins here test for a RegExp
-/// object rather than dispatching on a method: subclassing <c>RegExp</c> and overriding
-/// <c>exec</c> changes nothing, and neither does an object that merely looks like one. There is
-/// no <c>matchAll</c>, no <c>replaceAll</c>, and no <c>d</c> or <c>v</c> flag.
+/// <b>The pattern protocol dispatches and the RegExp's own <c>exec</c> is still not consulted.</b>
+/// The five String methods ask their argument for <c>Symbol.match</c>, <c>Symbol.matchAll</c>,
+/// <c>Symbol.replace</c>, <c>Symbol.search</c> or <c>Symbol.split</c> and call it when it answers,
+/// so a program's own object is a pattern — <i>(this read "no Symbols at all" until 2026-09-05,
+/// which was true when this surface had none and had stopped being true; corrected as
+/// JSC-129)</i>. What the five methods on <c>RegExp.prototype</c> do NOT do is go through the
+/// receiver's own <c>exec</c>: they run the matcher directly, so a subclass overriding <c>exec</c>
+/// changes what <c>re.exec(s)</c> answers and not what <c>s.match(re)</c> answers.
+/// <c>replaceAll</c> takes a string pattern only.
 /// </item>
 /// <item>
-/// <b>Every matcher carries a five-second match allowance.</b> A catastrophic backtrack becomes a
-/// <c>RangeError</c> the guest can see rather than a host process that stops answering. The
-/// language has no such error; a hung interpreter is the worse of the two.
+/// <b>A required repetition is counted rather than reasoned about.</b> <c>/(?:){1000000000}/</c>
+/// runs a billion empty iterations and spends the fuel for them, where an engine that noticed the
+/// body cannot consume would answer at once. The answer is the same; the cost is not.
 /// </item>
 /// </list>
 /// </remarks>
@@ -94,19 +114,19 @@ namespace Broiler.VM.Profile.JavaScript;
 // Broiler-Human:        PENDING
 internal sealed partial class JsRealm
 {
-    /// <summary>How long a single match may run before the matcher abandons it.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=EFBD27
+    /// <summary>The meter the matcher charges its instructions to, built once per realm.</summary>
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=4BE525
     // Broiler-Human:        PENDING
-    private static readonly System.TimeSpan RegExpMatchAllowance = System.TimeSpan.FromSeconds(5);
+    private JsRegExpCharge? regExpCharge;
 
     /// <summary>Builds <c>RegExp</c>, <c>RegExp.prototype</c>, and the String methods that take one.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=7C33C6
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=84B942
     // Broiler-Human:        PENDING
     private void SetupRegExp()
     {
         var prototype = RegExpPrototype;
 
-        Constructor(
+        var regExpConstructor = Constructor(
             "RegExp",
             2,
             prototype,
@@ -181,11 +201,57 @@ internal sealed partial class JsRealm
                 : engine.ThrowTypeError("RegExp.prototype.flags requires a RegExp receiver");
         });
 
+        RegExpFlagGetter(prototype, "hasIndices", 'd');
         RegExpFlagGetter(prototype, "global", 'g');
+        SpeciesGetter(regExpConstructor);
+
         RegExpFlagGetter(prototype, "ignoreCase", 'i');
         RegExpFlagGetter(prototype, "multiline", 'm');
-        RegExpFlagGetter(prototype, "sticky", 'y');
+        RegExpFlagGetter(prototype, "dotAll", 's');
         RegExpFlagGetter(prototype, "unicode", 'u');
+        RegExpFlagGetter(prototype, "sticky", 'y');
+
+        // ---- the pattern protocol, which is what makes these five methods dispatchable --------
+        //
+        // A PATTERN IS AN OBJECT WITH THE RIGHT SYMBOL AND NOT A RegExp. `"x".replace(p, r)` asks
+        // `p` for `Symbol.replace` and calls it; a program's own object answering that Symbol is a
+        // pattern, and a RegExp is one because its prototype answers all five. That is the whole
+        // extension point the language gives here, and this realm answered it by TESTING FOR A
+        // RegExp OBJECT until 2026-09-05 - a header remark defended the difference on the grounds
+        // that this surface had no Symbols, which stopped being true when it acquired them.
+        RegExpSymbolMethod(prototype, MatchSymbol, "[Symbol.match]", 1,
+            (engine, pattern, arguments) =>
+                RegExpMatchThrough(engine, pattern, engine.ToStringValue(ArgOfRegExp(arguments, 0))));
+
+        RegExpSymbolMethod(prototype, MatchAllSymbol, "[Symbol.matchAll]", 1,
+            (engine, pattern, arguments) =>
+                RegExpMatchAllThrough(
+                    engine, pattern, engine.ToStringValue(ArgOfRegExp(arguments, 0))));
+
+        RegExpSymbolMethod(prototype, SearchSymbol, "[Symbol.search]", 1,
+            (engine, pattern, arguments) =>
+                RegExpSearchThrough(engine, pattern, engine.ToStringValue(ArgOfRegExp(arguments, 0))));
+
+        RegExpSymbolMethod(prototype, ReplaceSymbol, "[Symbol.replace]", 2,
+            (engine, pattern, arguments) =>
+                JsValue.String(
+                    RegExpReplaceAll(
+                        engine,
+                        pattern,
+                        engine.ToStringValue(ArgOfRegExp(arguments, 0)),
+                        ArgOfRegExp(arguments, 1))));
+
+        RegExpSymbolMethod(prototype, SplitSymbol, "[Symbol.split]", 2,
+            (engine, pattern, arguments) =>
+            {
+                var input = engine.ToStringValue(ArgOfRegExp(arguments, 0));
+                var bound = ArgOfRegExp(arguments, 1);
+                var limit = bound.Type == JsType.Undefined ? 4294967295L : engine.ToUint32(bound);
+
+                return limit == 0
+                    ? JsValue.Object(NewArray())
+                    : JsValue.Object(RegExpSplitPattern(engine, pattern, input, limit));
+            });
 
         // ---- the String methods that take a RegExp ------------------------------------------
         //
@@ -199,8 +265,15 @@ internal sealed partial class JsRealm
 
         Method(StringPrototype, "match", 1, (engine, thisValue, arguments) =>
         {
+            var given = ArgOfRegExp(arguments, 0);
+
+            if (RegExpDispatch(engine, thisValue, given, engine.Realm.MatchSymbol, out var answered))
+            {
+                return answered;
+            }
+
             var input = RegExpStringThis(engine, thisValue);
-            var pattern = RegExpFromArgument(engine, ArgOfRegExp(arguments, 0));
+            var pattern = RegExpFromArgument(engine, given);
             engine.Charge((ulong)input.Length + 16);
 
             if (!pattern.Global)
@@ -209,45 +282,141 @@ internal sealed partial class JsRealm
             }
 
             // A GLOBAL `match` COLLECTS THE MATCHED TEXT AND NOTHING ELSE - no index, no input, no
-            // captures - and leaves `lastIndex` at zero however it ends.
+            // captures - and leaves `lastIndex` at zero however it ends. It goes through `exec`
+            // rather than around it, so a global sticky pattern stops at its first gap.
             pattern.LastIndex = JsValue.Number(0);
             var found = NewArray();
-            var at = 0;
 
-            while (at <= input.Length)
+            while (true)
             {
-                engine.Charge((ulong)(input.Length - at) + 4);
-                var match = RegExpRun(engine, pattern, input, at);
+                var match = RegExpMatchOne(engine, pattern, input);
 
-                if (!match.Success)
+                if (match is null)
                 {
                     break;
                 }
 
-                found.Push(JsValue.String(match.Value));
-                at = match.Length == 0 ? match.Index + 1 : match.Index + match.Length;
+                found.Push(JsValue.String(match.TextOf(input, 0)));
+
+                if (match.Length == 0)
+                {
+                    pattern.LastIndex = JsValue.Number(
+                        JsRegExpMatcher.Advance(input, match.End, pattern.Unicode));
+                }
             }
 
             pattern.LastIndex = JsValue.Number(0);
             return found.Length == 0 ? JsValue.Null : JsValue.Object(found);
         });
 
-        Method(StringPrototype, "search", 1, (engine, thisValue, arguments) =>
+        // EVERY MATCH WITH ITS CAPTURES, WHICH IS THE ONE THING A GLOBAL `match` WILL NOT GIVE.
+        // `"a1".match(/(\w)(\d)/g)` answers the matched TEXT of each match and throws the groups
+        // away, so a program that wants both has to loop `exec` and remember `lastIndex` itself.
+        // This is that loop, as an iterator, and it is the reason the method exists.
+        Method(StringPrototype, "matchAll", 1, (engine, thisValue, arguments) =>
         {
+            var given = ArgOfRegExp(arguments, 0);
+
+            // THE GLOBALITY CHECK HAPPENS BEFORE THE DISPATCH AND NOT INSIDE IT, which is the one
+            // place this method's order differs from its four neighbours: the language checks that
+            // a RegExp argument is global first, so `"x".matchAll(/a/)` is a TypeError even though
+            // `RegExp.prototype[Symbol.matchAll]` would have accepted it.
+            if (given.AsObjectOrNull() is RegExpObject checkedFirst && !checkedFirst.Global)
+            {
+                return engine.ThrowTypeError(
+                    "String.prototype.matchAll called with a non-global RegExp argument");
+            }
+
+            if (RegExpDispatch(engine, thisValue, given, engine.Realm.MatchAllSymbol, out var answered))
+            {
+                return answered;
+            }
+
             var input = RegExpStringThis(engine, thisValue);
-            var pattern = RegExpFromArgument(engine, ArgOfRegExp(arguments, 0));
+
+            // A NON-GLOBAL REGULAR EXPRESSION IS A TYPE ERROR AND NOT AN ITERATOR OF ONE. The
+            // language refuses it because the loop this performs would not terminate without the
+            // `lastIndex` a global pattern keeps, and answering with a single match would have been
+            // a different method wearing this one's name.
+            if (given.AsObjectOrNull() is RegExpObject supplied && !supplied.Global)
+            {
+                return engine.ThrowTypeError(
+                    "String.prototype.matchAll called with a non-global RegExp argument");
+            }
+
+            // THE ITERATION RUNS OVER A COPY, so the pattern the caller handed in keeps its own
+            // `lastIndex`: a program that interleaves `matchAll` with `exec` on one RegExp sees
+            // neither disturb the other, which is what the language says and what a shared object
+            // would not give.
+            var pattern = RegExpBuild(
+                engine,
+                given.AsObjectOrNull() is RegExpObject source ? source.Source : engine.ToStringValue(given),
+                given.AsObjectOrNull() is RegExpObject held ? held.Flags : "g");
+
+            pattern.LastIndex = given.AsObjectOrNull() is RegExpObject from
+                ? JsValue.Number(engine.ToInteger(from.LastIndex))
+                : JsValue.Number(0);
+
             engine.Charge((ulong)input.Length + 16);
 
-            // `search` never consults and never disturbs `lastIndex`, global flag or not.
-            var match = RegExpRun(engine, pattern, input, 0);
-            return JsValue.Number(match.Success ? match.Index : -1);
+            return JsValue.Object(CreateListIterator("RegExp String Iterator", slot =>
+            {
+                var match = RegExpMatchOne(engine, pattern, input);
+
+                if (match is null)
+                {
+                    return (false, JsValue.Undefined, slot);
+                }
+
+                // AN EMPTY MATCH ADVANCES THE CURSOR BY HAND, because the matcher leaves
+                // `lastIndex` where the match ended and an empty match ends where it began. Without
+                // this the iterator answers the same empty match for ever.
+                if (match.Length == 0)
+                {
+                    pattern.LastIndex = JsValue.Number(
+                        JsRegExpMatcher.Advance(input, match.End, pattern.Unicode));
+                }
+
+                return (true, JsValue.Object(RegExpResult(engine, pattern, match, input)), slot + 1);
+            }));
+        });
+
+        Method(StringPrototype, "search", 1, (engine, thisValue, arguments) =>
+        {
+            var given = ArgOfRegExp(arguments, 0);
+
+            if (RegExpDispatch(engine, thisValue, given, engine.Realm.SearchSymbol, out var answered))
+            {
+                return answered;
+            }
+
+            var input = RegExpStringThis(engine, thisValue);
+            var pattern = RegExpFromArgument(engine, given);
+            engine.Charge((ulong)input.Length + 16);
+
+            // `search` neither consults nor disturbs `lastIndex`: it saves it, searches from zero,
+            // and puts it back. A sticky pattern is still anchored, which is why "aab".search(/b/y)
+            // is -1.
+            var saved = pattern.LastIndex;
+            pattern.LastIndex = JsValue.Number(0);
+            var match = RegExpRun(engine, pattern, input, 0, pattern.Sticky);
+            pattern.LastIndex = saved;
+            return JsValue.Number(match is null ? -1 : match.Index);
         });
 
         Method(StringPrototype, "replace", 2, (engine, thisValue, arguments) =>
         {
-            var input = RegExpStringThis(engine, thisValue);
             var search = ArgOfRegExp(arguments, 0);
             var replacement = ArgOfRegExp(arguments, 1);
+
+            if (RegExpDispatch(
+                    engine, thisValue, search, engine.Realm.ReplaceSymbol, out var answered,
+                    replacement))
+            {
+                return answered;
+            }
+
+            var input = RegExpStringThis(engine, thisValue);
             engine.Charge((ulong)input.Length + 16);
 
             return JsValue.String(
@@ -258,9 +427,16 @@ internal sealed partial class JsRealm
 
         Method(StringPrototype, "split", 2, (engine, thisValue, arguments) =>
         {
-            var input = RegExpStringThis(engine, thisValue);
             var separator = ArgOfRegExp(arguments, 0);
             var bound = ArgOfRegExp(arguments, 1);
+
+            if (RegExpDispatch(
+                    engine, thisValue, separator, engine.Realm.SplitSymbol, out var answered, bound))
+            {
+                return answered;
+            }
+
+            var input = RegExpStringThis(engine, thisValue);
             engine.Charge((ulong)input.Length + 16);
 
             var limit = bound.Type == JsType.Undefined ? 4294967295L : engine.ToUint32(bound);
@@ -285,6 +461,164 @@ internal sealed partial class JsRealm
             return JsValue.Object(
                 RegExpSplitText(engine, input, engine.ToStringValue(separator), limit));
         });
+    }
+
+    /// <summary>Installs one of the five pattern methods under its Symbol.</summary>
+    /// <remarks>
+    /// <b>Each one requires a real RegExp receiver</b>, which is not the same as requiring a RegExp
+    /// argument at the call site: a program's own object may answer the Symbol however it likes, and
+    /// what this refuses is a call of <c>RegExp.prototype[Symbol.match]</c> on something that is not
+    /// one.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=BF84D3
+    // Broiler-Human:        PENDING
+    private void RegExpSymbolMethod(
+        JsObject host,
+        JsSymbol key,
+        string name,
+        int arity,
+        System.Func<JsEngine, RegExpObject, JsValue[], JsValue> body) =>
+        host.SetOwnSymbol(
+            key,
+            JsProperty.Data(
+                JsValue.Object(Native(name, arity, (engine, thisValue, arguments) =>
+                {
+                    if (thisValue.AsObjectOrNull() is not RegExpObject pattern)
+                    {
+                        return engine.ThrowTypeError(
+                            "RegExp.prototype" + name + " called on a value that is not a RegExp");
+                    }
+
+                    return body(engine, pattern, arguments);
+                })),
+                JsPropertyAttributes.BuiltIn));
+
+    /// <summary>Hands the work to the pattern when the pattern says it can do it.</summary>
+    /// <remarks>
+    /// <b>The read is a <c>GetMethod</c> and the ORDER matters.</b> A nullish pattern is not asked
+    /// at all — <c>"x".replace(null, r)</c> replaces the text <c>"null"</c> — and a pattern whose
+    /// Symbol is present but not callable is a <c>TypeError</c> rather than a fall-through, because
+    /// an object that claims the protocol and cannot perform it is a mistake worth reporting. The
+    /// receiver is coerced to a String only on the path that does NOT dispatch, since the method
+    /// being dispatched to is handed the receiver as it stands.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=627A72
+    // Broiler-Human:        PENDING
+    private static bool RegExpDispatch(
+        JsEngine engine,
+        JsValue receiver,
+        JsValue pattern,
+        JsSymbol key,
+        out JsValue answered,
+        JsValue extra = default)
+    {
+        answered = JsValue.Undefined;
+
+        if (pattern.IsNullish)
+        {
+            return false;
+        }
+
+        if (receiver.IsNullish)
+        {
+            engine.ThrowTypeError("String.prototype method called on null or undefined");
+        }
+
+        var method = engine.GetSymbol(pattern, key);
+
+        if (method.Type == JsType.Undefined || method.Type == JsType.Null)
+        {
+            return false;
+        }
+
+        if (!method.IsObject || !method.AsObject().IsCallable)
+        {
+            engine.ThrowTypeError("the pattern's protocol method is not callable");
+        }
+
+        answered = extra.IsEmpty
+            ? engine.Call(method, pattern, [receiver])
+            : engine.Call(method, pattern, [receiver, extra]);
+
+        return true;
+    }
+
+    /// <summary>What <c>String.prototype.match</c> does once the pattern is known to be one.</summary>
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=E15631
+    // Broiler-Human:        PENDING
+    private JsValue RegExpMatchThrough(JsEngine engine, RegExpObject pattern, string input)
+    {
+        engine.Charge((ulong)input.Length + 16);
+
+        if (!pattern.Global)
+        {
+            return RegExpExecute(engine, pattern, input);
+        }
+
+        pattern.LastIndex = JsValue.Number(0);
+        var found = NewArray();
+
+        while (true)
+        {
+            var match = RegExpMatchOne(engine, pattern, input);
+
+            if (match is null)
+            {
+                break;
+            }
+
+            found.Push(JsValue.String(match.TextOf(input, 0)));
+
+            if (match.Length == 0)
+            {
+                pattern.LastIndex = JsValue.Number(
+                    JsRegExpMatcher.Advance(input, match.End, pattern.Unicode));
+            }
+        }
+
+        pattern.LastIndex = JsValue.Number(0);
+        return found.Length == 0 ? JsValue.Null : JsValue.Object(found);
+    }
+
+    /// <summary>The same for <c>search</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=7F4778
+    // Broiler-Human:        PENDING
+    private JsValue RegExpSearchThrough(JsEngine engine, RegExpObject pattern, string input)
+    {
+        engine.Charge((ulong)input.Length + 16);
+        var saved = pattern.LastIndex;
+        pattern.LastIndex = JsValue.Number(0);
+        var match = RegExpRun(engine, pattern, input, 0, pattern.Sticky);
+        pattern.LastIndex = saved;
+        return JsValue.Number(match is null ? -1 : match.Index);
+    }
+
+    /// <summary>The same for <c>matchAll</c>, over a copy of the pattern.</summary>
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=69F556
+    // Broiler-Human:        PENDING
+    private JsValue RegExpMatchAllThrough(JsEngine engine, RegExpObject pattern, string input)
+    {
+        var walked = RegExpBuild(engine, pattern.Source, pattern.Flags);
+        walked.LastIndex = JsValue.Number(engine.ToInteger(pattern.LastIndex));
+        engine.Charge((ulong)input.Length + 16);
+
+        return JsValue.Object(CreateListIterator("RegExp String Iterator", slot =>
+        {
+            var match = RegExpMatchOne(engine, walked, input);
+
+            if (match is null)
+            {
+                return (false, JsValue.Undefined, slot);
+            }
+
+            if (match.Length == 0)
+            {
+                walked.LastIndex = JsValue.Number(
+                    JsRegExpMatcher.Advance(input, match.End, walked.Unicode));
+            }
+
+            return (true, JsValue.Object(RegExpResult(engine, walked, match, input)), slot + 1);
+        }));
     }
 
     /// <summary>Reads one argument, which may not have been passed.</summary>
@@ -415,11 +749,13 @@ internal sealed partial class JsRealm
     {
         var normalized = RegExpNormalizeFlags(engine, flags);
         engine.Charge((ulong)source.Length + 32);
-        return new RegExpObject(RegExpPrototype, source, normalized, RegExpCompile(engine, source, normalized));
+
+        return new RegExpObject(
+            RegExpPrototype, source, normalized, RegExpCompile(engine, source, normalized));
     }
 
     /// <summary>Validates a flag string and returns it in the specification's order.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=680F44
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=1BF553
     // Broiler-Human:        PENDING
     private static string RegExpNormalizeFlags(JsEngine engine, string flags)
     {
@@ -429,12 +765,13 @@ internal sealed partial class JsRealm
         {
             var bit = flag switch
             {
-                'g' => 1,
-                'i' => 2,
-                'm' => 4,
-                's' => 8,
-                'u' => 16,
-                'y' => 32,
+                'd' => 1,
+                'g' => 2,
+                'i' => 4,
+                'm' => 8,
+                's' => 16,
+                'u' => 32,
+                'y' => 64,
                 _ => 0,
             };
 
@@ -446,163 +783,42 @@ internal sealed partial class JsRealm
             seen |= bit;
         }
 
-        var builder = new System.Text.StringBuilder(6);
+        // THE ORDER IS THE SPECIFICATION'S AND NOT THE ORDER THEY WERE WRITTEN IN, which is what
+        // makes `new RegExp("x", "yg").flags` answer "gy" and what `toString` prints.
+        var builder = new System.Text.StringBuilder(7);
+        var order = "dgimsuy";
 
-        if ((seen & 1) != 0)
+        for (var at = 0; at < order.Length; at++)
         {
-            builder.Append('g');
-        }
-
-        if ((seen & 2) != 0)
-        {
-            builder.Append('i');
-        }
-
-        if ((seen & 4) != 0)
-        {
-            builder.Append('m');
-        }
-
-        if ((seen & 8) != 0)
-        {
-            builder.Append('s');
-        }
-
-        if ((seen & 16) != 0)
-        {
-            builder.Append('u');
-        }
-
-        if ((seen & 32) != 0)
-        {
-            builder.Append('y');
+            if ((seen & (1 << at)) != 0)
+            {
+                builder.Append(order[at]);
+            }
         }
 
         return builder.ToString();
     }
 
-    /// <summary>Translates a JavaScript pattern and compiles it.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=61BAF2
+    /// <summary>Compiles a pattern with this profile's own matcher.</summary>
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=C66184
     // Broiler-Human:        PENDING
-    private static System.Text.RegularExpressions.Regex RegExpCompile(
-        JsEngine engine, string source, string flags)
+    private static JsRegExpMatcher RegExpCompile(JsEngine engine, string source, string flags)
     {
-        var translated = RegExpTranslate(source);
-
-        var options = System.Text.RegularExpressions.RegexOptions.ECMAScript |
-            System.Text.RegularExpressions.RegexOptions.CultureInvariant;
-
-        foreach (var flag in flags)
-        {
-            switch (flag)
-            {
-                case 'i':
-                    options |= System.Text.RegularExpressions.RegexOptions.IgnoreCase;
-                    break;
-
-                case 'm':
-                    options |= System.Text.RegularExpressions.RegexOptions.Multiline;
-                    break;
-
-                case 's':
-                    options |= System.Text.RegularExpressions.RegexOptions.Singleline;
-                    break;
-
-                default:
-                    break;
-            }
-        }
-
         try
         {
-            return new System.Text.RegularExpressions.Regex(translated, options, RegExpMatchAllowance);
+            return JsRegExpMatcher.Compile(
+                source,
+                RegExpHasFlag(flags, 'i'),
+                RegExpHasFlag(flags, 'm'),
+                RegExpHasFlag(flags, 's'),
+                RegExpHasFlag(flags, 'u'));
         }
-        catch (System.ArgumentException)
-        {
-            // .NET REFUSES `ECMAScript` FOR MORE PATTERNS AND OPTION SETS THAN IT ACCEPTS IT FOR,
-            // and `Singleline` is one it refuses outright - so every `/./s` lands here. Retrying
-            // without the option is the difference between a working pattern and a SyntaxError the
-            // language would never have raised; what it changes is written down in the remarks.
-        }
-
-        var relaxed = options & ~System.Text.RegularExpressions.RegexOptions.ECMAScript;
-
-        try
-        {
-            return new System.Text.RegularExpressions.Regex(translated, relaxed, RegExpMatchAllowance);
-        }
-        catch (System.ArgumentException failure)
+        catch (JsRegExpSyntaxError failure)
         {
             throw engine.Error(
                 "SyntaxError",
                 "Invalid regular expression: /" + source + "/: " + failure.Message);
         }
-    }
-
-    /// <summary>Rewrites the constructs .NET spells differently or refuses.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=81D6C5
-    // Broiler-Human:        PENDING
-    private static string RegExpTranslate(string pattern)
-    {
-        var builder = new System.Text.StringBuilder(pattern.Length + 8);
-        var at = 0;
-        var inClass = false;
-
-        while (at < pattern.Length)
-        {
-            var character = pattern[at];
-
-            if (character == '\\' && at + 1 < pattern.Length)
-            {
-                builder.Append(character).Append(pattern[at + 1]);
-                at += 2;
-                continue;
-            }
-
-            if (!inClass && character == '[')
-            {
-                // `[]` matches nothing and `[^]` matches anything; .NET rejects both as
-                // unterminated. An assertion that cannot succeed and an explicit any-character
-                // class are the two patterns that mean the same thing to .NET.
-                if (at + 1 < pattern.Length && pattern[at + 1] == ']')
-                {
-                    builder.Append("(?!)");
-                    at += 2;
-                    continue;
-                }
-
-                if (at + 2 < pattern.Length && pattern[at + 1] == '^' && pattern[at + 2] == ']')
-                {
-                    builder.Append("[\\s\\S]");
-                    at += 3;
-                    continue;
-                }
-
-                inClass = true;
-                builder.Append(character);
-                at++;
-                continue;
-            }
-
-            if (inClass && character == '[')
-            {
-                // Escaped, so .NET's class-subtraction syntax cannot read `-[` out of a class the
-                // language reads as two ordinary members.
-                builder.Append("\\[");
-                at++;
-                continue;
-            }
-
-            if (inClass && character == ']')
-            {
-                inClass = false;
-            }
-
-            builder.Append(character);
-            at++;
-        }
-
-        return builder.ToString();
     }
 
     /// <summary>The escaped text the <c>source</c> accessor and <c>toString</c> report.</summary>
@@ -648,7 +864,7 @@ internal sealed partial class JsRealm
 
                 default:
                     // The two Unicode line separators are line terminators to the language even
-                    // though they are ordinary characters to .NET, so a source text carrying one
+                    // though they are ordinary characters otherwise, so a source text carrying one
                     // has to escape it or stop being a single line when it is printed. They are
                     // spelled numerically because a C# source file cannot hold either one.
                     if (character == (char)0x2028)
@@ -678,11 +894,24 @@ internal sealed partial class JsRealm
     /// and a success sets it past the match. Getting the reset wrong is what makes a loop over
     /// <c>exec</c> either miss its second string or never end.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=206A84
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=AF8128
     // Broiler-Human:        PENDING
     private JsValue RegExpExecute(JsEngine engine, RegExpObject target, string input)
     {
-        engine.Charge((ulong)input.Length + 16);
+        var match = RegExpMatchOne(engine, target, input);
+
+        return match is null
+            ? JsValue.Null
+            : JsValue.Object(RegExpResult(engine, target, match, input));
+    }
+
+    /// <summary>One <c>exec</c>, answering the match itself rather than an Array.</summary>
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=0AE0EA
+    // Broiler-Human:        PENDING
+    private static JsRegExpMatch? RegExpMatchOne(
+        JsEngine engine, RegExpObject target, string input)
+    {
+        engine.Charge(16);
 
         var tracks = target.Global || target.Sticky;
         var start = tracks ? engine.ToInteger(target.LastIndex) : 0;
@@ -695,84 +924,87 @@ internal sealed partial class JsRealm
             start = 0;
         }
 
-        if (start > input.Length)
-        {
-            if (tracks)
-            {
-                target.LastIndex = JsValue.Number(0);
-            }
+        var match = start > input.Length
+            ? null
+            : RegExpRun(engine, target, input, (int)start, target.Sticky);
 
-            return JsValue.Null;
+        // THE TWO WRITES BELOW ARE THE SPECIFICATION'S `Set(R, "lastIndex", …, true)` AND THROW
+        // WHERE THE PROPERTY IS CLOSED. `lastIndex` became closable when it gained an attribute
+        // bit of its own, and a `g` pattern that had been frozen would otherwise go on advancing a
+        // cursor it reports as non-writable. A pattern that tracks nothing never writes and is
+        // unaffected, which is why `/x/.exec` on a frozen RegExp still works.
+        if (tracks && !target.LastIndexWritable)
+        {
+            engine.ThrowTypeError("Cannot assign to read only property 'lastIndex'");
         }
 
-        var from = (int)start;
-        var match = RegExpRun(engine, target, input, from);
-
-        // .NET has no sticky mode, so an anchored match is a forward search whose result is thrown
-        // away unless it began exactly where it was asked to.
-        if (!match.Success || (target.Sticky && match.Index != from))
+        if (match is null)
         {
             if (tracks)
             {
                 target.LastIndex = JsValue.Number(0);
             }
 
-            return JsValue.Null;
+            return null;
         }
 
         if (tracks)
         {
-            target.LastIndex = JsValue.Number(match.Index + match.Length);
+            target.LastIndex = JsValue.Number(match.End);
         }
 
-        return JsValue.Object(RegExpResult(engine, match, input));
+        return match;
     }
 
-    /// <summary>Runs the matcher, turning an exhausted allowance into something guest code sees.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=05E06F
+    /// <summary>Runs the matcher, turning its two ceilings into a stop the guest cannot catch.</summary>
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=9C3846
     // Broiler-Human:        PENDING
-    private static System.Text.RegularExpressions.Match RegExpRun(
-        JsEngine engine, RegExpObject target, string input, int start)
+    private static JsRegExpMatch? RegExpRun(
+        JsEngine engine, RegExpObject target, string input, int start, bool anchored)
     {
         try
         {
-            return target.Matcher.Match(input, start);
+            return target.Matcher.Match(input, start, anchored, engine.Realm.RegExpMeter(engine));
         }
-        catch (System.Text.RegularExpressions.RegexMatchTimeoutException)
+        catch (JsRegExpOverflowError failure)
         {
-            throw engine.Error(
-                "RangeError",
-                "the regular expression /" + target.Source + "/ exceeded its match allowance");
+            throw new JsAbort(JsAbortKind.Exhausted, failure.Message);
         }
     }
 
+    /// <summary>The delegate the matcher charges through, built once and kept.</summary>
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=624853
+    // Broiler-Human:        PENDING
+    private JsRegExpCharge RegExpMeter(JsEngine owner) => regExpCharge ??= owner.Charge;
+
     /// <summary>The Array an <c>exec</c> answers with.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=82BBF3
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=C8955D
     // Broiler-Human:        PENDING
     private JsArray RegExpResult(
-        JsEngine engine, System.Text.RegularExpressions.Match match, string input)
+        JsEngine engine, RegExpObject target, JsRegExpMatch match, string input)
     {
         var result = NewArray();
-        result.Push(JsValue.String(match.Value));
-        var groups = match.Groups;
+        result.Push(JsValue.String(match.TextOf(input, 0)));
 
-        for (var at = 1; at < groups.Count; at++)
+        for (var at = 1; at <= match.CaptureCount; at++)
         {
             engine.Charge(1);
-            var group = groups[at];
 
             // A GROUP THAT DID NOT PARTICIPATE IS `undefined` AND NOT THE EMPTY STRING. The two are
             // told apart by every destructuring of an exec result that has an optional group in it.
-            result.Push(group.Success ? JsValue.String(group.Value) : JsValue.Undefined);
+            result.Push(match.Participated(at)
+                ? JsValue.String(match.TextOf(input, at))
+                : JsValue.Undefined);
         }
 
         result.DefineOrdinary("index", JsValue.Number(match.Index));
         result.DefineOrdinary("input", JsValue.String(input));
+        result.DefineOrdinary("groups", RegExpNamedGroups(target, match, input));
         return result;
     }
 
     /// <summary><c>replace</c> with a RegExp on the left.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=C3ABF6
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=820AB9
     // Broiler-Human:        PENDING
     private static string RegExpReplaceAll(
         JsEngine engine, RegExpObject pattern, string input, JsValue replacement)
@@ -780,7 +1012,6 @@ internal sealed partial class JsRealm
         var callable = replacement.AsObjectOrNull() is { IsCallable: true };
         var template = callable ? string.Empty : engine.ToStringValue(replacement);
         var builder = new System.Text.StringBuilder(input.Length);
-        var at = 0;
         var copied = 0;
 
         if (pattern.Global)
@@ -788,12 +1019,12 @@ internal sealed partial class JsRealm
             pattern.LastIndex = JsValue.Number(0);
         }
 
-        while (at <= input.Length)
+        while (true)
         {
-            engine.Charge((ulong)(input.Length - at) + 4);
-            var match = RegExpRun(engine, pattern, input, at);
+            engine.Charge(4);
+            var match = RegExpMatchOne(engine, pattern, input);
 
-            if (!match.Success)
+            if (match is null)
             {
                 break;
             }
@@ -801,10 +1032,10 @@ internal sealed partial class JsRealm
             builder.Append(input, copied, match.Index - copied);
 
             builder.Append(callable
-                ? RegExpCallReplacement(engine, replacement, match, input)
-                : RegExpExpand(template, match, input));
+                ? RegExpCallReplacement(engine, pattern, replacement, match, input)
+                : RegExpExpand(engine, pattern, template, match, input));
 
-            copied = match.Index + match.Length;
+            copied = match.End;
 
             if (!pattern.Global)
             {
@@ -812,7 +1043,11 @@ internal sealed partial class JsRealm
             }
 
             // An empty match must advance, or the replacement of "" by "-" never terminates.
-            at = match.Length == 0 ? match.Index + 1 : copied;
+            if (match.Length == 0)
+            {
+                pattern.LastIndex = JsValue.Number(
+                    JsRegExpMatcher.Advance(input, match.End, pattern.Unicode));
+            }
         }
 
         builder.Append(input, copied, input.Length - copied);
@@ -895,36 +1130,89 @@ internal sealed partial class JsRealm
         return input.Substring(0, at) + produced + input.Substring(at + search.Length);
     }
 
-    /// <summary>Calls a function replacement with <c>(match, p1..pn, offset, string)</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=560903
+    /// <summary>Calls a function replacement with <c>(match, p1..pn, offset, string, groups)</c>.</summary>
+    /// <remarks>
+    /// The <c>groups</c> object is appended only when the pattern named a group, which is what the
+    /// specification says and what keeps <c>function (whole, offset, text)</c> - the shape every
+    /// replacement written before named groups existed has - working unchanged.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=1DB2AE
     // Broiler-Human:        PENDING
     private static string RegExpCallReplacement(
         JsEngine engine,
+        RegExpObject pattern,
         JsValue replacement,
-        System.Text.RegularExpressions.Match match,
+        JsRegExpMatch match,
         string input)
     {
-        var groups = match.Groups;
-        var passed = new JsValue[groups.Count + 2];
-        passed[0] = JsValue.String(match.Value);
+        var named = pattern.Matcher.HasGroupNames;
+        var count = match.CaptureCount;
+        var passed = new JsValue[count + (named ? 4 : 3)];
+        passed[0] = JsValue.String(match.TextOf(input, 0));
 
-        for (var at = 1; at < groups.Count; at++)
+        for (var at = 1; at <= count; at++)
         {
             engine.Charge(1);
-            var group = groups[at];
-            passed[at] = group.Success ? JsValue.String(group.Value) : JsValue.Undefined;
+            passed[at] = match.Participated(at)
+                ? JsValue.String(match.TextOf(input, at))
+                : JsValue.Undefined;
         }
 
-        passed[groups.Count] = JsValue.Number(match.Index);
-        passed[groups.Count + 1] = JsValue.String(input);
+        passed[count + 1] = JsValue.Number(match.Index);
+        passed[count + 2] = JsValue.String(input);
+
+        if (named)
+        {
+            passed[count + 3] = RegExpNamedGroups(pattern, match, input);
+        }
+
         return engine.ToStringValue(engine.Call(replacement, JsValue.Undefined, passed));
     }
 
+    /// <summary>The <c>groups</c> object, or <c>undefined</c> when the pattern named nothing.</summary>
+    /// <remarks>
+    /// The specification builds it with a null prototype, and so does this: an object whose
+    /// prototype is nothing at all is what keeps <c>result.groups.toString</c> from finding
+    /// <c>Object.prototype</c>'s. The realm can build one, so there is no deviation to declare here.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=50A993
+    // Broiler-Human:        PENDING
+    private static JsValue RegExpNamedGroups(
+        RegExpObject pattern, JsRegExpMatch match, string input)
+    {
+        if (!pattern.Matcher.HasGroupNames)
+        {
+            return JsValue.Undefined;
+        }
+
+        var groups = new JsObject(null);
+
+        for (var at = 1; at <= match.CaptureCount; at++)
+        {
+            var name = pattern.Matcher.NameOf(at);
+
+            if (name is null)
+            {
+                continue;
+            }
+
+            groups.DefineOrdinary(
+                name,
+                match.Participated(at) ? JsValue.String(match.TextOf(input, at)) : JsValue.Undefined);
+        }
+
+        return JsValue.Object(groups);
+    }
+
     /// <summary>Expands the dollar substitutions of a string replacement.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=0255E9
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=7A2957
     // Broiler-Human:        PENDING
     private static string RegExpExpand(
-        string template, System.Text.RegularExpressions.Match match, string input)
+        JsEngine engine,
+        RegExpObject pattern,
+        string template,
+        JsRegExpMatch match,
+        string input)
     {
         var builder = new System.Text.StringBuilder(template.Length);
         var at = 0;
@@ -950,7 +1238,7 @@ internal sealed partial class JsRealm
                     continue;
 
                 case '&':
-                    builder.Append(match.Value);
+                    builder.Append(match.TextOf(input, 0));
                     at += 2;
                     continue;
 
@@ -960,10 +1248,17 @@ internal sealed partial class JsRealm
                     continue;
 
                 case '\'':
-                    var tail = match.Index + match.Length;
-                    builder.Append(input, tail, input.Length - tail);
+                    builder.Append(input, match.End, input.Length - match.End);
                     at += 2;
                     continue;
+
+                case '<':
+                    if (RegExpExpandName(pattern, template, match, input, ref at, builder))
+                    {
+                        continue;
+                    }
+
+                    break;
 
                 default:
                     break;
@@ -971,7 +1266,7 @@ internal sealed partial class JsRealm
 
             if (next is >= '0' and <= '9')
             {
-                var count = match.Groups.Count;
+                var count = match.CaptureCount;
                 var number = next - '0';
                 var width = 2;
 
@@ -982,20 +1277,18 @@ internal sealed partial class JsRealm
                 {
                     var wider = (number * 10) + (template[at + 2] - '0');
 
-                    if (wider >= 1 && wider < count)
+                    if (wider >= 1 && wider <= count)
                     {
                         number = wider;
                         width = 3;
                     }
                 }
 
-                if (number >= 1 && number < count)
+                if (number >= 1 && number <= count)
                 {
-                    var group = match.Groups[number];
-
-                    if (group.Success)
+                    if (match.Participated(number))
                     {
-                        builder.Append(group.Value);
+                        builder.Append(match.TextOf(input, number));
                     }
 
                     at += width;
@@ -1010,8 +1303,54 @@ internal sealed partial class JsRealm
         return builder.ToString();
     }
 
+    /// <summary>Expands one <c>$&lt;name&gt;</c> substitution, or reports that it is not one.</summary>
+    /// <remarks>
+    /// With no named group in the pattern, <c>$&lt;</c> is two ordinary characters and not a
+    /// malformed substitution - which is what keeps a replacement text carrying a less-than sign
+    /// from changing meaning when it is used with a different pattern.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=793C46
+    // Broiler-Human:        PENDING
+    private static bool RegExpExpandName(
+        RegExpObject pattern,
+        string template,
+        JsRegExpMatch match,
+        string input,
+        ref int at,
+        System.Text.StringBuilder builder)
+    {
+        if (!pattern.Matcher.HasGroupNames)
+        {
+            return false;
+        }
+
+        var close = template.IndexOf('>', at + 2);
+
+        if (close < 0)
+        {
+            return false;
+        }
+
+        var name = template.Substring(at + 2, close - at - 2);
+        var group = pattern.Matcher.NumberOf(name);
+        at = close + 1;
+
+        if (group >= 1 && group <= match.CaptureCount && match.Participated(group))
+        {
+            builder.Append(match.TextOf(input, group));
+        }
+
+        return true;
+    }
+
     /// <summary><c>split</c> with a RegExp separator: every match is a boundary, captures included.</summary>
-    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=BE6FE7
+    /// <remarks>
+    /// The specification splits with a STICKY clone of the pattern and never touches the original's
+    /// <c>lastIndex</c>, and that is what this does: the anchored attempt walks the string one
+    /// position at a time. What it does not do is search forward, because a separator that can match
+    /// at two places must be tried at the earlier one.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=98F065
     // Broiler-Human:        PENDING
     private JsArray RegExpSplitPattern(
         JsEngine engine, RegExpObject pattern, string input, long limit)
@@ -1022,9 +1361,7 @@ internal sealed partial class JsRealm
         {
             // AN EMPTY STRING SPLITS INTO NOTHING WHEN THE SEPARATOR MATCHES IT and into one empty
             // piece when it does not. `"".split(/x/)` is `[""]` and `"".split(/(?:)/)` is `[]`.
-            var probe = RegExpRun(engine, pattern, input, 0);
-
-            if (!probe.Success)
+            if (RegExpRun(engine, pattern, input, 0, true) is null)
             {
                 pieces.Add(JsValue.String(input));
             }
@@ -1037,21 +1374,21 @@ internal sealed partial class JsRealm
 
         while (scan < input.Length)
         {
-            engine.Charge((ulong)(input.Length - scan) + 4);
-            var match = RegExpRun(engine, pattern, input, scan);
+            engine.Charge(4);
+            var match = RegExpRun(engine, pattern, input, scan, false);
 
-            if (!match.Success || match.Index >= input.Length)
+            if (match is null || match.Index >= input.Length)
             {
                 break;
             }
 
-            var end = System.Math.Min(match.Index + match.Length, input.Length);
+            var end = System.Math.Min(match.End, input.Length);
 
             if (end == start)
             {
                 // An empty match sitting on the start of the pending piece would produce an empty
                 // piece for every position; the specification steps past it instead.
-                scan = match.Index + 1;
+                scan = JsRegExpMatcher.Advance(input, match.Index, pattern.Unicode);
                 continue;
             }
 
@@ -1062,13 +1399,13 @@ internal sealed partial class JsRealm
                 return NewArray(pieces);
             }
 
-            var groups = match.Groups;
-
-            for (var at = 1; at < groups.Count; at++)
+            for (var at = 1; at <= match.CaptureCount; at++)
             {
                 engine.Charge(1);
-                var group = groups[at];
-                pieces.Add(group.Success ? JsValue.String(group.Value) : JsValue.Undefined);
+
+                pieces.Add(match.Participated(at)
+                    ? JsValue.String(match.TextOf(input, at))
+                    : JsValue.Undefined);
 
                 if (pieces.Count >= limit)
                 {
@@ -1143,13 +1480,13 @@ internal sealed partial class JsRealm
     private sealed class RegExpObject : JsObject
     {
         /// <summary>Creates a compiled regular expression.</summary>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=EAC46F
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=464FC0
         // Broiler-Human:        PENDING
         internal RegExpObject(
             JsObject? prototype,
             string source,
             string flags,
-            System.Text.RegularExpressions.Regex matcher)
+            JsRegExpMatcher matcher)
             : base(prototype, "RegExp")
         {
             Source = source;
@@ -1185,9 +1522,9 @@ internal sealed partial class JsRealm
         internal string Flags { get; }
 
         /// <summary>The compiled matcher.</summary>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=23C977
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=C47205
         // Broiler-Human:        PENDING
-        internal System.Text.RegularExpressions.Regex Matcher { get; }
+        internal JsRegExpMatcher Matcher { get; }
 
         /// <summary>Whether the <c>g</c> flag is set.</summary>
         // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=5988AA
@@ -1199,10 +1536,33 @@ internal sealed partial class JsRealm
         // Broiler-Human:        PENDING
         internal bool Sticky { get; }
 
+        /// <summary>Whether the <c>u</c> flag is set, which decides how an index advances.</summary>
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=B271D1
+        // Broiler-Human:        PENDING
+        internal bool Unicode => Matcher.Unicode;
+
         /// <summary>Where the next <c>g</c> or <c>y</c> search starts, as the guest last left it.</summary>
         // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=D28876
         // Broiler-Human:        PENDING
         internal JsValue LastIndex { get; set; } = JsValue.Number(0);
+
+        /// <summary>Whether <c>lastIndex</c> may still be written.</summary>
+        /// <remarks>
+        /// <b>It is a bit of its own because the property is projected rather than stored</b>, and
+        /// a projection has nowhere to keep an attribute. Without it
+        /// <c>Object.defineProperty(re, "lastIndex", { writable: false })</c> returned having
+        /// changed nothing, and the property went on reporting itself writable and going on being
+        /// written - which is the same defect <see cref="JsArray"/> answers with
+        /// <c>lengthWritable</c>, in the same shape, for the same reason.
+        /// </remarks>
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=FB58E5
+        // Broiler-Human:        PENDING
+        private bool lastIndexWritable = true;
+
+        /// <summary>Whether the <c>exec</c> protocol may still move the cursor.</summary>
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=D46EC6
+        // Broiler-Human:        PENDING
+        internal bool LastIndexWritable => lastIndexWritable;
 
         /// <inheritdoc/>
         // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=3C7D1D
@@ -1210,13 +1570,16 @@ internal sealed partial class JsRealm
         internal override int OwnPropertyCount => base.OwnPropertyCount + 1;
 
         /// <inheritdoc/>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=966612
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=461B43
         // Broiler-Human:        PENDING
         internal override bool TryGetOwnProperty(string key, out JsProperty property)
         {
             if (string.Equals(key, "lastIndex", System.StringComparison.Ordinal))
             {
-                property = JsProperty.Data(LastIndex, JsPropertyAttributes.Writable);
+                property = JsProperty.Data(
+                    LastIndex,
+                    lastIndexWritable ? JsPropertyAttributes.Writable : JsPropertyAttributes.None);
+
                 return true;
             }
 
@@ -1224,14 +1587,20 @@ internal sealed partial class JsRealm
         }
 
         /// <inheritdoc/>
-        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=83A231
+        // Broiler-AI:           Origin=AI; IP=Medium; Security=Medium; Resources=4; Fingerprint=082176
         // Broiler-Human:        PENDING
         internal override void SetOwnProperty(string key, JsProperty property)
         {
             if (string.Equals(key, "lastIndex", System.StringComparison.Ordinal) &&
                 !property.IsAccessor)
             {
+                // A DEFINITION MAY CLOSE THE PROPERTY AND AN ASSIGNMENT MAY NOT, and both arrive
+                // here - which is the same arrangement `JsArray` makes for `length`. The checked
+                // path hands down whatever attributes the descriptor asked for, so losing
+                // `Writable` is how a definition says so; an ordinary assignment carries the
+                // attributes the property already had, which its caller read above.
                 LastIndex = property.Value;
+                lastIndexWritable = (property.Attributes & JsPropertyAttributes.Writable) != 0;
                 return;
             }
 

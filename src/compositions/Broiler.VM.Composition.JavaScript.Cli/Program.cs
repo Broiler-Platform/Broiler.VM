@@ -104,13 +104,27 @@ internal static class Program
             return ExitCodes.Usage;
         }
 
+        if (!CallDepth(args, out var callDepth, out var callDepthComplaint))
+        {
+            Console.Error.WriteLine("broiler-js: " + callDepthComplaint);
+            return ExitCodes.Usage;
+        }
+
+        if (!LiveBytes(args, out var liveBytes, out var liveBytesComplaint))
+        {
+            Console.Error.WriteLine("broiler-js: " + liveBytesComplaint);
+            return ExitCodes.Usage;
+        }
+
         var paths = new List<string>();
 
         for (var index = 0; index < args.Length; index++)
         {
             if (string.Equals(args[index], "--fuel", StringComparison.Ordinal) ||
                 string.Equals(args[index], "--wall", StringComparison.Ordinal) ||
-                string.Equals(args[index], "--max-depth", StringComparison.Ordinal))
+                string.Equals(args[index], "--max-depth", StringComparison.Ordinal) ||
+                string.Equals(args[index], "--call-depth", StringComparison.Ordinal) ||
+                string.Equals(args[index], "--live-bytes", StringComparison.Ordinal))
             {
                 index++;
                 continue;
@@ -171,12 +185,23 @@ internal static class Program
                 read.Add(SourceFiles.Read(path));
             }
 
-            var joined = WideHost.Run(read, module, checkOnly, forceStrict, fuel, wall, depth);
+            var joined = WideHost.Run(
+                read,
+                module || SourceFiles.IsModulePath(files[^1]),
+                checkOnly,
+                forceStrict,
+                fuel,
+                wall,
+                depth,
+                callDepth,
+                liveBytes);
             Report(string.Join(' ', files), joined, single: true, all, quiet);
             return ExitCodes.For(joined.Status);
         }
 
-        return Run(files, module, checkOnly, all, quiet, fuel, wall, depth, missing.Count, slice, forceStrict);
+        return Run(
+            files, module, checkOnly, all, quiet, fuel, wall, depth, callDepth, liveBytes,
+            missing.Count, slice, forceStrict);
     }
 
     /// <summary>Runs every named file and reports the worst answer any of them gave.</summary>
@@ -189,6 +214,8 @@ internal static class Program
         ulong? fuel,
         ulong? wall,
         int? depth,
+        ulong? callDepth,
+        ulong? liveBytes,
         int missing,
         bool slice,
         bool forceStrict)
@@ -205,9 +232,17 @@ internal static class Program
         {
             var source = SourceFiles.Read(path);
 
+            // A `.mjs` FILE IS A MODULE WHETHER OR NOT THE OPTION WAS PASSED, and a sweep over a
+            // tree is where that matters: a directory holding both is one run, and the goal each
+            // file is read under has to come from the file rather than from one flag covering all
+            // of them.
+            var asModule = module || SourceFiles.IsModulePath(path);
+
             var result = slice
-                ? Host.Run(source, module, checkOnly, fuel, depth)
-                : WideHost.Run([source], module, checkOnly, forceStrict, fuel, wall, depth);
+                ? Host.Run(source, asModule, checkOnly, fuel, depth)
+                : WideHost.Run(
+                    [source], asModule, checkOnly, forceStrict, fuel, wall, depth, callDepth,
+                    liveBytes);
 
             counts[result.Status] = counts.TryGetValue(result.Status, out var seen) ? seen + 1 : 1;
 
@@ -361,6 +396,82 @@ internal static class Program
     }
 
     /// <summary>Reads the instruction allowance, or says why the argument is not one.</summary>
+    /// <summary>
+    /// Reads <c>--call-depth</c>, the one ceiling a person measuring this interpreter has to move.
+    /// </summary>
+    /// <remarks>
+    /// <b>It exists so that the call-depth ceiling can be a MEASUREMENT rather than an estimate.</b>
+    /// Roadmap section 8 says the bound is measured and not chosen, and a bound nobody can raise
+    /// from outside can only be measured by editing the profile — which measures whatever the
+    /// editor happened to build. With this, `eng/measure-frame-cost.py` bisects the ceiling against
+    /// the real binary on the real stack and reports the depth at which the answer stops being a
+    /// named exhaustion.
+    /// </remarks>
+    private static bool CallDepth(string[] args, out ulong? callDepth, out string complaint)
+    {
+        callDepth = null;
+        complaint = string.Empty;
+        var at = Array.IndexOf(args, "--call-depth");
+
+        if (at < 0)
+        {
+            return true;
+        }
+
+        if (at == args.Length - 1)
+        {
+            complaint = "--call-depth needs a number of frames";
+            return false;
+        }
+
+        if (!ulong.TryParse(args[at + 1], out var stated) || stated == 0)
+        {
+            complaint = $"`{args[at + 1]}` is not a positive frame count";
+            return false;
+        }
+
+        callDepth = stated;
+        return true;
+    }
+
+    /// <summary>Reads <c>--live-bytes</c>, the allowance a workload's own working set needs.</summary>
+    /// <remarks>
+    /// <b>The other three ceilings a person meets are settable and this one was not, which made it
+    /// the ceiling that decided what could be run.</b> A benchmark that allocates more than the
+    /// profile's default holds is not a program this host may not run — it is a program run under
+    /// an allowance nobody chose, and the difference shows up as a named exhaustion after a
+    /// benchmark has already printed its score. Sizing a budget is the embedder's decision in every
+    /// other dimension; there is no reason for memory to be the one an operator has to rebuild the
+    /// profile to move. The profile's hard maximum still bounds it, so this widens what a caller
+    /// may ask for and not what the profile permits.
+    /// </remarks>
+    private static bool LiveBytes(string[] args, out ulong? liveBytes, out string complaint)
+    {
+        liveBytes = null;
+        complaint = string.Empty;
+        var at = Array.IndexOf(args, "--live-bytes");
+
+        if (at < 0)
+        {
+            return true;
+        }
+
+        if (at == args.Length - 1)
+        {
+            complaint = "--live-bytes needs a number of bytes";
+            return false;
+        }
+
+        if (!ulong.TryParse(args[at + 1], out var stated) || stated == 0)
+        {
+            complaint = $"`{args[at + 1]}` is not a positive byte count";
+            return false;
+        }
+
+        liveBytes = stated;
+        return true;
+    }
+
     private static bool Fuel(string[] args, out ulong? fuel, out string complaint)
     {
         fuel = null;
@@ -397,7 +508,8 @@ internal static class Program
     private static readonly string[] Known =
     [
         "--module", "--check", "--all", "--quiet", "--fuel", "--max-depth", "--closure",
-        "--slice", "--strict", "--sweep", "--wall", "--help", "--version",
+        "--slice", "--strict", "--sweep", "--wall", "--call-depth", "--live-bytes", "--help",
+        "--version",
     ];
 
     /// <summary>The closure this image actually has, read off its own loaded assemblies.</summary>
@@ -465,6 +577,7 @@ internal static class Program
         Console.WriteLine("realm per file, so one file's globals cannot decide the next one's result.");
         Console.WriteLine();
         Console.WriteLine("  --module    read each file under the module goal rather than the script goal");
+        Console.WriteLine("              (a .mjs file is read as a module without it)");
         Console.WriteLine("  --strict    compile every script as strict-mode code");
         Console.WriteLine("  --sweep     run each named file in a realm of its own rather than sharing one");
         Console.WriteLine("  --slice     use the narrow broiler.javascript.slice surface instead");
@@ -473,6 +586,7 @@ internal static class Program
         Console.WriteLine("  --quiet     do not print the completion value");
         Console.WriteLine("  --fuel <n>  the instruction allowance per run; the profile's default otherwise");
         Console.WriteLine("  --wall <ms> the wall-clock allowance per run; the profile's 10,000 ms otherwise");
+        Console.WriteLine("  --live-bytes <n> the live-memory allowance per run; the profile's default otherwise");
         Console.WriteLine("  --max-depth <n>");
         Console.WriteLine("              the nesting depth the parser admits; the parse options' 64 otherwise.");
         Console.WriteLine("              Two files of the Octane benchmark nest deeper than 64 and are refused");
@@ -488,10 +602,12 @@ internal static class Program
         Console.WriteLine();
         Console.WriteLine($"This host runs the feature manifest {JavaScriptProfile.WideManifest} by");
         Console.WriteLine("default: objects, arrays, strings, functions, closures, prototypes,");
-        Console.WriteLine("exceptions, for-in, switch, labels and a standard library. It admits no");
-        Console.WriteLine("class, generator, async function, module, destructuring, spread, template");
-        Console.WriteLine("literal, for-of, Proxy, Symbol, BigInt or typed array, and no eval or");
-        Console.WriteLine("Function constructor. What has been measured against a conformance suite");
+        Console.WriteLine("classes with super and new.target, symbols, typed arrays, keyed");
+        Console.WriteLine("collections, promises, regular expressions, template literals,");
+        Console.WriteLine("destructuring, spread, for-of, generators, exceptions, for-in, switch,");
+        Console.WriteLine("labels and a standard library. It admits no async function, module,");
+        Console.WriteLine("class field, private name, class static block, generator member of a");
+        Console.WriteLine("class body, Proxy or BigInt. What has been measured against a suite");
         Console.WriteLine("is a handful of its subtrees, which measures those subtrees. Nothing here");
         Console.WriteLine("is reviewed, accepted or supported, and this host is advertised as");
         Console.WriteLine("nothing.");

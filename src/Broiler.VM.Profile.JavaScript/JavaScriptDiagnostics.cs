@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   8
 // Annotated:        8/8
-// Exempt:           46
+// Exempt:           64
 // Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    High
@@ -48,7 +48,7 @@ namespace Broiler.VM.Profile.JavaScript;
 /// predicate's own record calls a worse record than one block on the vocabulary.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=16E590
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B91296
 // Broiler-Human:        PENDING
 public enum JavaScriptDiagnosticCode
 {
@@ -212,6 +212,178 @@ public enum JavaScriptDiagnosticCode
 
     /// <summary>An exception region states a range, a handler or a kind this format refuses.</summary>
     MalformedExceptionRegion = 1605,
+
+    /// <summary>The artifact declares one optional surface twice.</summary>
+    DuplicateSurface = 1606,
+
+    /// <summary>The artifact declares an optional surface this build does not implement.</summary>
+    /// <remarks>
+    /// It is a different failure from <see cref="SurfaceOutsideComposition"/> and the difference is
+    /// who is wrong: this one says nobody wrote the surface, that one says somebody declined it.
+    /// </remarks>
+    UnknownSurface = 1607,
+
+    /// <summary>
+    /// The artifact declares an optional surface this composition did not admit.
+    /// </summary>
+    /// <remarks>
+    /// This is the manifest boundary as a policy boundary, refused at verification, which roadmap
+    /// section 6 distinguishes by name from the run-time refusal a composition that admits a
+    /// surface and registers no provider produces.
+    /// </remarks>
+    SurfaceOutsideComposition = 1608,
+
+    /// <summary>
+    /// A suspension instruction appears in a code unit that is not a generator body.
+    /// </summary>
+    /// <remarks>
+    /// The executor gives a generator invocation a heap-allocated frame and an ordinary one none,
+    /// so a <c>Yield</c> anywhere else would suspend a frame that does not exist. It is refused
+    /// here rather than answered there, because "the frame is null" is not a diagnosis a payload
+    /// author can act on.
+    /// </remarks>
+    YieldOutsideGenerator = 1609,
+
+    /// <summary>
+    /// A code-unit row combines the generator flag with a flag that contradicts it.
+    /// </summary>
+    /// <remarks>
+    /// A generator is neither an arrow, nor the program body, nor a constructor. Each pairing would
+    /// send the executor down a path the other flag already claimed - an arrow's <c>this</c>, the
+    /// program body's entry, or <c>new</c> - and none of them has an answer for a unit that
+    /// suspends.
+    /// </remarks>
+    GeneratorFlagsInconsistent = 1610,
+
+    /// <summary>
+    /// An <c>Await</c> instruction appears in a code unit that is not an async function body.
+    /// </summary>
+    /// <remarks>
+    /// It is a code of its own rather than a second use of
+    /// <see cref="YieldOutsideGenerator"/>, because the two name different missing FLAGS and a
+    /// payload author acts on the flag. An artifact that awaits in a generator body is not an
+    /// artifact that yields outside one, and telling it the latter would send its author to
+    /// exactly the wrong bit.
+    /// </remarks>
+    AwaitOutsideAsync = 1611,
+
+    /// <summary>
+    /// A code-unit row combines the async flag with a flag that contradicts it.
+    /// </summary>
+    /// <remarks>
+    /// An async function is neither the program body nor a constructor. THE GENERATOR FLAG IS NOT
+    /// ON THE LIST AND WAS, and dropping it is what admitted the async generator: a unit carrying
+    /// both bits is not asking the executor to choose between two drivers - it names a THIRD, whose
+    /// caller pulls with <c>next</c> and whose body settles the promise that pull answered. An
+    /// async ARROW is not on the list either, because an arrow with a suspendable body is exactly
+    /// what <c>async () =&gt; { await x; }</c> is.
+    /// </remarks>
+    AsyncFlagsInconsistent = 1612,
+
+    /// <summary>
+    /// A <c>DefineClassElement</c> operand carries a bit set the instruction has no reading for.
+    /// </summary>
+    /// <remarks>
+    /// <b>It is a code of its own rather than a second use of <see cref="UnknownOpcode"/></b>,
+    /// because every bit in the operand IS defined by this format version: what is wrong is the
+    /// combination, and an author told "unknown feature" would go looking for a version of the
+    /// format that has one. A static block that is not static, a getter that is also a setter, and
+    /// a public element on an instruction that only records private ones are the three shapes it
+    /// answers for, and each is an encoding the executor would otherwise have to pick an arm for by
+    /// precedence.
+    /// </remarks>
+    ClassElementFlagsInconsistent = 1621,
+
+    // ---- 1613: the module goal ---------------------------------------------------------------
+    //
+    // Out of numeric order beside the block above, and deliberately: these were minted while 1621
+    // was, and packing them after it would have put a module refusal in the middle of the
+    // structural block it has nothing to do with. Every code here is about a relation BETWEEN
+    // modules - what a request names, what an export resolves to, whether the composition admits
+    // the surface at all - and none of them can be stated about one row.
+
+    /// <summary>
+    /// The artifact carries module records and declares no module surface beside its manifest.
+    /// </summary>
+    ModuleSectionOutsideManifest = 1613,
+
+    /// <summary>A module record states an index, a count or a slot this format refuses.</summary>
+    MalformedModuleRow = 1614,
+
+    /// <summary>A module requests a key no module of this artifact carries.</summary>
+    /// <remarks>
+    /// <b>Resolution happened before the bytes were written and this is the check that it was
+    /// complete.</b> The composition turns a specifier into a key and supplies the module under
+    /// that key; an artifact whose request matches no key is one whose producer resolved a
+    /// specifier and then did not carry what it resolved to, which no amount of executing would
+    /// discover any earlier.
+    /// </remarks>
+    ModuleRequestUnresolved = 1615,
+
+    /// <summary>An import or a re-export names an export the exporting module does not have.</summary>
+    ModuleExportNotFound = 1616,
+
+    /// <summary>Two star re-exports supply the same name from different bindings.</summary>
+    ModuleExportAmbiguous = 1617,
+
+    /// <summary>
+    /// Resolving an export re-entered the module and name it started from: a cyclic import.
+    /// </summary>
+    /// <remarks>
+    /// <b>This is what a cyclic import costs, and it costs a named refusal rather than a budget.</b>
+    /// A cycle in the module GRAPH is ordinary and runs; a cycle in an export RESOLUTION -
+    /// <c>a</c> re-exporting a name from <c>b</c> while <c>b</c> re-exports it from <c>a</c> -
+    /// names a binding that exists nowhere, and a resolver that followed it would walk the cycle
+    /// until an allowance ran out. The walk carries the pairs it has visited and refuses on
+    /// re-entry, so the answer is this code and never an exhaustion.
+    /// </remarks>
+    ModuleExportCircular = 1618,
+
+    /// <summary>
+    /// The artifact declares the module surface and the composition registered no resolver.
+    /// </summary>
+    /// <remarks>
+    /// <b>Admitting the surface and answering its one question are two different acts, and this is
+    /// the second.</b> A composition declines the surface by not admitting it, and is told so with
+    /// <see cref="SurfaceOutsideComposition"/>; a composition that admits it and registers no
+    /// resolver has said it will run modules and supplied no way to say what a specifier names.
+    /// Both are refused at verification, and a reader holding one of the two codes knows which of
+    /// the two things is missing.
+    /// </remarks>
+    ModuleResolverAbsent = 1619,
+
+    /// <summary>The artifact declares the module surface and carries no module records.</summary>
+    ModuleSectionMissing = 1620,
+
+    /// <summary>
+    /// A dynamic <c>import()</c> or an <c>import.meta</c> appears in an artifact that declared no
+    /// surface for it.
+    /// </summary>
+    /// <remarks>
+    /// <b>A dynamic import is the one construct that names TWO surfaces, and this is the code for
+    /// either half being absent.</b> It answers a module namespace object, which is the module
+    /// surface's subject, and it may put a specifier to the mediator for a module the artifact does
+    /// not carry, which is the dynamic surface's — so an artifact holding the instruction must have
+    /// declared both, and one that declared neither would have bought a host round trip with an
+    /// opcode. <c>import.meta</c> names the module surface alone, because it reaches no mediator.
+    /// A composition that DECLINED either surface never reaches this code: its artifact was refused
+    /// where the surfaces were read, with <see cref="SurfaceOutsideComposition"/>.
+    /// </remarks>
+    ImportCallOutsideManifest = 1622,
+
+    /// <summary>
+    /// An asynchronous iteration step appears in a code unit whose flags say nothing may await.
+    /// </summary>
+    /// <remarks>
+    /// <b>The five instructions of a <c>for await</c> head are a sequence with an <c>Await</c>
+    /// inside it, and only the <c>Await</c> would otherwise be refused.</b> An artifact that wrote
+    /// the other four into an ordinary function would run: each of them is an ordinary call on an
+    /// iterator, and the answer would be a promise nobody resolved rather than a diagnosable error.
+    /// Refusing the whole sequence against the same flag the <c>Await</c> is checked against is what
+    /// makes "a <c>for await</c> head belongs to an async body" a property of the FORMAT rather than
+    /// of the lowering that happens to produce one.
+    /// </remarks>
+    AsyncIterationOutsideAsync = 1630,
 
     // ---- 1900: the bounded reader's own statuses, mapped -----------------------------------
 

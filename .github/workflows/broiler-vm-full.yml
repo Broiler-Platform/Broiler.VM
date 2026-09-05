@@ -67,3 +67,9 @@ jobs:
       # question and a disagreement between them is a defect rather than a different experiment.
       fuzz-iterations: 25000
       android: true
+      # All fifteen benchmarks in the Octane pin, on all six cells. Empty means all: the quick
+      # lane names six of them and this lane names none, so a benchmark added to the pin is run
+      # here without this file being touched. This is where the whole set is scored, and the
+      # exclusion the quick lane carries - no runtime identifier scores the whole set on the push
+      # path - is discharged here or nowhere.
+      octane-benchmarks: ''

@@ -162,7 +162,14 @@ internal static class CorpusReplay
                 hashStatus);
         }
 
-        var request = new VmInvocationRequest(new VmUtf8Text("main"u8));
+        // A MODULE GRAPH IS INVOKED BY ITS ROOT AND NOT BY `main`. A module artifact names one
+        // entry point, which is the root of the graph the rest is reached from; asking for `main`
+        // would answer that no entry point of that name is defined, and the row would record a
+        // reference error instead of the completion the entry produces.
+        var request = new VmInvocationRequest(
+            entry.Mode.StartsWith(Hosts.ModuleMode, StringComparison.Ordinal)
+                ? new VmUtf8Text("module"u8)
+                : new VmUtf8Text("main"u8));
         var result = instance.Invoke(in request, CancellationToken.None);
 
         // TWO SURFACES, TWO PAYLOAD KINDS, ONE COLUMN. A version-2 instance answers with the

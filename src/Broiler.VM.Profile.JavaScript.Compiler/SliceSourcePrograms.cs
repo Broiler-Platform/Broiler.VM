@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   9
-// Annotated:        9/9
+// Relevant units:   10
+// Annotated:        10/10
 // Exempt:           1
-// Human-reviewed:   0/9
+// Human-reviewed:   0/10
 // IP risk:          None
 // Security risk:    High
-// Criteria:         5/3
+// Criteria:         6/4
 // Resource impact:  2/10 max
-// Unverified:       9
+// Unverified:       10
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -68,6 +68,68 @@ public sealed record SliceRefusedSource(string Name, string Source, SliceSourceD
 // Broiler-Human:        PENDING
 public static class SliceSourcePrograms
 {
+    /// <summary>
+    /// The sources the MODULE goal's early errors are refused by, one per code.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A second list rather than a flag on the first, because a different front end answers
+    /// them.</b> Every program in <see cref="Refused"/> is put to the slice front end, which has no
+    /// module goal at all; these three are put to the wide one, which has. Folding them in would
+    /// have meant one list whose rows are compiled by two compilers, and a reader would have had to
+    /// know which row went where.
+    /// </para>
+    /// <para>
+    /// The first is presented as a SCRIPT on purpose. <c>import</c> in a script is a syntax error
+    /// rather than a construct outside the manifest - the manifest admits the declaration and the
+    /// goal does not - and the whole reason that code exists is to keep the two apart.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=C3A6FF
+    // Broiler-Falsified-If: any program here is refused with a code other than the one recorded beside it
+    // Broiler-Human:        PENDING
+    public static SliceRefusedSource[] RefusedModules =>
+    [
+        new(
+            "refuse-an-import-in-a-script",
+            "import { a } from \"./other.mjs\";\na",
+            SliceSourceDiagnosticCode.ModuleDeclarationOutsideModuleGoal),
+        new(
+            "refuse-a-name-exported-twice",
+            "const a = 1;\nconst b = 2;\nexport { a as both, b as both };",
+            SliceSourceDiagnosticCode.DuplicateExportName)
+        {
+            Options = SliceParseOptions.Module,
+        },
+        new(
+            "refuse-an-export-of-a-name-nothing-declares",
+            "export { nowhere };",
+            SliceSourceDiagnosticCode.ExportNameNotDeclared)
+        {
+            Options = SliceParseOptions.Module,
+        },
+
+        // THIS ONE IS A SCRIPT FOR THE SAME REASON THE FIRST IS. `import.meta` is a module's own
+        // metadata, so a script has no object for it to answer with - and the code says which of
+        // the two module refusals it is, because a reader given the declaration's code would go
+        // looking for an import statement that is not there.
+        new(
+            "refuse-an-import-meta-in-a-script",
+            "const where = import.meta;\nwhere",
+            SliceSourceDiagnosticCode.ImportMetaOutsideModuleGoal),
+
+        // AND THIS ONE IS A MODULE WHOSE SYNTAX IS PERFECTLY ORDINARY. The clause parses; what is
+        // refused is the ATTRIBUTE, because no composition of this profile has a loader for a
+        // module of a type - and for a static import, loading is what this front end does.
+        new(
+            "refuse-an-import-attribute-nothing-can-honour",
+            "import value from \"./data.json\" with { type: \"json\" };\nvalue",
+            SliceSourceDiagnosticCode.UnsupportedImportAttribute)
+        {
+            Options = SliceParseOptions.Module,
+        },
+    ];
+
     /// <summary>Every source the front end must compile, with the value the program runs to.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=11701F
     // Broiler-Falsified-If: any program here runs to a value other than the one recorded beside it
@@ -132,13 +194,21 @@ public static class SliceSourcePrograms
     /// becomes bytes. They are judged by the composition that carries the front end, and the
     /// execution-only image - which has no front end - could not judge them and does not claim to.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=6AE934
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=FEAC8D
     // Broiler-Falsified-If: any source here compiles, or is refused with a code other than the one recorded beside it
     // Broiler-Human:        PENDING
     public static SliceRefusedSource[] Refused =>
     [
         // ---- tokenizing ------------------------------------------------------------------------
-        new("refuse-an-unexpected-character", "1 @ 2", SliceSourceDiagnosticCode.UnexpectedCharacter),
+        // THE CHARACTER IS `¡` AND NOT `@`, and the swap is a repair rather than a preference. This
+        // row was written with `@` while nothing in either grammar had a meaning for it; admitting
+        // the class family gave `@` one - the tokenizer now refuses it BY NAME as a decorator, which
+        // is a construct this manifest declines rather than a character it does not know - so the
+        // row asserted a code the front end had stopped producing and the registry claimed a
+        // reachability it no longer had *(corrected: JSC-125)*. `¡` is an inverted exclamation mark:
+        // it is not an identifier start, it begins no token either grammar defines, and no proposal
+        // is going to give it a meaning.
+        new("refuse-an-unexpected-character", "1 ¡ 2", SliceSourceDiagnosticCode.UnexpectedCharacter),
         new("refuse-an-unterminated-comment", "1 /* and no close", SliceSourceDiagnosticCode.UnterminatedComment),
         new("refuse-an-exponent-with-no-digits", "1e", SliceSourceDiagnosticCode.MalformedNumericLiteral),
         new(

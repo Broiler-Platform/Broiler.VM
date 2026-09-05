@@ -1,0 +1,71 @@
+# test262 tc39/test262 at ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e
+# 56560 files, content 46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93 - the checkout answers to test262.pin
+# manifest broiler.javascript.slice; declined (none)
+# 12 shards across 3 processes, 100000000 fuel and 5000 ms per variant
+# retaining every shard's transcript under /tmp/wl/retained/test262-slice
+--- shard 1 of 12 exited 1; /tmp/wl/retained/test262-slice/logs/shard-0001.log
+--- shard 0 of 12 exited 1; /tmp/wl/retained/test262-slice/logs/shard-0000.log
+--- shard 2 of 12 exited 1; /tmp/wl/retained/test262-slice/logs/shard-0002.log
+--- shard 4 of 12 exited 1; /tmp/wl/retained/test262-slice/logs/shard-0004.log
+--- shard 3 of 12 exited 1; /tmp/wl/retained/test262-slice/logs/shard-0003.log
+--- shard 5 of 12 exited 1; /tmp/wl/retained/test262-slice/logs/shard-0005.log
+--- shard 6 of 12 exited 1; /tmp/wl/retained/test262-slice/logs/shard-0006.log
+--- shard 7 of 12 exited 1; /tmp/wl/retained/test262-slice/logs/shard-0007.log
+--- shard 8 of 12 exited 1; /tmp/wl/retained/test262-slice/logs/shard-0008.log
+--- shard 9 of 12 exited 1; /tmp/wl/retained/test262-slice/logs/shard-0009.log
+--- shard 10 of 12 exited 1; /tmp/wl/retained/test262-slice/logs/shard-0010.log
+--- shard 11 of 12 exited 1; /tmp/wl/retained/test262-slice/logs/shard-0011.log
+broiler-js-conformance: merged 12 test262 shard report(s)
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+suite test262@46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93
+manifest broiler.javascript.slice at format version 1; harness not loaded; admitted surfaces broiler.javascript.binary, broiler.javascript.dynamic, broiler.javascript.modules; declined (none)
+partition FNV-1a over the normalized suite-relative path, modulo the shard count, one whole file per shard; merged from 12 shards
+selection candidates=53469 selected=53469 merged=53469
+# unsupported families: 43 distinct, 83241 variants
+#     30829  a call  e.g. test/annexB/built-ins/Date/prototype/getYear/B.2.4.js [sloppy]
+#     11193  an object literal  e.g. test/annexB/built-ins/Array/from/iterator-method-emulates-undefined.js [sloppy]
+#     10714  the construct Class  e.g. test/built-ins/Array/prototype/concat/Array.prototype.concat_non-array.js [sloppy]
+#      7151  a function  e.g. test/annexB/built-ins/String/prototype/substr/start-and-length-as-numbers.js [sloppy]
+#      4812  the construct New  e.g. test/annexB/built-ins/Date/prototype/getYear/nan.js [sloppy]
+#      4331  an array literal  e.g. test/built-ins/AggregateError/cause-property.js [sloppy]
+#      3172  the construct Generator  e.g. test/annexB/built-ins/RegExp/RegExp-control-escape-russian-letter.js [sloppy]
+#      2176  a property access  e.g. test/annexB/built-ins/Date/prototype/getYear/this-not-date.js [sloppy]
+#      1854  a string value  e.g. test/annexB/built-ins/escape/to-string-observe.js [sloppy]
+#      1081  the construct Try  e.g. test/annexB/language/eval-code/direct/var-env-lower-lex-catch-non-strict.js [sloppy]
+#       874  the construct AsyncFunction  e.g. test/annexB/language/statements/for-await-of/iterator-close-return-emulates-undefined-throws-when-called.js [sloppy]
+#       721  the construct ForOf  e.g. test/built-ins/Array/prototype/every/resizable-buffer.js [sloppy]
+#       622  a regular-expression literal  e.g. test/annexB/built-ins/RegExp/RegExp-invalid-control-escape-character-class-range.js [sloppy]
+#       555  the construct Throw  e.g. test/language/asi/S7.9_A11_T1.js [sloppy]
+#       475  the construct Destructuring  e.g. test/language/statements/const/dstr/ary-name-iter-val.js [sloppy]
+#       466  the construct Null  e.g. test/built-ins/Promise/all/ctx-ctor.js [sloppy]
+#       402  an arrow function  e.g. test/built-ins/Array/prototype/copyWithin/resizable-buffer.js [sloppy]
+#       355  the construct Update  e.g. test/annexB/built-ins/RegExp/RegExp-leading-escape-BMP.js [sloppy]
+#       284  the construct CompoundAssignment  e.g. test/language/expressions/compound-assignment/11.13.2-12-s.js [sloppy]
+#       154  the construct Delete  e.g. test/built-ins/Boolean/S15.6.2.1_A4.js [sloppy]
+#       138  the construct This  e.g. test/built-ins/Array/prototype/every/15.4.4.16-5-1.js [sloppy]
+#       110  loose equality, which is not the strict comparison with a different spelling  e.g. test/built-ins/String/prototype/S15.5.4_A2.js [sloppy]
+#       101  the construct Label  e.g. test/annexB/language/statements/labeled/function-declaration.js [sloppy]
+#        99  the construct Import  e.g. test/built-ins/Proxy/preventExtensions/trap-is-undefined-target-is-proxy.js [module]
+#        80  the construct Export  e.g. test/language/expressions/class/elements/class-name-static-initializer-default-export.js [module]
+#        77  the construct Await  e.g. test/language/module-code/top-level-await/await-dynamic-import-rejection.js [module]
+#        75  the construct TypeOf  e.g. test/built-ins/String/fromCharCode/S15.5.3.2_A1.js [sloppy]
+#        54  the construct ForIn  e.g. test/built-ins/Boolean/prototype/S15.6.3.1_A4.js [sloppy]
+#        39  the construct Switch  e.g. test/annexB/language/function-code/function-redeclaration-switch.js [sloppy]
+#        38  a template literal  e.g. test/language/expressions/class/private-getter-brand-check-multiple-evaluations-of-class-eval-indirect.js [sloppy]
+#        38  the construct Void  e.g. test/language/expressions/logical-not/S11.4.9_A3_T4.js [sloppy]
+#        28  the construct TaggedTemplate  e.g. test/language/expressions/tagged-template/invalid-escape-sequences.js [sloppy]
+#        21  a computed property access  e.g. test/built-ins/Array/prototype/Symbol.unscopables/array-find-from-last.js [sloppy]
+#        20  the bitwise-not operator `~`  e.g. test/language/expressions/bitwise-not/S11.4.8_A2.1_T1.js [sloppy]
+#        20  the construct BigInt  e.g. test/built-ins/Map/bigint-number-same-value.js [sloppy]
+#        20  the construct With  e.g. test/language/comments/hashbang/use-strict.js [raw]
+#        14  the construct NullishCoalescing  e.g. test/language/expressions/coalesce/chainable-with-bitwise-and.js [sloppy]
+#        14  the construct Sequence  e.g. test/language/expressions/assignment/fn-name-cover.js [sloppy]
+#        13  the construct Instanceof  e.g. test/language/expressions/instanceof/S11.8.6_A2.1_T1.js [sloppy]
+#        10  the construct In  e.g. test/language/eval-code/indirect/var-env-var-strict.js [sloppy]
+#         6  the construct Exponentiation  e.g. test/built-ins/Map/valid-keys.js [sloppy]
+#         3  the construct PrivateName  e.g. test/language/comments/hashbang/escaped-bang-u0021.js [raw]
+#         2  the construct Debugger  e.g. test/language/statements/debugger/statement.js [sloppy]
+# no variant spent an allowance
+# test262 53469 files, 94545 variants: pass 1409, fail 1549, unsupported 83241, exhausted 0, skipped 8346
+coverage whole
+# the whole-run report is /tmp/wl/retained/test262-slice/test262.report

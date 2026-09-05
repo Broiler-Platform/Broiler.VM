@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   36
-// Annotated:        36/36
+// Relevant units:   40
+// Annotated:        40/40
 // Exempt:           100
-// Human-reviewed:   0/36
+// Human-reviewed:   0/40
 // IP risk:          None
 // Security risk:    High
 // Criteria:         22/18
 // Resource impact:  2/10 max
-// Unverified:       36
+// Unverified:       40
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -349,8 +349,20 @@ public enum SliceTokenKind
 /// question about the whitespace between two tokens, and a parser that had to look back into the
 /// source text to answer it would be a third re-scan.
 /// </para>
+/// <para>
+/// <b><see cref="IsEscaped"/> is the fourth, and it is the one fact about an identifier that its
+/// characters no longer carry.</b> <c>await</c> and <c>await</c> ARE one name - the escape is
+/// how a code point was written and not part of what was written - so
+/// <see cref="RawText"/> holds the same string for both, and the difference between them is
+/// nevertheless an early error the language states: an identifier that reaches for a reserved word
+/// through an escape is refused wherever the unescaped word would have been. A parser that had to
+/// answer that by looking at the source text would be the re-scan this type exists to remove.
+/// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=95A77A
+/// <param name="IsEscaped">
+/// Whether the token's characters were written with at least one unicode escape in them.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=CD6A13
 // Broiler-Falsified-If: any consumer of this type reads the original source text to recover a fact a field here carries
 // Broiler-Human:        PENDING
 public readonly record struct SliceToken(
@@ -361,7 +373,8 @@ public readonly record struct SliceToken(
     int Line,
     int Column,
     bool PrecededByLineTerminator,
-    bool IsLegacyOctal);
+    bool IsLegacyOctal,
+    bool IsEscaped = false);
 
 /// <summary>
 /// The one pass over the source characters. Every artifact is tokenized at most once.
@@ -632,7 +645,7 @@ public sealed class SliceTokenizer
         return ReadPunctuator(startLine, startColumn, sawNewline);
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=3DEFF5
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=101E97
     // Broiler-Human:        PENDING
     private SliceToken ReadIdentifierOrKeyword(int startLine, int startColumn, bool sawNewline)
     {
@@ -675,6 +688,12 @@ public sealed class SliceTokenizer
         // identifier spelled oddly, not an `if`; the language forbids it in keyword position and
         // this grammar has no production where the distinction changes what is parsed, so it is
         // read as the identifier its characters spell.
+        //
+        // WHAT IT IS NOT IS A NAME, and that fact is CARRIED from here rather than decided here. An
+        // IdentifierName may be spelled with escapes freely - a property key and a member name are
+        // both programs every engine runs - and an Identifier may not reach a reserved word that
+        // way, so the answer depends on the POSITION and only the parser knows the position. A
+        // tokenizer that decided it would be the ambient parse state this component removed.
         var escaped = index - start != text.Length;
 
         return new SliceToken(
@@ -685,7 +704,8 @@ public sealed class SliceTokenizer
             startLine,
             startColumn,
             sawNewline,
-            false);
+            false,
+            escaped);
     }
 
     /// <summary>Reads one <c>\uXXXX</c> or <c>\u{…}</c> escape inside an identifier.</summary>
@@ -810,13 +830,21 @@ public sealed class SliceTokenizer
 
     /// <summary>The keyword table. One place knows which words are words.</summary>
     /// <remarks>
+    /// <para>
     /// <c>let</c> is here rather than treated contextually. The slice grammar has no production in
     /// which <c>let</c> is a legal identifier reference, so the contextual treatment the language
     /// requires would buy a program nobody can write and cost a rule nobody can see.
+    /// </para>
+    /// <para>
+    /// <b>It is reachable from the wide parser, and for one question only:</b> which word an
+    /// ESCAPED identifier would have been had it been spelled plainly. Asking the table rather than
+    /// writing a second list of reserved words in the parser is what keeps the answer one fact -
+    /// a word added here cannot be forgotten there.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=15B2D3
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=E5ABA7
     // Broiler-Human:        PENDING
-    private static SliceTokenKind KeywordKind(string text) => text switch
+    internal static SliceTokenKind KeywordKind(string text) => text switch
     {
         "var" => SliceTokenKind.Var,
         "let" => SliceTokenKind.Let,
@@ -883,7 +911,7 @@ public sealed class SliceTokenizer
     /// on strictness, strictness is the validator's, and a tokenizer that knew about strictness
     /// would be the ambient parse state this component removed.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=2E13A6
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=730FCD
     // Broiler-Falsified-If: the value this produces differs from the language's MV for the same literal text
     // Broiler-Human:        PENDING
     private SliceToken ReadNumericLiteral(int startLine, int startColumn, bool sawNewline)
@@ -907,6 +935,13 @@ public sealed class SliceTokenizer
             if (index == digitsStart)
             {
                 return RefuseNumeric(start, startLine, startColumn, "a radix prefix with no digits");
+            }
+
+            if (!SeparatorsAreBetweenDigits(
+                    System.MemoryExtensions.AsSpan(source, digitsStart, index - digitsStart), radix))
+            {
+                return RefuseNumeric(
+                    start, startLine, startColumn, "a numeric separator that is not between two digits");
             }
 
             value = 0;
@@ -950,6 +985,17 @@ public sealed class SliceTokenizer
                     while (index < source.Length && char.IsAsciiDigit(source[index]))
                     {
                         index++;
+                    }
+
+                    // A LEGACY OCTAL MAY NOT CARRY A SEPARATOR AT ALL, which is the one place the
+                    // rule is about the literal's KIND rather than about where the underscore sits:
+                    // `0_1` is not a legacy octal with a separator in it, it is a syntax error, and
+                    // the language says so in order not to grow the shape it is trying to retire.
+                    if (index < source.Length && source[index] == '_')
+                    {
+                        return RefuseNumeric(
+                            start, startLine, startColumn,
+                            "a numeric separator in a legacy octal literal");
                     }
 
                     value = 0;
@@ -1004,6 +1050,25 @@ public sealed class SliceTokenizer
 
             if (text.Contains('_', System.StringComparison.Ordinal))
             {
+                // `0_1` IS NOT A DECIMAL WITH A SEPARATOR IN IT. A literal beginning with a zero
+                // and continuing with a digit is the legacy octal shape, and the language refuses a
+                // separator there outright rather than growing a form it is trying to retire - so
+                // the test is on the SHAPE and is made before the placement rule below, which
+                // `0_1` would otherwise satisfy.
+                if (text.Length > 1 && text[0] == '0' && (char.IsAsciiDigit(text[1]) || text[1] == '_'))
+                {
+                    return RefuseNumeric(
+                        start, startLine, startColumn,
+                        "a numeric separator in a legacy octal literal");
+                }
+
+                if (!SeparatorsAreBetweenDigits(text, 10))
+                {
+                    return RefuseNumeric(
+                        start, startLine, startColumn,
+                        "a numeric separator that is not between two digits");
+                }
+
                 text = text.Replace("_", string.Empty, System.StringComparison.Ordinal);
             }
 
@@ -1605,7 +1670,7 @@ public sealed class SliceTokenizer
     /// silently turn an unsigned right shift into two comparisons, which is a program that parses
     /// and means something else.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=1F2B04
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=E57116
     // Broiler-Falsified-If: a shorter punctuator is matched where a longer one starting at the same character exists
     // Broiler-Human:        PENDING
     private SliceToken ReadPunctuator(int startLine, int startColumn, bool sawNewline)
@@ -1620,6 +1685,27 @@ public sealed class SliceTokenizer
                 return new SliceToken(
                     kind, text, 0, string.Empty, startLine, startColumn, sawNewline, false);
             }
+        }
+
+        // A DECORATOR IS A CONSTRUCT AND NOT A STRAY CHARACTER, and it is named here because it is
+        // the only place that ever sees it: `@` begins no token either grammar defines, so the
+        // parser is never reached. While no class was admitted the whole decorated declaration was
+        // refused by name as a class; admitting the class family would otherwise have moved every
+        // decorator to an unexpected-character diagnostic, which a conformance runner scores as a
+        // failure rather than as a construct this manifest declines.
+        if (source[index] == '@')
+        {
+            Refuse(
+                SliceSourceDiagnosticCode.ConstructOutsideManifest,
+                "a decorator is not admitted by the declared feature manifest",
+                startLine,
+                startColumn);
+
+            index++;
+
+            return new SliceToken(
+                SliceTokenKind.EndOfSource, string.Empty, 0, string.Empty,
+                startLine, startColumn, false, false);
         }
 
         Refuse(
@@ -1734,24 +1820,132 @@ public sealed class SliceTokenizer
     /// Whether <paramref name="c"/> may start an identifier.
     /// </summary>
     /// <remarks>
-    /// <b>ASCII plus <c>$</c> and <c>_</c>, and this is an exclusion rather than an omission.</b>
-    /// The language's answer is the Unicode <c>ID_Start</c> property, which needs the Unicode data
-    /// this component has not acquired - it is an open dependency with a named holder. A
-    /// non-ASCII identifier is therefore refused as an unexpected character, which is a refusal
-    /// rather than a silent acceptance, and the decision record carries it as a conformance
-    /// exclusion.
+    /// <para>
+    /// <b>It is <c>ID_Start</c> and not "a letter", and the difference is a thousand refusals.</b>
+    /// This predicate read <c>char.IsLetter</c>, whose answer is the general categories
+    /// <c>Lu Ll Lt Lm Lo</c>; the language's answer adds <c>Nl</c> - a Roman numeral is an
+    /// identifier - and the six characters Unicode lists as <c>Other_ID_Start</c>, of which
+    /// <c>U+2118</c> is the one a conformance suite reaches for. A valid identifier was refused as
+    /// <b>an unexpected character</b>, which is the one refusal this front end may not make about a
+    /// construct the language admits: a reader is sent looking for a typo, and the harness scores it
+    /// a failure rather than an unsupported construct.
+    /// </para>
+    /// <para>
+    /// <b>The remark this replaces said ASCII only, and the code had not agreed with it for some
+    /// time.</b> It described the Unicode data as an open dependency and the exclusion as
+    /// deliberate. What that dependency is actually needed for is case folding, normalisation and
+    /// the property escapes in a pattern - none of which is this, because the identifier properties
+    /// are derivable from the general categories the platform already carries plus two small
+    /// literal sets.
+    /// </para>
+    /// <para>
+    /// <b>What is still excluded is stated rather than implied</b>: an identifier character outside
+    /// the basic plane, which needs a surrogate pair and therefore a predicate over code points
+    /// rather than over UTF-16 units.
+    /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=C6B56B
-    // Broiler-Falsified-If: this admits a character outside ASCII while the Unicode data dependency is open
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=7A9065
+    // Broiler-Falsified-If: a character the language admits to start an identifier is refused as an unexpected character
     // Broiler-Human:        PENDING
     private static bool IsIdentifierStart(char c) =>
-        char.IsAsciiLetter(c) || c is '$' or '_' || (c > '\u007f' && char.IsLetter(c));
+        char.IsAsciiLetter(c) || c is '$' or '_' ||
+        (c > '\u007f' &&
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=320347
+            // U+2E2F IS THE ONE SUBTRACTION, and it is a subtraction rather than an omission.
+            // `ID_Start` is the letter categories MINUS `Pattern_Syntax`, and the vertical tilde is
+            // the only character in both: a modifier letter that Unicode reserves for pattern
+            // syntax. Every other character the subtraction would remove is put back by
+            // `Other_ID_Start`, which is why that set exists and why this is a single test rather
+            // than a second table.
+            c != '\u2e2f' &&
+            (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) is
+                System.Globalization.UnicodeCategory.UppercaseLetter or
+                System.Globalization.UnicodeCategory.LowercaseLetter or
+                System.Globalization.UnicodeCategory.TitlecaseLetter or
+                System.Globalization.UnicodeCategory.ModifierLetter or
+                System.Globalization.UnicodeCategory.OtherLetter or
+                System.Globalization.UnicodeCategory.LetterNumber ||
+             IsOtherIdentifierStart(c)));
+
+    /// <summary>The six characters Unicode carries as <c>Other_ID_Start</c>.</summary>
+    /// <remarks>
+    /// They are a literal list because Unicode publishes them as one: they are the characters kept
+    /// startable for stability after their general category changed, so no category test can find
+    /// them and no future one will.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=DCA0EA
+    // Broiler-Human:        PENDING
+    private static bool IsOtherIdentifierStart(char c) =>
+        c is '\u1885' or '\u1886' or '\u2118' or '\u212e' or '\u309b' or '\u309c';
+
+    /// <summary>Whether <paramref name="c"/> may continue an identifier.</summary>
+    /// <remarks>
+    /// <b>A zero-width joiner and non-joiner are identifier characters</b>, which is the clause most
+    /// often missed: the grammar names them in <c>IdentifierPart</c> outright rather than reaching
+    /// them through a property, because they are format characters and every category test says so.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=7886AC
     // Broiler-Human:        PENDING
     private static bool IsIdentifierPart(char c) =>
         IsIdentifierStart(c) || char.IsAsciiDigit(c) ||
-        (c > '' && char.IsLetterOrDigit(c));
+        (c > '\u007f' &&
+            (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) is
+                System.Globalization.UnicodeCategory.NonSpacingMark or
+                System.Globalization.UnicodeCategory.SpacingCombiningMark or
+                System.Globalization.UnicodeCategory.DecimalDigitNumber or
+                System.Globalization.UnicodeCategory.ConnectorPunctuation ||
+             c is '\u200c' or '\u200d' ||
+             IsOtherIdentifierContinue(c)));
+
+    /// <summary>The characters Unicode carries as <c>Other_ID_Continue</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=90CBE1
+    // Broiler-Human:        PENDING
+    private static bool IsOtherIdentifierContinue(char c) =>
+        c is '\u00b7' or '\u0387' or '\u19da' || (c >= '\u1369' && c <= '\u1371');
+
+    /// <summary>Whether every separator in a numeric literal sits between two digits.</summary>
+    /// <remarks>
+    /// <b>THE SEPARATOR IS NOT A CHARACTER THE LITERAL MAY CONTAIN, it is a character that may sit
+    /// BETWEEN TWO DIGITS.</b> `1__0`, `1_`, `_1`, `0x_1` and `1_.5` are each a syntax error, and
+    /// this tokenizer stripped every underscore and parsed what was left - so all five were numbers.
+    /// A literal a person is most likely to write by accident is exactly the one the rule exists to
+    /// catch.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=AF6BD8
+    // Broiler-Human:        PENDING
+    private static bool SeparatorsAreBetweenDigits(System.ReadOnlySpan<char> text, int radix)
+    {
+        for (var at = 0; at < text.Length; at++)
+        {
+            if (text[at] != '_')
+            {
+                continue;
+            }
+
+            if (at == 0 || at + 1 >= text.Length)
+            {
+                return false;
+            }
+
+            if (!IsPlainDigit(text[at - 1], radix) || !IsPlainDigit(text[at + 1], radix))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>A digit of the radix, which is what a separator has to sit between.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=B29B95
+    // Broiler-Human:        PENDING
+    private static bool IsPlainDigit(char c, int radix) => radix switch
+    {
+        2 => c is '0' or '1',
+        8 => c is >= '0' and <= '7',
+        16 => char.IsAsciiHexDigit(c),
+        _ => char.IsAsciiDigit(c),
+    };
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=F0264A
     // Broiler-Human:        PENDING

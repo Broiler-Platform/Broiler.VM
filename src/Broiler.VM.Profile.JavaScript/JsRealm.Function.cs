@@ -36,7 +36,7 @@ internal sealed partial class JsRealm
         "at run time";
 
     /// <summary>Builds <c>Function.prototype</c>'s members and the refused <c>Function</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F16C2D
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=EE532A
     // Broiler-Human:        PENDING
     private void SetupFunction()
     {
@@ -53,6 +53,30 @@ internal sealed partial class JsRealm
         functionPrototype.SetOwnProperty(
             "name",
             JsProperty.Data(JsValue.String(string.Empty), JsPropertyAttributes.Configurable));
+
+        // THE TWO RESTRICTED PROPERTIES, WHICH EXIST IN ORDER TO REFUSE. `caller` and `arguments`
+        // were how a function reached its caller's frame; the language removed them and put an
+        // accessor pair in their place whose halves both throw, on `Function.prototype`, so that a
+        // strict function READING one gets the refusal rather than `undefined`. Leaving them out
+        // entirely answers `undefined`, which is not the same answer and is the one thirty-four
+        // variants of the pinned suite look at.
+        var restricted = Native("", 0, static (engine, thisValue, arguments) =>
+        {
+            _ = thisValue;
+            _ = arguments;
+
+            return engine.ThrowTypeError(
+                "'caller', 'callee', and 'arguments' properties may not be accessed on strict mode " +
+                "functions or the arguments objects for calls to them");
+        });
+
+        functionPrototype.SetOwnProperty(
+            "caller",
+            JsProperty.Accessor(restricted, restricted, JsPropertyAttributes.Configurable));
+
+        functionPrototype.SetOwnProperty(
+            "arguments",
+            JsProperty.Accessor(restricted, restricted, JsPropertyAttributes.Configurable));
 
         Method(functionPrototype, "call", 1, static (engine, thisValue, arguments) =>
             engine.Call(

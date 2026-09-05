@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   53
-// Annotated:        53/53
+// Relevant units:   56
+// Annotated:        56/56
 // Exempt:           9
-// Human-reviewed:   0/53
+// Human-reviewed:   0/56
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       53
+// Unverified:       56
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -878,7 +878,7 @@ internal sealed partial class JsRealm
     /// fixes local time to UTC, so the two agree and one computation serves both.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=BFC295
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F6DD7F
     // Broiler-Human:        PENDING
     private static double DateParseText(JsEngine engine, string text)
     {
@@ -888,7 +888,12 @@ internal sealed partial class JsRealm
 
         if (!DateReadDigits(text, ref at, 4, out var year))
         {
-            return double.NaN;
+            // NOT ISO 8601, SO TRY THE TWO FORMS THIS REALM ITSELF PRODUCES. The specification
+            // requires `Date.parse` to accept whatever `toString` and `toUTCString` answered, and
+            // a parser that read only the ISO form failed its own output: `Date.parse(d.toUTCString())`
+            // was `NaN`, so a round trip through the format a program is most likely to have stored
+            // did not come back.
+            return DateParseTextual(text);
         }
 
         double month = 1;
@@ -1000,6 +1005,170 @@ internal sealed partial class JsRealm
             DateMakeDay(year, month - 1, day), DateMakeTime(hour, minute, second, milli));
 
         return DateTimeClip(parsed - (offsetMinutes * DateMsPerMinute));
+    }
+
+    /// <summary>
+    /// Parses the two textual forms this realm renders: <c>toUTCString</c>'s and <c>toString</c>'s.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is written to accept what this realm PRODUCES and a little either side, not to be a
+    /// date-string parser.</b> The specification leaves every non-ISO format implementation-defined
+    /// and requires exactly one thing: that the output of <c>toString</c>, <c>toUTCString</c> and
+    /// <c>toISOString</c> parse back. Accepting more than that would be inventing a dialect nobody
+    /// asked for, and every program that relied on it would be relying on this implementation.
+    /// </para>
+    /// <para>
+    /// The reader is deliberately positional-by-token rather than by character: a weekday if one is
+    /// there, a month name and a day in either order, a four-digit year, an optional clock, and an
+    /// optional zone. That covers <c>Thu, 01 Jan 1970 00:00:00 GMT</c>,
+    /// <c>Thu Jan 01 1970 00:00:00 GMT+0000 (…)</c> and <c>Thu Jan 01 1970</c> with one walk.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2C03A7
+    // Broiler-Human:        PENDING
+    private static double DateParseTextual(string text)
+    {
+        double month = -1;
+        double day = -1;
+        double year = double.NaN;
+        double hour = 0;
+        double minute = 0;
+        double second = 0;
+        var offsetMinutes = 0.0;
+
+        foreach (var token in text.Split(
+            [' ', ',', '\t'], System.StringSplitOptions.RemoveEmptyEntries))
+        {
+            if (token.Length != 0 && token[0] == '(')
+            {
+                // The parenthesised zone NAME, which `toString` appends and which carries nothing
+                // the offset has not already said.
+                break;
+            }
+
+            var named = DateMonthByName(token);
+
+            if (named >= 0 && month < 0)
+            {
+                month = named;
+                continue;
+            }
+
+            if (token.Contains(':', System.StringComparison.Ordinal))
+            {
+                var parts = token.Split(':');
+
+                if (parts.Length is < 2 or > 3 ||
+                    !DateWholeNumber(parts[0], out hour) ||
+                    !DateWholeNumber(parts[1], out minute) ||
+                    (parts.Length == 3 && !DateWholeNumber(parts[2], out second)))
+                {
+                    return double.NaN;
+                }
+
+                continue;
+            }
+
+            if (token.StartsWith("GMT", System.StringComparison.Ordinal) ||
+                token.StartsWith("UTC", System.StringComparison.Ordinal))
+            {
+                var zone = token[3..];
+
+                if (zone.Length == 0)
+                {
+                    continue;
+                }
+
+                if (zone.Length != 5 || (zone[0] != '+' && zone[0] != '-') ||
+                    !DateWholeNumber(zone[1..3], out var zoneHour) ||
+                    !DateWholeNumber(zone[3..], out var zoneMinute))
+                {
+                    return double.NaN;
+                }
+
+                offsetMinutes = (zoneHour * 60) + zoneMinute;
+
+                if (zone[0] == '-')
+                {
+                    offsetMinutes = -offsetMinutes;
+                }
+
+                continue;
+            }
+
+            if (!DateWholeNumber(token, out var number))
+            {
+                // A weekday name, or anything else this form carries and the value does not need.
+                continue;
+            }
+
+            if (token.Length >= 3 || (day >= 0 && double.IsNaN(year)))
+            {
+                year = number;
+            }
+            else
+            {
+                day = number;
+            }
+        }
+
+        if (month < 0 || day < 1 || day > 31 || double.IsNaN(year) ||
+            hour > 24 || minute > 59 || second > 59)
+        {
+            return double.NaN;
+        }
+
+        var parsed = DateMakeDate(
+            DateMakeDay(year, month, day), DateMakeTime(hour, minute, second, 0));
+
+        return DateTimeClip(parsed - (offsetMinutes * DateMsPerMinute));
+    }
+
+    /// <summary>The month a three-letter name stands for, or <c>-1</c>.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C6EE3D
+    // Broiler-Human:        PENDING
+    private static int DateMonthByName(string token) => token switch
+    {
+        "Jan" => 0,
+        "Feb" => 1,
+        "Mar" => 2,
+        "Apr" => 3,
+        "May" => 4,
+        "Jun" => 5,
+        "Jul" => 6,
+        "Aug" => 7,
+        "Sep" => 8,
+        "Oct" => 9,
+        "Nov" => 10,
+        "Dec" => 11,
+        _ => -1,
+    };
+
+    /// <summary>Reads a token that is entirely decimal digits.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5A0680
+    // Broiler-Human:        PENDING
+    private static bool DateWholeNumber(string token, out double value)
+    {
+        value = 0;
+
+        if (token.Length == 0)
+        {
+            return false;
+        }
+
+        foreach (var character in token)
+        {
+            if (character is < '0' or > '9')
+            {
+                value = 0;
+                return false;
+            }
+
+            value = (value * 10) + (character - '0');
+        }
+
+        return true;
     }
 
     /// <summary>Reads exactly <paramref name="count"/> decimal digits, advancing the cursor.</summary>

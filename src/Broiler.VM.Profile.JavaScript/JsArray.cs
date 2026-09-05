@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   13
-// Annotated:        13/13
-// Exempt:           3
-// Human-reviewed:   0/13
+// Relevant units:   14
+// Annotated:        14/14
+// Exempt:           5
+// Human-reviewed:   0/14
 // IP risk:          Low
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       13
+// Unverified:       14
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -53,6 +53,18 @@ internal sealed class JsArray : JsObject
     // Broiler-Human:        PENDING
     private uint length;
 
+    /// <summary>Whether <c>length</c> may still move.</summary>
+    /// <remarks>
+    /// <b>It is a field rather than an ordinary property because <c>length</c> is not an ordinary
+    /// property.</b> An Array's length is derived from the elements, so there is nowhere in the
+    /// property store for its attributes to live; without this, <c>defineProperty(a, "length",
+    /// { writable: false })</c> was accepted, reported as accepted, and then ignored by the next
+    /// <c>push</c>. A refusal that reports success is the one answer this profile refuses to give.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9667EC
+    // Broiler-Human:        PENDING
+    private bool lengthWritable = true;
+
     /// <summary>Creates an empty Array.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A4EEE4
     // Broiler-Human:        PENDING
@@ -65,6 +77,16 @@ internal sealed class JsArray : JsObject
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F4AC04
     // Broiler-Human:        PENDING
     internal uint Length => length;
+
+    /// <summary>Whether the length may still move.</summary>
+    /// <remarks>
+    /// A closed length is what makes a write past the end a refusal rather than an extension, and
+    /// the engine has to be able to ask before it stores: a store that was silently dropped is a
+    /// <c>TypeError</c> in strict code, and only the caller knows the mode.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=AA042B
+    // Broiler-Human:        PENDING
+    internal bool LengthWritable => lengthWritable;
 
     /// <summary>How many elements the dense part holds.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=FB598E
@@ -113,31 +135,80 @@ internal sealed class JsArray : JsObject
     }
 
     /// <summary>Sets the Array's length, dropping or extending as the specification requires.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=8BB249
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=65E131
     // Broiler-Human:        PENDING
-    internal void SetLength(uint value)
+    internal void SetLength(uint value) => _ = TrySetLength(value);
+
+    /// <summary>Sets the length, and answers whether it got all the way there.</summary>
+    /// <remarks>
+    /// <b>A SHORTENING DELETES FROM THE TOP DOWN AND STOPS AT THE FIRST ELEMENT IT MAY NOT
+    /// DELETE.</b> `Object.defineProperty(a, "1", {configurable: false})` makes index 1 permanent,
+    /// and the language says a later `a.length = 0` deletes index 2, fails at index 1, and leaves
+    /// the length at 2 — a partial result rather than either extreme. Truncating regardless would
+    /// destroy a property the program was promised, and refusing outright would leave a length
+    /// nobody could shrink at all.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=28839C
+    // Broiler-Human:        PENDING
+    internal bool TrySetLength(uint value)
     {
-        if (value < length)
+        if (value >= length)
         {
-            if (elements.Count > value)
+            length = value;
+            return true;
+        }
+
+        var reached = value;
+
+        for (var candidate = length; candidate > value; candidate--)
+        {
+            var at = candidate - 1;
+            var key = JsNumberFormat.ToUintString(at);
+
+            // THE DENSE HALF HAS NO ATTRIBUTES TO CONSULT: an element that is still in it is an
+            // ordinary configurable data property, and one that was given attributes has already
+            // moved into the map underneath - leaving a HOLE in the dense half at that index, which
+            // is why the test is on the slot being empty rather than on the index being past the
+            // end. Only the map can refuse.
+            var dense = at < elements.Count && !elements[(int)at].IsEmpty;
+
+            if (!dense && base.TryGetOwnProperty(key, out var held) && !held.Configurable)
             {
-                elements.RemoveRange((int)value, elements.Count - (int)value);
+                reached = at + 1;
+                break;
             }
 
-            for (var candidate = value; candidate < length; candidate++)
+            if (dense)
             {
-                base.DeleteOwnProperty(JsNumberFormat.ToUintString(candidate));
+                elements[(int)at] = JsValue.Empty;
+            }
+            else
+            {
+                base.DeleteOwnProperty(key);
             }
         }
 
-        length = value;
+        if (elements.Count > reached)
+        {
+            elements.RemoveRange((int)reached, elements.Count - (int)reached);
+        }
+
+        length = reached;
+        return reached == value;
     }
 
     /// <summary>Writes one indexed element.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=AD3D77
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=89F663
     // Broiler-Human:        PENDING
     internal void SetIndex(uint at, JsValue value)
     {
+        // THE SAME REFUSAL AS THE ONE ABOVE, on the fast path the engine reaches directly. A write
+        // that would extend a length nobody may move is not a write.
+        if (!lengthWritable && at >= length)
+        {
+            return;
+        }
+
         if (at < elements.Count)
         {
             elements[(int)at] = value;
@@ -164,7 +235,7 @@ internal sealed class JsArray : JsObject
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=CA1D6A
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=AF68DC
     // Broiler-Human:        PENDING
     internal override bool TryGetOwnProperty(string key, out JsProperty property)
     {
@@ -190,7 +261,8 @@ internal sealed class JsArray : JsObject
         else if (string.Equals(key, "length", System.StringComparison.Ordinal))
         {
             property = JsProperty.Data(
-                JsValue.Number(length), JsPropertyAttributes.Writable);
+                JsValue.Number(length),
+                lengthWritable ? JsPropertyAttributes.Writable : JsPropertyAttributes.None);
 
             return true;
         }
@@ -199,16 +271,35 @@ internal sealed class JsArray : JsObject
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C3B289
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B28009
     // Broiler-Human:        PENDING
     internal override void SetOwnProperty(string key, JsProperty property)
     {
         if (string.Equals(key, "length", System.StringComparison.Ordinal) && !property.IsAccessor)
         {
-            SetLength(JsValue.ToUint32(property.Value.Type == JsType.Number
+            var wanted = JsValue.ToUint32(property.Value.Type == JsType.Number
                 ? property.Value.AsNumber()
-                : 0));
+                : 0);
 
+            // A DEFINITION MAY CLOSE THE LENGTH AND AN ASSIGNMENT MAY NOT, and both arrive here.
+            // The checked path hands down whatever attributes the descriptor asked for, so losing
+            // `Writable` is how a definition says so; an ordinary assignment carries the attributes
+            // the property already had, which the caller read from `TryGetOwnProperty` above.
+            if (!lengthWritable && wanted != length)
+            {
+                return;
+            }
+
+            SetLength(wanted);
+            lengthWritable = (property.Attributes & JsPropertyAttributes.Writable) != 0;
+            return;
+        }
+
+        // AN ELEMENT PAST A CLOSED LENGTH IS REFUSED, because writing it would move the length that
+        // was just made immovable. An element INSIDE the length is unaffected: closing the length
+        // says nothing about the elements, and freezing those is what `Object.freeze` is for.
+        if (!lengthWritable && IsArrayIndex(key, out var beyond) && beyond >= length)
+        {
             return;
         }
 
@@ -237,11 +328,27 @@ internal sealed class JsArray : JsObject
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7DDAF3
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=45912A
     // Broiler-Human:        PENDING
     internal override bool DeleteOwnProperty(string key)
     {
-        if (IsArrayIndex(key, out var at) && at < elements.Count)
+        // `length` IS AN OWN PROPERTY THAT IS NEVER CONFIGURABLE, so deleting it is always a
+        // refusal - and it had to be refused HERE because it is not in the map the base searches,
+        // which answers `true` for every key it does not find. Without this `delete [].length`
+        // answered `true`, having deleted nothing, and in strict code answered `true` where the
+        // language owes a `TypeError`.
+        if (string.Equals(key, "length", System.StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        // A HOLE FALLS THROUGH TO THE ORDINARY MAP, exactly as the read above does and for exactly
+        // the same reason: a vacated slot is a property the array moved out of the dense store
+        // because it was given attributes the store cannot carry. Clearing the slot and answering
+        // `true` for one of those reported the deletion of a FROZEN element, and left it in place -
+        // so `delete frozen[0]` said `true` in sloppy code, threw nothing in strict code, and the
+        // element read back afterwards.
+        if (IsArrayIndex(key, out var at) && at < elements.Count && !elements[(int)at].IsEmpty)
         {
             elements[(int)at] = JsValue.Empty;
             return true;

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   27
-// Annotated:        27/27
-// Exempt:           20
-// Human-reviewed:   0/27
+// Relevant units:   41
+// Annotated:        41/41
+// Exempt:           32
+// Human-reviewed:   0/41
 // IP risk:          Low
-// Security risk:    Medium
-// Criteria:         0/0
+// Security risk:    High
+// Criteria:         1/1
 // Resource impact:  3/10 max
-// Unverified:       27
+// Unverified:       41
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -44,6 +44,19 @@ namespace Broiler.VM.Profile.JavaScript;
 /// so a handler whose declared height disagrees with what the code at it does is a join
 /// disagreement and is refused, rather than an operand-stack corruption at the first throw.
 /// </para>
+/// <para>
+/// <b>What a <c>with</c> body costs this pass is one thing and not the model.</b> An object
+/// environment record is a scope like any other here: <see cref="JsOpcode.PushObjectScope"/> raises
+/// the depth, <see cref="JsOpcode.PopScope"/> lowers it, and the two branches a dynamically
+/// resolved name lowers to are held to the same join rule every other branch is. Every read, write
+/// and deletion inside such a body is an ordinary property instruction, so this pass checks them.
+/// <b>What it stops being able to check is which environment a NAME reaches</b>: outside a
+/// <c>with</c> body a read names a slot and a depth this pass bounds, and inside one the answer
+/// depends on what an object holds when the instruction runs. That is not a check this pass gave
+/// up - it is a question the language stopped answering statically - and what keeps it harmless is
+/// that <see cref="JsOpcode.ResolveName"/> can only ever answer with an OBJECT that is already on
+/// the chain, never with a slot.
+/// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=B42A78
 // Broiler-Human:        PENDING
@@ -55,12 +68,13 @@ internal sealed class JsVerifier
 
 
     /// <summary>Verifies a version-2 payload and produces the program the executor runs.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=DD5485
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=80B643
     // Broiler-Human:        PENDING
     internal static VmVerifierOutcome Verify(
         in VmArtifactDescriptor descriptor,
         System.ReadOnlySpan<byte> payload,
         IVmVerificationContext context,
+        System.Collections.Immutable.ImmutableArray<string> admittedSurfaces,
         System.Threading.CancellationToken cancellationToken)
     {
         var adapter = new JavaScriptReadAdapter(context.Meter);
@@ -127,7 +141,7 @@ internal sealed class JsVerifier
                 return Stopped(cancellationToken);
             }
 
-            var outcome = ReadSection(ref reader, adapter, ref previousKind, state);
+            var outcome = ReadSection(ref reader, adapter, ref previousKind, state, admittedSurfaces);
 
             if (outcome.Category != VmOutcome.Normal)
             {
@@ -146,7 +160,7 @@ internal sealed class JsVerifier
             return VmVerifierOutcome.Cancellation();
         }
 
-        return Link(state, adapter, cancellationToken);
+        return Link(state, adapter, context, admittedSurfaces, cancellationToken);
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BB9BC8
@@ -197,13 +211,14 @@ internal sealed class JsVerifier
         return VmVerifierOutcome.Verified(EmptyState.Instance, VmArtifactSharing.Shareable);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4E4B50
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D4A382
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome ReadSection(
         ref VmBoundedReader reader,
         JavaScriptReadAdapter adapter,
         ref uint previousKind,
-        Sections state)
+        Sections state,
+        System.Collections.Immutable.ImmutableArray<string> admittedSurfaces)
     {
         var at = reader.Position;
 
@@ -217,7 +232,7 @@ internal sealed class JsVerifier
             return FromReader(ref reader, reader.Position);
         }
 
-        if (kind is < 1 or > 8)
+        if (kind is < 1 or > 10)
         {
             return Invalid(
                 VmReason.UnknownFeature, JavaScriptDiagnosticCode.UnknownSectionKind, at);
@@ -244,6 +259,8 @@ internal sealed class JsVerifier
             JsFormat.SectionKind.ExceptionRegions => ReadRegions(ref reader, state),
             JsFormat.SectionKind.Positions => ReadPositions(ref reader, state),
             JsFormat.SectionKind.Functions => ReadFunctions(ref reader, state),
+            JsFormat.SectionKind.Surfaces => ReadSurfaces(ref reader, state, admittedSurfaces),
+            JsFormat.SectionKind.Modules => ReadModules(ref reader, adapter, state),
             _ => Invalid(
                 VmReason.UnknownFeature,
                 JavaScriptDiagnosticCode.SuspensionTargetOutsideManifest,
@@ -297,7 +314,7 @@ internal sealed class JsVerifier
         return Ok;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7CCEA8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=58E734
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome ReadConstants(
         ref VmBoundedReader reader, JavaScriptReadAdapter adapter, Sections state)
@@ -381,7 +398,7 @@ internal sealed class JsVerifier
                         return FromReader(ref reader, reader.Position);
                     }
 
-                    names[index] = System.Text.Encoding.UTF8.GetString(text);
+                    names[index] = Format.JsFormat.DecodeText(text);
                     values[index] = JsValue.String(names[index]);
                     break;
 
@@ -527,6 +544,105 @@ internal sealed class JsVerifier
         return Ok;
     }
 
+    /// <summary>
+    /// Reads the optional surfaces this artifact declares, and refuses one the composition has not
+    /// admitted.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>This is where a composition declining a surface refuses an artifact, and it is at
+    /// verification rather than at run time on purpose.</b> Roadmap section 6 draws the
+    /// distinction: a composition that declines a manifest produces an invalid artifact the guest
+    /// never sees, and a composition that admits one while registering no provider produces a
+    /// run-time refusal the guest may catch. Two outcomes, two catchabilities, and reading them off
+    /// one behaviour is how a policy boundary quietly stops being one.
+    /// </para>
+    /// <para>
+    /// <b>Two refusals rather than one, and the difference is who is wrong.</b> A name this build
+    /// does not know is an artifact naming a surface nobody wrote; a name this build knows and this
+    /// composition did not admit is an artifact naming a surface somebody declined. The first is a
+    /// defect in whatever produced the bytes and the second is the composition doing its job, and a
+    /// reader of a diagnostic code should not have to guess which happened.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=2F6AFE
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome ReadSurfaces(
+        ref VmBoundedReader reader,
+        Sections state,
+        System.Collections.Immutable.ImmutableArray<string> admittedSurfaces)
+    {
+        if (!reader.TryReadDeclaredCount(out var count))
+        {
+            return FromReader(ref reader, reader.Position);
+        }
+
+        if (count > JsFormat.CeilingSurfaces)
+        {
+            return Invalid(
+                VmReason.InconsistentStructure,
+                JavaScriptDiagnosticCode.DeclaredMaximumTooLarge,
+                reader.Position);
+        }
+
+        var declared = new string[count];
+
+        for (var index = 0u; index < count; index++)
+        {
+            if (!reader.TryReadVarUInt32(out var length))
+            {
+                return FromReader(ref reader, reader.Position);
+            }
+
+            if (length is 0 or > JavaScriptFormat.MaximumManifestIdBytes)
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.ManifestIdTooLong,
+                    reader.Position);
+            }
+
+            if (!reader.TryReadBytes(length, out var bytes))
+            {
+                return FromReader(ref reader, reader.Position);
+            }
+
+            var identity = System.Text.Encoding.UTF8.GetString(bytes);
+
+            for (var earlier = 0u; earlier < index; earlier++)
+            {
+                if (string.Equals(declared[earlier], identity, System.StringComparison.Ordinal))
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.DuplicateSurface,
+                        reader.Position);
+                }
+            }
+
+            if (!JsSurfaces.IsKnown(identity))
+            {
+                return Invalid(
+                    VmReason.UnknownFeature,
+                    JavaScriptDiagnosticCode.UnknownSurface,
+                    reader.Position);
+            }
+
+            if (!admittedSurfaces.Contains(identity))
+            {
+                return Invalid(
+                    VmReason.UnsupportedFeatureManifest,
+                    JavaScriptDiagnosticCode.SurfaceOutsideComposition,
+                    reader.Position);
+            }
+
+            declared[index] = identity;
+        }
+
+        state.Surfaces = declared;
+        return Ok;
+    }
+
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9E02CD
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome ReadRegions(ref VmBoundedReader reader, Sections state)
@@ -658,11 +774,239 @@ internal sealed class JsVerifier
         return Ok;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9A3477
+    /// <summary>Whether the module rows name <paramref name="unit"/> as a module's body.</summary>
+    /// <remarks>
+    /// Read off the rows rather than off a flag on the unit, because a flag would be a second place
+    /// the same fact is stated and the two could disagree; the records are what make a unit a
+    /// module's body, so they are what the question is put to.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=23291E
+    // Broiler-Human:        PENDING
+    private static bool IsModuleBody(Sections state, uint unit)
+    {
+        if (state.ModuleRows is not { } rows)
+        {
+            return false;
+        }
+
+        foreach (var row in rows)
+        {
+            if (row.UnitIndex == unit)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>Reads the module records exactly as the payload declares them.</summary>
+    /// <remarks>
+    /// <b>Nothing is resolved here.</b> This pass answers only whether the bytes are a sequence of
+    /// module rows; what a request names and what an export resolves to are questions about the
+    /// whole graph, and asking them one row at a time would mean asking them against rows that had
+    /// not been read yet.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F86BD3
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome ReadModules(
+        ref VmBoundedReader reader, JavaScriptReadAdapter adapter, Sections state)
+    {
+        if (!reader.TryReadDeclaredCount(out var count))
+        {
+            return FromReader(ref reader, reader.Position);
+        }
+
+        if (count == 0 || count > JsFormat.CeilingModules)
+        {
+            return Invalid(
+                VmReason.InconsistentStructure,
+                JavaScriptDiagnosticCode.MalformedModuleRow,
+                reader.Position);
+        }
+
+        var rows = new JsModuleRow[count];
+        var imports = 0L;
+
+        for (var index = 0u; index < count; index++)
+        {
+            if (!adapter.Poll())
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.ReaderStopped,
+                    reader.Position);
+            }
+
+            if (!reader.TryReadVarUInt32(out var key) ||
+                !reader.TryReadVarUInt32(out var unit) ||
+                !reader.TryReadVarUInt32(out var initialiser))
+            {
+                return FromReader(ref reader, reader.Position);
+            }
+
+            if (!reader.TryReadDeclaredCount(out var requestCount) ||
+                requestCount > JsFormat.CeilingModuleRequests)
+            {
+                return FromReader(ref reader, reader.Position);
+            }
+
+            var specifiers = new uint[requestCount];
+            var requests = new uint[requestCount];
+
+            for (var request = 0u; request < requestCount; request++)
+            {
+                if (!reader.TryReadVarUInt32(out specifiers[request]) ||
+                    !reader.TryReadVarUInt32(out requests[request]))
+                {
+                    return FromReader(ref reader, reader.Position);
+                }
+            }
+
+            if (!reader.TryReadDeclaredCount(out var importCount) ||
+                importCount > JsFormat.CeilingImportEntries)
+            {
+                return FromReader(ref reader, reader.Position);
+            }
+
+            var importRows = new JsImportEntryRow[importCount];
+
+            for (var entry = 0u; entry < importCount; entry++)
+            {
+                if (!reader.TryReadVarUInt32(out var request) ||
+                    !reader.TryReadVarUInt32(out var name) ||
+                    !reader.TryReadByte(out var kind))
+                {
+                    return FromReader(ref reader, reader.Position);
+                }
+
+                if (kind > (byte)JsFormat.ImportKind.Namespace)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        reader.Position);
+                }
+
+                importRows[entry] = new JsImportEntryRow(request, name, (JsFormat.ImportKind)kind);
+            }
+
+            imports += importRows.Length;
+
+            if (imports > JsFormat.CeilingImportEntries)
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.MalformedModuleRow,
+                    reader.Position);
+            }
+
+            if (!reader.TryReadDeclaredCount(out var localCount) ||
+                localCount > JsFormat.CeilingExportEntries)
+            {
+                return FromReader(ref reader, reader.Position);
+            }
+
+            var locals = new JsLocalExportRow[localCount];
+
+            for (var entry = 0u; entry < localCount; entry++)
+            {
+                if (!reader.TryReadVarUInt32(out var name) || !reader.TryReadVarUInt32(out var slot))
+                {
+                    return FromReader(ref reader, reader.Position);
+                }
+
+                locals[entry] = new JsLocalExportRow(name, slot);
+            }
+
+            if (!reader.TryReadDeclaredCount(out var indirectCount) ||
+                indirectCount > JsFormat.CeilingExportEntries)
+            {
+                return FromReader(ref reader, reader.Position);
+            }
+
+            var indirects = new JsIndirectExportRow[indirectCount];
+
+            for (var entry = 0u; entry < indirectCount; entry++)
+            {
+                if (!reader.TryReadVarUInt32(out var name) ||
+                    !reader.TryReadVarUInt32(out var request) ||
+                    !reader.TryReadVarUInt32(out var importName) ||
+                    !reader.TryReadByte(out var kind))
+                {
+                    return FromReader(ref reader, reader.Position);
+                }
+
+                if (kind > (byte)JsFormat.ImportKind.Namespace)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        reader.Position);
+                }
+
+                indirects[entry] =
+                    new JsIndirectExportRow(name, request, importName, (JsFormat.ImportKind)kind);
+            }
+
+            if (!TryReadKeys(ref reader, JsFormat.CeilingModuleRequests, out var stars))
+            {
+                return stars is null
+                    ? FromReader(ref reader, reader.Position)
+                    : Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        reader.Position);
+            }
+
+            rows[index] = new JsModuleRow(
+                key, unit, initialiser, specifiers, requests, importRows, locals, indirects, stars!);
+        }
+
+        state.ModuleRows = rows;
+        state.ImportCount = (int)imports;
+        return Ok;
+    }
+
+    /// <summary>Reads a counted run of unsigned integers, refusing one past a ceiling.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=38BC95
+    // Broiler-Human:        PENDING
+    private static bool TryReadKeys(ref VmBoundedReader reader, uint ceiling, out uint[]? values)
+    {
+        values = null;
+
+        if (!reader.TryReadDeclaredCount(out var count))
+        {
+            return false;
+        }
+
+        if (count > ceiling)
+        {
+            values = [];
+            return false;
+        }
+
+        var read = new uint[count];
+
+        for (var index = 0u; index < count; index++)
+        {
+            if (!reader.TryReadVarUInt32(out read[index]))
+            {
+                return false;
+            }
+        }
+
+        values = read;
+        return true;
+    }
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6008E4
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome Link(
         Sections state,
         JavaScriptReadAdapter adapter,
+        IVmVerificationContext context,
+        System.Collections.Immutable.ImmutableArray<string> admittedSurfaces,
         System.Threading.CancellationToken cancellationToken)
     {
         if (!state.SawLimits || !state.SawConstants || !state.SawCode ||
@@ -681,9 +1025,17 @@ internal sealed class JsVerifier
         {
             var row = rows[index];
 
+            // `ParameterCount` MEANS TWO THINGS AND ONLY ONE OF THEM IS A SLOT COUNT. Without
+            // `BindsParameters` the frame copies that many arguments into slots zero upward, so it
+            // must fit in the scope; with it, no copy happens and the figure is only the arity the
+            // function reports as `length` - which a pattern with no bindings, `function f({}) {}`,
+            // makes larger than the slots.
+            var binds = ((JsFormat.FunctionFlags)row.Flags &
+                JsFormat.FunctionFlags.BindsParameters) != 0;
+
             if (row.ScopeSlots > state.DeclaredScopeSlots ||
                 row.MaxOperandStack > state.DeclaredOperandStack ||
-                row.ParameterCount > row.ScopeSlots ||
+                (!binds && row.ParameterCount > row.ScopeSlots) ||
                 row.ParameterCount > JsFormat.CeilingCallArguments)
             {
                 return Invalid(
@@ -703,6 +1055,50 @@ internal sealed class JsVerifier
             if (row.CodeLength == 0)
             {
                 return Invalid(VmReason.InconsistentStructure, JavaScriptDiagnosticCode.EmptyCode, (ulong)index);
+            }
+
+            // A GENERATOR IS NONE OF THE OTHER THREE THINGS A FLAG CAN SAY IT IS. The executor
+            // decides whether an invocation gets a heap frame from this bit alone, and each of the
+            // three it is refused with here would have already sent the invocation somewhere else.
+            var unitFlags = (JsFormat.FunctionFlags)row.Flags;
+
+            if ((unitFlags & JsFormat.FunctionFlags.Generator) != 0 &&
+                (unitFlags & (JsFormat.FunctionFlags.Arrow |
+                    JsFormat.FunctionFlags.ProgramBody |
+                    JsFormat.FunctionFlags.Constructible)) != 0)
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.GeneratorFlagsInconsistent,
+                    (ulong)index);
+            }
+
+            // AN ASYNC UNIT IS NOT A CONSTRUCTOR, AND NEITHER THE ARROW NOR THE GENERATOR IS ON
+            // THE LIST. The arrow never was: an async ARROW is an ordinary arrow whose body may
+            // suspend, and the executor enters it exactly as it enters any arrow - with the
+            // lexical `this` and `new.target` its closure recorded. The GENERATOR was, and dropping
+            // it is what admitted the async generator: the pair does not ask the executor to choose
+            // between the generator driver and the async one, it names a THIRD driver whose caller
+            // pulls with `next` and whose body settles the promise that pull answered.
+            // `Generator | Arrow` stays refused by the check above, which is what keeps the one
+            // combination the grammar has no production for out.
+            //
+            // A MODULE BODY IS THE ONE PROGRAM BODY THAT MAY BE ASYNC, and until the module goal
+            // existed no program body could be. `ProgramBody | Async` was refused here because the
+            // only program bodies were scripts, which have no driver and no caller to hand a
+            // promise to; a module has both - it is entered by the linker, which holds the promise
+            // its evaluation answers with and orders the graph on it. So the combination is
+            // admitted exactly for a unit the module records name as a body, and refused everywhere
+            // else, which is what keeps a script from claiming a driver nothing would supply.
+            if ((unitFlags & JsFormat.FunctionFlags.Async) != 0 &&
+                ((unitFlags & JsFormat.FunctionFlags.Constructible) != 0 ||
+                    ((unitFlags & JsFormat.FunctionFlags.ProgramBody) != 0 &&
+                        !IsModuleBody(state, (uint)index))))
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.AsyncFlagsInconsistent,
+                    (ulong)index);
             }
 
             // DISJOINT AND ASCENDING, both. Two units whose ranges overlapped would let a branch
@@ -794,6 +1190,37 @@ internal sealed class JsVerifier
             }
         }
 
+        // THE REALM IS BUILT FROM WHAT THE COMPOSITION ADMITS, NOT FROM WHAT THE ARTIFACT DECLARED.
+        // The two sets are different questions and only one of them is a policy: the artifact's
+        // declaration is what this pass has just refused an unadmitted entry of, and the
+        // composition's is what the guest may find on the global object. Installing only what a
+        // particular artifact declared would make `typeof Uint8Array` answer differently for two
+        // programs a composition admits equally, which is a difference no embedder asked for.
+        var modules = System.Array.Empty<JsModuleRecord>();
+        var bindings = System.Array.Empty<JsBinding>();
+
+        // A MODULE SECTION AND A MODULE SURFACE ARE TWO DECLARATIONS AND EITHER WITHOUT THE OTHER
+        // IS AN ARTIFACT THAT CONTRADICTS ITSELF. The section says the graph is here; the surface
+        // says the composition was asked whether it admits one. Records without the declaration
+        // would run a module graph in a composition that declined modules, and the declaration
+        // without records would be a program declaring a surface it does not reach.
+        if (state.DeclaresModules())
+        {
+            var linked = LinkModules(state, units, context, adapter, out modules, out bindings);
+
+            if (linked.Category != VmOutcome.Normal)
+            {
+                return linked;
+            }
+        }
+        else if (state.ModuleRows is not null)
+        {
+            return Invalid(
+                VmReason.UnknownFeature,
+                JavaScriptDiagnosticCode.ModuleSectionOutsideManifest,
+                0);
+        }
+
         var program = new JsProgram(
             state.Constants!,
             state.Names!,
@@ -801,9 +1228,634 @@ internal sealed class JsVerifier
             units,
             state.Regions,
             state.Entries,
-            state.PositionRows);
+            state.PositionRows,
+            admittedSurfaces,
+            modules,
+            bindings);
 
         return VmVerifierOutcome.Verified(program, VmArtifactSharing.Shareable);
+    }
+
+    /// <summary>
+    /// Turns declared module rows into a linked graph, executing nothing.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The whole of module linking happens here, before the artifact is admitted.</b> Which
+    /// module a request names, which slot of which module an imported name reads, whether two star
+    /// re-exports supply the same name from different bindings, and whether an export resolution
+    /// walks a cycle - all four are decidable from the rows alone, and answering them at the first
+    /// import would mean an artifact that verified and then failed on its second instruction.
+    /// </para>
+    /// <para>
+    /// <b>The resolution is a fixed point rather than a recursion, and the reason is the stack.</b>
+    /// A recursive <c>ResolveExport</c> is the specification's shape and would nest once per link in
+    /// a re-export chain, which an artifact controls; verification runs on the caller's thread, and
+    /// this component's own rule is that a payload never chooses how deep the host recurses. So
+    /// each module's export table is filled by repeated passes that stop when a pass changes
+    /// nothing, and what is still unresolved afterwards is classified by a walk with a visited set.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=8255D8
+    // Broiler-Falsified-If: linking recurses to a depth the payload chooses, or a cyclic export resolution is answered by spending an allowance
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome LinkModules(
+        Sections state,
+        JsCodeUnit[] units,
+        IVmVerificationContext context,
+        JavaScriptReadAdapter adapter,
+        out JsModuleRecord[] modules,
+        out JsBinding[] bindings)
+    {
+        modules = [];
+        bindings = [];
+
+        // THE RESOLVER IS CHECKED FIRST AND ON ITS OWN. Declining the surface is already answered
+        // by the time this runs - an artifact declaring a surface the composition did not admit was
+        // refused where the surfaces were read - so what is left to ask is the surface's one
+        // question: a composition that admits modules and registers no resolver has said it will
+        // run a graph and supplied no way to say what a specifier names. Every refusal below would
+        // otherwise be a remark about an artifact it was never going to evaluate.
+        if (!context.TryGetCapabilityDescriptor(
+                JavaScriptProfile.ResolveCapability.CapabilityId,
+                JavaScriptProfile.ResolveCapability.Version,
+                out _))
+        {
+            return Invalid(
+                VmReason.UnsupportedFeatureManifest,
+                JavaScriptDiagnosticCode.ModuleResolverAbsent,
+                0);
+        }
+
+        if (state.ModuleRows is not { Length: > 0 } rows)
+        {
+            return Invalid(
+                VmReason.InconsistentStructure, JavaScriptDiagnosticCode.ModuleSectionMissing, 0);
+        }
+
+        var names = state.Names!;
+        var keys = new string[rows.Length];
+
+        for (var index = 0; index < rows.Length; index++)
+        {
+            var row = rows[index];
+
+            if (row.KeyConstant >= names.Length || names[row.KeyConstant].Length == 0 ||
+                row.UnitIndex >= units.Length || row.InitialiserUnitIndex >= units.Length)
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.MalformedModuleRow,
+                    (ulong)index);
+            }
+
+            keys[index] = names[row.KeyConstant];
+
+            for (var earlier = 0; earlier < index; earlier++)
+            {
+                if (string.Equals(keys[earlier], keys[index], System.StringComparison.Ordinal))
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        (ulong)index);
+                }
+            }
+        }
+
+        var requests = new int[rows.Length][];
+
+        for (var index = 0; index < rows.Length; index++)
+        {
+            var row = rows[index];
+            requests[index] = new int[row.RequestKeyConstants.Length];
+
+            for (var request = 0; request < row.RequestKeyConstants.Length; request++)
+            {
+                var constant = row.RequestKeyConstants[request];
+
+                if (constant >= names.Length ||
+                    row.RequestSpecifierConstants[request] >= names.Length ||
+                    names[row.RequestSpecifierConstants[request]].Length == 0)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        (ulong)index);
+                }
+
+                var found = -1;
+
+                for (var candidate = 0; candidate < keys.Length; candidate++)
+                {
+                    if (string.Equals(keys[candidate], names[constant], System.StringComparison.Ordinal))
+                    {
+                        found = candidate;
+                        break;
+                    }
+                }
+
+                if (found < 0)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.ModuleRequestUnresolved,
+                        (ulong)index);
+                }
+
+                requests[index][request] = found;
+            }
+        }
+
+        var tables = new System.Collections.Generic.Dictionary<string, ExportEntry>[rows.Length];
+        var seeded = Seed(rows, requests, units, names, tables);
+
+        if (seeded.Category != VmOutcome.Normal)
+        {
+            return seeded;
+        }
+
+        Settle(rows, requests, tables, adapter);
+
+        var classified = Classify(rows, requests, tables);
+
+        if (classified.Category != VmOutcome.Normal)
+        {
+            return classified;
+        }
+
+        // A RE-EXPORT IS CHECKED WHETHER OR NOT ANYTHING IMPORTS IT. `export { x } from './m'`
+        // where `m` exports no `x` is a link failure of THIS module, and a graph in which nothing
+        // happened to import that name would otherwise have verified with a re-export naming
+        // nothing - which is the case a whole family of the conformance suite is about.
+        for (var index = 0; index < rows.Length; index++)
+        {
+            foreach (var indirect in rows[index].IndirectExports)
+            {
+                var published = names[indirect.NameConstant];
+
+                if (!tables[index].TryGetValue(published, out var entry))
+                {
+                    continue;
+                }
+
+                if (entry.State == ExportState.NotFound)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.ModuleExportNotFound,
+                        (ulong)index);
+                }
+
+                if (entry.State == ExportState.Ambiguous)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.ModuleExportAmbiguous,
+                        (ulong)index);
+                }
+            }
+        }
+
+        var records = new JsModuleRecord[rows.Length];
+        var table = new System.Collections.Generic.List<JsBinding>(state.ImportCount);
+
+        for (var index = 0; index < rows.Length; index++)
+        {
+            var row = rows[index];
+            var exported = new System.Collections.Generic.List<string>(tables[index].Count);
+
+            foreach (var pair in tables[index])
+            {
+                if (pair.Value.State == ExportState.Resolved)
+                {
+                    exported.Add(pair.Key);
+                }
+            }
+
+            exported.Sort(System.StringComparer.Ordinal);
+            var exportBindings = new JsBinding[exported.Count];
+
+            for (var name = 0; name < exported.Count; name++)
+            {
+                exportBindings[name] = tables[index][exported[name]].Binding;
+            }
+
+            var specifiers = new string[row.RequestSpecifierConstants.Length];
+
+            for (var request = 0; request < specifiers.Length; request++)
+            {
+                specifiers[request] = names[row.RequestSpecifierConstants[request]];
+            }
+
+            records[index] = new JsModuleRecord(
+                keys[index],
+                row.UnitIndex,
+                row.InitialiserUnitIndex,
+                specifiers,
+                requests[index],
+                exported.ToArray(),
+                exportBindings);
+        }
+
+        for (var index = 0; index < rows.Length; index++)
+        {
+            foreach (var entry in rows[index].Imports)
+            {
+                if (entry.RequestIndex >= requests[index].Length)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        (ulong)index);
+                }
+
+                var target = requests[index][entry.RequestIndex];
+
+                if (entry.Kind == JsFormat.ImportKind.Namespace)
+                {
+                    if (entry.NameConstant != 0)
+                    {
+                        return Invalid(
+                            VmReason.InconsistentStructure,
+                            JavaScriptDiagnosticCode.MalformedModuleRow,
+                            (ulong)index);
+                    }
+
+                    table.Add(new JsBinding(target, 0, JsBindingKind.Namespace, keys[target]));
+                    continue;
+                }
+
+                if (entry.NameConstant >= names.Length)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        (ulong)index);
+                }
+
+                var wanted = names[entry.NameConstant];
+
+                if (!tables[target].TryGetValue(wanted, out var found) ||
+                    found.State == ExportState.NotFound)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.ModuleExportNotFound,
+                        (ulong)index);
+                }
+
+                if (found.State == ExportState.Ambiguous)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.ModuleExportAmbiguous,
+                        (ulong)index);
+                }
+
+                table.Add(found.Binding);
+            }
+        }
+
+        if (table.Count != state.ImportCount)
+        {
+            return Invalid(
+                VmReason.InconsistentStructure, JavaScriptDiagnosticCode.MalformedModuleRow, 0);
+        }
+
+        modules = records;
+        bindings = table.ToArray();
+        return Ok;
+    }
+
+    /// <summary>Fills each module's table with what its own rows state, before any propagation.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=DEAAE8
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome Seed(
+        JsModuleRow[] rows,
+        int[][] requests,
+        JsCodeUnit[] units,
+        string[] names,
+        System.Collections.Generic.Dictionary<string, ExportEntry>[] tables)
+    {
+        for (var index = 0; index < rows.Length; index++)
+        {
+            var row = rows[index];
+            var table = new System.Collections.Generic.Dictionary<string, ExportEntry>(
+                System.StringComparer.Ordinal);
+
+            tables[index] = table;
+
+            foreach (var local in row.LocalExports)
+            {
+                if (local.NameConstant >= names.Length ||
+                    local.Slot >= units[row.UnitIndex].ScopeSlots)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        (ulong)index);
+                }
+
+                var name = names[local.NameConstant];
+
+                if (!table.TryAdd(
+                        name,
+                        new ExportEntry
+                        {
+                            State = ExportState.Resolved,
+                            Binding = new JsBinding(index, (int)local.Slot, JsBindingKind.Slot, name),
+                        }))
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        (ulong)index);
+                }
+            }
+
+            foreach (var indirect in row.IndirectExports)
+            {
+                if (indirect.NameConstant >= names.Length ||
+                    indirect.RequestIndex >= requests[index].Length)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        (ulong)index);
+                }
+
+                var target = requests[index][indirect.RequestIndex];
+                var name = names[indirect.NameConstant];
+
+                var entry = indirect.Kind == JsFormat.ImportKind.Namespace
+                    ? new ExportEntry
+                    {
+                        State = ExportState.Resolved,
+                        Binding = new JsBinding(
+                            target, 0, JsBindingKind.Namespace, name),
+                    }
+                    : new ExportEntry
+                    {
+                        State = ExportState.Pending,
+                        TargetModule = target,
+                        TargetName = indirect.ImportNameConstant < names.Length
+                            ? names[indirect.ImportNameConstant]
+                            : string.Empty,
+                    };
+
+                if (indirect.Kind == JsFormat.ImportKind.Namespace
+                    ? indirect.ImportNameConstant != 0
+                    : entry.TargetName.Length == 0)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        (ulong)index);
+                }
+
+                if (!table.TryAdd(name, entry))
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        (ulong)index);
+                }
+            }
+
+            foreach (var star in row.StarExportRequests)
+            {
+                if (star >= requests[index].Length)
+                {
+                    return Invalid(
+                        VmReason.InconsistentStructure,
+                        JavaScriptDiagnosticCode.MalformedModuleRow,
+                        (ulong)index);
+                }
+            }
+        }
+
+        return Ok;
+    }
+
+    /// <summary>
+    /// Propagates re-exports until a pass changes nothing, or until every module has had a turn.
+    /// </summary>
+    /// <remarks>
+    /// The pass count is bounded by the module count because a chain of re-exports can be no longer
+    /// than the graph; a cycle changes nothing after its first pass and stops the loop early, which
+    /// is why a cyclic artifact costs a pass rather than an allowance.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=290727
+    // Broiler-Human:        PENDING
+    private static void Settle(
+        JsModuleRow[] rows,
+        int[][] requests,
+        System.Collections.Generic.Dictionary<string, ExportEntry>[] tables,
+        JavaScriptReadAdapter adapter)
+    {
+        for (var pass = 0; pass <= rows.Length; pass++)
+        {
+            var changed = false;
+
+            for (var index = 0; index < rows.Length; index++)
+            {
+                if (!adapter.TryChargeWork((ulong)tables[index].Count + 1))
+                {
+                    return;
+                }
+
+                foreach (var name in Keys(tables[index]))
+                {
+                    var entry = tables[index][name];
+
+                    if (entry.State != ExportState.Pending ||
+                        !tables[entry.TargetModule].TryGetValue(entry.TargetName, out var found) ||
+                        found.State == ExportState.Pending)
+                    {
+                        continue;
+                    }
+
+                    tables[index][name] = new ExportEntry
+                    {
+                        State = found.State,
+                        Binding = found.Binding,
+                        TargetModule = entry.TargetModule,
+                        TargetName = entry.TargetName,
+                    };
+
+                    changed = true;
+                }
+
+                foreach (var star in rows[index].StarExportRequests)
+                {
+                    var target = requests[index][star];
+
+                    foreach (var name in Keys(tables[target]))
+                    {
+                        // `default` IS NOT RE-EXPORTED BY A STAR, which is the one asymmetry in the
+                        // form: `export * from './m'` republishes what `m` names and not what `m`
+                        // is, so a default export stays reachable only through `m` itself.
+                        if (string.Equals(name, "default", System.StringComparison.Ordinal) ||
+                            tables[target][name].State != ExportState.Resolved)
+                        {
+                            continue;
+                        }
+
+                        var supplied = tables[target][name].Binding;
+
+                        if (!tables[index].TryGetValue(name, out var existing))
+                        {
+                            tables[index][name] = new ExportEntry
+                            {
+                                State = ExportState.Resolved,
+                                Binding = supplied,
+                                FromStar = true,
+                            };
+
+                            changed = true;
+                            continue;
+                        }
+
+                        // TWO STARS SUPPLYING ONE NAME IS AMBIGUOUS AND TWO SUPPLYING ONE BINDING IS
+                        // NOT. A diamond in which both paths reach the same slot of the same module
+                        // names one binding, and the language admits it; two different slots name
+                        // two, and no read of that name could pick one.
+                        if (existing.FromStar &&
+                            existing.State == ExportState.Resolved &&
+                            (existing.Binding.Module != supplied.Module ||
+                                existing.Binding.Slot != supplied.Slot ||
+                                existing.Binding.Kind != supplied.Kind))
+                        {
+                            tables[index][name] = new ExportEntry
+                            {
+                                State = ExportState.Ambiguous,
+                                FromStar = true,
+                            };
+
+                            changed = true;
+                        }
+                    }
+                }
+            }
+
+            if (!changed)
+            {
+                return;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Decides what every still-unresolved re-export is: a cycle, or a name nothing exports.
+    /// </summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0D2F3A
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome Classify(
+        JsModuleRow[] rows,
+        int[][] requests,
+        System.Collections.Generic.Dictionary<string, ExportEntry>[] tables)
+    {
+        _ = requests;
+
+        for (var index = 0; index < rows.Length; index++)
+        {
+            foreach (var name in Keys(tables[index]))
+            {
+                if (tables[index][name].State != ExportState.Pending)
+                {
+                    continue;
+                }
+
+                var seen = new System.Collections.Generic.HashSet<(int Module, string Name)>();
+                var module = index;
+                var wanted = name;
+
+                while (true)
+                {
+                    if (!seen.Add((module, wanted)))
+                    {
+                        return Invalid(
+                            VmReason.InconsistentStructure,
+                            JavaScriptDiagnosticCode.ModuleExportCircular,
+                            (ulong)index);
+                    }
+
+                    if (!tables[module].TryGetValue(wanted, out var entry))
+                    {
+                        tables[index][name] = new ExportEntry { State = ExportState.NotFound };
+                        break;
+                    }
+
+                    if (entry.State != ExportState.Pending)
+                    {
+                        tables[index][name] = entry;
+                        break;
+                    }
+
+                    module = entry.TargetModule;
+                    wanted = entry.TargetName;
+                }
+            }
+        }
+
+        return Ok;
+    }
+
+    /// <summary>A snapshot of a table's keys, so a pass may write the table while walking it.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=01F1E0
+    // Broiler-Human:        PENDING
+    private static string[] Keys(
+        System.Collections.Generic.Dictionary<string, ExportEntry> table)
+    {
+        var keys = new string[table.Count];
+        table.Keys.CopyTo(keys, 0);
+        return keys;
+    }
+
+    /// <summary>How far one exported name has got towards naming a binding.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C47894
+    // Broiler-Human:        PENDING
+    private enum ExportState
+    {
+        /// <summary>It re-exports a name whose own resolution is not settled yet.</summary>
+        Pending = 0,
+
+        /// <summary>It names one binding.</summary>
+        Resolved = 1,
+
+        /// <summary>Two star re-exports supply it from different bindings.</summary>
+        Ambiguous = 2,
+
+        /// <summary>Nothing in the graph exports it.</summary>
+        NotFound = 3,
+    }
+
+    /// <summary>One row of a module's export table while it is being settled.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E2D5BB
+    // Broiler-Human:        PENDING
+    private readonly struct ExportEntry
+    {
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=27F594
+        // Broiler-Human:        PENDING
+        internal ExportState State { get; init; }
+
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F1CBBA
+        // Broiler-Human:        PENDING
+        internal JsBinding Binding { get; init; }
+
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6ED800
+        // Broiler-Human:        PENDING
+        internal int TargetModule { get; init; }
+
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=C22B8A
+        // Broiler-Human:        PENDING
+        internal string TargetName { get; init; }
+
+        /// <summary>Whether a star re-export supplied it, which is what makes ambiguity possible.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9ECA7B
+        // Broiler-Human:        PENDING
+        internal bool FromStar { get; init; }
     }
 
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=658F98
@@ -914,6 +1966,56 @@ internal sealed class JsVerifier
         // Broiler-Human:        PENDING
         internal int PositionRows { get; set; }
 
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=9FAFA3
+        // Broiler-Human:        PENDING
+        internal string[] Surfaces { get; set; } = [];
+
+        /// <summary>The module rows as the payload declares them, before any resolution.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=67DA18
+        // Broiler-Human:        PENDING
+        internal JsModuleRow[]? ModuleRows { get; set; }
+
+        /// <summary>How many import entries the module rows declare between them.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=A683AF
+        // Broiler-Human:        PENDING
+        internal int ImportCount { get; set; }
+
+        /// <summary>Whether the artifact declared the module surface beside its manifest.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E754A2
+        // Broiler-Human:        PENDING
+        internal bool DeclaresModules()
+        {
+            foreach (var surface in Surfaces)
+            {
+                if (string.Equals(surface, JsSurfaces.Modules, System.StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>Whether the artifact declared the dynamic surface beside its manifest.</summary>
+        /// <remarks>
+        /// A program declares this by reading one of the names the surface owns, and — since a
+        /// dynamic <c>import()</c> may reach the mediator — by containing one of those.
+        /// </remarks>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=8EEDB8
+        // Broiler-Human:        PENDING
+        internal bool DeclaresDynamic()
+        {
+            foreach (var surface in Surfaces)
+            {
+                if (string.Equals(surface, JsSurfaces.Dynamic, System.StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4F7CE5
         // Broiler-Human:        PENDING
         internal bool SawLimits { get; set; }
@@ -954,7 +2056,7 @@ internal sealed class JsVerifier
         // Broiler-Human:        PENDING
         private int[] depths = [];
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1AD602
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D37B36
         // Broiler-Human:        PENDING
         internal VmVerifierOutcome Walk(int index)
         {
@@ -1099,7 +2201,13 @@ internal sealed class JsVerifier
 
                     switch (opcode)
                     {
+                        // AN OBJECT ENVIRONMENT RECORD IS A SCOPE AND IS COUNTED AS ONE. It holds an
+                        // object where a declarative record holds slots, and nothing about the
+                        // abstract state distinguishes the two: a `with` body's exits - falling
+                        // through, `break`, `continue`, `return` and an exception unwinding to a
+                        // region - are checked against the same depth arithmetic every block gets.
                         case JsOpcode.PushScope:
+                        case JsOpcode.PushObjectScope:
                             afterDepth = depth + 1;
 
                             if (afterDepth > MaxScopeDepth)
@@ -1132,7 +2240,18 @@ internal sealed class JsVerifier
 
                     if (JsOpcodes.HasCodeTarget(opcode))
                     {
-                        var targetHeight = opcode == JsOpcode.ForInNext ? height - 1 : after;
+                        // The four stepping opcodes have a different height on the taken branch than
+                        // on the fall-through: a name, a value or a close result arrives only when
+                        // there was one. `IterateAwaitStep` is two below rather than one, because
+                        // it consumes the awaited step AND the record the step was taken from -
+                        // and on the taken branch neither is replaced.
+                        var targetHeight = opcode switch
+                        {
+                            JsOpcode.ForInNext or JsOpcode.IterateNext or
+                                JsOpcode.IterateCloseAsync => height - 1,
+                            JsOpcode.IterateAwaitStep => height - 2,
+                            _ => after,
+                        };
                         var seeded = Seed(
                             unit, code, (int)operand, targetHeight, afterDepth, pending, offset);
 
@@ -1254,7 +2373,7 @@ internal sealed class JsVerifier
             return Ok;
         }
 
-        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=74562B
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=1B0374
         // Broiler-Human:        PENDING
         private VmVerifierOutcome Check(JsCodeUnit unit, JsOpcode opcode, uint operand, int offset)
         {
@@ -1278,6 +2397,12 @@ internal sealed class JsVerifier
                 case JsOpcode.DeleteProperty:
                 case JsOpcode.DefineGetter:
                 case JsOpcode.DefineSetter:
+                case JsOpcode.RequireCoercible:
+                case JsOpcode.ThrowImmutable:
+                case JsOpcode.DeclareGlobalLet:
+                case JsOpcode.DeclareGlobalConst:
+                case JsOpcode.InitialiseGlobalLexical:
+                case JsOpcode.DeleteGlobalBinding:
                     if (operand >= state.Constants!.Length)
                     {
                         return Invalid(
@@ -1289,11 +2414,97 @@ internal sealed class JsVerifier
                     // A NAME OPERAND MUST NAME A NAME. Reading a Number constant as a property key
                     // would work by accident here and be a type confusion the first time somebody
                     // changed how a key is stored, so it is refused where it is representable.
-                    return state.Names![operand].Length != 0 || IsEmptyStringConstant(operand)
+                    return NamesAName(operand)
                         ? Ok
                         : Invalid(
                             VmReason.SemanticValidationFailed,
                             JavaScriptDiagnosticCode.ConstantIndexOutOfRange,
+                            (ulong)offset);
+
+                // A PRIVATE NAME'S CONSTANT IS ITS DESCRIPTION AND NOTHING READS IT AS A KEY, but it
+                // is checked as a name anyway: a Number constant there would be a description no
+                // diagnostic could print, and the check costs one comparison at verification time
+                // rather than a surprise at the first `TypeError` a private access reports.
+                case JsOpcode.NewPrivateName:
+                    if (operand >= state.Constants!.Length)
+                    {
+                        return Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.ConstantIndexOutOfRange,
+                            (ulong)offset);
+                    }
+
+                    return NamesAName(operand)
+                        ? Ok
+                        : Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.ConstantIndexOutOfRange,
+                            (ulong)offset);
+
+                // AN IMPORT READ IN AN ARTIFACT WITH NO IMPORTS IS REFUSED BY THE SAME CHECK.
+                // The table is empty there, so every operand is out of range and the instruction
+                // is unreachable without a further rule about which units may contain it.
+                case JsOpcode.LoadImport:
+                    return operand < state.ImportCount
+                        ? Ok
+                        : Invalid(
+                            VmReason.InconsistentStructure,
+                            JavaScriptDiagnosticCode.MalformedModuleRow,
+                            (ulong)offset);
+
+                // A DYNAMIC IMPORT NAMES THE DYNAMIC SURFACE, AND ONLY THAT ONE. Its specifier is a
+                // value, so whether it names a module this artifact carries is not decidable here;
+                // a call that finds one is answered from the artifact and a call that does not puts
+                // the specifier to the mediator, which is the door `eval` goes through. So the
+                // instruction is checked against the surface that door belongs to. The MODULE
+                // surface is declared by carrying records and a script that writes `import()`
+                // carries none - checking this instruction against it would refuse a program the
+                // composition admits. A composition that declined the dynamic surface never reaches
+                // this code: its artifact was refused where the surfaces were read, with
+                // SurfaceOutsideComposition. What is left for here is an artifact that reached the
+                // instruction without declaring it, which is a program buying a host round trip
+                // with an opcode instead of with a declaration.
+                case JsOpcode.ImportCall:
+                    if (!state.DeclaresDynamic())
+                    {
+                        return Invalid(
+                            VmReason.UnknownFeature,
+                            JavaScriptDiagnosticCode.ImportCallOutsideManifest,
+                            (ulong)offset);
+                    }
+
+                    if (operand >= state.Constants!.Length)
+                    {
+                        return Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.ConstantIndexOutOfRange,
+                            (ulong)offset);
+                    }
+
+                    return NamesAName(operand)
+                        ? Ok
+                        : Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.ConstantIndexOutOfRange,
+                            (ulong)offset);
+
+                // AND `import.meta` NAMES ONE, because it is a module's own metadata and a script
+                // has none. The operand indexes the module records rather than the constants, so
+                // an artifact with no records has no valid operand for it at all.
+                case JsOpcode.ImportMeta:
+                    if (!state.DeclaresModules())
+                    {
+                        return Invalid(
+                            VmReason.UnknownFeature,
+                            JavaScriptDiagnosticCode.ImportCallOutsideManifest,
+                            (ulong)offset);
+                    }
+
+                    return state.ModuleRows is not null && operand < state.ModuleRows.Length
+                        ? Ok
+                        : Invalid(
+                            VmReason.InconsistentStructure,
+                            JavaScriptDiagnosticCode.MalformedModuleRow,
                             (ulong)offset);
 
                 case JsOpcode.Closure:
@@ -1302,6 +2513,80 @@ internal sealed class JsVerifier
                         : Invalid(
                             VmReason.InconsistentStructure,
                             JavaScriptDiagnosticCode.FunctionIndexOutOfRange,
+                            (ulong)offset);
+
+                // ONLY A GENERATOR BODY MAY SUSPEND. The executor allocates the frame a suspension
+                // saves itself into from the unit's flag, before a single instruction runs, so an
+                // artifact that yields anywhere else is refused here rather than met by a null
+                // frame in the middle of the dispatch loop.
+                case JsOpcode.Yield:
+                    return (unit.Flags & JsFormat.FunctionFlags.Generator) != 0
+                        ? Ok
+                        : Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.YieldOutsideGenerator,
+                            (ulong)offset);
+
+                // AND ONLY A GENERATOR BODY MAY BE ENTERED IN TWO PIECES. The seam is checked
+                // against the same flag as `Yield` and carries the same diagnostic, because it is
+                // the same fact about the executor: the frame a call leaves suspended at this
+                // instruction is the heap frame the generator arm allocated, and a unit without the
+                // bit is entered on the native stack by a call that has nowhere to leave one. In a
+                // unit that HAS the bit and does not bind its own parameters the instruction is
+                // reachable and harmless - the executor never runs the prologue phase there and
+                // walks straight through it - so the flag it is refused outside of is the only
+                // flag it is checked against.
+                case JsOpcode.EnterBody:
+                    return (unit.Flags & JsFormat.FunctionFlags.Generator) != 0
+                        ? Ok
+                        : Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.YieldOutsideGenerator,
+                            (ulong)offset);
+
+                // A DELEGATION IS CHECKED AGAINST THE GENERATOR FLAG AND NOTHING ELSE, exactly as
+                // `Yield` is. The executor picks between two delegation loops on the ASYNC flag -
+                // the synchronous one runs between two yields inside one entry into the dispatch
+                // loop, the asynchronous one awaits every inner step and re-enters this instruction
+                // to continue - and both are driven by a frame this flag already guarantees.
+                case JsOpcode.YieldDelegate:
+                    return (unit.Flags & JsFormat.FunctionFlags.Generator) != 0
+                        ? Ok
+                        : Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.YieldOutsideGenerator,
+                            (ulong)offset);
+
+                // THE `for await` HEAD IS CHECKED AGAINST THE FLAG ITS OWN `Await` IS CHECKED
+                // AGAINST. Four of the five instructions would run perfectly well in an ordinary
+                // function - each is a call on an iterator - and the answer would be a promise
+                // nobody ever resolved rather than an error anybody could diagnose. Refusing the
+                // whole sequence here is what makes "a `for await` head belongs to a body that may
+                // await" a property of the format rather than of the lowering that emits one.
+                case JsOpcode.IterateStartAsync:
+                case JsOpcode.IterateNextAsync:
+                case JsOpcode.IterateAwaitStep:
+                case JsOpcode.IterateCloseAsync:
+                case JsOpcode.IterateCloseCheck:
+                    return (unit.Flags & JsFormat.FunctionFlags.Async) != 0
+                        ? Ok
+                        : Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.AsyncIterationOutsideAsync,
+                            (ulong)offset);
+
+                // AND ONLY AN ASYNC BODY MAY AWAIT, checked against the OTHER flag. Two bits and
+                // two codes rather than one predicate over "may suspend", because the frame an
+                // await suspends into is resumed by the job queue and the frame a yield suspends
+                // into is resumed by the guest's own `next` - so a unit with the wrong bit would
+                // be handed to a driver that has no way to reach it again, and an author told the
+                // wrong bit is missing looks in the wrong place.
+                case JsOpcode.Await:
+                    return (unit.Flags & JsFormat.FunctionFlags.Async) != 0
+                        ? Ok
+                        : Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.AwaitOutsideAsync,
                             (ulong)offset);
 
                 case JsOpcode.PushScope:
@@ -1321,6 +2606,60 @@ internal sealed class JsVerifier
                             JavaScriptDiagnosticCode.OperandStackOverflow,
                             (ulong)offset);
 
+                // AN OPERAND BIT THIS VERSION DOES NOT DEFINE IS AN UNKNOWN FEATURE, and it is
+                // answered with the unknown-opcode reason for that reason: the byte names an
+                // instruction this reader knows and asks it for behaviour this reader does not
+                // have. A `NewClass` whose flags carried an undefined bit would also have a stack
+                // effect nothing has agreed on, since the defined bit is what decides it.
+                case JsOpcode.NewClass:
+                    return operand <= JsOpcodes.ClassIsDerived
+                        ? Ok
+                        : Invalid(
+                            VmReason.UnknownFeature,
+                            JavaScriptDiagnosticCode.UnknownOpcode,
+                            (ulong)offset);
+
+                // A CLASS ELEMENT'S FLAGS ARE A SET WITH RULES BETWEEN ITS MEMBERS, and the rules
+                // are checked rather than resolved. Each of the three pairs below names a bit
+                // combination the executor has no behaviour for, and letting one through would mean
+                // choosing an arm at run time for an encoding nothing agreed on: a static block
+                // that lands on an instance has no `this` to run against; a getter that is also a
+                // setter is one function asked to be two; and a public element reaching this
+                // instruction at all is one `DefineMethod` should have defined, since only a
+                // private element and a field are recorded rather than defined.
+                case JsOpcode.DefineClassElement:
+                {
+                    var block = (operand & JsOpcodes.ElementIsBlock) != 0;
+                    var accessor = operand & (JsOpcodes.ElementIsGetter | JsOpcodes.ElementIsSetter);
+                    var method = (operand & JsOpcodes.ElementIsMethod) != 0;
+                    var isPrivate = (operand & JsOpcodes.ElementIsPrivate) != 0;
+
+                    var consistent = operand <= JsOpcodes.ElementBits &&
+                        accessor != (JsOpcodes.ElementIsGetter | JsOpcodes.ElementIsSetter) &&
+                        (!block || operand == (JsOpcodes.ElementIsBlock | JsOpcodes.ElementIsStatic)) &&
+                        (accessor == 0 || (method && isPrivate)) &&
+                        (!method || isPrivate);
+
+                    return consistent
+                        ? Ok
+                        : Invalid(
+                            VmReason.InconsistentStructure,
+                            JavaScriptDiagnosticCode.ClassElementFlagsInconsistent,
+                            (ulong)offset);
+                }
+
+                // A member is a getter, or a setter, or neither - never both. Resolving the pair
+                // by precedence would give one encoding two readings.
+                case JsOpcode.DefineMethod:
+                    return operand <= JsOpcodes.MemberBits &&
+                        (operand & (JsOpcodes.MemberIsGetter | JsOpcodes.MemberIsSetter)) !=
+                            (JsOpcodes.MemberIsGetter | JsOpcodes.MemberIsSetter)
+                        ? Ok
+                        : Invalid(
+                            VmReason.UnknownFeature,
+                            JavaScriptDiagnosticCode.UnknownOpcode,
+                            (ulong)offset);
+
                 // A CALL'S ARGUMENT COUNT NEEDS NO CHECK, and saying so is better than a check
                 // that cannot fail: the operand is one byte and the format's ceiling is 255, so
                 // every encodable count is admissible. A branch here would be a row in the
@@ -1338,11 +2677,40 @@ internal sealed class JsVerifier
                             JavaScriptDiagnosticCode.ScopeDepthOutOfRange,
                             (ulong)offset);
 
+                // WHAT IS CHECKABLE HERE IS THE ENCODING AND NOT THE RESOLUTION. The low half must
+                // name a name, exactly as every other name-carrying instruction's operand must, so
+                // an artifact asking this instruction to search for a Number constant is refused
+                // where it is representable. The high half needs no check, for the reason a call's
+                // argument count needs none: it is one byte and the scope-depth ceiling is 255, so
+                // every encodable bound is admissible.
+                //
+                // What this pass CANNOT check is the bound's CORRECTNESS - whether it stops at the
+                // record the language's own scope rules stop at - because that is a fact about the
+                // source the lowering read and not about the bytes. A bound that is too small
+                // resolves fewer names dynamically and falls through to the static address, which is
+                // the safe direction; a bound that is too large lets an outer `with` shadow a
+                // binding, which is a wrong ANSWER and never a reachable slot, because the search
+                // reads object records and a declarative record has no names in it to match.
+                case JsOpcode.ResolveName:
+                    return NamesAName(operand & 0xFFFF)
+                        ? Ok
+                        : Invalid(
+                            VmReason.SemanticValidationFailed,
+                            JavaScriptDiagnosticCode.ConstantIndexOutOfRange,
+                            (ulong)offset);
+
                 default:
                     _ = unit;
                     return Ok;
             }
         }
+
+        /// <summary>Whether constant <paramref name="operand"/> exists and is a name.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0AB6AF
+        // Broiler-Human:        PENDING
+        private bool NamesAName(uint operand) =>
+            operand < state.Constants!.Length &&
+            (state.Names![operand].Length != 0 || IsEmptyStringConstant(operand));
 
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=3676ED
         // Broiler-Human:        PENDING

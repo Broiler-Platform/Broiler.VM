@@ -119,6 +119,20 @@ internal static class LanguageErrors
         SliceSourceDiagnosticCode.ReservedWordAsBinding => RefusalClass.EarlyError,
         SliceSourceDiagnosticCode.LegacyOctalInStrictCode => RefusalClass.EarlyError,
 
+        // ---- The module goal's early errors, which are early errors of a MODULE. --------------
+        //
+        // Each is a rule the specification writes as an early error of a production only the
+        // Module goal has, and each is scorable for the same reason the rules above are: a
+        // conformance file asserting a parse-phase SyntaxError over one of these shapes is
+        // asserting exactly what this front end answers. `ModuleDeclarationOutsideModuleGoal` is
+        // the one to read twice - a script containing `import` is a program every engine rejects,
+        // and it was refused as a construct outside the manifest until the module goal existed,
+        // which scored `unsupported` and declined a test this profile can answer.
+        SliceSourceDiagnosticCode.ModuleDeclarationOutsideModuleGoal => RefusalClass.EarlyError,
+        SliceSourceDiagnosticCode.DuplicateExportName => RefusalClass.EarlyError,
+        SliceSourceDiagnosticCode.ExportNameNotDeclared => RefusalClass.EarlyError,
+        SliceSourceDiagnosticCode.ImportMetaOutsideModuleGoal => RefusalClass.EarlyError,
+
         // ---- The manifest, which is not the language. -----------------------------------------
         SliceSourceDiagnosticCode.ConstructOutsideManifest => RefusalClass.OutsideManifest,
 
@@ -136,6 +150,15 @@ internal static class LanguageErrors
         // change and is given early - which the code's own declaration records as a deliberate
         // divergence, and names the manifest growth that would end it.
         SliceSourceDiagnosticCode.UnresolvableIdentifier => RefusalClass.Divergence,
+
+        // AN UNSUPPORTED IMPORT ATTRIBUTE IS A FACT ABOUT LOADING AND NOT ABOUT PARSING, which the
+        // code's own declaration says in those words: the clause parses, the grammar is ordinary
+        // and this front end reads it, and what no composition of this profile can do is load a
+        // module of a type it has no loader for. The language fails that load rather than the
+        // parse, so this refusal is the right kind of answer at the wrong time - and a negative
+        // test declaring a parse-phase SyntaxError must not be satisfied by it. The DYNAMIC form
+        // refuses the same attribute where the language does, by rejecting the promise.
+        SliceSourceDiagnosticCode.UnsupportedImportAttribute => RefusalClass.Divergence,
 
         // ---- Ceilings the specification permits an implementation to have. --------------------
         SliceSourceDiagnosticCode.NestingTooDeep => RefusalClass.ImplementationLimit,
@@ -198,6 +221,11 @@ internal static class LanguageErrors
             SliceSourceDiagnosticCode.TooManyLocals,
             SliceSourceDiagnosticCode.TooManyConstants,
             SliceSourceDiagnosticCode.OperandStackTooDeep,
+            SliceSourceDiagnosticCode.ModuleDeclarationOutsideModuleGoal,
+            SliceSourceDiagnosticCode.DuplicateExportName,
+            SliceSourceDiagnosticCode.ExportNameNotDeclared,
+            SliceSourceDiagnosticCode.ImportMetaOutsideModuleGoal,
+            SliceSourceDiagnosticCode.UnsupportedImportAttribute,
         };
 
     /// <summary>

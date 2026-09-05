@@ -83,23 +83,37 @@ principles.
 
 ### 3.1 What each workload meets today
 
-| Workload | What it meets | What would have to exist | What owns it now |
-|---|---|---|---|
-| Octane `mandreel` | A reference error naming a typed array constructor | The binary surface | **Nothing** — JSW-2 |
-| Octane `gbemu` | The benchmark's own report that typed arrays are unsupported | The binary surface | **Nothing** — JSW-2 |
-| Octane `zlib` | A reference error naming `eval` | The dynamic surface | `broiler.javascript.dynamic`, JS-8 — JSW-3 |
-| Octane `code-load` | A reference error naming `eval` | The dynamic surface | `broiler.javascript.dynamic`, JS-8 — JSW-3 |
-| Octane `regexp` | It runs, and the benchmark's own checksum disagrees with what it produced | Regular expressions over the from-scratch matcher | `broiler.javascript.regexp`, JS-6 — JSW-4 |
-| Octane `pdfjs` | **The verifier refuses an artifact this host produced** | Nothing new; this is a defect | **Nothing** — JSW-1 |
-| Octane `typescript` | A type error reading a property of `undefined`, after running for a while | Nothing new; this is a defect | **Nothing** — JSW-1 |
-| test262, asynchronous cases | They cannot complete, because a promise never settles | A job queue | JS-7 — JSW-7 |
-| test262, module cases | They are not run as modules by this host | The module goal | `broiler.javascript.modules`, JS-7 — JSW-8 |
-| test262, the suite as a whole | Only chosen subtrees have run | The runs themselves, per manifest | Roadmap [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s rule — JSW-10 |
+**This table has two columns of history and one of the present.** It was written when every row
+below was a gap; the stages of section 5 have since been built, and what each row *met* then and
+*meets now* are both recorded, because a plan that quietly replaced the first with the second would
+be a plan a reader could not check *(corrected: JSC-87)*.
+
+| Workload | What it met when this was written | What it meets now |
+|---|---|---|
+| Octane `mandreel` | A reference error naming a typed array constructor | It reports a score |
+| Octane `gbemu` | The benchmark's own report that typed arrays are unsupported | It reports a score |
+| Octane `zlib` | A reference error naming `eval` | It reports a score, past a **host** absence the realm answers by refusing rather than by being absent — `read`, which no manifest owns and which core contract version 1 has no shape for *(JSC-84)* — and under a memory allowance the caller states *(JSC-90)* |
+| Octane `code-load` | A reference error naming `eval` | It reports a score |
+| Octane `regexp` | It runs, and the benchmark's own checksum disagrees with what it produced | Its own checksum agrees |
+| Octane `pdfjs` | **The verifier refuses an artifact this host produced** | It reports a score *(JSC-81)* |
+| Octane `typescript` | A type error reading a property of `undefined`, after running for a while | It reports a score *(JSC-82)* |
+| test262, asynchronous cases | They cannot complete, because a promise never settles | A promise settles, at a drain point the host states and asks for |
+| test262, module cases | They are not run as modules by this host | Unchanged: there is no module goal |
+| test262, the suite as a whole | Only chosen subtrees have run | Unchanged: roadmap [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s rule is still unmet, and JSW-10 still owns it |
 
 **Every row above is a behaviour, and every one of them is reproducible from the commands the
-retained bundle's procedure section already carries.** Two rows are defects rather than absences and
+retained bundle's procedure section already carries.** Two rows were defects rather than absences and
 section 3.4 separates them out, because a plan that schedules a repair as though it were a feature
 has mis-stated both.
+
+**One row changed kind before it closed, and that is the finding worth keeping.** `zlib` stopped
+meeting a language absence and met a **shell** the benchmark assumes and this host does not have.
+Nothing in the seven-identity allocation of section 6 would ever have caught it, because it is not a
+language surface at all — and asking for it is the first amendment this profile has an observed
+reason to put to the core. The row closed once the realm answered that probe by REFUSING rather than
+by being absent, and once the memory allowance stopped being a figure only a rebuild could move: the
+benchmark printed its score and then met a ceiling, so the process exited non-zero on a run that had
+produced exactly what section 1 asks for *(JSC-90)*.
 
 ### 3.2 The surface that is absent from the realm
 
@@ -108,10 +122,17 @@ hides no other — the wide manifest's realm answers to `Object`, `Function`, `A
 `Number`, `Boolean`, `Math`, `JSON`, `Date`, `RegExp`, `Error` and `globalThis`, plus the host's
 own `print`.
 
-**Absent, and present in the comparison engine:** `Symbol`, `BigInt`, `Proxy`, `Reflect`,
-`Promise`, `WeakRef`, `FinalizationRegistry`, `Map`, `Set`, `WeakMap`, `WeakSet`, `ArrayBuffer`,
-`SharedArrayBuffer`, `DataView`, every typed array constructor, `Atomics`, `Intl`, `Temporal`, and
-`eval`.
+**Absent when this was written, and present in the comparison engine:** `Symbol`, `BigInt`,
+`Proxy`, `Reflect`, `Promise`, `WeakRef`, `FinalizationRegistry`, `Map`, `Set`, `WeakMap`,
+`WeakSet`, `ArrayBuffer`, `SharedArrayBuffer`, `DataView`, every typed array constructor,
+`Atomics`, `Intl`, `Temporal`, and `eval`.
+
+**Absent still, and the list is shorter than it was** *(corrected: JSC-87)*. `Proxy`, `Reflect`,
+`BigInt`, `Intl` and `Temporal` are absent; `SharedArrayBuffer` and `Atomics` are absent
+**deliberately**, excluded by name from the binary identity for the reason section 4 gives. The
+rest — `Symbol`, `Promise`, the keyed collections, the weak references, `ArrayBuffer`, `DataView`,
+the typed array constructors and `eval` — are present, three of them behind an optional surface a
+composition may decline.
 
 **That set is wider than the retained bundle's exclusion list, and the difference is the reason
 this section exists rather than pointing.** Bundle [JS-4-001](evidence/js-4-001/README.md) names
@@ -138,6 +159,16 @@ something was relying on. So each such stage carries the same clause: the family
 *refused by name* to *admitted and exercised*, and no family moves to *refused as an unexpected
 token* on the way.
 
+**And admitting a family CREATES positions the audit has never seen.** That is the clause a reader
+is most likely to skip and the one that has cost most. A class field initialiser and a class static
+block did not exist as syntactic positions until the class body was admitted; an async generator
+written in either was refused for the enclosing construct and never reached on its own, so a family
+that answered correctly everywhere the audit looked could answer with a surprise token in a position
+the audit had no row for. The audit is therefore re-run over a MATRIX rather than a list, in both
+directions — every position a refused family can be written in, and every position an admitted one
+can — and it is retained as `eng/audit-refusals.py` so that a later stage runs the same question
+rather than a remembered version of it.
+
 ### 3.4 The two failures that are defects rather than absences
 
 **`pdfjs` is refused by this component's own verifier, on bytes this component's own lowering
@@ -148,12 +179,30 @@ admit, or the format admits something the verifier's semantic stage then rejects
 two it is, is the first question JSW-1 answers**, and the answer decides whether the repair belongs
 to the lowering or to the format's specification.
 
+**The answer was neither, and the fork was drawn one level too high** *(corrected:
+[JSC-81](roadmap.corrections.md#jsc-81))*. The lowering emitted only instructions the format admits
+and the verifier decodes, and the verifier was right to refuse the composition of them: an array
+literal that is not dense-and-small left **nothing** on the operand stack where its caller expected
+one value. A lowering can be internally inconsistent while emitting nothing either named component
+could object to on its own, and a stage that had only looked for a disagreement between the two
+would not have found it.
+
 **`typescript` fails with a type error against a value the program did not expect to be
 `undefined`.** That is a semantic defect somewhere inside the admitted surface, found the way the
 three defects bundle JS-4-001 records were found — by a program longer and stranger than anything
 anybody in this repository would write. It is exactly the outcome section 3 of that bundle says the
 workloads exist to produce, and recording it as a defect rather than repairing it quietly is the
 same discipline.
+
+**It was the `arguments` binding, and the program that found it is one nobody here would have
+written** *(corrected: [JSC-82](roadmap.corrections.md#jsc-82))*. A formal parameter named
+`arguments` had its value destroyed on entry, because the compile-time scope answers a repeat
+declaration with the slot it already has and the arguments object was written into the parameter's
+own slot. The Octane TypeScript compiler has
+`function FuncDecl(name, bod, isConstructor, arguments, …)` and then reads `this.arguments`. Asking
+what else the same walk answered wrongly found a second defect the workload never reached
+*(corrected: [JSC-83](roadmap.corrections.md#jsc-83))*, which is the habit rather than the benchmark
+producing the finding.
 
 ---
 
@@ -257,6 +306,22 @@ the act that would turn a stage into a milestone with a ledger row.
   makes it reachable; the benchmark's own checksum agrees; and the dialect differences that
   remain — if any survive the matcher — are published as exclusions with a deterministic failure
   each, rather than discovered by the next workload.
+- **What the stage did, and the one clause of its own gate it did not take.** The matcher is this
+  profile's, written here rather than translated onto the platform's engine, and it lives in the
+  format assembly because the front end needs it too: an invalid pattern in a literal is an early
+  error, so the same grammar has to be readable by the thing that compiles a literal and by the
+  thing that runs one. **The benchmark's checksum agrees**, which is the sentence this stage was
+  written to make true, and the closure holds no call site into the platform's engine — asserted
+  from 2026-09-05 by rule **N18**, watched failing against an injected import and passing after the
+  revert, because the state of a tree that nothing checks is a state one edit can undo.
+  **`broiler.javascript.regexp` is not declared**, and that clause is left unmet deliberately
+  rather than quietly: the surface is inside `broiler.javascript.wide`, moving it would re-scope a
+  manifest every retained artifact names, and minting an identity nothing declares would be a
+  manifest with no artifacts rather than a boundary. That is a decision for a person to take, and
+  [JSC-167](roadmap.corrections.md#jsc-167) records it as owed rather than done. **The dialect
+  differences that remain are the Unicode data's**, which the ledger's
+  [section 3](roadmap.status.md#3-open-external-dependencies) still carries as an open external
+  dependency with a holder.
 
 ### JSW-5 — The core language surface still refused by name
 
@@ -272,6 +337,40 @@ the act that would turn a stage into a milestone with a ledger row.
   for the family, since that audit is what caught a refusal that produced the right outcome for the
   wrong reason. `unsupported` shrinks for the manifest claiming the family, with the subtree runs
   that show it retained whole, failures included.
+- **What the stage has admitted, family by family.** The class DECLARATION and EXPRESSION, `super`
+  and `new.target`; the generator family; the `async` family and `await`; `with`; and, on
+  2026-09-05, the whole of the class BODY — a class field with its initialiser, a class static
+  block, a private name in every form the grammar gives it (a field, a method, a getter, a setter,
+  each of those `static` as well, `this.#x`, `o.#x`, `o?.#x`, `#x in o`, and a private access as a
+  destructuring target), and a generator member of a class body. Each is exercised by fixtures under
+  `src/tests/cli` — `runs/` for the ones that produce a value and `threw/` for the three whose point
+  is an uncaught throw — and by cases in the retained differential probe, whose answers were taken
+  from the comparison engine before they were written down.
+- **And, on 2026-09-05, the ASYNC GENERATOR and `for await`, which the paragraph this replaces left
+  refused.** `async function*` as a declaration and as an expression, an async generator method of an
+  object literal and of a class body — `static`, private, computed and Symbol-keyed — `await` and
+  `yield` in one body without either being mistaken for the other, `yield*` over an async or a
+  synchronous inner iterator, and `for await` in an async function, an async method, an async arrow
+  and an async generator. **An async generator is not the two families it is spelled from**, and what
+  it needed beyond them is what this stage built: a REQUEST QUEUE on the generator object, so that a
+  second `next` before the first settles is answered in order rather than re-entering a running
+  frame; `next`, `return` and `throw` each answering a promise, including when they are errors;
+  `%AsyncGeneratorFunction%`, `%AsyncGeneratorFunction.prototype%`, `%AsyncGeneratorPrototype%` and
+  `%AsyncIteratorPrototype%`, with `Symbol.asyncIterator` reaching them; and
+  `%AsyncFromSyncIteratorPrototype%`, which is what makes `for await` over an Array of promises
+  iterate what they resolve to. The suspension the two families share is told apart by the FRAME —
+  `JsFrame.Suspension` is written by the instruction that left the dispatch loop — because an async
+  generator's body is the first that can suspend two ways into one frame, and the two mean opposite
+  things to the driver that receives the value.
+- **What the family cost the call-depth measurement, which is the first time it cost anything.** Five
+  dispatch arms took the executor's own frame from 4,073 bytes to 4,551 and the capacity on the
+  declared stack from 16,478 calls to 14,737 — 1.80 times the ceiling a host may be granted, below
+  the factor of two [JSC-126](roadmap.corrections.md#jsc-126) had already called the narrowest it had
+  been. The guest stack was raised to ninety-six megabytes and re-measured at 22,122 calls, which is
+  2.70 times that ceiling; [JSC-139](roadmap.corrections.md#jsc-139) records both figures and why the
+  stack moved rather than the ceiling.
+- **The decorator stays refused as well**, and it is not this stage's to admit: it is a proposal
+  rather than a production of the pinned edition, and the tokenizer refuses it by name at the `@`.
 
 ### JSW-6 — The core library still absent from the realm
 
@@ -338,6 +437,36 @@ the act that would turn a stage into a milestone with a ledger row.
   result has an identity; and a lane that runs both workloads on every claimed runtime identifier,
   since a workload that has only ever run on one machine under a JIT is what let a failing Native
   AOT run reach two retained bundles before anything noticed.
+- **What the stage did.** The Octane checkout was retrieved, hashed and archived on 2026-09-04 the
+  way [section 14](roadmap.md#14-the-conformance-oracle)'s pinning already works — the archive
+  `git archive` produced at the pinned commit, a digest over its own members, and the upstream
+  licence retained beside it — and the obligation that archive triggers was discharged a day later,
+  when `THIRD_PARTY_NOTICES.md` gained its row and rule N13 gained the directory that makes the
+  row's own mechanism sentence true *([JSC-145](roadmap.corrections.md#jsc-145))*.
+- **Both workloads run out of the published image on every claimed runtime identifier**, in the
+  publish job of the lane, beside the component's own suites. Each runs over a selection, and each
+  selection is stated in the step rather than left to be inferred: what changes with the runtime
+  identifier is whether the published image can execute a corpus, not what the engine answers about
+  it. The conformance selection is four subtrees on every cell and the whole suite once on one
+  Linux runner, because the archive is 232 MB extracted. The Octane selection is the caller's —
+  six benchmarks on the quick lane's two cells, all fifteen on the full lane's six — and that
+  asymmetry is a **measurement rather than a plan**: the step's first run scored fifteen benchmarks
+  in 23m28s on `ubuntu-latest`, on a job whose every other step totals 78 to 208 seconds
+  *([JSC-180](roadmap.corrections.md#jsc-180))*. The per-benchmark allowance is the profile's own
+  `WallClock` maximum rather than a figure the lane chose, because an hour is the most any
+  composition of this profile may be granted — so a benchmark that meets it has met **this
+  engine's ceiling**, which is a finding rather than a bound to move. **The exclusions are that no
+  identifier but the Linux one has scored the whole conformance suite, that no identifier scores
+  the whole Octane set on the push path, and that `zlib` has no known duration on any machine here
+  — it meets that ceiling on the one it was measured on, and whether it fits inside the hour on a
+  runner is what the first full lane answers.**
+- **The whole-suite runs are retained per manifest**, under
+  [section 4's evidence contract](roadmap.status.md#4-required-evidence-bundle), with the harness's
+  five verdicts reported rather than four — a variant that spent an allowance is neither a pass, a
+  failure, a construct outside the manifest nor a skip, and folding it into any of those would hide
+  the one outcome a reader can act on by raising a number. **Every family the `unsupported` column
+  names is named in the bundle**, and for `broiler.javascript.wide` there are none to name: the
+  column is empty, which is what section 1 asked for and the form it asked for it in.
 
 ---
 
