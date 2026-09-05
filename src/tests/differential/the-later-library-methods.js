@@ -289,3 +289,23 @@ p(function(){ var a = [1,2,3]; Object.defineProperty(a, "1", {configurable: fals
 p(function(){ var a = [1]; try { Object.defineProperty(a, "length", {enumerable: true}); return "no-throw"; } catch(e){ return e.name; } });
 p(function(){ var a = [1]; try { Object.defineProperty(a, "length", {configurable: true}); return "no-throw"; } catch(e){ return e.name; } });
 p(function(){ var a = [1]; try { Object.defineProperty(a, "length", {get: function(){ return 1; }}); return "no-throw"; } catch(e){ return e.name; } });
+
+// --- the two restricted properties, and the arithmetic the language added after the comparison
+// engine was built. APPENDED for the reason the numbering asks.
+p(function(){ try { Function.prototype.caller; return "no-throw"; } catch(e){ return e.name; } });
+p(function(){ try { Function.prototype.arguments; return "no-throw"; } catch(e){ return e.name; } });
+p(function(){ "use strict"; function f(){} try { f.caller; return "no-throw"; } catch(e){ return e.name; } });
+p(function(){ var d = Object.getOwnPropertyDescriptor(Function.prototype, "caller"); return (typeof d.get) + "," + String(d.get === d.set) + "," + d.configurable + "," + d.enumerable; });
+p(function(){ var d1 = Object.getOwnPropertyDescriptor(Function.prototype, "caller"); var d2 = Object.getOwnPropertyDescriptor(Function.prototype, "arguments"); return String(d1.get === d2.get); });
+p(function(){ return Math.f16round(1.337) + "," + Math.f16round(0) + "," + String(Math.f16round(NaN)); });
+p(function(){ return Math.f16round(65504) + "," + String(Math.f16round(65536)); });
+p(function(){ return typeof Math.sumPrecise + "," + Math.sumPrecise.length; });
+p(function(){ return String(Math.sumPrecise([0.1, 0.2])); });
+p(function(){ return String(Math.sumPrecise([])) + "," + String(1/Math.sumPrecise([])); });
+p(function(){ return String(1/Math.sumPrecise([-0])) + "," + String(1/Math.sumPrecise([-0, 0])); });
+p(function(){ return String(Math.sumPrecise([1e308, 1e308, -1e308])); });
+p(function(){ return String(Math.sumPrecise([NaN, 1])) + "," + String(Math.sumPrecise([Infinity, -Infinity])); });
+p(function(){ try { Math.sumPrecise(["a"]); return "no-throw"; } catch(e){ return e.name; } });
+p(function(){ return String(Math.sumPrecise([1e-16, 1, 1e16])); });
+p(function(){ return Object.prototype.toString.call(Math) + Math[Symbol.toStringTag]; });
+p(function(){ return String(Math.sumPrecise([-5.630637621603525e+255, 9.565271205476345e+307, 2.9937604643020797e+292])); });

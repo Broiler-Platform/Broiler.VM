@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   15
-// Annotated:        15/15
+// Relevant units:   18
+// Annotated:        18/18
 // Exempt:           1
-// Human-reviewed:   0/15
+// Human-reviewed:   0/18
 // IP risk:          Low
-// Security risk:    Low
+// Security risk:    Medium
 // Criteria:         0/0
-// Resource impact:  1/10 max
-// Unverified:       15
+// Resource impact:  3/10 max
+// Unverified:       18
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -55,11 +55,17 @@ internal sealed partial class JsRealm
     private ulong mathRandomState = 0x2545F4914F6CDD1DUL;
 
     /// <summary>Builds <c>Math</c> and defines it on the global object.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=F8BFC1
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Low; Resources=1; Fingerprint=BC62C1
     // Broiler-Human:        PENDING
     private void SetupMath()
     {
         var math = new JsObject(ObjectPrototype, "Math");
+
+        // THE TAG A NAMESPACE OBJECT CARRIES, which is what makes `Object.prototype.toString.call(Math)`
+        // answer `[object Math]` rather than `[object Object]`.
+        math.SetOwnSymbol(
+            ToStringTagSymbol,
+            JsProperty.Data(JsValue.String("Math"), JsPropertyAttributes.Configurable));
 
         // Writable and configurable, NOT frozen: see the type remarks.
         GlobalObject.DefineBuiltIn("Math", JsValue.Object(math));
@@ -137,6 +143,20 @@ internal sealed partial class JsRealm
 
         Method(math, "fround", 1, static (engine, _, arguments) =>
             JsValue.Number((double)(float)MathNumberAt(engine, arguments, 0)));
+
+        // HALF PRECISION, WHICH THE LANGUAGE ADDED FOR THE SAME REASON IT ADDED `fround`: a program
+        // that stores numbers in a Float16Array wants to know what a value will become before it
+        // stores it. The platform has the type, so the rounding is its own rather than a
+        // reimplementation of the format's rules.
+        Method(math, "f16round", 1, static (engine, _, arguments) =>
+            JsValue.Number((double)(System.Half)MathNumberAt(engine, arguments, 0)));
+
+        // AN EXACTLY ROUNDED SUM, which is not what a loop of additions gives: adding left to right
+        // rounds at every step and the errors accumulate, so `0.1 + 0.2 + 0.3` and
+        // `0.3 + 0.2 + 0.1` differ. This keeps a list of non-overlapping partial sums - Shewchuk's
+        // distillation - so the exact value is carried and rounded once, at the end.
+        Method(math, "sumPrecise", 1, (engine, _, arguments) =>
+            JsValue.Number(MathSumPrecise(engine, MathArgumentAt(arguments, 0))));
 
         Method(math, "hypot", 2, static (engine, _, arguments) =>
             JsValue.Number(MathHypotenuse(engine, arguments)));
@@ -530,4 +550,208 @@ internal sealed partial class JsRealm
         mathRandomState = state;
         return (state >> 11) * (1.0 / 9007199254740992.0);
     }
+    /// <summary>Reads one argument, which the caller may not have supplied.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=270320
+    // Broiler-Human:        PENDING
+    private static JsValue MathArgumentAt(JsValue[] arguments, int at) =>
+        at < arguments.Length ? arguments[at] : JsValue.Undefined;
+
+    /// <summary>The exactly rounded sum of an iterable of Numbers.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Every element must already BE a Number.</b> This is the one arithmetic method in the
+    /// namespace that does not coerce: a string in the list is a <c>TypeError</c> rather than a
+    /// number, because a list of numbers is what the method is for and coercing would hide the
+    /// element that is not one.
+    /// </para>
+    /// <para>
+    /// <b>The infinities and NaN are decided before the arithmetic.</b> Both infinities present is
+    /// NaN, either alone is itself, and a NaN anywhere wins - so the partial sums never have to
+    /// carry a value that is not finite, which they cannot do.
+    /// </para>
+    /// <para>
+    /// <b>An empty list sums to negative zero</b>, which is the identity this operation was given
+    /// so that the sign of a sum of negative zeros survives.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=EEF3AB
+    // Broiler-Human:        PENDING
+    private double MathSumPrecise(JsEngine engine, JsValue source)
+    {
+        var values = new System.Collections.Generic.List<double>();
+        var positiveInfinities = 0;
+        var negativeInfinities = 0;
+        var seenNaN = false;
+        var seenPositiveZero = false;
+        var largest = 0.0;
+
+        // ONE ELEMENT AT A TIME AND STOPPING AT THE FIRST THAT IS NOT A NUMBER, which the language
+        // asks for twice over: nothing is coerced, and the iterator is CLOSED where the walk stops -
+        // so a generator handed a bad list runs its `finally` and is asked for nothing more.
+        CollectionEach(engine, source, element =>
+        {
+            engine.Charge(1);
+
+            if (!element.IsNumber)
+            {
+                throw engine.Error("TypeError", "Math.sumPrecise: an element is not a number");
+            }
+
+            var value = element.AsNumber();
+
+            if (double.IsNaN(value))
+            {
+                seenNaN = true;
+                return;
+            }
+
+            if (double.IsInfinity(value))
+            {
+                if (value > 0)
+                {
+                    positiveInfinities++;
+                }
+                else
+                {
+                    negativeInfinities++;
+                }
+
+                return;
+            }
+
+            if (value == 0)
+            {
+                // `-0` IS THE IDENTITY OF THIS OPERATION AND `+0` IS NOT. An empty list and a list
+                // of nothing but negative zeros sum to `-0`; one `+0` anywhere makes the answer
+                // `+0`. Neither contributes to the arithmetic, so the sign is all that is kept.
+                seenPositiveZero |= !double.IsNegative(value);
+                return;
+            }
+
+            values.Add(value);
+            largest = System.Math.Max(largest, System.Math.Abs(value));
+        });
+
+        if (seenNaN)
+        {
+            return double.NaN;
+        }
+
+
+        // BOTH INFINITIES PRESENT IS NaN, which is the one case a running total would also have
+        // got right and for the wrong reason: here it is decided before any arithmetic, so the
+        // partial sums never have to hold a value they cannot represent.
+        if (positiveInfinities > 0 && negativeInfinities > 0)
+        {
+            return double.NaN;
+        }
+
+        if (positiveInfinities > 0)
+        {
+            return double.PositiveInfinity;
+        }
+
+        if (negativeInfinities > 0)
+        {
+            return double.NegativeInfinity;
+        }
+
+        if (values.Count == 0)
+        {
+            return seenPositiveZero ? 0.0 : -0.0;
+        }
+
+        // AN INTERMEDIATE SUM MAY OVERFLOW WHERE THE ANSWER DOES NOT, which is what makes this
+        // harder than a running total: `[8.99e307, 8.99e307, -1.8e308]` is about 1e292, and any
+        // order that adds the first two first passes through infinity. Scaling by a power of two is
+        // exact, so a list with a huge term in it is distilled in a scaled domain and scaled back;
+        // what that drops is terms below the scaled range, which are orders of magnitude beneath the
+        // last bit of an answer this large.
+        var scale = largest > 8.98846567431158e307 / 4 ? System.Math.ScaleB(1.0, -600) : 1.0;
+        var total = MathDistil(values, scale);
+
+        return scale == 1.0 ? total : System.Math.ScaleB(total, 600);
+    }
+
+    /// <summary>Shewchuk's distillation: a list of non-overlapping partial sums, added once.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0D6736
+    // Broiler-Human:        PENDING
+    private static double MathDistil(System.Collections.Generic.List<double> values, double scale)
+    {
+        var partials = new System.Collections.Generic.List<double>();
+
+        foreach (var element in values)
+        {
+            var carried = element * scale;
+            var kept = 0;
+
+            for (var at = 0; at < partials.Count; at++)
+            {
+                var held = partials[at];
+
+                if (System.Math.Abs(carried) < System.Math.Abs(held))
+                {
+                    (carried, held) = (held, carried);
+                }
+
+                var high = carried + held;
+                var low = held - (high - carried);
+
+                if (low != 0)
+                {
+                    partials[kept] = low;
+                    kept++;
+                }
+
+                carried = high;
+            }
+
+            partials.RemoveRange(kept, partials.Count - kept);
+            partials.Add(carried);
+        }
+
+        // THE LAST STEP IS NOT A LOOP OF ADDITIONS, and that is where exactness is won or lost.
+        // The partials are non-overlapping and increasing, so summing them from the top stops at
+        // the first addition that is inexact - and the correction below is what makes half-even
+        // rounding come out right across two of them, which is the case a plain loop gets wrong by
+        // one unit in the last place.
+        if (partials.Count == 0)
+        {
+            return 0.0;
+        }
+
+        var index = partials.Count - 1;
+        var answer = partials[index];
+        var remainder = 0.0;
+
+        while (index > 0)
+        {
+            index--;
+            var above = answer;
+            var next = partials[index];
+            answer = above + next;
+            remainder = next - (answer - above);
+
+            if (remainder != 0.0)
+            {
+                break;
+            }
+        }
+
+        if (index > 0 &&
+            ((remainder < 0.0 && partials[index - 1] < 0.0) ||
+             (remainder > 0.0 && partials[index - 1] > 0.0)))
+        {
+            var doubled = remainder * 2.0;
+            var raised = answer + doubled;
+
+            if (doubled == raised - answer)
+            {
+                answer = raised;
+            }
+        }
+
+        return answer;
+    }
+
 }

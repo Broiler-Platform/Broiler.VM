@@ -5051,3 +5051,39 @@ piece of work anybody here can do.
 
 **Authority and date.** The sweep of `test/built-ins/RegExp` on 2026-09-05 in this checkout, and the
 file counts under `test/built-ins/RegExp/property-escapes/generated`. 2026-09-05.
+
+### JSC-131
+
+**Where:** `Function.prototype`, which had no `caller` and no `arguments` at all, and `Math`, which
+was missing the two members the language added last and a `Symbol.toStringTag`.
+
+**What was assumed about the two restricted properties.** That removing them is the same as not
+having them.
+
+**What was true.** They exist **in order to refuse**. `caller` and `arguments` were how a function
+reached its caller's frame; the language took the capability away and put an accessor pair in its
+place on `Function.prototype`, both halves of which throw. A strict function reading `f.caller`
+therefore gets a `TypeError` — through inheritance, without every function carrying its own
+property. Leaving them out answers `undefined`, which is a different answer to the same question,
+and **thirty-four variants of `built-ins/Function` look at exactly that**. The subtree went from 733
+of 893 variants to 754.
+
+**`Math.sumPrecise` is the one arithmetic method here that a loop cannot implement.** Its answer is
+the exactly rounded sum, which a running total does not give: adding left to right rounds at every
+step, so `0.1 + 0.2 + 0.3` and `0.3 + 0.2 + 0.1` differ. It keeps a list of non-overlapping partial
+sums and rounds once — and **three things about it are easy to get wrong and are each worth a test
+the suite has**: an intermediate sum may overflow where the answer does not, so a list with a term
+near the top of the range is distilled in a scaled domain and scaled back; the final addition needs
+the half-even correction across two partials, without which one of the suite's cases is two units in
+the last place out; and `-0` is the identity, so an empty list and a list of nothing but negative
+zeros sum to `-0` while one `+0` anywhere makes it `+0`. Nothing is coerced — an element that is not
+a Number is a `TypeError` — and the walk stops at that element and closes the iterator.
+
+**`Math.f16round` and `Object.prototype.toString.call(Math)`** complete the namespace: the first is
+`fround`'s half-precision twin, and the second answered `[object Object]` for want of a tag.
+`built-ins/Math` went from 622 of 654 variants to 652; the two that remain need `BigInt`.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, the sweeps of
+`test/built-ins/Function` and `test/built-ins/Math` before and after, and the seventeen cases
+appended to `src/tests/differential/the-later-library-methods.js`, ten of which are declared
+divergences because the comparison engine predates the two members. 2026-09-05.

@@ -5,6 +5,16 @@
 #diverges 202 the upsert pair is ES2026 and the comparison engine predates it: this build has `Map.prototype.getOrInsert` and `getOrInsertComputed` and that engine answers `absent`, which is the one direction of divergence where the pinned suite rather than the comparison is the oracle
 #diverges 203 the upsert pair is ES2026 and the comparison engine predates it: this build has `Map.prototype.getOrInsert` and `getOrInsertComputed` and that engine answers `absent`, which is the one direction of divergence where the pinned suite rather than the comparison is the oracle
 #diverges 36 Math.cbrt is implementation-approximated and the platform's differs by one unit in the last place for a non-perfect cube
+#diverges 254 `Math.f16round` is ES2026 and the comparison engine predates it: this build has the member and that engine answers a TypeError about calling `undefined`
+#diverges 255 the same: this build has the member and that engine answers a TypeError about calling `undefined`
+#diverges 256 `Math.sumPrecise` is ES2026 and the comparison engine predates it: this build has the member and that engine answers a TypeError about calling `undefined`
+#diverges 257 the same: this build has the member and that engine answers a TypeError about calling `undefined`
+#diverges 258 the same: this build has the member and that engine answers a TypeError about calling `undefined`
+#diverges 259 the same: this build has the member and that engine answers a TypeError about calling `undefined`
+#diverges 260 the same: this build has the member and that engine answers a TypeError about calling `undefined`
+#diverges 261 the same: this build has the member and that engine answers a TypeError about calling `undefined`
+#diverges 263 the same: this build has the member and that engine answers a TypeError about calling `undefined`
+#diverges 265 the same, and this is the case that needs the exact final rounding rather than a loop of additions: this build has the member and that engine answers a TypeError about calling `undefined`
 1 1
 2 "1,2"
 3 1
@@ -253,3 +263,20 @@
 246 "TypeError"
 247 "TypeError"
 248 "TypeError"
+249 "TypeError"
+250 "TypeError"
+251 "TypeError"
+252 "function,true,true,false"
+253 "true"
+254 "1.3369140625,0,NaN"
+255 "65504,Infinity"
+256 "function,1"
+257 "0.30000000000000004"
+258 "0,-Infinity"
+259 "-Infinity,Infinity"
+260 "1e+308"
+261 "NaN,NaN"
+262 "TypeError"
+263 "10000000000000002"
+264 "[object Math]Math"
+265 "9.565271205476347e+307"
