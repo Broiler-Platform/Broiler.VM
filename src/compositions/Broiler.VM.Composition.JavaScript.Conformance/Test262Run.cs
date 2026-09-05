@@ -282,7 +282,21 @@ internal static class Test262Run
             }
             else
             {
-                scripts.Add(new JsScriptUnit("test", text, options, strict));
+                // THE TEST FILE'S OWN PATH IS THE SCRIPT'S REFERRER, and without it every one of
+                // the suite's several hundred SCRIPT variants of a dynamic import would have had a
+                // relative specifier and nothing to resolve it against. A module carries the key
+                // this harness resolved it to; a script is a text, so the harness that read the
+                // text says where it read it from.
+                scripts.Add(new JsScriptUnit(
+                    "test",
+                    text,
+                    options,
+                    strict,
+                    Path.GetFullPath(
+                        Path.Combine(
+                            suiteRoot,
+                            relativePath.Replace('/', Path.DirectorySeparatorChar)))
+                        .Replace('\\', '/')));
             }
 
             var compiled = JsCompiler.Compile(scripts, modules);

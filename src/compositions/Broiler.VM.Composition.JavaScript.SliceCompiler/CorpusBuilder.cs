@@ -1089,6 +1089,9 @@ internal static class JavaScriptDiagnosticCodes
     /// <summary>The artifact declares the module surface and carries no module records.</summary>
     internal const int ModuleSectionMissing = 1620;
 
+    /// <summary>A dynamic import instruction under an artifact that declared no surface for it.</summary>
+    internal const int ImportCallOutsideManifest = 1622;
+
     /// <summary>The artifact declares one optional surface twice.</summary>
     internal const int DuplicateSurface = 1606;
 

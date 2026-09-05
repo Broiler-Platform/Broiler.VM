@@ -107,6 +107,7 @@ wide-an-await-outside-an-async-function|8e160cada105f492d4dbab61a7b449500b3fac61
 wide-an-async-function-that-is-also-the-program-body|7f9564b887e57c33b22ccab00e9fd2c87f43f62271f07db25b2920315da0e3c2|wide|InvalidArtifact|InconsistentStructure|1612|-|-|-|-
 wide-an-async-iteration-step-outside-an-async-function|a4f3965c1bfa60fa0286add86ec7c667f113828be2d69e20928e48c2c38218e3|wide|InvalidArtifact|SemanticValidationFailed|1630|-|-|-|-
 wide-a-class-element-whose-flags-contradict|f73139f5f9f3970bc0ab9adc978a56990497ed61eac7980fc97b9078cf184e17|wide|InvalidArtifact|InconsistentStructure|1621|-|-|-|-
+wide-an-import-call-with-no-surface-declared|815bd6a86ff6b4cadf6d4893210b3691d3407f869b60b56792de65c6422bbcb1|wide|InvalidArtifact|UnknownFeature|1622|-|-|-|-
 wide-a-version-1-artifact-announced-as-version-2|4a871c79683bcd1c0192ed7cfd50d4d8a9caf59d62f8071e9776188fee5d8156|wide|InvalidArtifact|DescriptorMismatch|1003|-|-|-|-
 wide-a-slice-manifest-announced-as-the-wide-one|820f00f2877b8bebc95b8ec462f6fa6c9aade306bf7de8eb32b9d48f065fcd2d|wide|InvalidArtifact|DescriptorMismatch|1006|-|-|-|-
 wide-a-method-called-through-a-property|f7bde8e8fc2b93608fe40962a7abb3e33ff28ea5d01dcb20d41635e698db4bcd|wide|Normal|NormalCompleted|0|7|-|-|-

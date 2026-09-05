@@ -103,6 +103,26 @@ internal static class Test262Modules
         return new Graph(modules, string.Empty);
     }
 
+    /// <summary>Loads the graph rooted at what one specifier names from one referrer.</summary>
+    /// <remarks>
+    /// <b>This is what a dynamic <c>import()</c> asks this harness for.</b> The suite reaches it in
+    /// a thousand variants, in scripts as well as in modules, and the specifier is normally a value
+    /// the test computed rather than a literal any compiler saw - so this is resolution at run time,
+    /// through exactly the rule the static walk above uses, and not a second reading of what a
+    /// specifier is.
+    /// </remarks>
+    internal static Graph LoadFor(string referrer, string specifier)
+    {
+        var resolved = Resolve(referrer, specifier);
+
+        if (resolved.Length == 0 || !File.Exists(resolved))
+        {
+            return new Graph([], "no module at " + specifier);
+        }
+
+        return Load(resolved, ReadUtf8(resolved));
+    }
+
     /// <summary>Rules on one resolution request the profile put to this harness.</summary>
     internal static bool Confirms(ReadOnlySpan<byte> request)
     {

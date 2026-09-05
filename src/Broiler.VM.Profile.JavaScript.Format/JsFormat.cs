@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   25
-// Annotated:        25/25
+// Relevant units:   28
+// Annotated:        28/28
 // Exempt:           31
-// Human-reviewed:   0/25
+// Human-reviewed:   0/28
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       25
+// Unverified:       28
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -510,5 +510,81 @@ public static class JsFormat
         }
 
         return built.ToString();
+    }
+
+    /// <summary>
+    /// The first byte of a guest-initiated load that asks for a MODULE rather than for the program
+    /// a String is.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>One door and two questions, and this byte is which question was asked.</b> A guest of
+    /// this profile obtains code exactly one way — a request whose payload the profile defines and
+    /// whose answer the core verifies — and there are two things it may ask for through it: the
+    /// program a String is, which is what <c>eval</c> and the <c>Function</c> constructor ask, and
+    /// the module a specifier names, which is what a dynamic <c>import()</c> asks when the artifact
+    /// it is written in does not already carry that module. Two doors would have been two
+    /// capabilities for a composition to register, two places for a mediator to be out of scope,
+    /// and two chances to admit one and forget the other.
+    /// </para>
+    /// <para>
+    /// <b>It is a byte no source can begin with, which is what makes the two payloads
+    /// distinguishable rather than merely different.</b> U+0000 is not white space, is not part of
+    /// an identifier and begins no token, so a program whose first character is one is a program
+    /// every front end refuses — and a provider written before this byte existed therefore answers
+    /// a module request by REFUSING it, which is a legible failure rather than a misreading.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=550A36
+    // Broiler-Human:        PENDING
+    public const byte ModuleRequestMark = 0x00;
+
+    /// <summary>
+    /// The request payload that asks a provider for the module <paramref name="specifier"/> names
+    /// from <paramref name="referrer"/>.
+    /// </summary>
+    /// <remarks>
+    /// <b>The referrer travels with the specifier because a relative specifier means nothing
+    /// without one.</b> <c>"./m.mjs"</c> is not the identity of a module; it is the identity of a
+    /// module RELATIVE to whatever wrote it, and this profile neither knows nor may guess what that
+    /// relation is. So the profile states both halves and the composition answers with the module
+    /// its own rules say that pair names.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=0B8924
+    // Broiler-Human:        PENDING
+    public static byte[] ModuleRequest(string referrer, string specifier)
+    {
+        var body = EncodeText(referrer + "\0" + specifier);
+        var payload = new byte[body.Length + 1];
+        payload[0] = ModuleRequestMark;
+        System.Array.Copy(body, 0, payload, 1, body.Length);
+        return payload;
+    }
+
+    /// <summary>Reads what <see cref="ModuleRequest"/> wrote, or answers false.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=BC7BF9
+    // Broiler-Human:        PENDING
+    public static bool TryReadModuleRequest(
+        System.ReadOnlySpan<byte> payload, out string referrer, out string specifier)
+    {
+        referrer = string.Empty;
+        specifier = string.Empty;
+
+        if (payload.Length == 0 || payload[0] != ModuleRequestMark)
+        {
+            return false;
+        }
+
+        var text = DecodeText(payload[1..]);
+        var separator = text.IndexOf('\0');
+
+        if (separator < 0)
+        {
+            return false;
+        }
+
+        referrer = text[..separator];
+        specifier = text[(separator + 1)..];
+        return true;
     }
 }

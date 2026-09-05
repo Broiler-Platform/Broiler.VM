@@ -18,7 +18,7 @@
 namespace Broiler.VM.Profile.JavaScript;
 
 /// <summary>
-/// The dynamic surface: <c>eval</c> and the <c>Function</c> constructor, and nothing else.
+/// The dynamic surface's two globals: <c>eval</c> and the <c>Function</c> constructor.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -37,9 +37,17 @@ namespace Broiler.VM.Profile.JavaScript;
 /// the guest may catch. Two situations a reader experiences as the same and which are not.
 /// </para>
 /// <para>
-/// <b>Dynamic <c>import()</c> is NOT here.</b> It belongs to the module goal, which this profile
-/// does not have; the manifest's own scope names it, and admitting a form with no module records
-/// behind it would be admitting a syntax rather than a surface.
+/// <b>A dynamic <c>import()</c> is on this surface too, and it is not in this file because it is
+/// not a global.</b> It is a production rather than a name, so nothing here installs it and no
+/// program can reach it by reading a property — but it goes through the same door for the same
+/// reason. A specifier the artifact already carries a module for is answered from the artifact,
+/// with no host round trip and with the instance a static import of the same module would have
+/// got; every other specifier is a value nobody resolved before the bytes were written, so it
+/// becomes the payload of a guest-initiated load exactly as <c>eval</c>'s source does, marked by
+/// its first byte as a request for a module rather than for the program a String is. That is why
+/// an artifact containing one declares this surface whichever route a particular call turns out to
+/// take: which route it takes is a property of a run-time value, and a declaration cannot be. See
+/// <c>JsEngine.DynamicImport</c>, which is where both routes are.
 /// </para>
 /// </remarks>
 // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=7; Fingerprint=60DD8D

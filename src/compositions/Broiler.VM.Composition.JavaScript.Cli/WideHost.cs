@@ -80,11 +80,16 @@ internal static class WideHost
                 continue;
             }
 
+            // THE SCRIPT'S OWN PATH IS ITS REFERRER, which is what makes `import('./m.mjs')` in a
+            // script mean the same thing it means in a module beside it. A module carries the key
+            // this host resolved it to and needs no second identity; a script is a text, so the
+            // host that read the text says where it was read from.
             scripts.Add(new JsScriptUnit(
                 "script" + index.ToString(System.Globalization.CultureInfo.InvariantCulture),
                 files[index].Text,
                 options,
-                forceStrict));
+                forceStrict,
+                Path.GetFullPath(files[index].Path).Replace('\\', '/')));
         }
 
         var compiled = JsCompiler.Compile(scripts, modules);

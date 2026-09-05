@@ -56,6 +56,17 @@ internal sealed class SourceProvider : IVmArtifactProvider
             return VmArtifactProviderAnswer.NotFound(VmReason.ProviderArtifactNotFound);
         }
 
+        // TWO QUESTIONS THROUGH ONE DOOR, AND THE PAYLOAD SAYS WHICH. `eval` and the `Function`
+        // constructor ask for the program a String is; a dynamic `import()` asks for the module a
+        // specifier names from a referrer, and marks its payload so. The two are answered by two
+        // different compilations of two different goals, and folding them together would have made
+        // a module graph out of whatever text a guest happened to pass to `eval`.
+        if (Broiler.VM.Profile.JavaScript.Format.JsFormat.TryReadModuleRequest(
+            request.RequestPayload.Span, out var referrer, out var specifier))
+        {
+            return Module(referrer, specifier);
+        }
+
         string source;
 
         try
@@ -76,6 +87,41 @@ internal sealed class SourceProvider : IVmArtifactProvider
             // HOST. The guest asked for something outside the manifest and is told so; the
             // diagnostic itself does not cross the boundary, because a provider answers with an
             // artifact or a reason and the reason vocabulary is the core's.
+            return VmArtifactProviderAnswer.Refused(VmReason.SemanticValidationFailed);
+        }
+
+        var descriptor = new VmArtifactDescriptor(
+            JavaScriptProfile.Id,
+            Broiler.VM.Profile.JavaScript.Format.JsFormat.FormatVersion,
+            JavaScriptProfile.WideManifest,
+            default,
+            VmCallerIdentity.FromCanonicalIdentity("broiler-js-cli://source-provider"));
+
+        return VmArtifactProviderAnswer.Provided(in descriptor, compiled.Artifact);
+    }
+
+    /// <summary>Answers a request for the module one specifier names from one referrer.</summary>
+    /// <remarks>
+    /// <b>A specifier this host cannot resolve is NOT FOUND and a graph it can resolve but not
+    /// compile is REFUSED</b>, which are the two answers the core's vocabulary already has for a
+    /// provider and which mean what a reader would expect: the first is "there is no such module
+    /// here" and the second is "there is, and it is not a program this manifest admits". The guest
+    /// sees both as a rejected promise carrying the reason, and the reason is what tells the two
+    /// apart.
+    /// </remarks>
+    private static VmArtifactProviderAnswer Module(string referrer, string specifier)
+    {
+        var graph = ModuleGraph.LoadFor(referrer, specifier);
+
+        if (graph.Failure.Length != 0)
+        {
+            return VmArtifactProviderAnswer.NotFound(VmReason.ProviderArtifactNotFound);
+        }
+
+        var compiled = JsCompiler.Compile([], graph.Modules);
+
+        if (!compiled.Succeeded || compiled.Artifact is null)
+        {
             return VmArtifactProviderAnswer.Refused(VmReason.SemanticValidationFailed);
         }
 

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   78
-// Annotated:        78/78
+// Relevant units:   81
+// Annotated:        81/81
 // Exempt:           13
-// Human-reviewed:   0/78
+// Human-reviewed:   0/81
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  3/10 max
-// Unverified:       78
+// Unverified:       81
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -798,6 +798,37 @@ internal sealed record JsSuperCallExpression(
     SliceSourceSpan Span,
     System.Collections.Generic.IReadOnlyList<JsExpression> Arguments) : JsExpression(Span);
 
+/// <summary>A dynamic <c>import()</c>: the specifier expression and its attributes argument.</summary>
+/// <param name="Specifier">The expression that will be coerced to a module specifier.</param>
+/// <param name="Options">
+/// The second argument, or <see langword="null"/> where the source wrote none. It is an ordinary
+/// expression and not a clause: the attributes of a dynamic import are a run-time object, where the
+/// attributes of a static one are syntax.
+/// </param>
+/// <remarks>
+/// <b>It is a CALL and not a reference, which is the whole of what the assignment-target family
+/// asks about.</b> This node is deliberately not among the four the assignment and update
+/// productions accept, so <c>import('') = 1</c> and <c>import('')++</c> are refused where every
+/// other invalid target is refused rather than by a rule of its own.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=E2CEC6
+// Broiler-Human:        PENDING
+internal sealed record JsImportCall(
+    SliceSourceSpan Span, JsExpression Specifier, JsExpression? Options) : JsExpression(Span);
+
+/// <summary>The <c>import.meta</c> meta-property.</summary>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=4C3B52
+// Broiler-Human:        PENDING
+internal sealed record JsImportMeta(SliceSourceSpan Span) : JsExpression(Span);
+
+/// <summary>One entry of a static import-attribute clause.</summary>
+/// <param name="Key">The attribute name, which may have been written as a string.</param>
+/// <param name="Value">The attribute value, which the grammar requires to be a string.</param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=650DC1
+// Broiler-Human:        PENDING
+internal sealed record JsImportAttribute(SliceSourceSpan Span, string Key, string Value)
+    : JsNode(Span);
+
 /// <summary>One binding an <c>import</c> declaration introduces.</summary>
 /// <param name="Span">Where the specifier begins.</param>
 /// <param name="Imported">
@@ -819,12 +850,14 @@ internal sealed record JsImportSpecifier(
 /// The bindings introduced, which is empty for <c>import "./m.mjs";</c> - a form that requests a
 /// module for its effects and binds nothing.
 /// </param>
-// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=F7BC2A
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=664B91
 // Broiler-Human:        PENDING
 internal sealed record JsImportDeclaration(
     SliceSourceSpan Span,
     string Specifier,
-    System.Collections.Generic.IReadOnlyList<JsImportSpecifier> Specifiers) : JsStatement(Span);
+    System.Collections.Generic.IReadOnlyList<JsImportSpecifier> Specifiers,
+    System.Collections.Generic.IReadOnlyList<JsImportAttribute>? Attributes = null)
+    : JsStatement(Span);
 
 /// <summary>Which of the four shapes an <c>export</c> declaration has.</summary>
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=929749
@@ -861,7 +894,7 @@ internal sealed record JsExportSpecifier(SliceSourceSpan Span, string Local, str
 /// <param name="Specifiers">The names published, which is empty for a bare <c>export * from</c>.</param>
 /// <param name="Declaration">The declaration exported in place, when there is one.</param>
 /// <param name="Default">The expression of an <c>export default</c> of an expression.</param>
-// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=538DDF
+// Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=0614ED
 // Broiler-Human:        PENDING
 internal sealed record JsExportDeclaration(
     SliceSourceSpan Span,
@@ -869,7 +902,9 @@ internal sealed record JsExportDeclaration(
     string From,
     System.Collections.Generic.IReadOnlyList<JsExportSpecifier> Specifiers,
     JsStatement? Declaration,
-    JsExpression? Default) : JsStatement(Span);
+    JsExpression? Default,
+    System.Collections.Generic.IReadOnlyList<JsImportAttribute>? Attributes = null)
+    : JsStatement(Span);
 
 /// <summary>A whole program: a directive prologue and a statement list.</summary>
 // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=5F7C89

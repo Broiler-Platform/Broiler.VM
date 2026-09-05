@@ -6490,3 +6490,311 @@ this compiler lowers, run against `/opt/node22/bin/node` to establish that
 [JSC-152](#jsc-152)'s reading was wrong before anything was changed; and cases 335 to 345 of
 `src/tests/differential/the-statement-and-object-surface.js`, every one of them measured against the
 same engine before it was written down. 2026-09-05.
+
+---
+
+### JSC-161
+
+**Where:** the dynamic `import()`, which had no lowering at all: `JsParser.ParsePrimary` refused it
+by name wherever it appeared, and `JsRealm.Dynamic.cs` said in as many words that it was not there
+because "it belongs to the module goal, which this profile does not have".
+
+**What was assumed.** That the two ways a guest of this profile can reach code are the two that
+already existed, and that a dynamic import would have to be one of them. `eval` and the `Function`
+constructor put a String to the mediator and run what the composition's artifact provider answers;
+the static module graph is resolved BEFORE the bytes are written, so a specifier has already become
+a key and the artifact carries what the key names. A dynamic import looked like a third thing that
+would have to be forced into one of those two shapes.
+
+**What was true.** **It is both of them, and which one a particular call is cannot be known until it
+runs.** The specifier of `import(x)` is a value. When that value happens to be one the referring
+module already requested — `import('./m.mjs')` in a module that also wrote `import y from
+'./m.mjs'` — the answer is sitting in the artifact's own module records, resolved and confirmed by
+the composition at link, and putting it to the mediator would be a host round trip to be told
+something the artifact already says. When it does not — `import(x + y)`, `import(obj)` with a
+`toString`, a specifier assembled from a table — nobody has resolved it, nothing has compiled it,
+and there is no answer inside the artifact at all. Of the 595 files of the pinned suite that call
+`import()`, 461 use only literal specifiers and 134 compute at least one; a design that served only
+the first would have declined a fifth of the family by construction, and a design that served only
+the second would have gone to the host for four fifths of it and, worse, would have had to be told
+separately that the module it was handed back is one the realm already has.
+
+**What replaced it.** Both routes, with the artifact's own records as the fast path, which is
+`JsEngine.DynamicImport` and `JsEngine.ImportedModule`. A new instruction, `ImportCall` at `0x83`,
+pops an attributes value and a specifier and pushes a promise; its `u16` operand is a constant
+holding the REFERRER, because the specifier is on the stack and what the instruction cannot get from
+the stack is which module or script wrote it. The fast path scans the referring module's own request
+table, which the composition already ruled on at link, and answers the instance that table names.
+The slow path is `eval`'s door: `JsFormat.ModuleRequest` builds a payload of the referrer and the
+specifier behind a leading `NUL`, the composition's provider resolves, reads and compiles a module
+graph, the core verifies it, and this realm links it beside its own.
+
+**Why the two single-route designs were refused, and not merely not chosen.** A mediator-only design
+answers everything and is wrong about identity: `import('./m')` in a module that statically imports
+`./m` would have gone to the host, come back with a second compilation of the same module, and built
+a second environment for it — so an exported `let` would have had two values in one realm, which is
+the one thing a module registry exists to prevent. It also spends a host call on a question the
+artifact already answers. An artifact-only design is honest about everything it can answer and
+cannot answer a computed specifier at all, because answering one means turning a run-time string
+into bytes and this profile compiles nothing at run time; it would have left the largest half of the
+family declined for a reason the roadmap does not give.
+
+**What the surfaces are, and why it is not the pair a reader expects.** An artifact containing an
+`ImportCall` declares `broiler.javascript.dynamic` and does NOT declare
+`broiler.javascript.modules`. The first is roadmap section 6's own allocation — the table there has
+listed `eval`, the `Function` constructor and dynamic `import()` under that one identity since
+JS-8 — and it is declared whichever route a given call turns out to take, because which route it
+takes is a property of a run-time value and a declaration cannot be. The second is not declared
+because **the module surface is declared by CARRYING RECORDS and by nothing else**, and a SCRIPT may
+write `import()` and carries none: 1,046 of the 1,079 dynamic-import variants of the pinned suite
+are script variants. Declaring it from the call site would have made every one of those an artifact
+claiming to hold a graph it does not hold, which the verifier refuses as `ModuleSectionMissing`.
+The refusals stay in the three shapes that already existed: a composition that DECLINES the dynamic
+surface has its artifact refused at verification, as an invalid artifact the guest never sees; a
+composition that admits it and registers no provider is refused at run time; and a composition whose
+provider cannot answer for this specifier is refused at run time with a different message naming the
+specifier. Nothing here is a fourth shape. One new core code, `1622 ImportCallOutsideManifest`,
+covers the case those three do not: an artifact that reached the instruction without declaring
+anything, which is a program buying a host round trip with an opcode. It is the first optional
+surface an artifact can reach without reading a name or carrying a section, which is why it needs a
+code of its own.
+
+**What it does NOT change, and the one constraint it puts on a composition.** A module the realm has
+already instanced is ADOPTED by a later artifact rather than rebuilt — `JsEngine.Instantiate` keys on
+the module's key, which is the composition's own answer — so an artifact the mediator supplies is a
+second VIEW of a graph and not a second graph. That makes the composition responsible for one thing
+it was not visibly responsible for before: two artifacts answered under one key must be two
+compilations of the same source, because the second artifact's import bindings index the first one's
+environment. It is the same class of obligation as "the composition resolves a specifier to a key",
+and it is stated here rather than enforced, because enforcing it would mean comparing two
+compilations of a module the profile is not allowed to compile.
+
+**What that cost, measured.** `test/language/expressions/dynamic-import`, 997 files and 1,522
+variants: **pass 40, fail 4, unsupported 1,079, skipped 399** before, and **pass 1,025, fail 98,
+unsupported 0, skipped 399** after. The `unsupported` column is the figure the programme is about
+and it is empty; the 98 failures are a family that is admitted and imperfect, which is the outcome
+that column exists to make visible. Measured with
+`python3 eng/run-test262.py --suite /tmp/wl/test262-ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e --dir
+test/language/expressions/dynamic-import --jobs 2`, both figures on this checkout, the before with
+the refusal restored.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; cases 53 to 65 of
+`src/tests/differential/the-module-goal.mjs`, every one of them taken from `/opt/node22/bin/node`
+before it was written down; and rows `modules/a-dynamic-import.mjs`,
+`modules/a-dynamic-import-from-a-script.js` and `modules/a-dynamic-import-of-nothing.mjs` of
+`src/tests/cli/expected.txt`, which are the two routes and a rejection. 2026-09-05.
+
+### JSC-162
+
+**Where:** `import.meta`, refused by name in `JsParser.ParsePrimary` beside the dynamic import.
+
+**What was assumed.** That it is a third form of the same family, and that admitting it means
+admitting whatever a host would put in it. The refusal read `` `import.meta` is not admitted by the
+declared feature manifest``, which says the manifest is what forbids it.
+
+**What was true.** **What a host puts in `import.meta` is the host's, and none of it is what the
+language fixes.** The language fixes four things: it is an ordinary object with a null prototype, it
+is extensible, a guest may add to it and read back what it added, and two evaluations of it in one
+module answer the SAME object. A host that populates it with nothing satisfies all four. So the
+manifest was never what forbade it; what forbade it was that no code unit had anywhere to keep an
+object per module instance.
+
+**What replaced it.** `ImportMeta` at `0x84`, whose `u16` operand is a module INDEX rather than a key
+constant — unlike `ImportCall`, this production is admitted only inside a module, so the module it
+belongs to is fixed when the code unit is lowered. The object hangs off `JsModuleInstance.Meta` and
+is built the first time it is asked for, which is what makes the second evaluation answer the first
+one's object; building it in the module's initialiser would have made one for every module of every
+graph whether or not a line of the module mentions it. It lives on the INSTANCE and not on the
+record, so two realms running one artifact get two of them.
+
+**And a diagnostic of its own, `2404 ImportMetaOutsideModuleGoal`.** `import.meta` in a script is a
+syntax error in every engine, and the code that already existed for a module goal's refusals is
+`ModuleDeclarationOutsideModuleGoal` — which would have told a reader to go looking for an import
+statement that is not there. `import.meta` declares nothing, binds nothing and requests nothing.
+
+**What that cost, measured.** `test/language/expressions/import.meta`, 23 files and 28 variants:
+**pass 2, fail 8, unsupported 17, skipped 1** before, and **pass 17, fail 10, unsupported 0,
+skipped 1** after. The ten failures are the suite asking what THIS host put in the object — a `url`,
+a resolver — which is the half a host decides and this one has decided is nothing.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout, and cases 46 to 52 of
+`src/tests/differential/the-module-goal.mjs` measured against `/opt/node22/bin/node` before they
+were written down. Case 52 is the declared divergence and it is the whole of the difference: this
+realm's object is empty and the comparison engine's holds five names. 2026-09-05.
+
+### JSC-163
+
+**Where:** `JsParser.Attributes`, which refused `import x from './m' with { type: 'json' }` as a
+construct outside the manifest, with the family name "an import attribute clause".
+
+**What was assumed.** That refusing the clause and declining the attribute are the same act. The
+comment beside the refusal said the point of the clause "is to change what the host loads — which is
+the composition's decision, so admitting it would mean carrying an assertion this profile has no way
+to honour".
+
+**What was true.** **The grammar is ordinary and this front end can read it perfectly well.**
+Refusing it as a construct outside the manifest said the SYNTAX was not admitted, and that was
+false: `2104` is graded by the conformance runner as `unsupported`, a verdict reserved for a
+construct this front end does not read, and the clause is a brace, a key, a colon and a string
+literal. What no composition of this profile has is a LOADER for a module of a type — a JSON module
+is a module whose default export is a parsed document rather than an evaluated program — and that is
+a fact about loading.
+
+**What replaced it.** The clause is parsed in full, with the two early errors the grammar states —
+an attribute value must be a string literal, and a key may not be written twice — and the attribute
+is declined where the module is LOADED. For a static import that is compile time, because the graph
+of an artifact is resolved before a byte of it is written; the code is `2405
+UnsupportedImportAttribute`, which is not `2104` and is therefore scored as a refusal of the program
+rather than as a construct outside the manifest. For a dynamic import loading happens at run time,
+so the same attribute is declined there, by rejecting the promise the call has already answered
+with — and the second argument's SHAPE is checked in full first, because
+`import('./m', null)`, `import('./m', {with: 1})` and `import('./m', {with: {type: 1}})` are three
+programs the language rejects for three reasons and none of those reasons is "no loader for that
+type".
+
+**What it does NOT change.** The legacy `assert` spelling is not accepted at all, and that is a
+straightforward reading of the edition this front end is written against rather than a decision: the
+keyword was removed, so `assert` after a specifier is an identifier where a semicolon is expected,
+which is the ordinary syntax error.
+
+**What that cost, measured.** `test/language/import`, 182 files and 182 variants: **pass 1, fail 3,
+unsupported 12, skipped 166** before, and **pass 3, fail 13, unsupported 0, skipped 166** after. Ten
+of the twelve became failures and that is the intended shape of this entry: every one of them is a
+`json-modules` or `text-modules` test asking this host to load a document, which it cannot and now
+says so at the load rather than at the parse.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; cases 66 to 71 of
+`src/tests/differential/the-module-goal.mjs`, taken from `/opt/node22/bin/node` before they were
+written down — the comparison engine rejects the same three shapes with the same three error
+constructors and rejects the `type` attribute for its own reasons; and row
+`modules/an-import-attribute.mjs` of `src/tests/cli/expected.txt`. 2026-09-05.
+
+### JSC-164
+
+**Where:** `JsParser.ParseExportDefault` and `JsParser.ParseExportDeclared`, each of which carried an
+arm refusing `async function*` by name.
+
+**What was assumed.** That the async generator family still needed a refusal in `export`. Both arms
+were written when the family was outside the manifest and both tested for the `*` AHEAD of the arm
+that admits `async function`, so they kept working — and kept refusing — after the family was
+admitted everywhere else.
+
+**What was true.** `ParseFunctionRest` reads the `*` exactly as it does for `function*` and has done
+since the async generator was merged; the two constructs differ in one bit of the node and in no
+branch of the parser. The refusal was a superseded case nobody removed, which is why this is a gap in
+`export default` rather than a gap in the family.
+
+**What replaced it.** Both arms are gone, and `export default async function* () {}` reaches the
+same `ParseFunctionRest` every other function form reaches. The anonymous default form takes the
+synthetic name `default` from the rule about declarations, exactly as the anonymous class and the
+anonymous async function beside it do.
+
+**What that cost, measured.** Two variants of `test/language/module-code`, which were the whole of
+the family's `unsupported` count; the subtree went from **pass 551, fail 20, unsupported 26,
+skipped 153** to **pass 571, fail 26, unsupported 0, skipped 153**, and the other 24 recovered
+variants are [JSC-161](#jsc-161)'s and [JSC-163](#jsc-163)'s rather than this entry's.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; cases 72 and 73 of
+`src/tests/differential/the-module-goal.mjs`, measured against `/opt/node22/bin/node` before they
+were written down; and row `modules/a-default-async-generator.mjs` of `src/tests/cli/expected.txt`.
+2026-09-05.
+
+### JSC-165
+
+**Where:** the rejection a dynamic `import()` answers with when the module it named cannot be
+loaded — `JsEngine.ImportedModule`, in the arm [JSC-161](#jsc-161) wrote.
+
+**What was assumed.** That every way a mediated load can fail is this host's own plumbing, so every
+one of them rejects with a `TypeError`. That is what the arm was written to say, and it is what
+[JSC-161](#jsc-161)'s first measurement was taken against.
+
+**What was true.** **Two of those failures are the MODULE's and not the host's, and the language
+calls both of them the module's own syntax.** A module whose source will not parse and a module
+whose graph will not link — a name nothing exports, a resolution that walks a cycle, two star
+re-exports supplying one name — are both `SyntaxError` where they surface, and where they surface
+for a dynamic import is the rejection. It is the same distinction `JsEngine.Evaluate` already draws
+for `eval`, one step further out: there, a provider refusal is a `SyntaxError` because the front end
+refused the evaluated SOURCE; here, so is a core refusal of the ARTIFACT, because linking a graph is
+the module goal's half of parsing and the guest has no way to have caused it other than by writing
+the module that way.
+
+**What replaced it.** A load that came back `ProviderRefused`, or `InvalidArtifact` for any reason
+other than a manifest one, rejects with a `SyntaxError`; everything else keeps the `TypeError` it
+had. The exception for the manifest reasons is the part worth reading: a composition that DECLINED a
+surface refuses the inner artifact at verification, and that is a fact about the composition rather
+than about the module's text, so it stays a `TypeError` beside "there is no such module", "there is
+no provider" and "the allowance is spent".
+
+**What that cost, measured.** `test/language/expressions/dynamic-import` went from **pass 1,025,
+fail 98** — the figure [JSC-161](#jsc-161) recorded — to **pass 1,089, fail 34**, with the
+`unsupported` column still empty; sixty-four variants, all of them a `catch` asserting
+`SameValue(e.constructor.name, "SyntaxError")` on the rejection of an import of a module that does
+not link. Over the four subtrees together, 1,950 files and 2,482 variants: **pass 1,616, fail 147**
+becomes **pass 1,680, fail 83**. **That supersedes the after-figure in [JSC-161](#jsc-161)**, which
+was measured before this repair and was correct when it was taken.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; cases 72 and 73 of
+`src/tests/differential/the-module-goal.mjs` — a module that will not link and a module that will
+not parse — measured against `/opt/node22/bin/node` before they were written down, which answers
+`SyntaxError` to both; and row `modules/a-dynamic-import-of-an-unlinkable-module.mjs` of
+`src/tests/cli/expected.txt`. 2026-09-05.
+
+### JSC-166
+
+**Where:** two things [JSC-161](#jsc-161) got wrong about a module the guest asks for at run time —
+`JsParser.ParseImportDeclaration`'s bindingless arm, and when `JsEngine.DynamicImport` settles its
+promise.
+
+**What was assumed.** First, that the import forms which carry an attribute clause are the ones with
+a binding list. Second, that a graph is finished when the walk that started it returns.
+
+**What was true.** **`import './m.mjs' with {};` is a form, and the clause goes on the REQUEST rather
+than on the bindings.** The bindingless arm returns from the import parser as soon as it has read
+the specifier, so the clause was never looked for there and the answer was `` `;` was expected and
+`with` was found `` — a missing semicolon reported against a program the grammar admits, which is
+the shape of refusal [JSC-161](#jsc-161)'s whole family exists to stop giving.
+
+**And a graph containing a top-level `await` is NOT finished when the walk returns.** `Step` walks
+the evaluation order, and where a module suspends it registers a continuation on that module's own
+promise and RETURNS — that is what makes a top-level `await` an ordering guarantee rather than a
+blocked host. Settling the import's promise at that point handed the guest a namespace whose module
+had not run, and a read through it answered the temporal dead zone's `ReferenceError` for a binding
+that was about to exist. A rejection from a module that failed after suspending reached nobody at
+all: it was raised inside a job, where a graph entered through the artifact's entry point has
+nowhere else to put it, rather than through the promise the guest was holding.
+
+**What replaced it.** The bindingless arm reads a clause like every other arm. And `Step` takes a
+completion callback: a graph entered through a dynamic import passes one, so the promise is settled
+where the walk RUNS OUT rather than where it returns, and a failure anywhere in the graph reaches
+the guest through that promise instead of through a throw inside a job. A graph entered through the
+entry point passes none and keeps exactly the behaviour it had, because it has nobody holding a
+promise for it — which is also why `JsModuleInstance.Evaluation` is asked only by a walk that
+carries a callback: a module that is still awaiting reads as `Evaluated` (the state is set the
+moment an async body is entered, or a second walk would enter the body twice), and only a walk
+somebody is waiting on can afford to wait for it.
+
+**What that cost, measured.** Over `test/language/module-code` and
+`test/language/expressions/dynamic-import` together, 1,745 files and 2,272 variants: **60 failures
+before and 60 after**, and the four that changed on each side are what the entry is about. Recovered:
+`import-attributes/import-attribute-empty.js`, `top-level-await/await-dynamic-import-resolution.js`,
+`top-level-await/dynamic-import-rejection.js` and `top-level-await/dynamic-import-resolution.js` —
+the last of which is precisely the dead-zone read the early settle produced. Newly failing:
+`top-level-await/fulfillment-order.js`, `top-level-await/rejection-order.js` and both variants of
+`top-level-await/dynamic-import-of-waiting-module.js`, which were passing because everything settled
+at once and now ask a question this engine has no model for. **That is the finding and it is left
+open**: those three name `AsyncModuleExecutionFulfilled`, `GatherAvailableAncestors` and
+`[[AsyncEvaluationOrder]]`, which are the async module graph's own machinery — a list of available
+ancestors settled leaf-to-root — and this engine has a depth-first order and a per-module promise
+instead. It belongs to the asynchronous-module family rather than to the dynamic import, and closing
+it means giving a module record an evaluation capability and a pending-dependency count.
+
+**The `Evaluation` field moves no measurement and is here anyway**, which is worth saying plainly: a
+second dynamic import of a module that is still awaiting walks past it and settles early without it,
+and the two cases of the suite that would witness that fail on the ordering model above instead. It
+is correct by construction rather than by measurement, and a reader is entitled to know which.
+
+**Authority and date.** The implementation of 2026-09-05 in this checkout; case 74 of
+`src/tests/differential/the-module-goal.mjs` — a dynamic import of a module with a top-level
+`await`, reading a `let` the body has not reached — measured against `/opt/node22/bin/node` before
+it was written down; and rows `modules/an-empty-attribute-clause.mjs` and
+`modules/a-dynamic-import-that-waits.mjs` of `src/tests/cli/expected.txt`. 2026-09-05.

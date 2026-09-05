@@ -1,8 +1,8 @@
 # broiler.javascript.slice diagnostic-code registry
 #
-# registry-revision: 9
+# registry-revision: 10
 # published-at-milestone: JS-3a (revision 1), JS-3b (revision 2), JS-4 (revision 3), JSW-2 (revision 4),
-#                         JSW-5 (revisions 5, 6, 7 and 9), JSW-8 (revision 8)
+#                         JSW-5 (revisions 5, 6, 7 and 9), JSW-8 (revisions 8 and 10)
 # owning-decision: JSD-0009
 # format-version: 1, 2
 # feature-manifest: broiler.javascript.slice, broiler.javascript.wide
@@ -113,6 +113,7 @@
 1619|ModuleResolverAbsent|core-result|UnsupportedFeatureManifest|modules|corpus|modules-a-module-artifact-with-no-resolver|8
 1620|ModuleSectionMissing|core-result|InconsistentStructure|modules|corpus|modules-the-module-surface-with-no-module-records|8
 1621|ClassElementFlagsInconsistent|core-result|InconsistentStructure|code|corpus|wide-a-class-element-whose-flags-contradict|7
+1622|ImportCallOutsideManifest|core-result|UnknownFeature|code|corpus|wide-an-import-call-with-no-surface-declared|10
 1630|AsyncIterationOutsideAsync|core-result|SemanticValidationFailed|code|corpus|wide-an-async-iteration-step-outside-an-async-function|9
 1901|Truncated|core-result|Truncated|reader|corpus|a-truncated-payload|1
 1902|MalformedEncoding|core-result|MalformedEncoding|reader|corpus|an-overlong-variable-length-integer|1
@@ -144,3 +145,5 @@
 2401|ModuleDeclarationOutsideModuleGoal|embedder-seam|-|parser|source|refuse-an-import-in-a-script|8
 2402|DuplicateExportName|embedder-seam|-|semantics|source|refuse-a-name-exported-twice|8
 2403|ExportNameNotDeclared|embedder-seam|-|semantics|source|refuse-an-export-of-a-name-nothing-declares|8
+2404|ImportMetaOutsideModuleGoal|embedder-seam|-|parser|source|refuse-an-import-meta-in-a-script|10
+2405|UnsupportedImportAttribute|embedder-seam|-|semantics|source|refuse-an-import-attribute-nothing-can-honour|10
