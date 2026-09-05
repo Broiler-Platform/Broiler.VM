@@ -470,15 +470,26 @@ jobs:
           #
           # WHY NO COMPLETION COULD BE OBTAINED, and what a lane run then measured. `zlib` does not
           # settle within that hour on the machine the bound was written on - it met the ceiling
-          # under both the JIT and the published AOT image, at 3,600s each time. THE FIRST FULL
-          # LANE SETTLED IT: `zlib` SCORES on a runner. 2,342s on `linux-x64` and 2,796s on
-          # `osx-arm64`, both inside the hour, and it is 78 per cent of the whole run - the other
-          # fourteen together are 655s on `linux-x64`.
+          # under both the JIT and the published AOT image, at 3,600s each time.
           #
-          # THE HEADROOM IS THE FIGURE TO WATCH, because it is the one thing here that cannot be
-          # bought: about 21 minutes on `linux-x64` and about 13 on `osx-arm64`, against a ceiling
-          # already at the profile's maximum. A cell that grows past it is reporting a finding
-          # rather than asking for a larger number.
+          # THE FIRST FULL LANE MEASURED IT ON FOUR CELLS, and the answer is not uniform:
+          #
+          #   linux-x64    zlib 2,342s   15 of 15   1,258s of headroom
+          #   osx-arm64    zlib 2,796s   15 of 15     804s
+          #   linux-arm64  zlib 2,897s   15 of 15     703s
+          #   osx-x64      zlib 3,600s   14 of 15     NONE - it met the ceiling
+          #
+          # `zlib` is 78 per cent of the whole run - the other fourteen together are 655s on
+          # `linux-x64` - so it is the benchmark that reaches the ceiling first everywhere, and
+          # `osx-x64` is roughly 2.4 times slower than `linux-x64` on `richards` (24.7 to 59.5).
+          #
+          # A CELL THAT MEETS THIS BOUND IS REPORTING A FINDING rather than asking for a larger
+          # number, and on this one the distinction is not rhetorical: an hour is already the
+          # maximum the profile permits, so there is nothing to raise it to. What `osx-x64` says is
+          # that this engine cannot run `zlib` to completion inside its own ceiling on that
+          # identifier. Whether the lane may go on claiming the whole set - or must state `zlib` on
+          # `osx-x64` as a named exclusion the way the conformance step states its own - is a
+          # decision about what this component CLAIMS, and JSC-182 records it open.
           #
           # The estimate that stood here before that run said "above forty-one minutes", scaled
           # from `richards` at 32.0 on this image against 46.3 on `ubuntu-latest`. The measurement

@@ -456,14 +456,17 @@ the act that would turn a stage into a milestone with a ledger row.
   `WallClock` maximum rather than a figure the lane chose, because an hour is the most any
   composition of this profile may be granted — so a benchmark that meets it has met **this
   engine's ceiling**, which is a finding rather than a bound to move. On 2026-09-05 the first full
-  lane measured what that allowance is actually for: **`zlib` scores on a runner** — 2,342 seconds
-  on `linux-x64` and 2,796 on `osx-arm64`, both inside the hour — and it is 78 per cent of the whole
-  run, the other fourteen together being 655 seconds *([JSC-182](roadmap.corrections.md#jsc-182))*.
-  The headroom against the ceiling is about 21 minutes and about 13, and it is the figure to watch,
-  because an hour is already the most this profile may be granted.
+  lane measured what that allowance is for, and the answer is not uniform: `zlib` scores in 2,342
+  seconds on `linux-x64`, 2,796 on `osx-arm64` and 2,897 on `linux-arm64` — and on `osx-x64`, the
+  slowest cell of the matrix, **it meets the ceiling and does not score at all**
+  *([JSC-182](roadmap.corrections.md#jsc-182))*. `zlib` is 78 per cent of the whole run, so it is
+  what reaches the ceiling first everywhere; the headroom is 1,258 seconds, 804, 703, and then none.
   **The exclusions are that no identifier but the Linux one has scored the whole conformance suite,
-  and that no identifier scores the whole Octane set on the push path** — the quick lane's six do
-  not include `zlib`, so the set is scored whole only where the full lane runs.
+  that no identifier scores the whole Octane set on the push path, and that `osx-x64` does not score
+  `zlib` at all.** Whether the lane may go on claiming the whole set on every identifier, or must
+  state that last one as a named exclusion, is a decision about what this component CLAIMS and is
+  recorded open rather than taken. The quick lane's six do not include `zlib`, so the set is
+  attempted whole only where the full lane runs.
 - **The whole-suite runs are retained per manifest**, under
   [section 4's evidence contract](roadmap.status.md#4-required-evidence-bundle), with the harness's
   five verdicts reported rather than four — a variant that spent an allowance is neither a pass, a

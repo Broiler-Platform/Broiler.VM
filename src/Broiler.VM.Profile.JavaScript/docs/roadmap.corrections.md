@@ -7575,21 +7575,34 @@ bound.** The two benchmarks do not stress the same machinery, so `richards` meas
 **1.54**, since the numerator is a bound rather than a figure. A one-benchmark ratio is an
 illustration and never a bound, and the entry should have said so.
 
-**What the run measured.** The first full lane, dispatched deliberately on 2026-09-05:
+**What the run measured, and it is not one answer.** The first full lane, dispatched deliberately
+on 2026-09-05, over the four cells that reached the workload step:
 
-| runtime identifier | `zlib` | score | the fifteen |
-|---|---|---|---|
-| `linux-x64` | 2,342s | 65.2 | 2,997s, 15 of 15 |
-| `osx-arm64` | 2,796s | 54.6 | 3,651s, 15 of 15 |
-| `linux-arm64` | not read | — | 15 of 15, workload step 69m34s |
-| `osx-x64` | not read | — | still running when this was written |
+| runtime identifier | `richards` | `zlib` | score | the fifteen | headroom |
+|---|---|---|---|---|---|
+| `linux-x64` | 59.5 | 2,342s | 65.2 | 2,997s, **15 of 15** | 1,258s |
+| `osx-arm64` | 50.2 | 2,796s | 54.6 | 3,651s, **15 of 15** | 804s |
+| `linux-arm64` | 44.8 | 2,897s | 52.8 | 3,749s, **15 of 15** | 703s |
+| `osx-x64` | 24.7 | **3,600s** | none | 5,141s, **14 of 15** | **none — met** |
 
-**So the ceiling holds, and `zlib` is what the allowance is for.** It is 78 per cent of the whole
-Octane run on `linux-x64` — the other fourteen together are 655 seconds — and the headroom against
-the ceiling is about 21 minutes there and about 13 on `osx-arm64`. **That headroom is the figure a
-future reader should watch**, because it is the one this profile cannot buy more of: an hour is
-already the maximum `JavaScriptProfile.Maxima()` permits, so a cell that grows past it produces a
-finding rather than a bound to raise.
+**`zlib` scores on three of the four and MEETS THE CEILING on `osx-x64`**, which reported
+`AllowanceExhausted on WallClock` and failed the step. That cell is the slowest of the matrix by a
+wide margin — `richards` 24.7 against `linux-x64`'s 59.5, so roughly 2.4 times slower — and `zlib`
+is 78 per cent of the whole run, so it is the benchmark that reaches the ceiling first everywhere.
+The headroom column is the reading that matters: 21 minutes, 13, 12, and then none.
+
+**That failure is a finding and not a bound to raise**, and the distinction is the whole of why the
+wall is where it is. An hour is already the maximum `JavaScriptProfile.Maxima()` permits, so there
+is no larger number to move to; what `osx-x64` reports is that **this engine cannot run `zlib` to
+completion inside its own ceiling on that runtime identifier**, which is a true statement about the
+engine and the cell rather than a misconfigured lane.
+
+**The decision it forces is not taken here.** A full lane that is red every week on one cell trains
+readers to ignore it, and the alternative — excluding `zlib` on `osx-x64` by name, the way the
+conformance step states its own exclusions — is a decision about **what this component CLAIMS**
+rather than about a number. This component has no reviewer, and roadmap section 16 makes an
+untruthful support claim a stop condition, so the choice belongs to a person. It is recorded here
+open.
 
 **What is corrected and what is not.** JSC-180 stands as written — this ledger appends and never
 edits — and its other figures are unaffected: the ceiling is still the profile's, the 23m28s is
@@ -7598,13 +7611,17 @@ still what fifteen benchmarks cost on a publish cell, and the observation that t
 is withdrawn is the **forty-one-minute lower bound** and the method that produced it. The lane step
 comment and the JSW-10 bullet, which both said the answer was not known, now carry the measurement.
 
-**What this does not claim.** Not that `zlib` scores on every claimed identifier. The two Windows
-cells never reached the workload step in this run — [JSC-181](#jsc-181) records why — so `win-x64`
-and `win-arm64` have still never executed it, and the exclusion the roadmap states is unchanged: no
-identifier scores the whole Octane set on the push path, because the quick lane's six do not
-include `zlib`.
+**What this does not claim.** Not that `zlib` scores on every claimed identifier — it does not, and
+`osx-x64` is the counterexample. Nor that the two Windows cells agree with either group: they never
+reached the workload step in this run, because [JSC-181](#jsc-181)'s defect stopped them one second
+in, so `win-x64` and `win-arm64` have still executed neither the benchmark nor the step. Two of six
+identifiers are therefore unmeasured, one has failed, and three have scored. The exclusion the
+roadmap already states is unchanged and separate: no identifier scores the whole set on the push
+path, because the quick lane's six do not include `zlib`.
 
-**Authority and date.** Run 33964028317 of 2026-09-05, `broiler-vm (full)` on `1910c6f`: the
-`linux-x64` cell's `--- zlib (exit 0, 2342s)` and `# 15 of 15 benchmarks reported a score and
-exited zero`, the `osx-arm64` cell's `--- zlib (exit 0, 2796s)` and the same fifteen-of-fifteen
-line, and the `linux-arm64` cell's workload step completing green. 2026-09-05.
+**Authority and date.** Run 33964028317 of 2026-09-05, `broiler-vm (full)` on `1910c6f`, reading
+each cell's own transcript: `--- zlib (exit 0, 2342s)` on `linux-x64`, `(exit 0, 2796s)` on
+`osx-arm64` and `(exit 0, 2897s)` on `linux-arm64`, each with `# 15 of 15 benchmarks reported a
+score and exited zero`; and on `osx-x64` `--- zlib (exit 5, 3600s)` with
+`the program did not settle within its allowance: AllowanceExhausted on WallClock` and
+`# 14 of 15 benchmarks reported a score and exited zero`. 2026-09-05.
