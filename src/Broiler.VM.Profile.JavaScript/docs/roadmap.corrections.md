@@ -156,7 +156,7 @@ rather than a decision record.
 | [JSC-70](#jsc-70) | roadmap section 6's manifest allocation table, and the same table in [JSD-0002](decisions/0002-feature-manifest-allocation.md) | The table gains a row: `broiler.javascript.wide`, minted for bring-up, which is deliberately NOT the `core` row JS-5 was promised and which closes no milestone | [JSD-0021](decisions/0021-the-wide-bring-up-manifest-and-format-version-2.md) |
 | [JSC-71](#jsc-71) | roadmap section 7, and `JavaScriptFormat`'s remark that version 1 is the only version this build defines | There are two format versions, and what version 2 adds - a function table, an environment model, exception regions carrying a scope depth - is what a version break exists for | [JSD-0021](decisions/0021-the-wide-bring-up-manifest-and-format-version-2.md) |
 | [JSC-72](#jsc-72) | roadmap section 8 and the descriptor's five provisional rows | Two of the five are settled by CONSTRUCTION and not by benchmark: a declared poll bound is an upper bound on the largest single charge the profile makes | the poll-bound violation a bulk code-section read produced |
-| [JSC-73](#jsc-73) | the descriptor's budget declaration matrix, and [JSD-0008](decisions/0008-descriptor-rows-that-are-provisional-and-why.md) | The `HostCalls` row is `Charged`, because one optional host capability import now exists - the flip JSD-0008 said JS-6 would make, arriving from another milestone | the descriptor, and the composition that registers the import |
+| [JSC-73](#jsc-73) | the descriptor's budget declaration matrix, and [JSD-0008](decisions/0008-format-version-1-the-entry-point-and-what-js-1-corrected.md) | The `HostCalls` row is `Charged`, because one optional host capability import now exists - the flip JSD-0008 said JS-6 would make, arriving from another milestone | the descriptor, and the composition that registers the import |
 | [JSC-74](#jsc-74) | registry rows 1003 and 1006, and rule N7's admitted set | Two rows stopped being unreachable: a defensive row's justification is a fact about the build, and registering a second format version and a second manifest expired both | two retained corpus entries, one per direction |
 | [JSC-75](#jsc-75) | roadmap section 15 and [JSD-0017](decisions/0017-the-end-user-host-and-what-an-exit-code-promises.md) | The end-user host runs the wide surface by default, and naming several files runs them as separate scripts sharing ONE realm rather than as a sweep | the host's own closure report and its two workloads |
 | [JSC-76](#jsc-76) | roadmap section 14 and the conformance composition's `--run` mode | A second mode runs a pinned third-party checkout this repository does not hold, with four verdicts rather than two, because an unadmitted construct is neither a pass nor a failure | the retained runs over named subtrees |
@@ -3316,7 +3316,7 @@ discipline and against the header the manifest carried; decision
 
 **Where:** roadmap [section 8](roadmap.md#8-the-value-frame-and-call-model)'s *`CallDepth` is
 measured, not chosen*, and the lifecycle clause of
-[gates section 21](roadmap.gates.md#21-format-and-verifier-safety) that says a call-stack overflow
+[gates section 22](roadmap.gates.md#22-release-gates) that says a call-stack overflow
 is reported as a resource exhaustion and is not fatal.
 
 **What the plan said.** That the bound could be promised at all *because of how a frame is stored*:
@@ -3693,7 +3693,7 @@ through the ordinary command line that produced the second column. 2026-09-04.
 
 ### JSC-88
 
-**Where:** roadmap [section 10](roadmap.md#10-the-executor-and-the-realm)'s abstract operations, and
+**Where:** roadmap [section 10](roadmap.md#10-execution-mapping-javascript-onto-the-core-lifecycle)'s abstract operations, and
 the property [JSC-79](#jsc-79) and [JSC-85](#jsc-85) both exist to hold: **a refusal is an answer and
 a process termination is not one.**
 
@@ -3972,7 +3972,7 @@ answers. 2026-09-04.
 
 ### JSC-97
 
-**Where:** roadmap [section 10](roadmap.md#10-the-executor-and-the-realm)'s statement that a
+**Where:** roadmap [section 10](roadmap.md#10-execution-mapping-javascript-onto-the-core-lifecycle)'s statement that a
 JavaScript `throw` travels on the CLR's own exception mechanism and each frame catches it and looks
 for a region covering the instruction that was executing.
 
@@ -5112,7 +5112,7 @@ built by the same constructor the guest could have called itself. That required 
 visible to the compiler, and it was in the profile assembly, which the compiler must not reference —
 so `JsRegExpMatcher` moved to `Broiler.VM.Profile.JavaScript.Format`, where the tokenizer and the
 realm can both see it. It became public rather than internal-visible because **rule A10 of
-[ADR 0001](decisions/0001-what-this-component-is.md) forbids `InternalsVisibleTo` in a product
+ADR 0001 forbids `InternalsVisibleTo` in a product
 project**; a type two assemblies need is a type with a surface, and pretending otherwise is what that
 rule exists to stop.
 
@@ -5477,7 +5477,7 @@ this bundle happened to trip over.
 
 ### JSC-142
 
-**Where:** the fourth divergence of the [ledger's section 2](roadmap.status.md#2-what-the-runs-found),
+**Where:** the fourth divergence of the [ledger's section 2](roadmap.status.md#2-current-milestone-status),
 the remark at the head of `JsCompiler` that declared it, and the three `dead-zone/` rows of
 `src/tests/cli/expected.txt` that pinned it so the day it moved would be a day something went red.
 

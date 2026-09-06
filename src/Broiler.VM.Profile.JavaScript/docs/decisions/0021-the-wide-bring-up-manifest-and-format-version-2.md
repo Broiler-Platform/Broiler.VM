@@ -48,7 +48,7 @@ form in which the older name keeps meaning what it meant.
 **The core name is allocated to JS-5 and was not free to take.** JSD-0002's table and section 6's
 copy of it both put `broiler.javascript.core` at JS-5, and JS-6 — the milestone that owns the
 standard library — is required by
-[its entry in the delivery plan](../roadmap.delivery.md#js-6-the-standard-library) to mint the
+[its entry in the delivery plan](../roadmap.delivery.md#js-6--the-standard-library) to mint the
 regular-expression surface as its own identity and leave it out of `broiler.javascript.core`.
 
 **This manifest admits a RegExp.** Taking the core name would therefore have contradicted that
