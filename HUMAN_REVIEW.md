@@ -5,7 +5,7 @@ GENERATED - DO NOT EDIT MANUALLY. Regenerate with
 `CODE-ASSURANCE.md`, `assurance.manifest.json` and every generated source header from the
 product tree.
 
-> **Status: PENDING.** Human-reviewed: 0 of 2676 relevant units. No package
+> **Status: PENDING.** Human-reviewed: 0 of 2679 relevant units. No package
 > may be published from this component, no RID claimed and no milestone accepted until every
 > relevant unit carries a decision, which is update rule 8 in the status ledger.
 
@@ -79,12 +79,12 @@ date, any annotation is malformed or any generated artefact is stale.
 | Metric | Value |
 |---|---:|
 | Files scanned | 122 |
-| Code units | 4814 |
-| Relevant | 2676 |
+| Code units | 4817 |
+| Relevant | 2679 |
 | Exempt | 2138 |
-| Assessed | 2676 of 2676 (100%) |
-| Human reviewed | 0 of 2676 (0%) |
-| Unverified | 2676 |
+| Assessed | 2679 of 2679 (100%) |
+| Human reviewed | 0 of 2679 (0%) |
+| Unverified | 2679 |
 | Aliases naming a decision | 0 |
 
 ## 4. Review States
@@ -96,7 +96,7 @@ annotations and the current fingerprints; nothing stores them.
 |---|---:|
 | NEW | 0 |
 | AI_ASSESSED | 0 |
-| HUMAN_PENDING | 2676 |
+| HUMAN_PENDING | 2679 |
 | HUMAN_APPROVED_PENDING_FINGERPRINT | 0 |
 | VERIFIED | 0 |
 | STALE | 0 |
@@ -179,7 +179,7 @@ relevant units in a state that blocks a release.
 | `src/Broiler.VM.Profile.JavaScript/JsArray.cs` | 19 | 14 | 5 | 14 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsBinary.cs` | 51 | 31 | 20 | 31 | Low | Medium | 0/0 |
 | `src/Broiler.VM.Profile.JavaScript/JsCollections.cs` | 87 | 51 | 36 | 51 | Low | High | 1/1 |
-| `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` | 136 | 121 | 15 | 121 | Low | High | 22/22 |
+| `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` | 139 | 124 | 15 | 124 | Low | High | 25/25 |
 | `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` | 24 | 13 | 11 | 13 | Low | High | 2/2 |
 | `src/Broiler.VM.Profile.JavaScript/JsFunction.cs` | 56 | 26 | 30 | 26 | Low | High | 1/1 |
 | `src/Broiler.VM.Profile.JavaScript/JsGenerator.cs` | 68 | 17 | 51 | 17 | None | High | 5/5 |
@@ -618,6 +618,10 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: this stays set after the refusal has been thrown, so a later recursion is unbounded
 - `Broiler.VM.Profile.JavaScript.JsEngine.StackBackstopReached()` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `94E6AA`, PENDING
   - Falsified if: the stack backstop produces a result naming no dimension, or a refused charge commits anything
+- `Broiler.VM.Profile.JavaScript.JsEngine.ChargeText(int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `626201`, PENDING
+  - Falsified if: a text operation's charge does not grow with the input the guest controls
+- `Broiler.VM.Profile.JavaScript.JsEngine.ToNumberFromText(string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `07B791`, PENDING
+  - Falsified if: a longer numeric string is read for the same charge as a shorter one
 - `Broiler.VM.Profile.JavaScript.JsEngine.instanced` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `9CFED6`, PENDING
   - Falsified if: two instances of one module key exist in one realm
 - `Broiler.VM.Profile.JavaScript.JsEngine.RunModuleGraph(JsProgram, int)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `6350BB`, PENDING
@@ -650,6 +654,8 @@ written out, so a unit that becomes `High` joins it at the next generation.
   - Falsified if: an inner step of an async `yield*` reaches the outer body unawaited, or a `return` or a `throw` that arrives while one is suspended is not offered to the inner iterator first
 - `Broiler.VM.Profile.JavaScript.JsEngine.ResolveName(System.Collections.Generic.List<JsEnvironment>, int, string)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `1AC0F4`, PENDING
   - Falsified if: this walk answers with anything but an object a `PushObjectScope` placed on the chain
+- `Broiler.VM.Profile.JavaScript.JsEngine.ChargeComparison(JsValue, JsValue)` in `src/Broiler.VM.Profile.JavaScript/JsEngine.cs` - Security=High, Spec=none cited, `B5D7E9`, PENDING
+  - Falsified if: comparing two long equal strings costs what comparing two short ones costs
 - `Broiler.VM.Profile.JavaScript.JsInstance.Environment` in `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` - Security=High, Spec=none cited, `1C7767`, PENDING
   - Falsified if: this environment is asked for a mediator outside an invocation it supplied one for
 - `Broiler.VM.Profile.JavaScript.JsExecution.RunOnGuestStack(JsInstance, uint?)` in `src/Broiler.VM.Profile.JavaScript/JsExecution.cs` - Security=High, Spec=none cited, `CDA795`, PENDING
@@ -722,7 +728,7 @@ The assessments the decisions are recorded beside are machine-written and unread
 assessment is a comment, so downgrading one moves no fingerprint anywhere, which exclusions
 EX-65 and EX-76 record.
 
-That is not a figure of speech. 2676 of the 2676 assessed units declare
+That is not a figure of speech. 2679 of the 2679 assessed units declare
 `Origin=AI`, and the records this component implements were drafted the same way. An
 adversarial pass over the work confirmed findings and they were corrected, which is a check
 on it and not an independent judgement of it. Reading a declaration is the only thing that

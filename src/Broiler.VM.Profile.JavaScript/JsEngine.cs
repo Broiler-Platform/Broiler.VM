@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   121
-// Annotated:        121/121
+// Relevant units:   124
+// Annotated:        124/124
 // Exempt:           15
-// Human-reviewed:   0/121
+// Human-reviewed:   0/124
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         22/22
+// Criteria:         25/25
 // Resource impact:  7/10 max
-// Unverified:       121
+// Unverified:       124
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -542,6 +542,37 @@ internal sealed class JsEngine
         return new JsAbort(JsAbortKind.Exhausted, "the call-depth backstop was reached");
     }
 
+    /// <summary>
+    /// Charges for work whose size is a number of characters, never less than one unit.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The comparison and conversion families charged a flat amount, and a flat charge over an
+    /// input the guest chooses is a budget that bounds nothing.</b> Roadmap section 8 names
+    /// <i>string concatenation and comparison</i> and <i>numeric conversion of large values</i>
+    /// among the families whose cost grows with their input, and asks each to declare a monotone
+    /// non-decreasing charging function. Concatenation had one and comparison did not: comparing
+    /// two strings of any length cost sixteen units, measured, and so did reading a number out of a
+    /// string of any length.
+    /// </para>
+    /// <para>
+    /// <b>The unit is a character and the declared function is the work's own bound.</b> An ordinal
+    /// comparison stops at the first difference and therefore cannot read past the shorter operand,
+    /// so its function is <c>min(|a|, |b|) + 1</c>; reading a number out of a string trims and scans
+    /// the whole of it, so its function is <c>|s| + 1</c>. Both are monotone non-decreasing in the
+    /// magnitude of the input, and the declared granularity is one, so the charge is the function
+    /// itself rather than a ceiling over a window.
+    /// </para>
+    /// <para>
+    /// The <c>+ 1</c> is not rounding: a comparison of two empty strings is still a comparison, and
+    /// a family whose charge can be zero is a family a program can perform without limit.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=626201
+    // Broiler-Falsified-If: a text operation's charge does not grow with the input the guest controls
+    // Broiler-Human:        PENDING
+    internal void ChargeText(int units) => Charge(units <= 0 ? 1UL : (ulong)units + 1UL);
+
     /// <summary>Charges fuel, aborting when the allowance is spent.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=4AFB70
     // Broiler-Human:        PENDING
@@ -689,7 +720,7 @@ internal sealed class JsEngine
     }
 
     /// <summary>The abstract operation <c>ToNumber</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=3320EE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=D4B151
     // Broiler-Human:        PENDING
     internal double ToNumber(JsValue value) => value.Type switch
     {
@@ -697,7 +728,7 @@ internal sealed class JsEngine
         JsType.Boolean => value.AsBoolean() ? 1 : 0,
         JsType.Undefined => double.NaN,
         JsType.Null => 0,
-        JsType.String => JsNumberFormat.ToNumber(value.AsString()),
+        JsType.String => ToNumberFromText(value.AsString()),
 
         // A SYMBOL HAS TO BE REFUSED HERE AND NOT LEFT TO THE ARM BELOW. `ToPrimitive` of a
         // primitive is that primitive, so a Symbol reaching the recursive arm converts to itself
@@ -708,6 +739,20 @@ internal sealed class JsEngine
         JsType.Symbol => ThrowTypeError("Cannot convert a Symbol value to a number").AsNumber(),
         _ => ToNumber(ToPrimitive(value, "number")),
     };
+
+    /// <summary>Reads a number out of text, charging for the text it reads.</summary>
+    /// <remarks>
+    /// The conversion trims and scans the whole string, so its cost is the string's own length —
+    /// which the guest chooses, and which was charged nothing until this existed.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=07B791
+    // Broiler-Falsified-If: a longer numeric string is read for the same charge as a shorter one
+    // Broiler-Human:        PENDING
+    private double ToNumberFromText(string text)
+    {
+        ChargeText(text.Length);
+        return JsNumberFormat.ToNumber(text);
+    }
 
     /// <summary>The abstract operation <c>ToString</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=02CC42
@@ -4331,7 +4376,7 @@ internal sealed class JsEngine
     /// have run for a throw from the instruction itself, and no unwinding is reimplemented.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=37FF7E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=C7D1E7
     // Broiler-Human:        PENDING
     private JsValue Execute(
         JsProgram program,
@@ -5307,6 +5352,7 @@ internal sealed class JsEngine
                         {
                             var right = stack[--sp];
                             var left = stack[--sp];
+                            ChargeComparison(left, right);
                             stack[sp++] = JsValue.Boolean(left.StrictlyEquals(right));
                             pc++;
                             break;
@@ -5316,6 +5362,7 @@ internal sealed class JsEngine
                         {
                             var right = stack[--sp];
                             var left = stack[--sp];
+                            ChargeComparison(left, right);
                             stack[sp++] = JsValue.Boolean(!left.StrictlyEquals(right));
                             pc++;
                             break;
@@ -6482,7 +6529,7 @@ internal sealed class JsEngine
     }
 
     /// <summary>The four relational operators, through one abstract comparison.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=C40206
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=6700C2
     // Broiler-Human:        PENDING
     internal bool Relational(JsOpcode opcode, JsValue left, JsValue right)
     {
@@ -6505,7 +6552,14 @@ internal sealed class JsEngine
 
         if (first.IsString && second.IsString)
         {
-            var order = string.CompareOrdinal(first.AsString(), second.AsString());
+            var firstText = first.AsString();
+            var secondText = second.AsString();
+
+            // An ordinal comparison stops at the first difference, so the shorter operand bounds
+            // the work whatever the longer one holds.
+            ChargeText(System.Math.Min(firstText.Length, secondText.Length));
+
+            var order = string.CompareOrdinal(firstText, secondText);
 
             return opcode switch
             {
@@ -6528,13 +6582,34 @@ internal sealed class JsEngine
         };
     }
 
+    /// <summary>
+    /// Charges an equality comparison for the text it may have to read.
+    /// </summary>
+    /// <remarks>
+    /// Only the string-against-string case can read anything: every other pair of the same type
+    /// compares a word or a reference, and two different types answer without looking. Equality
+    /// answers immediately when the lengths differ, so like the relational comparison beside it the
+    /// shorter operand bounds the work.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=B5D7E9
+    // Broiler-Falsified-If: comparing two long equal strings costs what comparing two short ones costs
+    // Broiler-Human:        PENDING
+    private void ChargeComparison(JsValue left, JsValue right)
+    {
+        if (left.IsString && right.IsString)
+        {
+            ChargeText(System.Math.Min(left.AsString().Length, right.AsString().Length));
+        }
+    }
+
     /// <summary>The abstract equality comparison, <c>==</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=BED8C4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=D30801
     // Broiler-Human:        PENDING
     internal bool LooselyEquals(JsValue left, JsValue right)
     {
         if (left.Type == right.Type)
         {
+            ChargeComparison(left, right);
             return left.StrictlyEquals(right);
         }
 

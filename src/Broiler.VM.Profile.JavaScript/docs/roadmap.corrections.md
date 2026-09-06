@@ -8083,3 +8083,48 @@ a defensive arm otherwise. **These runs were taken outside any retained bundle a
 ledger row.**
 
 **Authority and date.** The runs of 2026-09-06 on `linux-x64` described above. 2026-09-06.
+
+### JSC-193
+
+**Where:** [`JsEngine`](../JsEngine.cs)'s comparison and conversion paths, and roadmap
+[section 8](roadmap.md#proportional-charging)'s family list.
+
+**What the record said.** That for every named operation family whose cost grows with its input —
+*string concatenation and comparison, array copy and sort, property enumeration,
+regular-expression matching, numeric conversion of large values, structured cloning* — this profile
+declares a monotone non-decreasing charging function and charges at least the ceiling of it. That
+sentence is the plan's and it did not change. What changed is that two of the families were not
+doing it, and nothing had ever asked them.
+
+**What replaced it.** **String comparison charged a flat sixteen units and numeric conversion of a
+numeral charged a flat amount too**, both measured by bisecting the fuel allowance against a
+control. So `a < b` over two strings of half a megabyte cost what it costs over two characters, and
+`Number(s)` over a five-hundred-digit numeral cost what it costs over four digits. That is the risk
+[section 23](roadmap.gates.md#23-risks-and-stop-conditions) states in one line — *guest-controlled
+superlinear cost is not charged proportionally, so a bounded budget bounds nothing* — reached by
+linear cost rather than superlinear, which is the same hole and cheaper to walk through.
+
+Both charge per character now, against the work's own bound: an ordinal comparison stops at the
+first difference and so cannot read past the shorter operand, giving `min(|a|, |b|) + 1`; reading a
+number trims and scans the whole string, giving `|s| + 1`. Strict and loose equality over two
+strings take the comparison charge as well, because equality reads the same characters the
+relational operators do. The declared granularity is one, so the charge is the function rather than
+a ceiling over a window, and the `+ 1` is there because a family whose charge can be zero is one a
+program can perform without limit.
+
+**And the reason nothing had asked** is the part worth keeping. Section 8 asks for *a retained
+fixture with an unsimplified control* per family and makes the consequence explicit — an operation
+family without a proportionality fixture does not ship in the increment — and there was no fixture
+for any of the seven. Eight now exist, in the root that carries the lowering, measuring each family
+against its own control by bisecting the allowance, because nothing in the public surface reports
+what an invocation spent and adding a reporter would put a measurement channel in the product. The
+two defects above are what the first run of them found. **The negative control is the defect
+itself**: injecting the flat charge back fails the two fixtures naming the floor and the flat
+series, and reverting passes them.
+
+**What is NOT claimed.** Structured cloning is the seventh family and does not ship, so it has no
+fixture and needs none. The floors are lower bounds on the work rather than the measured charges —
+a floor set to what was measured would pass by construction. And these runs are outside any
+retained bundle: **no ledger row moves on them.**
+
+**Authority and date.** The measurements of 2026-09-06 on `linux-x64` described above. 2026-09-06.

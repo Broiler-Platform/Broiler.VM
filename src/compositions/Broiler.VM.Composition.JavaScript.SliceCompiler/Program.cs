@@ -424,6 +424,7 @@ internal static class Program
             .Concat(SurfaceChecks.Run())
             .Concat(IsolationChecks.Run())
             .Concat(HostBoundaryChecks.Run())
+            .Concat(ProportionalityChecks.Run())
             .ToArray();
         var failed = 0;
 
