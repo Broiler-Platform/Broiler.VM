@@ -8128,3 +8128,57 @@ a floor set to what was measured would pass by construction. And these runs are 
 retained bundle: **no ledger row moves on them.**
 
 **Authority and date.** The measurements of 2026-09-06 on `linux-x64` described above. 2026-09-06.
+
+### JSC-194
+
+**Where:** roadmap [section 12](roadmap.md#12-suspension-generators-async-functions-and-top-level-await)'s
+routing decision, JS-1's declaration that the fifth step kind is produced at JS-7, and
+[`JavaScriptExecutor`](../JavaScriptExecutor.cs)'s `Resume` and `Unwind`.
+
+**What the record said.** That `Suspended` is unreachable from this profile and is **produced at
+JS-7** — JS-1 declared it rather than minting an out-of-manifest opcode to reach it, the ledger has
+carried the sentence since, and the execution-only root asserted it by checking that neither
+suspension row was declared. Nothing produced the kind.
+
+**What replaced it.** **The kind is produced**, by a reserved entry point of the same shape as the
+drain: `#step-jobs` runs one due job and, if the queue still holds anything, answers `Suspended`
+with a continuation and a projection carrying how many jobs are left. The host resumes to take the
+next turn. Resume and Unwind are implemented — the first refuses a continuation presented against a
+different instance, which is the one confusion the core cannot see because both objects are this
+profile's; the second drops the queue without calling any of it, because roadmap section 12 says an
+unwind may run nothing able to request a load or to suspend and the only way to promise that about
+a queue of guest callables is not to call them.
+
+**This is section 12's routing decision, and it is narrow on purpose.** Section 12 warns that
+routing every microtask through a core suspension would make the suspended-operation limit govern a
+page rather than a pathology. So a drain is still one operation running the queue to exhaustion, a
+`yield` and an `await` still suspend on a heap frame inside one operation with no core suspension,
+and the pause is only what a host asked for by taking the turn as its unit. **The live-suspension
+count that produces is at most one per instance being stepped, and a composition that never steps
+produces none** — a property of the embedding rather than of the program, which is the count
+section 12 asks to be recorded with the decision.
+
+**One declaration was made and withdrawn in the same change, and the reason is worth keeping.**
+`ExternalSuspension` was set to `Declared`, and a check written against the pair section 12 asks to
+be told apart failed and was right to: **at core contract version 1 an executor cannot see that a
+host has asked it to pause** — nothing on the execution environment reports the request — so a
+profile declaring the row could keep the promise only where the guest happened to reach a
+suspension point of its own. That is a declaration true by luck. The row stays `NotDeclared`, the
+pause is a **guest** suspension, which section 12's first row says declares nothing extra, and a
+host calling `RequestSuspend` gets `ExternalSuspensionNotDeclared` — one half of the pair, with a
+case. The other half needs a descriptor that declares the row, and minting a second differing in it
+alone would be composing a profile this repository does not ship in order to pass a check.
+
+**What of JS-7's gate this reaches, and what it does not.** Reached, each by a named case in the
+root that carries the lowering: a pause and a resume across two suspensions with every job running
+once in order; a second resume refused as `ResumeTokenConsumed`; a parked operation disposed
+without ever being resumed, with its queue dropped rather than run; the live-suspension bound
+answering `SuspendedOperationLimitReached`. **Not reached**: asynchronous instantiation, which is
+not declared and which section 12 already records as *not what a caller gets today* — a module
+graph is evaluated inside an invocation — so the gate's top-level-await-during-instantiation clause
+is untouched and still owed; the residency bound, which needs a pause to outlive a wall clock and
+would make a check that sleeps; and the budget-snapshot-across-a-pause clause, which nothing here
+reads. **No ledger row moves on this**: the cases are in a root's check list and not in a retained
+bundle.
+
+**Authority and date.** The implementation and the runs of 2026-09-06 described above. 2026-09-06.

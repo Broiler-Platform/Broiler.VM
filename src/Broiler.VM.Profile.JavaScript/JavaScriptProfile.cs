@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   18
-// Annotated:        18/18
+// Relevant units:   20
+// Annotated:        20/20
 // Exempt:           10
-// Human-reviewed:   0/18
+// Human-reviewed:   0/20
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         7/7
 // Resource impact:  3/10 max
-// Unverified:       18
+// Unverified:       20
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -166,6 +166,11 @@ public static class JavaScriptProfile
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4D1110
     // Broiler-Human:        PENDING
     public const int WideFaultKindId = 1004;
+
+    /// <summary>The kind ID stamped on the projection a parked operation publishes.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=59D3C3
+    // Broiler-Human:        PENDING
+    public const int WidePauseKindId = 1005;
 
     /// <summary>The binding index the wide surface's <c>print</c> reaches the host through.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A9FBB7
@@ -367,6 +372,12 @@ public static class JavaScriptProfile
     public static bool TryGetWideCompletion(in VmInvocationResult result, out JsCompletion completion) =>
         result.TryGetPayload(out completion);
 
+    /// <summary>Projects the pause a parked wide-surface operation published.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8096BB
+    // Broiler-Human:        PENDING
+    public static bool TryGetPause(in VmInvocationResult result, out JsPause pause) =>
+        result.TryGetPayload(out pause);
+
     /// <summary>Projects a wide-surface uncaught exception out of an invocation result.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=56397D
     // Broiler-Human:        PENDING
@@ -476,8 +487,21 @@ public static class JavaScriptProfile
             // No top-level await, because there are no modules. JS-7 declares it.
             asynchronousInstantiation: VmDeclaration.NotDeclared,
 
-            // Not declared, so a composition enabling it gets the named refusal rather than a pause
-            // this profile cannot honour. JS-7 decides it.
+            // NOT DECLARED, AND THE PAUSE THIS PROFILE MAKES IS NOT THIS ROW. Declaring external
+            // suspension is a promise to park WHEN THE HOST ASKS, and at core contract version 1 an
+            // executor cannot see that it has been asked: nothing on the execution environment
+            // reports the request, so a profile that declared this could keep the promise only when
+            // the guest happened to reach a suspension point of its own. That is a declaration that
+            // would be true by luck.
+            //
+            // What this profile parks for is a GUEST suspension - section 12's first row, where
+            // nothing extra is declared - between two job turns, and only where a host asked for
+            // the turn as its unit by invoking the stepping entry point. A host calling
+            // `RequestSuspend` gets `ExternalSuspensionNotDeclared`, which is the honest answer and
+            // is one half of the pair section 12 asks to be told apart; the other half needs a
+            // descriptor that declares the row, and minting a second descriptor differing in it
+            // alone would be composing a profile this repository does not ship in order to pass a
+            // check.
             externalSuspension: VmDeclaration.NotDeclared,
             payloadKindIdRange: new VmPayloadKindIdRange(1000, 1099),
             authoredCoreContractVersion: 1,

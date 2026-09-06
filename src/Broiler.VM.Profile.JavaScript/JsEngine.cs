@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   124
-// Annotated:        124/124
+// Relevant units:   127
+// Annotated:        127/127
 // Exempt:           15
-// Human-reviewed:   0/124
+// Human-reviewed:   0/127
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         25/25
+// Criteria:         27/27
 // Resource impact:  7/10 max
-// Unverified:       124
+// Unverified:       127
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -128,6 +128,11 @@ internal sealed class JsEngine
     // Broiler-Human:        PENDING
     internal bool HasPendingJobs => jobs.Count != 0;
 
+    /// <summary>How many jobs are due and have not run.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=5235ED
+    // Broiler-Human:        PENDING
+    internal int PendingJobCount => jobs.Count;
+
     /// <summary>
     /// Runs every job that is due, and every job those enqueue, until none is left.
     /// </summary>
@@ -185,6 +190,72 @@ internal sealed class JsEngine
         }
 
         return JsValue.Undefined;
+    }
+
+    /// <summary>
+    /// Runs at most one due job and says whether the queue still holds anything.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>This is the same queue and the same jobs as <see cref="DrainJobs"/>; what differs is who
+    /// decides when the next one runs.</b> A drain runs the queue to exhaustion inside one
+    /// operation, which is what a host that wants a script settled asks for. A host that wants an
+    /// event loop of its own — one that can interleave its work with the guest's, or stop between
+    /// turns and never resume — needs the turn to be the unit, and a queue drained to exhaustion
+    /// cannot give it one.
+    /// </para>
+    /// <para>
+    /// <b>A job that throws does not stop the stepping</b>, exactly as it does not stop a drain: the
+    /// value is carried out and the queue keeps its remaining jobs, so a host stepping through a
+    /// program sees the same sequence of faults, one at a time, that a drain would have folded into
+    /// the first.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=D67CCF
+    // Broiler-Falsified-If: more than one job runs in a step, or a step reports a queue state the queue does not have
+    // Broiler-Human:        PENDING
+    internal bool StepOneJob(out JsValue thrown)
+    {
+        thrown = JsValue.Undefined;
+
+        if (jobs.Count == 0)
+        {
+            return false;
+        }
+
+        Charge(1);
+        var (callable, arguments) = jobs.Dequeue();
+
+        try
+        {
+            _ = Call(callable, JsValue.Undefined, arguments);
+        }
+        catch (JsThrow raised)
+        {
+            thrown = raised.Value;
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Drops every queued job without running any of it.
+    /// </summary>
+    /// <remarks>
+    /// The terminal unwind's whole of the work, and it deliberately runs <b>no guest code</b>:
+    /// roadmap section 12 says the unwind must run nothing able to request a load or to suspend,
+    /// and the only way to promise that about a queue of guest callables is not to call them.
+    /// Whatever they would have done is not done, which is what abandoning an operation means.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=459593
+    // Broiler-Falsified-If: a queued job runs during an unwind
+    // Broiler-Human:        PENDING
+    internal int DropPendingJobs()
+    {
+        var dropped = jobs.Count;
+        jobs.Clear();
+        return dropped;
     }
 
     /// <summary>Whether the composition admitted the optional surface <paramref name="manifestId"/>.</summary>

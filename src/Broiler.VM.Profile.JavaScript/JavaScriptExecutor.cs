@@ -330,13 +330,15 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
     /// to resume is what keeps a defect in the core or in this profile from being reported as a
     /// completed operation. JS-7 replaces this body.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=980DF9
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9B2A67
     // Broiler-Human:        PENDING
     public VmExecutionStep Resume(
         IVmInstanceState state,
         IVmProfileContinuation continuation,
         System.Threading.CancellationToken cancellationToken) =>
-        VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation);
+        state is JsInstance
+            ? JsExecution.Resume(ProfileId, state, continuation)
+            : VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation);
 
     /// <inheritdoc/>
     /// <remarks>
@@ -345,10 +347,17 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
     /// empty, and roadmap section 12 fixes what it must then do - run under the tighter of the two
     /// budgets and run no guest code able to request a load or to suspend.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5DBDBE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=075965
     // Broiler-Human:        PENDING
     public void Unwind(IVmProfileContinuation continuation, ulong effectiveUnwindAllowance)
     {
+        // THE ALLOWANCE IS NOT CONSULTED BECAUSE NOTHING HERE SPENDS IT. Abandoning a parked
+        // stepping operation is dropping a queue of callables without calling any of them, which is
+        // bounded by the queue's own length and runs no guest code at all - so there is no work to
+        // run under the tighter of the two budgets, and pretending to meter it would be a claim
+        // about a loop that does not exist. A pause that ever holds work worth metering is where
+        // this stops being empty of the allowance rather than empty of effect.
+        JsExecution.Unwind(continuation);
     }
 
     /// <summary>What one operand slot costs, for the retention report.</summary>
