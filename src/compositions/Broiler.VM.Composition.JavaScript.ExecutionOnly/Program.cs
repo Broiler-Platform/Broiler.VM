@@ -49,6 +49,16 @@ internal static class Program
                 return Fuzzing.Replay(replay);
             }
 
+            // THE FOURTH SURFACE, AND THE ONLY MODE HERE THAT NEEDS NO CORPUS. It mutates patterns
+            // and subjects this file carries rather than artifacts a producer wrote, so it is
+            // dispatched before the corpus argument is required.
+            if (args.Contains("--fuzz-regexp", StringComparer.Ordinal))
+            {
+                return RegExpFuzzing.Run(
+                    ulong.Parse(Argument(args, "--seed") ?? "1", System.Globalization.CultureInfo.InvariantCulture),
+                    int.Parse(Argument(args, "--iterations") ?? "20000", System.Globalization.CultureInfo.InvariantCulture));
+            }
+
             var corpus = Argument(args, "--corpus");
 
             if (corpus is null)

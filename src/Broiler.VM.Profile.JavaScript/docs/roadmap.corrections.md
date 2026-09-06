@@ -8231,3 +8231,47 @@ JS-1's hand-written encoder and its hand-written programs are still not deleted,
 asks for and asserts by scan.
 
 **Authority and date.** The implementation and the runs of 2026-09-06 described above. 2026-09-06.
+
+### JSC-196
+
+**Where:** JS-9's *fuzz all four untrusted-input surfaces* in
+[the delivery file](roadmap.delivery.md#js-9--adversarial-input-agents-and-soak), and the header
+every retained `fuzz.log` carries.
+
+**What the record said.** That two of roadmap
+[section 7](roadmap.md#7-the-bytecode-format-and-the-verifier)'s four surfaces are fuzzed and two
+are not, the second pair being **the source tokenizer and parser** and **the regular-expression
+matcher over pattern and subject** — and, from 2026-09-03, that the first of those two *exists and
+no session reaches it* while the matcher *does not exist, and waits on JS-6*.
+
+**What replaced it.** **The matcher exists** — the workload programme wrote one in this checkout
+when it replaced the translation onto the platform's engine, and rule N18 asserts over the product
+source that no call site constructs a compiled-mode regular expression from the platform. So *waits
+on JS-6* stopped being true at the same moment the same sentence stopped being true of the front
+end, and the row carried the older reading for both. **A session reaches it now**: a matcher session
+mutates both halves of the input, because a pattern is text a program wrote and a subject is text a
+program passed, and a session that mutated only the pattern would leave unexplored the half where a
+backtracker spends its time.
+
+**What a counterexample is here, stated because it is narrower than it sounds.** The matcher
+declares exactly two refusals — a pattern that is not one, and a ceiling it declares for itself —
+and the caller that turns a matcher failure into a guest-visible answer knows about exactly those
+two. So an escaping third exception is a defect and everything else is an answer. The session found
+none in the sessions retained; **what makes that worth reading is the control beside it**, which
+turns one declared refusal into an ordinary exception and requires the session to report the pattern
+and subject that reach it.
+
+**And the guidance loop fires here, where the source session's does not.** Both key on the answer
+this profile publishes, as [JSD-0013](decisions/0013-the-fuzz-sessions-coverage-signal.md) requires.
+The source session kept nothing — every answer it produced was one its seed corpus already reached —
+while the matcher session's seed pool grows until it reaches its declared ceiling, which the session
+reports rather than passing over. **A session's growth is a fact about its corpus as much as about
+its mutator**, so neither is judged on it; what each is judged on is its own loop.
+
+**What is still open.** Three of the four surfaces have a session; the fourth pair is now one
+surface rather than two, and it is closed. **What no session covers is the executor over
+verified-but-adversarial artifacts reached from SOURCE** rather than from mutated bytes, which is
+not one of the four and is named here only so it is not read into them. **No ledger row is closed
+by this**: the matcher session is one session over one surface, and JS-9's gate asks for far more.
+
+**Authority and date.** The implementation and the runs of 2026-09-06 described above. 2026-09-06.
