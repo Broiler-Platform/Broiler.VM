@@ -1,0 +1,12 @@
+bundle:                JS-9-005
+milestone:             JS-9
+collected (UTC):       2026-09-06T22:27:46+00:00
+component commit:      204f1e49c7fb119c927d24121df9386de1a1d13c
+branch:                claude/broiler-vm-js-profile-roadmap-wo2wnk
+working tree:          clean
+dirty entries:         0
+owner:                 profile architecture owner (unassigned identity)
+reviewer:              NONE - nothing here has been reviewed
+
+Every path below is relative to the component root. A figure in this bundle is this
+component's own; no result from any other component is evidence here.
