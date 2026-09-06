@@ -7890,3 +7890,145 @@ recognised, so a construct added later inherits the bound unless it is built som
 [JSD-0022](decisions/0022-what-the-nesting-bound-bounds-and-the-stack-it-is-derived-against.md),
 and the sweep and controls recorded in that change. The runs were taken outside any retained bundle
 and advance nothing. 2026-09-06.
+
+### JSC-187
+
+**Where:** the workload roadmap's
+[section 3.2](roadmap.workloads.md#32-the-surface-that-is-absent-from-the-realm), the paragraph
+beginning *absent still, and the list is shorter than it was*.
+
+**What the plan said.** That `Proxy`, `Reflect`, `BigInt`, `Intl` and `Temporal` are absent from the
+realm, with `SharedArrayBuffer` and `Atomics` absent deliberately.
+
+**What replaced it.** `Proxy` and `Reflect` are present, exercised by a differential probe of their
+own. What is absent is `BigInt` with its two typed arrays, `Intl`, `Temporal`, the deliberate
+shared-memory pair — and **`Float16Array`, which no document named at all**, so the paragraph was
+not merely long by two names but short by one. The absent list a rule can decide is the ledger's
+fenced block, and the list a reader meets first was this paragraph.
+
+**Why a stale absence list is worse than no list.** Rule **N17** exists because
+[bundle JS-4-001](evidence/js-4-001/README.md) published a list a later reader could mistake for the
+whole set, and it decides exactly one document: it compares the ledger's block against the set the
+realm publishes. This paragraph is a second claim about the same subject in a different file, and
+nothing checked it — so the mechanism built to stop this class of staleness did not reach the place
+it next occurred. Extending it is
+[JSP-1](roadmap.parity.md#jsp-1--the-instrument-name-the-engine-and-make-the-comparison-runnable)'s.
+
+**Authority and date.** The realm sweep of 2026-09-06 recorded in
+[the parity roadmap](roadmap.parity.md#43-the-types-and-surfaces-that-are-absent), taken by asking
+both hosts one name at a time with `typeof`, against `docs/realm/globals.txt` as the realm's own
+answer. The runs were taken outside any retained bundle and advance nothing. 2026-09-06.
+
+### JSC-188
+
+**Where:** the workload roadmap's
+[section 3.3](roadmap.workloads.md#33-the-syntax-that-is-refused-by-name).
+
+**What the plan said.** That the front end refuses, by name and at its own position, a class
+declaration or expression, `super`, a generator function, an `async` function, `await`, `yield`, a
+module declaration, `with`, `for … of`, an optional chain, a template literal, a tagged template,
+`new.target`, destructuring in four positions, a rest parameter, a parameter default, and spread in
+three.
+
+**What replaced it.** **Every family on that list compiles**, asked one at a time under `--check`,
+which compiles and verifies and runs nothing. The section's own subject — that refusal by name is a
+property the programme must not spend — is unchanged and is why the list mattered; what changed is
+that the list is no longer the set of things the front end refuses, so a reader planning against it
+is planning against a surface that closed.
+
+**And the property the section protects has been spent once, in a place the list could not name.**
+A BigInt literal is admitted by the wide front end and evaluated as a Number, so a program doing
+big-integer arithmetic meets a wrong value rather than a refusal — the one construct where the front
+end admits what the value model cannot represent.
+[JSP-2](roadmap.parity.md#jsp-2--the-refusal-that-was-lost-a-bigint-literal-is-not-a-number) owns
+it, and its gate is split so that restoring the refusal does not wait on the type.
+
+**Authority and date.** The construct sweep of 2026-09-06 recorded in
+[the parity roadmap](roadmap.parity.md#41-what-is-no-longer-a-gap-and-what-that-costs-the-record)
+and [section 4.2](roadmap.parity.md#42-the-refusal-that-was-lost). The runs were taken outside any
+retained bundle and advance nothing. 2026-09-06.
+
+### JSC-189
+
+**Where:** the workload roadmap's
+[section 3.1](roadmap.workloads.md#31-what-each-workload-meets-today), the test262 module row, and
+[JSW-8](roadmap.workloads.md#jsw-8--the-module-goal)'s premise.
+
+**What the plan said.** That the module cases are *not run as modules by this host*, unchanged,
+because *there is no module goal* — and that JSW-8 would be the stage that creates one.
+
+**What replaced it.** The module goal exists and runs. The host takes `--module`, reads a `.mjs`
+under the module goal without it, and answers every case of the retained module probe: imports and
+re-exports, live bindings, the namespace exotic object, cyclic imports, and top-level `await`.
+JSW-8's objective is therefore partly met before the stage was scheduled, and what remains of it is
+the manifest identity `broiler.javascript.modules`, the composition's resolver, and the suite's
+module subtrees — not the goal itself.
+
+**The comparison this row was written against could not have shown it.** The comparison engine takes
+its goal from a flag rather than from the file name, and no run in this component had ever passed
+that flag — so the surface was recorded as one this host lacks at the moment it was one the other
+host could not be asked about. Correctly invoked, the comparison engine cannot complete the probe at
+all: it hangs without terminating on a cyclic import.
+
+**Authority and date.** The module runs of 2026-09-06 recorded in
+[the parity roadmap](roadmap.parity.md#2-how-the-comparison-was-made-and-the-two-ways-it-had-been-made-wrongly)
+and its [section 5](roadmap.parity.md#5-what-already-has-an-owner). The runs were taken outside any
+retained bundle and advance nothing. 2026-09-06.
+
+### JSC-190
+
+**Where:** the workload roadmap's
+[section 2](roadmap.workloads.md#2-what-the-comparison-engine-admits-and-what-that-comparison-is-worth),
+and the authored `#diverges` reasons retained beside every differential probe.
+
+**What the plan said.** That *the legacy component `Broiler.JS` is the comparison this document was
+asked for*, while each retained divergence explains itself in terms of *the comparison engine* —
+two documents using one phrase, with nothing recording that they meant different engines.
+
+**What replaced it.** **The retained divergences are calibrated against a third-party engine, not
+against the legacy component.** Run the driver against that engine and every declaration holds as
+written, including the one describing an `import.meta` carrying a URL, a path and a resolver. Run it
+against the legacy component and a large part of the same set is stale, because that engine *has*
+the members the declarations call absent — and its own `import.meta` carries a single name. The
+driver's usage line names the third-party engine. **A declaration is therefore only true relative to
+an engine it does not name**, and the two documents are about two engines.
+
+**Why this is recorded as a correction rather than as a repair.** Deleting the declarations that a
+run against the legacy component reports as stale would break the calibration they were written for,
+and keeping them silently leaves a reader unable to tell which of two engines any given claim is
+about. Naming the engine per declaration is the fix, and it is
+[JSP-1](roadmap.parity.md#jsp-1--the-instrument-name-the-engine-and-make-the-comparison-runnable)'s
+first clause. **Nothing about either engine's behaviour changed**; what changed is the plan's ability
+to say which engine a recorded difference was taken against.
+
+**Authority and date.** The calibration runs of 2026-09-06 recorded in
+[the parity roadmap](roadmap.parity.md#2-how-the-comparison-was-made-and-the-two-ways-it-had-been-made-wrongly),
+taken by running `eng/run-differential.py --against` at each engine in turn. The runs were taken
+outside any retained bundle and advance nothing. 2026-09-06.
+
+### JSC-191
+
+**Where:** [the differential probes' README](../../tests/differential/README.md), its *running them*
+section, and the driver `eng/run-differential.py`.
+
+**What the record said.** That the probes are run against a second engine by naming it, and — in the
+driver's own comment — that *both this host and the comparison engine decide the goal from the file
+name*, so a `.mjs` copied to a `.js` would be read as a script.
+
+**What replaced it.** The comparison engine decides the goal from a **flag**, and the driver passes
+none, so a script probe has never been run under the script goal and the module probe has never been
+run at all. **And the driver cannot run on `win-x64`**, a runtime identifier ADR 0012 declares: it
+looks for the composition binary without the platform's executable suffix and exits before doing any
+work, and its scratch directory is a POSIX path that on Windows is drive-relative and resolves
+against whichever drive the caller happens to stand on. It also passes no timeout, which matters
+because the comparison engine hangs without terminating on the module probe's import cycle.
+
+**One consequence for the retained answers themselves.** Re-running the regression half on a second
+machine disagrees with the retained file in two cases that are the machine rather than the build — a
+one-unit-in-the-last-place cube root and a non-ASCII answer mangled by the console code page. The
+retained answers are assumed to be reproducible on any declared platform and are not, because the
+driver pins neither the child's time zone nor its encoding.
+
+**Authority and date.** The driver runs of 2026-09-06 recorded in
+[the parity roadmap](roadmap.parity.md#2-how-the-comparison-was-made-and-the-two-ways-it-had-been-made-wrongly).
+The runs were taken outside any retained bundle and advance nothing. 2026-09-06.

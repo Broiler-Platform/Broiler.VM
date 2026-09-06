@@ -42,6 +42,29 @@ by construction, and a component whose only oracle is its own previous output pr
 claims about JavaScript rather than conformance, which is what bundle JS-4-001 records of every
 fixture written here.
 
+## WHICH engine, and why the answer is not one engine
+
+**The declared divergences below are calibrated against a third-party engine — not against the
+legacy component `Broiler.JS`.** Every `#diverges` reason in these files is true of that engine and
+several of them are false of the legacy one, which *has* the members they call absent. The
+[workload roadmap](../../Broiler.VM.Profile.JavaScript/docs/roadmap.workloads.md#2-what-the-comparison-engine-admits-and-what-that-comparison-is-worth)
+uses the same phrase, *the comparison engine*, and means the legacy component. **So a declaration
+here is only true relative to an engine it does not name**, and a run against the other one reports
+a set of these as stale that a run against the calibration engine needs kept. Recorded as
+[JSC-190](../../Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-190); naming the
+engine per declaration is
+[JSP-1](../../Broiler.VM.Profile.JavaScript/docs/roadmap.parity.md#jsp-1--the-instrument-name-the-engine-and-make-the-comparison-runnable)'s.
+
+**Three things stop `--against` being pointed at the legacy component today**, recorded as
+[JSC-191](../../Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md#jsc-191). The driver
+invokes the named engine with the file and no flag, and that engine takes its goal from a **flag**
+rather than from the file name — so a script probe is not run under the script goal and
+`the-module-goal.mjs` is not run at all. It passes no timeout, and that engine hangs without
+terminating on the module probe's import cycle. And the driver cannot start on `win-x64`: it looks
+for the composition binary without the platform's executable suffix, and its scratch directory is a
+POSIX path. Until those are fixed, a comparison against the legacy component has to be driven by
+hand.
+
 ## Declared divergences are data
 
 An answer file may carry `#diverges <case> <reason>` lines. They are authored, not generated, and
