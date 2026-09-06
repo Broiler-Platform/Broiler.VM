@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   9
-// Annotated:        9/9
+// Relevant units:   10
+// Annotated:        10/10
 // Exempt:           5
-// Human-reviewed:   0/9
+// Human-reviewed:   0/10
 // IP risk:          None
 // Security risk:    High
-// Criteria:         3/2
+// Criteria:         4/3
 // Resource impact:  0/10 max
-// Unverified:       9
+// Unverified:       10
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -93,6 +93,47 @@ public readonly record struct SliceParseOptions
     // Broiler-Falsified-If: a source parsed at this bound terminates the process
     // Broiler-Human:        PENDING
     public const int MaximumSupportedNestingDepth = 512;
+
+    /// <summary>
+    /// The deepest tree this compiler will hand to a walk, which is a different resource from the
+    /// bound above and needed a bound of its own.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The bound above is what the PARSER'S recursion costs; this is what the TREE costs the
+    /// things that walk it.</b> They are not the same quantity and no single number could be both.
+    /// A parenthesis costs parser stack and builds no node; a left-associative chain is built in a
+    /// LOOP, so it costs the parser one activation and builds a spine as long as the source.
+    /// `1+1+1+...` therefore passed a nesting bound of 64 with thousands of terms, and then the
+    /// lowering descended it once per term.
+    /// </para>
+    /// <para>
+    /// <b>It is not the host's to set, and that is the substantive half of the decision.</b> The
+    /// nesting bound is a policy a host states through parse options. This one is a property of the
+    /// stack this component declares for compilation - a host raising it would be raising a limit
+    /// on a resource it does not own and cannot see - so it is a constant here rather than a field
+    /// of the options, and no command line reaches it.
+    /// </para>
+    /// <para>
+    /// <b>Derived against the declared stack, with the margin stated.</b> On the stack a Windows
+    /// process gives its main thread, a left spine of about five thousand nodes ended the process
+    /// and two thousand survived; compilation runs on a stack this component declares, which is
+    /// sixteen times that, so the same walk survives on the order of sixty thousand. Ten thousand
+    /// is the bound, a margin of about six, and it admits every program a person writes and every
+    /// one a minifier emits - generated source is the shape this exists for.
+    /// </para>
+    /// <para>
+    /// <b>Why a bound at all, when the stack was raised.</b> Raising a stack moves a cliff; it does
+    /// not remove one, and the failure at the cliff is the one failure the CLR cannot turn into an
+    /// exception. The bound is what makes the answer a refusal at every size, and the declared
+    /// stack is what makes the bound large enough to cost no real program. Neither half is
+    /// sufficient alone, which is why JSD-0022 takes both.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=0; Fingerprint=6DB2AB
+    // Broiler-Falsified-If: a source whose tree is deeper than this bound is compiled rather than refused
+    // Broiler-Human:        PENDING
+    public const int MaximumTreeDepth = 10_000;
 
     /// <summary>Creates the options for <paramref name="goal"/> with every other switch defaulted.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=0; Fingerprint=C3E535

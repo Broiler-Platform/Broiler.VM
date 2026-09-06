@@ -1,0 +1,37 @@
+// Rule N17's witness: the tree-depth bound handed to the host as a switch it states.
+//
+// This is the shape a later contributor produces, and it produces it for a good reason. Every
+// other limit on this type IS the host's - the goal, the top-level-await permission, the nesting
+// depth - so a bound sitting beside them as a bare constant reads like something nobody finished.
+// Moving it into the options makes the type consistent, makes the CLI able to expose it, and makes
+// the tests that want a small bound simpler.
+//
+// What it costs is the thing the bound exists for. MaximumTreeDepth is derived against the stack
+// CompilationStack declares, and that stack belongs to this component: a host cannot see it, cannot
+// measure it, and does not know that raising the bound past it turns a refusal into a process
+// termination the CLR cannot report. A limit on somebody else's resource is not configuration.
+
+namespace Broiler.VM.Profile.JavaScript.Compiler;
+
+public readonly record struct SliceParseOptions
+{
+    public const int MaximumTreeDepth = 10_000;
+
+    public SliceParseOptions(SliceGoal goal, bool allowTopLevelAwait, int maximumNestingDepth,
+        int maximumTreeDepth)
+    {
+        Goal = goal;
+        AllowTopLevelAwait = allowTopLevelAwait;
+        MaximumNestingDepth = maximumNestingDepth;
+        TreeDepth = maximumTreeDepth;
+    }
+
+    public SliceGoal Goal { get; }
+
+    public bool AllowTopLevelAwait { get; }
+
+    public int MaximumNestingDepth { get; }
+
+    // The violation: the walk's bound is now whatever the caller asked for.
+    public int TreeDepth { get; }
+}

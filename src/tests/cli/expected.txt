@@ -100,6 +100,30 @@ refused/a-free-name.js|1|uncaught ReferenceError
 limits/nesting-past-the-default.js|3|2103:NestingTooDeep
 --max-depth 512 limits/nesting-past-the-default.js|0|1
 
+# THE BOUND BOUNDS RECURSION AND NOT PARENTHESES, which is what the first three pin. Each descends
+# through the parser without passing the methods the depth counter is entered from, so each ran
+# until the operating system stopped the process - at every --max-depth, and under --check, which
+# parses and does not run. They are judged here rather than in the test assembly because the defect
+# is a PROCESS TERMINATION, and a test that runs the parser in the test host cannot survive its own
+# subject. An exit code can, and 3 against 127 is the whole assertion.
+limits/a-prefix-operator-chain.js|3|2103:NestingTooDeep
+limits/a-typeof-chain.js|3|2103:NestingTooDeep
+limits/a-new-chain.js|3|2103:NestingTooDeep
+--check limits/a-prefix-operator-chain.js|3|2103:NestingTooDeep
+--slice limits/a-prefix-operator-chain.js|3|2103:NestingTooDeep
+
+# AND A SECOND BOUND, ON A SECOND RESOURCE, because one number could not be both. The rows above
+# bound what the PARSER'S recursion costs. These bound what the TREE costs the things that walk it:
+# a left-associative chain is built in a LOOP, so it raises the nesting counter not at all and
+# builds a spine as long as the source. The last row is the half that makes it a bound rather than
+# a refusal of everything - five thousand terms compile, run, and print their sum.
+limits/a-left-associative-chain.js|3|the source builds a tree deeper than
+limits/a-logical-chain.js|3|the source builds a tree deeper than
+limits/a-member-chain.js|3|the source builds a tree deeper than
+--check limits/a-left-associative-chain.js|3|the source builds a tree deeper than
+--slice limits/a-left-associative-chain.js|3|the source builds a tree deeper than
+limits/a-chain-inside-the-bound.js|0|5000
+
 # A program with no exit ends by spending its allowance, and says so rather than being killed.
 --fuel 200000 limits/a-loop-that-does-not-end.js|5|did not settle within its allowance
 

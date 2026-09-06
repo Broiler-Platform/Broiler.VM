@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   24
-// Annotated:        24/24
+// Relevant units:   25
+// Annotated:        25/25
 // Exempt:           9
-// Human-reviewed:   0/24
+// Human-reviewed:   0/25
 // IP risk:          None
 // Security risk:    High
-// Criteria:         17/17
+// Criteria:         18/18
 // Resource impact:  2/10 max
-// Unverified:       24
+// Unverified:       25
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -184,13 +184,28 @@ public sealed class SliceSourceCompiler
     /// stage fed a tree the previous stage did not vouch for reports about a program the source
     /// never contained.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=4076ED
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=CCBB5B
     // Broiler-Falsified-If: a stage runs over a tree the previous stage refused
     // Broiler-Human:        PENDING
     public static SliceCompilation Compile(string source, SliceParseOptions options)
     {
         System.ArgumentNullException.ThrowIfNull(source);
 
+        return CompilationStack.Run(() => CompileOnTheDeclaredStack(source, options));
+    }
+
+    /// <summary>The compilation itself, on the stack <see cref="CompilationStack"/> declared.</summary>
+    /// <remarks>
+    /// Split from its entry point rather than wrapped in place so the thread is created once per
+    /// compilation and not once per stage: every stage below walks the same tree, and each of them
+    /// recurses over it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=95FA57
+    // Broiler-Falsified-If: a stage below runs on the caller's stack rather than the declared one
+    // Broiler-Human:        PENDING
+    private static SliceCompilation CompileOnTheDeclaredStack(
+        string source, SliceParseOptions options)
+    {
         var tokenizer = new SliceTokenizer(source);
         var tokens = tokenizer.Tokenize();
 

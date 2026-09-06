@@ -7750,3 +7750,143 @@ cell's own transcript: `--- zlib (exit 0, 2790s)` on `osx-arm64`, `(exit 0, 2852
 `# 14 of 14 benchmarks reported a score and exited zero, 1 excluded and not attempted: zlib`, that
 line appearing on no other cell. Compared against run 33964028317 on `1910c6f`, the run JSC-182
 records. 2026-09-05.
+
+### JSC-185
+
+**Where:** the nesting bound, in the three places that carry its falsifier — the
+`MaximumSupportedNestingDepth` remark in `SliceParseOptions`, the class remark on
+`SliceParser`, and
+[JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md)'s fifth
+decision — and, through them, the JS-3b row of [the ledger](roadmap.status.md#2-current-milestone-status).
+
+**What the record said.** That deep nesting is an explicit bound that **refuses**, falsified if a
+source parsed at the bound terminates the process. `SliceParseOptions` states the reasoning: one
+level of source nesting costs several stack frames, so a counter admitting N levels admits about
+three times N frames, and the ceiling of 512 is a third of a measured failure point.
+
+**What was actually true.** **The bound counted two methods and the parser recursed in four.**
+`Enter` was called from `ParseStatement` and `ParseAssignment` only, and two descents reach
+neither: `ParseUnary` recurses into itself once per prefix operator, and `ParseCallChain` descends
+through `ParseMemberOnly` once per `new`. So `!!!!…1`, `typeof typeof …1` and `new new … Object`
+consumed no depth at all. **About two thousand operators terminated the process, at every
+`--max-depth` and under `--check`** — a parse with no execution, which is where the falsifier
+points. The bound bounded the shapes that route through an assignment and bounded these not at all.
+
+**The slice parser had the same hole**, one method narrower: it counts `ParseStatement`,
+`ParseAssignment`, `ParseBinary` and `ParseCallChain`, and a prefix chain passes each of those
+exactly once on its way in. A narrower manifest did not make the hole narrower.
+
+**How it was found, and what the claim that prompted it got wrong.** It was reported as 440 nested
+parentheses terminating the process at `--max-depth 512`, with the slice refusing the same file
+cleanly. **Neither half reproduced.** Parentheses are counted correctly by both parsers and are
+refused with `2103:NestingTooDeep`; seven parenthesis-shaped sources were run at the bound and none
+terminated anything. What found the defect was reading `Enter`'s call sites and asking which
+descents miss them — and then a sweep over every construct that can nest, rather than over the
+shapes somebody had thought of. **A claim can be right that something is broken and wrong about
+everything else**, and the reproducer that arrives with a report is worth re-deriving rather than
+re-running.
+
+**What replaced it.** `ParseUnary` in both parsers, and `ParseCallChain` in the wide one, enter the
+bound. **They enter it only on the branch that recurses**, and that is not a refinement: every
+expression in the language passes through `ParseUnary` on its way to a postfix, so charging a level
+per visit tightened the effective bound on every program instead of bounding the shape that was
+unbounded. The slice compiler's own check said so within one run — a twenty-level source inside a
+sixty-four level bound stopped compiling — which is what a check placed on both sides of a bound is
+for. **The bound counts recursion, not visits.**
+
+**What is still open, and it is the same falsifier.** A left-associative operator chain parses
+**iteratively** — precedence climbing loops rather than recursing — so `1+1+1+…` and `1&&1&&…`
+raise no counter at all, and neither does a long member chain. What they build is a tree as deep as
+the chain is long, and `JsCompiler.CompileExpression` walks it by recursing on the left operand.
+**From about five thousand terms the process dies, under `--check`, at any `--max-depth`.** So the
+falsifier's own words — a source parsed at this bound terminates the process — are still met by
+that shape, and this entry does not claim otherwise. **It is not the same defect**: nothing about
+it is a parser-recursion hole, and closing it means deciding what the bound is a bound *on*. A
+counter over source nesting cannot see a flat chain; bounding chain length would refuse a legal
+600-term addition; making the walk iterative changes no admitted program and is the larger change.
+**That decision is not taken here**, and recording the shape with its reproducer is what this entry
+does instead of taking it quietly.
+
+**What is checked now.** Six rows in the command-line acceptance suite, judged on the built binary
+out of process — which is where a process termination can be observed at all, since a test that
+runs the parser in the test host cannot survive its own subject. Three sources under
+`src/tests/cli/limits/`, at ten thousand operators each, asserted to answer `3` and
+`2103:NestingTooDeep` rather than an exit code the operating system chose; one under `--check`, one
+at `--max-depth 512`, one under `--slice`. The control removed the bound from both recursions,
+rebuilt, and watched all six fail — three of them with the termination exit code itself — then
+restored by copy, touched the mtimes so the incremental build could not skip them, rebuilt, and
+watched all forty-four pass.
+
+**Authority and date.** The implementation of 2026-09-06 in this checkout, the sweep over
+twenty-eight nesting shapes recorded in that change, and the falsification clauses named above.
+The runs were taken outside any retained bundle and advance nothing. 2026-09-06.
+
+### JSC-186
+
+**Where:** the nesting bound's meaning, in the three places that carry its falsifier — the
+`MaximumSupportedNestingDepth` remark in `SliceParseOptions`, the class remark on `SliceParser`,
+and [JSD-0014](decisions/0014-the-source-front-end-and-the-verification-boundary.md)'s fifth
+decision — and the shape [JSC-185](#jsc-185) left open.
+
+**What the record said.** That deep nesting is an explicit bound that refuses, falsified if a
+source parsed at the bound terminates the process. [JSC-185](#jsc-185) closed two parser recursions
+the counter was never entered from and recorded, in its own words, that a left-associative chain
+still terminated the process and that closing it *means deciding what the bound is a bound on*.
+
+**What was actually true, measured rather than reasoned.** A sweep over every construct in the
+admitted grammar that can nest, on both front ends, found **eleven shapes** that ended the process —
+addition, multiplication, comparison, mixed arithmetic, `&&`, `||`, `??`, string concatenation,
+member access, indexing and calls — each under `--check`, which parses and verifies and runs
+nothing, and each at every `--max-depth`. The wide front end died at about five thousand terms and
+the slice at about ten thousand. **The counter could not see any of them**: precedence climbing is
+iterative for a left-associative operator and the call chain loops over its links, so a chain of
+any length costs one parser activation and builds a spine as long as the source.
+
+**Two resources were being spent and one number was counting one of them.** The nesting bound is
+what the parser's own recursion costs — a parenthesis costs parser stack and builds no node at all.
+The tree is what the walks cost, and `CompileExpression` descends a left spine once per node.
+
+**What replaced it.** [JSD-0022](decisions/0022-what-the-nesting-bound-bounds-and-the-stack-it-is-derived-against.md)
+takes the decision: the nesting bound stays what it is, and a second bound is minted on the depth
+of the tree the front end hands to a walk, charged by the two iterative builders in both front
+ends. Its ceiling is derived against a stack this component now declares for compilation — the
+mechanism `JsExecution` has used for a guest invocation since JSC-79, extended to the compile path,
+which had never had it. Rule **N19** holds all three halves together, because a checkout with any
+two of them is broken in a way the third hides.
+
+**The three options the question posed were not three.** Bounding the tree and bounding chain
+length are the same bound for a left spine, because a left spine's depth *is* its length. The
+variable was never whether to bound but what the ceiling could afford to be, and that is a question
+about a stack rather than about a grammar. Making the walks iterative — the option that costs no
+program at all — was measured against eleven shapes through five node kinds on two front ends, with
+short-circuit jump patching in the middle of it, and it fixes the walks that exist rather than the
+next one somebody writes.
+
+**What it costs, stated rather than buried.** A tree deeper than ten thousand nodes is refused.
+Nothing a person writes reaches that; generated source is the shape that would, which is why the
+ceiling was chosen against what a minifier emits rather than against what a person types. **A
+five-thousand-term sum compiles, runs and prints its answer**, and a retained command line asserts
+that it does — the row that makes this a bound rather than a refusal of everything.
+
+**And the ceiling is a cliff moved rather than removed**, which the decision record says in those
+words. The bound is what makes the answer a refusal at every size; the declared stack is only what
+lets the bound sit somewhere harmless. A future walk that costs materially more stack per node
+changes the derivation, and N19 asserts the constant's remark names the stack it was derived
+against so that the next reader re-derives rather than guesses.
+
+**What the controls showed.** Handing the tree bound to the host as a settable switch fails N19;
+starting the compilation thread without the declared size fails N19; and removing the declared
+stack from the wide entry point makes the **in-bound** five-thousand-term program die with the
+operating system's stack-overflow code rather than print its answer — which is the control that
+proves the two halves are jointly necessary and neither is decoration. Each injection compiles, so
+each judged an answer rather than stopping the run, and each reverted run is clean.
+
+**What is still open.** The sweep covered every nesting construct in the admitted grammar and a
+construct nobody named is a shape nobody swept. What changed is the failure mode for anything
+missed: the charge is placed where trees are built rather than where particular operators are
+recognised, so a construct added later inherits the bound unless it is built somewhere new.
+
+**Authority and date.** The implementation of 2026-09-06 in this checkout,
+[JSD-0022](decisions/0022-what-the-nesting-bound-bounds-and-the-stack-it-is-derived-against.md),
+and the sweep and controls recorded in that change. The runs were taken outside any retained bundle
+and advance nothing. 2026-09-06.

@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   145
-// Annotated:        145/145
-// Exempt:           19
-// Human-reviewed:   0/145
+// Relevant units:   149
+// Annotated:        149/149
+// Exempt:           20
+// Human-reviewed:   0/149
 // IP risk:          None
 // Security risk:    High
-// Criteria:         3/3
+// Criteria:         4/4
 // Resource impact:  3/10 max
-// Unverified:       145
+// Unverified:       149
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -134,6 +134,16 @@ internal sealed class JsParser
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=329437
     // Broiler-Human:        PENDING
     private int depth;
+
+    /// <summary>How deep a left spine the iterative builders have grown, in nodes.</summary>
+    /// <remarks>
+    /// Never decremented, deliberately: this is not a bracketed resource the way parser recursion
+    /// is. What it answers is how deep a tree a walk can be handed, and a walk over a unit with
+    /// many long chains descends each of them.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=D491DB
+    // Broiler-Human:        PENDING
+    private int treeDepth;
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=989AE3
     // Broiler-Human:        PENDING
@@ -4233,7 +4243,7 @@ internal sealed class JsParser
     private const int Relational = 8;
 
     /// <summary>Extends an already-parsed left operand with every operator that may follow it.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=2C6F23
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=5650F7
     // Broiler-Human:        PENDING
     private JsExpression Continue(JsExpression left, SliceSourceSpan span, int minimum, bool noIn)
     {
@@ -4264,6 +4274,15 @@ internal sealed class JsParser
                 SliceTokenKind.QuestionQuestion
                 ? new JsLogicalExpression(span, kind, left, right)
                 : new JsBinaryExpression(span, kind, left, right);
+
+            // EACH TURN OF THIS LOOP MAKES THE TREE ONE DEEPER, and the loop is why the nesting
+            // counter never saw it: precedence climbing is ITERATIVE for a left-associative
+            // operator, so `1+1+1+...` costs one parser activation and builds a left spine as long
+            // as the source. Nothing walks a parser activation; everything walks the tree.
+            if (!Deepen(span, out var deep))
+            {
+                return deep;
+            }
         }
     }
 
@@ -4290,9 +4309,58 @@ internal sealed class JsParser
         _ => 0,
     };
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=C085AF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=0F5F1B
     // Broiler-Human:        PENDING
     private JsExpression ParseUnary()
+    {
+        // THIS METHOD RECURSES INTO ITSELF ONCE PER PREFIX OPERATOR, and until 2026-09-06 that
+        // recursion reached neither of the two methods `Enter` is called from. `!!!!x`,
+        // `typeof typeof x` and `await await x` therefore cost no depth at all, and a few thousand
+        // operators ended the process - at every `--max-depth`, and under a compile-and-verify that
+        // runs nothing. It is the same defect `ParseBindingPattern` carries `EnterNesting` for, in
+        // a production nobody had looked at.
+        //
+        // ENTERED ONLY WHEN THIS CALL WILL RECURSE. Every expression in the language passes through
+        // here on its way to a postfix, so charging a level per VISIT would tighten the effective
+        // bound on every program rather than bounding the shape that was unbounded. The bound
+        // counts recursion, not visits.
+        if (!WillRecurse(Current.Kind))
+        {
+            return ParsePostfix();
+        }
+
+        if (!EnterNesting())
+        {
+            return new JsNumberLiteral(Span(), 0, false);
+        }
+
+        try
+        {
+            return ParseUnaryCore();
+        }
+        finally
+        {
+            depth--;
+        }
+    }
+
+    /// <summary>Whether this token begins a unary production whose parse descends.</summary>
+    /// <remarks>
+    /// `await` is here as well as in the switch below, because it is recognised before the switch
+    /// and recurses exactly as the operators do.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=DAC039
+    // Broiler-Human:        PENDING
+    private bool WillRecurse(SliceTokenKind kind) =>
+        (awaitIsOperator && kind == SliceTokenKind.Await) ||
+        kind is SliceTokenKind.Plus or SliceTokenKind.Minus or SliceTokenKind.Bang or
+            SliceTokenKind.Tilde or SliceTokenKind.Typeof or SliceTokenKind.Void or
+            SliceTokenKind.Delete or SliceTokenKind.PlusPlus or SliceTokenKind.MinusMinus;
+
+    /// <summary>The unary parse itself, inside the bound its caller entered.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3CB26F
+    // Broiler-Human:        PENDING
+    private JsExpression ParseUnaryCore()
     {
         var span = Span();
 
@@ -4433,9 +4501,38 @@ internal sealed class JsParser
     /// parentheses would get wrong.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=3806DF
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=59C4FB
     // Broiler-Human:        PENDING
     private JsExpression ParseCallChain()
+    {
+        // `new new new X` DESCENDS THROUGH ParseMemberOnly BACK INTO THIS METHOD once per `new`,
+        // reaching neither counted method for the same reason ParseUnary did. Entered only on the
+        // branch that recurses: every primary expression reaches this method, and only `new` makes
+        // it descend.
+        if (Current.Kind != SliceTokenKind.New)
+        {
+            return ParseCallChainCore();
+        }
+
+        if (!EnterNesting())
+        {
+            return new JsNumberLiteral(Span(), 0, false);
+        }
+
+        try
+        {
+            return ParseCallChainCore();
+        }
+        finally
+        {
+            depth--;
+        }
+    }
+
+    /// <summary>The call-chain parse itself, inside the bound its caller entered.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=85D6F9
+    // Broiler-Human:        PENDING
+    private JsExpression ParseCallChainCore()
     {
         var span = Span();
         JsExpression current;
@@ -4565,6 +4662,15 @@ internal sealed class JsParser
 
                 default:
                     return optional ? new JsChainExpression(span, current) : current;
+            }
+
+            // The second iterative builder, and the same reasoning: `o.a.a.a`,
+            // `o['a']['a']` and `f()()()` each add a node per turn and no parser
+            // activation. Charged after the switch, which only the arm that ENDS the
+            // chain escapes by returning.
+            if (!Deepen(span, out var deepChain))
+            {
+                return deepChain;
             }
         }
     }
@@ -6088,6 +6194,39 @@ internal sealed class JsParser
                 " levels these parse options allow");
 
         refusal = new JsEmptyStatement(span);
+        return false;
+    }
+
+
+    /// <summary>
+    /// Charges one level of TREE depth, for a builder that deepens the tree without recursing.
+    /// </summary>
+    /// <remarks>
+    /// <b>Two resources, two counters.</b> <see cref="EnterNesting"/> bounds what the parser's own
+    /// recursion costs; this bounds what the tree costs the walks. A left-associative chain is
+    /// where they come apart completely: built in a loop, it costs the parser one activation and
+    /// costs every walker one activation per term.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=FEEA6B
+    // Broiler-Falsified-If: a source whose tree is deeper than this bound reaches a walk
+    // Broiler-Human:        PENDING
+    private bool Deepen(SliceSourceSpan span, out JsExpression refusal)
+    {
+        treeDepth++;
+
+        if (treeDepth <= SliceParseOptions.MaximumTreeDepth)
+        {
+            refusal = null!;
+            return true;
+        }
+
+        Refuse(
+            span,
+            SliceSourceDiagnosticCode.NestingTooDeep,
+            "the source builds a tree deeper than the " + SliceParseOptions.MaximumTreeDepth +
+                " levels this compiler walks");
+
+        refusal = new JsNumberLiteral(span, 0, false);
         return false;
     }
 

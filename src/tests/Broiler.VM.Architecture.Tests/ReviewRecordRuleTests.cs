@@ -971,7 +971,11 @@ public sealed class ReviewRecordRuleTests
         // other is a global's shape - and the first is the largest single file in the profile for
         // a reason that belongs to it rather than to this count: every trap carries the invariant
         // checks the language makes the proxy's answers pass before they leave it.
-        Assert.Equal(121, AssuranceSources.Files.Count);
+        // The hundred-and-twenty-second is the declared compilation stack, covered for the same
+        // reason every product file is and for one of its own: it decides how much stack every
+        // walk in the front end gets, so a review that did not read it would be a review of walks
+        // whose budget it never saw.
+        Assert.Equal(122, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(
