@@ -1246,6 +1246,12 @@ def corpus_controls(out, corpus, arguments):
 # gates forbid.
 FUZZ_SESSIONS = ((1, 25_000), (2, 25_000), (3, 25_000), (4, 25_000))
 
+# THE SOURCE SESSIONS, and there are fewer of them because one iteration costs more: a mutant here
+# is compiled rather than verified, and the front end does more work per input than the reader does.
+# Two seeds rather than four for the same reason a session has a stated floor at all - the number is
+# the budget, and a budget nobody wrote down is a session whose depth a reader cannot judge.
+SOURCE_FUZZ_SESSIONS = ((1, 5_000), (2, 5_000))
+
 
 def fuzz(out, corpus):
     """Run the retained fuzz sessions and keep everything they printed, findings included."""
@@ -1299,8 +1305,40 @@ def fuzz(out, corpus):
         log.extend("    " + line for line in output.splitlines())
         log.append("")
 
+    # THE SOURCE SURFACE, WHICH THESE SESSIONS DO NOT REACH AND WHICH NO BUNDLE HAD EVER RUN.
+    #
+    # The paragraph above says why: these mutate ARTIFACTS, and the tokenizer, the parser and the
+    # lowering consume SOURCE. That was a scope statement with nothing on the other side of it -
+    # the slice-compiler root has carried a source session since the front end was written, and no
+    # collection had ever invoked it, so "no session reaches them" was true of the retained
+    # evidence rather than of the checkout. It is invoked here.
+    #
+    # It runs in ONE mode rather than three: a session is a total function of its seed and its seed
+    # set, so the same session under Native AOT would produce the same transcript, and retaining
+    # three copies of one answer would read as three pieces of evidence.
+    log.append("")
     log.append(
-        f"sessions: {len(FUZZ_SESSIONS)}; sessions reporting a finding: {findings}")
+        "THE SOURCE SURFACE, run by the root that carries the lowering. The sessions above mutate "
+        "artifacts; this one mutates source and reaches the tokenizer, the parser and the lowering "
+        "- the surface JSC-47 recorded as existing and unfuzzed. The matcher is still reached by "
+        "no session at all.")
+    log.append("")
+
+    for seed, iterations in SOURCE_FUZZ_SESSIONS:
+        code, output = run([
+            "dotnet", "run", "--project", SLICE_COMPILER, "-c", "Release", "--no-build",
+            "--", "--fuzz", os.path.join(corpus, "source"),
+            "--seed", str(seed), "--iterations", str(iterations)])
+
+        findings += 1 if code == 1 else 0
+
+        log.append(f"[source, seed {seed}, {iterations} iterations] exit {code}")
+        log.extend("    " + line for line in output.splitlines())
+        log.append("")
+
+    log.append(
+        f"sessions: {len(FUZZ_SESSIONS)} over artifacts and {len(SOURCE_FUZZ_SESSIONS)} over "
+        f"source; sessions reporting a finding: {findings}")
 
     if findings:
         log.append(

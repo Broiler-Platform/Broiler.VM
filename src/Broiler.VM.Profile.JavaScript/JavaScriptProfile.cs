@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   20
-// Annotated:        20/20
+// Relevant units:   21
+// Annotated:        21/21
 // Exempt:           10
-// Human-reviewed:   0/20
+// Human-reviewed:   0/21
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         7/7
 // Resource impact:  3/10 max
-// Unverified:       20
+// Unverified:       21
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -55,6 +55,28 @@ public static class JavaScriptProfile
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=AE7B50
     // Broiler-Human:        PENDING
     public const string DrainEntryPoint = "#drain-jobs";
+
+    /// <summary>The entry-point name a host invokes to run the jobs a program left owed, one at a
+    /// time.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The second of the two reserved names, and it is published for the same reason the first
+    /// is:</b> a host cannot use an entry point it cannot name, and a name each host restated for
+    /// itself would be a convention rather than a surface.
+    /// </para>
+    /// <para>
+    /// <b>What it buys is the turn as the unit.</b> <see cref="DrainEntryPoint"/> runs the queue to
+    /// exhaustion inside one operation, which is what a host wanting a script settled asks for. A
+    /// host that wants an event loop of its own — one that interleaves its work with the guest's,
+    /// or stops between turns and never resumes — invokes this instead: it runs one due job and, if
+    /// anything is still queued, answers with a suspension the host resumes to take the next turn.
+    /// A program with no jobs at all completes rather than parking, so a host may step until it is
+    /// told there is nothing left.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=6C91EE
+    // Broiler-Human:        PENDING
+    public const string StepEntryPoint = "#step-jobs";
 
     /// <summary>This profile's identity.</summary>
     /// <remarks>

@@ -100,7 +100,7 @@ internal static class SuspensionChecks
             }
 
             var pauses = 0;
-            Invoke(instance, JsStepEntryPoint, out var stepped);
+            Invoke(instance, JavaScriptProfile.StepEntryPoint, out var stepped);
 
             if (stepped.Outcome is not VmOutcome.Suspension)
             {
@@ -197,7 +197,7 @@ internal static class SuspensionChecks
             }
 
             var request = new VmInvocationRequest(
-                new VmUtf8Text(System.Text.Encoding.UTF8.GetBytes(JsStepEntryPoint)));
+                new VmUtf8Text(System.Text.Encoding.UTF8.GetBytes(JavaScriptProfile.StepEntryPoint)));
 
             var stepped = instance.Invoke(
                 in request, System.Threading.CancellationToken.None, out var control);
@@ -244,7 +244,7 @@ internal static class SuspensionChecks
                 return (Name, false, $"seeding answered {seeded.Outcome}/{seeded.Reason}");
             }
 
-            Invoke(instance, JsStepEntryPoint, out var stepped);
+            Invoke(instance, JavaScriptProfile.StepEntryPoint, out var stepped);
 
             if (!stepped.TryGetSuspension(out var suspension))
             {
@@ -296,7 +296,7 @@ internal static class SuspensionChecks
                 return (Name, false, $"seeding answered {seeded.Outcome}/{seeded.Reason}");
             }
 
-            Invoke(instance, JsStepEntryPoint, out var stepped);
+            Invoke(instance, JavaScriptProfile.StepEntryPoint, out var stepped);
 
             if (!stepped.TryGetSuspension(out var suspension))
             {
@@ -379,14 +379,14 @@ internal static class SuspensionChecks
                 return (Name, false, "seeding did not complete");
             }
 
-            Invoke(first, JsStepEntryPoint, out var parked);
+            Invoke(first, JavaScriptProfile.StepEntryPoint, out var parked);
 
             if (parked.Outcome is not VmOutcome.Suspension)
             {
                 return (Name, false, $"the first step answered {parked.Outcome}/{parked.Reason}");
             }
 
-            Invoke(second, JsStepEntryPoint, out var refused);
+            Invoke(second, JavaScriptProfile.StepEntryPoint, out var refused);
 
             return (
                 Name,
@@ -395,13 +395,6 @@ internal static class SuspensionChecks
                 $"{refused.Outcome}/{refused.Reason}");
         }
     }
-
-    /// <summary>The reserved name a host steps the queue by invoking.</summary>
-    /// <remarks>
-    /// Spelled here rather than read off the profile, because the profile's own constant is
-    /// internal and a composition reaches this surface the way any host does: by name.
-    /// </remarks>
-    private const string JsStepEntryPoint = "#step-jobs";
 
     /// <summary>Compiles the two scripts and instantiates them into one realm.</summary>
     private static bool TryInstantiate(

@@ -426,6 +426,7 @@ internal static class Program
             .Concat(HostBoundaryChecks.Run())
             .Concat(ProportionalityChecks.Run())
             .Concat(SuspensionChecks.Run())
+            .Concat(FinallyMatrixChecks.Run())
             .ToArray();
         var failed = 0;
 

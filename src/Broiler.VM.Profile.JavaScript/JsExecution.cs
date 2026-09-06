@@ -259,9 +259,9 @@ internal static class JsExecution
     }
 
     /// <summary>The reserved entry-point name a host drains the job queue by invoking.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F3B354
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E1285C
     // Broiler-Human:        PENDING
-    internal const string DrainEntryPoint = "#drain-jobs";
+    internal const string DrainEntryPoint = JavaScriptProfile.DrainEntryPoint;
 
     /// <summary>The reserved entry-point name a host steps the job queue by invoking.</summary>
     /// <remarks>
@@ -282,10 +282,10 @@ internal static class JsExecution
     /// is a pause the <b>host</b> owns, between turns rather than inside one.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=7B0180
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=815A20
     // Broiler-Falsified-If: a guest pause creates a core suspension, or a step runs more than one job
     // Broiler-Human:        PENDING
-    internal const string StepEntryPoint = "#step-jobs";
+    internal const string StepEntryPoint = JavaScriptProfile.StepEntryPoint;
 
     /// <summary>Runs one due job and parks if the queue still holds anything.</summary>
     /// <remarks>

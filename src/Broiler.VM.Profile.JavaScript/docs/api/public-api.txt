@@ -118,6 +118,7 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.ResolveCapability : static Broiler.VM.VmHostCapabilityDescriptor { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.SliceManifest : static Broiler.VM.VmFeatureManifestId { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.SourceProviderCapability : static Broiler.VM.VmHostCapabilityDescriptor { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.StepEntryPoint : const System.String = "#step-jobs"
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.TryGetCompletion(in Broiler.VM.VmInvocationResult result, out Broiler.VM.Profile.JavaScript.JavaScriptCompletion completion) : static System.Boolean
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.TryGetFault(in Broiler.VM.VmInvocationResult result, out Broiler.VM.Profile.JavaScript.JavaScriptFault fault) : static System.Boolean
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.TryGetPause(in Broiler.VM.VmInvocationResult result, out Broiler.VM.Profile.JavaScript.JsPause pause) : static System.Boolean
