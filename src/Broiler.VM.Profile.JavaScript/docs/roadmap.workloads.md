@@ -62,6 +62,22 @@ reader is most likely to want otherwise.
 The legacy component `Broiler.JS` is the comparison this document was asked for, and **the
 comparison is a surface comparison and not a speed one.**
 
+**Which engine a recorded difference was taken against has to be said, and for a while it was not**
+*(corrected: JSC-190)*. This document's comparison is the legacy component. The authored divergences
+retained beside the differential probes say *the comparison engine* too and mean a third-party one,
+which is the engine their driver's usage line names — so one phrase in this component covered two
+engines, and a declaration true against one is stale against the other. The parity roadmap's
+[section 2](roadmap.parity.md#2-how-the-comparison-was-made-and-the-two-ways-it-had-been-made-wrongly)
+records the evidence and
+[JSP-1](roadmap.parity.md#jsp-1--the-instrument-name-the-engine-and-make-the-comparison-runnable)
+owns naming the engine per declaration.
+
+**And a whole roadmap now stands beside this one.** Where this document asks what running the two
+third-party corpora *whole* would take, [the parity roadmap](roadmap.parity.md) asks what standing
+level with the legacy component would take, and the two divide the same ground by question rather
+than by surface: `JSW-n` owns the large absences and the corpus runs, `JSP-n` owns the mechanisms
+inside the surface that is already admitted. Neither re-mints the other's stages.
+
 Asked one name at a time, its script host answers to every global named in section 3.2 below, and
 it compiles every syntactic form named in section 3.3. The only form in that probe it refused is a
 `super` call in the constructor of a class with no heritage — which the language refuses too, so
@@ -98,7 +114,7 @@ be a plan a reader could not check *(corrected: JSC-87)*.
 | Octane `pdfjs` | **The verifier refuses an artifact this host produced** | It reports a score *(JSC-81)* |
 | Octane `typescript` | A type error reading a property of `undefined`, after running for a while | It reports a score *(JSC-82)* |
 | test262, asynchronous cases | They cannot complete, because a promise never settles | A promise settles, at a drain point the host states and asks for |
-| test262, module cases | They are not run as modules by this host | Unchanged: there is no module goal |
+| test262, module cases | They are not run as modules by this host | The module goal exists and runs — imports, live bindings, the namespace object, cycles and top-level `await` *(corrected: JSC-189)*. What is left of JSW-8 is the manifest identity, the composition's resolver, and the subtree runs |
 | test262, the suite as a whole | Only chosen subtrees have run | Unchanged: roadmap [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s rule is still unmet, and JSW-10 still owns it |
 
 **Every row above is a behaviour, and every one of them is reproducible from the commands the
@@ -127,12 +143,23 @@ own `print`.
 `WeakSet`, `ArrayBuffer`, `SharedArrayBuffer`, `DataView`, every typed array constructor,
 `Atomics`, `Intl`, `Temporal`, and `eval`.
 
-**Absent still, and the list is shorter than it was** *(corrected: JSC-87)*. `Proxy`, `Reflect`,
-`BigInt`, `Intl` and `Temporal` are absent; `SharedArrayBuffer` and `Atomics` are absent
-**deliberately**, excluded by name from the binary identity for the reason section 4 gives. The
-rest — `Symbol`, `Promise`, the keyed collections, the weak references, `ArrayBuffer`, `DataView`,
-the typed array constructors and `eval` — are present, three of them behind an optional surface a
+**Absent still, and the list is shorter again** *(corrected: JSC-87, JSC-187)*. `BigInt` is absent,
+with `BigInt64Array` and `BigUint64Array`; `Intl` and `Temporal` are absent, deferred by name;
+`SharedArrayBuffer` and `Atomics` are absent **deliberately**, excluded by name from the binary
+identity for the reason section 4 gives; and **`Float16Array` is absent without being named by any
+document**, which is the failure this section was written about happening again in the other
+direction. `Proxy` and `Reflect` are present, each with a differential probe of its own. The rest —
+`Symbol`, `Promise`, the keyed collections, the weak references, `ArrayBuffer`, `DataView`, the
+typed array constructors and `eval` — are present, three of them behind an optional surface a
 composition may decline.
+
+**One absence is not an absence at all, and it is the one that matters most.** A BigInt *literal* is
+admitted by the front end and evaluated as a Number, so the declared absence of the `BigInt` binding
+does not protect a program that never names it: it gets a wrong number instead of a refusal. The
+parity roadmap's
+[section 4.2](roadmap.parity.md#42-the-refusal-that-was-lost) states it and
+[JSP-2](roadmap.parity.md#jsp-2--the-refusal-that-was-lost-a-bigint-literal-is-not-a-number) owns
+it.
 
 **That set is wider than the retained bundle's exclusion list, and the difference is the reason
 this section exists rather than pointing.** Bundle [JS-4-001](evidence/js-4-001/README.md) names
@@ -151,6 +178,11 @@ class declaration or expression, `super`, a generator function, an `async` funct
 `yield`, a module declaration, `with`, `for … of`, an optional chain, a template literal, a tagged
 template, `new.target`, a destructuring pattern, a destructuring parameter, a destructuring catch
 parameter, a rest parameter, a parameter default, and a spread argument, element or property.
+
+**Every family in that list now compiles** *(corrected: JSC-188)*, asked one at a time under
+`--check`. The bundle is not wrong — it records what was true when it was collected — but the list
+is no longer the set of constructs the front end refuses, and the rest of this section is about the
+property rather than about the list.
 
 **Refusal by name is a property this programme must not spend.** It is what keeps an unadmitted
 construct out of the pass column, it is what section 4 of that bundle records as having leaked
@@ -401,6 +433,14 @@ the act that would turn a stage into a milestone with a ledger row.
 
 - **Objective.** `broiler.javascript.modules` exists and test262's module cases run as modules.
 - **Waits on.** JSW-5 for the syntax, JSW-7 for top-level `await`.
+- **The goal itself is no longer the open part** *(corrected: JSC-189)*. The host reads a module,
+  and the retained module probe exercises the import and export forms, live bindings, the namespace
+  exotic object, a cycle and top-level `await`. What this stage still owns is the manifest identity,
+  the composition's resolver and the refusal a composition without one owes, and the subtree runs.
+  **One clause of the gate below is met by a defect rather than by a feature**: a top-level
+  `for await` makes the lowering emit an artifact this component's own verifier rejects, which is a
+  cyclic-import-shaped failure in a different construct and belongs to
+  [JSP-8](roadmap.parity.md#jsp-8--the-places-this-component-disagrees-with-itself).
 - **Exit gate.** Module records, live bindings and the import and export forms are exercised; a
   cyclic import terminates with a named diagnostic rather than by exhausting a budget; the host's
   module resolution is the composition's rather than the profile's, and a composition that provides
