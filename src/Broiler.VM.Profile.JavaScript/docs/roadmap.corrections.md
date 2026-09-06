@@ -8032,3 +8032,54 @@ driver pins neither the child's time zone nor its encoding.
 **Authority and date.** The driver runs of 2026-09-06 recorded in
 [the parity roadmap](roadmap.parity.md#2-how-the-comparison-was-made-and-the-two-ways-it-had-been-made-wrongly).
 The runs were taken outside any retained bundle and advance nothing. 2026-09-06.
+
+### JSC-192
+
+**Where:** `eng/measure-frame-cost.py`'s outcome vocabulary, `JsEngine`'s stack backstop, and
+[`JsExecution`](../JsExecution.cs)'s record of the measured per-frame cost.
+
+**What the record said.** That the frame-cost script's three outcomes — a recursion that
+*completed*, one a declared bound *refused*, and one that *died* — covered what a trial can do, and
+that a run reaching neither its ceiling nor its bound had terminated the process. And that a
+call-stack overflow is *reported as a resource exhaustion naming a dimension*, which
+[release gate 4](roadmap.gates.md#22-release-gates) requires in those words.
+
+**What replaced it.** Both halves were wrong in the same place, and each hid the other.
+
+**The backstop named nothing.** A call whose stack probe refuses ends the operation rather than
+throwing a `RangeError`, which is right and is what
+[`JsEngine.MaximumCallDepth`](../JsEngine.cs)'s remarks argue for. What it did was throw an abort
+that became `ProfileFault`/`AllowanceExhausted` — an answer carrying no dimension and no scope, so
+a reader met a profile fault where the gate asks for a resource exhaustion naming a dimension. It
+now charges a quantity of `CallDepth` no level can admit, which is the only way a profile may name
+a dimension, and the core's own precedence reports
+`ResourceExhaustion`/`CeilingReached` on `CallDepth` with the scope that refused. A refused charge
+commits nothing, so the meter is left as it was. What this costs a reader is stated where the
+change is: the dimension named is the one the guest was spending and not the machine resource that
+ran out, so raising `CallDepth` after meeting it gets no further.
+
+**And the script called that refusal a death.** With no arm for it the classifier fell through to
+its last resort and printed *A RECURSION TERMINATED THE PROCESS* about a process that was still
+running, on the first machine where the backstop fired before a declared bound did. A measurement
+harness reporting a refusal as a death is what [rule 5 of section 17](roadmap.gates.md#17-measurement-discipline)
+exists against. The vocabulary now has a fourth outcome, `backstop`, and the script tells it from a
+granted ceiling by the one thing the message does not carry: a recursion shallower than the ceiling
+the run granted cannot have reached that ceiling, so what refused was the stack. A run whose two
+shapes stop for different reasons is reported as not a comparison rather than averaged.
+
+**What the corrected instrument then measured**, and it is a second runtime identifier rather than a
+repair of the first: on `linux-x64`, ninety-six megabytes holds **19,756** guest calls — **5,095
+bytes** a call, against the 4,551 recorded on the machine of JSC-139. The margin the ceiling depends
+on holds at 2.41 times the grantable call-depth maximum and 3.29 times the engine's own bound, and
+the returning and throwing shapes agreed exactly, which is JSC-97's property surviving a second
+platform. Reproducing it means lifting the engine's bound and the profile's call-depth maximum in a
+build of one's own, as JSC-139 already recorded, because the released build's counted bound fires at
+6,000 and reports the promise.
+
+**What is NOT claimed.** The backstop's new answer has no named case, because it is not reachable
+from guest source in a released build: the counted bound fires first for a call, and `JSON` and the
+matcher carry depth bounds of their own. It was observed on the lifted build described above and is
+a defensive arm otherwise. **These runs were taken outside any retained bundle and advance no
+ledger row.**
+
+**Authority and date.** The runs of 2026-09-06 on `linux-x64` described above. 2026-09-06.

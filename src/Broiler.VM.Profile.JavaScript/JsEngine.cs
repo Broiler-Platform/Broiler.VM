@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   120
-// Annotated:        120/120
+// Relevant units:   121
+// Annotated:        121/121
 // Exempt:           15
-// Human-reviewed:   0/120
+// Human-reviewed:   0/121
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         21/21
+// Criteria:         22/22
 // Resource impact:  7/10 max
-// Unverified:       120
+// Unverified:       121
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -497,6 +497,50 @@ internal sealed class JsEngine
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=733ADC
     // Broiler-Human:        PENDING
     private const ulong PollWindow = 16_384;
+
+    /// <summary>
+    /// Ends the operation when the runtime's stack probe refuses, naming the dimension it refused
+    /// on.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The refusal is real and it was reported as nothing.</b> A call whose stack probe says no
+    /// has nowhere left to build an error object, so it ends the operation rather than throwing a
+    /// <c>RangeError</c> — that half is <see cref="MaximumCallDepth"/>'s remarks and is right. What
+    /// it did NOT do was say what ran out: the abort became
+    /// <c>ProfileFault</c>/<c>AllowanceExhausted</c>, which names no dimension and no scope, and
+    /// release gate 4 asks that a call-stack overflow be <b>reported as a resource exhaustion
+    /// naming a dimension</b> and not be fatal. Half of that held — nothing terminated — and the
+    /// naming half did not.
+    /// </para>
+    /// <para>
+    /// <b>The meter is how a profile names a dimension, because a profile may not mint a core
+    /// outcome.</b> Charging a quantity of <c>CallDepth</c> no level can admit is the truthful
+    /// statement of what happened — this interpreter cannot take another frame — and it is the
+    /// only statement of it the contract has. The core's own precedence then reports
+    /// <c>ResourceExhaustion</c>/<c>CeilingReached</c> carrying <c>CallDepth</c> and the scope that
+    /// refused, ahead of whatever step this abort produces. Nothing is committed by a refused
+    /// charge, so the meter is left exactly as it was.
+    /// </para>
+    /// <para>
+    /// <b>What it costs a reader is worth stating.</b> The dimension named is the one the guest was
+    /// spending and not the machine resource that ran out, so an operator who raises
+    /// <c>CallDepth</c> after meeting this gets no further — the stack, not the ceiling, is what
+    /// refused. That is the same trade the counted bound makes in the other direction, and the
+    /// alternative was an answer that named nothing at all.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=94E6AA
+    // Broiler-Falsified-If: the stack backstop produces a result naming no dimension, or a refused charge commits anything
+    // Broiler-Human:        PENDING
+    private JsAbort StackBackstopReached()
+    {
+        // The whole range, so that no ceiling a host could grant admits it and the outermost level
+        // that refuses is the one reported.
+        _ = meter.TryCharge(VmBudgetDimension.CallDepth, ulong.MaxValue);
+
+        return new JsAbort(JsAbortKind.Exhausted, "the call-depth backstop was reached");
+    }
 
     /// <summary>Charges fuel, aborting when the allowance is spent.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=4AFB70
@@ -1992,7 +2036,7 @@ internal sealed class JsEngine
     // ---- calling -------------------------------------------------------------------------------
 
     /// <summary>Calls <paramref name="callee"/>, whatever kind of callable it is.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=C222F2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=40A67B
     // Broiler-Human:        PENDING
     internal JsValue Call(JsValue callee, JsValue thisValue, JsValue[] arguments)
     {
@@ -2020,7 +2064,7 @@ internal sealed class JsEngine
         // resource exhaustion no guest can see, and the guard the program wrote never runs.
         if (!System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack())
         {
-            throw new JsAbort(JsAbortKind.Exhausted, "the call-depth backstop was reached");
+            throw StackBackstopReached();
         }
 
         if (depth >= MaximumCallDepth && !reportingDepth)
@@ -2116,7 +2160,7 @@ internal sealed class JsEngine
     /// language promises rather than a half-built object.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=DCDFD8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=182F69
     // Broiler-Human:        PENDING
     internal JsValue Construct(JsValue callee, JsValue[] arguments, JsValue newTarget)
     {
@@ -2215,7 +2259,7 @@ internal sealed class JsEngine
         // resource exhaustion no guest can see, and the guard the program wrote never runs.
         if (!System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack())
         {
-            throw new JsAbort(JsAbortKind.Exhausted, "the call-depth backstop was reached");
+            throw StackBackstopReached();
         }
 
         if (depth >= MaximumCallDepth && !reportingDepth)

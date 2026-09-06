@@ -334,6 +334,17 @@ internal static class JsExecution
     /// stops at a declared bound reports the promise and not the capacity <i>(JSC-139)</i>.
     /// </para>
     /// <para>
+    /// <b>A SECOND RUNTIME IDENTIFIER HAS NOW BEEN MEASURED, and it costs more per frame than the
+    /// first.</b> On <c>linux-x64</c> ninety-six megabytes holds <b>19,756</b> calls, which is
+    /// <b>5,095 bytes</b> a call against the 4,551 above. The ordering the ceiling depends on still
+    /// holds — 2.41 times the grantable maximum and 3.29 times
+    /// <see cref="JsEngine.MaximumCallDepth"/>, both above the factor of two — so nothing here
+    /// moves; what changes is that the margin is now known on two machines rather than assumed to
+    /// be one number. The returning and throwing shapes agreed exactly, which is the property
+    /// JSC-97 left behind and the one a second platform could have broken
+    /// <i>(JSC-192)</i>.
+    /// </para>
+    /// <para>
     /// The room this leaves is what it always left: the built-ins that recurse in C# without going
     /// through a call - a comparison function driving a sort, a cycle-free walk of a deep object in
     /// JSON - along with the stack a host has already used before it reached this profile.
