@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap — corrections and rejections
 
-**Last updated:** 2026-09-05
+**Last updated:** 2026-09-06
 
 **This file is part of the [Broiler.VM.Profile.JavaScript roadmap](roadmap.md)**, which
 [names every file](roadmap.md#how-this-roadmap-is-split). It carries no numbered section of the
@@ -8180,5 +8180,54 @@ is untouched and still owed; the residency bound, which needs a pause to outlive
 would make a check that sleeps; and the budget-snapshot-across-a-pause clause, which nothing here
 reads. **No ledger row moves on this**: the cases are in a root's check list and not in a retained
 bundle.
+
+**Authority and date.** The implementation and the runs of 2026-09-06 described above. 2026-09-06.
+
+### JSC-195
+
+**Where:** JS-4's exit gate in [the delivery file](roadmap.delivery.md#js-4--the-value-representation-and-the-object-model),
+JS-5's host-boundary clauses in the same file, and the checks that answer them.
+
+**What the record said.** That two runtimes minting properties under the same key text observe
+neither the other's storage, shape identity nor key identity **in a test that fails when the key
+table is made process-wide again**; and that a failed **required** import leaves no partially bound
+runtime, with a capability whose **version**, signature ID or kind does not match refused when the
+runtime is created.
+
+**What replaced it.** Both gates were written against a component that does not exist yet, and each
+now carries the property it was protecting rather than the mechanism it named.
+
+**The key table has nothing to switch on.** JS-4's falsifier is a statement about the seed's
+storage — an interned key table and a shape-transition table, both process-wide structures a copy
+would have brought with it. **JS-2 is blocked and the copy has not happened**, so what is here is a
+property store written in this checkout: a dictionary owned by one object, with no key table, no
+shape table and no feedback anywhere. A test that failed when the table was made process-wide again
+cannot be written, because there is no table to make process-wide. What is asserted instead is what
+the falsifier was guarding: two runtimes alive at once mint the same three names and each reads back
+only its own value, and neither can see the name the other alone minted. That holds whatever the
+storage is made of, which is why it is worth running against an implementation the gate did not
+anticipate.
+
+**And the structural scan is still not a scan.** The gate asks that a scan assert nothing
+instance-owned is reachable from a shareable handle, with its mechanism and residual stated. What
+stands in its place is behavioural — three runtimes over one handle each building their store from
+nothing, after the realms have been mutated rather than before — and it says so in its own output.
+**The residual is that a per-instance structure those programs never observe would not be caught**,
+and what bounds it is the construction rather than the check.
+
+**Two of JS-5's boundary clauses are unreachable rather than unmet.** This profile declares three
+host-capability imports and **every one of them is optional**, so there is no required import to
+fail and no partially bound runtime to find; building one would mean changing the descriptor to
+make a gate constructible, which is the wrong direction. The version clause is the same declaration
+seen from the other side: the core matches a registration by identity **and version together**, so a
+registration at another version is not a mismatch it refuses but a capability it never finds — and
+an optional import that finds nothing is bound to nothing. That is the unbound branch, which the
+gate also asks for and which now has a case of its own. The signature and kind mismatches are
+refused at creation, each by its own case.
+
+**What is NOT claimed.** None of this closes a clause: the cases live in a composition root's check
+list, retained by [bundle JS-7-001](evidence/js-7-001/README.md), and no reviewer decision exists.
+JS-1's hand-written encoder and its hand-written programs are still not deleted, which the same gate
+asks for and asserts by scan.
 
 **Authority and date.** The implementation and the runs of 2026-09-06 described above. 2026-09-06.

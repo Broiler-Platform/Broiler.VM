@@ -1,0 +1,12 @@
+bundle:                JS-7-001
+milestone:             JS-7
+collected (UTC):       2026-09-06T21:45:07+00:00
+component commit:      a56e9065e071cc2ea018e0e235388cb63d5aa34b
+branch:                claude/broiler-vm-js-profile-roadmap-wo2wnk
+working tree:          clean
+dirty entries:         0
+owner:                 profile architecture owner (unassigned identity)
+reviewer:              NONE - nothing here has been reviewed
+
+Every path below is relative to the component root. A figure in this bundle is this
+component's own; no result from any other component is evidence here.
