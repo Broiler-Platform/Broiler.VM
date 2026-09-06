@@ -507,7 +507,10 @@ public sealed class DiagnosticRegistryRuleTests
         // what the graph manifest is for. It went from fourteen to seventeen when the wide
         // surface's own front end - its syntax tree, its parser and its lowering - joined the
         // assembly, and every one of the three is scanned by the same rule for the same reason.
-        Assert.Equal(17, lowering.Length);
+        // The eighteenth is the declared compilation stack, which is scanned like the rest: it
+        // holds a const and a generic method and nothing that outlives a call, and a rule that
+        // stopped counting a new file would be a rule that stopped reading it.
+        Assert.Equal(18, lowering.Length);
         Assert.Contains(
             ArchitectureRules.N12([], filesScanned: 0),
             violation => violation.Contains(

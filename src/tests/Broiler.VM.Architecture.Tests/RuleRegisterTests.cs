@@ -301,10 +301,10 @@ public sealed class RuleRegisterTests
         // profile's regular expressions are its own matcher's rather than a translation onto the
         // platform's, and that is a state of the tree a later change can undo in one `using`
         // without any other test noticing.
-        Assert.Equal(83, byStatus["Active"]);
+        Assert.Equal(84, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(85, Loaded.Rules.Count);
+        Assert.Equal(86, Loaded.Rules.Count);
     }
 
     private static Register Load()

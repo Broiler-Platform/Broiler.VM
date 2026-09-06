@@ -680,6 +680,7 @@
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions.GoalIsStrict : System.Boolean { get; }
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions.MaximumNestingDepth : System.Int32 { get; }
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions.MaximumSupportedNestingDepth : const System.Int32 = 512
+  Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions.MaximumTreeDepth : const System.Int32 = 10000
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions.Module : static Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions { get; }
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions.Script : static Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions { get; }
   Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.SliceParseOptions.ToString() : virtual System.String

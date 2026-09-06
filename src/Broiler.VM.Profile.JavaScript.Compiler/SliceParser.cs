@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   59
-// Annotated:        59/59
-// Exempt:           6
-// Human-reviewed:   0/59
+// Relevant units:   63
+// Annotated:        63/63
+// Exempt:           7
+// Human-reviewed:   0/63
 // IP risk:          None
 // Security risk:    High
-// Criteria:         20/20
+// Criteria:         21/21
 // Resource impact:  2/10 max
-// Unverified:       59
+// Unverified:       63
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -62,6 +62,15 @@ public sealed class SliceParser
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=329437
     // Broiler-Human:        PENDING
     private int depth;
+
+    /// <summary>How deep a left spine the iterative builders have grown, in nodes.</summary>
+    /// <remarks>
+    /// Never decremented, for the reason the wide parser's counterpart is not: it charges what a
+    /// walk over the whole unit descends, not the maximum of one chain.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=D491DB
+    // Broiler-Human:        PENDING
+    private int treeDepth;
 
     /// <summary>Creates a parser over <paramref name="tokens"/> under <paramref name="options"/>.</summary>
     // Broiler-AI:           Origin=AI; IP=None; Security=Low; Resources=1; Fingerprint=9C7AE3
@@ -996,7 +1005,7 @@ public sealed class SliceParser
     }
 
     /// <summary>Precedence climbing over the binary, logical and relational operators.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=0FFC90
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=B46ED5
     // Broiler-Falsified-If: the tree this builds groups an operator differently from the language's precedence and associativity
     // Broiler-Human:        PENDING
     private SliceExpression ParseBinary(int minimumPrecedence, bool noIn)
@@ -1036,6 +1045,15 @@ public sealed class SliceParser
                     : ParseBinary(precedence + 1, noIn);
 
                 left = Combine(span, op, left, right);
+
+                // One turn of this loop is one more level of TREE, and the loop is why the
+                // nesting counter never saw it: precedence climbing is iterative, so a
+                // left-associative chain costs one parser activation and builds a spine as long
+                // as the source. Every walk over that tree pays per node.
+                if (!Deepen(span, out var deep))
+                {
+                    return deep;
+                }
             }
         }
         finally
@@ -1092,10 +1110,53 @@ public sealed class SliceParser
         _ => -1,
     };
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=705846
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=49555A
     // Broiler-Falsified-If: a unary operator outside the manifest is built as a precise node, or its operand is not walked
     // Broiler-Human:        PENDING
     private SliceExpression ParseUnary()
+    {
+        // Entered for the reason the wide parser's is: this method recurses into itself once per
+        // prefix operator, and this parser counted ParseStatement, ParseAssignment, ParseBinary
+        // and ParseCallChain - four places a prefix chain reaches exactly once between them. The
+        // narrower manifest did not make the hole narrower.
+        //
+        // Entered only when this call will recurse. Charging a level per VISIT here cost a level
+        // per source level on every program, which the slice compiler's own bound check caught
+        // immediately: a twenty-level source inside a sixty-four level bound stopped compiling.
+        // THE BOUND COUNTS RECURSION, NOT VISITS, and that check is what says so.
+        if (!IsPrefixOperator(Current.Kind))
+        {
+            return ParseUnaryCore();
+        }
+
+        if (!Enter())
+        {
+            return new SliceNumericLiteral(Here(), 0, false);
+        }
+
+        try
+        {
+            return ParseUnaryCore();
+        }
+        finally
+        {
+            Leave();
+        }
+    }
+
+    /// <summary>Whether a token begins a prefix expression whose parse recurses.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=E464BD
+    // Broiler-Human:        PENDING
+    private static bool IsPrefixOperator(SliceTokenKind kind) => kind is
+        SliceTokenKind.Plus or SliceTokenKind.Minus or SliceTokenKind.Bang or
+        SliceTokenKind.Tilde or SliceTokenKind.Typeof or SliceTokenKind.Void or
+        SliceTokenKind.Delete or SliceTokenKind.Await or SliceTokenKind.PlusPlus or
+        SliceTokenKind.MinusMinus;
+
+    /// <summary>The unary parse itself, inside the bound its caller entered.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=364267
+    // Broiler-Human:        PENDING
+    private SliceExpression ParseUnaryCore()
     {
         var span = Here();
 
@@ -1158,7 +1219,7 @@ public sealed class SliceParser
     }
 
     /// <summary>Member access, calls and <c>new</c>, left to right.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=309170
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=42B016
     // Broiler-Falsified-If: a link of a chain drops its target, so a walk under it counts nothing
     // Broiler-Human:        PENDING
     private SliceExpression ParseCallChain()
@@ -1204,6 +1265,18 @@ public sealed class SliceParser
             while (diagnostics.Count == 0)
             {
                 var linkSpan = Here();
+
+                // The second iterative builder. Charged at the top rather than after the switch
+                // because every arm of it continues, so nothing below the switch is reachable -
+                // and charged only when the token IS a link, because the loop is entered once per
+                // primary expression and billing that entry cost a level for every operand. A
+                // five-thousand-term sum has five thousand operands, so the over-charge doubled
+                // the price of the shape this bound exists for and refused programs the wide
+                // front end admits.
+                if (IsChainLink(Current.Kind) && !Deepen(linkSpan, out var deep))
+                {
+                    return deep;
+                }
 
                 switch (Current.Kind)
                 {
@@ -1663,6 +1736,45 @@ public sealed class SliceParser
     }
 
     /// <summary>Takes one level of the depth allowance, refusing once when it runs out.</summary>
+
+    /// <summary>Whether a token continues a call chain, and so deepens the tree by one.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=F7EE96
+    // Broiler-Human:        PENDING
+    private static bool IsChainLink(SliceTokenKind kind) => kind is
+        SliceTokenKind.Dot or SliceTokenKind.QuestionDot or SliceTokenKind.OpenBracket or
+        SliceTokenKind.OpenParen or SliceTokenKind.TemplateLiteral;
+
+    /// <summary>
+    /// Charges one level of TREE depth, for a builder that deepens the tree without recursing.
+    /// </summary>
+    /// <remarks>
+    /// The wide parser carries the same charge and
+    /// <see cref="SliceParseOptions.MaximumTreeDepth"/> carries the derivation. It is here as
+    /// well because the manifest's narrowness is not the parser's: this front end builds the same
+    /// left spines from the same loops, and a shorter admitted grammar makes a chain no shorter.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=2; Fingerprint=E5C733
+    // Broiler-Falsified-If: a source whose tree is deeper than this bound reaches a walk
+    // Broiler-Human:        PENDING
+    private bool Deepen(SliceSourceSpan span, out SliceExpression refusal)
+    {
+        treeDepth++;
+
+        if (treeDepth <= SliceParseOptions.MaximumTreeDepth)
+        {
+            refusal = null!;
+            return true;
+        }
+
+        Refuse(
+            SliceSourceDiagnosticCode.NestingTooDeep,
+            $"the source builds a tree deeper than the {SliceParseOptions.MaximumTreeDepth} " +
+                "levels this compiler walks");
+
+        refusal = new SliceNumericLiteral(span, 0, false);
+        return false;
+    }
+
     // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=1; Fingerprint=0D6A78
     // Broiler-Falsified-If: recursion continues after this answers false
     // Broiler-Human:        PENDING

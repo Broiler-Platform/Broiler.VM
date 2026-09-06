@@ -920,6 +920,15 @@
       "activationMilestone": null,
       "nonVacuousWhen": "Each of the profile's product assemblies has to be represented before the empty result is read, and the from-scratch matcher's own file has to be among the sources by name, so a renamed assembly or a moved path is a failure rather than the cleanest-looking pass. The rejecting direction is a witness source writing every spelling the rule knows, and it has been watched failing against an injected import and passing after the revert.",
       "witness": "witnesses/register/N18-a-product-source-that-constructs-a-platform-matcher.cs.witness"
+    },
+    {
+      "id": "N19",
+      "owningAdr": "0011",
+      "status": "Active",
+      "statement": "Every public compile entry point of the lowering assembly reaches the syntax-tree walks through CompilationStack, which starts a thread with the size it declares; and the tree-depth bound derived against that stack is a constant of the assembly rather than a switch a host states through parse options. Both halves in one rule, because a checkout with the bound and not the stack refuses programs a minifier emits, and one with the stack and not the bound has moved its cliff rather than removed it.",
+      "evidence": "The lowering assembly's sources, read as text, and the parse-options type's declaration",
+      "nonVacuousWhen": "Public compile entry points exist for both surfaces from 2026-09-06 and each is scanned, and the rule reports its own vacuity when the entry-point pattern matches nothing - which is the failure mode it would otherwise have, since it passes by finding nothing. The rule was minted with the decision it holds: a left-associative chain parses ITERATIVELY, so it raises the nesting counter not at all and builds a spine as long as the source, and the lowering descended it once per term until a long enough chain ended the process - under a compile-and-verify that runs nothing, at every nesting bound. The host-settable clause is the one a later change breaks by kindness: every other limit on that type is a host's to state, so moving this one beside them reads like finishing the type rather than handing a host a limit on a stack it cannot see.",
+      "witness": "witnesses/N19-a-tree-bound-the-host-can-raise.cs.witness"
     }
   ]
 }

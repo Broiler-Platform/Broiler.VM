@@ -322,13 +322,14 @@ public sealed class JsCompiler
         Compile([new JsScriptUnit("main", source, options)]);
 
     /// <summary>Compiles several source texts into one artifact, one entry point each.</summary>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=16DA79
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=24405A
     // Broiler-Human:        PENDING
-    public static JsCompilation Compile(System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts)
-    {
-        var compiler = new JsCompiler();
-        return compiler.Run(scripts, []);
-    }
+    public static JsCompilation Compile(System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts) =>
+        CompilationStack.Run(() =>
+        {
+            var compiler = new JsCompiler();
+            return compiler.Run(scripts, []);
+        });
 
     /// <summary>What one source text requests, so a composition can resolve and load it.</summary>
     /// <param name="Succeeded">Whether the source parsed.</param>
@@ -410,15 +411,16 @@ public sealed class JsCompiler
     /// never evaluated, which is what the specification says of a module nothing requests.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=9872AC
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=326E18
     // Broiler-Human:        PENDING
     public static JsCompilation Compile(
         System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts,
-        System.Collections.Generic.IReadOnlyList<JsModuleUnit> modules)
-    {
-        var compiler = new JsCompiler();
-        return compiler.Run(scripts, modules);
-    }
+        System.Collections.Generic.IReadOnlyList<JsModuleUnit> modules) =>
+        CompilationStack.Run(() =>
+        {
+            var compiler = new JsCompiler();
+            return compiler.Run(scripts, modules);
+        });
 
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E0B865
