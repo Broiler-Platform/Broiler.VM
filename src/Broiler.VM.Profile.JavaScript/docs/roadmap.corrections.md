@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap — corrections and rejections
 
-**Last updated:** 2026-09-05
+**Last updated:** 2026-09-06
 
 **This file is part of the [Broiler.VM.Profile.JavaScript roadmap](roadmap.md)**, which
 [names every file](roadmap.md#how-this-roadmap-is-split). It carries no numbered section of the
@@ -8032,3 +8032,246 @@ driver pins neither the child's time zone nor its encoding.
 **Authority and date.** The driver runs of 2026-09-06 recorded in
 [the parity roadmap](roadmap.parity.md#2-how-the-comparison-was-made-and-the-two-ways-it-had-been-made-wrongly).
 The runs were taken outside any retained bundle and advance nothing. 2026-09-06.
+
+### JSC-192
+
+**Where:** `eng/measure-frame-cost.py`'s outcome vocabulary, `JsEngine`'s stack backstop, and
+[`JsExecution`](../JsExecution.cs)'s record of the measured per-frame cost.
+
+**What the record said.** That the frame-cost script's three outcomes — a recursion that
+*completed*, one a declared bound *refused*, and one that *died* — covered what a trial can do, and
+that a run reaching neither its ceiling nor its bound had terminated the process. And that a
+call-stack overflow is *reported as a resource exhaustion naming a dimension*, which
+[release gate 4](roadmap.gates.md#22-release-gates) requires in those words.
+
+**What replaced it.** Both halves were wrong in the same place, and each hid the other.
+
+**The backstop named nothing.** A call whose stack probe refuses ends the operation rather than
+throwing a `RangeError`, which is right and is what
+[`JsEngine.MaximumCallDepth`](../JsEngine.cs)'s remarks argue for. What it did was throw an abort
+that became `ProfileFault`/`AllowanceExhausted` — an answer carrying no dimension and no scope, so
+a reader met a profile fault where the gate asks for a resource exhaustion naming a dimension. It
+now charges a quantity of `CallDepth` no level can admit, which is the only way a profile may name
+a dimension, and the core's own precedence reports
+`ResourceExhaustion`/`CeilingReached` on `CallDepth` with the scope that refused. A refused charge
+commits nothing, so the meter is left as it was. What this costs a reader is stated where the
+change is: the dimension named is the one the guest was spending and not the machine resource that
+ran out, so raising `CallDepth` after meeting it gets no further.
+
+**And the script called that refusal a death.** With no arm for it the classifier fell through to
+its last resort and printed *A RECURSION TERMINATED THE PROCESS* about a process that was still
+running, on the first machine where the backstop fired before a declared bound did. A measurement
+harness reporting a refusal as a death is what [rule 5 of section 17](roadmap.gates.md#17-measurement-discipline)
+exists against. The vocabulary now has a fourth outcome, `backstop`, and the script tells it from a
+granted ceiling by the one thing the message does not carry: a recursion shallower than the ceiling
+the run granted cannot have reached that ceiling, so what refused was the stack. A run whose two
+shapes stop for different reasons is reported as not a comparison rather than averaged.
+
+**What the corrected instrument then measured**, and it is a second runtime identifier rather than a
+repair of the first: on `linux-x64`, ninety-six megabytes holds **19,756** guest calls — **5,095
+bytes** a call, against the 4,551 recorded on the machine of JSC-139. The margin the ceiling depends
+on holds at 2.41 times the grantable call-depth maximum and 3.29 times the engine's own bound, and
+the returning and throwing shapes agreed exactly, which is JSC-97's property surviving a second
+platform. Reproducing it means lifting the engine's bound and the profile's call-depth maximum in a
+build of one's own, as JSC-139 already recorded, because the released build's counted bound fires at
+6,000 and reports the promise.
+
+**What is NOT claimed.** The backstop's new answer has no named case, because it is not reachable
+from guest source in a released build: the counted bound fires first for a call, and `JSON` and the
+matcher carry depth bounds of their own. It was observed on the lifted build described above and is
+a defensive arm otherwise. **These runs were taken outside any retained bundle and advance no
+ledger row.**
+
+**Authority and date.** The runs of 2026-09-06 on `linux-x64` described above. 2026-09-06.
+
+### JSC-193
+
+**Where:** [`JsEngine`](../JsEngine.cs)'s comparison and conversion paths, and roadmap
+[section 8](roadmap.md#proportional-charging)'s family list.
+
+**What the record said.** That for every named operation family whose cost grows with its input —
+*string concatenation and comparison, array copy and sort, property enumeration,
+regular-expression matching, numeric conversion of large values, structured cloning* — this profile
+declares a monotone non-decreasing charging function and charges at least the ceiling of it. That
+sentence is the plan's and it did not change. What changed is that two of the families were not
+doing it, and nothing had ever asked them.
+
+**What replaced it.** **String comparison charged a flat sixteen units and numeric conversion of a
+numeral charged a flat amount too**, both measured by bisecting the fuel allowance against a
+control. So `a < b` over two strings of half a megabyte cost what it costs over two characters, and
+`Number(s)` over a five-hundred-digit numeral cost what it costs over four digits. That is the risk
+[section 23](roadmap.gates.md#23-risks-and-stop-conditions) states in one line — *guest-controlled
+superlinear cost is not charged proportionally, so a bounded budget bounds nothing* — reached by
+linear cost rather than superlinear, which is the same hole and cheaper to walk through.
+
+Both charge per character now, against the work's own bound: an ordinal comparison stops at the
+first difference and so cannot read past the shorter operand, giving `min(|a|, |b|) + 1`; reading a
+number trims and scans the whole string, giving `|s| + 1`. Strict and loose equality over two
+strings take the comparison charge as well, because equality reads the same characters the
+relational operators do. The declared granularity is one, so the charge is the function rather than
+a ceiling over a window, and the `+ 1` is there because a family whose charge can be zero is one a
+program can perform without limit.
+
+**And the reason nothing had asked** is the part worth keeping. Section 8 asks for *a retained
+fixture with an unsimplified control* per family and makes the consequence explicit — an operation
+family without a proportionality fixture does not ship in the increment — and there was no fixture
+for any of the seven. Eight now exist, in the root that carries the lowering, measuring each family
+against its own control by bisecting the allowance, because nothing in the public surface reports
+what an invocation spent and adding a reporter would put a measurement channel in the product. The
+two defects above are what the first run of them found. **The negative control is the defect
+itself**: injecting the flat charge back fails the two fixtures naming the floor and the flat
+series, and reverting passes them.
+
+**What is NOT claimed.** Structured cloning is the seventh family and does not ship, so it has no
+fixture and needs none. The floors are lower bounds on the work rather than the measured charges —
+a floor set to what was measured would pass by construction. And these runs are outside any
+retained bundle: **no ledger row moves on them.**
+
+**Authority and date.** The measurements of 2026-09-06 on `linux-x64` described above. 2026-09-06.
+
+### JSC-194
+
+**Where:** roadmap [section 12](roadmap.md#12-suspension-generators-async-functions-and-top-level-await)'s
+routing decision, JS-1's declaration that the fifth step kind is produced at JS-7, and
+[`JavaScriptExecutor`](../JavaScriptExecutor.cs)'s `Resume` and `Unwind`.
+
+**What the record said.** That `Suspended` is unreachable from this profile and is **produced at
+JS-7** — JS-1 declared it rather than minting an out-of-manifest opcode to reach it, the ledger has
+carried the sentence since, and the execution-only root asserted it by checking that neither
+suspension row was declared. Nothing produced the kind.
+
+**What replaced it.** **The kind is produced**, by a reserved entry point of the same shape as the
+drain: `#step-jobs` runs one due job and, if the queue still holds anything, answers `Suspended`
+with a continuation and a projection carrying how many jobs are left. The host resumes to take the
+next turn. Resume and Unwind are implemented — the first refuses a continuation presented against a
+different instance, which is the one confusion the core cannot see because both objects are this
+profile's; the second drops the queue without calling any of it, because roadmap section 12 says an
+unwind may run nothing able to request a load or to suspend and the only way to promise that about
+a queue of guest callables is not to call them.
+
+**This is section 12's routing decision, and it is narrow on purpose.** Section 12 warns that
+routing every microtask through a core suspension would make the suspended-operation limit govern a
+page rather than a pathology. So a drain is still one operation running the queue to exhaustion, a
+`yield` and an `await` still suspend on a heap frame inside one operation with no core suspension,
+and the pause is only what a host asked for by taking the turn as its unit. **The live-suspension
+count that produces is at most one per instance being stepped, and a composition that never steps
+produces none** — a property of the embedding rather than of the program, which is the count
+section 12 asks to be recorded with the decision.
+
+**One declaration was made and withdrawn in the same change, and the reason is worth keeping.**
+`ExternalSuspension` was set to `Declared`, and a check written against the pair section 12 asks to
+be told apart failed and was right to: **at core contract version 1 an executor cannot see that a
+host has asked it to pause** — nothing on the execution environment reports the request — so a
+profile declaring the row could keep the promise only where the guest happened to reach a
+suspension point of its own. That is a declaration true by luck. The row stays `NotDeclared`, the
+pause is a **guest** suspension, which section 12's first row says declares nothing extra, and a
+host calling `RequestSuspend` gets `ExternalSuspensionNotDeclared` — one half of the pair, with a
+case. The other half needs a descriptor that declares the row, and minting a second differing in it
+alone would be composing a profile this repository does not ship in order to pass a check.
+
+**What of JS-7's gate this reaches, and what it does not.** Reached, each by a named case in the
+root that carries the lowering: a pause and a resume across two suspensions with every job running
+once in order; a second resume refused as `ResumeTokenConsumed`; a parked operation disposed
+without ever being resumed, with its queue dropped rather than run; the live-suspension bound
+answering `SuspendedOperationLimitReached`. **Not reached**: asynchronous instantiation, which is
+not declared and which section 12 already records as *not what a caller gets today* — a module
+graph is evaluated inside an invocation — so the gate's top-level-await-during-instantiation clause
+is untouched and still owed; the residency bound, which needs a pause to outlive a wall clock and
+would make a check that sleeps; and the budget-snapshot-across-a-pause clause, which nothing here
+reads. **No ledger row moves on this**: the cases are in a root's check list and not in a retained
+bundle.
+
+**Authority and date.** The implementation and the runs of 2026-09-06 described above. 2026-09-06.
+
+### JSC-195
+
+**Where:** JS-4's exit gate in [the delivery file](roadmap.delivery.md#js-4--the-value-representation-and-the-object-model),
+JS-5's host-boundary clauses in the same file, and the checks that answer them.
+
+**What the record said.** That two runtimes minting properties under the same key text observe
+neither the other's storage, shape identity nor key identity **in a test that fails when the key
+table is made process-wide again**; and that a failed **required** import leaves no partially bound
+runtime, with a capability whose **version**, signature ID or kind does not match refused when the
+runtime is created.
+
+**What replaced it.** Both gates were written against a component that does not exist yet, and each
+now carries the property it was protecting rather than the mechanism it named.
+
+**The key table has nothing to switch on.** JS-4's falsifier is a statement about the seed's
+storage — an interned key table and a shape-transition table, both process-wide structures a copy
+would have brought with it. **JS-2 is blocked and the copy has not happened**, so what is here is a
+property store written in this checkout: a dictionary owned by one object, with no key table, no
+shape table and no feedback anywhere. A test that failed when the table was made process-wide again
+cannot be written, because there is no table to make process-wide. What is asserted instead is what
+the falsifier was guarding: two runtimes alive at once mint the same three names and each reads back
+only its own value, and neither can see the name the other alone minted. That holds whatever the
+storage is made of, which is why it is worth running against an implementation the gate did not
+anticipate.
+
+**And the structural scan is still not a scan.** The gate asks that a scan assert nothing
+instance-owned is reachable from a shareable handle, with its mechanism and residual stated. What
+stands in its place is behavioural — three runtimes over one handle each building their store from
+nothing, after the realms have been mutated rather than before — and it says so in its own output.
+**The residual is that a per-instance structure those programs never observe would not be caught**,
+and what bounds it is the construction rather than the check.
+
+**Two of JS-5's boundary clauses are unreachable rather than unmet.** This profile declares three
+host-capability imports and **every one of them is optional**, so there is no required import to
+fail and no partially bound runtime to find; building one would mean changing the descriptor to
+make a gate constructible, which is the wrong direction. The version clause is the same declaration
+seen from the other side: the core matches a registration by identity **and version together**, so a
+registration at another version is not a mismatch it refuses but a capability it never finds — and
+an optional import that finds nothing is bound to nothing. That is the unbound branch, which the
+gate also asks for and which now has a case of its own. The signature and kind mismatches are
+refused at creation, each by its own case.
+
+**What is NOT claimed.** None of this closes a clause: the cases live in a composition root's check
+list, retained by [bundle JS-7-001](evidence/js-7-001/README.md), and no reviewer decision exists.
+JS-1's hand-written encoder and its hand-written programs are still not deleted, which the same gate
+asks for and asserts by scan.
+
+**Authority and date.** The implementation and the runs of 2026-09-06 described above. 2026-09-06.
+
+### JSC-196
+
+**Where:** JS-9's *fuzz all four untrusted-input surfaces* in
+[the delivery file](roadmap.delivery.md#js-9--adversarial-input-agents-and-soak), and the header
+every retained `fuzz.log` carries.
+
+**What the record said.** That two of roadmap
+[section 7](roadmap.md#7-the-bytecode-format-and-the-verifier)'s four surfaces are fuzzed and two
+are not, the second pair being **the source tokenizer and parser** and **the regular-expression
+matcher over pattern and subject** — and, from 2026-09-03, that the first of those two *exists and
+no session reaches it* while the matcher *does not exist, and waits on JS-6*.
+
+**What replaced it.** **The matcher exists** — the workload programme wrote one in this checkout
+when it replaced the translation onto the platform's engine, and rule N18 asserts over the product
+source that no call site constructs a compiled-mode regular expression from the platform. So *waits
+on JS-6* stopped being true at the same moment the same sentence stopped being true of the front
+end, and the row carried the older reading for both. **A session reaches it now**: a matcher session
+mutates both halves of the input, because a pattern is text a program wrote and a subject is text a
+program passed, and a session that mutated only the pattern would leave unexplored the half where a
+backtracker spends its time.
+
+**What a counterexample is here, stated because it is narrower than it sounds.** The matcher
+declares exactly two refusals — a pattern that is not one, and a ceiling it declares for itself —
+and the caller that turns a matcher failure into a guest-visible answer knows about exactly those
+two. So an escaping third exception is a defect and everything else is an answer. The session found
+none in the sessions retained; **what makes that worth reading is the control beside it**, which
+turns one declared refusal into an ordinary exception and requires the session to report the pattern
+and subject that reach it.
+
+**And the guidance loop fires here, where the source session's does not.** Both key on the answer
+this profile publishes, as [JSD-0013](decisions/0013-the-fuzz-sessions-coverage-signal.md) requires.
+The source session kept nothing — every answer it produced was one its seed corpus already reached —
+while the matcher session's seed pool grows until it reaches its declared ceiling, which the session
+reports rather than passing over. **A session's growth is a fact about its corpus as much as about
+its mutator**, so neither is judged on it; what each is judged on is its own loop.
+
+**What is still open.** Three of the four surfaces have a session; the fourth pair is now one
+surface rather than two, and it is closed. **What no session covers is the executor over
+verified-but-adversarial artifacts reached from SOURCE** rather than from mutated bytes, which is
+not one of the four and is named here only so it is not read into them. **No ledger row is closed
+by this**: the matcher session is one session over one surface, and JS-9's gate asks for far more.
+
+**Authority and date.** The implementation and the runs of 2026-09-06 described above. 2026-09-06.

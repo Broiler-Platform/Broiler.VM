@@ -1,0 +1,21 @@
+# closure Broiler.VM.Composition.JavaScript.Cli rid=linux-x64
+
+[jit] 7 non-framework assemblies
+Broiler.VM.Abstractions
+Broiler.VM.Binary
+Broiler.VM.Composition.JavaScript.Cli
+Broiler.VM.Profile.JavaScript
+Broiler.VM.Profile.JavaScript.Compiler
+Broiler.VM.Profile.JavaScript.Format
+Broiler.VM.Runtime
+
+[trimmed] 7 non-framework assemblies
+Broiler.VM.Abstractions
+Broiler.VM.Binary
+Broiler.VM.Composition.JavaScript.Cli
+Broiler.VM.Profile.JavaScript
+Broiler.VM.Profile.JavaScript.Compiler
+Broiler.VM.Profile.JavaScript.Format
+Broiler.VM.Runtime
+
+[aot] 0 non-framework assemblies

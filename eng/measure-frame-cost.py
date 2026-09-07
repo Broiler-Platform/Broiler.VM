@@ -39,6 +39,21 @@
 # own; the figures that arrangement produced on 2026-09-04 are recorded in `JsEngine.MaximumCallDepth`
 # beside the bound derived from them.
 #
+# AND THERE IS A FOURTH OUTCOME, WHICH THIS SCRIPT REPORTED AS A DEATH. The runtime's own stack
+# probe is the designed backstop: a call whose probe refuses has nowhere left to build an error
+# object, so the operation ENDS - cleanly, with the process alive and an answer of its own. That is
+# the stack announcing itself, which is the quantity this whole script exists to find, and the
+# classifier below had no name for it. It fell through to the last resort and printed A RECURSION
+# TERMINATED THE PROCESS about a process that did not terminate. A measurement harness that reports
+# a refusal as a death is the failure mode roadmap section 17 rule 5 exists against, and on
+# `linux-x64` it fired on the first machine that met the backstop before it met a declared bound.
+#
+# THE BACKSTOP AND A GRANTED CEILING NOW ANSWER ALIKE, and the script tells them apart from the one
+# thing it knows that the message does not carry: the ceiling it granted. A recursion asked to go
+# `d` deep under a granted ceiling of `c > d` cannot have reached that ceiling, so a
+# `CeilingReached on CallDepth` at such a depth is the stack. That inference is why the ceiling is
+# passed rather than left at the profile's default.
+#
 #   python3 eng/measure-frame-cost.py [--binary-directory <dir>] [--stack-bytes <n>] [--ceiling <n>]
 
 import argparse
@@ -79,6 +94,7 @@ catch (failure) {
 # per-frame cost derived from a bound rather than from the stack.
 COMPLETED = "completed"
 BOUNDED = "bounded"
+BACKSTOP = "backstop"
 DIED = "died"
 
 
@@ -112,7 +128,18 @@ def outcome(binary, scratch, shape, depth, ceiling, timeout):
         return BOUNDED, "the engine's own bound"
 
     if "CeilingReached on CallDepth" in both:
-        return BOUNDED, "the budget ceiling"
+        # THE GRANTED CEILING, OR THE STACK REFUSING IN ITS NAME. Both answer alike, and a
+        # recursion shallower than the ceiling this run granted cannot have reached that ceiling,
+        # so what refused was the stack.
+        return (
+            (BOUNDED, "the budget ceiling") if depth >= ceiling
+            else (BACKSTOP, "the runtime's stack probe"))
+
+    # A DIMENSION THIS RUN SPENT, WHICH IS A REFUSAL AND NOT A DEATH. The process is alive, it
+    # answered, and it named what it ran out of. Reading either as a death is what printed a
+    # termination notice about a process that was still running.
+    if "AllowanceExhausted" in both:
+        return BOUNDED, "an allowance this run spent"
 
     if "Stack overflow" in both or done.returncode < 0:
         return DIED, "the process terminated"
@@ -199,6 +226,13 @@ def main():
             "# profile's declared call-depth maximum in a build of your own to measure the capacity.")
 
         return 0
+
+    if BOUNDED in (why_returning, why_throwing):
+        print(
+            "# ONE SHAPE MET A DECLARED BOUND AND THE OTHER MET THE STACK, so the two figures below\n"
+            "# are not a comparison. Lift the bounds and run again before reading them as one.")
+
+        return 1
 
     print(f"bytes-per-frame {arguments.stack_bytes / returning:.0f}")
 

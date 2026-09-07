@@ -68,6 +68,9 @@ ANDROID_CATALOG_BASELINE = os.path.join(
 ANDROID_CLOSURE = os.path.join(
     "src", "Broiler.VM.Profile.JavaScript", "docs", "evidence", "js-android-001",
     "closure-android.txt")
+# The matcher, which one control injects into.
+PROFILE_MATCHER = os.path.join(
+    "src", "Broiler.VM.Profile.JavaScript.Format", "JsRegExpMatcher.cs")
 EXECUTION_ONLY_HOSTS = os.path.join(
     "src", "compositions", "Broiler.VM.Composition.JavaScript.ExecutionOnly", "Hosts.cs")
 
@@ -1246,6 +1249,17 @@ def corpus_controls(out, corpus, arguments):
 # gates forbid.
 FUZZ_SESSIONS = ((1, 25_000), (2, 25_000), (3, 25_000), (4, 25_000))
 
+# THE SOURCE SESSIONS, and there are fewer of them because one iteration costs more: a mutant here
+# is compiled rather than verified, and the front end does more work per input than the reader does.
+# Two seeds rather than four for the same reason a session has a stated floor at all - the number is
+# the budget, and a budget nobody wrote down is a session whose depth a reader cannot judge.
+SOURCE_FUZZ_SESSIONS = ((1, 5_000), (2, 5_000))
+
+# THE MATCHER'S SESSIONS, which are the fourth of roadmap section 7's four surfaces and the last to
+# be reached by anything. They cost about what an artifact session costs - a mutant is compiled and
+# run against a subject rather than verified - so the budget is the same.
+REGEXP_FUZZ_SESSIONS = ((1, 25_000), (2, 25_000))
+
 
 def fuzz(out, corpus):
     """Run the retained fuzz sessions and keep everything they printed, findings included."""
@@ -1299,8 +1313,64 @@ def fuzz(out, corpus):
         log.extend("    " + line for line in output.splitlines())
         log.append("")
 
+    # THE SOURCE SURFACE, WHICH THESE SESSIONS DO NOT REACH AND WHICH NO BUNDLE HAD EVER RUN.
+    #
+    # The paragraph above says why: these mutate ARTIFACTS, and the tokenizer, the parser and the
+    # lowering consume SOURCE. That was a scope statement with nothing on the other side of it -
+    # the slice-compiler root has carried a source session since the front end was written, and no
+    # collection had ever invoked it, so "no session reaches them" was true of the retained
+    # evidence rather than of the checkout. It is invoked here.
+    #
+    # It runs in ONE mode rather than three: a session is a total function of its seed and its seed
+    # set, so the same session under Native AOT would produce the same transcript, and retaining
+    # three copies of one answer would read as three pieces of evidence.
+    log.append("")
     log.append(
-        f"sessions: {len(FUZZ_SESSIONS)}; sessions reporting a finding: {findings}")
+        "THE SOURCE SURFACE, run by the root that carries the lowering. The sessions above mutate "
+        "artifacts; this one mutates source and reaches the tokenizer, the parser and the lowering "
+        "- the surface JSC-47 recorded as existing and unfuzzed. The matcher is still reached by "
+        "no session at all.")
+    log.append("")
+
+    for seed, iterations in SOURCE_FUZZ_SESSIONS:
+        code, output = run([
+            "dotnet", "run", "--project", SLICE_COMPILER, "-c", "Release", "--no-build",
+            "--", "--fuzz", os.path.join(corpus, "source"),
+            "--seed", str(seed), "--iterations", str(iterations)])
+
+        findings += 1 if code == 1 else 0
+
+        log.append(f"[source, seed {seed}, {iterations} iterations] exit {code}")
+        log.extend("    " + line for line in output.splitlines())
+        log.append("")
+
+    # THE MATCHER, WHICH WAS THE LAST SURFACE REACHED BY NOTHING. It was excused as ABSENT until
+    # the workload programme wrote a matcher of this component's own, and after that the excuse was
+    # wrong and the gap was real - bundle JS-7-001 names it in its exclusions in those words. Both
+    # halves of the input are guest-controlled, so both the pattern and the subject are mutated.
+    log.append("")
+    log.append(
+        "THE MATCHER, over pattern and subject. Its two declared refusals - a pattern that is not "
+        "one, and a ceiling it declares for itself - are answers; any other exception escaping is "
+        "a counterexample, because the caller that turns these into guest-visible answers knows "
+        "about exactly two.")
+    log.append("")
+
+    for seed, iterations in REGEXP_FUZZ_SESSIONS:
+        code, output = run([
+            "dotnet", "run", "--project", EXECUTION_ONLY, "-c", "Release", "--no-build",
+            "--", "--fuzz-regexp", "--seed", str(seed), "--iterations", str(iterations)])
+
+        findings += 1 if code == 1 else 0
+
+        log.append(f"[regexp, seed {seed}, {iterations} iterations] exit {code}")
+        log.extend("    " + line for line in output.splitlines())
+        log.append("")
+
+    log.append(
+        f"sessions: {len(FUZZ_SESSIONS)} over artifacts, {len(SOURCE_FUZZ_SESSIONS)} over source "
+        f"and {len(REGEXP_FUZZ_SESSIONS)} over the matcher; sessions reporting a finding: "
+        f"{findings}")
 
     if findings:
         log.append(
@@ -1348,6 +1418,27 @@ FUZZ_CONTROLS = [
         lambda text: text.replace(
             "            return index < constantCount\n                ? Ok",
             "            return true\n                ? Ok"),
+        1,
+    ),
+]
+
+
+# THE MATCHER'S CONTROL, judged by a MATCHER SESSION rather than by an artifact one. The two
+# sessions mutate different things and reach different code, so a control for one says nothing
+# about the other - and a matcher session that reported nothing would otherwise be worth nothing,
+# which is the whole reason every session in this file has a control beside it.
+REGEXP_CONTROLS = [
+    (
+        "the-matcher-throws-something-it-does-not-declare",
+        "A refusal the parser makes becomes an ordinary exception instead of the matcher's own. "
+        "The caller that turns a matcher failure into a guest-visible answer knows about exactly "
+        "two exception types, so a third reaching it is an answer no guest could be given - which "
+        "is what this session calls a counterexample and what the control demonstrates it would "
+        "catch. Exit 1: a finding.",
+        PROFILE_MATCHER,
+        lambda text: text.replace(
+            '                    throw new JsRegExpSyntaxError("Duplicate capture group name");',
+            '                    throw new System.InvalidOperationException("undeclared");'),
         1,
     ),
 ]
@@ -1419,9 +1510,53 @@ def fuzz_controls(out, corpus):
             or line.strip().startswith("a verified"))
         log.append("")
 
+    # THE MATCHER'S CONTROLS, judged by a MATCHER SESSION. Same shape, different session, because
+    # a control for one surface says nothing about another.
+    log.append("")
     log.append(
-        "fuzz controls run: " + str(len(FUZZ_CONTROLS)) + "; passed: " + str(passed) +
-        "; SKIPPED: " + str(skipped))
+        "THE MATCHER'S CONTROLS, judged by a matcher session rather than by an artifact one.")
+    log.append("")
+
+    for name, why, path, mutate, expected in REGEXP_CONTROLS:
+        original = read(path)
+        mutated = mutate(original)
+
+        if mutated == original:
+            skipped += 1
+            log.append(
+                "[" + name + "] SKIPPED - the injection changed nothing; "
+                + skip_reason(path, dirty))
+            log.append("    file: " + path)
+            log.append("")
+            continue
+
+        overwrite(path, mutated)
+        injected_code, injected_output = regexp_session()
+        overwrite(path, original)
+
+        if read(path) != original:
+            raise SystemExit("control " + name + " did not restore " + path)
+
+        reverted_code, _ = regexp_session()
+
+        verdict = "PASS" if injected_code == expected and reverted_code == 0 else "FAIL"
+        passed += 1 if verdict == "PASS" else 0
+
+        log.append("[" + name + "] " + verdict)
+        log.append("    why:       " + why)
+        log.append("    file:      " + path)
+        log.append(
+            "    injected:  exit " + str(injected_code) + " (expected " + str(expected) + ")")
+        log.append("    reverted:  exit " + str(reverted_code))
+        log.extend(
+            "      " + line.strip()
+            for line in injected_output.splitlines()
+            if "COUNTEREXAMPLE" in line)
+        log.append("")
+
+    log.append(
+        "fuzz controls run: " + str(len(FUZZ_CONTROLS) + len(REGEXP_CONTROLS)) +
+        "; passed: " + str(passed) + "; SKIPPED: " + str(skipped))
 
     if skipped:
         log.append(
@@ -1618,6 +1753,18 @@ def android_controls(out):
 
     write(os.path.join(out, "android-controls.log"), "\n".join(log) + "\n")
     return passed, skipped
+
+
+def regexp_session(seed=1, iterations=25_000):
+    """Rebuild and run one matcher session, returning its exit code and output."""
+    code, text = run(["dotnet", "build", SOLUTION, "-c", "Release", "--nologo"])
+
+    if code != 0:
+        return code, text
+
+    return run([
+        "dotnet", "run", "--project", EXECUTION_ONLY, "-c", "Release", "--no-build",
+        "--", "--fuzz-regexp", "--seed", str(seed), "--iterations", str(iterations)])
 
 
 def fuzz_session(corpus, seed=1, iterations=25_000):

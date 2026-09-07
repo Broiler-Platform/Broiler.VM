@@ -49,6 +49,16 @@ internal static class Program
                 return Fuzzing.Replay(replay);
             }
 
+            // THE FOURTH SURFACE, AND THE ONLY MODE HERE THAT NEEDS NO CORPUS. It mutates patterns
+            // and subjects this file carries rather than artifacts a producer wrote, so it is
+            // dispatched before the corpus argument is required.
+            if (args.Contains("--fuzz-regexp", StringComparer.Ordinal))
+            {
+                return RegExpFuzzing.Run(
+                    ulong.Parse(Argument(args, "--seed") ?? "1", System.Globalization.CultureInfo.InvariantCulture),
+                    int.Parse(Argument(args, "--iterations") ?? "20000", System.Globalization.CultureInfo.InvariantCulture));
+            }
+
             var corpus = Argument(args, "--corpus");
 
             if (corpus is null)
@@ -72,7 +82,7 @@ internal static class Program
             {
                 UnsupportedProfileExaminesNoByte(),
                 FourExecutionStepKinds(addition),
-                SuspensionIsUnreachableHere(),
+                SuspensionIsDeclaredAndUnreachedHere(),
                 OperandStackIsSizedFromVerification(addition),
                 TheCallerBufferMayChangeAfterwards(addition),
                 TheGuidanceLoopIsWired(),
@@ -369,7 +379,7 @@ internal static class Program
     /// <c>Instantiated</c> from an instantiation, <c>Completed</c> from an entry point that
     /// returns, <c>Faulted</c> from an entry-point name nothing is bound to - a ReferenceError in
     /// the language - and <c>ContractViolation</c> from a resume this surface can never have
-    /// produced a continuation for. The fifth is <see cref="SuspensionIsUnreachableHere"/>.
+    /// produced a continuation for. The fifth is <see cref="SuspensionIsDeclaredAndUnreachedHere"/>.
     /// </remarks>
     private static (string, bool, string) FourExecutionStepKinds(byte[] addition)
     {
@@ -425,25 +435,51 @@ internal static class Program
     }
 
     /// <summary>
-    /// The fifth step kind is unreachable from this surface, and this milestone declares it rather
-    /// than minting an out-of-manifest opcode to reach it.
+    /// External suspension is declared, and nothing this root runs reaches it.
     /// </summary>
     /// <remarks>
-    /// The slice has no generator, no async function and no module, so nothing can park. Adding an
-    /// opcode that suspended in order to produce the answer would be widening the manifest to
-    /// satisfy a gate, which is the shape the roadmap forbids by name. JS-7 produces it.
+    /// <para>
+    /// <b>The fifth step kind is produced now, and neither declaration row moved.</b> This check
+    /// used to say the kind was unreachable; it is reachable, as a GUEST suspension between two job
+    /// turns, which section 12's first row says declares nothing extra. External suspension is a
+    /// different promise — to park when the host asks — and an executor at core contract version 1
+    /// cannot see that it has been asked, so declaring it would be a promise kept by luck.
+    /// </para>
+    /// <para>
+    /// <b>What is asserted here is that the pause did not quietly change what this root does.</b> A
+    /// host reaches the pause by asking for a turn, so a composition that never asks creates no
+    /// suspension, and this root never asks. Every entry the replay above ran answered without
+    /// parking, which is the property a reader of a corpus wants: the recorded answers are still
+    /// whole answers rather than the first turn of one. The cases that produce and resume a pause
+    /// need a program with a job in it, so they live in the root that carries the lowering.
+    /// </para>
     /// </remarks>
-    private static (string, bool, string) SuspensionIsUnreachableHere()
+    private static (string, bool, string) SuspensionIsDeclaredAndUnreachedHere()
     {
-        var declaresSuspension =
-            JavaScriptProfile.Descriptor.ExternalSuspension == VmDeclaration.Declared ||
-            JavaScriptProfile.Descriptor.AsynchronousInstantiation == VmDeclaration.Declared;
+        const string Name = "neither suspension row is declared and nothing this root runs parks";
 
-        return declaresSuspension
-            ? ("suspended-is-declared-produced-at-js-7", false,
-                "the descriptor declares a pause this surface cannot make")
-            : ("suspended-is-declared-produced-at-js-7", true,
-                "neither external suspension nor asynchronous instantiation is declared; JS-7 produces the fifth kind");
+        if (JavaScriptProfile.Descriptor.ExternalSuspension == VmDeclaration.Declared)
+        {
+            return (
+                Name,
+                false,
+                "external suspension is declared, and this profile cannot see that a host has asked");
+        }
+
+        if (JavaScriptProfile.Descriptor.AsynchronousInstantiation == VmDeclaration.Declared)
+        {
+            return (
+                Name,
+                false,
+                "asynchronous instantiation is declared, and nothing here parks an instantiation");
+        }
+
+        return (
+            Name,
+            true,
+            "neither row is declared, and the pause this profile does make is a guest suspension " +
+            "between two job turns that only a host asking for the turn as its unit reaches; no " +
+            "entry this root replays asks");
     }
 
     /// <summary>

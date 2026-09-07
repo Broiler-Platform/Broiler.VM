@@ -1,0 +1,6 @@
+JSD-0005 records a CANDIDATE snapshot identity. This step re-derives it and compares.
+A match is not a taken snapshot: JS-2 takes one and records what it actually took.
+
+aggregate checkout:    /home/user
+
+INCONCLUSIVE - no aggregate checkout above the component root, so the seed's revisions could not be read. This is not a match and not a mismatch.

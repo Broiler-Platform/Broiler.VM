@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   120
-// Annotated:        120/120
+// Relevant units:   127
+// Annotated:        127/127
 // Exempt:           15
-// Human-reviewed:   0/120
+// Human-reviewed:   0/127
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         21/21
+// Criteria:         27/27
 // Resource impact:  7/10 max
-// Unverified:       120
+// Unverified:       127
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -128,6 +128,11 @@ internal sealed class JsEngine
     // Broiler-Human:        PENDING
     internal bool HasPendingJobs => jobs.Count != 0;
 
+    /// <summary>How many jobs are due and have not run.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=5235ED
+    // Broiler-Human:        PENDING
+    internal int PendingJobCount => jobs.Count;
+
     /// <summary>
     /// Runs every job that is due, and every job those enqueue, until none is left.
     /// </summary>
@@ -185,6 +190,72 @@ internal sealed class JsEngine
         }
 
         return JsValue.Undefined;
+    }
+
+    /// <summary>
+    /// Runs at most one due job and says whether the queue still holds anything.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>This is the same queue and the same jobs as <see cref="DrainJobs"/>; what differs is who
+    /// decides when the next one runs.</b> A drain runs the queue to exhaustion inside one
+    /// operation, which is what a host that wants a script settled asks for. A host that wants an
+    /// event loop of its own — one that can interleave its work with the guest's, or stop between
+    /// turns and never resume — needs the turn to be the unit, and a queue drained to exhaustion
+    /// cannot give it one.
+    /// </para>
+    /// <para>
+    /// <b>A job that throws does not stop the stepping</b>, exactly as it does not stop a drain: the
+    /// value is carried out and the queue keeps its remaining jobs, so a host stepping through a
+    /// program sees the same sequence of faults, one at a time, that a drain would have folded into
+    /// the first.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=D67CCF
+    // Broiler-Falsified-If: more than one job runs in a step, or a step reports a queue state the queue does not have
+    // Broiler-Human:        PENDING
+    internal bool StepOneJob(out JsValue thrown)
+    {
+        thrown = JsValue.Undefined;
+
+        if (jobs.Count == 0)
+        {
+            return false;
+        }
+
+        Charge(1);
+        var (callable, arguments) = jobs.Dequeue();
+
+        try
+        {
+            _ = Call(callable, JsValue.Undefined, arguments);
+        }
+        catch (JsThrow raised)
+        {
+            thrown = raised.Value;
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Drops every queued job without running any of it.
+    /// </summary>
+    /// <remarks>
+    /// The terminal unwind's whole of the work, and it deliberately runs <b>no guest code</b>:
+    /// roadmap section 12 says the unwind must run nothing able to request a load or to suspend,
+    /// and the only way to promise that about a queue of guest callables is not to call them.
+    /// Whatever they would have done is not done, which is what abandoning an operation means.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=459593
+    // Broiler-Falsified-If: a queued job runs during an unwind
+    // Broiler-Human:        PENDING
+    internal int DropPendingJobs()
+    {
+        var dropped = jobs.Count;
+        jobs.Clear();
+        return dropped;
     }
 
     /// <summary>Whether the composition admitted the optional surface <paramref name="manifestId"/>.</summary>
@@ -498,6 +569,81 @@ internal sealed class JsEngine
     // Broiler-Human:        PENDING
     private const ulong PollWindow = 16_384;
 
+    /// <summary>
+    /// Ends the operation when the runtime's stack probe refuses, naming the dimension it refused
+    /// on.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The refusal is real and it was reported as nothing.</b> A call whose stack probe says no
+    /// has nowhere left to build an error object, so it ends the operation rather than throwing a
+    /// <c>RangeError</c> — that half is <see cref="MaximumCallDepth"/>'s remarks and is right. What
+    /// it did NOT do was say what ran out: the abort became
+    /// <c>ProfileFault</c>/<c>AllowanceExhausted</c>, which names no dimension and no scope, and
+    /// release gate 4 asks that a call-stack overflow be <b>reported as a resource exhaustion
+    /// naming a dimension</b> and not be fatal. Half of that held — nothing terminated — and the
+    /// naming half did not.
+    /// </para>
+    /// <para>
+    /// <b>The meter is how a profile names a dimension, because a profile may not mint a core
+    /// outcome.</b> Charging a quantity of <c>CallDepth</c> no level can admit is the truthful
+    /// statement of what happened — this interpreter cannot take another frame — and it is the
+    /// only statement of it the contract has. The core's own precedence then reports
+    /// <c>ResourceExhaustion</c>/<c>CeilingReached</c> carrying <c>CallDepth</c> and the scope that
+    /// refused, ahead of whatever step this abort produces. Nothing is committed by a refused
+    /// charge, so the meter is left exactly as it was.
+    /// </para>
+    /// <para>
+    /// <b>What it costs a reader is worth stating.</b> The dimension named is the one the guest was
+    /// spending and not the machine resource that ran out, so an operator who raises
+    /// <c>CallDepth</c> after meeting this gets no further — the stack, not the ceiling, is what
+    /// refused. That is the same trade the counted bound makes in the other direction, and the
+    /// alternative was an answer that named nothing at all.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=94E6AA
+    // Broiler-Falsified-If: the stack backstop produces a result naming no dimension, or a refused charge commits anything
+    // Broiler-Human:        PENDING
+    private JsAbort StackBackstopReached()
+    {
+        // The whole range, so that no ceiling a host could grant admits it and the outermost level
+        // that refuses is the one reported.
+        _ = meter.TryCharge(VmBudgetDimension.CallDepth, ulong.MaxValue);
+
+        return new JsAbort(JsAbortKind.Exhausted, "the call-depth backstop was reached");
+    }
+
+    /// <summary>
+    /// Charges for work whose size is a number of characters, never less than one unit.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The comparison and conversion families charged a flat amount, and a flat charge over an
+    /// input the guest chooses is a budget that bounds nothing.</b> Roadmap section 8 names
+    /// <i>string concatenation and comparison</i> and <i>numeric conversion of large values</i>
+    /// among the families whose cost grows with their input, and asks each to declare a monotone
+    /// non-decreasing charging function. Concatenation had one and comparison did not: comparing
+    /// two strings of any length cost sixteen units, measured, and so did reading a number out of a
+    /// string of any length.
+    /// </para>
+    /// <para>
+    /// <b>The unit is a character and the declared function is the work's own bound.</b> An ordinal
+    /// comparison stops at the first difference and therefore cannot read past the shorter operand,
+    /// so its function is <c>min(|a|, |b|) + 1</c>; reading a number out of a string trims and scans
+    /// the whole of it, so its function is <c>|s| + 1</c>. Both are monotone non-decreasing in the
+    /// magnitude of the input, and the declared granularity is one, so the charge is the function
+    /// itself rather than a ceiling over a window.
+    /// </para>
+    /// <para>
+    /// The <c>+ 1</c> is not rounding: a comparison of two empty strings is still a comparison, and
+    /// a family whose charge can be zero is a family a program can perform without limit.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=626201
+    // Broiler-Falsified-If: a text operation's charge does not grow with the input the guest controls
+    // Broiler-Human:        PENDING
+    internal void ChargeText(int units) => Charge(units <= 0 ? 1UL : (ulong)units + 1UL);
+
     /// <summary>Charges fuel, aborting when the allowance is spent.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=4AFB70
     // Broiler-Human:        PENDING
@@ -645,7 +791,7 @@ internal sealed class JsEngine
     }
 
     /// <summary>The abstract operation <c>ToNumber</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=3320EE
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=D4B151
     // Broiler-Human:        PENDING
     internal double ToNumber(JsValue value) => value.Type switch
     {
@@ -653,7 +799,7 @@ internal sealed class JsEngine
         JsType.Boolean => value.AsBoolean() ? 1 : 0,
         JsType.Undefined => double.NaN,
         JsType.Null => 0,
-        JsType.String => JsNumberFormat.ToNumber(value.AsString()),
+        JsType.String => ToNumberFromText(value.AsString()),
 
         // A SYMBOL HAS TO BE REFUSED HERE AND NOT LEFT TO THE ARM BELOW. `ToPrimitive` of a
         // primitive is that primitive, so a Symbol reaching the recursive arm converts to itself
@@ -664,6 +810,20 @@ internal sealed class JsEngine
         JsType.Symbol => ThrowTypeError("Cannot convert a Symbol value to a number").AsNumber(),
         _ => ToNumber(ToPrimitive(value, "number")),
     };
+
+    /// <summary>Reads a number out of text, charging for the text it reads.</summary>
+    /// <remarks>
+    /// The conversion trims and scans the whole string, so its cost is the string's own length —
+    /// which the guest chooses, and which was charged nothing until this existed.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=07B791
+    // Broiler-Falsified-If: a longer numeric string is read for the same charge as a shorter one
+    // Broiler-Human:        PENDING
+    private double ToNumberFromText(string text)
+    {
+        ChargeText(text.Length);
+        return JsNumberFormat.ToNumber(text);
+    }
 
     /// <summary>The abstract operation <c>ToString</c>.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=02CC42
@@ -1992,7 +2152,7 @@ internal sealed class JsEngine
     // ---- calling -------------------------------------------------------------------------------
 
     /// <summary>Calls <paramref name="callee"/>, whatever kind of callable it is.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=C222F2
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=40A67B
     // Broiler-Human:        PENDING
     internal JsValue Call(JsValue callee, JsValue thisValue, JsValue[] arguments)
     {
@@ -2020,7 +2180,7 @@ internal sealed class JsEngine
         // resource exhaustion no guest can see, and the guard the program wrote never runs.
         if (!System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack())
         {
-            throw new JsAbort(JsAbortKind.Exhausted, "the call-depth backstop was reached");
+            throw StackBackstopReached();
         }
 
         if (depth >= MaximumCallDepth && !reportingDepth)
@@ -2116,7 +2276,7 @@ internal sealed class JsEngine
     /// language promises rather than a half-built object.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=DCDFD8
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=182F69
     // Broiler-Human:        PENDING
     internal JsValue Construct(JsValue callee, JsValue[] arguments, JsValue newTarget)
     {
@@ -2215,7 +2375,7 @@ internal sealed class JsEngine
         // resource exhaustion no guest can see, and the guard the program wrote never runs.
         if (!System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack())
         {
-            throw new JsAbort(JsAbortKind.Exhausted, "the call-depth backstop was reached");
+            throw StackBackstopReached();
         }
 
         if (depth >= MaximumCallDepth && !reportingDepth)
@@ -4287,7 +4447,7 @@ internal sealed class JsEngine
     /// have run for a throw from the instruction itself, and no unwinding is reimplemented.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=37FF7E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=C7D1E7
     // Broiler-Human:        PENDING
     private JsValue Execute(
         JsProgram program,
@@ -5263,6 +5423,7 @@ internal sealed class JsEngine
                         {
                             var right = stack[--sp];
                             var left = stack[--sp];
+                            ChargeComparison(left, right);
                             stack[sp++] = JsValue.Boolean(left.StrictlyEquals(right));
                             pc++;
                             break;
@@ -5272,6 +5433,7 @@ internal sealed class JsEngine
                         {
                             var right = stack[--sp];
                             var left = stack[--sp];
+                            ChargeComparison(left, right);
                             stack[sp++] = JsValue.Boolean(!left.StrictlyEquals(right));
                             pc++;
                             break;
@@ -6438,7 +6600,7 @@ internal sealed class JsEngine
     }
 
     /// <summary>The four relational operators, through one abstract comparison.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=C40206
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=6700C2
     // Broiler-Human:        PENDING
     internal bool Relational(JsOpcode opcode, JsValue left, JsValue right)
     {
@@ -6461,7 +6623,14 @@ internal sealed class JsEngine
 
         if (first.IsString && second.IsString)
         {
-            var order = string.CompareOrdinal(first.AsString(), second.AsString());
+            var firstText = first.AsString();
+            var secondText = second.AsString();
+
+            // An ordinal comparison stops at the first difference, so the shorter operand bounds
+            // the work whatever the longer one holds.
+            ChargeText(System.Math.Min(firstText.Length, secondText.Length));
+
+            var order = string.CompareOrdinal(firstText, secondText);
 
             return opcode switch
             {
@@ -6484,13 +6653,34 @@ internal sealed class JsEngine
         };
     }
 
+    /// <summary>
+    /// Charges an equality comparison for the text it may have to read.
+    /// </summary>
+    /// <remarks>
+    /// Only the string-against-string case can read anything: every other pair of the same type
+    /// compares a word or a reference, and two different types answer without looking. Equality
+    /// answers immediately when the lengths differ, so like the relational comparison beside it the
+    /// shorter operand bounds the work.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=5; Fingerprint=B5D7E9
+    // Broiler-Falsified-If: comparing two long equal strings costs what comparing two short ones costs
+    // Broiler-Human:        PENDING
+    private void ChargeComparison(JsValue left, JsValue right)
+    {
+        if (left.IsString && right.IsString)
+        {
+            ChargeText(System.Math.Min(left.AsString().Length, right.AsString().Length));
+        }
+    }
+
     /// <summary>The abstract equality comparison, <c>==</c>.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=BED8C4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=5; Fingerprint=D30801
     // Broiler-Human:        PENDING
     internal bool LooselyEquals(JsValue left, JsValue right)
     {
         if (left.Type == right.Type)
         {
+            ChargeComparison(left, right);
             return left.StrictlyEquals(right);
         }
 

@@ -387,7 +387,11 @@ answered by whichever of the two ran late.
   reflection-invocation, IL-emit, reflective-member-write, thread-static, or ambient async-local
   construct, **each clause with its own witness**; two runtimes in one process each mint
   properties under the same key text and neither observes the other's storage, shape identity, or
-  key identity, in a test that **fails when the key table is made process-wide again**; two
+  key identity — **asserted over the property directly, because the falsifier this clause used to
+  name has nothing to switch on**: *a test that fails when the key table is made process-wide
+  again* was written against the seed's interned key table and shape-transition table, JS-2 is what
+  would bring them, and a store written here is a dictionary owned by one object
+  *(corrected: JSC-195)*; two
   separately compiled programs whose first cache slot carries the same index run in separate
   runtimes and are evicted with no state crossing owners; two runtimes read one shareable handle
   concurrently with no synchronisation and a **structural scan** asserts no instance-owned cache,

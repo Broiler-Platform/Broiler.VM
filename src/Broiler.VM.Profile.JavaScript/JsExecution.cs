@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   13
-// Annotated:        13/13
-// Exempt:           11
-// Human-reviewed:   0/13
+// Relevant units:   21
+// Annotated:        21/21
+// Exempt:           17
+// Human-reviewed:   0/21
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         2/2
-// Resource impact:  3/10 max
-// Unverified:       13
+// Criteria:         9/9
+// Resource impact:  6/10 max
+// Unverified:       21
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -90,6 +90,91 @@ public sealed class JsUncaught : IVmProfilePayload
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=05F22E
     // Broiler-Human:        PENDING
     public string ErrorName { get; }
+}
+
+/// <summary>What a host is told while an operation is parked between two job turns.</summary>
+/// <remarks>
+/// <b>It carries a count and nothing reachable.</b> A projection is handed to the host while the
+/// operation is suspended, so anything in it that pointed back into the realm would be guest state
+/// crossing the boundary at the one moment nothing is running to defend it. The number of jobs
+/// still queued is what a host driving an event loop actually reads — whether to step again — and
+/// it is a number rather than a handle.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=6E5458
+// Broiler-Falsified-If: anything reachable from the realm is published through this payload
+// Broiler-Human:        PENDING
+public sealed class JsPause : IVmProfilePayload
+{
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=5F2BC7
+    // Broiler-Human:        PENDING
+    internal JsPause(VmProfileId profileId, int pendingJobs, string thrown)
+    {
+        Identity = new VmPayloadIdentity(profileId, JavaScriptProfile.WidePauseKindId, 1);
+        PendingJobs = pendingJobs;
+        Thrown = thrown;
+    }
+
+    /// <inheritdoc/>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=AF660A
+    // Broiler-Human:        PENDING
+    public VmPayloadIdentity Identity { get; }
+
+    /// <summary>How many jobs are still queued behind this pause.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=D5A239
+    // Broiler-Human:        PENDING
+    public int PendingJobs { get; }
+
+    /// <summary>
+    /// What the job that just ran threw, rendered, or the empty string if it did not throw.
+    /// </summary>
+    /// <remarks>
+    /// A drain folds every fault into the first and reports it once at the end. Stepping reports
+    /// each one at the turn it happened, which is the difference a host stepping the queue is
+    /// asking for; folding them here would lose every fault but one.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F15B5B
+    // Broiler-Human:        PENDING
+    public string Thrown { get; }
+}
+
+/// <summary>Where a parked wide-surface operation resumes.</summary>
+/// <remarks>
+/// <para>
+/// <b>It names the instance and carries no frame, because the queue is the instance's.</b> The
+/// continuation exists to say <i>which</i> parked operation this is, not to hold what it was doing:
+/// a job turn begins and ends at the queue, so between two turns there is nothing on any stack to
+/// capture. That is what makes this pause cost no thread — roadmap section 12's requirement — and
+/// it is why the continuation is a token rather than a frame.
+/// </para>
+/// <para>
+/// <b>Single use is the core's to enforce and this does not second-guess it.</b> A second resume, a
+/// resume after cancellation or disposal, and a resume presented to a runtime that does not own the
+/// continuation are all refused before this profile is reached. What this type adds is the instance
+/// check the core cannot make: a continuation from one instance presented against another is this
+/// profile's own confusion to catch.
+/// </para>
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=231B03
+// Broiler-Falsified-If: a continuation is honoured against an instance that did not produce it
+// Broiler-Human:        PENDING
+internal sealed class JsContinuation : IVmProfileContinuation
+{
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=7ABACC
+    // Broiler-Human:        PENDING
+    internal JsContinuation(JsInstance instance, int turn)
+    {
+        Instance = instance;
+        Turn = turn;
+    }
+
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F89838
+    // Broiler-Human:        PENDING
+    internal JsInstance Instance { get; }
+
+    /// <summary>Which turn of the stepping this continuation resumes into.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=E8AD94
+    // Broiler-Human:        PENDING
+    internal int Turn { get; }
 }
 
 /// <summary>
@@ -174,9 +259,115 @@ internal static class JsExecution
     }
 
     /// <summary>The reserved entry-point name a host drains the job queue by invoking.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F3B354
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=E1285C
     // Broiler-Human:        PENDING
-    internal const string DrainEntryPoint = "#drain-jobs";
+    internal const string DrainEntryPoint = JavaScriptProfile.DrainEntryPoint;
+
+    /// <summary>The reserved entry-point name a host steps the job queue by invoking.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The second of the two reserved names, and the routing decision roadmap section 12 leaves
+    /// to this milestone.</b> Section 12 warns against routing every microtask through a core
+    /// suspension — the suspended-operation limit would then govern a page rather than a pathology
+    /// — so the routing here is not <i>every pause</i> but <i>the pause a host asked for</i>: a
+    /// drain is still one operation running the queue to exhaustion, and a step is a host saying it
+    /// wants the turn as its unit. A composition that never invokes this name creates no
+    /// suspension at all, which is what keeps the live-suspension count a property of the embedding
+    /// rather than of the program.
+    /// </para>
+    /// <para>
+    /// <b>A generator's <c>yield</c> and an <c>await</c> stay where they were.</b> They suspend on a
+    /// heap frame inside one operation and no core suspension is created for them, which is what
+    /// section 12's first row says and what JSW-8 built. Nothing here changes that; what this adds
+    /// is a pause the <b>host</b> owns, between turns rather than inside one.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=815A20
+    // Broiler-Falsified-If: a guest pause creates a core suspension, or a step runs more than one job
+    // Broiler-Human:        PENDING
+    internal const string StepEntryPoint = JavaScriptProfile.StepEntryPoint;
+
+    /// <summary>Runs one due job and parks if the queue still holds anything.</summary>
+    /// <remarks>
+    /// A step over an empty queue completes rather than parking, so a host may step until it is
+    /// told there is nothing left without having to ask first — and so that a program with no jobs
+    /// at all never creates a suspension.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=B5AF9E
+    // Broiler-Falsified-If: a step parks with an empty queue, or completes with a job still due
+    // Broiler-Human:        PENDING
+    private static VmExecutionStep StepJobs(VmProfileId profileId, JsInstance instance, int turn)
+    {
+        instance.Engine.Loader =
+            instance.Environment.TryGetArtifactLoadMediator(out var mediator) ? mediator : null;
+
+        try
+        {
+            var thrown = RunOneJobOnGuestStack(instance);
+
+            if (!instance.Engine.HasPendingJobs)
+            {
+                return VmExecutionStep.Completed(
+                    new JsCompletion(profileId, thrown, thrown.Length == 0 ? "undefined" : "object"));
+            }
+
+            return VmExecutionStep.Suspended(
+                new JsContinuation(instance, turn + 1),
+                new JsPause(profileId, instance.Engine.PendingJobCount, thrown));
+        }
+        catch (JsAbort abort)
+        {
+            return abort.Kind switch
+            {
+                JsAbortKind.Cancelled => VmExecutionStep.ContractViolation(VmReason.Cancelled),
+                JsAbortKind.Exhausted => VmExecutionStep.ContractViolation(VmReason.AllowanceExhausted),
+                _ => VmExecutionStep.ContractViolation(VmReason.ProfileContractViolation),
+            };
+        }
+        catch (System.InsufficientExecutionStackException)
+        {
+            return VmExecutionStep.Faulted(
+                new JsUncaught(profileId, "Maximum call stack size exceeded", "RangeError"));
+        }
+        finally
+        {
+            instance.Engine.Loader = null;
+        }
+    }
+
+    /// <summary>Resumes a parked stepping operation into its next turn.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=5DF4EF
+    // Broiler-Falsified-If: a continuation is honoured against an instance that did not produce it
+    // Broiler-Human:        PENDING
+    internal static VmExecutionStep Resume(
+        VmProfileId profileId, IVmInstanceState state, IVmProfileContinuation continuation)
+    {
+        if (state is not JsInstance instance ||
+            continuation is not JsContinuation parked ||
+            !ReferenceEquals(parked.Instance, instance))
+        {
+            // THE CORE HAS ALREADY REFUSED A FOREIGN RUNTIME, A SECOND RESUME AND A RESUME AFTER
+            // DISPOSAL. What is left for this profile to catch is a continuation of ITS OWN kind
+            // presented against a different instance of the same runtime, which the core cannot see
+            // because both objects are this profile's.
+            return VmExecutionStep.ContractViolation(VmReason.ForeignPayload);
+        }
+
+        instance.InvocationCount++;
+        return StepJobs(profileId, instance, parked.Turn);
+    }
+
+    /// <summary>Abandons a parked stepping operation, running none of what it had queued.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=CE785F
+    // Broiler-Falsified-If: guest code runs during an unwind
+    // Broiler-Human:        PENDING
+    internal static void Unwind(IVmProfileContinuation continuation)
+    {
+        if (continuation is JsContinuation parked)
+        {
+            _ = parked.Instance.Engine.DropPendingJobs();
+        }
+    }
 
     /// <summary>Runs every due job on the guest stack and reports what happened.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=BF301D
@@ -222,7 +413,7 @@ internal static class JsExecution
     }
 
     /// <summary>Runs one entry point against an existing realm.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=F18750
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=2; Fingerprint=DB0FB0
     // Broiler-Human:        PENDING
     internal static VmExecutionStep Invoke(
         VmProfileId profileId, JsInstance instance, in VmInvocationRequest request)
@@ -244,6 +435,12 @@ internal static class JsExecution
         if (string.Equals(name, DrainEntryPoint, System.StringComparison.Ordinal))
         {
             return DrainJobs(profileId, instance);
+        }
+
+        if (string.Equals(name, StepEntryPoint, System.StringComparison.Ordinal))
+        {
+            instance.InvocationCount++;
+            return StepJobs(profileId, instance, 0);
         }
 
         if (!instance.Program.TryFindEntry(name, out var unit))
@@ -334,6 +531,17 @@ internal static class JsExecution
     /// stops at a declared bound reports the promise and not the capacity <i>(JSC-139)</i>.
     /// </para>
     /// <para>
+    /// <b>A SECOND RUNTIME IDENTIFIER HAS NOW BEEN MEASURED, and it costs more per frame than the
+    /// first.</b> On <c>linux-x64</c> ninety-six megabytes holds <b>19,756</b> calls, which is
+    /// <b>5,095 bytes</b> a call against the 4,551 above. The ordering the ceiling depends on still
+    /// holds — 2.41 times the grantable maximum and 3.29 times
+    /// <see cref="JsEngine.MaximumCallDepth"/>, both above the factor of two — so nothing here
+    /// moves; what changes is that the margin is now known on two machines rather than assumed to
+    /// be one number. The returning and throwing shapes agreed exactly, which is the property
+    /// JSC-97 left behind and the one a second platform could have broken
+    /// <i>(JSC-192)</i>.
+    /// </para>
+    /// <para>
     /// The room this leaves is what it always left: the built-ins that recurse in C# without going
     /// through a call - a comparison function driving a sort, a cycle-free walk of a deep object in
     /// JSON - along with the stack a host has already used before it reached this profile.
@@ -399,6 +607,48 @@ internal static class JsExecution
         worker.Join();
         raised?.Throw();
         return completed;
+    }
+
+    /// <summary>Runs one job on a thread whose stack this profile declared.</summary>
+    /// <remarks>
+    /// A job is guest code and recurses exactly as guest code does, so it gets the same stack a
+    /// script gets. What it returns is the rendering of whatever it threw, or the empty string —
+    /// carried out rather than raised, because a job that throws does not stop the stepping any
+    /// more than it stops a drain.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=6D52BB
+    // Broiler-Falsified-If: a job runs on the caller's stack, or a job that throws ends the stepping
+    // Broiler-Human:        PENDING
+    private static string RunOneJobOnGuestStack(JsInstance instance)
+    {
+        var rendered = string.Empty;
+        System.Runtime.ExceptionServices.ExceptionDispatchInfo? raised = null;
+
+        var worker = new System.Threading.Thread(
+            () =>
+            {
+                try
+                {
+                    if (instance.Engine.StepOneJob(out var thrown))
+                    {
+                        rendered = instance.Engine.Render(thrown);
+                    }
+                }
+                catch (System.Exception failure)
+                {
+                    raised = System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(failure);
+                }
+            },
+            GuestStackBytes)
+        {
+            IsBackground = true,
+            Name = "broiler-js-guest",
+        };
+
+        worker.Start();
+        worker.Join();
+        raised?.Throw();
+        return rendered;
     }
 
     /// <summary>

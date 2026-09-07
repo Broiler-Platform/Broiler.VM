@@ -422,6 +422,11 @@ internal static class Program
         var checks = CrossProfileChecks.Run()
             .Concat(SourceFrontEndChecks.Run())
             .Concat(SurfaceChecks.Run())
+            .Concat(IsolationChecks.Run())
+            .Concat(HostBoundaryChecks.Run())
+            .Concat(ProportionalityChecks.Run())
+            .Concat(SuspensionChecks.Run())
+            .Concat(FinallyMatrixChecks.Run())
             .ToArray();
         var failed = 0;
 

@@ -118,13 +118,16 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.ResolveCapability : static Broiler.VM.VmHostCapabilityDescriptor { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.SliceManifest : static Broiler.VM.VmFeatureManifestId { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.SourceProviderCapability : static Broiler.VM.VmHostCapabilityDescriptor { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.StepEntryPoint : const System.String = "#step-jobs"
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.TryGetCompletion(in Broiler.VM.VmInvocationResult result, out Broiler.VM.Profile.JavaScript.JavaScriptCompletion completion) : static System.Boolean
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.TryGetFault(in Broiler.VM.VmInvocationResult result, out Broiler.VM.Profile.JavaScript.JavaScriptFault fault) : static System.Boolean
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.TryGetPause(in Broiler.VM.VmInvocationResult result, out Broiler.VM.Profile.JavaScript.JsPause pause) : static System.Boolean
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.TryGetUncaught(in Broiler.VM.VmInvocationResult result, out Broiler.VM.Profile.JavaScript.JsUncaught uncaught) : static System.Boolean
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.TryGetWideCompletion(in Broiler.VM.VmInvocationResult result, out Broiler.VM.Profile.JavaScript.JsCompletion completion) : static System.Boolean
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.WideCompletionKindId : const System.Int32 = 1003
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.WideFaultKindId : const System.Int32 = 1004
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.WideManifest : static Broiler.VM.VmFeatureManifestId { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.WidePauseKindId : const System.Int32 = 1005
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.WriteBindingIndex : const System.Int32 = 0
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProfile.WriteCapability : static Broiler.VM.VmHostCapabilityDescriptor { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptProgram.CodeLength : System.Int32 { get; }
@@ -173,6 +176,9 @@
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsCompletion.Identity : Broiler.VM.VmPayloadIdentity { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsCompletion.TypeOf : System.String { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsCompletion.Value : System.String { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsPause.Identity : Broiler.VM.VmPayloadIdentity { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsPause.PendingJobs : System.Int32 { get; }
+  Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsPause.Thrown : System.String { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsUncaught.ErrorName : System.String { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsUncaught.Identity : Broiler.VM.VmPayloadIdentity { get; }
   Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsUncaught.Message : System.String { get; }
@@ -1428,6 +1434,7 @@ type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptValue
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptValueKind : enum
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JavaScriptVerifier : sealed class Broiler.VM.IVmProfileVerifier
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsCompletion : sealed class Broiler.VM.IVmProfilePayload
+type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsPause : sealed class Broiler.VM.IVmProfilePayload
 type Broiler.VM.Profile.JavaScript Broiler.VM.Profile.JavaScript.JsUncaught : sealed class Broiler.VM.IVmProfilePayload
 type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsCompilation : sealed class System.IEquatable<Broiler.VM.Profile.JavaScript.Compiler.JsCompilation>
 type Broiler.VM.Profile.JavaScript.Compiler Broiler.VM.Profile.JavaScript.Compiler.JsCompiler : sealed class

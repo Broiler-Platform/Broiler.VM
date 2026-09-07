@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   18
-// Annotated:        18/18
+// Relevant units:   21
+// Annotated:        21/21
 // Exempt:           10
-// Human-reviewed:   0/18
+// Human-reviewed:   0/21
 // IP risk:          Low
 // Security risk:    High
 // Criteria:         7/7
 // Resource impact:  3/10 max
-// Unverified:       18
+// Unverified:       21
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -55,6 +55,28 @@ public static class JavaScriptProfile
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=AE7B50
     // Broiler-Human:        PENDING
     public const string DrainEntryPoint = "#drain-jobs";
+
+    /// <summary>The entry-point name a host invokes to run the jobs a program left owed, one at a
+    /// time.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The second of the two reserved names, and it is published for the same reason the first
+    /// is:</b> a host cannot use an entry point it cannot name, and a name each host restated for
+    /// itself would be a convention rather than a surface.
+    /// </para>
+    /// <para>
+    /// <b>What it buys is the turn as the unit.</b> <see cref="DrainEntryPoint"/> runs the queue to
+    /// exhaustion inside one operation, which is what a host wanting a script settled asks for. A
+    /// host that wants an event loop of its own — one that interleaves its work with the guest's,
+    /// or stops between turns and never resumes — invokes this instead: it runs one due job and, if
+    /// anything is still queued, answers with a suspension the host resumes to take the next turn.
+    /// A program with no jobs at all completes rather than parking, so a host may step until it is
+    /// told there is nothing left.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=0; Fingerprint=6C91EE
+    // Broiler-Human:        PENDING
+    public const string StepEntryPoint = "#step-jobs";
 
     /// <summary>This profile's identity.</summary>
     /// <remarks>
@@ -166,6 +188,11 @@ public static class JavaScriptProfile
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=4D1110
     // Broiler-Human:        PENDING
     public const int WideFaultKindId = 1004;
+
+    /// <summary>The kind ID stamped on the projection a parked operation publishes.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=59D3C3
+    // Broiler-Human:        PENDING
+    public const int WidePauseKindId = 1005;
 
     /// <summary>The binding index the wide surface's <c>print</c> reaches the host through.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=A9FBB7
@@ -367,6 +394,12 @@ public static class JavaScriptProfile
     public static bool TryGetWideCompletion(in VmInvocationResult result, out JsCompletion completion) =>
         result.TryGetPayload(out completion);
 
+    /// <summary>Projects the pause a parked wide-surface operation published.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=8096BB
+    // Broiler-Human:        PENDING
+    public static bool TryGetPause(in VmInvocationResult result, out JsPause pause) =>
+        result.TryGetPayload(out pause);
+
     /// <summary>Projects a wide-surface uncaught exception out of an invocation result.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=56397D
     // Broiler-Human:        PENDING
@@ -476,8 +509,21 @@ public static class JavaScriptProfile
             // No top-level await, because there are no modules. JS-7 declares it.
             asynchronousInstantiation: VmDeclaration.NotDeclared,
 
-            // Not declared, so a composition enabling it gets the named refusal rather than a pause
-            // this profile cannot honour. JS-7 decides it.
+            // NOT DECLARED, AND THE PAUSE THIS PROFILE MAKES IS NOT THIS ROW. Declaring external
+            // suspension is a promise to park WHEN THE HOST ASKS, and at core contract version 1 an
+            // executor cannot see that it has been asked: nothing on the execution environment
+            // reports the request, so a profile that declared this could keep the promise only when
+            // the guest happened to reach a suspension point of its own. That is a declaration that
+            // would be true by luck.
+            //
+            // What this profile parks for is a GUEST suspension - section 12's first row, where
+            // nothing extra is declared - between two job turns, and only where a host asked for
+            // the turn as its unit by invoking the stepping entry point. A host calling
+            // `RequestSuspend` gets `ExternalSuspensionNotDeclared`, which is the honest answer and
+            // is one half of the pair section 12 asks to be told apart; the other half needs a
+            // descriptor that declares the row, and minting a second descriptor differing in it
+            // alone would be composing a profile this repository does not ship in order to pass a
+            // check.
             externalSuspension: VmDeclaration.NotDeclared,
             payloadKindIdRange: new VmPayloadKindIdRange(1000, 1099),
             authoredCoreContractVersion: 1,
