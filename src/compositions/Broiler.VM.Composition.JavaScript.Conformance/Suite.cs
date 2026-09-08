@@ -185,7 +185,25 @@ internal static class Suite
     /// fixture, a known-incorrect entry or a raw test's sidecar moves the revision too. A pin over
     /// part of a suite is a pin somebody can edit around.
     /// </remarks>
-    internal static IReadOnlyList<SuiteFile> Files(string root)
+    internal static IReadOnlyList<SuiteFile> Files(string root) => Files(root, null);
+
+    /// <summary>
+    /// The same list, with the per-file hash taken from a caller that may already know it.
+    /// </summary>
+    /// <param name="root">The suite.</param>
+    /// <param name="hash">
+    /// Given the full path and the normalized relative path, the file's lower-case hexadecimal
+    /// SHA-256. <c>null</c> reads every byte, which is what every caller but the sharded whole-suite
+    /// run does.
+    /// </param>
+    /// <remarks>
+    /// <b>The overload exists so that WHICH files are hashed stays decided in one place.</b> The
+    /// digest is over the pairs, the suite's own pin is excluded, and the order is ordinal - three
+    /// facts a second enumeration written beside a cache would have had to repeat and could have
+    /// repeated differently. What a caller may substitute is the hash of a file, never the list of
+    /// them; <see cref="Test262DigestCache"/> records what such a caller has to have done first.
+    /// </remarks>
+    internal static IReadOnlyList<SuiteFile> Files(string root, Func<string, string, string>? hash)
     {
         var files = new List<SuiteFile>();
 
@@ -202,7 +220,8 @@ internal static class Suite
                 continue;
             }
 
-            files.Add(new SuiteFile(relative, Sha256(File.ReadAllBytes(file))));
+            files.Add(new SuiteFile(
+                relative, hash is null ? Sha256(File.ReadAllBytes(file)) : hash(file, relative)));
         }
 
         return files;

@@ -18,7 +18,10 @@
     "JS-0 adds the three project shells the JavaScript profile's own ADR-equivalent decision JSD-0001 authorises - the format assembly, the profile assembly and the lowering - taking the graph from 14 projects and 41 edges to 17 and 46, and product projects from 3 to 6. It adds ZERO packable assemblies: all three declare IsPackable false and no PackageId, so the packable set is still exactly the three core packages and rule A6 still counts three. The profile assembly references Abstractions, Binary and its own format sibling, which ADR 0011 P1's 2026-08-31 revision admits; the lowering references Abstractions and the format and never the profile, which is what makes an execution-only composition compiler-free. ADR 0001 revision 5 authorises the growth.",
     "JS-1 adds the two composition roots ADR 0001 revision 6 authorises - an execution-only root and a slice-compiler root - taking the graph from 17 projects and 46 edges to 19 and 55. It adds ZERO packable assemblies. The two are separate projects rather than two modes of one because their REFERENCE SETS differ by the lowering, which is the whole of the execution-only claim: that root names the profile and not the compiler, so it cannot turn source into an artifact however it is invoked, and every artifact it runs is precompiled and read as bytes.",
     "JS-3a adds the conformance harness, which ADR 0001's revision of 2026-09-03 authorises: a composition root that is NEVER ADVERTISED, taking the graph from 20 projects and 59 edges to 21 and 64. It adds ZERO packable assemblies. Its reference set is the slice-compiler root's, because scoring a conformance test means lowering it - and rule N13 is what holds the consequence: the harness, and any suite it reads, appear in no package and in no advertised composition's closure, and no other project references it in either direction.",
-    "JS-3b adds ONE composition root and it is the first here to claim a deployment label: the end-user host, which ADR 0001 revision of 2026-09-03 authorises. It takes the graph from 21 projects and 64 edges to 22 and 69, and adds ZERO packable assemblies. Its reference set is the conformance root's and the slice-compiler root's - the profile plus the lowering - so it introduces no new edge SHAPE; what it introduces is a composition that is handed SOURCE FROM OUTSIDE THE IMAGE, which is the one thing `narrow-runtime-compiler` means that a root lowering a programmatic builder cannot demonstrate. It is the only JavaScript root carrying no test tooling at all, which is what makes its closure readable against the label rather than needing the paragraph of exceptions every sibling needs."
+    "JS-3b adds ONE composition root and it is the first here to claim a deployment label: the end-user host, which ADR 0001 revision of 2026-09-03 authorises. It takes the graph from 21 projects and 64 edges to 22 and 69, and adds ZERO packable assemblies. Its reference set is the conformance root's and the slice-compiler root's - the profile plus the lowering - so it introduces no new edge SHAPE; what it introduces is a composition that is handed SOURCE FROM OUTSIDE THE IMAGE, which is the one thing `narrow-runtime-compiler` means that a root lowering a programmatic builder cannot demonstrate. It is the only JavaScript root carrying no test tooling at all, which is what makes its closure readable against the label rather than needing the paragraph of exceptions every sibling needs.",
+    "WA-0 adds the three projects the WebAssembly profile's boundary milestone needs - the profile assembly, an execution-only composition root and a never-advertised harness root - taking the graph from 22 projects and 69 edges to 25 and 79. It adds ZERO packable assemblies: the profile declares IsPackable false and no PackageId, and neither root is advertised, so the packable set is still exactly the three core packages. The profile assembly references Abstractions and Binary and NOTHING ELSE: unlike the JavaScript profile it has no format sibling, because its payload is a bare WebAssembly module produced by an external toolchain and there is no lowering for a pivot to hold apart. The two roots have identical reference sets and differ only in the register: one is the execution-only demonstration, the other is where a binary corpus encoder must live because rule A11 forbids a test project to name a profile assembly. ADR 0001's revision of 2026-09-07 authorises the growth.",
+    "",
+    "VM-7 adds ONE composition root and it is the first image in this repository that composes two PRODUCT profiles - the end-user command-line host, taking the graph from 25 projects and 79 edges to 26 and 85. It adds ZERO packable assemblies: it is a demonstration, it declares IsPackable false, and docs/compositions.md section 1 still advertises nothing. Its reference set is the JavaScript CLI root's plus Broiler.VM.Profile.WebAssembly, so the SHAPE of the growth is one new edge kind and not one new project kind: rule N2 forbids a project in one profile family to reference a project in another and excepts a composition root, which rule A12 bounds instead, so the two families still cannot see each other and one composition can see both. Roadmap section 14 has asked since VM-3 for a catalog test over two profiles and section 16 records that a composition hosting two of them closes no gate until one exists; the only two-profile composition before this one composed two fixtures this repository wrote in order to be composed. ADR 0001's revision of 2026-09-07 authorises the growth."
   ],
   "milestone": "JS-1",
   "coreContractVersion": 1,
@@ -86,6 +89,18 @@
       "isPackable": false,
       "isTestProject": false,
       "projectReferences": []
+    },
+    {
+      "path": "src/Broiler.VM.Profile.WebAssembly/Broiler.VM.Profile.WebAssembly.csproj",
+      "assemblyName": "Broiler.VM.Profile.WebAssembly",
+      "rootNamespace": "Broiler.VM.Profile.WebAssembly",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary"
+      ]
     },
     {
       "path": "src/compositions/Broiler.VM.Composition.Calculator/Broiler.VM.Composition.Calculator.csproj",
@@ -187,6 +202,50 @@
         "Broiler.VM.Runtime",
         "Broiler.VM.Profile.JavaScript",
         "Broiler.VM.Profile.JavaScript.Compiler"
+      ]
+    },
+    {
+      "path": "src/compositions/Broiler.VM.Composition.WebAssembly.Execution/Broiler.VM.Composition.WebAssembly.Execution.csproj",
+      "assemblyName": "Broiler.VM.Composition.WebAssembly.Execution",
+      "rootNamespace": "Broiler.VM.Composition.WebAssembly.Execution",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Runtime",
+        "Broiler.VM.Profile.WebAssembly"
+      ]
+    },
+    {
+      "path": "src/compositions/Broiler.VM.Composition.WebAssembly.Harness/Broiler.VM.Composition.WebAssembly.Harness.csproj",
+      "assemblyName": "Broiler.VM.Composition.WebAssembly.Harness",
+      "rootNamespace": "Broiler.VM.Composition.WebAssembly.Harness",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Runtime",
+        "Broiler.VM.Profile.WebAssembly"
+      ]
+    },
+    {
+      "path": "src/compositions/Broiler.VM.Composition.PolyglotCli/Broiler.VM.Composition.PolyglotCli.csproj",
+      "assemblyName": "Broiler.VM.Composition.PolyglotCli",
+      "rootNamespace": "Broiler.VM.Composition.PolyglotCli",
+      "packageId": null,
+      "isPackable": false,
+      "isTestProject": false,
+      "projectReferences": [
+        "Broiler.VM.Abstractions",
+        "Broiler.VM.Binary",
+        "Broiler.VM.Runtime",
+        "Broiler.VM.Profile.JavaScript",
+        "Broiler.VM.Profile.JavaScript.Compiler",
+        "Broiler.VM.Profile.WebAssembly"
       ]
     },
     {

@@ -1,0 +1,25 @@
+# Witness: a WebAssembly-family baseline that does not declare an exported member
+#
+# WebAssemblyProfile.Id is exported and this baseline does not list it. That is an ADDITION as
+# far as the rule can tell, and for a profile that is the direction that matters: this assembly
+# is referenced by two composition roots, so a member added here is a member a composition can
+# bind to without anyone deciding it should be bindable.
+#
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor..ctor(Broiler.VM.VmProfileId profileId) : void
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.Instantiate(Broiler.VM.VmVerifiedArtifact artifact, System.Threading.CancellationToken cancellationToken) : Broiler.VM.VmExecutionStep
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.Invoke(Broiler.VM.IVmInstanceState state, in Broiler.VM.VmInvocationRequest request, System.Threading.CancellationToken cancellationToken) : Broiler.VM.VmExecutionStep
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.ProfileId : Broiler.VM.VmProfileId { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.Resume(Broiler.VM.IVmInstanceState state, Broiler.VM.IVmProfileContinuation continuation, System.Threading.CancellationToken cancellationToken) : Broiler.VM.VmExecutionStep
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor.Unwind(Broiler.VM.IVmProfileContinuation continuation, System.UInt64 effectiveUnwindAllowance) : System.Void
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.Descriptor : static Broiler.VM.VmProfileDescriptor { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile.SliceManifest : static Broiler.VM.VmFeatureManifestId { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyVerifier..ctor(Broiler.VM.VmProfileId profileId) : void
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyVerifier.AuthoredCoreContractVersion : System.Int32 { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyVerifier.BuiltAgainstCoreContractVersion : System.Int32 { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyVerifier.NoDecoderDiagnosticCode : const System.Int32 = 1
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyVerifier.ProfileId : Broiler.VM.VmProfileId { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyVerifier.VerifierSemanticVersion : System.Int32 { get; }
+  Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyVerifier.Verify(in Broiler.VM.VmArtifactDescriptor descriptor, System.ReadOnlySpan<System.Byte> payload, Broiler.VM.IVmVerificationContext context, System.Threading.CancellationToken cancellationToken) : Broiler.VM.VmVerifierOutcome
+type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyExecutor : sealed class Broiler.VM.IVmProfileExecutor
+type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyProfile : static class
+type Broiler.VM.Profile.WebAssembly Broiler.VM.Profile.WebAssembly.WebAssemblyVerifier : sealed class Broiler.VM.IVmProfileVerifier

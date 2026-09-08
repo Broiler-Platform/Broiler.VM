@@ -70,15 +70,17 @@ own, because they are read one entry at a time rather than start to finish.
 | [`decisions/`](decisions/README.md) | — | The dated decision records, `JSD-nnnn`. A plan says what is intended; a decision record says what was chosen, what it rejected, and who signed it. |
 | `evidence/js-<n>[-nnn]/` | — | The retained evidence bundles, produced by `eng/collect-js-evidence.py`. A milestone carries a numbered series rather than one bundle, because a clause found open after a collection is closed by a further bundle rather than by editing the first. Cited by the ledger and by nothing in the core's. |
 
-**Two proposal documents stand outside that table, and outside this plan.**
+**Three proposal documents stand outside that table, and outside this plan.**
 [`roadmap.workloads.md`](roadmap.workloads.md) asks what running the two third-party corpora whole
-would take, and [`roadmap.parity.md`](roadmap.parity.md) asks what standing level with the legacy
-JavaScript component would take. Neither is a plan file: neither mints an identifier in the `JS-`
-namespace, neither moves a ledger row, and neither is a status. They carry their own stage
-namespaces — `JSW-n` and `JSP-n` — which are proposals for where the milestones below would have to
-grow, and each names, for every gap it records, either the milestone or stage that already owns it
-or the fact that nothing does. A reader who wants to know what this component *plans* reads the
-table above; a reader who wants to know what it does not yet *do* reads those two.
+would take, [`roadmap.parity.md`](roadmap.parity.md) asks what standing level with the legacy
+JavaScript component would take, and [`roadmap.backends.md`](roadmap.backends.md) asks what a second
+and third output form — an artifact whose payload is machine code — would take. None is a plan file:
+none mints an identifier in the `JS-` namespace, none moves a ledger row, and none is a status. They
+carry their own stage namespaces — `JSW-n`, `JSP-n` and `JSB-n` — which are proposals for where the
+milestones below would have to grow, and each names, for every gap or obligation it records, either
+the milestone or stage that already owns it or the fact that nothing does. A reader who wants to
+know what this component *plans* reads the table above; a reader who wants to know what it does not
+yet *do* reads those three.
 
 Four rules keep the split cheap and are not negotiable.
 
@@ -192,6 +194,37 @@ trimming, and Native AOT gates for the core boundary.
   bytecode-to-IL promotion, no deoptimization from a compiled tier, and no on-stack replacement,
   because there is no second tier for any of them to reach. A product closure containing an IL
   emitter is a release blocker, not a configuration.
+
+  ***Amended 2026-09-07, and narrowed rather than withdrawn.*** *The core opened
+  [VM-7](../../../docs/roadmap.md#vm-7--admit-a-native-artifact-form-and-in-process-native-execution),
+  which admits an artifact whose payload is machine code and a composition that executes it. Read
+  literally, every sentence above survives it: a native artifact is not IL, not an expression tree
+  and not a delegate, and VM-7 forbids tiering, promotion, deoptimization and on-stack replacement
+  in the core's own words. **What this paragraph loses is not a clause but an implication** — it was
+  written to say that what this profile compiles is bytecode and what it runs is an interpreter, and
+  a second output form makes the first half false while leaving the second half true of any given
+  artifact.*
+
+  *The line that replaces the implication is a property, not an intention: **the form is chosen when
+  an artifact is compiled and fixed when it is verified, and a verified handle's form never
+  changes.** One executor, one form per handle, no promotion. A path that picks a form from run-time
+  observation, or re-maps a handle's payload, is the second execution arm this paragraph refuses, and
+  it is refused under the amendment exactly as it was before it. **This profile schedules no backend
+  by writing this**: the milestone that would emit x86 is not written, is not in
+  [the delivery document](roadmap.delivery.md), and is not in this profile's ledger. What changed
+  today is what a milestone here is permitted to propose.*
+
+  ***And a document proposing backends now stands beside this plan*** *(added 2026-09-07).*
+  *[`roadmap.backends.md`](roadmap.backends.md) asks what a second and third output form would take,
+  mints its stages as `JSB-n`, and organises itself around the one constraint this profile's value
+  representation imposes on any emitted code. **Naming it here schedules nothing**, and that is the
+  convention the two sibling proposal documents already established rather than a caution invented
+  for this one: a stage in a proposal document has no owner, no ledger row and no identifier in the
+  `JS-` namespace, and assigning any of the three is the act that would turn it into work somebody is
+  tracking. **The paragraph above is unchanged by its existence** — the milestone that would emit x86
+  is still not written, still not in [the delivery document](roadmap.delivery.md), and still not in
+  this profile's ledger. What the document adds is that the question now has a written answer a
+  reader can disagree with, which is the difference between a plan and an intention.*
 - **A second verifier.** Whatever validates an artifact is this profile's verifier, reached
   through the core's one verification entry point. A build-time reimplementation that is merely
   supposed to agree with it is a security defect with a schedule attached.

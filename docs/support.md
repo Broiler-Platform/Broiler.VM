@@ -127,6 +127,169 @@ remain excluded: no targeted project and no harness that can *run* what is publi
 
 ---
 
+## 3a. Artifact output forms
+
+**What this section may be read as.** A statement of which artifact payload forms exist in this
+component at all, and — for each form that exists — which runtime identifiers it has been published
+**and run** on, on a retained collection.
+
+**What it may not be read as, and each of these is a rule rather than a caution.** It may not be
+read as a claim that a form exists because the core contract admits it; the contract's payload is
+opaque and profile-owned, which means it admits forms nobody has written. It may not be read as a
+claim about speed: this component measures its own overhead and never a language's, and **a release
+may state that a native form exists and may not state what it is worth.** And it may not be read as
+a claim that a form works on a runtime identifier merely because that identifier appears in section
+3 — section 3's rows are about publishing and running *this component*, and a form is something a
+profile emits.
+
+**The core generates no machine code and learns no encoding.** Instruction selection, register
+allocation and calling convention belong to the profile that owns them; what the core owns is
+whether a composition may execute the result, which is declared in [the composition
+register](compositions.md) — where, since 2026-09-07, the five JavaScript rows and the polyglot
+root declare `x86-64`, six of the register's ten rows, and the other four (the two core fixture
+compositions and the two WebAssembly roots) declare `none`, and where a rule now holds every one of
+those cells against the tree in both directions *(corrected 2026-09-08: this read "the five
+JavaScript rows declare `x86-64` and the four others declare `none`", a count that was right for
+the hours between the column landing on 2026-09-07 and the tenth row arriving later the same day,
+and the register itself has said "Four cells read `none` and six read an architecture" since.
+Understating the set a declared permission covers is the same defect as overstating it, and this
+table is the document least entitled to either)*. **That column records a permission and not a
+run**, and a rule reading it makes the permission checkable and makes no run out of it; nothing in
+it is a support claim. This section is where a run would be recorded, and it records none.
+
+**Two forms exist beyond bytecode as of 2026-09-07, and the whole of what follows is the difference
+between existing and being supported** *(this section said until that day that no such form existed
+anywhere, which was true when it was written)*. **No evidence bundle has been retained for either
+of them.** Every cell of the table below states what has been demonstrated **on retained evidence**,
+which is the rule at the head of this document, and for both new rows the answer to that is
+*nothing*: what exists is code in a working tree that was observed to run on one machine, and a
+working tree is not a collection. A reader who takes anything below as a claim about a runtime
+identifier has read past that sentence.
+
+| Output form | Does it exist | Published and run | Deterministic refusal elsewhere |
+|---|---|---|---|
+| **Bytecode** | **Yes**, and it is the only artifact payload form anything in this checkout has ever verified or executed | Exactly the runtime identifiers section 3 records and no others. **This row adds no claim to any of them**: section 3's Status column is what says which are demonstrated, which are unclaimed and which are excluded, and it is unchanged by this section | Not applicable. There is no runtime identifier where a bytecode artifact is refused for want of a form |
+| **x86-64 machine code** | **Yes, and it is emitted and executed.** The JavaScript profile's format carries an emitted-code section and a symbol section; its lowering carries encoders for both x86-64 calling conventions, named `x86-64-win64` and `x86-64-sysv`; its verifier answers for the payload **structurally**, **by a template-closure scan in every image**, and, where an image carries the lowering, by recompiling the artifact's own bytecode and comparing the emitted bytes; and one type in that profile maps a page and arms it readable-and-executable. *(Corrected 2026-09-08: this cell named two verification layers until this date, and the second of them — re-emission — reaches only an image that carries a compiler. An execution-only image carries none, so what stood between a malformed payload and an armed page there was the architecture value, which asks which machine bytes are for and not whether they are code: a corpus row of **four zero bytes** verified, was armed, was jumped into and killed the process on this date. A third layer now decodes an emitted payload against a closed table of every instruction template this build's backends emit and refuses one that is not closed under it, before anything is armed, in every image. **What that is worth is bounded in section 7 and is not a claim that the code is correct**, and the two rows of this table are unmoved by it: nothing here is retained evidence.)* **The language it compiles is `broiler.javascript.numeric` and it is not JavaScript** — a program outside that manifest is refused at compile time by name *(corrected 2026-09-08: that last clause had one exception until this date and now has none. The front end admitted a **BigInt literal** and dropped its suffix, so `--numeric --native x86-64-win64` compiled `9007199254740993n` and emitted machine code returning `9007199254740992` — a plausible wrong integer produced by the armed native path rather than a refusal naming the construct. The parser now answers `2104:ConstructOutsideManifest` for the literal, which was checked by running that command line on this date. **The sentence is not being weakened, it is being dated**: a reader who took it on trust before today was told something this form did not do in one case, and a support table is the last document entitled to leave that unrecorded)* | **No runtime identifier is claimed, and none can be today.** The Windows convention was emitted and executed in a working tree on `win-x64`, answering what the interpreter answered for the same source; `win-x64` is **Not claimed** in section 3 for want of a retained collection, this row adds nothing to it, and a form cannot claim an identifier this component has not claimed for itself. **The System V convention has been emitted and executed nowhere**: on a Windows host it verifies and refuses to instantiate. **No bundle retains any of this**, and no cell here is a CI-lane result | **Yes, and it is deterministic and by name.** An artifact whose architecture and convention the running process is not refuses to instantiate, as a contract violation naming an unsatisfied host assumption, rather than falling back to the bytecode beside it in the same artifact. And a composition that declines the native surface refuses the artifact **at verification**, with an invalid-artifact reason, before any instruction of it is reachable |
+| **arm64 machine code** | **Yes as an encoder, and it is EMITTING-ONLY.** A backend named `arm64-aapcs64` emits into the same sections and its bytes are pinned against known-good encodings by golden rows in a checks lane. **It has run nowhere**, and the reason is unchanged and is not a shortage of machines: the architecturally required instruction-cache maintenance sequence has no managed expression and no dependable library export | **None, and none is claimed. `emitting-only` is the word**, and it is in this cell rather than in a footnote because [release gate 11](roadmap.md#15-release-gates) and the native-execution milestone's exit gate require it here. Nothing has been published or run on any arm64 runtime identifier by this form, on any machine, at any time | **Yes.** An image asked to instantiate an arm64 artifact refuses by name, on every machine including an arm64 one, because no process this component runs in reports an architecture this build will arm for. The refusal is the same one the row above names and it is reachable from the command line |
+
+**What has to happen before any cell above changes again, stated so that a filled cell is
+recognisable as an event.** The native-execution milestone's exit gate requires this table to name,
+per declared runtime identifier, which native backends have published **and run** — and to name the
+deterministic refusal everywhere else. **The second half can now be written and the first half
+cannot**, which is the exact inversion of what this paragraph said until 2026-09-07, when it said
+neither half could be written because there was no backend and no refusal path. The refusal path
+exists and is named above. The publish-and-run half needs a retained collection on a claimed runtime
+identifier, and section 3 claims one runtime identifier, which is not the one this form has run on.
+**A reader who wants to know whether native execution works should read the Does-it-exist column and
+then read the Published-and-run column, and treat the second as the answer.**
+
+**Two routes are already fixed for a native form and neither was decided.**
+[`docs/mvp.md`](mvp.md) records them: arm64 is planned as an **emitting-only** backend — bytes
+compared against a retained expectation, never bytes run, no runtime identifier claimed and no
+figure attached, and **emitting-only** is the word [the roadmap](roadmap.md)'s release gate 11 and
+the native-execution milestone's exit gate require this table to carry in the row itself rather
+than in a footnote under it — and x86-32 is dropped from scope entirely, so `win-x86` is not a
+runtime identifier of this component and this table will not gain a row for it. Both are recorded
+there as routes taken **without a decision**, which means they may be reversed without anything
+being corrected, and a reader planning against either should read that record rather than this one.
+
+---
+
+## 3b. Input profiles
+
+**What this section may be read as.** Whether a language profile exists as source in this
+repository, whether it is advertised, and whether it is packable. All three are observable facts
+about the checkout.
+
+**What it may not be read as, and this is the load-bearing half.** It may not be read as a status
+claim about any profile. **This table reads no profile ledger and carries no profile result.** A
+profile's status belongs to that profile's own ledger — core ledger update rule 6, and the profile
+family's own bidirectional counterpart — so a conformance total, a benchmark score, a differential
+transcript or a milestone state collected by a profile is evidence about that profile, is recorded
+in that profile's own bundles, and does not appear here at any strength. **Sharing a repository is
+not sharing a ledger.** And the claim at the head of this document is unchanged by anything below
+it: **the core ships no language profile**, and no profile ships in any package section 1 lists.
+
+| Input profile | In this repository | Advertised | Packable | Where its state is recorded |
+|---|---|---|---|---|
+| **JavaScript** | **Yes.** A product project family under `src/Broiler.VM.Profile.JavaScript`, composed by demonstration composition roots that [the composition register](compositions.md) lists by name | **No.** The register's advertised set is empty, every root composing this profile is a demonstration, and advertisement is a release decision ADR 0012 owns rather than an edit to a column | **No.** Every project in the family declares no package identity and carries the literal non-packable property the family rule reads out of the project file. The packable set stays exactly the three packages of section 1 | Its own ledger at `src/Broiler.VM.Profile.JavaScript/docs/roadmap.status.md`, under its own three-mark legend. **This table does not read it, and a green result there moves no row here** |
+| **WebAssembly** | **Yes** *(corrected 2026-09-07; this cell read "No. Planned, and no code exists" and listed a documentation directory with no project file, no source file, no descriptor, no composition root, no rule-register group, no evidence tree and no entry in either solution — every clause of which was true when written and none of which is true now)*. A product project under `src/Broiler.VM.Profile.WebAssembly` carrying a descriptor, a decoder for the binary format, a validator, a store and an interpreter, composed by two never-advertised composition roots [the composition register](compositions.md) lists by name | **No.** The register's advertised set is empty, both roots composing this profile are demonstrations, and advertisement is a release decision ADR 0012 owns rather than an edit to a column | **No.** The project declares no package identity. The packable set stays exactly the three packages of section 1 | Its own ledger at `src/Broiler.VM.Profile.WebAssembly/docs/roadmap.status.md`, which records which of its milestones own code and states in its own words that **none is accepted, none has a retained bundle, and code that exists and runs is not retained evidence**. **This table does not read that ledger, and a green result there moves no row here** |
+
+**Swept on 2026-09-08 for a claim about the JavaScript profile's conformance run, and there is
+none to correct — which is the rule above working rather than an omission.** On that date the wide
+manifest's front end was given back a refusal it had lost: a BigInt literal, which it had been
+admitting and evaluating as a Number, is refused at compile time naming the construct. The
+consequence over the suite runs the other way from the repair — variants that had passed or failed
+over the BigInt subtree now meet a refusal instead, so the whole-suite `passed` total falls and the
+wide run's `unsupported` column stops being empty. **Every record anywhere in this repository
+saying the wide run names no unsupported family, or that its unsupported column is empty, is false
+from this date**, and the retained bundle `jsw-10-001` states figures for a run taken before the
+change. **None of those records is in this document**, because this document reads no profile
+ledger and carries no profile result: the sweep found no conformance total, no `unsupported`
+column and no pass count here to correct, and section 3b's own rule — a profile's status belongs
+to that profile's ledger — is why there was nothing to find. It is recorded here anyway so that a
+reader who knows what moved that day, and comes here expecting a correction, is told the answer
+rather than left to conclude that the sweep was not made. **This section states no figure, old or
+new, and it would state none if they were known.**
+
+*(Corrected 2026-09-08, later the same day, and the correction is of a promissory note rather than
+of a wrong fact. The paragraph above ended "**A fresh whole-suite run is being taken and its totals
+are not known**, so this section states no figure, old or new, and it would state none if they were
+known." The run has since been taken and its totals are known, so the first half of that sentence
+is a note whose answer has arrived and it is withdrawn; the second half is the rule and it stands
+word for word, which is why this correction adds a date and a name and still adds no number. **A
+record that leaves a promissory note standing after the answer arrives is the stale-summary failure
+update rule 1 exists against**, and a support table is the last document entitled to leave one
+there.
+
+**The run this sweep describes is named rather than summarised**, so that a reader can tell which
+run any figure they meet elsewhere belongs to: the whole `tc39/test262` suite driven under
+`broiler.javascript.wide` by `python3 eng/run-test262.py` against the pinned suite revision
+`46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93`, taken by the orchestrator on
+**2026-09-08** on **`win-x64`**, whole rather than sampled and pinned rather than floating, and
+taken **in a working tree rather than into an evidence tree**. **It is therefore retainable and
+not retained**: no bundle has collected it, nothing about it has been read by a person, and no row
+of any ledger in this repository reaches `Accepted` on it. Its counts belong to
+`src/Broiler.VM.Profile.JavaScript/docs` under core ledger update rule 6, and a reader who wants
+them opens that ledger or runs the script and reads their own — which is the same instruction this
+document gave before the run existed and gives unchanged now that it does.
+
+**The one thing the sweep can state here is a name and not a count.** The wide manifest's
+whole-suite `unsupported` column is **no longer empty**, and every variant in it is the same
+construct rather than a family list — the BigInt literal, meeting the refusal that names it — so a
+record anywhere in this repository saying the wide run names no unsupported family, or that its
+`unsupported` column is empty, is false from 2026-09-08 whether or not it states a figure. The
+retained bundle `jsw-10-001` continues to state figures for a run taken **before** the change, and
+that is not a defect in the bundle: a bundle describes the run it retains and nothing later.)*
+
+**A plan naming a profile is not a profile, and this section exists so that a reader of the plan does
+not infer one.** The core roadmap already names both intended first profiles and keeps a list of what
+each expects to require of the contract. **That sentence used to end by saying one of those plans
+stands over an empty directory, and it no longer does** — the directory has a project in it, which
+changes the In-this-repository column and changes nothing in the three columns beside it. **A profile
+existing is the weakest of the four claims this table makes**, and it is the only one either profile
+has earned: neither is advertised, neither is packable, and what each has demonstrated is its own
+ledger's to say and not this table's.
+
+**No composition composes both, and none is coming from this table.** The product that would need
+both at once is a browser; [the composition register](compositions.md) refuses to carry a row for
+that composition, because the rule binding the register to the checkout fails on a row naming a root
+that does not exist. Until such a component exists, the closure, the runtime-identifier matrix and
+the Native AOT evidence for it belong to nobody, which the register says in its own words.
+
+**Why an unadvertised, unaccepted component is nevertheless being advanced.**
+[`docs/mvp.md`](mvp.md) records the instruction, dated 2026-09-07, and fixes exactly what it defers:
+the approval of boundary records, human review, evidence-bundle collection and milestone acceptance,
+and the co-signing the amendment procedure needs. What that instruction does **not** defer is the
+automated gates, the status vocabulary, the stop condition on an untruthful support claim, the
+non-advertisement of every composition and the three-package pack set, and the prohibition on
+publishing. **An MVP here buys the right to build and merge unreviewed work; it buys nothing
+whatever about what may be claimed.**
+Every row of this table is a claim, so no row moves because work was done — a row moves when a
+retained collection shows it, and not before.
+
+---
+
 ## 4. Deterministic exclusions
 
 Behaviour that is bounded, deliberate and will not change without an amendment.
@@ -173,3 +336,29 @@ profile; what a language costs is that language's own.
 - It does not claim any platform beyond `linux-x64`.
 - It does not claim a security review by anyone other than the author, who holds every role.
 - It does not claim performance for any language, and the core has no language to claim it for.
+- It does not say that a native artifact form is **supported**. Two now exist — section 3a says which,
+  per form, rather than leaving it to be inferred — and **neither has a retained collection, a claimed
+  runtime identifier or a reviewed line**, so nothing about either is a support claim. *(This bullet
+  said until 2026-09-07 that no native artifact form existed on any architecture. It did, from the
+  commit that emitted one.)*
+- It does not say that the arm64 backend runs. It is **emitting-only**, in that word, and it has run
+  nowhere.
+- It does not say that a **verified** native payload is correct code, and the layer added on
+  2026-09-08 makes that bullet worth writing rather than assuming. What an execution-only image can
+  check is that a payload is **closed under a table this build's backends emit from** — every byte an
+  instantiation of a known template with every operand inside the set that field admits. That is
+  strictly more than provenance and **strictly less than a correct generator**: a well-formed sequence
+  of the wrong templates is well formed, and the defect the core retains as a fixture — a caller using
+  the wrong calling convention against a callee that was correct — is a property of a call site that
+  no scan of a payload can see. Recompiling the artifact's own bytecode and comparing is the only
+  layer that reaches the generator, and only an image carrying the compiler has it.
+- It does not say that a WebAssembly profile is supported. One exists as of 2026-09-07; nothing about
+  it is claimed here, and its own ledger is where its state is. *(This bullet said that a plan for one
+  existed and the profile did not.)*
+- It does not claim any language performance — the bullet above says so, and **release gate 8 fails
+  a core record that does**. A profile's conformance totals and benchmark scores belong to that
+  profile's own ledger and bundles under core update rule 6, and **no automated rule checks a core
+  record for one**: that half is a rule a reader enforces and not a gate. It is said here rather
+  than left to be discovered from a green suite — which is the term [the composition
+  register](compositions.md) used for its own native-execution column while no rule read it, and a
+  rule reads that one from 2026-09-07 while this half of release gate 8 still has none.

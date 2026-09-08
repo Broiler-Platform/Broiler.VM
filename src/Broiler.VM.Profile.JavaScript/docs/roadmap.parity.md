@@ -50,7 +50,11 @@ surface through a feature manifest and
 first-class answer: a construct outside the manifest is refused at compile time, naming the
 construct, so a composition can decline a surface and say so. An absence that announces itself is a
 supported outcome. **An absence that produces a plausible wrong value is not**, and section 3 below
-is about the one place that distinction has been lost.
+is about the one place that distinction had been lost — [section 4.2](#42-the-refusal-that-was-lost)
+is that place, and **the refusal was restored there on 2026-09-08**, on the strength of this
+paragraph and nothing else. Until that date this sentence ended *"the one place that distinction has
+been lost"* in the present tense, and it was true when it was written
+*(corrected: [JSC-207](roadmap.corrections.md#jsc-207))*.
 
 **Parity is not imitation, and this is the clause a reader is most likely to skip.** The comparison
 engine is older than the edition this profile is written against, and running both over the same
@@ -181,6 +185,13 @@ second clause.
 
 ### 4.2 The refusal that was lost
 
+**This section's finding was acted on in the working tree on 2026-09-08, and the two paragraphs
+below are kept exactly as they were written rather than repaired in place** — a reader who planned
+against them is owed the reading and the retraction, not a section that has quietly stopped saying
+what it said. **Read them in the past tense**, and read the record that closes this section beside
+them. The heading is unchanged because two documents outside this file link to it by anchor
+*(corrected: [JSC-207](roadmap.corrections.md#jsc-207))*.
+
 **A BigInt literal is admitted by the front end and evaluated as a Number.** `typeof 1n` answers
 `"number"`; `1n === 1` is `true`; `9007199254740993n` — a value chosen because no Number can hold
 it — answers a different integer; `1n + 1` produces `2` where the language requires a `TypeError`;
@@ -197,13 +208,52 @@ visible one line away: the regular-expression `v` flag is *also* unimplemented, 
 with its own diagnostic naming the flag. The host's own usage text, meanwhile, describes a wide
 manifest that admits neither async functions nor class fields nor `Proxy`, all of which run.
 
+**The refusal was restored on 2026-09-08, and what changed is narrower than deleting the paragraphs
+above would suggest.** The superseded reading is the one quoted at the head of this section: *"A
+BigInt literal is admitted by the front end and evaluated as a Number"*, with `typeof 1n` answering
+`"number"`, `1n === 1` answering `true`, and `9007199254740993n` answering `9007199254740992`.
+Observed in this working tree on 2026-09-08, `print(typeof 1n)` now answers
+`2104:ConstructOutsideManifest at 1:14: a BigInt literal is not admitted by the declared feature
+manifest`. **The refusal is restored; the value kind is not implemented**, and this section did not
+ask for it to be: BigInt arithmetic is a manifest widening nothing has scheduled, and
+[JSP-2](#jsp-2--the-refusal-that-was-lost-a-bigint-literal-is-not-a-number)'s gate is split in two
+precisely so that the half that needs no type, no manifest identity and no decision could be taken
+on its own. **The second half is untaken and is not closer to being taken.** So `1n + 1` does not
+produce `2` any more — it produces no program at all — and the language's `TypeError` is still not
+raised, because there is no BigInt to raise it about.
+
+**What decided it is this document's own section 1 and not a measurement.** A refusal is a supported
+answer and a plausible wrong value is not; the machinery for the refusal already existed and was
+merely not reached, which [section 4.7](#47-where-the-profile-contradicts-itself) had recorded in
+one line of its own. The change is one arm of the wide parser's primary-expression switch in
+`src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs`, reading the `n` the tokenizer already
+consumes and leaves on the token's raw text — `SliceTokenizer.FinishNumeric` says in its own comment
+that it does so *so that a parser can notice it*, and until this date only the slice parser did.
+
+**And it cost the pass total, which is the part a record of this change must not omit.** Over
+`test/language/literals/bigint` the variants that had passed by accident and the variants that had
+failed silently both became variants meeting a refusal that names the construct, so the subtree's
+pass column fell and its `unsupported` column stopped being empty. **A smaller pass total that is
+honest beats a larger one that is not**, and section 1 is the rule that says so rather than a
+preference expressed here. **This document states no figure for any of it**, as its own header
+promises: the movement is measured in
+[the evidence ledger](roadmap.status.md#2-current-milestone-status) and in
+[JSC-207](roadmap.corrections.md#jsc-207), and a reader who wants the numbers runs
+`eng/run-test262.py` over that subtree either side of the change rather than trusting a count copied
+into prose. The whole-suite figure after this change is being re-taken and no document in this
+family carries one. **Nothing here is accepted, no row moved, and no bundle retains a byte of it.**
+
 ### 4.3 The types and surfaces that are absent
 
 Asked with `typeof`, which answers for an undeclared name without throwing so that one absence
 hides no other, the wide realm lacks these names that the comparison engine has:
 
 - **`BigInt`**, with `BigInt64Array` and `BigUint64Array`, and the `DataView` big-integer accessors.
-  Declared absent in the ledger; section 4.2 is what the declaration does not cover.
+  Declared absent in the ledger; section 4.2 is what the declaration does not cover. **From
+  2026-09-08 what it does not cover is the value kind alone**: the *literal* is refused by name from
+  that date, so this row is an absence that announces itself in both halves rather than in one. Until
+  then this bullet's second sentence covered a silent wrong value as well
+  *(corrected: [JSC-207](roadmap.corrections.md#jsc-207))*.
 - **`Intl`**, and with it every locale-sensitive method's behaviour: `localeCompare` is an ordinal
   comparison over code units, `toLocaleLowerCase` and `toLocaleUpperCase` ignore their locale
   argument, `Number.prototype.toLocaleString` and `Date.prototype.toLocaleString` ignore theirs, and
@@ -379,7 +429,10 @@ documents or its own components, found while comparing:
   identifier `undefined` at compile time although the usage text says the slice manifest admits it.
 - **The front end knows what a BigInt literal is**: it names the construct in a `--slice` refusal,
   while the wide surface — whose own manifest text excludes BigInt — admits it silently. The
-  machinery for the refusal of section 4.2 already exists and is not reached.
+  machinery for the refusal of section 4.2 already exists and is not reached. **This is the one
+  entry on this list that has been repaired: the wide parser reaches that machinery from 2026-09-08**
+  and both surfaces now refuse the literal by name, which is the disagreement closing rather than
+  being explained *(corrected: [JSC-207](roadmap.corrections.md#jsc-207))*.
 - **`GeneratorFunction`, `AsyncFunction` and `AsyncGeneratorFunction` refuse with a reason about
   turning source into code at run time**, which is the dynamic surface's reason rather than theirs.
 
@@ -514,6 +567,15 @@ a milestone with a ledger row.
   one are exercised. A negative control for each half, watched failing and watched passing after the
   revert. **And the host's usage text is made to describe the manifest it runs**, because the same
   change that admits or refuses a construct is the one that can be checked against the prose.
+- **Where this stands on 2026-09-08, stated in the direction that costs.** The first clause of the
+  cheap half is met in the working tree — `1n` is refused at compile time with
+  `2104:ConstructOutsideManifest` naming the construct, and `--check` decides it — and **the rest of
+  the gate is not**: no retained corpus entry carries the refusal, no negative control has been
+  watched failing and watched passing after a revert, the host's usage text is untouched, and the
+  type half is exactly where it was. **Meeting a clause of a gate is not meeting the gate and is not
+  acceptance**, which [section 8](#8-what-this-roadmap-does-not-promise) already says of every stage
+  here; this stage has no owner and moved no row. The conformance consequence of the one clause that
+  was taken is in section 4.2 and in the [ledger](roadmap.status.md#2-current-milestone-status).
 
 ### JSP-3 — The static semantics the wide front end does not have
 
@@ -651,7 +713,10 @@ a milestone with a ledger row.
 repairs an instrument; [JSP-8](#jsp-8--the-places-this-component-disagrees-with-itself) repairs
 disagreements internal to this checkout; **the first half of
 [JSP-2](#jsp-2--the-refusal-that-was-lost-a-bigint-literal-is-not-a-number) — refusing the literal —
-needs no type, no manifest and no decision**, which is the point of splitting its gate in two; and
+needs no type, no manifest and no decision**, which is the point of splitting its gate in two —
+**and it was taken on 2026-09-08**, so that clause of this paragraph reads in the past tense now
+while the rest of JSP-2's gate stays open, which is the whole reason the split was worth drawing
+*(corrected: [JSC-207](roadmap.corrections.md#jsc-207))*; and
 **the `Math.random` clause of [JSP-10](#jsp-10--the-host-surface-an-embedder-meets-first) is one
 change to one function**, which is why that gate says so rather than leaving it inside a stage that
 waits on a budget decision.

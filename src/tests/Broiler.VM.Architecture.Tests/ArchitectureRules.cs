@@ -852,6 +852,7 @@ internal static class ArchitectureRules
     /// of <see cref="DefensiveCodes"/> and states why no artifact reaches it.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// This is the backward half of the binding and the expensive one to satisfy honestly: a
     /// registry can always be made to agree with the enum, and it takes a corpus to show that the
     /// codes are reachable at all. Two rows are not - one because the reader's status set is
@@ -861,6 +862,24 @@ internal static class ArchitectureRules
     /// manifest: the two descriptor-mismatch rows were unobservable because the core screened the
     /// descriptor against a set with one member in it, and registering a second version and a
     /// second manifest made both reachable and gave each a retained entry.
+    /// </para>
+    /// <para>
+    /// <b>THE REGISTRY HAD THREE KINDS OF REACHABILITY, THEN FOUR FOR ONE REVISION, AND HAS THREE
+    /// AGAIN - and this rule is where the fourth was admitted, so this is where its withdrawal is
+    /// recorded.</b> Between the two commits of 2026-09-08 that built the template-closure scan, a
+    /// <c>check</c> branch stood below the <c>source</c> one and a <c>CheckReachableCodes</c> list
+    /// stood beside <see cref="DefensiveCodes"/> naming the single code admitted to it, 1625, on
+    /// the reading that a <c>check</c> row is one "a named check of a producer composition reaches
+    /// and no entry of the retained corpus does". The second half of that reading stopped being
+    /// true within the day, when five retained entries binding 1625 landed, and its own text had
+    /// already said the entry that would promote the row belonged to the stage that owns the
+    /// corpus. Withdrawing the kind is what that promotion leaves behind: what would otherwise
+    /// remain is a branch of this rule no row can reach and a list no row may join. 1625 is now a
+    /// <c>corpus</c> row naming <c>wide-a-native-payload-of-four-zero-bytes</c>, held to the
+    /// retained manifest by the same clause every other <c>corpus</c> row is held to, and the lane
+    /// check it used to name still runs in the slice compiler's <c>--checks</c> lane - what it is
+    /// no longer is a registry row's evidence.
+    /// </para>
     /// </remarks>
     internal static IEnumerable<string> N7(
         IReadOnlyList<DiagnosticRegistryRow> registry,
@@ -1606,9 +1625,26 @@ internal static class ArchitectureRules
     }
 
     /// <summary>
-    /// B5: no assembly reaches a dynamic-loading, reflection-invocation or IL-emit API.
-    /// Invariant 2 requires registration to be static and typed.
+    /// B5: no assembly reaches a dynamic-loading, reflection-invocation, IL-emit or
+    /// native-code-preparation API. Invariant 2 requires registration to be static and typed.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The list gained its native half on 2026-09-07, and the half that matters is not
+    /// here.</b> A managed member that hands out or prepares a code pointer -
+    /// <c>Marshal.GetDelegateForFunctionPointer</c>, <c>NativeLibrary.GetExport</c>,
+    /// <c>RuntimeHelpers.PrepareMethod</c> - is named in the MemberRef table like every other
+    /// entry below, so it belongs on this list. The calls that actually make a page executable
+    /// name no member of any referenced assembly at all: they are platform invokes into
+    /// <c>kernel32</c> or <c>libc</c>, reached through this assembly's own ImplMap. Rule B5c reads
+    /// that table, and the two rules together are what the roadmap's widening asks for.
+    /// </para>
+    /// <para>
+    /// <b>The scope widened on the same date.</b> This ran over the three core assemblies while
+    /// the register row said "the product graph"; it now runs over every assembly a published
+    /// image can contain, which is where an arming path would actually be.
+    /// </para>
+    /// </remarks>
     internal static IEnumerable<string> B5(AssemblyFacts assembly)
     {
         // Matched by exact member name rather than by prefix: a prefix test reads
@@ -1629,6 +1665,15 @@ internal static class ArchitectureRules
             "System.Linq.Expressions.LambdaExpression.Compile",
             "System.Runtime.InteropServices.NativeLibrary.Load",
             "System.Runtime.InteropServices.NativeLibrary.TryLoad",
+
+            // The native half: the managed members by which a caller acquires, prepares or hands
+            // out a pointer to code. None of them maps a page - that is B5c's table - and each of
+            // them is how emitted code would be reached once a page existed.
+            "System.Runtime.InteropServices.NativeLibrary.GetExport",
+            "System.Runtime.InteropServices.NativeLibrary.TryGetExport",
+            "System.Runtime.InteropServices.Marshal.GetDelegateForFunctionPointer",
+            "System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate",
+            "System.Runtime.CompilerServices.RuntimeHelpers.PrepareMethod",
         ];
 
         // Whole namespaces and types where naming the thing at all is the violation.

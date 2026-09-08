@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Globalization;
+using System.Text.Json;
 
 namespace Broiler.VM.Composition.JavaScript.Conformance;
 
@@ -38,7 +39,298 @@ internal static class Test262Checks
         AnExhaustionIsItsOwnVerdictAndNamesItsDimension(),
         APartialRunCannotRenderAsAWholeOne(),
         ATest262ReportRoundTripsThroughItsOwnFormat(),
+        AReportOfAnEarlierFormatIsRefusedAndNotHalfRead(),
+        TheFailureClassificationAccountsForEveryFailure(),
+        AFeatureTaggingIsNotAPartitionAndSaysSo(),
+        TheJsonDocumentParsesAndCarriesEveryDeclaredMember(),
+        AWholeRunFloorHoldsAndRegressesInBothDirections(),
+        AWholeRunFloorIsNeverComparedAcrossARevisionOrAManifest(),
+        ARunTakenWithoutAPinMayNotBeRetainedOrSetAFloor(),
     ];
+
+    private static (string, bool, string) AReportOfAnEarlierFormatIsRefusedAndNotHalfRead()
+    {
+        // A FORMAT CHANGE IS A FORMAT CHANGE, and the failure mode this refuses is the quiet one: a
+        // version-1 report has seven-field results and a six-field run row, so a reader that only
+        // checked the header PREFIX would refuse it one line at a time and blame a row.
+        var path = Path.Combine(Path.GetTempPath(), "broiler-js-conformance-test262-earlier.txt");
+
+        try
+        {
+            File.WriteAllText(
+                path,
+                "# broiler-js-conformance test262 report 1\nrun|test262|abcd|-1|1|rule\n");
+
+            var recognised = Test262Report.Recognises(path);
+            var refused = string.Empty;
+
+            try
+            {
+                Test262Report.Read(path);
+            }
+            catch (InvalidOperationException failure)
+            {
+                refused = failure.Message;
+            }
+
+            return (
+                "a-test262-report-of-an-earlier-format-is-recognised-as-one-and-then-refused",
+                recognised && refused.Contains("earlier version", StringComparison.Ordinal),
+                recognised
+                    ? "a version-1 report is recognised as this kind and refused by version: " + refused
+                    : "a version-1 report was not recognised as a test262 report at all");
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    private static (string, bool, string) TheFailureClassificationAccountsForEveryFailure()
+    {
+        // THE PROPERTY THAT MAKES THE TABLE CHECKABLE. Kind and area each file every failing variant
+        // exactly once, so both columns sum to the failed total; a classification that dropped a row
+        // - because a verdict was reached somewhere that names no kind, say - would produce a work
+        // list quietly smaller than the number it is a breakdown of.
+        var results = new List<Test262Outcome>
+        {
+            new("test/built-ins/Array/prototype/map/a.js", "strict", Test262Verdict.Failed,
+                "uncaught TypeError: x", Kind: Test262Failures.Uncaught("TypeError")),
+            new("test/built-ins/Array/prototype/map/b.js", "sloppy", Test262Verdict.Failed,
+                "uncaught TypeError: y", Kind: Test262Failures.Uncaught("TypeError")),
+            new("test/language/statements/class/c.js", "strict", Test262Verdict.Failed,
+                "a harness file threw: z", Kind: Test262Failures.HarnessThrew("Test262Error")),
+
+            // The one with no kind, which must become a row rather than vanish.
+            new("test/language/statements/class/d.js", "strict", Test262Verdict.Failed, "something"),
+            new("test/built-ins/Array/prototype/map/e.js", "strict", Test262Verdict.Passed, string.Empty),
+        };
+
+        var report = ReportOver(["x"], Sharding.AllShards, 1, ["x"], results);
+        var kinds = report.FailureKinds;
+        var areas = report.FailureAreas;
+        var unclassified = kinds.FirstOrDefault(static row =>
+            string.Equals(row.Name, Test262Failures.Unclassified, StringComparison.Ordinal));
+
+        var kindTotal = kinds.Sum(static row => row.Count);
+        var areaTotal = areas.Sum(static row => row.Count);
+
+        return (
+            "the-failure-classification-files-every-failing-variant-exactly-once",
+            kindTotal == 4 && areaTotal == 4 && report.Totals.Failed == 4 &&
+                unclassified is { Count: 1 } && areas.Count == 2 &&
+                areas.Any(static row => string.Equals(
+                    row.Name, "test/built-ins/Array/prototype", StringComparison.Ordinal)) &&
+                areas.Any(static row => string.Equals(
+                    row.Name, "test/language/statements/class", StringComparison.Ordinal)),
+            $"{kindTotal} kind and {areaTotal} area taggings over {report.Totals.Failed} failures, " +
+            $"{areas.Count} areas, and a verdict naming no kind is filed under " +
+            $"`{Test262Failures.Unclassified}` rather than dropped");
+    }
+
+    private static (string, bool, string) AFeatureTaggingIsNotAPartitionAndSaysSo()
+    {
+        // A test262 file declares zero, one or several `features`, so the feature axis is a set of
+        // tags rather than a partition and its column deliberately does NOT sum to the failures. The
+        // check is that both facts hold: two features put one variant in two rows, and a variant
+        // with none is in no row at all.
+        var results = new List<Test262Outcome>
+        {
+            new("test/a.js", "strict", Test262Verdict.Failed, "uncaught", Kind: "k",
+                Features: "Proxy,Reflect"),
+            new("test/b.js", "strict", Test262Verdict.Failed, "uncaught", Kind: "k",
+                Features: "Proxy"),
+            new("test/c.js", "strict", Test262Verdict.Failed, "uncaught", Kind: "k"),
+        };
+
+        var report = ReportOver(["x"], Sharding.AllShards, 1, ["x"], results);
+        var features = report.FailureFeatures;
+        var proxy = features.FirstOrDefault(static row =>
+            string.Equals(row.Name, "Proxy", StringComparison.Ordinal));
+
+        return (
+            "a-declared-feature-is-a-tag-and-not-a-partition-of-the-failures",
+            features.Count == 2 && proxy is { Count: 2 } &&
+                features.Sum(static row => row.Count) == 3 && report.Totals.Failed == 3 &&
+                Test262Failures.WithAFeature(report.Results) == 2,
+            "three failures declare three taggings over two of them, so the feature column does not " +
+            "sum to the failed total and the report states how many variants it covers");
+    }
+
+    private static (string, bool, string) TheJsonDocumentParsesAndCarriesEveryDeclaredMember()
+    {
+        // ONE LIST, TWO DOCUMENTS. The renderer walks the member list and the schema is generated
+        // from it, so the check that matters is that what came out is well-formed JSON whose
+        // top-level members are exactly that list, in that order - which is the promise the schema
+        // makes to a consumer that never reads this repository.
+        var files = Paths(20);
+        var report = ReportOver(files, Sharding.AllShards, 1, files);
+
+        try
+        {
+            using var document = JsonDocument.Parse(Test262Json.Render(report));
+            using var schema = JsonDocument.Parse(Test262Json.Schema());
+
+            var emitted = document.RootElement
+                .EnumerateObject()
+                .Select(static member => member.Name)
+                .ToArray();
+
+            var declared = Test262Json.Members.Select(static member => member.Name).ToArray();
+
+            var promised = schema.RootElement
+                .GetProperty("properties")
+                .EnumerateObject()
+                .Select(static member => member.Name)
+                .ToArray();
+
+            // And the totals in the document are the report's own, not a second count of the rows.
+            var totals = document.RootElement.GetProperty("totals");
+            var failures = document.RootElement.GetProperty("failures").GetArrayLength();
+
+            var agrees = totals.GetProperty("failed").GetInt32() == failures &&
+                totals.GetProperty("variants").GetInt32() == report.Results.Count &&
+                document.RootElement.GetProperty("retention").GetProperty("retainable").GetBoolean();
+
+            return (
+                "the-json-report-parses-and-its-members-are-the-schema-s-in-order",
+                emitted.SequenceEqual(declared, StringComparer.Ordinal) &&
+                    promised.SequenceEqual(declared, StringComparer.Ordinal) && agrees,
+                $"{emitted.Length} members rendered, {promised.Length} promised by the schema, and " +
+                $"{failures} failure record(s) against a failed total of " +
+                totals.GetProperty("failed").GetInt32().ToString(CultureInfo.InvariantCulture));
+        }
+        catch (JsonException failure)
+        {
+            return (
+                "the-json-report-parses-and-its-members-are-the-schema-s-in-order",
+                false,
+                "the rendered document is not JSON: " + failure.Message);
+        }
+    }
+
+    private static (string, bool, string) AWholeRunFloorHoldsAndRegressesInBothDirections()
+    {
+        // THE RATCHET THE WHOLE-SUITE FIGURE HAD NONE OF. A run equal to the floor holds; a run that
+        // passes fewer variants regresses; and - the half a one-directional ratchet walks around - a
+        // run that passes as many while FAILING more regresses too, because a construct that moved
+        // from passed to unsupported or a file that stopped being readable is a regression a pass
+        // count cannot see.
+        var files = Paths(60);
+        var run = ReportOver(files, Sharding.AllShards, 1, files);
+        var floor = Test262Floor.From(run);
+
+        var held = floor.Compare(run, out _) == Floor.Verdict.Held;
+
+        var fewer = ReportOver(
+            files,
+            Sharding.AllShards,
+            1,
+            files,
+            [.. run.Results.Select(static result => result.Verdict == Test262Verdict.Passed
+                ? result with { Verdict = Test262Verdict.Failed, Kind = "a kind" }
+                : result)]);
+
+        var passesFell = floor.Compare(fewer, out var fell) == Floor.Verdict.Regressed &&
+            fell.Any(static complaint => complaint.Contains("`passed`", StringComparison.Ordinal));
+
+        // Same passes, one skip turned into a failure: the `atMost failed` row is what catches it.
+        var worse = ReportOver(
+            files,
+            Sharding.AllShards,
+            1,
+            files,
+            [.. run.Results.Select(static result => result.Verdict == Test262Verdict.Skipped
+                ? result with { Verdict = Test262Verdict.Failed, Kind = "a kind" }
+                : result)]);
+
+        var failuresRose = floor.Compare(worse, out var rose) == Floor.Verdict.Regressed &&
+            rose.Any(static complaint => complaint.Contains("`failed`", StringComparison.Ordinal));
+
+        return (
+            "a-whole-run-floor-holds-and-catches-a-fall-in-passes-and-a-rise-in-failures",
+            held && passesFell && failuresRose,
+            held
+                ? "the run that set the floor holds it; fewer passes and more failures each regress"
+                : "the run that set the floor did not hold it");
+    }
+
+    private static (string, bool, string) AWholeRunFloorIsNeverComparedAcrossARevisionOrAManifest()
+    {
+        // A floor compared across revisions reads an added test as a regression and a removed one as
+        // a lower bar; a floor compared across manifests reads a deliberate composition as a
+        // catastrophe. Both re-base rather than compare, and a re-base retains the old rows.
+        var files = Paths(30);
+        var run = ReportOver(files, Sharding.AllShards, 1, files);
+        var floor = Test262Floor.From(run);
+
+        var moved = run with { Suite = new SuiteRevision("test262", "efgh") };
+        var other = run with { ManifestId = "broiler.javascript.slice" };
+
+        var rebasedRevision = floor.Compare(moved, out _) == Floor.Verdict.Rebased;
+        var rebasedManifest = floor.Compare(other, out _) == Floor.Verdict.Rebased;
+        var rebased = floor.Rebase(moved, "the suite revision moved");
+
+        var round = Path.Combine(Path.GetTempPath(), "broiler-js-conformance-test262-floor.txt");
+        var trip = false;
+
+        try
+        {
+            File.WriteAllText(round, rebased.Render());
+            trip = string.Equals(
+                Test262Floor.Read(round).Render(), rebased.Render(), StringComparison.Ordinal);
+        }
+        finally
+        {
+            File.Delete(round);
+        }
+
+        return (
+            "a-whole-run-floor-re-bases-across-a-revision-or-a-manifest-and-retains-the-old-rows",
+            rebasedRevision && rebasedManifest && rebased.Retired.Count == 1 && trip &&
+                rebased.Retired[0].Contains("test262@abcd", StringComparison.Ordinal),
+            "a moved revision and a changed manifest both re-base rather than compare, the retired " +
+            "rows stay in the file, and the file round-trips");
+    }
+
+    private static (string, bool, string) ARunTakenWithoutAPinMayNotBeRetainedOrSetAFloor()
+    {
+        // THE CLAUSE NOTHING CHECKED. A run without `--expect` already carries
+        // MissingSuiteRevision - but a failed run still writes a transcript, and a transcript is
+        // what somebody copies into an evidence bundle. Three places now refuse it by the same
+        // field: the floor, the JSON document's `retention`, and the driver that takes the run.
+        var files = Paths(20);
+        var pinned = ReportOver(files, Sharding.AllShards, 1, files);
+
+        var unpinned = pinned with
+        {
+            Suite = new SuiteRevision("test262", string.Empty),
+            Findings =
+            [
+                new ConfigurationFinding(
+                    ConfigurationFailure.MissingSuiteRevision, "no pin was given"),
+            ],
+        };
+
+        var shard = ReportOver(Test262Partition.Take(files, 1, 4), 1, 4, files);
+
+        var refusedUnpinned = !Test262Floor.Admissible(unpinned, out var whyUnpinned);
+        var refusedShard = !Test262Floor.Admissible(shard, out var whyShard);
+        var admitted = Test262Floor.Admissible(pinned, out _);
+
+        var said = Test262Json.Render(unpinned).Contains(
+            "\"retainable\": false", StringComparison.Ordinal);
+
+        return (
+            "a-run-taken-without-a-retained-pin-may-not-be-retained-and-may-not-set-a-floor",
+            refusedUnpinned && refusedShard && admitted && said && !unpinned.IsRetainable &&
+                whyUnpinned.Contains("--expect", StringComparison.Ordinal) &&
+                whyShard.Contains("one shard", StringComparison.Ordinal),
+            refusedUnpinned
+                ? "an unpinned run and a single shard are both refused a floor, and the JSON " +
+                    "document says `retainable: false` with the reason"
+                : "an unpinned run was admitted as a floor");
+    }
 
     private static (string, bool, string) ThePartitionIsExhaustiveAndDisjoint()
     {
@@ -382,6 +674,8 @@ internal static class Test262Checks
         IReadOnlyList<Test262Outcome>? results = null) =>
         new(
             new SuiteRevision("test262", "abcd"),
+            "tc39/test262",
+            "ccaac100ff49d81e9ff47a75ff4c60e0bd3f262e",
             Test262Manifest.Default,
             2,
             LoadsHarness: true,

@@ -49,19 +49,38 @@
 # spent, so raising a ceiling later is a decision a reader takes on the transcript rather than a
 # number that vanished into "fail".
 #
-# THE EXIT CODE IS THE MERGE'S, so it says what the harness said: 0 where nothing failed, 1 where
-# cases failed or the merged run was misconfigured, and this script stops before the merge where any
-# shard reported the harness's own defect code, because a shard that could not measure has totals
-# nobody may add. A whole run of this suite fails cases today, so 1 is the ordinary outcome and not a
-# reason to discard the transcript.
+# THE EXIT CODE IS THE MERGE'S WHERE NOTHING WORSE HAPPENED, so it says what the harness said: 0
+# where nothing failed, 1 where cases failed or the merged run was misconfigured. A whole run of this
+# suite fails cases today, so 1 is the ordinary outcome and not a reason to discard the transcript.
+# Three codes outrank it, worst first, because each says something the totals cannot:
+#
+#     2   a shard reported the harness's own defect code, so nothing was merged. A shard that could
+#         not measure has totals nobody may add, and this script stops before the merge.
+#     3   the merged run may not be retained: it read no pinned suite, or its five verdicts do not
+#         account for its variants. See the retention paragraph below.
+#     4   the merged run crossed the floor it was held to.
+#
+# WHAT MAY BE RETAINED, AND WHAT ENFORCES IT. A run taken without `--expect` reports totals about a
+# directory rather than about a revision - the harness raises MissingSuiteRevision and fails the run -
+# but a failed run still writes a transcript, and a transcript is what somebody copies into an
+# evidence bundle six weeks later. Nothing checked that. Three things do now: the merged report
+# carries a `retention` object in its JSON document saying whether it may be cited and why not, the
+# floor refuses to be set or compared from a run that object refuses, and this script reads that
+# object after the merge and exits 3 rather than leaving a transcript that reads like a whole run.
+# A narrowed run - one `--dir`, one shard, a `--limit` - is a different matter: it says `partial` in
+# the coverage field a rule reads, this script prints every reason, and it does not raise the exit
+# code, because narrowing is what the caller asked for.
 #
 #   python3 eng/run-test262.py --suite <root> [--binary-directory <dir>] [--manifest <id>]
 #                              [--decline <surface>]... [--jobs <n>] [--shards <n>]
 #                              [--fuel <n>] [--wall <ms>] [--out <dir>] [--dir <subtree>]...
+#                              [--digest-cache <file>] [--json <file>]
+#                              [--floor <file>] [--admit-floor]
 
 import argparse
 import concurrent.futures
 import hashlib
+import json
 import os
 import pathlib
 import subprocess
@@ -110,7 +129,13 @@ def pinned():
 
 
 def identify(suite, fields):
-    """Refuses a checkout that is not the pinned revision. A disagreement is refused, never fixed."""
+    """Refuses a checkout that is not the pinned revision. A disagreement is refused, never fixed.
+
+    Answers the digest and, beside it, what every file WAS when it was read: its length, its
+    modification time in whole seconds, and the hash of its bytes. Those three are what `cache()`
+    writes; this function reads every byte of every file to get the third of them, every time, and
+    `cache()` records why that reading is not the one an opt-in cache replaces.
+    """
     rows = []
 
     for path in sorted(suite.rglob("*")):
@@ -124,11 +149,14 @@ def identify(suite, fields):
         if relative == "suite.pin":
             continue
 
-        rows.append((relative, hashlib.sha256(path.read_bytes()).hexdigest()))
+        stat = path.stat()
+        rows.append(
+            (relative, hashlib.sha256(path.read_bytes()).hexdigest(), stat.st_size, int(stat.st_mtime))
+        )
 
     content = hashlib.sha256()
 
-    for relative, digest in sorted(rows):
+    for relative, digest, _, _ in sorted(rows):
         content.update(f"{relative}\n{digest}\n".encode())
 
     observed = content.hexdigest()
@@ -146,7 +174,46 @@ def identify(suite, fields):
             f"#   pin      {declared}\n#   checkout {observed}"
         )
 
-    return observed
+    return observed, rows
+
+
+def cache(path, digest, rows):
+    """Writes what this run read, so its own shards need not read it again.
+
+    WHY THE VERIFICATION ABOVE IS NOT SKIPPED, AND WHY NO OPTION HERE WILL EVER SKIP IT. Every shard
+    is handed `--expect` and re-verifies the checkout, for the reason the harness records beside that
+    check: a shard that reported a revision it had not read would be certifying its own input. That
+    is right and it is expensive - the pinned checkout is 56,560 files and 232 megabytes, so a
+    twelve-shard run reads and hashes the tree thirteen times, and twelve of the thirteen readings
+    answer a question the first one answered minutes earlier on the same disk.
+
+    This file is those twelve readings, taken once. What it holds per file is a length, a
+    modification time and a hash, and the first two are NOT evidence about the third: both are
+    writable by anyone who can write the file, an edit that preserves them is a line of script, and a
+    filesystem reporting whole seconds cannot see a change made inside the same second. So the cache
+    is not a cheaper verification and this script never offers one. `identify()` above reads every
+    byte of every file, computes the digest and compares it against the retained pin BEFORE this is
+    written, and the digest it verified is written into the file: a shard handed a cache naming any
+    other digest ignores it whole and reads the checkout itself. What the cache buys is one full
+    reading per RUN instead of one per SHARD, and the run that writes it is the run that took the
+    reading.
+    """
+    lines = [
+        "# broiler-js-conformance suite digest cache 1",
+        "# Written by eng/run-test262.py after it read every byte of the checkout and matched the",
+        "# retained pin. The length and modification time below are a CACHE KEY and not evidence:",
+        "# a shard that finds either changed reads the file itself, and a shard whose pin names a",
+        "# different content digest from the one below ignores this file whole.",
+        f"# content-sha256 {digest}",
+        f"# files {len(rows)}",
+    ]
+
+    for relative, sha, size, modified in sorted(rows):
+        lines.append(f"{size} {modified} {sha} {relative}")
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
+    return path
 
 
 def shard(binary, suite, arguments, index, count, reports, logs):
@@ -168,6 +235,9 @@ def shard(binary, suite, arguments, index, count, reports, logs):
 
     for subtree in arguments.dir:
         command += ["--dir", subtree]
+
+    if arguments.digest_cache:
+        command += ["--digest-cache", str(arguments.digest_cache)]
 
     done = subprocess.run(command, cwd=str(ROOT), capture_output=True, text=True)
     transcript = logs / f"shard-{index:04d}.log"
@@ -195,6 +265,27 @@ def main():
     # pool refill instead of idling, and costs one extra suite verification per shard.
     parser.add_argument("--shards", type=int, default=0)
     parser.add_argument("--out", default=None, help="where the transcript is retained")
+
+    # OPT-IN, because it is a trade and not a free win: it costs a file on disk and it is only worth
+    # anything on a run of several shards. See cache() for what it does and does not replace.
+    parser.add_argument(
+        "--digest-cache",
+        default=None,
+        help="a file this run writes what it read into, so its own shards need not read it again",
+    )
+
+    parser.add_argument(
+        "--json", default=None, help="the machine-readable report; defaults to <out>/test262.json")
+
+    parser.add_argument(
+        "--floor", default=None, help="a whole-run floor the merged run is held to")
+
+    parser.add_argument(
+        "--admit-floor",
+        action="store_true",
+        help="set or re-base the floor from this run; never passed by a lane",
+    )
+
     arguments = parser.parse_args()
 
     binary = pathlib.Path(arguments.binary_directory) / BINARY_NAME
@@ -223,7 +314,7 @@ def main():
         raise SystemExit(f"# {suite} has no harness/ directory, so it is not a test262 checkout")
 
     fields = pinned()
-    digest = identify(suite, fields)
+    digest, rows = identify(suite, fields)
 
     jobs = max(1, arguments.jobs)
     shards = arguments.shards if arguments.shards > 0 else jobs * 4
@@ -244,8 +335,18 @@ def main():
     for path in stale:
         path.unlink()
 
+    # WRITTEN AFTER THE VERIFICATION AND NEVER INSTEAD OF IT. See cache().
+    if arguments.digest_cache:
+        arguments.digest_cache = cache(
+            pathlib.Path(arguments.digest_cache), digest, rows)
+
     print(f"# test262 {fields['upstream']} at {fields['revision']}")
     print(f"# {fields['files']} files, content {digest} - the checkout answers to {PIN.name}")
+
+    if arguments.digest_cache:
+        print(
+            f"# {len(rows)} file digests written to {arguments.digest_cache}; every shard still "
+            f"verifies the checkout, and every file whose length or timestamp moved is re-read")
     print(f"# manifest {arguments.manifest}; declined {arguments.decline or '(none)'}")
     print(f"# {shards} shards across {jobs} processes, {arguments.fuel} fuel and "
           f"{arguments.wall} ms per variant")
@@ -271,13 +372,17 @@ def main():
                 failed.append(index)
 
     if failed:
-        raise SystemExit(
-            f"# {len(failed)} shard(s) reported a harness defect and measured nothing: {failed}"
+        print(
+            f"# {len(failed)} shard(s) reported a harness defect and measured nothing: {failed}",
+            file=sys.stderr,
         )
 
+        return 2
+
     merged = out / "test262.report"
+    document = pathlib.Path(arguments.json) if arguments.json else out / "test262.json"
     done = subprocess.run(
-        [str(binary), "--merge", str(reports), "--report", str(merged)],
+        [str(binary), "--merge", str(reports), "--report", str(merged), "--json", str(document)],
         cwd=str(ROOT),
         capture_output=True,
         text=True,
@@ -290,7 +395,51 @@ def main():
         print(done.stderr.rstrip())
 
     print(f"# the whole-run report is {merged}")
-    return done.returncode
+    print(f"# the machine-readable report is {document}")
+
+    code = done.returncode
+
+    # THE RETENTION VERDICT, READ OFF THE MERGED REPORT AND NOT ASSERTED HERE. Every reason is the
+    # harness's own; this script prints them and decides only which of them outrank a case failure.
+    if document.exists():
+        retention = json.loads(document.read_text(encoding="utf-8"))["retention"]
+
+        if retention["retainable"]:
+            print("# this run may be retained: pinned, whole, and its verdicts account for it")
+        else:
+            print("# THIS RUN MAY NOT BE RETAINED AS A WHOLE-SUITE FIGURE:")
+
+            for reason in retention["reasons"]:
+                print(f"#   {reason}")
+
+            # A narrowing or a shard is what the caller asked for and says so in the coverage field
+            # a rule reads; an unpinned suite or arithmetic that does not add up is neither.
+            if any(
+                "--expect" in reason or "account for" in reason
+                for reason in retention["reasons"]
+            ):
+                code = 3
+
+    if arguments.floor:
+        floor = [str(binary), "--floor", arguments.floor, "--report", str(merged)]
+
+        if arguments.admit_floor:
+            floor.append("--admit")
+
+        ratchet = subprocess.run(floor, cwd=str(ROOT), capture_output=True, text=True)
+        (out / "floor.log").write_text(ratchet.stdout + ratchet.stderr)
+        print(ratchet.stdout.rstrip())
+
+        if ratchet.stderr.strip():
+            print(ratchet.stderr.rstrip())
+
+        # RANKED WORST-FIRST AND NOT LAST-WINS: a harness defect outranks an unretainable run,
+        # which outranks a crossed floor, which outranks cases having failed. A floor complaint
+        # must not overwrite the reason the run could not be retained in the first place.
+        if ratchet.returncode != 0 and code in (0, 1):
+            code = 4
+
+    return code
 
 
 if __name__ == "__main__":

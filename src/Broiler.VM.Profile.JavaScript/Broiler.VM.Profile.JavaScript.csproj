@@ -7,6 +7,13 @@
 
     <!-- JS-0 declares no package; see the Format project for why. -->
     <IsPackable>false</IsPackable>
+
+    <!-- JsNativePage is the one place in this product that maps memory and makes it executable,
+         and every line that needs this property is in that file and its two platform halves. The
+         property is here rather than nowhere so that the capability is a visible, reviewable line
+         in a project file instead of an assumption; a reader who wants to know whether this
+         assembly can touch raw memory reads one line to find out. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <!--

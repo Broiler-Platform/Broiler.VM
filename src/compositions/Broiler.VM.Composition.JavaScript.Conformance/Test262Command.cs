@@ -55,6 +55,14 @@ internal static class Test262Command
     /// <summary>Where a test262 checkout keeps the files that are scored.</summary>
     private const string TestDirectory = "test";
 
+    /// <summary>How many rows of each failure axis the printed summary carries.</summary>
+    /// <remarks>
+    /// <b>A head and not the whole table, with what was cut named.</b> A whole run meets more areas
+    /// than a terminal holds; the report and the JSON document carry every row, and a summary that
+    /// printed all of them is a summary nobody reads the end of.
+    /// </remarks>
+    private const int RankedRows = 25;
+
     /// <summary>Runs the mode.</summary>
     internal static int Run(string suiteRoot, string[] args, bool verbose)
     {
@@ -99,6 +107,8 @@ internal static class Test262Command
         var mine = Test262Partition.Take(selected, shardIndex, shardCount);
 
         var suite = new SuiteRevision("test262", string.Empty);
+        var upstream = string.Empty;
+        var upstreamRevision = string.Empty;
         var expect = Argument(args, "--expect");
 
         if (expect is not null)
@@ -107,10 +117,18 @@ internal static class Test262Command
             // than once by whoever launched them. A shard that reported a revision it had not read
             // would be certifying its own input, which is the exact shape `SuitePins` exists to
             // refuse; re-reading the checkout costs seconds against a run that costs hours.
-            if (!Verify(suiteRoot, expect, out suite))
+            if (!Verify(suiteRoot, expect, Argument(args, "--digest-cache"), out suite, out var pin))
             {
                 return ExitCodes.HarnessDefect;
             }
+
+            // THE PIN'S OWN WORDS AND NOT THE DIGEST, carried into the report so that a reader of
+            // the report alone knows which upstream revision of which project the totals are about.
+            // The digest answers "is this the same bytes"; only the pin answers "the same bytes as
+            // what", and a machine-readable report that made a reader open a second file to learn
+            // that is a report about an anonymous directory.
+            upstream = pin.Upstream;
+            upstreamRevision = pin.Revision;
         }
 
         // THE SUITE SAYS WHICH OF ITS FLAGS NAME PROPOSALS, and this command reads that where the
@@ -172,6 +190,8 @@ internal static class Test262Command
 
         var report = new Test262Report(
             suite,
+            upstream,
+            upstreamRevision,
             manifest.Id.ToString(),
             manifest.FormatVersion,
             manifest.LoadsHarness,
@@ -203,6 +223,15 @@ internal static class Test262Command
             File.WriteAllText(output, report.Render(), Transcript);
         }
 
+        var json = Argument(args, "--json");
+
+        if (json is not null)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(json))!);
+            File.WriteAllText(json, Test262Json.Render(report), Transcript);
+            Console.WriteLine("json " + Path.GetFullPath(json));
+        }
+
         return report.Failed ? ExitCodes.Failed : ExitCodes.Ok;
     }
 
@@ -225,7 +254,7 @@ internal static class Test262Command
     /// own rather than by substituting.
     /// </para>
     /// </remarks>
-    private static readonly System.Text.UTF8Encoding Transcript = new(
+    internal static readonly System.Text.UTF8Encoding Transcript = new(
         encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: false);
 
     /// <summary>Prints one report's tallies, its totals and its coverage, in that order.</summary>
@@ -256,6 +285,15 @@ internal static class Test262Command
         {
             Console.WriteLine(
                 "# exhausted " + spent.Path + " [" + spent.Variant + "] on " + spent.Dimension);
+        }
+
+        // THE FAILURE CLASSIFICATION, RANKED, and printed before the totals for the same reason the
+        // family table is: a reader at the tail of a transcript wants the total, and the line above
+        // it should say which repair moves the total. The report and the JSON document carry every
+        // row; this prints the head of each axis.
+        foreach (var line in Test262Failures.Describe(report, RankedRows))
+        {
+            Console.WriteLine(line);
         }
 
         Console.WriteLine(report.Totals.Describe());
@@ -369,9 +407,21 @@ internal static class Test262Command
     }
 
     /// <summary>Checks the checkout against a pin this repository holds, or says why it is not it.</summary>
-    private static bool Verify(string suiteRoot, string expect, out SuiteRevision suite)
+    /// <remarks>
+    /// <b>The digest is always computed over every file this shard found; only where a file's BYTES
+    /// come from can be answered by a cache.</b> <see cref="Test262DigestCache"/> states what a
+    /// caller offering one has to have done first and why the reading it replaces is a reading of
+    /// this run rather than of this process.
+    /// </remarks>
+    private static bool Verify(
+        string suiteRoot,
+        string expect,
+        string? digestCache,
+        out SuiteRevision suite,
+        out RetainedSuitePin pin)
     {
         suite = new SuiteRevision("test262", string.Empty);
+        pin = null!;
         var retained = RetainedSuitePin.Read(expect, out var complaints);
 
         foreach (var complaint in complaints)
@@ -387,7 +437,10 @@ internal static class Test262Command
             return false;
         }
 
-        var files = Suite.Files(suiteRoot);
+        var files = Test262DigestCache.Files(
+            suiteRoot, digestCache, retained.ContentDigest, out var note);
+
+        Console.WriteLine("suite digest " + note);
         var disagreements = retained.Disagrees(Suite.Digest(files), files.Count);
 
         foreach (var complaint in disagreements)
@@ -405,6 +458,7 @@ internal static class Test262Command
 
         Console.WriteLine("retained pin " + retained.Describe());
         suite = retained.AsRevision();
+        pin = retained;
         return true;
     }
 

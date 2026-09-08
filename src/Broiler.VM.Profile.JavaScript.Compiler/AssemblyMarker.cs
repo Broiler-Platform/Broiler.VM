@@ -22,9 +22,17 @@ namespace Broiler.VM.Profile.JavaScript.Compiler;
 /// </summary>
 /// <remarks>
 /// <para>
-/// JS-0 creates project shells and no product code. No tokenizer, no syntax tree, no static
-/// semantics and no lowering exist here; JS-1 writes a hand lowering for the slice manifest and
-/// JS-3b writes the general one.
+/// This assembly holds the tokenizer, the syntax tree, the static semantics and the lowering for
+/// the slice, wide and numeric manifests, together with the x86-64 and arm64 machine-code backends
+/// that attach at the finished bytecode. JS-1 wrote the hand lowering for the slice manifest and
+/// JS-3b wrote the general one.
+/// <i>(Corrected 2026-09-08. This paragraph read "JS-0 creates project shells and no product code.
+/// No tokenizer, no syntax tree, no static semantics and no lowering exist here; JS-1 writes a hand
+/// lowering for the slice manifest and JS-3b writes the general one." All four absences were true
+/// at JS-0 and none has been true since JS-3b; describing this assembly as a shell understates the
+/// component that compiles the whole wide surface and emits machine code, which this repository
+/// treats as the same defect as overstating one. The superseded reading is quoted rather than
+/// deleted so the chain stays readable.)</i>
 /// </para>
 /// <para>
 /// This assembly is a sibling of the profile and never a part of it. A composition that executes

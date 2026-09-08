@@ -1,0 +1,37 @@
+// A WITNESS INPUT AND NOT A SOURCE FILE. Stored with a .witness extension so that no compilation
+// includes it, and read by rule X1 at a path outside the arming path so that the rule can be
+// watched rejecting a second place that maps memory.
+//
+// THIS IS THE SHAPE THE DEFECT ACTUALLY TAKES. Nobody adds a second arming path on purpose; a
+// backend acquires one because the code that needs a page is not the code that owns the mapping,
+// and copying four imports is quicker than routing a call. Both halves are written here, because
+// an author who reaches for one platform's spelling reaches for the other's on the next machine,
+// and a rule that knew only Win32 would clear a Unix-shaped copy.
+
+namespace Broiler.VM.Profile.JavaScript.Compiler;
+
+internal static unsafe partial class JsBackendPage
+{
+    private const uint PageExecuteRead = 0x20;
+
+    private const int ProtReadExecute = 0x1 | 0x4;
+
+    internal static bool ArmOnWindows(void* at, nuint bytes)
+    {
+        uint previous;
+
+        return VirtualProtect(at, bytes, PageExecuteRead, &previous);
+    }
+
+    internal static bool ArmOnUnix(void* at, nuint bytes) =>
+        mprotect(at, bytes, ProtReadExecute) == 0;
+
+    [System.Runtime.InteropServices.LibraryImport("kernel32.dll", SetLastError = true)]
+    [return: System.Runtime.InteropServices.MarshalAs(
+        System.Runtime.InteropServices.UnmanagedType.Bool)]
+    private static partial bool VirtualProtect(
+        void* address, nuint size, uint protect, uint* previous);
+
+    [System.Runtime.InteropServices.LibraryImport("libc", SetLastError = true)]
+    private static partial int mprotect(void* address, nuint length, int protect);
+}

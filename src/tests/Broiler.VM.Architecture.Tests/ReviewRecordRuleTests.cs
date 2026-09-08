@@ -975,7 +975,41 @@ public sealed class ReviewRecordRuleTests
         // reason every product file is and for one of its own: it decides how much stack every
         // walk in the front end gets, so a review that did not read it would be a review of walks
         // whose budget it never saw.
-        Assert.Equal(122, AssuranceSources.Files.Count);
+        //
+        // The WebAssembly profile's are fourteen. Four of them are the boundary the second profile
+        // family came under review with: an assembly marker, an identity with its descriptor, a
+        // verifier and an executor. Nine are its decoder - its own variable-length integer readers,
+        // the format vocabulary, the type and opcode vocabularies, the strict UTF-8 rule, the
+        // metering adapter, the diagnostic registry, the decoded module and the section loop. The
+        // fourteenth is its validation pass, and it is a file of its own for the reason the two
+        // phases are two passes: it walks the module the section loop produced rather than the bytes
+        // that loop read, and a reader checking it against the specification's validation appendix
+        // should not have to read a decoder to do it. They are covered on the same terms as every
+        // other product file, because coverage follows the product partition rather than how much a
+        // file does.
+        //
+        // THE NINE THAT JOINED THEM ARE THE NATIVE OUTPUT FORM, AND THEY ARE COUNTED HERE FOR A
+        // REASON THIS ROW SHOULD STATE PLAINLY: they are the only files in the product that make
+        // memory executable or write a byte of machine code, so a review record that did not cover
+        // them would be a record that covered everything except the part a reader would most want
+        // read. Three of them are the format's - the frame emitted code is called with, the numeric
+        // manifest that makes a whole-artifact form possible, and the emitter seam both a compiler
+        // and a verifier reach. Four more are the lowering's second exit: an encoder, a
+        // calling-convention table, a static walk of one code unit and the emitter itself, once per
+        // instruction set. The rest are the profile's: the one place that maps a page and arms it,
+        // its two platform halves, the executor arm that calls into an armed one, and the probe the
+        // calling-convention obligations are held by. Every one of them is covered on the same terms
+        // as every other product file.
+        //
+        // TWO MORE JOINED THEM WITH THE TEMPLATE-CLOSURE SCAN, and they are in the format assembly
+        // rather than beside either encoder because that is what makes the scan possible at all: a
+        // closed table of the instruction templates the backends emit, and the pass that decodes an
+        // emitted payload against it. A compiler and an executor must agree about what a payload is
+        // and neither may depend on the other, so the enumeration both answer to is in the assembly
+        // both already reference. They are covered on the same terms as every other product file,
+        // and the record says of them what it says of the other nine: nothing here has been read by
+        // a human.
+        Assert.Equal(162, AssuranceSources.Files.Count);
         Assert.All(
             AssuranceSources.Files,
             static file => Assert.Contains(

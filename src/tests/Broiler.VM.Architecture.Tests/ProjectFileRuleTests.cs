@@ -358,15 +358,20 @@ public sealed class ProjectFileRuleTests
     {
         Assert.Empty(Sweep(ArchitectureRules.N4));
 
-        // The rule has real subjects: three family projects in the graph - the format, the profile
-        // and the lowering - none of them packable. The two JavaScript composition roots are NOT
-        // family projects and that is deliberate: they are named Broiler.VM.Composition.JavaScript.*
-        // rather than Broiler.VM.Profile.JavaScript.Composition.*, because the second shape makes
+        // The rule has real subjects, and since WA-0 they come from two families: the JavaScript
+        // format, profile and lowering, plus the WebAssembly profile, which is one project rather
+        // than three because that family has no format pivot and no lowering. None of the four is
+        // packable. THE RULE ITSELF NEEDED NO EDIT for the second family, because it is written
+        // over the language segment rather than over an assembly name - which is the property this
+        // count is here to keep honest: a literal of three would have gone on passing while saying
+        // nothing about the new family. The composition roots of both families are NOT family
+        // projects and that is deliberate: they are named Broiler.VM.Composition.<Language>.*
+        // rather than Broiler.VM.Profile.<Language>.Composition.*, because the second shape makes
         // a composition root indistinguishable from a profile assembly to every rule that
         // identifies one by prefix - A8 fired on it, correctly, when it was tried. A12 and the
         // composition register hold the roots instead.
         Assert.Equal(
-            3,
+            4,
             ComponentGraph.Projects.Count(project =>
                 ArchitectureRules.ProfileFamily(project.AssemblyName) is not null));
 

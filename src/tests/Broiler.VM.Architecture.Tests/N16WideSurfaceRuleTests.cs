@@ -45,9 +45,20 @@ public sealed class N16WideSurfaceRuleTests
     private const string SecondPassPath =
         "src/Broiler.VM.Profile.JavaScript/JsVerifier.cs";
 
-    /// <summary>The descriptor declares both manifests and a range that spans both versions.</summary>
+    /// <summary>The descriptor declares every manifest and a range that spans both versions.</summary>
+    /// <remarks>
+    /// <b>TWO FORMAT VERSIONS AND THREE MANIFESTS, WHICH IS NOT A CONTRADICTION AND IS WORTH
+    /// SAYING WHY.</b> The rule this test holds is that a format version is bound to the feature
+    /// manifest it is defined against, so that a payload announcing one version's manifest under
+    /// the other's version is refused rather than read by a pass written for a surface it does not
+    /// have. Version 2 is defined against <c>broiler.javascript.wide</c> and against
+    /// <c>broiler.javascript.numeric</c>, which is a NARROWING of it: the same sections, the same
+    /// instruction encoding, the same verifier, and a smaller language behind it. A narrowing needs
+    /// no format version of its own, and minting one would have minted the second verifier this
+    /// rule exists to keep out.
+    /// </remarks>
     [Fact]
-    public void N16_Two_Versions_And_Two_Manifests_Are_Declared_Together()
+    public void N16_Two_Versions_And_Three_Manifests_Are_Declared_Together()
     {
         var text = AssuranceSources.File(DescriptorPath).Text;
 
@@ -62,15 +73,21 @@ public sealed class N16WideSurfaceRuleTests
             System.StringComparison.Ordinal);
 
         Assert.Contains(
-            "ImmutableArray.Create(SliceManifest, WideManifest)",
+            "VmFeatureManifestId.Parse(Format.JsNumericManifest.ManifestId)",
             text,
             System.StringComparison.Ordinal);
 
-        // AND THE OPTIONAL SURFACES ARE ADDED TO THAT PAIR RATHER THAN BAKED INTO IT. An artifact
-        // still names one of the two manifests in its header; a surface is something it declares
+        Assert.Contains(
+            "ImmutableArray.Create(SliceManifest, WideManifest, NumericManifest)",
+            text,
+            System.StringComparison.Ordinal);
+
+        // AND THE OPTIONAL SURFACES ARE ADDED TO THAT SET RATHER THAN BAKED INTO IT. An artifact
+        // still names one of the three manifests in its header; a surface is something it declares
         // beside that, and a composition admitting none is a composition whose accepted set is
-        // exactly the pair above. A literal that listed the surfaces here would make every
-        // composition admit them.
+        // exactly the three above. A literal that listed the surfaces here would make every
+        // composition admit them - including the native surface, which is the one whose whole
+        // purpose is that a composition can refuse it.
         Assert.Contains(
             "accepted = accepted.Add(VmFeatureManifestId.Parse(surface))",
             text,
@@ -178,8 +195,14 @@ public sealed class N16WideSurfaceRuleTests
         // the optional surfaces the composition admitted - which the second pass refuses an
         // artifact for declaring outside. Both are arguments of the one verifier object, because a
         // second object would be a second answer to the same question.
+        //
+        // A THIRD ARGUMENT JOINED THEM AND IT IS AN EMITTER, AND THE PREFIX IS MATCHED RATHER THAN
+        // THE WHOLE CALL SO THAT THIS ROW STAYS ABOUT WHAT IT IS ABOUT. What this clause pins is
+        // that the two manifests and the admitted surfaces reach ONE verifier object; whether that
+        // object also holds the emitter a composition may re-emit a native payload with is a
+        // different question, asked where re-emission is.
         Assert.Contains(
-            "new JavaScriptVerifier(Id, SliceManifest, admittedSurfaces)",
+            "new JavaScriptVerifier(Id, SliceManifest, admittedSurfaces",
             AssuranceSources.File(DescriptorPath).Text,
             System.StringComparison.Ordinal);
 

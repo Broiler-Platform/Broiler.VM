@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   21
-// Annotated:        21/21
-// Exempt:           10
-// Human-reviewed:   0/21
+// Relevant units:   22
+// Annotated:        22/22
+// Exempt:           12
+// Human-reviewed:   0/22
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         7/7
+// Criteria:         8/8
 // Resource impact:  3/10 max
-// Unverified:       21
+// Unverified:       22
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -110,6 +110,39 @@ public static class JavaScriptProfile
         VmFeatureManifestId.Parse("broiler.javascript.wide");
 
     /// <summary>
+    /// The numeric feature manifest: the subset of the language a whole artifact can be compiled
+    /// from.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A THIRD MANIFEST AND NOT A FOURTH SURFACE, BECAUSE IT GIVES LESS RATHER THAN MORE.</b> An
+    /// optional surface is a declaration an artifact makes BESIDE its manifest to reach something
+    /// the manifest does not give it; this identity is a NARROWING - Number values, the arithmetic,
+    /// comparison, bitwise and unary operators, bindings of numbers, the ordinary statements, and
+    /// functions of numbers called by name - and a narrowing cannot be spelled as an addition.
+    /// </para>
+    /// <para>
+    /// <b>It shares format version 2 with <see cref="WideManifest"/>, and one verifier reads
+    /// both.</b> The bytecode is the same bytecode in the same sections; what differs is which
+    /// source the front end will lower. Minting a format version for it would have minted a second
+    /// verifier, which this profile does not do.
+    /// </para>
+    /// <para>
+    /// <b>WHY IT EXISTS AT ALL: it is what makes a form other than bytecode a WHOLE-ARTIFACT
+    /// form.</b> This profile's non-goals fix an artifact's form when it is compiled and pin it
+    /// when it is verified - one executor, one form per handle, no promotion - so a form that
+    /// compiled some units and interpreted the rest is refused however it is spelled. A language
+    /// every program of which is compilable in whole is the only shape that rule admits, and this
+    /// is that language. The cost is stated where the manifest is defined: what it admits is small
+    /// and it is not JavaScript.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=F84EE9
+    // Broiler-Human:        PENDING
+    public static VmFeatureManifestId NumericManifest { get; } =
+        VmFeatureManifestId.Parse(Format.JsNumericManifest.ManifestId);
+
+    /// <summary>
     /// The binary surface: <c>ArrayBuffer</c>, <c>DataView</c> and the typed array constructors.
     /// </summary>
     /// <remarks>
@@ -168,6 +201,32 @@ public static class JavaScriptProfile
     // Broiler-Human:        PENDING
     public static VmFeatureManifestId ModulesManifest { get; } =
         VmFeatureManifestId.Parse(Format.JsSurfaces.Modules);
+
+    /// <summary>
+    /// The native surface: the artifact carries emitted machine code beside its bytecode.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>What a composition declines by not naming this one is EXECUTABLE MEMORY.</b> Whether this
+    /// process may make a page executable is a decision about the host and its policy, not about
+    /// the language, and a composition with no answer to it has to be able to refuse such an
+    /// artifact outright rather than load it and rely on nothing calling into the bytes. Declined,
+    /// the artifact is refused where the surfaces are read - at verification, before any of its
+    /// instructions are reachable - which is the same answer a declined module or binary surface
+    /// gets.
+    /// </para>
+    /// <para>
+    /// <b>Admitting it is not a claim that this build can run the bytes, and this build cannot.</b>
+    /// No composition here maps a page, arms one or calls into emitted code, and no backend encodes
+    /// an instruction of any architecture. Refusing a payload because an image has no backend for
+    /// the architecture it names is a second refusal that does not exist yet; this surface is the
+    /// question about executable memory, asked before there is anything to run.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=DDC799
+    // Broiler-Human:        PENDING
+    public static VmFeatureManifestId NativeManifest { get; } =
+        VmFeatureManifestId.Parse(Format.JsSurfaces.Native);
 
     /// <summary>The kind ID stamped on a completion value.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=C9902C
@@ -360,6 +419,43 @@ public static class JavaScriptProfile
         return Build(names.ToImmutable());
     }
 
+    /// <summary>
+    /// A descriptor whose verifier can RE-EMIT a native payload and require the bytes to match.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>IT IS A SEPARATE DOOR BECAUSE NOT EVERY IMAGE HAS AN EMITTER, AND THE DIFFERENCE IS WHAT
+    /// A READER OF THE ARTIFACT IS ENTITLED TO BELIEVE.</b> An image built with one can recompile
+    /// the bytecode the artifact also carries and compare the result to the emitted bytes it
+    /// carries, which is the only sense in which machine code is VERIFIABLE at all: a wrong
+    /// backend produces a well-framed sequence of the wrong instructions, and no framing check ever
+    /// written catches that. An image built without one checks the framing and no more, and what it
+    /// is then trusting is PROVENANCE - that whoever produced the artifact ran a backend it has no
+    /// way to re-run - rather than verification. That distinction belongs in what a composition
+    /// tells its users and is stated here so that the two doors cannot be confused.
+    /// </para>
+    /// <para>
+    /// <b>The emitter is a composition's choice and is fixed when the descriptor is registered,</b>
+    /// exactly as the admitted surfaces are, and for the same reason: a verifier that could be
+    /// asked twice could be given two answers.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=A32D4C
+    // Broiler-Falsified-If: a descriptor built here admits a native payload whose bytes its emitter does not reproduce
+    // Broiler-Human:        PENDING
+    public static VmProfileDescriptor DescriptorReEmittingWith(
+        Format.IJsNativeEmitter emitter, params VmFeatureManifestId[] surfaces)
+    {
+        var names = ImmutableArray.CreateBuilder<string>();
+
+        foreach (var surface in surfaces)
+        {
+            names.Add(surface.ToString());
+        }
+
+        return Build(names.ToImmutable(), emitter);
+    }
+
     /// <summary>Every optional surface this build implements.</summary>
     /// <remarks>
     /// <b>Computed on each read rather than initialised once</b>, because a static field is
@@ -431,14 +527,23 @@ public static class JavaScriptProfile
     /// drift between a record and a construction, and this paragraph is what closes it.
     /// </para>
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=864F45
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=8F3F86
     // Broiler-Falsified-If: a row here disagrees with decision JSD-0004 or JSD-0008 without a dated record of the correction
     // Broiler-Human:        PENDING
-    private static VmProfileDescriptor Build(ImmutableArray<string> admittedSurfaces)
+    private static VmProfileDescriptor Build(
+        ImmutableArray<string> admittedSurfaces, Format.IJsNativeEmitter? emitter = null)
     {
         VmDiagnosticsIdentity.TryCreate(Id, "broiler.javascript.diagnostics", out var diagnostics);
 
-        var accepted = ImmutableArray.Create(SliceManifest, WideManifest);
+        // THE NUMERIC MANIFEST IS ACCEPTED UNCONDITIONALLY AND THE NATIVE SURFACE IS NOT, because
+        // they answer different questions. The numeric manifest is a NARROWING of the wide surface
+        // - every program it admits is a program the wide surface already admitted - so a
+        // composition that admits the wide manifest has already admitted everything a numeric
+        // artifact can do, and declining it would be declining a subset of what is already
+        // allowed. The native surface is the opposite: it is a request to make memory executable,
+        // which is a capability the wide surface never asked for, so it travels through the
+        // admitted-surface list where a composition can refuse it.
+        var accepted = ImmutableArray.Create(SliceManifest, WideManifest, NumericManifest);
 
         foreach (var surface in admittedSurfaces)
         {
@@ -452,7 +557,7 @@ public static class JavaScriptProfile
             supportedFormatVersions: new VmFormatVersionRange(
                 JavaScriptFormat.MinimumFormatVersion, Format.JsFormat.FormatVersion),
             acceptedFeatureManifests: accepted,
-            verifier: new JavaScriptVerifier(Id, SliceManifest, admittedSurfaces),
+            verifier: new JavaScriptVerifier(Id, SliceManifest, admittedSurfaces, emitter),
             executorFactory: environment => new JavaScriptExecutor(Id, environment),
             artifactRepresentationKind: VmArtifactRepresentationKind.Decoded,
             artifactLifetimeKind: VmArtifactLifetimeKind.Managed,

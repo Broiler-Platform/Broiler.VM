@@ -57,11 +57,29 @@ internal enum Test262Verdict
 /// <param name="Dimension">
 /// The budget dimension an <see cref="Test262Verdict.Exhausted"/> verdict spent, empty otherwise.
 /// </param>
+/// <param name="Kind">
+/// The class a <see cref="Test262Verdict.Failed"/> verdict falls in, from
+/// <see cref="Test262Failures"/>'s closed vocabulary; empty for every other verdict.
+/// </param>
+/// <param name="Features">
+/// The <c>features</c> flags the file's own frontmatter declares, comma-separated and possibly
+/// empty. The file's and not the variant's: two variants of one file declare the same flags.
+/// </param>
 /// <remarks>
+/// <para>
 /// <b>The family and the dimension are fields rather than prose inside the detail.</b> Both are
 /// aggregated into a table at the end of a run and summed across shards by the merge; recovering
 /// them by parsing a sentence would make the table a property of how a message happens to be
 /// punctuated.
+/// </para>
+/// <para>
+/// <b>The kind and the features are here for exactly that reason, added 2026-09-07.</b> A whole run
+/// fails tens of thousands of variants and the failed column named none of them, so the one question
+/// a reader has - which repair moves this number - could only be answered by reading sentences out
+/// of a hundred-megabyte transcript. Both new fields are decided where the outcome is decided and
+/// carried through the report and the merge, so the classification a reader acts on is the harness's
+/// own record rather than a second reading of its prose.
+/// </para>
 /// </remarks>
 internal sealed record Test262Outcome(
     string Path,
@@ -69,7 +87,9 @@ internal sealed record Test262Outcome(
     Test262Verdict Verdict,
     string Detail,
     string Family = "",
-    string Dimension = "");
+    string Dimension = "",
+    string Kind = "",
+    string Features = "");
 
 /// <summary>
 /// Runs a real test262 checkout under the feature manifest the run names.
@@ -164,7 +184,8 @@ internal static class Test262Run
                     [
                         new Test262Outcome(
                             relativePath, "-", Test262Verdict.Skipped,
-                            "the test claims the proposed feature `" + feature + "`"),
+                            "the test claims the proposed feature `" + feature + "`",
+                            Features: string.Join(",", frontmatter.Features)),
                     ];
                 }
             }
@@ -176,7 +197,8 @@ internal static class Test262Run
             [
                 new Test262Outcome(
                     relativePath, "-", Test262Verdict.Skipped,
-                    "this agent's [[CanBlock]] is true"),
+                    "this agent's [[CanBlock]] is true",
+                    Features: string.Join(",", frontmatter.Features)),
             ];
         }
 
@@ -207,6 +229,13 @@ internal static class Test262Run
             variants.Add("sloppy");
         }
 
+        // THE FILE'S DECLARED FEATURES RIDE ALONG ON EVERY OUTCOME IT PRODUCES, and they are
+        // attached here rather than at each of the dozen places inside a variant where a verdict is
+        // reached. They are a property of the FILE - two variants of one file declare the same
+        // flags, which is why the field is documented as the file's - so one assignment where the
+        // variants are collected covers every verdict a variant can reach, and there is no path
+        // through which an outcome escapes without them.
+        var declared = string.Join(",", frontmatter.Features);
         var outcomes = new List<Test262Outcome>(variants.Count);
 
         foreach (var variant in variants)
@@ -214,7 +243,10 @@ internal static class Test262Run
             outcomes.Add(
                 RunVariant(
                     suiteRoot, relativePath, text, frontmatter, flags, variant, manifest, fuel,
-                    wallClock));
+                    wallClock) with
+                {
+                    Features = declared,
+                });
         }
 
         return outcomes;
@@ -275,7 +307,8 @@ internal static class Test262Run
                 if (graph.Failure.Length != 0)
                 {
                     return new Test262Outcome(
-                        relativePath, variant, Test262Verdict.Failed, graph.Failure);
+                        relativePath, variant, Test262Verdict.Failed, graph.Failure,
+                        Kind: Test262Failures.ModuleGraphUnreadable);
                 }
 
                 modules.AddRange(graph.Modules);
@@ -402,7 +435,8 @@ internal static class Test262Run
 
         return new Test262Outcome(
             relativePath, variant, Test262Verdict.Failed,
-            "the front end refused the source: " + (first is null ? "no diagnostic" : first.ToString()));
+            "the front end refused the source: " + (first is null ? "no diagnostic" : first.ToString()),
+            Kind: Test262Failures.FrontEndRefused);
     }
 
     /// <summary>One variant that ran out of an allowance, with the dimension it ran out of.</summary>
@@ -479,7 +513,8 @@ internal static class Test262Run
             return new Test262Outcome(
                 relativePath, variant, Test262Verdict.Failed,
                 $"the verifier refused an artifact this runner produced: {verified.Outcome}/" +
-                    $"{verified.Reason} {verified.Diagnostics.ProfileDiagnosticCode.ToString(System.Globalization.CultureInfo.InvariantCulture)}");
+                    $"{verified.Reason} {verified.Diagnostics.ProfileDiagnosticCode.ToString(System.Globalization.CultureInfo.InvariantCulture)}",
+                Kind: Test262Failures.VerifierRefused);
         }
 
         var instantiated = runtime.Instantiate(handle, CancellationToken.None);
@@ -493,7 +528,8 @@ internal static class Test262Run
         {
             return new Test262Outcome(
                 relativePath, variant, Test262Verdict.Failed,
-                $"the artifact would not instantiate: {instantiated.Outcome}/{instantiated.Reason}");
+                $"the artifact would not instantiate: {instantiated.Outcome}/{instantiated.Reason}",
+                Kind: Test262Failures.WouldNotInstantiate);
         }
 
         // A MODULE GRAPH IS ONE MORE INVOCATION AFTER THE HARNESS SCRIPTS, and it is the test.
@@ -527,7 +563,8 @@ internal static class Test262Run
                 {
                     return new Test262Outcome(
                         relativePath, variant, Test262Verdict.Failed,
-                        "a harness file threw: " + message);
+                        "a harness file threw: " + message,
+                        Kind: Test262Failures.HarnessThrew(errorName));
                 }
 
                 if (negative is not null &&
@@ -538,7 +575,8 @@ internal static class Test262Run
                             relativePath, variant, Test262Verdict.Passed, "threw " + errorName)
                         : new Test262Outcome(
                             relativePath, variant, Test262Verdict.Failed,
-                            "expected " + negative.Type + " and got " + message);
+                            "expected " + negative.Type + " and got " + message,
+                            Kind: Test262Failures.NegativeWrongError(negative.Type, errorName));
                 }
 
                 if (negative is not null)
@@ -546,18 +584,21 @@ internal static class Test262Run
                     return new Test262Outcome(
                         relativePath, variant, Test262Verdict.Failed,
                         "expected a " + negative.Phase + "-phase " + negative.Type +
-                            " and it threw at run time: " + message);
+                            " and it threw at run time: " + message,
+                        Kind: Test262Failures.NegativeWrongPhase(negative.Phase));
                 }
 
                 return new Test262Outcome(
-                    relativePath, variant, Test262Verdict.Failed, "uncaught " + message);
+                    relativePath, variant, Test262Verdict.Failed, "uncaught " + message,
+                    Kind: Test262Failures.Uncaught(errorName));
             }
 
             if (!Completed(in result, manifest))
             {
                 return new Test262Outcome(
                     relativePath, variant, Test262Verdict.Failed,
-                    $"the invocation answered {result.Outcome}/{result.Reason} and carried no payload");
+                    $"the invocation answered {result.Outcome}/{result.Reason} and carried no payload",
+                    Kind: Test262Failures.NoPayload);
             }
         }
 
@@ -582,10 +623,11 @@ internal static class Test262Run
             // A JOB THAT THREW IS THE PROGRAM THROWING, and it is reported as such rather than as a
             // missing completion: an unhandled rejection reaching the drain is what a test asserting
             // one is about, and calling it "printed no completion" would name the symptom.
-            if (TryUncaught(in drained, manifest, out _, out var thrown))
+            if (TryUncaught(in drained, manifest, out var jobError, out var thrown))
             {
                 return new Test262Outcome(
-                    relativePath, variant, Test262Verdict.Failed, "a job threw: " + thrown);
+                    relativePath, variant, Test262Verdict.Failed, "a job threw: " + thrown,
+                    Kind: Test262Failures.JobThrew(jobError));
             }
         }
 
@@ -593,7 +635,8 @@ internal static class Test262Run
         {
             return new Test262Outcome(
                 relativePath, variant, Test262Verdict.Failed,
-                "expected a " + negative.Phase + "-phase " + negative.Type + " and nothing was thrown");
+                "expected a " + negative.Phase + "-phase " + negative.Type + " and nothing was thrown",
+                Kind: Test262Failures.NegativeThrewNothing(negative.Phase, negative.Type));
         }
 
         if (flags.Contains("async"))
@@ -608,13 +651,16 @@ internal static class Test262Run
 
                 if (line.StartsWith(AsyncFailure, StringComparison.Ordinal))
                 {
-                    return new Test262Outcome(relativePath, variant, Test262Verdict.Failed, line);
+                    return new Test262Outcome(
+                        relativePath, variant, Test262Verdict.Failed, line,
+                        Kind: Test262Failures.AsyncReported);
                 }
             }
 
             return new Test262Outcome(
                 relativePath, variant, Test262Verdict.Failed,
-                "an asynchronous test printed no completion, and the job queue is drained");
+                "an asynchronous test printed no completion, and the job queue is drained",
+                Kind: Test262Failures.AsyncSilent);
         }
 
         return new Test262Outcome(relativePath, variant, Test262Verdict.Passed, string.Empty);

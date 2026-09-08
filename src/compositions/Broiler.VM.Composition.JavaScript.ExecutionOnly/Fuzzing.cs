@@ -341,7 +341,7 @@ internal sealed record FuzzObservation(
     string ExhaustedDimension);
 
 /// <summary>
-/// Roadmap section 7's second discipline, over the two of its four surfaces that exist.
+/// Roadmap section 7's second discipline, over two of its four surfaces.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -350,10 +350,18 @@ internal sealed record FuzzObservation(
 /// verified-but-adversarial artifacts. **This file covers the verifier and the executor.** The
 /// source tokenizer and parser are covered by a session of their own in the slice-compiler root,
 /// which is where they have to be: this image carries no lowering, so a session over source could
-/// not run here at all. The regular-expression matcher does not exist. **This paragraph said
+/// not run here at all. The regular-expression matcher is covered by <see cref="RegExpFuzzing"/>
+/// beside this file. **This paragraph said
 /// "two of the four exist at this milestone" until 2026-09-03, and by then three did**
 /// *(corrected: JSC-69)* - the source front end landed at JS-3b and was fuzzed by nothing for as
-/// long as this sentence went unrevisited.
+/// long as this sentence went unrevisited. **It then said "the regular-expression matcher does not
+/// exist" until 2026-09-08, and by then the matcher had landed and was being fuzzed by
+/// <see cref="RegExpFuzzing"/> in this same directory** - the same sentence going unrevisited a
+/// second time, for the fourth surface instead of the second. The matcher is
+/// <c>JsRegExpMatcher</c> in <c>Broiler.VM.Profile.JavaScript.Format</c>; commit 204f1e4 and
+/// bundle JS-9-005 are what made the sentence false, and
+/// <c>src/Broiler.VM.Profile.JavaScript/docs/roadmap.corrections.md</c> is where the JSC number
+/// for this second correction belongs.
 /// </para>
 /// <para>
 /// <b>It is answer-guided mutation, and the adjective is load-bearing.</b> A mutant's coverage
@@ -385,8 +393,14 @@ internal static class Fuzzing
     /// <summary>How many bytes of allocation one mutant byte may authorise.</summary>
     /// <remarks>
     /// The same bound the ordering checks hold the retained corpus to, applied to every mutant.
-    /// This is the part a hand-written corpus cannot do: sixty entries check the ordering on sixty
-    /// shapes, and a session checks it on every shape the mutator reaches.
+    /// This is the part a hand-written corpus cannot do: the retained entries check the ordering on
+    /// as many shapes as somebody wrote down - 128 of them at this checkout - and a session checks
+    /// it on every shape the mutator reaches. <i>(Corrected 2026-09-08: this read "sixty entries
+    /// check the ordering on sixty shapes", a figure that went stale as the corpus grew. The count
+    /// is named rather than dropped so that the next reader can check it against
+    /// <c>src/tests/corpus/js-1/corpus.manifest</c>, and the argument does not turn on it. Corrected
+    /// again on 2026-09-08, from "122 of them at this checkout", when the six template-closure
+    /// entries were retained.)</i>
     /// </remarks>
     private const ulong AllocationBytesPerArtifactByte = 64;
 
@@ -396,9 +410,11 @@ internal static class Fuzzing
     /// unbounded pool makes a long session's draw distribution a function of how many answers it
     /// happened to discover, so two sessions of different lengths over the same seed would explore
     /// differently for reasons neither could state. The figure is a stated ceiling and not a
-    /// measurement - the retained corpus is sixty-six entries and this profile publishes forty
-    /// diagnostic codes, so a pool that reaches it has kept more distinct answers than the
+    /// measurement - the retained corpus is 128 entries and this profile publishes 66 diagnostic
+    /// codes, so a pool that reaches it has kept more distinct answers than the
     /// vocabulary has members and the mutator is drawing from findings rather than from seeds.
+    /// <i>(Corrected 2026-09-08: this read "122 entries and this profile publishes 65 diagnostic
+    /// codes", both of which the template-closure scan and its retained entries moved.)</i>
     /// </remarks>
     private const int PoolCeiling = 512;
 

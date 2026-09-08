@@ -711,6 +711,19 @@ The rules the verified graph must retain, whatever the names become:
   a decision with a measured closure difference attached, taken at the milestone that mints the
   manifest and not before.
 
+**The MVP creates exactly three projects, and stating the count is what makes a fourth visible**
+*(amended 2026-09-07)*. Under [the MVP programme](../../../docs/mvp.md) the set is:
+`Broiler.VM.Profile.WebAssembly`, whose Broiler.VM reference set is exactly the two core assemblies;
+`Broiler.VM.Composition.WebAssembly.Execution` under `src/compositions/`, referencing the three core
+projects and that one profile, which is the shape the composition rule admits and the only shape it
+admits; and one harness root under `src/compositions/` carrying the binary corpus encoder and the
+corpus store, never advertised and never packable. **No format sibling is created**, and the reason
+is this section's own rather than the MVP's: there is no compiler here, so there is nothing for a
+pivot to hold apart, and a format assembly would be an assembly created to shorten a file. The
+second product assembly the previous bullet keeps available is not taken either, because both of its
+named candidates are surfaces the MVP does not mint. **None of the three exists today**; the
+[ledger](roadmap.status.md) is the authority for that, and a project set named in a plan is a plan.
+
 ---
 
 ## 6. Feature manifests: how the language surface is admitted
@@ -770,6 +783,7 @@ WA-0 fixes this table; later milestones may extend it but may not silently widen
 | Manifest | Admits | Earliest milestone |
 |---|---|---|
 | `broiler.webassembly.slice` | One type, one function, one export, integer arithmetic, `local.get`/`local.set`, `block`/`loop`/`br`/`br_if`/`return`, `unreachable`. No memory, no table, no global, no import, no float. **Deliberately not a module anyone would ship** — its purpose is to close the whole contract loop against a surface small enough to hold in the head. | WA-1 |
+| `broiler.webassembly.numeric1` *(allocated 2026-09-07)* | The MVP's surface, which is `…core1` minus everything that needs a second module or an initialiser: the full numeric instruction set for `i32`, `i64`, `f32` and `f64` including every comparison, conversion and reinterpretation; `drop` and `select`; `local.get`, `local.set`, `local.tee`, `global.get` and `global.set`; structured control flow with `block`, `loop`, `if`/`else`, `br`, `br_if`, `br_table`, `return`, `unreachable` and `nop`, **at the empty block type and the single-value block type only**; one linear memory with its loads and stores, `memory.size` and `memory.grow`; one table, reached by `call_indirect` and by nothing else; `call`; exports; and custom sections ignored correctly. **No import, no start function, no element or data segment, no multi-value block type, no sign-extension operator, no saturating conversion, no bulk memory or table instruction, no reference instruction, no vector and no atomic.** | WA-5 |
 | `broiler.webassembly.core1` | The original standardised surface: the full numeric instruction set including floats, structured control flow, `call` and `call_indirect`, one linear memory with its loads and stores and `memory.grow`, one table, globals, imports and exports of all four kinds, the start function, element and data segments, and custom sections ignored correctly. | WA-6 opens it; WA-7 completes it with imports |
 | `broiler.webassembly.core2` | The second standardised group **minus vectors**: sign-extension operators, non-trapping float-to-integer conversion, multi-value blocks and results, reference types with `funcref` and `externref`, bulk memory and table instructions, and the data count section. | WA-8 |
 | `broiler.webassembly.vector` | The 128-bit vector instruction family. Its own manifest because it is, by instruction count, comparable to everything above it combined, and because an execution-only image that never needs it should be able to decline it truthfully. | WA-8, or excluded with a published failure |
@@ -784,6 +798,27 @@ WA-0 fixes this table; later milestones may extend it but may not silently widen
 **Nothing in this table is a schedule.** Its purpose is to fix the granularity at which the surface
 may grow, so that the answer to "does this engine support WebAssembly?" is always a manifest set
 with runs behind it rather than a version number.
+
+**The MVP mints two of these identities and no others, and the second is minted rather than
+borrowed** *(amended 2026-09-07)*. [The MVP programme](../../../docs/mvp.md) delivers the slice
+first and then widens to the numeric surface, so `broiler.webassembly.slice` is minted at WA-1 and
+`broiler.webassembly.numeric1` at WA-5. **`broiler.webassembly.core1` is not minted by the MVP, and
+declaring it would be exactly the mistake the three rules above exist to prevent**: `…core1` admits
+imports, the start function, and element and data segments, and the MVP delivers none of the three,
+so a module naming `…core1` and running here would have been admitted against a scope no run of
+this component covers. Minting a narrower identity costs one row of this table. Widening an
+identity to fit what was built costs the meaning of every identity beside it, and costs it
+silently.
+
+**The admission rules bind the MVP without a discount, and the first of them binds it hardest.** A
+manifest with no retained run of its own is not accepted — not accepted late, not accepted
+provisionally, and not accepted because the milestone that would have run it sits on the other side
+of a deferral. Under [the MVP programme](../../../docs/mvp.md) no milestone reaches `Accepted` at
+all, so both identities above are **minted and unaccepted** for as long as the MVP runs, and the
+support table may not describe either as supported. A descriptor may declare a manifest whose run
+has not been retained; nothing may report that the manifest is supported. **The distance between
+those two sentences is the whole of what this section is for**, and an MVP is the condition under
+which a reader is most likely to collapse it.
 
 ---
 
@@ -879,6 +914,36 @@ Three obligations follow, and each is a WA-2 gate clause rather than a note:
    its own side of a falsification has fixed its support table and left the defect standing. WA-2
    reads the record against this answer and either confirms it or files the correction with its
    owner *(corrected: WAC-24)*.
+
+**The concrete shape the disagreement takes in code, recorded because a resolution stated as a
+principle is a resolution nobody can review** *(amended 2026-09-07)*. This profile's
+variable-length layer sits directly on `TryReadByte` and provides six readers: unsigned at 32 and
+64 bits; signed at 32, 33 and 64 bits, the 33-bit form being the one block types use and the width
+that makes the second obligation above unavoidable rather than merely true; and one bounded count
+reader. Each accumulates seven bits per byte while counting bytes, and each enforces three rules
+that are separate and stay separate. **A byte budget** — the ceiling of the width divided by seven
+— which an encoding may not exceed. **The terminal byte's unused bits**, which must be zero for an
+unsigned reader and a correct sign extension for a signed one. **And padding inside the budget,
+which is accepted.** The first two failures carry distinct diagnostic codes because the suite
+distinguishes them, and the third is the case a control entry in the corpus must *pass* rather than
+merely not fail.
+
+**The bounded count reader is where obligation 1's ordering is actually re-derived**, and it does
+three things in an order that may not be rearranged: it decodes, it compares the decoded value
+against the effective declared-count ceiling, and only then does it return a value at all — so no
+caller can loop, size a buffer, or reserve capacity from a number that never passed its bound. It
+is one member rather than a rule every call site remembers, because a rule every call site
+remembers is a rule one call site forgets.
+
+**One consequence became visible only when the layer was described this concretely, and it is a
+gain in obligation rather than a loss of one.** The core's `DeclaredCountExceeded` bounded-read
+status is raised on exactly one path, inside the guarded count reader this decoder declines to
+call, so **that status is unreachable in this profile** and the decoder's status-to-outcome mapping
+carries a row that can never fire. The count-ceiling refusal that the outcome split below requires
+— `ResourceExhaustion` naming `DeclaredCount` and one scope — is therefore manufactured by this
+profile's own reader and is this profile's to get right. That is obligation 1 restated with its
+failure mode named, and the failure mode is not a wrong answer but a missing one
+*(corrected: WAC-27)*.
 
 [Section 20](#20-amendments-and-this-profiles-duty-as-the-counterweight) carries the amendment
 candidate this produces — a padding-tolerant reader in the core's binary package, parameterized by
@@ -1420,6 +1485,38 @@ declared. Four properties are fixed here:
 - **Shared memories are excluded by name**, with their manifest unallocated.
   [Section 14](#14-suspension-threads-and-what-this-profile-does-not-declare) says why.
 
+**The first of those bullets and section 12 cannot both be satisfied on the shipped contract, and
+the MVP takes a route where a deferred decision would otherwise have chosen** *(amended
+2026-09-07)*. A memory is grown through the meter, and
+[section 12](#12-traps-exhaustion-and-why-neither-is-a-process-failure) requires a refused growth to
+be guest-observable and non-terminating — the module is handed `-1`, decides what to do, and the
+operation continues. The contract offers no spelling of that: the retention report returns nothing,
+so a ceiling-class dimension cannot carry a refusal at the point of retention, and a refused charge
+at any scope latches exhaustion, so the core rewrites the completed step as resource exhaustion
+whatever this profile did with the `false` it was handed *(corrected: WAC-03)*.
+[Section 20](#20-amendments-and-this-profiles-duty-as-the-counterweight) opens an amendment for it
+and files nothing, because no local resolution exists.
+
+**Under [the MVP programme](../../../docs/mvp.md) the co-signing that would mint that amendment is
+deferred, and a deferred decision is a decision nobody took rather than one that went a particular
+way.** So the route is named here, where its consequence is, and not only in the record that defers
+it — section 5 of [the MVP programme record](../../../docs/mvp.md) carries the same route as its
+row MVP-1, which names the alternative not taken, what would settle it, and who would decide, and
+which is reversible without a correction because there is nothing decided to correct. **Growth is
+refused against this profile's own
+declared memory maximum**, which is a profile limit and not a core budget refusal, and on that arm
+the specification's answer is produced exactly: the module observes `-1`, the operation completes
+normally, and no core allowance is spent. **On the other arm — a growth a core budget would refuse
+— no such answer is available**, the step becomes `ResourceExhaustion`, and that is a deviation
+from what the specification says `memory.grow` answers.
+
+**The deviation is published rather than discovered, and publishing it is a release decision.** It
+is named in the support table as a deviation, at WA-10, which is where a release decision belongs;
+WA-5 takes the route and does not take the decision *(corrected: WAC-16)*. The row stays open in
+the [ledger](roadmap.status.md#3-open-external-dependencies) with its holder and its unblock
+condition unchanged, and an amendment minted later closes the deviation rather than ratifying it
+*(corrected: WAC-28)*.
+
 ### Tables and globals
 
 A table is a vector of references with a declared element type and declared limits; a global is one
@@ -1913,15 +2010,23 @@ co-sign it" is a counterweight answer for the record and not a decision. And the
 currently **unexecutable**: no amendment has been minted, and the minting and both co-signing roles
 are held by one person, so no co-signature would be independent. Every row here but one is filed and
 held rather than scheduled — the refusable retention member is opened, because no local resolution
-exists and WA-5 cannot choose a memory representation without it — and none is admissible until it
-names a merged or approved capability.
+exists and no memory representation this profile could choose produces the answer the specification
+requires on the arm a core budget refuses — and none is admissible until it names a merged or
+approved capability.
 
 **The one opened row is an external dependency and is written down as one.** Its holder is the
 core's contract and release owners; its unblock condition is a minted amendment carrying a
 co-signature, or a recorded refusal. Neither is something this component can schedule, and an
-unexecutable procedure is not an answer that is merely late. So an unanswered row makes WA-5
+unexecutable procedure is not an answer that is merely late. So an unanswered row would make WA-5
 **`Blocked`** rather than merely late at the moment WA-3 would otherwise let it start, recorded
-with its holder and its unblock condition — and if it
+with its holder and its unblock condition — **and under
+[the MVP programme](../../../docs/mvp.md) it does not, because that programme defers the very
+co-signing this row waits on, and
+[section 13](#13-memories-tables-globals-and-the-host-boundary) names the route WA-5 takes in its
+absence** *(amended 2026-09-07; corrected: WAC-28)*. **A route is not an answer**: the row stays
+open with the same holder and the same unblock condition, it binds what this profile may claim
+rather than what it may commit, and an amendment minted later closes the deviation rather than
+ratifying it. And if it
 is refused or never answered, **the fallback is a release decision and not a milestone one**: a
 memory whose growth refusal is not guest-observable is a published deviation from what the
 specification says `memory.grow` answers, and WA-10 names it in the support table with its

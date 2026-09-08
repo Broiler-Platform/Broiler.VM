@@ -1,0 +1,38 @@
+# broiler-js-conformance test262 floor 1
+# The whole-suite --test262 ratchet. A later run of THIS revision under THIS
+# manifest may not cross a row below. `atLeast` may not fall; `atMost` may not
+# rise. Exhaustions are deliberately not held: a spent allowance says what the
+# machine was doing, not what the engine does. A revision or manifest change
+# re-bases with --admit and retires the old rows here with their reason.
+#
+# RE-BASED BY HAND ON 2026-09-08, AND THE FACT THAT --admit COULD NOT DO IT IS
+# THE POINT. `--admit` re-bases only when the suite revision or the manifest
+# moved; neither moved here, so the ratchet answered `Regressed` and refused,
+# which is the design working. What moved is the ENGINE, deliberately: the wide
+# front end had been admitting a BigInt literal and evaluating it as a Number,
+# so `9007199254740993n` answered `9007199254740992`, and the refusal it should
+# have met was restored in JsParser.cs. Sixty variants of
+# test/language/literals/bigint alone moved from a mixture of accidental passes
+# and silent failures onto one named refusal, and 1,990 across the suite.
+#
+# THE FLOOR IS THEREFORE LOWER ON `passed` AND THAT IS NOT A REGRESSION, which
+# is exactly the claim a ratchet exists to stop anybody making casually - so it
+# is made here, in writing, with the retired rows kept below rather than
+# deleted. 319 variants that had been passing by accident stopped passing;
+# 1,671 that had been failing silently now meet a refusal naming the construct.
+# The profile's rule is that a refusal is a supported answer and a plausible
+# wrong value is not (roadmap.parity.md section 1), so a smaller honest total
+# replaced a larger dishonest one. JSC-207 carries the finding.
+#
+# A reader who wants to move `passed` back up should widen the manifest to
+# implement BigInt, not narrow the refusal.
+suite test262
+revision 46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93
+manifest broiler.javascript.wide
+atLeast files 53469
+atLeast variants 94545
+atLeast passed 70834
+atMost failed 13315
+atMost unsupported 1990
+atMost skipped 8346
+retired 2026-09-08 atLeast passed 71153, atMost failed 14986, atMost unsupported 0 - set from the whole run of 2026-09-07 taken before the BigInt literal refusal was restored in JsParser.cs; the engine moved rather than the suite, so --admit refused to re-base and this file was edited deliberately. JSC-207.

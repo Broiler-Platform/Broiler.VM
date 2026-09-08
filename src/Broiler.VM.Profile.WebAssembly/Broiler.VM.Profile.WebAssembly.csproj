@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Profile.WebAssembly</RootNamespace>
+    <AssemblyName>Broiler.VM.Profile.WebAssembly</AssemblyName>
+    <Description>The Broiler.VM WebAssembly language profile. It carries an identity, a descriptor, a decoder for the binary format, a validator, and an interpreter over the four numeric types, locals, globals, one linear memory, structured control flow, direct and indirect calls. It has no linker and admits no import, no manifest has been scored against the specification's own conformance suite, and the status ledger under docs/ is the authority for what exists.</Description>
+
+    <!-- WA-0 declares no package. Packaging is WA-10's decision and rule N4 holds the claim. -->
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <!--
+    THE REFERENCE SET IS EXACTLY TWO, AND THERE IS NO FORMAT SIBLING.
+
+    ADR 0011 obligation P1 fixes a profile's Broiler.VM-owned reference set at Abstractions and
+    Binary, and its 2026-08-31 revision admits a profile component's own siblings beside them. The
+    JavaScript profile has such a sibling because a lowering and an executor must agree on a
+    bytecode without depending on each other, and the format assembly is the pivot that keeps them
+    apart.
+
+    This profile has no pivot to hold apart. Its roadmap section 5 rejects a format assembly by
+    name: there is no compiler here, the payload is a bare WebAssembly module produced by an
+    external toolchain, and a third project would be a boundary with nothing on either side of it.
+    So the set is the two core assemblies and nothing else, and rule W1 asserts it.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+  </ItemGroup>
+
+</Project>

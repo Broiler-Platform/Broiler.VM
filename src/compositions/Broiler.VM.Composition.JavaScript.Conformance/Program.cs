@@ -9,12 +9,28 @@ namespace Broiler.VM.Composition.JavaScript.Conformance;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>An engine that grades itself is not evidence, so the first thing this program does is prove
-/// it can report a failure.</b> Every run - every shard, every time - starts with the harness's own
-/// regression suite and then with the self-check: deliberately broken fixtures whose declared
-/// verdicts the harness has to reach, and at least one control that must pass. A mismatch stops the
-/// run on an exit code of its own, before a single suite test is scored, because a shard that
-/// cannot report failure has measured nothing and its totals must not be merged.
+/// <b>An engine that grades itself is not evidence, so a run over this component's own fixture
+/// trees proves first that it can report a failure.</b> Every <c>--run</c> - every shard, every
+/// time - starts with the harness's own regression suite and then with the self-check:
+/// deliberately broken fixtures whose declared verdicts the harness has to reach, and at least one
+/// control that must pass. A mismatch stops the run on an exit code of its own, before a single
+/// suite test is scored, because a shard that cannot report failure has measured nothing and its
+/// totals must not be merged.
+/// </para>
+/// <para>
+/// <b><c>--test262</c> RUNS NEITHER OF THEM, and that is said here rather than left to be found by
+/// reading <see cref="Test262Command"/>.</b> A third-party checkout carries no <c>selfcheck/</c>
+/// directory and this mode takes no <c>--selfcheck</c>, so <c>HarnessChecks.Run</c> and
+/// <c>SelfCheck.Run</c> have exactly two call sites between them and neither is on the
+/// <c>--test262</c> path. What stands behind one of those shards is the retained pin it re-verifies
+/// for itself and whatever a caller ran separately with <c>--harness-checks</c> - which no driver
+/// in this repository does. <i>(Corrected 2026-09-08. The paragraph above read "the first thing
+/// this program does is prove it can report a failure" and "Every run - every shard, every time -
+/// starts with the harness's own regression suite and then with the self-check", unbounded, while
+/// the third paragraph of this same block brings third-party checkouts inside the remarks. Every
+/// whole-suite figure this repository cites comes from the mode that has neither gate, so the
+/// unbounded reading was the one a careful reader would have taken and the one that was
+/// wrong.)</i>
 /// </para>
 /// <para>
 /// <b>Why this is a composition root and not a test project.</b> Scoring a test means lowering it,
@@ -26,11 +42,20 @@ namespace Broiler.VM.Composition.JavaScript.Conformance;
 /// it.
 /// </para>
 /// <para>
-/// <b>No third-party suite is in this repository and this program fetches none.</b> It reads a
-/// directory that already exists. Retrieving, hashing and archiving a conformance suite is a human
-/// action the ledger records as open, and a run pointed at a directory with no verified revision
-/// reports <see cref="ConfigurationFailure.MissingSuiteRevision"/> - a failure of that run, not a
-/// smaller total.
+/// <b>The third-party suite is retained in this repository as the archive it was retrieved as, and
+/// this program fetches none of it.</b> It reads a directory that already exists - one a caller
+/// unpacked from <c>src/tests/conformance/pins/test262-&lt;revision&gt;.tar.gz</c>, whose archive
+/// rule N15 hashes against the <c>archive-sha256</c> of <c>test262.pin</c> on every run of the
+/// architecture suite. Retrieving,
+/// hashing and archiving that suite was a human action the ledger closed on 2026-09-03, and a run
+/// pointed at a directory with no verified revision still reports
+/// <see cref="ConfigurationFailure.MissingSuiteRevision"/> - a failure of that run, not a smaller
+/// total. <i>(Corrected 2026-09-08. This paragraph read "No third-party suite is in this repository
+/// and this program fetches none" and described the retrieval as "a human action the ledger records
+/// as open". The first half went false when the archive landed beside its licence and its pin; the
+/// second went false the same day. The clauses that are still true - that this program fetches
+/// nothing and reads a directory a caller supplies, and that a directory with no verified revision
+/// fails the run rather than shrinking the total - are kept word for word.)</i>
 /// </para>
 /// </remarks>
 internal static class Program
@@ -68,6 +93,15 @@ internal static class Program
                 return RunHarnessChecks(verbose);
             }
 
+            // THE SCHEMA IS ASKED FOR WITHOUT A RUN, because a consumer writing a reader has no run
+            // yet. It is generated from the same member list the renderer walks, so what it prints
+            // is the contract this build actually emits rather than a description of one.
+            if (args.Contains("--json-schema", StringComparer.Ordinal))
+            {
+                Console.Write(Test262Json.Schema());
+                return ExitCodes.Ok;
+            }
+
             // THE MERGE IS ASKED FIRST BECAUSE A MERGE NEEDS NO SUITE. It reads a directory of shard
             // reports and decides from their own headers which mode wrote them, so a caller that
             // still has `--test262 <root>` on the command line from the run it is now merging gets
@@ -76,7 +110,11 @@ internal static class Program
 
             if (merge is not null)
             {
-                return MergeShards(merge, Argument(args, "--output") ?? Argument(args, "--report"), verbose);
+                return MergeShards(
+                    merge,
+                    Argument(args, "--output") ?? Argument(args, "--report"),
+                    Argument(args, "--json"),
+                    verbose);
             }
 
             var checkout = Argument(args, "--test262");
@@ -100,12 +138,14 @@ internal static class Program
                 Console.WriteLine(
                     "broiler-js-conformance: no --suite <directory> was given. Modes: --closure, " +
                     "--harness-checks, --self-check, --run, --write-artifacts, --pin, " +
-                    "--merge <dir>, --floor <file> --report <file>, --test262 <root>. A run adds " +
-                    "--dialect native|ingested, --selfcheck <dir> and --expect <retained pin>. " +
-                    "A --test262 run takes --manifest <id>, --decline <surface> (repeatable), " +
-                    "--shard <k>/<n>, --expect <retained pin>, --report <file>, --test <path> and " +
+                    "--merge <dir>, --floor <file> --report <file>, --json-schema, " +
+                    "--test262 <root>. A run adds --dialect native|ingested, --selfcheck <dir> and " +
+                    "--expect <retained pin>. A --test262 run takes --manifest <id>, " +
+                    "--decline <surface> (repeatable), --shard <k>/<n>, --expect <retained pin>, " +
+                    "--report <file>, --json <file>, --digest-cache <file>, --test <path> and " +
                     "--dir <path> (both repeatable, and naming neither runs the whole test tree), " +
-                    "--limit <n>, --fuel <n> and --wall <ms>.");
+                    "--limit <n>, --fuel <n> and --wall <ms>. A --merge takes --json <file> too, " +
+                    "and --floor reads whichever of the two report formats the file is in.");
 
                 return ExitCodes.Usage;
             }
@@ -506,7 +546,7 @@ internal static class Program
     /// which reports as a configuration failure blaming the wrong thing. Refusing the arrangement
     /// is cheaper than teaching the reader to recognise its own output.
     /// </remarks>
-    private static int MergeShards(string directory, string? output, bool verbose)
+    private static int MergeShards(string directory, string? output, string? json, bool verbose)
     {
         if (output is not null &&
             string.Equals(
@@ -548,7 +588,17 @@ internal static class Program
             if (output is not null)
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(output))!);
-                File.WriteAllText(output, mergedRun.Render());
+                File.WriteAllText(output, mergedRun.Render(), Test262Command.Transcript);
+            }
+
+            // THE MACHINE-READABLE DOCUMENT IS WRITTEN FROM THE SAME MERGED REPORT and never from a
+            // second pass over the shards, so the two documents cannot disagree about a total: one
+            // is a rendering of the other's rows.
+            if (json is not null)
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(json))!);
+                File.WriteAllText(json, Test262Json.Render(mergedRun), Test262Command.Transcript);
+                Console.WriteLine("json " + Path.GetFullPath(json));
             }
 
             Console.WriteLine($"broiler-js-conformance: merged {test262.Length} test262 shard report(s)");
@@ -585,12 +635,23 @@ internal static class Program
     }
 
     /// <summary>Compares a merged run against a floor, or admits it as one.</summary>
+    /// <remarks>
+    /// <b>Which floor is decided by the report and not by a flag.</b> Two modes write reports and
+    /// each has a ratchet of its own, so a caller who named the wrong one would otherwise get a parse
+    /// error blaming a line rather than the file. It is the same argument the merge makes one method
+    /// down, and it is read the same way: off the report's own first line.
+    /// </remarks>
     private static int Ratchet(string floorPath, string? reportPath, bool admit)
     {
         if (reportPath is null)
         {
             Console.WriteLine("broiler-js-conformance: --floor needs a --report <file> to compare");
             return ExitCodes.Usage;
+        }
+
+        if (Test262Report.Recognises(reportPath))
+        {
+            return Test262Floor.Ratchet(floorPath, reportPath, admit);
         }
 
         var run = Report.Read(reportPath);
@@ -770,7 +831,8 @@ internal static class Program
                 ' ',
                 "manifest",
                 JavaScriptProfile.SliceManifest,
-                JavaScriptProfile.WideManifest));
+                JavaScriptProfile.WideManifest,
+                JavaScriptProfile.NumericManifest));
         Console.WriteLine(
             string.Join(
                 ' ',

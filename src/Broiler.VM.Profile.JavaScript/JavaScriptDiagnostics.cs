@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   8
 // Annotated:        8/8
-// Exempt:           64
+// Exempt:           67
 // Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    High
@@ -48,7 +48,7 @@ namespace Broiler.VM.Profile.JavaScript;
 /// predicate's own record calls a worse record than one block on the vocabulary.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B91296
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=29486F
 // Broiler-Human:        PENDING
 public enum JavaScriptDiagnosticCode
 {
@@ -384,6 +384,91 @@ public enum JavaScriptDiagnosticCode
     /// of the lowering that happens to produce one.
     /// </remarks>
     AsyncIterationOutsideAsync = 1630,
+
+    /// <summary>
+    /// The artifact carries an emitted-code or emitted-symbol section and declared no native
+    /// surface.
+    /// </summary>
+    /// <remarks>
+    /// <b>Emitted machine code is the one payload whose presence is a request to make memory
+    /// executable, and a composition must be able to answer that question before the bytes are
+    /// anywhere near a page.</b> An artifact that carried the bytes without declaring the surface
+    /// would have skipped the question entirely: the surfaces section is read before the emitted
+    /// sections are, so a composition that declined the surface refuses such an artifact where the
+    /// surfaces are read and never reaches this code. This one is for the artifact that declared
+    /// nothing at all, which is a producer defect rather than a policy answer, and it is the same
+    /// shape and the same reason as <see cref="ModuleSectionOutsideManifest"/>.
+    /// </remarks>
+    NativeSectionOutsideManifest = 1623,
+
+    /// <summary>
+    /// An emitted-code or emitted-symbol section disagrees with itself, with the section frame, or
+    /// with the function table.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>One code for every structural disagreement about the emitted sections, and the reason is
+    /// that the verifier does not read machine code.</b> Invariant 4 keeps the core ignorant of any
+    /// instruction set and this profile's verifier is not going to become a second disassembler, so
+    /// every question the verifier CAN answer here is a question about framing - an architecture
+    /// this build does not name, an alignment that is zero or not a power of two, a declared length
+    /// that disagrees with the bytes present, a symbol naming no code unit, an offset outside the
+    /// blob, symbols that do not ascend, a symbol table that does not name every code unit, and any
+    /// of the three declarations - the surface, the bytes, the symbols - without the other two.
+    /// Splitting those into a code each would suggest that the verifier is making finer
+    /// distinctions about the payload than it is.
+    /// </para>
+    /// <para>
+    /// <b>WHAT THIS CODE CANNOT SAY IS THAT THE CODE IS WRONG.</b> A backend that emitted a
+    /// well-framed sequence of the wrong instructions produces an artifact every clause above
+    /// accepts. That is a property of the design and not a gap in it - the answer to a wrong
+    /// backend is re-emission equality and a differential oracle, not a verifier that reads
+    /// machine code - and it belongs in what a composition tells its users rather than in a
+    /// footnote.
+    /// </para>
+    /// </remarks>
+    MalformedNativeSection = 1624,
+
+    /// <summary>
+    /// The emitted payload carries a byte that belongs to no instruction template this build's
+    /// backends emit, or to one whose operand no backend of this build would have written.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THIS IS THE ONE ANSWER THIS VERIFIER GIVES ABOUT THE PAYLOAD RATHER THAN ABOUT ITS
+    /// FRAMING, AND IT IS NOT A DISASSEMBLER.</b> <see cref="MalformedNativeSection"/> is every
+    /// structural disagreement - a length, an alignment, a symbol table - and its own remarks say
+    /// that it cannot say the code is wrong. This one says something narrower and new: the emitted
+    /// stream was decoded against the SAME fixed template table a backend emits from, and a byte of
+    /// it belongs to no instantiation of any template with in-range operands. The verifier still
+    /// reads no instruction set of its own: the table lives in the format assembly that the
+    /// backends emit from and the verifier answers to, so there is one enumeration rather than a
+    /// second opinion.
+    /// </para>
+    /// <para>
+    /// <b>IT EXISTS BECAUSE THE ARCHITECTURE CHECK ASKS THE WRONG QUESTION.</b> An architecture
+    /// value says which machine the bytes are for; it does not say that they are code. On
+    /// 2026-09-08 a payload of four zero bytes declared as x86-64 passed every framing clause this
+    /// profile had, was armed, was jumped into, and killed the process with an access violation.
+    /// Four zero bytes match no template of any table this build carries, and this is the code the
+    /// refusal now travels with.
+    /// </para>
+    /// <para>
+    /// <b>The position is the offset of the offending byte inside the EMITTED BLOB</b>, counted
+    /// from the first byte the emitted-code section carries rather than from the artifact's first
+    /// byte, because the blob is what the scan was handed. A reader who wants an artifact offset
+    /// adds the section's own base, which is arithmetic the refusal deliberately does not do for
+    /// them: a position computed from a framing this pass was not given would be a number that
+    /// looks authoritative and is not.
+    /// </para>
+    /// <para>
+    /// <b>WHAT IT CANNOT SAY IS THAT THE CODE IS RIGHT.</b> A well-formed sequence of the WRONG
+    /// templates carries no byte this code refuses. The scan reaches the PAYLOAD; only re-emission
+    /// equality reaches the GENERATOR, and it is available only to an image that carries the
+    /// lowering.
+    /// </para>
+    /// </remarks>
+    NativePayloadNotTemplateClosed = 1625,
 
     // ---- 1900: the bounded reader's own statuses, mapped -----------------------------------
 

@@ -254,7 +254,7 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
     public VmProfileId ProfileId { get; }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=F2CD86
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=2; Fingerprint=8F63E1
     // Broiler-Falsified-If: a handle this profile did not verify produces an instance
     // Broiler-Human:        PENDING
     public VmExecutionStep Instantiate(
@@ -263,7 +263,16 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
     {
         if (artifact.TryGetState(out var wide) && wide is JsProgram wideProgram)
         {
-            return JsExecution.Instantiate(wideProgram, environment, cancellationToken);
+            // THE ARM IS CHOSEN FROM WHAT THE ARTIFACT CARRIED AND FROM NOTHING ELSE. The form was
+            // fixed when the artifact was compiled and pinned when it was verified, so this test
+            // reads a property of the verified state and never a property of the run: no counter,
+            // no clock, no observation of how hot anything got. A handle whose payload carried
+            // emitted code has that form for as long as it exists, and one whose payload did not
+            // never acquires it - which is the whole of this profile's one-form-per-handle
+            // non-goal, written as a single `if`.
+            return JsNativeExecution.CarriesEmittedCode(wideProgram)
+                ? JsNativeExecution.Instantiate(wideProgram, environment)
+                : JsExecution.Instantiate(wideProgram, environment, cancellationToken);
         }
 
         if (!artifact.TryGetState(out var state) || state is not JavaScriptProgram program)
@@ -291,7 +300,7 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
     }
 
     /// <inheritdoc/>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=59C786
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=4; Fingerprint=89BE7A
     // Broiler-Falsified-If: an unknown entry point is reported as anything but a language fault, or a foreign instance state runs
     // Broiler-Human:        PENDING
     public VmExecutionStep Invoke(
@@ -302,6 +311,15 @@ public sealed class JavaScriptExecutor : IVmProfileExecutor
         if (state is JsInstance wide)
         {
             return JsExecution.Invoke(ProfileId, wide, in request);
+        }
+
+        // THE EMITTED FORM'S INSTANCE IS A DIFFERENT TYPE, which is what makes the two arms
+        // impossible to confuse. An instance of the emitted form holds an armed mapping and three
+        // slabs of doubles and no realm at all, so there is no shape in which one arm could be
+        // handed the other's state and run it half-way.
+        if (state is JsNativeInstance emitted)
+        {
+            return JsNativeExecution.Invoke(ProfileId, emitted, in request);
         }
 
         if (state is not JavaScriptInstance instance)

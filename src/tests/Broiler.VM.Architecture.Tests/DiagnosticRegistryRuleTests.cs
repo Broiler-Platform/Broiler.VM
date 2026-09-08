@@ -100,10 +100,40 @@ public sealed class DiagnosticRegistryRuleTests
         // where the front end says that the CLAUSE parses and the ATTRIBUTE is what is declined -
         // a distinction that did not exist while the whole clause was refused as a construct
         // outside the manifest.
-        Assert.Equal(63, Vocabulary.Count);
+        //
+        // Revision 11 is the two sections that carry emitted machine code, and it grows the core
+        // half by two while THE SEAM HALF DOES NOT GROW AT ALL. That asymmetry is the finding. The
+        // numeric feature manifest the emitted form is defined against refuses every construct
+        // outside it BY NAME, at compile time, through the code the manifest boundary already has -
+        // a construct outside the declared manifest is exactly what a String literal in a numeric
+        // program is - so a program the manifest excludes needs no new number to be refused with.
+        // What did need numbers is the artifact: a payload carrying machine code without declaring
+        // the surface that lets a composition decline executable memory, and a payload whose two
+        // emitted sections disagree with themselves, with their own frame or with the function
+        // table. ONE CODE COVERS EVERY STRUCTURAL DISAGREEMENT OF THE SECOND KIND rather than one
+        // per clause, and that is deliberate: the verifier decodes no instruction, so splitting the
+        // framing refusals into a code each would suggest it makes finer distinctions about the
+        // payload than it does.
+        //
+        // Revision 12 is ONE CODE, and it is the first answer this verifier gives about the
+        // PAYLOAD rather than about its framing. The template-closure scan decodes an emitted
+        // payload against the same fixed template table a backend emits from, and refuses a byte
+        // that belongs to no instantiation with in-range operands, which is why it is a second
+        // native code rather than a clause of the first.
+        //
+        // IT WAS THE FIRST ROW OF EITHER HALF WHOSE REACHABILITY WAS NEITHER A RETAINED ENTRY NOR
+        // A DEFENCE, AND IT IS NOT ONE ANY MORE, which is recorded here because this comment said
+        // the other thing for a revision. It arrived saying `check` - a fourth reachability kind
+        // minted for it by the stage that added the code and could not add a corpus entry - and
+        // the stage that owns the corpus then wrote five retained entries reaching it, so the row
+        // says `corpus` and names `wide-a-native-payload-of-four-zero-bytes`, the entry recording
+        // the bytes of JSC-208. The kind was withdrawn with the promotion on 2026-09-08. THE
+        // REVISION DID NOT MOVE FOR EITHER: `since` and the registry's own revision date the
+        // MEANING of a code, and 1625 means exactly what it meant when it was minted.
+        Assert.Equal(66, Vocabulary.Count);
         Assert.Equal(29, SeamVocabulary.Count);
         Assert.Equal(Vocabulary.Count + SeamVocabulary.Count, Registry.Count);
-        Assert.Equal(10, DiagnosticRegistry.Revision);
+        Assert.Equal(12, DiagnosticRegistry.Revision);
 
         // The two vocabularies live in two assemblies that cannot see each other, so the one thing
         // no compiler could catch is a number used in both. Nothing else in the build reads both
@@ -185,20 +215,30 @@ public sealed class DiagnosticRegistryRuleTests
 
         Assert.Empty(ArchitectureRules.N7(Registry, corpus, sourceCorpus));
 
-        // Non-vacuous, and the figures that matter: sixty-one of the sixty-two core-result rows
+        // Non-vacuous, and the figures that matter: sixty-five of the sixty-six core-result rows
         // are reached by a retained corpus entry and one is not, which is the count rule N7 fixes
-        // rather than the registry; and every one of the twenty-six embedder-seam rows that is not
-        // defensive is reached by a retained source entry. Twenty-four of the sixty-one arrived
-        // with format version 2: five refusals the version adds, three about the optional surfaces,
-        // FOUR about the two unit kinds that may suspend - a generator and an async function, each
-        // with a suspension in the wrong unit and a flag pairing that contradicts itself - ONE
-        // about the class body's own operand bits, whose six flags have rules between them that a
-        // combination can break without any single bit being unknown, ONE about the `for await`
-        // head, EIGHT about linking a module graph, and two that registering a second version and a
-        // second manifest made observable at all. The seam half has no defensive row beyond the one
-        // below on purpose - its format-ceiling codes ARE reachable by a program, and recording them
-        // as unreachable would have been recording something untrue to avoid generating three
-        // sources.
+        // rather than the registry; and every one of the twenty-eight embedder-seam rows that is
+        // not defensive is reached by a retained source entry. Twenty-eight of the sixty-six
+        // arrived with format version 2: five refusals the version adds, three about the optional
+        // surfaces, FOUR about the two unit kinds that may suspend - a generator and an async
+        // function, each with a suspension in the wrong unit and a flag pairing that contradicts
+        // itself - ONE about the class body's own operand bits, whose six flags have rules between
+        // them that a combination can break without any single bit being unknown, ONE about the
+        // `for await` head, EIGHT about linking a module graph, two that registering a second
+        // version and a second manifest made observable at all, ONE about the dynamic import, and
+        // THREE about the sections that carry emitted machine code. The seam half has no defensive
+        // row beyond the one below on purpose - its format-ceiling codes ARE reachable by a
+        // program, and recording them as unreachable would have been recording something untrue to
+        // avoid generating three sources.
+        //
+        // THREE OF THE SIXTY-FIVE ARRIVED WITH THE EMITTED-CODE SECTIONS, and their entries are
+        // where the shape of a native payload becomes a checkable fact rather than a plan: one
+        // artifact carrying machine code while declaring no surface for it, one whose emitted
+        // section declares a length its own bytes contradict, and one whose payload is not
+        // something any backend of this build could have emitted. An entry beside them VERIFIES,
+        // carrying both sections and a symbol for its one code unit, which is what a verifier that
+        // refused every artifact of the shape could never produce - and which is the whole reason
+        // the three refusals mean anything.
         //
         // TWO OF THE EIGHT MODULE ROWS ARE REACHED BY VARYING THE HOST AND NOT THE BYTES, which is
         // a shape only the exhaustion rows had before: a composition that registers no module
@@ -209,8 +249,75 @@ public sealed class DiagnosticRegistryRuleTests
         // not await - which is enough, because the refusal is on the unit's flag and not on the
         // sequence being complete.
         Assert.Equal(2, ArchitectureRules.DefensiveCodes.Length);
+
+        // THERE IS NO ROW REACHED BY A COMPOSITION CHECK, AND THERE WAS ONE FOR A REVISION. Row
+        // 1625 arrived on 2026-09-08 claiming `check`, a fourth reachability kind minted for it
+        // alone and admitted by rule N7 only for the codes a list in that rule named, on the
+        // reading that a named check of a producer composition reached it AND NO ENTRY OF THE
+        // RETAINED CORPUS DID. Five retained entries reaching 1625 landed the same day, which made
+        // the second half of that reading false of the only row that ever claimed the kind, so the
+        // kind is withdrawn and the row is held to the corpus like every other. What is asserted
+        // here is the absence, because a withdrawn word that quietly came back would otherwise be
+        // a row excused from the manifest.
+        Assert.Empty(DiagnosticRegistry.Reachabilities.Where(static kind => kind == "check"));
+        Assert.Empty(Registry.Where(static row => row.Reachability == "check"));
+
+        // And the row itself, named rather than counted: it is `corpus`, and the entry it names is
+        // the one recording the four zero bytes that verified, were armed and killed a process.
+        var scan = Registry.Single(static row => row.Code == 1625);
+
+        Assert.Equal("corpus", scan.Reachability);
+        Assert.Equal("wide-a-native-payload-of-four-zero-bytes", scan.Case);
+        Assert.Contains(
+            "wide-a-native-payload-of-four-zero-bytes",
+            corpus[1625]);
+
+        // Its rejecting direction is the one every `corpus` row is held to, injected on this row
+        // rather than assumed from its neighbours: a case the retained manifest does not record
+        // against this code fails, and a case the manifest records against a DIFFERENT code fails
+        // too, which is the half a rule that only looked the name up would miss.
+        Assert.Contains(
+            ArchitectureRules.N7(
+                Registry
+                    .Select(static row =>
+                        row.Code == 1625 ? row with { Case = "wide-a-corpus-entry-nobody-wrote" } : row)
+                    .ToArray(),
+                corpus,
+                sourceCorpus),
+            violation => violation.Contains(
+                "names the case wide-a-corpus-entry-nobody-wrote, and no corpus entry of that " +
+                "name records code 1625",
+                StringComparison.Ordinal));
+
+        Assert.Contains(
+            ArchitectureRules.N7(
+                Registry
+                    .Select(static row => row.Code == 1625
+                        ? row with { Case = "wide-a-native-payload-no-surface-declares" }
+                        : row)
+                    .ToArray(),
+                corpus,
+                sourceCorpus),
+            violation => violation.Contains(
+                "names the case wide-a-native-payload-no-surface-declares, and no corpus entry of " +
+                "that name records code 1625",
+                StringComparison.Ordinal));
+
+        // ...and a row claiming the withdrawn word is now a row claiming a reachability that is
+        // not one, which is the clause the kind's removal hands the check back to.
+        Assert.Contains(
+            ArchitectureRules.N7(
+                Registry
+                    .Select(static row =>
+                        row.Code == 1624 ? row with { Reachability = "check" } : row)
+                    .ToArray(),
+                corpus,
+                sourceCorpus),
+            violation => violation.Contains(
+                "claims the reachability check, which is not one",
+                StringComparison.Ordinal));
         Assert.Equal(
-            62,
+            65,
             Registry.Count(static row => row.Reachability == "corpus"));
         Assert.Equal(
             28,
@@ -510,7 +617,22 @@ public sealed class DiagnosticRegistryRuleTests
         // The eighteenth is the declared compilation stack, which is scanned like the rest: it
         // holds a const and a generic method and nothing that outlives a call, and a rule that
         // stopped counting a new file would be a rule that stopped reading it.
-        Assert.Equal(18, lowering.Length);
+        //
+        // The nineteenth and twentieth are the numeric manifest's admission pass and the native
+        // backend seam, and THE BACKEND SEAM IS THE ONE THIS RULE WAS WAITING FOR. A code cache, a
+        // register-allocation table or a scratch buffer held in a static is the obvious thing to
+        // write in an emitter and it is exactly what this rule forbids, so the roster of backends
+        // constructs one per lookup rather than holding a table - which costs nothing, because a
+        // backend holds nothing between calls either.
+        //
+        // THE SEVEN AFTER THEM ARE TWO REAL BACKENDS, AND EVERY ONE OF THE SEVEN IS THE CASE THIS
+        // RULE EXISTS FOR. An encoder, a static walk of one code unit and an emitter, twice over -
+        // once for each instruction set - and not one of them may hold a byte between calls. An
+        // encoder that cached its buffer would hand one compilation the tail of another's output,
+        // which is a defect that produces a well-framed artifact nothing downstream can detect;
+        // the calling-convention tables are static because they are DATA and are readonly, which
+        // this rule reads and correctly does not report.
+        Assert.Equal(27, lowering.Length);
         Assert.Contains(
             ArchitectureRules.N12([], filesScanned: 0),
             violation => violation.Contains(

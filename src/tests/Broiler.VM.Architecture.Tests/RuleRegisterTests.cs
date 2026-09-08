@@ -301,10 +301,25 @@ public sealed class RuleRegisterTests
         // profile's regular expressions are its own matcher's rather than a translation onto the
         // platform's, and that is a state of the tree a later change can undo in one `using`
         // without any other test noticing.
-        Assert.Equal(84, byStatus["Active"]);
+        // WA-0 mints group W, which holds the WebAssembly profile family's own shape: W1 over its
+        // reference set, whose sibling clause is the one no rule in group A or N can make because
+        // both of those exempt a same-family sibling by design, and W2 over its own public-API
+        // baseline, which follows N10's shape rather than widening it. Neither the Vacuous nor the
+        // Deferred count moves: B3 is still the row nothing in the graph can violate, and E5 still
+        // awaits a milestone that will not come.
+        // VM-7's first next action adds three rows, and they are the enforcement for a hole that
+        // predates the milestone: rule B5 forbade IL emit, dynamic loading and the
+        // reflection-invocation members and reached no hand-written machine-code path, so a
+        // composition that mapped a page executable passed every automated gate this component had
+        // while tripping a stop condition it published. B5c reads the ImplMap table B5 cannot,
+        // K5 holds the composition register's native-execution column to the images it describes,
+        // and X1 - a new group letter, because write-exclusive-or-execute belongs to no profile
+        // family - pins the arming path to one place and its protections to a closed set. Neither
+        // the Vacuous nor the Deferred count moves again.
+        Assert.Equal(89, byStatus["Active"]);
         Assert.Equal(1, byStatus["Vacuous"]);
         Assert.Equal(1, byStatus["Deferred"]);
-        Assert.Equal(86, Loaded.Rules.Count);
+        Assert.Equal(91, Loaded.Rules.Count);
     }
 
     private static Register Load()

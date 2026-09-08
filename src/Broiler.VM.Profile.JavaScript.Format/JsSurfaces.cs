@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   9
-// Annotated:        9/9
+// Relevant units:   10
+// Annotated:        10/10
 // Exempt:           0
-// Human-reviewed:   0/9
+// Human-reviewed:   0/10
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  0/10 max
-// Unverified:       9
+// Unverified:       10
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -96,15 +96,62 @@ public static class JsSurfaces
     // Broiler-Human:        PENDING
     public const string Modules = "broiler.javascript.modules";
 
+    /// <summary>
+    /// The native surface: the artifact carries emitted machine code beside its bytecode.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>It is declared by a SECTION and never by a global, exactly as <see cref="Modules"/>
+    /// is.</b> No name a program can write puts it inside this surface; what puts an artifact
+    /// inside it is that it carries a <see cref="JsFormat.SectionKind.NativeCode"/> section, so the
+    /// lowering declares it where it writes those bytes and <see cref="TryOwner"/> never answers
+    /// with it.
+    /// </para>
+    /// <para>
+    /// <b>What a composition declining this one is declining is EXECUTABLE MEMORY.</b> Running
+    /// emitted code means a page this process made executable, which is a decision about the host
+    /// and not about the language - and a composition with no answer to it must be able to refuse
+    /// the artifact rather than to load one and hope nothing calls into the bytes. Declined, the
+    /// artifact is refused where the surfaces are read, at verification, before any instruction of
+    /// it is reachable; that is the same answer a declined binary or module surface gets and it is
+    /// the answer roadmap section 6 requires.
+    /// </para>
+    /// <para>
+    /// <b>A composition that admits it is not thereby saying it can run the bytes, and the gap
+    /// between the two questions is the whole reason this surface is separate from an
+    /// architecture.</b> <i>(Revised 2026-09-07. This paragraph read "at this build no composition
+    /// can", and continued "Nothing here maps a page, arms one or calls into emitted code, and no
+    /// backend encodes an instruction of any architecture", and "refusing a payload for an
+    /// architecture an image has no backend for is a SECOND refusal that nothing in this repository
+    /// performs yet". Every one of those clauses is now false, and they are quoted rather than
+    /// deleted because a surface constant whose documentation understates what the build does is
+    /// the failure this record exists against, read in the direction nobody checks.)</i>
+    /// </para>
+    /// <para>
+    /// <b>What is true instead.</b> An arming path exists in exactly one place, three backends
+    /// encode - two for <c>x86-64</c> and one for <c>arm64</c> - and the second refusal is
+    /// performed: an artifact whose payload names an architecture this host cannot arm is refused
+    /// at instantiation rather than run. So the two questions really are two, and an image answers
+    /// them separately: this surface asks whether a composition admits an executable payload at
+    /// all, and the architecture in the payload asks whether this host is one that can arm it.
+    /// <b>The <c>arm64</c> backend is where the difference is visible</b>, because it emits and is
+    /// never armed anywhere - it is emitting-only, and an artifact carrying its bytes verifies and
+    /// refuses to instantiate.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=756E6F
+    // Broiler-Human:        PENDING
+    public const string Native = "broiler.javascript.native";
+
     /// <summary>Every optional surface this build knows, in ascending ordinal order.</summary>
     /// <remarks>
     /// An artifact declaring a name that is not here is refused as naming a surface this build does
     /// not implement, which is a different failure from naming one the composition declined and
     /// carries a different diagnostic.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=80FB1C
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B30ACF
     // Broiler-Human:        PENDING
-    public static readonly string[] All = [Binary, Dynamic, Modules];
+    public static readonly string[] All = [Binary, Dynamic, Modules, Native];
 
     /// <summary>
     /// The global names the binary surface owns, in ascending ordinal order.

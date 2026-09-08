@@ -1,0 +1,13 @@
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.PolyglotCli
+label narrow-runtime-compiler
+carries-lowering yes
+profiles 2
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 3
+profile broiler.webassembly Broiler.VM.Profile.WebAssembly 1 0
+manifest broiler.javascript.slice broiler.javascript.wide broiler.javascript.numeric broiler.webassembly.slice
+format-versions 1 2 1 1
+lowering Broiler.VM.Profile.JavaScript.Compiler
+native-backends arm64-aapcs64 x86-64-sysv x86-64-win64
+native-executes x86-64-sysv x86-64-win64
+native-emitting-only arm64-aapcs64

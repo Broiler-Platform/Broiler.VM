@@ -1,0 +1,38 @@
+# closure Broiler.VM.Composition.PolyglotCli rid=win-x64
+#
+# TWO MODES ARE RETAINED AND THE THIRD IS NOT, and the absent one is named here rather
+# than left to be inferred. A framework-dependent publish and a trimmed self-contained
+# publish were both taken on win-x64 and both were run; each listing below is the
+# non-framework assemblies of that published directory, read off the output rather than
+# described. Native AOT WAS ATTEMPTED AND DID NOT LINK on this machine: the compilation
+# ran and the native linker step failed to locate its toolchain, so no image was
+# produced and none is reported. A mode nobody ran is not a mode this file reports, and
+# a mode that failed is recorded as having failed rather than omitted. Rule K4 admits a
+# mode carrying no managed assembly at all, which is what a native image produces, so
+# the absence costs the rule nothing and costs a reader one sentence - this one. What it
+# does cost is a claim: this composition has NOT been shown to publish under Native AOT,
+# and no sentence anywhere in this bundle says it has.
+#
+# The two retained modes contain the same eight assemblies: the trimmer removed none of
+# them, which is what a closure of an image that actually calls into all eight looks
+# like.
+
+[jit] 8 non-framework assemblies
+Broiler.VM.Abstractions
+Broiler.VM.Binary
+Broiler.VM.Composition.PolyglotCli
+Broiler.VM.Profile.JavaScript
+Broiler.VM.Profile.JavaScript.Compiler
+Broiler.VM.Profile.JavaScript.Format
+Broiler.VM.Profile.WebAssembly
+Broiler.VM.Runtime
+
+[trimmed] 8 non-framework assemblies
+Broiler.VM.Abstractions
+Broiler.VM.Binary
+Broiler.VM.Composition.PolyglotCli
+Broiler.VM.Profile.JavaScript
+Broiler.VM.Profile.JavaScript.Compiler
+Broiler.VM.Profile.JavaScript.Format
+Broiler.VM.Profile.WebAssembly
+Broiler.VM.Runtime

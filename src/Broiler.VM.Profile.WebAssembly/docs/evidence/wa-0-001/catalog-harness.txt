@@ -1,0 +1,8 @@
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.WebAssembly.Harness
+label none
+advertised no
+profiles 1
+profile broiler.webassembly Broiler.VM.Profile.WebAssembly 1 0
+manifest broiler.webassembly.slice
+corpus-entries 0

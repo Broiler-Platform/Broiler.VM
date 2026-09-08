@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   180
-// Annotated:        180/180
-// Exempt:           85
-// Human-reviewed:   0/180
+// Relevant units:   188
+// Annotated:        188/188
+// Exempt:           91
+// Human-reviewed:   0/188
 // IP risk:          None
 // Security risk:    High
-// Criteria:         11/10
+// Criteria:         12/11
 // Resource impact:  3/10 max
-// Unverified:       180
+// Unverified:       188
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -90,6 +90,73 @@ public sealed record JsCompilation(
     byte[]? Artifact,
     System.Collections.Generic.IReadOnlyList<SliceSourceDiagnostic> Diagnostics);
 
+/// <summary>Which feature manifest a compilation is asked to lower under.</summary>
+/// <remarks>
+/// <b>The manifest is a property of the COMPILATION and not of the source, which is why it is
+/// asked for here.</b> One text can be admissible under both - a numeric kernel is a perfectly
+/// ordinary wide-surface program - and which manifest an artifact names decides what a composition
+/// is answering when it admits it. A front end that inferred the manifest from the source would be
+/// deciding that for the caller, and would answer differently the day the source grew a string.
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=A74AE9
+// Broiler-Human:        PENDING
+public enum JsFeatureManifest
+{
+    /// <summary>The wide surface: objects, closures, exceptions and a standard library.</summary>
+    Wide = 0,
+
+    /// <summary>The numeric subset, which a whole artifact can be emitted from.</summary>
+    Numeric = 1,
+}
+
+/// <summary>Which output form a compilation is asked to produce.</summary>
+/// <remarks>
+/// <para>
+/// <b>THE FORM IS CHOSEN HERE, ONCE, AND NOTHING LATER MAY CHANGE IT.</b> This profile's non-goals
+/// pin exactly that: the form is chosen when an artifact is compiled and fixed when it is verified,
+/// one executor and one form per handle, no promotion. So the choice is a compilation input beside
+/// the manifest and the sources - not a run-time observation, not a per-unit judgement, and not
+/// something a running host may revisit.
+/// </para>
+/// <para>
+/// <b>It defaults to <see cref="Bytecode"/>, and the default is load-bearing rather than
+/// polite.</b> Every existing caller of this compiler gets the artifact it always got, byte for
+/// byte, and a form that maps executable memory is something a caller has to ask for by name.
+/// </para>
+/// </remarks>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=9CB116
+// Broiler-Human:        PENDING
+public enum JsOutputForm
+{
+    /// <summary>Bytecode: the form every artifact of this profile has had.</summary>
+    Bytecode = 0,
+
+    /// <summary>
+    /// Machine code beside the bytecode, emitted for one architecture by one named backend.
+    /// </summary>
+    /// <remarks>
+    /// The bytecode stays in the artifact, and it is not a fallback: the differential oracle and
+    /// re-emission-equality verification both read it, and neither is an execution path.
+    /// </remarks>
+    Native = 1,
+}
+
+/// <summary>What a caller asks a compilation for beside its sources.</summary>
+/// <param name="Manifest">The feature manifest the artifact will name.</param>
+/// <param name="Form">The output form. Bytecode unless a caller says otherwise.</param>
+/// <param name="Backend">
+/// The name of the backend to emit with, which is meaningful only for
+/// <see cref="JsOutputForm.Native"/>. It is a NAME and not a probe of the running machine: which
+/// architecture an artifact is emitted for is a property of the artifact, and a compiler that read
+/// the host's architecture would answer one source with two artifacts on two machines.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=2B7B72
+// Broiler-Human:        PENDING
+public sealed record JsCompileRequest(
+    JsFeatureManifest Manifest = JsFeatureManifest.Wide,
+    JsOutputForm Form = JsOutputForm.Bytecode,
+    string Backend = "");
+
 /// <summary>
 /// The wide surface's lowering: a syntax tree in, one verifiable artifact out.
 /// </summary>
@@ -141,6 +208,28 @@ public sealed class JsCompiler
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=D4AAEE
     // Broiler-Human:        PENDING
     private const int MaximumSlots = 60000;
+
+    /// <summary>What this compilation was asked for beside its sources.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=01398D
+    // Broiler-Human:        PENDING
+    private readonly JsCompileRequest request;
+
+    /// <summary>Creates a compiler that lowers the wide surface to bytecode.</summary>
+    /// <remarks>
+    /// The parameterless form is kept so that every caller written before an output form could be
+    /// chosen still names the thing it always meant: the wide manifest, in bytecode.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=AAF58E
+    // Broiler-Human:        PENDING
+    public JsCompiler()
+        : this(new JsCompileRequest())
+    {
+    }
+
+    /// <summary>Creates a compiler that answers <paramref name="request"/>.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=174E1D
+    // Broiler-Human:        PENDING
+    public JsCompiler(JsCompileRequest request) => this.request = request;
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=35BE4C
     // Broiler-Human:        PENDING
@@ -422,8 +511,46 @@ public sealed class JsCompiler
             return compiler.Run(scripts, modules);
         });
 
+    /// <summary>
+    /// Compiles under a named feature manifest, into a named output form.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THIS IS THE ONLY PLACE AN OUTPUT FORM IS EVER CHOSEN, AND IT IS CHOSEN ONCE.</b> The
+    /// form travels into the artifact and no later stage may revisit it: the verifier pins it, the
+    /// executor reads it, and a handle keeps the form it was verified with for as long as it
+    /// exists. A second door - a property, an environment variable, a run-time probe - would be the
+    /// second execution arm this profile's non-goals refuse, wearing a different hat.
+    /// </para>
+    /// <para>
+    /// <b>The native form is admitted only under the numeric manifest, and the refusal for asking
+    /// otherwise names that.</b> A form other than bytecode has to be a whole-artifact form, which
+    /// means every unit is emitted; only the numeric manifest admits a language every program of
+    /// which can be. Asking for machine code from the wide surface is asking for the mixed artifact
+    /// the non-goals refuse, so it is answered here rather than half-answered later.
+    /// </para>
+    /// <para>
+    /// <b>AT THIS BUILD EVERY NATIVE REQUEST IS REFUSED, because no backend encodes an
+    /// instruction.</b> The path is whole - the manifest is checked, the backend is looked up by
+    /// name, the assembled program is handed over and the answer becomes a diagnostic - and its
+    /// answer is a refusal that names the backend. That is what the caller is told, and it is what
+    /// is true.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=106931
+    // Broiler-Human:        PENDING
+    public static JsCompilation Compile(
+        System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts,
+        System.Collections.Generic.IReadOnlyList<JsModuleUnit> modules,
+        JsCompileRequest request) =>
+        CompilationStack.Run(() =>
+        {
+            var compiler = new JsCompiler(request);
+            return compiler.Run(scripts, modules);
+        });
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E0B865
+
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=728D50
     // Broiler-Human:        PENDING
     private JsCompilation Run(
         System.Collections.Generic.IReadOnlyList<JsScriptUnit> scripts,
@@ -449,6 +576,21 @@ public sealed class JsCompiler
                 return new JsCompilation(false, null, diagnostics);
             }
 
+            // THE MANIFEST IS JUDGED BEFORE THE LOWERING RUNS, AND THAT ORDER IS WHAT MAKES A
+            // REFUSAL A REFUSAL BY NAME. The lowering meets a construct as a node to emit code
+            // for; the admission pass meets it as a construct with a name and a position, which is
+            // what an author needs to be told. Running it afterwards would mean reporting whatever
+            // the lowering happened to trip over first.
+            if (request.Manifest == JsFeatureManifest.Numeric)
+            {
+                diagnostics.AddRange(JsNumericAdmission.Judge(program));
+
+                if (diagnostics.Count != 0)
+                {
+                    return new JsCompilation(false, null, diagnostics);
+                }
+            }
+
             scriptReferrer = script.Referrer;
             var unit = CompileProgram(program, script.ForceStrict);
             scriptReferrer = string.Empty;
@@ -459,6 +601,20 @@ public sealed class JsCompiler
             }
 
             entries.Add((script.Name, (uint)unit));
+        }
+
+        // A MODULE GRAPH IS OUTSIDE THE NUMERIC MANIFEST AND IS REFUSED BEFORE ONE IS PARSED. The
+        // module surface is resolution, live bindings and an evaluation order over a graph, and
+        // none of the three is a Number; refusing the graph here rather than each `import` inside
+        // it names the thing the caller actually asked for.
+        if (request.Manifest == JsFeatureManifest.Numeric && modules.Count != 0)
+        {
+            Refuse(
+                default,
+                SliceSourceDiagnosticCode.ConstructOutsideManifest,
+                "a module graph is not admitted by the declared feature manifest");
+
+            return new JsCompilation(false, null, diagnostics);
         }
 
         for (var index = 0; index < modules.Count; index++)
@@ -493,7 +649,15 @@ public sealed class JsCompiler
             entries.Add((ModuleEntry, (uint)built[0].BodyUnit));
         }
 
-        return new JsCompilation(true, Assemble(), diagnostics);
+        // THE ARTIFACT IS BUILT AND THEN THE DIAGNOSTICS ARE CHECKED, because assembly is the pass
+        // that judges the manifest against what was actually emitted and that asks a backend for
+        // machine code. Both of those can refuse, and a compilation that returned bytes it had
+        // already refused would be a compilation whose answer contradicted its own diagnostics.
+        var artifact = Assemble();
+
+        return diagnostics.Count != 0
+            ? new JsCompilation(false, null, diagnostics)
+            : new JsCompilation(true, artifact, diagnostics);
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=E349FF
@@ -527,7 +691,7 @@ public sealed class JsCompiler
 
     // ---- assembly ------------------------------------------------------------------------------
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F8DFF1
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=F1D03A
     // Broiler-Human:        PENDING
     private byte[] Assemble()
     {
@@ -604,6 +768,32 @@ public sealed class JsCompiler
 
         positions.Sort(static (left, right) => left.Offset.CompareTo(right.Offset));
 
+        var assembled = new JsAssembledProgram(
+            ManifestId(),
+            code.ToArray(),
+            rows,
+            regions,
+            constants,
+            maximumStack,
+            maximumSlots);
+
+        if (request.Manifest == JsFeatureManifest.Numeric)
+        {
+            SweepAgainstTheNumericManifest(assembled);
+        }
+
+        JsNativeEmission? emission = null;
+
+        if (request.Form == JsOutputForm.Native && diagnostics.Count == 0)
+        {
+            emission = Emit(assembled);
+        }
+
+        if (diagnostics.Count != 0)
+        {
+            return [];
+        }
+
         var sections = new System.Collections.Generic.List<JavaScriptArtifactWriter.Section>
         {
             new(
@@ -646,6 +836,15 @@ public sealed class JsCompiler
             surfaces.Add(JsSurfaces.Modules);
         }
 
+        // THE NATIVE SURFACE IS DECLARED WHERE THE EMITTED BYTES ARE WRITTEN, and for the same
+        // reason the module surface is declared where the records are: no name a program can write
+        // puts it inside this surface. What puts an artifact inside it is that it carries machine
+        // code, and this is the one place that is known.
+        if (emission is not null)
+        {
+            surfaces.Add(JsSurfaces.Native);
+        }
+
         if (surfaces.Count != 0)
         {
             var declared = new string[surfaces.Count];
@@ -663,7 +862,158 @@ public sealed class JsCompiler
                 JsArtifactWriter.Modules(moduleRows)));
         }
 
-        return JsArtifactWriter.Write(JsFormat.ManifestId, sections.ToArray());
+        if (emission is not null)
+        {
+            sections.Add(new JavaScriptArtifactWriter.Section(
+                (JavaScriptFormat.SectionKind)JsFormat.SectionKind.NativeCode,
+                JsArtifactWriter.NativeCode(
+                    (uint)emission.Architecture,
+                    emission.BackendSemanticVersion,
+                    emission.CodeAlignment,
+                    emission.Code)));
+
+            sections.Add(new JavaScriptArtifactWriter.Section(
+                (JavaScriptFormat.SectionKind)JsFormat.SectionKind.NativeSymbols,
+                JsArtifactWriter.NativeSymbols(emission.Symbols)));
+        }
+
+        return JsArtifactWriter.Write(ManifestId(), sections.ToArray());
+    }
+
+    /// <summary>The feature-manifest identity this compilation's artifact names.</summary>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=7493AC
+    // Broiler-Human:        PENDING
+    private string ManifestId() =>
+        request.Manifest == JsFeatureManifest.Numeric
+            ? JsNumericManifest.ManifestId
+            : JsFormat.ManifestId;
+
+    /// <summary>
+    /// Checks what was actually emitted against the numeric manifest's closed instruction set.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>IT IS A CHECK OF THE FRONT END AGAINST ITSELF AND NOT A CHECK OF THE SOURCE.</b> The
+    /// admission pass has already refused every construct the manifest excludes, so a program that
+    /// reaches here is a program whose source the manifest admits. This sweep answers the other
+    /// question - whether the LOWERING wrote only what the manifest says a lowering under it may
+    /// write - and the two can part company without either being obviously wrong: a construct the
+    /// admission pass never thought to name, or a lowering that grew an instruction for something
+    /// it used to spell another way, would each produce an artifact naming a manifest whose closed
+    /// instruction set it does not respect.
+    /// </para>
+    /// <para>
+    /// <b>The consequence of leaving it out would be an untrue artifact rather than a crash</b>,
+    /// which is the reason it is here and not in a test. An artifact naming this manifest is a
+    /// promise to anything that reads it - a backend most of all - that its instructions come from
+    /// one list. A promise nothing checks is a promise that is true until it is not.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=High; Resources=3; Fingerprint=375AB9
+    // Broiler-Falsified-If: an artifact naming the numeric manifest is produced carrying an instruction that manifest does not admit
+    // Broiler-Human:        PENDING
+    private void SweepAgainstTheNumericManifest(JsAssembledProgram assembled)
+    {
+        for (var index = 0; index < assembled.Functions.Count; index++)
+        {
+            var row = assembled.Functions[index];
+
+            if (!JsNumericManifest.AdmitsFlags((JsFormat.FunctionFlags)row.Flags))
+            {
+                Refuse(
+                    default,
+                    SliceSourceDiagnosticCode.ConstructOutsideManifest,
+                    "the lowering wrote a code unit whose flags the declared feature manifest " +
+                    "does not admit");
+
+                return;
+            }
+
+            var at = (int)row.CodeOffset;
+            var end = at + (int)row.CodeLength;
+
+            while (at < end)
+            {
+                var opcode = (JsOpcode)assembled.Code[at];
+
+                if (!JsOpcodes.IsDefined(assembled.Code[at]))
+                {
+                    Refuse(
+                        default,
+                        SliceSourceDiagnosticCode.ConstructOutsideManifest,
+                        "the lowering wrote an instruction this build does not define");
+
+                    return;
+                }
+
+                if (!JsNumericManifest.Admits(opcode))
+                {
+                    Refuse(
+                        default,
+                        SliceSourceDiagnosticCode.ConstructOutsideManifest,
+                        "the lowering wrote the instruction `" + opcode +
+                        "`, which the declared feature manifest does not admit");
+
+                    return;
+                }
+
+                at += JsOpcodes.InstructionWidth(opcode);
+            }
+        }
+
+        if (assembled.ExceptionRegions.Count != 0)
+        {
+            Refuse(
+                default,
+                SliceSourceDiagnosticCode.ConstructOutsideManifest,
+                "the lowering wrote an exception region, which the declared feature manifest " +
+                "does not admit");
+        }
+    }
+
+    /// <summary>Asks the named backend for machine code, or records why there is none.</summary>
+    /// <remarks>
+    /// <b>THREE REFUSALS AND THEY NAME THREE DIFFERENT MISTAKES.</b> Asking for machine code
+    /// outside the numeric manifest is asking for the mixed-form artifact this profile refuses;
+    /// naming a backend this build does not carry is naming something that does not exist; and a
+    /// backend that will not emit has its own sentence to say. An author told the wrong one of the
+    /// three looks in the wrong place, which is the whole reason a refusal names a construct rather
+    /// than a stage.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=97B265
+    // Broiler-Human:        PENDING
+    private JsNativeEmission? Emit(JsAssembledProgram assembled)
+    {
+        if (request.Manifest != JsFeatureManifest.Numeric)
+        {
+            Refuse(
+                default,
+                SliceSourceDiagnosticCode.ConstructOutsideManifest,
+                "the native output form is admitted only by the `" +
+                JsNumericManifest.ManifestId + "` feature manifest, because an artifact whose " +
+                "units do not all have one form is the mixed form this profile refuses");
+
+            return null;
+        }
+
+        if (!JsNativeBackends.TryFind(request.Backend, out var backend))
+        {
+            Refuse(
+                default,
+                SliceSourceDiagnosticCode.ConstructOutsideManifest,
+                "this build carries no backend named `" + request.Backend + "`; it names " +
+                string.Join(", ", JsNativeBackends.Names));
+
+            return null;
+        }
+
+        if (!backend.TryEmit(assembled, out var emission, out var refusal))
+        {
+            Refuse(default, SliceSourceDiagnosticCode.ConstructOutsideManifest, refusal);
+            return null;
+        }
+
+        return emission;
     }
 
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=3; Fingerprint=79FFCF

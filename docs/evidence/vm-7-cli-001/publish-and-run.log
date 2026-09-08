@@ -1,0 +1,77 @@
+# What the published framework-dependent binary answered on win-x64, 2026-09-07.
+# Absolute paths are rewritten to the file name alone; nothing else is edited.
+
+$ broiler version
+broiler broiler.javascript manifest broiler.javascript.wide format 2
+edition ECMA-262 ES2026 (tc39/ecma262@0248456c758431e4bb8e5d26333ff1865123c9cd, spec.html sha256 ce7bc30174061fd8d212270b81cf6511661180c1e174f6911d10ced0581527b0) - archived at src/Broiler.VM.Profile.JavaScript/docs/specification/ecma-262-es2026-spec.html
+broiler broiler.webassembly manifest broiler.webassembly.slice format 1
+core-contract-version 1
+# exit 0
+
+$ broiler closure
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.PolyglotCli
+label narrow-runtime-compiler
+carries-lowering yes
+profiles 2
+profile broiler.javascript Broiler.VM.Profile.JavaScript 1 3
+profile broiler.webassembly Broiler.VM.Profile.WebAssembly 1 0
+manifest broiler.javascript.slice broiler.javascript.wide broiler.javascript.numeric broiler.webassembly.slice
+format-versions 1 2 1 1
+lowering Broiler.VM.Profile.JavaScript.Compiler
+native-backends arm64-aapcs64 x86-64-sysv x86-64-win64
+native-executes x86-64-sysv x86-64-win64
+native-emitting-only arm64-aapcs64
+# exit 0
+
+$ broiler run hello.js
+hello from broiler.javascript
+fib(20) = 6765
+2,4,6
+# exit 0
+
+$ broiler run adder.wasm
+42
+# exit 0
+
+$ broiler run adder.wasm --invoke add --arg i32:7 --arg i32:35
+42
+# exit 0
+
+$ broiler run hello.js adder.wasm
+ok       adder.wasm  42
+hello from broiler.javascript
+fib(20) = 6765
+ok       hello.js  2,4,6
+# 2 files
+# Completed: 2
+# exit 0
+
+$ broiler run --numeric loop.js
+999000
+# exit 0
+
+$ broiler run --numeric --native x86-64-win64 loop.js
+999000
+# exit 0
+
+$ broiler run --numeric --native x86-64-sysv loop.js
+broiler: loop.js: the artifact verified and this image will not arm it: (ProfileFault/UnsatisfiedHostAssumption). The arming path answers with the one x86-64 calling convention this process's own platform uses - Windows x64 or System V x64 - and refuses an artifact emitted for the other one or for any other architecture; arm64-aapcs64 is emitting-only everywhere.
+# exit 2
+
+$ broiler run --numeric --native arm64-aapcs64 expr.js
+broiler: expr.js: the artifact verified and this image will not arm it: (ProfileFault/UnsatisfiedHostAssumption). The arming path answers with the one x86-64 calling convention this process's own platform uses - Windows x64 or System V x64 - and refuses an artifact emitted for the other one or for any other architecture; arm64-aapcs64 is emitting-only everywhere.
+# exit 2
+
+$ broiler run mislabelled.js
+broiler: mislabelled.js: opens with the WebAssembly preamble 00 61 73 6D and is named as JavaScript source, so this host declines to route it; rename it `.wasm` if that is what it is
+# exit 2
+
+$ broiler run nottext.wasm
+broiler: nottext.wasm: is named `.wasm` and does not open with the WebAssembly preamble 00 61 73 6D, so this host declines to hand it to a decoder that would report a byte-zero failure instead of a mislabelled file
+# exit 2
+
+$ broiler compile adder.wasm -o out.bvm
+broiler: adder.wasm: the broiler.webassembly profile carries no lowering in this image, so a `.wasm` file is already an artifact and there is nothing here to compile it from
+# exit 2
+

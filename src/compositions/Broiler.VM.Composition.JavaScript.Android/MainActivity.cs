@@ -148,7 +148,8 @@ public sealed class MainActivity : Activity
                 ' ',
                 "manifest",
                 JavaScriptProfile.SliceManifest,
-                JavaScriptProfile.WideManifest),
+                JavaScriptProfile.WideManifest,
+                JavaScriptProfile.NumericManifest),
             string.Join(
                 ' ',
                 "format-versions",

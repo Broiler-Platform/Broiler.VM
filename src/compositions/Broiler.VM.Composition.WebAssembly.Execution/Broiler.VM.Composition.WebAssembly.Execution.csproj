@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Composition.WebAssembly.Execution</RootNamespace>
+    <AssemblyName>Broiler.VM.Composition.WebAssembly.Execution</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Not advertised. The composition register lists this root as a demonstration, packaging is
+         WA-10's decision, and rule N4 holds the profile side of the same claim. -->
+    <IsPackable>false</IsPackable>
+
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <!--
+    THE EXECUTION-ONLY CLOSURE, STATED AS A REFERENCE SET.
+
+    Four assemblies: the three the core is, plus the profile. There is no lowering to leave out and
+    no format sibling to arrive transitively, because this profile has neither - its payload is a
+    bare WebAssembly module produced by an external toolchain, so nothing in this repository
+    compiles anything into it.
+
+    What the label means here is therefore narrower than it means for a compiling profile, and it
+    is worth saying plainly: this image cannot turn source into an artifact because no image of
+    this profile can, not because this root declined to link a compiler.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Profile.WebAssembly\Broiler.VM.Profile.WebAssembly.csproj" />
+  </ItemGroup>
+
+</Project>

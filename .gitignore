@@ -10,3 +10,7 @@ __pycache__/
 
 # Agent worktrees, created by the tooling that runs work in an isolated copy of this checkout.
 .claude/worktrees/
+
+# Test result output from `dotnet test --logger trx`, which is a record of one run rather than
+# anything this repository retains: an evidence bundle is where a retained run lives.
+TestResults/

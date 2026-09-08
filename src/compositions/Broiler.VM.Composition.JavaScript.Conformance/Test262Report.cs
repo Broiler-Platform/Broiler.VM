@@ -72,6 +72,8 @@ internal sealed record Test262Totals(
 /// </remarks>
 internal sealed record Test262Report(
     SuiteRevision Suite,
+    string Upstream,
+    string UpstreamRevision,
     string ManifestId,
     uint FormatVersion,
     bool LoadsHarness,
@@ -89,7 +91,25 @@ internal sealed record Test262Report(
     IReadOnlyList<ConfigurationFinding> Findings)
 {
     /// <summary>The header every report of this kind carries, naming the format's version.</summary>
-    internal const string Header = "# broiler-js-conformance test262 report 1";
+    /// <remarks>
+    /// <b>Version 2 since 2026-09-07, and version 1 is refused rather than half-read.</b> Two things
+    /// moved at once: a <c>result</c> row gained the failure KIND and the file's declared FEATURES,
+    /// so that a run's failures can be classified from fields rather than from prose, and the
+    /// <c>run</c> row gained the upstream project and commit the retained pin names, so that a
+    /// machine-readable report states which revision of which suite it is about without being handed
+    /// the pin as well. A reader that accepted both arities would let one version number describe two
+    /// documents, which is the shape this repository refuses everywhere else.
+    /// </remarks>
+    internal const string Header = "# broiler-js-conformance test262 report 2";
+
+    /// <summary>What every version of this header begins with.</summary>
+    /// <remarks>
+    /// A merge decides which mode wrote a report from its first line, so a report of an EARLIER
+    /// version has to be recognised as this kind in order to be refused with a message about its
+    /// version, rather than handed to the other mode's reader and refused with a message about a
+    /// line.
+    /// </remarks>
+    internal const string HeaderPrefix = "# broiler-js-conformance test262 report ";
 
     /// <summary>What a whole run's coverage field says.</summary>
     internal const string WholeCoverage = "whole";
@@ -139,6 +159,88 @@ internal sealed record Test262Report(
         .OrderBy(static result => result.Path, StringComparer.Ordinal)
         .ThenBy(static result => result.Variant, StringComparer.Ordinal)
         .ToArray();
+
+    /// <summary>The failing variants grouped by the kind the harness named, most-met first.</summary>
+    /// <remarks>
+    /// <b>Derived from the rows exactly as the family table is, and written for a reader.</b> Three
+    /// axes rather than one, because the three questions a repair queue asks are different: WHAT went
+    /// wrong (kind), WHERE in the suite (area), and WHICH language feature the file declares itself
+    /// to be about (feature). None of the three is read back off a report - deriving them again from
+    /// the rows is what stops a merged table from disagreeing with the cases it is a breakdown of.
+    /// </remarks>
+    internal IReadOnlyList<Test262TallyRow> FailureKinds => Test262Failures.ByKind(Results);
+
+    /// <summary>The failing variants grouped by the area of the suite they sit in.</summary>
+    internal IReadOnlyList<Test262TallyRow> FailureAreas => Test262Failures.ByArea(Results);
+
+    /// <summary>The failing variants grouped by the features their files declare.</summary>
+    internal IReadOnlyList<Test262TallyRow> FailureFeatures => Test262Failures.ByFeature(Results);
+
+    /// <summary>Every variant that failed, named individually and in path order.</summary>
+    internal IReadOnlyList<Test262Outcome> Failures => Test262Failures.Of(Results);
+
+    /// <summary>
+    /// Why nothing about this run may be written into a record that outlives it, or nothing.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>A run taken without <c>--expect</c> is a run about a directory.</b> The report already
+    /// carries <see cref="ConfigurationFailure.MissingSuiteRevision"/> in that case, which fails the
+    /// run - but a failed run still writes a transcript, and a transcript is exactly what somebody
+    /// copies into an evidence bundle six weeks later. Nothing in this harness said, in one field a
+    /// tool can read, that such a transcript may not be retained; this is that field, and the floor
+    /// and the JSON document both refuse a run it names a reason for.
+    /// </para>
+    /// <para>
+    /// It is deliberately STRICTER than <see cref="Failed"/> and deliberately not the same question.
+    /// A whole run of this suite fails cases today and those totals are exactly what is worth
+    /// retaining; what may not be retained is a run whose identity, coverage or arithmetic was never
+    /// established.
+    /// </para>
+    /// </remarks>
+    internal IReadOnlyList<string> Unretainable
+    {
+        get
+        {
+            var reasons = new List<string>();
+
+            if (!Suite.IsPinned)
+            {
+                reasons.Add(
+                    "the run read no pinned suite: it was taken without `--expect <retained pin>`, " +
+                    "so its totals are about a directory rather than about a revision");
+            }
+
+            if (ShardIndex != Sharding.AllShards)
+            {
+                reasons.Add("the run is one shard and not a merged run");
+            }
+
+            if (!IsWhole)
+            {
+                reasons.Add("the run covers less than its selection: " + Coverage);
+            }
+
+            if (!Totals.Accounts)
+            {
+                reasons.Add(
+                    "the five verdicts account for " +
+                    Number(Totals.Passed + Totals.Failed + Totals.Unsupported + Totals.Exhausted +
+                        Totals.Skipped) +
+                    " of " + Number(Totals.Variants) + " variants");
+            }
+
+            if (Totals.Variants == 0)
+            {
+                reasons.Add("the run scored no variant at all");
+            }
+
+            return reasons;
+        }
+    }
+
+    /// <summary>Whether this run's figures may be written into a record that outlives it.</summary>
+    internal bool IsRetainable => Unretainable.Count == 0;
 
     /// <summary>The composition this report was taken under, in the words the run printed.</summary>
     internal string DescribeManifest() =>
@@ -263,7 +365,7 @@ internal sealed record Test262Report(
     {
         var text = new StringBuilder();
         text.Append(Header).Append('\n');
-        text.Append("# run|suite|revision|shardIndex|shardCount|partition\n");
+        text.Append("# run|suite|revision|upstream|upstreamRevision|shardIndex|shardCount|partition\n");
         text.Append("# edition|standard|year|source|revision|document|digest|archived\n");
         text.Append("# manifest|id|formatVersion|harness|admitted|declined\n");
         text.Append("# allowance|fuel|wallClockMs\n");
@@ -273,7 +375,10 @@ internal sealed record Test262Report(
         text.Append("# total|files|variants|passed|failed|unsupported|exhausted|skipped\n");
         text.Append("# family|name|count|example\n");
         text.Append("# exhausted|dimension|count|example\n");
-        text.Append("# result|path|variant|verdict|family|dimension|detail\n");
+        text.Append("# failure|kind|count|example\n");
+        text.Append("# area|directory|count|example\n");
+        text.Append("# feature|name|count|example\n");
+        text.Append("# result|path|variant|verdict|family|dimension|kind|features|detail\n");
         text.Append("# config|failure|detail\n");
 
         // THE OTHER PINNED INPUT, WRITTEN BESIDE THE SUITE'S, exactly as the `--run` mode's report
@@ -297,6 +402,8 @@ internal sealed record Test262Report(
                 "run",
                 Suite.Name,
                 Suite.IsPinned ? Suite.Revision : "unpinned",
+                Upstream.Length == 0 ? "-" : Report.Cell(Upstream),
+                UpstreamRevision.Length == 0 ? "-" : Report.Cell(UpstreamRevision),
                 Number(ShardIndex),
                 Number(ShardCount),
                 Report.Cell(Partition)))
@@ -370,6 +477,31 @@ internal sealed record Test262Report(
                 .Append('\n');
         }
 
+        // THE THREE FAILURE AXES, derived from the rows and written beside the two tallies that
+        // were already here. They are not read back, for the reason the family table is not: a merge
+        // that parsed them would hold a second set of figures able to disagree with the cases they
+        // are a breakdown of.
+        foreach (var row in FailureKinds)
+        {
+            text.Append(string.Join(
+                    '|', "failure", Report.Cell(row.Name), Number(row.Count), Report.Cell(row.Example)))
+                .Append('\n');
+        }
+
+        foreach (var row in FailureAreas)
+        {
+            text.Append(string.Join(
+                    '|', "area", Report.Cell(row.Name), Number(row.Count), Report.Cell(row.Example)))
+                .Append('\n');
+        }
+
+        foreach (var row in FailureFeatures)
+        {
+            text.Append(string.Join(
+                    '|', "feature", Report.Cell(row.Name), Number(row.Count), Report.Cell(row.Example)))
+                .Append('\n');
+        }
+
         foreach (var result in Results
                      .OrderBy(static result => result.Path, StringComparer.Ordinal)
                      .ThenBy(static result => result.Variant, StringComparer.Ordinal))
@@ -382,6 +514,8 @@ internal sealed record Test262Report(
                     result.Verdict.ToString(),
                     Report.Cell(result.Family),
                     Report.Cell(result.Dimension),
+                    Report.Cell(result.Kind),
+                    Report.Cell(result.Features),
                     Report.Cell(result.Detail)))
                 .Append('\n');
         }
@@ -411,7 +545,7 @@ internal sealed record Test262Report(
                 continue;
             }
 
-            return string.Equals(line, Header, StringComparison.Ordinal);
+            return line.StartsWith(HeaderPrefix, StringComparison.Ordinal);
         }
 
         return false;
@@ -421,6 +555,8 @@ internal sealed record Test262Report(
     internal static Test262Report Read(string path)
     {
         var suite = new SuiteRevision("unnamed", string.Empty);
+        var upstream = string.Empty;
+        var upstreamRevision = string.Empty;
         var manifestId = JavaScriptProfile.WideManifest.ToString();
         var formatVersion = 0u;
         var loadsHarness = false;
@@ -443,6 +579,18 @@ internal sealed record Test262Report(
         {
             if (line.Length == 0 || line[0] == '#')
             {
+                // AN EARLIER FORMAT IS REFUSED HERE AND NAMED, rather than falling through to the
+                // line reader and being refused for the first row whose arity moved. A report
+                // written before 2026-09-07 has seven-field results and a six-field run row, and
+                // every one of them would have been reported as an unrecognised line.
+                if (line.StartsWith(HeaderPrefix, StringComparison.Ordinal) &&
+                    !string.Equals(line, Header, StringComparison.Ordinal))
+                {
+                    throw new InvalidOperationException(
+                        $"{path} was written by `{line}` and this build reads `{Header}`; a report " +
+                        "of an earlier version is refused rather than read under the current one");
+                }
+
                 seenHeader |= string.Equals(line, Header, StringComparison.Ordinal);
                 continue;
             }
@@ -451,13 +599,15 @@ internal sealed record Test262Report(
 
             switch (parts[0])
             {
-                case "run" when parts.Length == 6:
+                case "run" when parts.Length == 8:
                     suite = new SuiteRevision(
                         parts[1],
                         string.Equals(parts[2], "unpinned", StringComparison.Ordinal) ? string.Empty : parts[2]);
-                    shardIndex = Value(parts[3]);
-                    shardCount = Value(parts[4]);
-                    partition = parts[5];
+                    upstream = Stated(parts[3]);
+                    upstreamRevision = Stated(parts[4]);
+                    shardIndex = Value(parts[5]);
+                    shardCount = Value(parts[6]);
+                    partition = parts[7];
                     break;
 
                 case "manifest" when parts.Length == 6:
@@ -506,16 +656,21 @@ internal sealed record Test262Report(
                 case "total":
                 case "family":
                 case "exhausted":
+                case "failure":
+                case "area":
+                case "feature":
                     break;
 
-                case "result" when parts.Length == 7:
+                case "result" when parts.Length == 9:
                     results.Add(new Test262Outcome(
                         parts[1],
                         parts[2],
                         Enum.Parse<Test262Verdict>(parts[3]),
-                        parts[6],
+                        parts[8],
                         parts[4],
-                        parts[5]));
+                        parts[5],
+                        parts[6],
+                        parts[7]));
                     break;
 
                 case "config" when parts.Length == 3:
@@ -534,9 +689,9 @@ internal sealed record Test262Report(
         }
 
         var report = new Test262Report(
-            suite, manifestId, formatVersion, loadsHarness, admitted, declined, shardIndex,
-            shardCount, partition, narrowings, candidates, selected, fuel, wallClock, results,
-            findings);
+            suite, upstream, upstreamRevision, manifestId, formatVersion, loadsHarness, admitted,
+            declined, shardIndex, shardCount, partition, narrowings, candidates, selected, fuel,
+            wallClock, results, findings);
 
         // THE COVERAGE CLAIM IS CHECKED AGAINST THE FACTS AND NOT TRUSTED. It is the field a rule
         // reads to decide whether a transcript is a whole-suite run, which makes it the one field
@@ -557,6 +712,10 @@ internal sealed record Test262Report(
         string.Equals(text, "-", StringComparison.Ordinal)
             ? []
             : text.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+
+    /// <summary>A cell whose lone dash means the field was not stated.</summary>
+    private static string Stated(string text) =>
+        string.Equals(text, "-", StringComparison.Ordinal) ? string.Empty : text;
 
     private static string Number(int value) => value.ToString(CultureInfo.InvariantCulture);
 

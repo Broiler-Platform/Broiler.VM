@@ -34,6 +34,16 @@ driver checks the archive at `src/tests/octane/pins/` against `octane.pin` befor
 runs each benchmark in a process of its own through the ordinary command line of the end-user host,
 and retains every line each printed.
 
+*(Correction recorded beside this row on 2026-09-08, and no line of any retained log is edited.
+**The sentence below was true of the run this bundle retains and is no longer true of the
+checkout.** Nine of fifteen score today: `pdfjs`, `mandreel`, `gbemu`, `box2d` and `typescript`
+meet `2103:NestingTooDeep` against `SliceParseOptions.MaximumTreeDepth`, a bound landed in commit
+`72b12c3` on 2026-09-06 — **the day after this bundle was collected** — and `zlib` raises a
+`SyntaxError` from inside its own `eval`. A bundle is a dated statement about one run and this one
+is not being withdrawn; what has moved is the tree.
+[JSC-206](../../roadmap.corrections.md#jsc-206) carries the finding, the cause and what it declines
+to conclude.)*
+
 **Fifteen of fifteen benchmarks reported a score and exited zero.** That is
 [section 1](../../roadmap.workloads.md#1-the-target-stated-as-behaviour-rather-than-as-a-score)'s
 target for this workload stated as behaviour, and it is the whole of what this bundle claims about

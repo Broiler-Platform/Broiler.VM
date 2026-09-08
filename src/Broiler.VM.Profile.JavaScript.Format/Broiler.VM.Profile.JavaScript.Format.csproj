@@ -9,6 +9,14 @@
          the status ledger records that nothing here is packable, so ADR 0001's packable set
          stays at exactly the three core packages and rule A6 keeps counting three. -->
     <IsPackable>false</IsPackable>
+
+    <!-- JsNativeFrame is the structure emitted machine code and managed code share, and its
+         fields are pointers to unmanaged storage. The property is here rather than nowhere so
+         that the ONE declaration in this component that names a pointer type is a visible,
+         reviewable line in a project file instead of an assumption. Nothing in this assembly
+         dereferences one; the struct is a contract, and this is what a contract about pointers
+         costs to write down. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <!-- The pivot. The executor and the lowering must agree on the bytecode and neither may

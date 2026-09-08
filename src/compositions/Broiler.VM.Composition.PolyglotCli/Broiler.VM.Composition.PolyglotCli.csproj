@@ -1,0 +1,70 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Composition.PolyglotCli</RootNamespace>
+    <AssemblyName>Broiler.VM.Composition.PolyglotCli</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- NOT PACKABLE, AND THE REASON IS THE ONE EVERY ROOT HERE GIVES. `docs/compositions.md`
+         section 1 advertises nothing, and this root is the one a reader is most likely to expect
+         to be shipped, because it is the tool the repository owner asked for: one command that
+         runs both input profiles. It is not shipped. The JavaScript surface admits no async
+         function, no module of its own, no Proxy and no BigInt; the WebAssembly surface admits no
+         import, no text format, no vector, no GC, no exception, no thread and no memory64. A tool
+         advertised as a polyglot host would be claiming both, and neither claim is one this
+         checkout can make. -->
+    <IsPackable>false</IsPackable>
+
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <!--
+    THE FIRST IMAGE IN THIS REPOSITORY THAT COMPOSES TWO PRODUCT PROFILES.
+
+    `docs/roadmap.md` section 14 has asked since VM-3 for a catalog test over two profiles, and
+    section 16 records that a composition hosting two profiles does not close a gate until that
+    test exists. Until now the only two-profile composition in the checkout was
+    `Broiler.VM.Composition.Workbench`, whose two profiles are the fixture profiles
+    `Com.Example.Calculator` and `Com.Example.Ledger` - written by this repository, for this
+    repository, to be composed. This root composes `broiler.javascript` and
+    `broiler.webassembly`: two profiles with different payload formats, different manifests,
+    different diagnostic vocabularies and different execution models, neither of which was written
+    with the other in mind.
+
+    WHAT IT DOES NOT DO IS CLOSE THAT ROW. Section 14 asks for a profile composed beside a
+    DELIBERATELY ADVERSE neighbour, showing the neighbour's hard maxima do not reach it while its
+    adopted defaults do, and this root writes no such test. Section 16 says a second product
+    profile turns the argument into one with two real parties and "does not make either pass
+    earlier", which is exactly this root's position.
+
+    WHAT THE REFERENCE SET IS, AND WHY IT IS SIX. Three core projects, the JavaScript profile and
+    its lowering, and the WebAssembly profile. The JavaScript format assembly arrives transitively
+    through the profile and is in the image without being named here, which is what the register's
+    sibling column exists to record. The WebAssembly profile has no format sibling and no lowering
+    at all, because its payload is a bare module produced by an external toolchain.
+
+    RULE N2 FORBIDS A CROSS-FAMILY EDGE AND EXCEPTS EXACTLY THIS. No project in one
+    `Broiler.VM.Profile.<Language>` family may reference a project in another, and no project
+    outside every family may reference into one - "except a composition root, which A12 bounds
+    instead". A12's bound is three core projects plus one or more profile assemblies, and this
+    root has that and nothing else. So the two families still cannot see each other; a composition
+    can see both.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Profile.JavaScript\Broiler.VM.Profile.JavaScript.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Profile.JavaScript.Compiler\Broiler.VM.Profile.JavaScript.Compiler.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Profile.WebAssembly\Broiler.VM.Profile.WebAssembly.csproj" />
+  </ItemGroup>
+
+</Project>

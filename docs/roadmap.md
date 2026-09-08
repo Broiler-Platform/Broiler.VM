@@ -37,6 +37,7 @@ test names, and release manifests must qualify the term when ambiguity is possib
 | **Built-in profile** | A profile whose factory and dependencies are directly referenced at build time and rooted in a static catalog. A built-in may be Broiler-provided or application-local; it is never discovered at run time. |
 | **Fixture profile** | A deliberately trivial profile owned by the core's own tests. It proves contracts, closures, and failure paths without waiting for a product profile, and it never ships in a product package. |
 | **Verified artifact** | The opaque, immutable, profile-bound output of successful verification. Execution and instantiation consume this handle, never caller-owned raw bytes. |
+| **Artifact output form** | The kind of payload a verified artifact carries. **The form is a property of the artifact and not of the runtime**: the compiler chooses it, verification fixes it, and nothing the runtime does afterwards changes it. **What the core knows is that an opaque profile-owned payload has a declared form, and nothing beyond that.** VM-7 admits three forms — bytecode, `x86-64` machine code and `arm64` machine code — and that enumeration belongs to the profiles that offer them and to the support table that publishes them, never to a core interface: invariant 4 refuses the core an ISA it understands, and an ISA the core understood would be the lowest-common-denominator ISA that invariant exists to refuse. See [invariant 14](#2-engineering-invariants) for what the core does own, which is whether a composition may execute the result. *(added 2026-09-07 for VM-7)* |
 | **Guest-initiated load** | A verification requested by executing guest code rather than by the caller. It produces an ordinary verified artifact through the ordinary verification path. |
 | **Artifact-provider capability** | The typed, allowlisted host capability that answers a guest-initiated load with a descriptor and bytes. It is a distinct capability kind from a value-returning import and is never implied by one. |
 | **External suspension** | A pause requested by the host or a diagnostic client rather than by guest code, from which execution may resume. It is distinct from guest-initiated suspension and from terminal cancellation. |
@@ -67,7 +68,9 @@ Broiler.VM owns:
 
 Each VM profile owns:
 
-- its bytecode payload format and feature manifest;
+- its artifact payload format and feature manifest. **A payload need not be bytecode**: VM-7
+  admits a native machine-code form, and which forms a profile offers is that profile's choice
+  and not the core's *(revised 2026-09-07)*;
 - decoding, validation, and profile-specific resource checks;
 - its value, frame, call, control-flow, trap/exception, and suspension model;
 - imports, exports, and conversions at its host boundary;
@@ -113,7 +116,12 @@ Each VM profile owns:
    disposal, or concurrent reuse of the caller's buffer cannot affect verified instructions. Bytes
    a profile obtains while executing take the same path: they become their own verified handle
    before anything in them runs, and no profile may execute source or bytes it acquired without
-   one.
+   one. **Where the payload is machine code the word *executable* stops being a metaphor, and the
+   verifier's obligation grows to match** *(added 2026-09-07 for VM-7)*: a bytecode verifier that
+   is wrong yields a wrong answer inside an interpreter that still owns the process, and a native
+   verifier that is wrong yields whatever the bytes say. Nothing about the shape of this invariant
+   changes; what changes is the cost of getting it wrong, and section 16 carries that as its own
+   risk row rather than leaving it to be inferred from this sentence.
 4. **The core is semantics-neutral.** It provides lifecycle and safety contracts, not a
    lowest-common-denominator ISA. Two profiles may share a primitive only after section 8's
    evidence rule is satisfied.
@@ -154,6 +162,30 @@ Each VM profile owns:
 13. **The core is provable without a product profile.** Every core gate closes against the fixture
    profile and an application-local consumer profile. A gate that cannot be demonstrated without
    shipping a language is a core-design defect, not a scheduling problem.
+14. **Native execution is declared, never ambient.** A composition may map artifact bytes
+   executable only where its register row declares it; the declaration is to be checked against the
+   published closure the way every other closure claim already is — **the column landed on
+   2026-09-07 and rule K5 has read it since**, holding every cell against the tree in both
+   directions: a `none` over an image that links the arming path and an architecture over an image
+   containing none both fail, and the assemblies that can map memory are read from the ImplMap
+   tables and the checkout's source rather than from the register. Six of the register's ten rows
+   declare `x86-64` and four declare `none`. So this invariant is enforced rather than declared;
+   what remains outstanding for
+   [VM-7](#vm-7--admit-a-native-artifact-form-and-in-process-native-execution) is reading the
+   declaration against the retained closure reports the way rule K4 reads every other closure claim
+   *(corrected 2026-09-08: this clause read "**the column exists as of 2026-09-07 with every row
+   declaring `none`, and no rule reads it yet**, so this invariant's enforcement is VM-7's first
+   next action and not a check this checkout runs", which went stale the day it was written — K5
+   was minted, and the JavaScript and PolyglotCli rows moved to `x86-64`. **An invariant that
+   reports itself unenforced when a rule enforces it understates the component in the direction
+   this document treats as a defect**, so the superseded reading is quoted rather than dropped)*.
+   Pages are armed **W^X** — written readable-writable, executed read-execute, never both at once —
+   and a profile that maps nothing executable must be unable to, rather than merely not doing it.
+   **The core generates no machine code and knows no encoding.** Invariant 4 is what forbids it: an
+   ISA the core understood would be the lowest-common-denominator ISA that invariant exists to
+   refuse, so instruction selection, register allocation and calling convention stay inside the
+   profile that owns them, and the core owns only whether a composition may execute the result
+   *(added 2026-09-07 for VM-7)*.
 
 ### Core contract version and amendment
 
@@ -325,6 +357,25 @@ VM-0 also fixes handle lifetime. A handle is either ordinary managed immutable d
 explicitly disposable resources; it cannot be ambiguously borrowed from a runtime. Where sharing
 and disposal are both supported, explicit leases, idempotent disposal, and deterministic
 use-after-dispose behavior prevent one runtime from invalidating another's input.
+
+**The payload's declared form is part of that identity, and the core reads it the way it reads
+every other profile-owned field** *(added 2026-09-07 for VM-7)*. Section 1's *artifact output form*
+is carried on the descriptor and pinned into the handle beside the profile, the manifest and the
+effective ceilings, so a composition that holds no executor for a form refuses it before any of the
+payload is decoded, and so the refusal is the ordinary deterministic load failure this section
+already requires of a mislabelled artifact rather than a new outcome category. **The form is fixed
+when the artifact is verified and a verified handle's form never changes**, which is the same rule
+invariant 9 applies to a ceiling: a different form needs a newly verified handle, and no run-time
+observation selects one.
+
+**What the core carries is a declaration and never a decoder**, and the distinction is invariant
+4's rather than a convenience. The core does not know what `x86-64` means, holds no encoding table,
+and cannot tell a well-formed instruction stream from a malformed one; what it can do is refuse a
+form no composition in the image declares, and record which form a handle was minted against. The
+verifier that reads the bytes is the profile's, and [invariant 14](#2-engineering-invariants) is
+where the executable case's extra obligations are stated. **No milestone before VM-7 admits a form
+other than bytecode**, and this passage describes the shape of a concept rather than a payload any
+composition in this repository produces.
 
 ### Optional persisted envelope
 
@@ -721,6 +772,36 @@ than as a dependency. That decision carries conditions:
 
 ### WebAssembly
 
+**This profile is planned to be brought up, and to be brought up as an MVP** *(added
+2026-09-07)*. The owner's instruction of that date names a second input profile beside JavaScript.
+**It has started, and nothing it has done is accepted** *(corrected 2026-09-08: this read "**None
+of it has started**: that profile's ledger marks every milestone `Not started` and its directory
+holds documentation and no code", which was true the day it was written and went stale within it)*:
+that directory holds a project in the solution and source beside its documentation, and that
+profile's ledger — not this section — is the authority for what the bring-up has demonstrated. It
+marks WA-0, WA-1, WA-3 and WA-5 `In progress` and WA-2 `Blocked` on the strength of code that
+exists and runs, with no milestone accepted, no evidence bundle retained and no human review of
+anything. The work of building one belongs to
+`src/Broiler.VM.Profile.WebAssembly/docs/` — that roadmap mints the stages, that ledger holds their
+state, and [update rule 6](roadmap.status.md#4-update-rules) keeps every one of them out of this
+component's ledger. **Nothing in this paragraph moves a core gate.** No row of section 15 gains a
+subject because a second profile is planned, VM-0 through VM-7 wait on it exactly as much as they
+waited before — which is not at all — and no WebAssembly result closes anything here.
+
+**What a second product profile does change is which of this document's arguments have two
+parties.** [Section 8](#8-sharing-between-profiles-without-a-lowest-common-denominator-core)'s
+extraction gate asks first for two profiles that need the same mechanism, and through VM-6 that
+condition is unsatisfiable rather than merely unmet: there has been one product profile and a
+fixture. Section 14's two-profile catalog row is in the same position, and
+[section 16](#16-risks-and-stop-conditions) already says so in its own words — a composition that
+hosts two profiles does not close a gate until that test exists, and until now there has been no
+second product profile to write it against. **A second one turns both from a design argument into
+a thing with two real parties**, which is the one respect in which this component's own gates stand
+to get better evidence out of work this document does not plan. **It does not make either pass
+earlier.** A first condition that becomes satisfiable is not a gate that has been invoked, and a
+catalog test with two product profiles in it is still a test somebody must write, run and retain;
+both belong to the milestones that already own them, and neither is advanced by this paragraph.
+
 Expected to require, beyond the baseline in section 4: binary decoding and type/stack validation
 of structured control flow; an immutable verified module distinct from each mutable instance;
 typed imports and exports resolved through an explicit linker; traps as profile results rather
@@ -735,6 +816,21 @@ refused, VM-0's item 7 records that no retained-state dimension can carry a gues
 refusal, and gating on a charge does not recover one. Recorded here because
 [section 2](#core-contract-version-and-amendment)'s procedure is currently unexecutable, so this is
 the sharpest live example of a blocker this component holds rather than a profile's own delay.
+
+**The MVP does not wait on that mint, and what it does instead is a published deviation rather
+than a workaround nobody wrote down** *(added 2026-09-07)*. Growth is gated on the profile's **own**
+declared memory maximum, which is not a core budget refusal at all, so the guest-observable
+negative answer the specification requires exists, is exercised, and is correct for every refusal
+the profile itself decides. **A refusal caused by a core budget stays non-guest-observable**,
+because on the shipped contract there is no spelling of one — the amendment above is exactly the
+absence of that spelling — and the deviation is named as a deviation in that profile's own support
+surface rather than left for a reader to infer from a test that passes. **This is a route taken
+without the decision that would have chosen it.** Choosing between deviating now and waiting for a
+mint is a boundary approval [the MVP programme](mvp.md) defers, and a deferred decision is a
+decision nobody took rather than one that went a particular way, so the route is recorded here —
+where its consequence is — and named as taken-without-a-decision. Taking it answers nothing: the
+candidate amendment stays **opened and unfiled** and unanswered, this component stays its holder,
+and VM-6 still publishes the row's state.
 
 It is also expected to need **no** parser, **no** text format, and **no** guest-initiated loads in
 its first version, which makes it the useful counterweight when judging whether a proposed core
@@ -764,7 +860,43 @@ Two concerns hide behind the word *compiler*, and they do not share a home:
 | Concern | Language-specific | Home |
 |---|---|---|
 | **Format** — opcodes, schema, encoder and decoder | yes | `Broiler.VM.Profile.<Language>.Format`, **only where a Broiler compiler exists for the language**; otherwise inside the profile |
-| **Lowering** — source to bytecode | yes, and only where Broiler compiles the language itself | `Broiler.VM.Profile.<Language>.Compiler` |
+| **Lowering** — source to an artifact | yes, and only where Broiler compiles the language itself | `Broiler.VM.Profile.<Language>.Compiler` |
+| **Output form** — which kind of artifact a lowering emits | yes | the same compiler. A backend is a **choice inside one lowering**, not a second lowering *(added 2026-09-07 for VM-7)* |
+
+**A second output form is not a second compiler, and the distinction is the one section 10 already
+draws for hosts.** "One lowering, however many hosts" below says a run-time-compiling and an
+ahead-of-time-compiling composition share one lowering assembly. The same rule answers backends:
+a bytecode backend and an x86 backend are two exits from one front end, sharing the parse, the
+static semantics and the analyses, and a profile that forks its front end per target has written
+the second lowering this section forbids. **What a backend does add is a second thing to keep
+deterministic** — the determinism property below now ranges over machine code, where iteration
+order reaches register allocation and instruction scheduling rather than only constant-pool
+ordering.
+
+**Both halves of that are rules rather than observations, and they are written as rules because a
+backend arrives as a convenience and a rule is what survives one.** The first is that a backend is
+added to the lowering that already exists, and its argument is not that two forks of a front end
+would disagree: it is that the language's static semantics would then be decided in two places,
+which is the defect whether or not the two agree today and is the defect a reader cannot check by
+comparing outputs. The second is that determinism stops being cheap. The property below ranged over
+a constant pool's ordering while bytecode was the only output; over machine code it also reaches
+instruction selection, and an iteration whose order is a dictionary's rather than a declaration's
+is enough to make two builds of one source differ in a byte of an epilogue — **two builds a reader
+cannot compare, in a component whose evidence is made of comparisons.** Where that work is tracked
+is not here: the JavaScript profile's backends are planned in
+`src/Broiler.VM.Profile.JavaScript/docs/roadmap.backends.md` under identifiers of its own, and this
+section fixes where a backend *lives* in the assembly graph rather than when anybody writes one.
+
+**That determinism also makes a verification strategy available that a payload of code would
+otherwise not have.** Where an image holds the front end and the backend both, a verifier can lower
+the artifact's own bytecode again with the same backend and require the emitted bytes to be equal —
+**re-emission equality**, which answers "are these the instructions this compiler produces for this
+program" rather than only "are these bytes well formed". It is available only where the backend is
+present, so an execution-only image cannot perform it and VM-7 does not treat it as the answer:
+that milestone's gate pins the *verifier* with a retained corpus and states in its own words that
+the code generator is pinned by nothing in it. **Re-emission equality is a consequence of
+determinism and not a substitute for a differential oracle** — it proves that an emitter reproduces
+itself, and an emitter that is wrong reproduces itself exactly.
 
 **The format package is the pivot, and it is a pivot only where there are two parties to pivot
 between.** A compiler and an executor must agree on the bytecode, and neither may depend on the
@@ -794,6 +926,18 @@ The trigger for revisiting is a product that must ship precompiled artifacts wit
 its image** — a dynamic-code-prohibited or size-constrained composition. At that point compiling
 somewhere other than the running host has a real consumer and a real closure to justify, and the
 component is opened then against that requirement rather than against an anticipated one.
+
+**That trigger is now pulled, and by VM-7 rather than by a product** *(2026-09-07)*. A native
+output form makes the execution-only composition the interesting one: it holds a format, a
+verifier and an executor that maps a page, and no compiler and no code generator at all, which is
+the "no compiler in its image" shape this paragraph was written against. **This does not by itself
+open a toolchain component.** What VM-7 opens is a backend inside the existing lowering and a
+mapping path inside the profile; a command-line compiler, a build integration and a packaged SDK
+each still have no consumer, and section 8's extraction gate still governs whether the mapping
+mechanism — how a page is allocated, armed and revoked — ever leaves the profile that first wrote
+it. **It leaves on the second consumer and not on the first**, exactly as `Broiler.VM.Binary` did
+for bounded reading; one profile with an executable page is a profile with an executable page, not
+a shared primitive.
 
 Two properties are worth holding from the start anyway, because both are cheap now and unpleasant
 to retrofit:
@@ -1128,8 +1272,13 @@ never complete because its design appears here.
   graph, catalog, AOT, and contract drift checks into required CI and the status ledger.
 
   **Then publish four states this component cannot resolve, each a state rather than a decision.**
-  They are here because this is the last milestone in the roadmap: what follows it is the review,
-  not a VM-7, so a question no earlier milestone could answer has no later one either.
+  They are published here because no earlier milestone can answer them and this is the last one
+  that gates a release. *(Revised 2026-09-07: this passage read "what follows it is the review, not
+  a VM-7". A VM-7 now follows. **The conclusion is unchanged and its reason is not** — VM-7
+  resolves none of the four: it mints no amendment, needs no second product profile, provides no
+  persisted envelope, and closes neither declared-and-undemonstrated bound. So the four are still
+  published at VM-6 rather than deferred into it, and a reader who met the old sentence and
+  inferred that the register was complete at VM-6 should read gate 1 again.)*
 
   1. **The candidate-amendment register**, per row: what it would change, whether it is filed, held
      or opened, the deterministic failure or named exclusion the unamended contract leaves
@@ -1167,6 +1316,247 @@ never complete because its design appears here.
   unowned. **Each rule is over the publication and never over the answer** — a release that
   publishes every row truthfully and moves none of them passes.
 
+### VM-7 — Admit a native artifact form and in-process native execution
+
+- **Owner:** Core architecture owner with the security and release owners. **Three owners rather
+  than one**, because this milestone spends the component's safety margin rather than adding a
+  capability beside it, and an owner who can approve that alone is an owner reviewing themselves.
+- **Why it is here at all, stated plainly.** Every milestone before this one narrowed what a
+  product image may do. This one widens it, and the widening is the point rather than a side
+  effect: a verified artifact may be machine code, and a composition may execute it. **The
+  component's own records forbade this until today** — section 16 stopped a closure that reaches
+  dynamic code, and the JavaScript profile's non-goals refused a second execution arm. Both are
+  amended in the same change that opens this milestone rather than found to be in the way later,
+  and neither amendment is a finding that the old rule was wrong. The old rule bought something
+  real, this milestone spends it, and the exit gate below is the price.
+- **What motivated it, and what that evidence is not.** A probe collected 2026-09-07 on one
+  `win-x64` machine: emitted x86 executed correctly from a **published Native AOT image** on
+  `win-x64` and on `win-x86` — `IsDynamicCodeSupported` is `False` in both and neither needs it —
+  and was faster than the interpreted path on that machine. **No figure from it is stated here**
+  *(revised 2026-09-07: this bullet printed per-call timings for the emitted path beside a
+  per-instruction timing for a language profile's interpreter, and the pairing implied a language
+  speedup; the figures are deleted and the qualitative fact kept)*. **This is a probe
+  and not a baseline.** It was not collected by the benchmark host, it has no A/A lane, no
+  predeclared rule and no retained repetitions, so rule L1 does not bind it and
+  [the baseline register](baselines.md) does not carry it. It is recorded because a milestone that
+  widens a trust boundary should say what it was opened against — and because that is not what
+  closes it. **It is also not retained, and this record says so rather than letting a reader assume
+  a bundle**: the probe was two throwaway programs, `docs/evidence/` holds no `vm-7` directory
+  because there is no bundle to put in one, and adding the programs to the tree would put a project
+  in neither the solution nor `samples/`, which rule A14 reports. So the probe is
+  **unreproducible from this repository as it stands**, and a figure about a language profile's
+  interpreter may not appear in a core record at all — [release gate 8](#15-release-gates) and
+  [update rule 6](roadmap.status.md#4-update-rules). A reader who needs numbers re-derives them; a
+  reader who needs to rely on them cannot, and that is the correct relationship between this
+  paragraph and a gate.
+- **One accident from that probe is worth more than its timings, and it is retained as a fixture
+  rather than as an anecdote.** The 32-bit backend was written with the wrong calling convention:
+  `ret` where the target ABI requires `ret 8`. Nothing refused it. The function returned the
+  correct answer, every time, and leaked eight bytes of stack per call until the process died of
+  stack exhaustion several million calls later — no exception, no diagnostic, and nothing a
+  verifier of the *artifact* could have caught, because the artifact was well formed and the
+  generator was wrong. **That is the shape of a native-form defect**: correct output, delayed
+  death, and a failure that arrives nowhere near its cause. Every clause of the exit gate below
+  that looks over-specified is answering it.
+- **Next action:**
+  1. **Make the enforcement say what the stop condition says.** Rule B5 forbids
+     `System.Reflection.Emit.*`, `System.Runtime.Loader.*` and the reflection-invocation members;
+     release gate 2 forbids "dynamic loading or IL emit". **Neither reached a hand-written
+     machine-code path. Through VM-6 a profile that mapped a page executable passed every automated
+     gate this component had, while tripping a stop condition this component publishes** — a hole
+     that predates this milestone and was not created by it. **Done: it landed on 2026-09-07 and is
+     recorded as done here on 2026-09-08, and this item is the one act a later document should name
+     rather than number.** B5 gained the native-memory member half — the managed members by which a
+     caller acquires, prepares or hands out a pointer to code — and its scope widened from the
+     three core assemblies to every assembly a published image can contain, which is where an
+     arming path would actually be; **B5c** was minted for the half no member reference names,
+     reading the ImplMap and ModuleRef tables where `VirtualProtect` and `mprotect` are rows in the
+     calling assembly's own metadata, with one named arming assembly allowlisted; **X1** pins the
+     arming path to one place in the shipping source and every protection it passes to a named
+     constant admitting a read and a write or a read and an execute and never both; and **K5**
+     reads the composition register's native-execution column against those same ImplMap tables and
+     the checkout's source, in both directions — a `none` over an image that links the arming path,
+     an architecture over an image that can arm nothing, `none` beside an architecture, a value
+     outside the vocabulary, and a row carrying no cell at all. The register now has **ten rows,
+     six declaring `x86-64` and four declaring `none`**. Each rule carries the negative control
+     item 4 below names, watched failing when injected and passing after revert. **What none of it
+     accepts is the milestone**: no exit-gate clause is met by it, no bundle of this milestone's
+     own is retained, and no person has read a line of it. *(Corrected 2026-09-08: this item read
+     "**Neither reaches a hand-written machine-code path. Today a profile that maps a page
+     executable passes every automated gate this component has, while tripping a stop condition
+     this component publishes**", and then described its own enforcement in the future tense — "B5
+     gains the native-memory surface ... it mints the rule that reads the composition register's
+     native-execution column — that column exists as of 2026-09-07 and every one of its seven rows
+     declares `none`, and **no rule reads it**, so the declaration exists and the enforcement does
+     not". Every one of those clauses was true when it was written and none of them survived the
+     day it was written on: B5, B5c, X1 and K5 are `Active` in
+     `src/tests/Broiler.VM.Architecture.Tests/rules.register.json`, the register carries ten rows
+     and not seven, and six of them declare an architecture —
+     [the register](compositions.md#3-the-compositions) and
+     [the support table](support.md) say the same. **A roadmap that reports its own enforcement as unwritten after it is written
+     understates the component, which is the same defect as overstating it**, so the superseded
+     reading is quoted here rather than deleted.)* *(Revised 2026-09-07: this item was numbered 2
+     and the amendment falsification below was numbered 1. **The first thing a milestone that
+     widens a boundary owes is the check that the boundary was ever enforced**, and this work
+     depends on no backend existing and on no procedure this component cannot execute, while the
+     item below depends on both. A document that referred to either of these by ordinal should
+     refer to the act instead, so the reference cannot go stale on a renumber.)*
+  2. **Attempt to falsify the claim that no core contract amendment is required.** It decides
+     whether the milestone can *run*: section 2's amendment procedure is **unexecutable** while one
+     person holds the minting role and both co-signing roles, so a VM-7 that needs an amendment is
+     a VM-7 that cannot start — which is why it stands ahead of every item below that writes a
+     backend, and behind the enforcement item above, which asks it nothing. The claim to attack is
+     that contract version 1 already admits this — a verified artifact's payload is opaque and
+     profile-owned, the executor is profile-owned, the lifecycle is untouched, and no result
+     category is added — so a native payload is just a payload. **The claim is stated in order to
+     be refuted, and what this item delivers is the attempt rather than the conclusion.** If it
+     survives, record why in a dated ADR revision; if it falls, VM-7 is `Blocked` on a procedure
+     this component cannot execute, and the ledger records that with this component named as the
+     holder.
+  3. **Define the declaration and prove the closure.** The composition register's native-execution
+     column landed on 2026-09-07 and rule K5 has read it in both directions since the same date, so
+     both the declaration and its enforcement exist: six of the register's ten rows declare
+     `x86-64` and four declare `none` *(revised 2026-09-08: this item read that the column "landed
+     on 2026-09-07 with every row declaring `none`, so what is left here is the rule above reading
+     it", carrying a 2026-09-07 parenthetical that "only the enforcement is outstanding". The
+     enforcement is rule K5 in `src/tests/Broiler.VM.Architecture.Tests/rules.register.json`,
+     witnessed by `CompositionRegisterTests` with five rejecting directions, and
+     [the register](compositions.md#3-the-compositions) no longer declares `none` on every row.
+     **What is still outstanding here is the closure half and not the declaration half**, which is
+     the distinction the previous revision collapsed)*; the published closure is read off the published
+     output as it already is; and an execution-only composition demonstrates the shape this
+     milestone exists for — a format, a verifier and an executor that maps a page, and **no
+     compiler and no code generator in the image at all**.
+  4. **Fix W^X as a property of the mechanism rather than a habit of its callers.** Pages are
+     written RW and executed RX and never both at once; the arming path is one place; and a
+     negative control asserts that a page mapped RWX fails the suite. The probe found RWX permitted
+     on the collection machine, which is a statement about that machine's policy and not a licence.
+  5. **Publish the RID consequence before collecting it.** Invariant 7 wants publish-and-run per
+     declared RID, and a native form multiplies that by one backend per architecture. This
+     milestone opens **two backends and admits them on different evidence**: `x86-64`, whose
+     emission and whose execution are both in scope, and `arm64`, whose emission is in scope and
+     whose execution is not. `x86-32` is not one of them, and `ios-arm64` forbids the mechanism
+     outright rather than merely lacking a runner. The support table says which backends exist, on
+     which RIDs each has published **and run**, which are **emitting-only** and have therefore run
+     nowhere, and — for every declared RID with no backend — that a native artifact is refused
+     deterministically there rather than absent. *(Revised 2026-09-07: this item read "`x86-64` and
+     `x86-32` are two, `arm64` is a third this milestone does **not** open". The owner's
+     instruction of the same date names `arm64` as an output form this component is to have, and a
+     plan that declined it here while the work was planned elsewhere would have put the plan and
+     the instruction in two documents that disagree. **What changed is which architectures are in
+     scope and not what evidence any of them owes** — `arm64` enters with its execution excluded by
+     the rule below rather than admitted quietly, and `x86-32` leaves for a reason argued below
+     rather than for a reason of priority.)*
+- **What this milestone does not do. Each is a rule, not a scheduling note:**
+  - **The core generates no machine code and learns no encoding.** Invariant 4 is what forbids it:
+    an ISA the core understood would be the lowest-common-denominator ISA that invariant exists to
+    refuse. Instruction selection, register allocation and calling convention belong to the profile
+    that owns them; the core owns only whether a composition may execute the result.
+  - **No tiering.** An artifact is bytecode or it is native, chosen when it is compiled and fixed
+    when it is verified. There is no promotion from one to the other while running, no on-stack
+    replacement, no deoptimization, and no profile-guided recompilation, because there is no second
+    tier for any of them to reach. **This is what makes a native output form a different thing from
+    the JIT the JavaScript profile's non-goals refused**, and the distinction is load-bearing
+    rather than rhetorical: a tier is a code generator in the running image; a form is not.
+  - **No code generator in an execution-only image.** Where a composition compiles, it declares a
+    compiler; where it only executes, it may hold no backend at all.
+  - **No claim about speed.** Section 1's non-goal stands: this component measures its own overhead
+    and never a language's. A native form is admitted here as a **capability**. Any figure about
+    what it buys belongs to the profile that emits it, measured against that profile's own
+    baseline, and is not evidence for this milestone.
+  - **`arm64` emits and does not execute, and the asymmetry is a rule rather than a schedule**
+    *(added 2026-09-07)*. A backend that emits and has never executed is named in the support table
+    as **emitting-only**; its encodings are pinned by golden-byte tests and by a corpus every entry
+    of which is read back through a disassembler and compared against the instruction the encoder's
+    own table names, rather than by a run; and **no figure and no capability claim attaches to
+    it**. **This is weaker evidence than `x86-64`'s, and the difference is not cosmetic**: a golden
+    byte is a claim about what an encoder wrote, and a run is a claim about what a processor did
+    with it, and no quantity of the first becomes the second. It is nevertheless worth having, for
+    two reasons this milestone states rather than assumes. **An encoder pinned by its own encodings
+    is falsifiable** — a byte that changes fails a test, and a stream that does not read back as
+    the instruction the table names fails another — which is strictly more than an unwritten
+    backend offers and is the only kind of evidence available to a component with no machine to run
+    on. **And an architecture added after the abstraction has hardened is an architecture added
+    against a fixed target**: the second backend is what finds the places where the first one's
+    shape was `x86-64`'s habits rather than the interface, and finding them while nothing depends
+    on the answer costs less than finding them once something does. **The reason the execution half
+    is excluded is the next rule and not a shortage of hardware.**
+  - **On `arm64` a written page is not coherent with the instruction stream until maintenance runs,
+    and this component has no way to run it** *(added 2026-09-07)*. The architecture requires a
+    data-cache clean to the point of unification, a barrier, an instruction-cache invalidation, a
+    second barrier and an instruction-synchronisation barrier between the write and the first
+    execution. **There is no managed expression for that sequence and no dependable library export
+    that performs it** — the usual C spelling is a compiler builtin rather than an exported symbol
+    — so a backend that armed a page without it would be relying on whatever the machine that
+    tested it happened to do about coherency. **That is the worst failure shape this milestone
+    knows**: it works where it was written, and it fails elsewhere, on another core, under another
+    scheduler, or on the same machine on a different day, with no diagnostic and nothing in the
+    artifact to blame. So `arm64` execution is **excluded rather than unscheduled**, and what would
+    close the exclusion is a maintenance path this component can name, call and test — not a runner
+    and not a lane.
+  - **`x86-32` leaves this milestone, and the reason is the accident above rather than a priority**
+    *(recorded 2026-09-07; next action 5 named it beside `x86-64` until today)*. It is the only
+    **callee-pops** ABI in the declared matrix, and it is the exact source of the `ret 8` defect
+    this milestone keeps as a fixture: a wrong immediate on a return instruction that nothing
+    refuses, that returns correct answers, and that kills the process a long way from its cause.
+    **`arm64`'s `ret` takes no immediate at all, so that entire defect class is unrepresentable
+    there**, and `x86-64` is caller-pops in both of its ABIs. Choosing `arm64` as the second
+    backend therefore buys a second architecture without buying back the one defect class this
+    milestone was opened by. **The rule is not that `x86-32` is unsafe.** It is that a milestone
+    whose motivating accident belongs to one ABI does not add that ABI second, and a later
+    milestone that wants it inherits both the fixture and the ABI table it will need.
+- **What this MVP defers here, and what it does not.** This milestone runs under the programme
+  [docs/mvp.md](mvp.md) records, and that record rather than this bullet is the authority for the
+  terms. **Deferred, by the owner's instruction dated 2026-09-07**: approval of the boundary
+  records, so every ADR this milestone touches stays `Proposed`; human review, so `HUMAN_REVIEW.md`
+  stays unsigned and PENDING and every unit stays `HUMAN_PENDING`; evidence-bundle collection and
+  milestone acceptance, so no row reaches `Accepted`; and section 2's amendment co-signing, which
+  that section already records as unexecutable while one person holds every role. **Not deferred,
+  and the list is short because each item is one whose deferral would make this record untruthful
+  rather than merely unfinished**: the automated gates — the build, the suites, the rule register
+  and the assurance generator's own consistency — where a rule that fails still fails; the status
+  vocabulary, where a row says what its evidence shows and no more; the stop condition on an
+  untruthful support claim, which is the one thing an MVP may not buy speed with; the
+  non-advertisement of every composition and the three-package pack set; and the prohibition on
+  publishing. **So a VM-7 bundle still owes every clause of the exit gate below that a machine
+  checks, and the deferral discharges none of them.** What an MVP buys here is the right to build
+  and merge unreviewed work, which [update rule 8](roadmap.status.md#4-update-rules) already
+  grants. It buys nothing whatever about what may be claimed, and this milestone's whole subject is
+  a claim.
+- **Dependencies:** VM-2 for the verification boundary, VM-3 for the closure machinery this
+  milestone extends, and VM-4 for lifecycle. **It does not depend on VM-5 or VM-6** and is not
+  ordered behind them; the delivery-order note below says what "next" means with three milestones
+  open at once.
+- **Objective exit gate.** Every clause fails a build or a suite rather than being read:
+  1. The amendment question is **answered in a dated record**: either the core contract version is
+     unchanged with the reasoning retained, or a version is minted, or the milestone is `Blocked`
+     naming its holder. An unanswered question is not a passing gate.
+  2. **A negative control for each new rule** — a composition that maps executable memory with no
+     register row; a page armed RWX; a backend claiming a RID with no publish-and-run record — each
+     failing when injected and passing after revert.
+  3. The **execution-only composition publishes and runs under JIT, trimming and Native AOT**, and
+     its closure, read off the published output, contains a verifier and an executor and **no code
+     generator**. The closure is the evidence; a linker annotation is not.
+  4. **The verifier's answer for a native payload is pinned by a retained corpus**, in the same
+     form as the eighty-seven artifacts VM-2 retains: each with its hash and its expected outcome,
+     reason and diagnostic code. **A corpus of malformed input is not evidence about a code
+     generator** — a wrong backend emits well-formed output, as the accident above did — so this
+     clause pins the verifier, and the bundle states in its own words that the generator is pinned
+     by nothing in this milestone and names what would pin it.
+  5. The support table names, per declared RID, which native backends have published **and run**,
+     names each **emitting-only** backend as one and states that it has run nowhere, and names the
+     deterministic refusal everywhere else. **A backend with no run is a row that says so**, and a
+     rule fails the release where an emitting-only backend appears in a support row without that
+     word.
+  6. **Nothing about a language is claimed**, and a rule fails the release if this milestone's
+     bundle carries a figure about guest code.
+  7. **The `arm64` backend is pinned without a run** *(added 2026-09-07)*: a golden-byte test per
+     emitted instruction form, and a corpus whose every entry is decoded by a disassembler and
+     compared against the instruction the encoder's own table names, both failing on a changed
+     byte. **Neither is a claim that anything executed.** Clause 6 already forbids the bundle a
+     figure; this clause additionally fails the milestone where the bundle, the support table or
+     any release note describes the `arm64` backend as demonstrated, supported or working.
+
 ### Delivery order
 
 ```text
@@ -1176,12 +1566,41 @@ VM-0 graph, ownership, core contract version 1
             ├→ VM-3 public profile contract and exact closures
             │    └→ VM-4 lifecycle, concurrency, diagnostics hardening
             │         ├→ VM-5 core overhead baselines
-            │         └→ VM-6 package, publish, recertify
+            │         ├→ VM-6 package, publish, recertify
+            │         └→ VM-7 native artifact form, in-process native execution
             └→ (profile roadmaps build against the IMPLEMENTED contract;
                 acceptance blocks the milestones their own ledgers name)
 ```
 
-A profile roadmap's gates are its own, nothing in VM-0 through VM-6 waits for a profile, and no
+**VM-7 is the component's next primary objective, and that is a statement about attention rather
+than about order** *(2026-09-07)*. Three milestones are open at once: VM-5 and VM-6 keep their
+gates, VM-7 displaces neither, and none of the three waits on the other two. What "next" buys is
+which one the owners are working on.
+
+**One consequence runs backwards and is stated here rather than discovered at a release.** VM-7
+changes release gate 2 and adds gate 11, and both are gates VM-6 is checked against — so under
+[update rule 5](roadmap.status.md#4-update-rules) VM-6's retained bundle is evidence for an older
+gate the moment VM-7's rules land. It is not carried forward silently: VM-6's row records what
+recertifies unchanged and what must be re-collected, and a support table issued before VM-7's
+native rows exist is a support table that predates its own gate. A component that widens what an
+image may do owes its release train that arithmetic in advance.
+
+**The order above is the order. What the MVP changes is what may be claimed at the end of it, and
+not what runs inside it** *(added 2026-09-07)*. [The MVP programme](mvp.md) records what the
+owner's instruction of that date defers — approval of the boundary records, human review,
+evidence-bundle collection and milestone acceptance, and the amendment procedure's co-signing — and
+records with equal force what it does not: the automated gates, the status vocabulary, the stop
+condition on an untruthful support claim, the non-advertisement of every composition and the
+three-package pack set, and the prohibition on publishing. Read against this diagram the
+consequence is narrower than a reader might hope and is stated so the hope is not inferred: **no
+milestone above moves faster because a decision was deferred, and none of them reaches
+`Accepted`.** A deferred decision is a decision nobody took rather than a decision that went a
+particular way, so wherever a milestone here takes a route that a deferred decision would have
+chosen between, the route is recorded where its consequence is and named as
+taken-without-a-decision — which is why section 9's memory-growth paragraph carries that phrase and
+this one only points at it.
+
+A profile roadmap's gates are its own, nothing in VM-0 through VM-7 waits for a profile, and no
 profile result closes a core gate. **What a profile waits on is narrower than this note used to
 say.** It read "a profile roadmap may begin as soon as VM-1's contract is accepted"; under
 [update rule 8](roadmap.status.md#4-update-rules) — human review gates a release and not a
@@ -1189,6 +1608,20 @@ development step — a profile may open its plan and build against the contract 
 and what waits on acceptance is each milestone its own ledger records as blocked, with this
 component named as the holder. The distinction is the profiles' to draw and their ledgers draw it;
 what this note owes is not to assert the stronger version *(revised 2026-09-01)*.
+
+**One profile-owned document is named here, because VM-7 would otherwise read as the place its work
+is tracked** *(added 2026-09-07)*. The JavaScript profile's output-form work — its backends, the
+artifact section that carries their output, the path that arms a page, and anything it measures
+about any of them — is planned by that profile itself, in
+`src/Broiler.VM.Profile.JavaScript/docs/roadmap.backends.md`, whose stages are numbered JSB-1
+through JSB-n in that profile's own identifier namespace. **This roadmap mints no identifier
+there and no row of this component's ledger tracks one**:
+[update rule 6](roadmap.status.md#4-update-rules) keeps
+profile milestones out of the core's ledger, and a `VM-` number attached to a profile's backend
+would be precisely the confusion that rule exists to prevent. What VM-7 owns is whether a
+composition may execute a native payload at all and what it must declare in order to; what a JSB
+stage owns is a compiler that produces one and a profile that runs it. **Naming the document is not
+scheduling its stages**, and nothing in this section says that any of them has started.
 
 ---
 
@@ -1198,6 +1631,7 @@ what this note owes is not to assert the stronger version *(revised 2026-09-01)*
 |---|---|---|
 | Core/catalog | duplicate, alias, unknown and reserved IDs; version and core-contract-version mismatch; explicit selection; order independence; factory identity; application-local fixture; profile-neutral outcomes and typed payload preservation; **a two-profile catalog test proving that one profile's declared maxima reach the other's artifacts not at all, and that its adopted defaults do** *(corrected 2026-08-31 with the clamp: the maxima half used to ask that neither profile's maxima refuse the other, which is a property the contract no longer has and a test can no longer fail)* | reflection or name discovery, silent replacement, core reference to a concrete profile, an undeclared or forked core contract version, catalog drift, or **one profile's adopted default capping a dimension it never uses** |
 | Dependency architecture | acyclic graph; core references no profile; no profile references another; no product package references a fixture or test project; no edge to a legacy Broiler component in either direction | any forbidden project or assembly edge, or undeclared dynamic loading |
+| **Native artifact form and execution** *(added 2026-09-07, VM-7)* | a composition that maps executable memory carries a register row declaring it, and one that does not **cannot**; pages are armed W^X with a negative control over an RWX mapping; an execution-only composition publishes and runs in three modes with a closure containing no code generator; the verifier's answer for a native payload is pinned by a retained hashed corpus; the support table names each backend's publish-and-run RIDs and the deterministic refusal elsewhere, and names every emitting-only backend as one with no RID claimed and no figure attached | an undeclared executable mapping, an RWX page, a code generator in an execution-only closure, a native payload whose verifier answer is pinned by nothing, a backend claimed on a RID it has not run on, or an emitting-only backend described as supported, demonstrated or working. **Not blocked by, and not evidence of, a wrong code generator** — the corpus pins the verifier, and a wrong backend emits well-formed output |
 | Artifact safety and policy | truncation, invalid sizes, indexes and framing, corrupt envelope, post-verification caller-buffer mutation, disposal and concurrent overwrite, verified-handle identity and lease lifetime, explicit default adoption, omitted-limit inheritance, host/profile/artifact intersection, invocation-only tightening, guest-initiated-load depth, fan-out and cumulative bounds, nested budget charging, missing-provider refusal, minimized fuzz corpus; **every bounded-read status produced by a named case and mapped onto its one ruled outcome category, asserted identically across every verifier in the graph** | invalid input executes, caller mutation changes execution, one runtime invalidates another's handle, omission becomes unbounded, policy raises a verified ceiling, a nested load enlarges or escapes its requesting operation's budget, a provider-less composition executes acquired bytes, **a ceiling breach reported as a malformed artifact or a framing failure reported as exhaustion**, **two verifiers in one graph answering one status differently**, unbounded allocation, crash, hang, or nondeterministic failure class |
 | Persistence ownership *(conditional on approval; no milestone approves it — see [section 6](#optional-persisted-envelope))* | core outer-schema compatibility, rejection and migration; header and profile dispatch; atomic corruption handling; profile payload and cache-key boundaries; content authorization separate from checksum | ambiguous migration owner, outer compatibility mistaken for payload compatibility, torn update treated as valid, or checksum treated as authenticity |
 | Lifecycle/concurrency | frozen state transitions; repeated verify, instantiate, run, suspend, resume, cancel and dispose; external suspension, resume and abandonment; guest-initiated load under cancellation and disposal; independent runtimes; multiple fixture profiles; thread affinity; reentrancy; shared aggregate budget exhaustion; memory plateau | profile-specific state leaks into the core result enum, shared mutable leakage, race, unbounded retention, use-after-dispose, an externally suspended operation that cannot be resumed, cancelled or disposed, concurrent runtimes multiplying a host ceiling, or unbounded cancellation latency |
@@ -1231,7 +1665,10 @@ A Broiler.VM core preview or stable release must satisfy all applicable gates:
    is named here or it is inferred from silence.
 2. **Graph and registration:** the generated dependency closure matches VM-0, the catalog is
    static and documented, the generic runtime references no concrete profile, no product
-   composition reaches dynamic loading or IL emit, and no edge reaches a legacy Broiler component.
+   composition reaches dynamic loading, IL emit, **or an executable memory mapping its register row
+   does not declare** *(widened 2026-09-07 for VM-7; the clause named only IL emit, which no
+   hand-written machine-code path has ever gone near)*, and no edge reaches a legacy Broiler
+   component.
    The public source-level profile contract and ID namespace pass VM-3; no binary plug-in ABI is
    implied.
 3. **Correctness and safety:** the malformed corpus, fuzz regressions, immutable verified-artifact
@@ -1263,6 +1700,16 @@ A Broiler.VM core preview or stable release must satisfy all applicable gates:
    third-party claim this component publishes is falsified by what any component that ingests or
    copies from it ships **or by what its tree contains**. A component that vendors or copies
    third-party source is named in the notice in the same change that introduces it.
+11. **Native execution** *(added 2026-09-07, VM-7)*: every composition that maps artifact bytes
+   executable declares it in the register and appears in the published closure with no code
+   generator it does not also declare; pages are armed W^X; each native backend names the RIDs it
+   has published **and run** on, or is named **emitting-only** and names none; and every declared
+   RID without a backend carries a deterministic refusal rather than a silence. **A release may
+   state that a native form exists and may not state what it is worth** — gate 8 is unchanged, and
+   a language figure in a core bundle fails it. **An emitting-only backend is a backend a release
+   may say exists and may not say works** *(added 2026-09-07 with `arm64`)*: its evidence is its
+   own encodings, checked against a disassembler, and the word *supported* does not follow from a
+   test that reads bytes back.
 
 Recertification is required when the SDK or runtime, core contract version, package graph, host
 capability surface, Native AOT settings, RID matrix, cache identity, resource defaults, or
@@ -1300,13 +1747,31 @@ representative workload changes.
 | Caller-owned bytes change after verification | Snapshot or fully decode into an immutable profile-bound handle and execute only that handle. Mutation, disposal, and concurrent overwrite tests are release blockers. |
 | Internal formats become accidental public contracts | Version from the first byte and promise persistence only after its explicit gate. Reject unsupported versions deterministically. |
 | The core is justified by unmeasured performance | Capability and correctness come first. The core publishes only its own overhead and never a language claim. |
+| **A gate says less than the rule it enforces**, so a prohibition is published and not checked | Found 2026-09-07 while opening VM-7 and recorded rather than fixed quietly, because the hole predates the milestone that revealed it. Rule B5 forbids `System.Reflection.Emit.*`, `System.Runtime.Loader.*` and the reflection-invocation members; release gate 2 forbade "dynamic loading or IL emit". **Neither has ever reached a hand-written machine-code path**, so through VM-6 a composition could map a page executable, pass every automated gate this component has, and trip a stop condition this component published. Nothing did — but nothing would have said so. B5 gains the native-memory surface and a register-keyed allowlist at VM-7. **Stop: a rule whose only enforcement is a reader is not enforced, and a prohibition this component publishes without a check that fails is an untruthful support claim under the clause above.** |
+| **A wrong code generator is not a wrong artifact**, so the whole verification apparatus answers a question nobody asked | The corpus, the fuzz target and the verifier all take *input* as their subject; a native backend's defect is in its *output*, and its output is well formed. VM-7's own probe produced a function that returned correct answers and killed the process by stack exhaustion several million calls later, from one wrong instruction in an epilogue. **No verifier of the artifact could have caught it, and no corpus of malformed input contains it.** The compensating control is a differential oracle — the same program lowered both ways, executed both ways, compared — owned by the profile that emits the code and not by this component. **Stop: a native backend that ships without one is shipping an unfalsifiable claim, and the core states in its support table that it holds no evidence about any generator.** |
+| **An output form becomes an execution tier by increments** | Each step is small and locally reasonable: cache the mapped page, then keep it warm, then choose the form at instantiation, then choose it from a counter. The end of that path is the runtime code generator VM-7 declines and the JavaScript profile's non-goals refuse. The line is drawn at a property rather than at an intention: **the form is fixed when the artifact is verified, and a verified handle's form never changes.** Any promotion needs a newly verified handle, which is the same rule invariant 9 already applies to raising a ceiling. **Stop: a code path that selects a form from run-time observation, or that re-maps a handle's payload, is the second execution arm under another name.** |
+| **Emitted code holds a managed reference the collector cannot see** | The core's promise that one runtime cannot corrupt another rests on the CLR's type and memory safety, which native frames leave. A profile whose value model carries a managed reference — the JavaScript profile's does, deliberately and on the record — cannot hand that reference to emitted code without a rooting scheme the collector understands. This is the profile's to solve and the core's to refuse: **the core admits a native form and does not thereby admit that any given value model may cross into it.** **Stop: a profile that cannot state where its emitted code's references are rooted has not earned the form, whatever its benchmarks say.** |
+| **The RID matrix multiplies by backends**, and a green lane is read as a claim | One backend per architecture, each needing publish-and-run per invariant 7. VM-7 opens `x86-64`, whose emission and execution are both in scope, and `arm64`, whose emission is in scope and whose execution is not; `x86-32` is out of the milestone, and `ios-arm64` forbids the mechanism rather than lacking a runner *(revised 2026-09-07: this cell read "`x86-64` and `x86-32` are two, `arm64` a third VM-7 does not open"; the architectures changed and the obligation did not)*. `docs/support.md`'s existing rule applies unchanged — a RID whose evidence stops at a build is what publish-and-run refuses — and it now applies per backend as well as per RID. **Stop: a native backend named in the support table without a RID it has published and run on, unless the row says emitting-only and claims no RID at all.** |
+| **An emitting-only backend is read as a supported one**, because a table that lists it lists it beside backends that run | `arm64` enters VM-7 with its emission in scope and its execution out of it, so its evidence is golden bytes and a disassembly-checked corpus rather than a run — and the difference between "the encoder wrote these bytes" and "a processor executed them" is invisible to a reader scanning a column of backend names. The compensating control is a word in the row rather than a footnote under it: the row says **emitting-only**, says it has run nowhere, and carries no figure. The underlying reason is not a missing runner and the table says that too — on `arm64` a written page is not coherent with the instruction stream until a maintenance sequence runs, and this component has no managed expression for that sequence. **Stop: an emitting-only backend described anywhere as supported, demonstrated or working, or carrying any figure at all, is an untruthful support claim under the clause below — and a backend that arms a page on `arm64` without the maintenance sequence is worse than one that refuses to, because it passes on the machine that wrote it.** |
 
-Stop or re-scope a milestone when the graph is cyclic, a product closure reaches dynamic code,
-test tooling, or a legacy component, a verifier cannot produce an immutable bounded representation
-before execution, trusted policy can be weakened by artifact input, a second core state machine is
-maintained for one language, the declared Native AOT composition cannot publish and run, or the
-named ownership or maintenance ceiling is absent. A difficult or slow milestone is not itself a
-stop condition; an untruthful support claim is.
+Stop or re-scope a milestone when the graph is cyclic, a product closure reaches **undeclared**
+dynamic code — a code generator, or an executable mapping, in an image whose register row declares
+neither — test tooling, or a legacy component, a verifier cannot produce an immutable bounded
+representation before execution, trusted policy can be weakened by artifact input, a second core
+state machine is maintained for one language, the declared Native AOT composition cannot publish
+and run, or the named ownership or maintenance ceiling is absent. A difficult or slow milestone is
+not itself a stop condition; an untruthful support claim is.
+
+***Narrowed 2026-09-07 for VM-7.** This clause read "a product closure reaches dynamic code",
+unqualified, and it forbade VM-7 outright. One word carried the whole prohibition, and replacing it
+with "undeclared" is the single largest widening of what a product image may do in this document.
+It is recorded as a narrowing rather than as a correction: **the old clause was not wrong.** It
+bought a property — that no image in this component could execute anything it had not been compiled
+with — and VM-7 spends that property deliberately, in exchange for a declaration, a closure that
+shows it, and gate 11. What replaces the old absolute is not a weaker rule but a rule with an
+enforcement problem: **an absolute needs no allowlist and admits no mistake in one, and a
+declaration needs both.** The register is now load-bearing where nothing was needed before, and the
+six risk rows above are what guard it.*
 
 ---
 

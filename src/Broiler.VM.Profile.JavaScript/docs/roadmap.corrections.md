@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.JavaScript roadmap — corrections and rejections
 
-**Last updated:** 2026-09-06
+**Last updated:** 2026-09-08
 
 **This file is part of the [Broiler.VM.Profile.JavaScript roadmap](roadmap.md)**, which
 [names every file](roadmap.md#how-this-roadmap-is-split). It carries no numbered section of the
@@ -8275,3 +8275,684 @@ not one of the four and is named here only so it is not read into them. **No led
 by this**: the matcher session is one session over one surface, and JS-9's gate asks for far more.
 
 **Authority and date.** The implementation and the runs of 2026-09-06 described above. 2026-09-06.
+
+### JSC-197
+
+**Where:** roadmap [section 1's](roadmap.md#1-terminology-and-support-claims) non-goals, the *second
+execution arm* entry, and every section of the plan that was written while it read that way.
+
+**What the plan said.** That this profile has one executor, emits no IL, builds no expression tree,
+compiles no delegate and contains no tiering path into dynamic code — and, carried by the same
+paragraph without ever being one of its clauses, **that what this profile compiles is bytecode and
+what runs it is an interpreter**. The second half was the implication a reader took away, and it was
+the one the rest of the plan was written against: an artifact's payload was bytecode because there
+was nothing else a payload could be.
+
+**What replaced it.** Every clause of the paragraph survives, and the implication does not. The core
+opened [VM-7](../../../docs/roadmap.md#vm-7--admit-a-native-artifact-form-and-in-process-native-execution),
+which admits an artifact whose payload is machine code and a composition that executes one, so a
+payload need not be bytecode and *what this profile compiles* is no longer answerable by naming one
+form. What the plan carries in its place is a property rather than an intention: **the form is chosen
+when an artifact is compiled and fixed when it is verified, and a verified handle's form never
+changes** — one executor, one form per handle, no promotion, and a path that picks a form from
+run-time observation or re-maps a handle's payload is the second execution arm the paragraph still
+refuses.
+
+**Why this is recorded as an amendment and not as a finding that the old reading was wrong.** The
+implication bought something real: while it held, an execution-only image of this family could not
+run anything it had not been compiled with, and no reader had to ask what a payload was made of. That
+property is spent deliberately here rather than found to have been mistaken, and what replaces an
+absolute is not a weaker rule but a rule with an enforcement problem — an absolute needs no
+declaration and admits no mistake in one.
+
+**What this entry does not record.** It records no work. **No milestone of this profile emits machine
+code, no row in the ledger is about a backend, and the amendment changes only what a milestone here
+is permitted to propose.** A reader who met the older reading and inferred that a native form was
+therefore scheduled has inferred the opposite of what the paragraph says.
+
+**Authority and date.** The core's VM-7 record and the amendments landed with it in the same change,
+2026-09-07, together with the amendment to this plan's own non-goal on the same date.
+
+### JSC-198
+
+**Where:** roadmap [how this roadmap is split](roadmap.md#how-this-roadmap-is-split), the paragraph
+that stands the proposal documents outside the plan's own table, and the non-goals entry JSC-197
+records.
+
+**What the plan said.** That **two** proposal documents stand outside the plan — the workload roadmap
+and the parity roadmap — carrying the stage namespaces `JSW-n` and `JSP-n`, and that a reader who
+wants to know what this component does not yet do reads those two. Written when it was true, and it
+fixed the set as much as it described it: the two namespaces were the two, and the delivery document
+held every other identifier this family mints.
+
+**What replaced it.** Three stand there. [`roadmap.backends.md`](roadmap.backends.md) asks what a
+second and third output form — an artifact whose payload is machine code — would take, and mints its
+stages as `JSB-n`, **a namespace [the delivery document](roadmap.delivery.md#19-milestones) does not
+hold and [the ledger](roadmap.status.md#2-current-milestone-status) does not read.** That is the
+point of the namespace rather than an accident of it: a `JS-` identifier with no ledger row would
+read as a milestone somebody is tracking, and a stage with no owner and no row is neither.
+
+**What naming it changes, stated because the answer is nothing.** The plan names the document and
+schedules none of it. No stage in it has an owner, none moves a row, none is cited by a row, and the
+milestone that would emit machine code is still not written and still not in the delivery document.
+**The ledger records the document's existence as observed repository state and says in the same
+paragraph that this profile owns no backend code of any kind** — no encoder, no executable mapping,
+no emitted byte.
+
+**Authority and date.** The document itself, and the observed-repository-state paragraph the ledger
+carries for it, both 2026-09-07.
+
+### JSC-199
+
+**Where:** [`roadmap.backends.md`](roadmap.backends.md) sections 1, 3, 6 and 8 — the target, the
+constraint the document is organised around, the exit gates of
+[JSB-4](roadmap.backends.md#jsb-4--the-artifact-sections-that-carry-emitted-code-and-its-symbols) and
+[JSB-6](roadmap.backends.md#jsb-6--the-x86-64-encoder-and-a-frame-that-holds-no-managed-reference),
+and the promises.
+
+**What the plan said.** That the native form is a **per-unit** form inside a mixed artifact. A backend
+would test each code unit against a fixed eligibility allowlist over the opcode table, compile the
+units that passed, and leave the rest in bytecode; **the fallback would not be a code path** but the
+absence of a row in an offset map, so an artifact with a handful of compiled units out of hundreds
+would still be correct rather than partial; and **an entry guard** on each emitted unit would check
+that its arguments were the shape it was compiled for and, when they were not, fail to the interpreter
+at that unit's first instruction, before any emitted instruction ran. The guard was argued for at
+length as a design property rather than a fast path, because a bail-out that can only happen at an
+entry needs no map from an emitted offset back to a bytecode offset. Section 8 named that guard as
+*the only transfer between forms*.
+
+**What replaced it.** **A whole-artifact form under a restricted feature manifest.** A third manifest,
+`broiler.javascript.numeric`, admits a numeric subset of the language and refuses every construct
+outside it **at compile time, by name**, with a diagnostic code and a source position; a program in
+that manifest is compilable in whole; so an artifact is native or it is bytecode, every code unit of a
+native artifact is emitted, and there is **no eligibility test, no guard, no bailout, no
+deoptimization, no on-stack replacement and no fallback of any kind**. A machine that cannot run an
+artifact's architecture refuses to instantiate it rather than running the bytecode carried beside it.
+The bytecode stays in the artifact for three reasons that are not fallback: the differential oracle,
+re-emission-equality verification, and a reader who cannot check either claim without it.
+
+**Why the design changed, which is the part a reader should not skim.** **Not because the first one
+was harder — because this repository's own published rules forbid it.** This profile's non-goals, as
+amended for the core's VM-7 and recorded at [JSC-197](#jsc-197), say that the form is chosen when an
+artifact is compiled and fixed when it is verified, and that a verified handle's form never changes:
+*one executor, one form per handle, no promotion*. A per-unit guard that bails to the interpreter when
+an argument is not a Number **is deoptimization from a compiled tier**, which that paragraph refuses by
+name. The weaker version — a per-unit choice taken at compile time, observing nothing at run time — is
+the same thing with the moment moved: it leaves **one handle carrying two forms**, and the rule says
+one form per handle. The core's own risk row says it a third way. Neither reading is admissible
+without amending a record this MVP is not empowered to amend, and the document proposed the first of
+them from the day it was written until the day it was read against the rule.
+
+**What it costs, stated because the replacement is not free.** **The compilable language is small and
+it is not JavaScript.** The design that was replaced would have declined an ineligible unit and still
+produced a working artifact; this one refuses the whole program, before any artifact exists. The cost
+moved from coverage inside an artifact to admission of the program, and it is the larger of the two.
+The alternative is recorded as [MVP-7](../../../docs/mvp.md#5-routes-taken-without-a-decision) in the
+route register, named there as **a route taken without a decision** with the alternative stated, so
+that a reader who thinks the published rules should be amended is disagreeing with a record and not
+with an implementation.
+
+**Authority and date.** The implementation of 2026-09-07 and the rules it was read against — this
+plan's own amended non-goals ([JSC-197](#jsc-197)) and the core's VM-7 risk row — together with the
+route register entry filed the same day. 2026-09-07.
+
+### JSC-200
+
+**Where:** [`roadmap.backends.md`](roadmap.backends.md)'s *what this document is not*, its
+[section 6](roadmap.backends.md#6-the-stages) and its
+[section 7](roadmap.backends.md#7-order-and-what-is-schedulable-today), and the paragraph
+[the ledger](roadmap.status.md) carried for the same fact.
+
+**What the plan said.** That **this profile owns no backend code of any kind** — no encoder, no
+arming path, no emitted byte anywhere in the tree, and no artifact section that could carry one. The
+ledger said it in the same words and told a reader how to establish it: search this family's source
+for the platform mapping and protection entry points and for a target-architecture section kind. Both
+documents said that none of the `JSB-n` stages was started, and section 7 said in the conditional that
+a profile in this repository *would* pass every automated gate while tripping a stop condition this
+component publishes, if it mapped a page executable.
+
+**What replaced it.** The profile owns backend code: a numeric admission pass, encoders for two
+x86-64 calling conventions and for arm64, two artifact section kinds with a verifier arm for each, an
+optional native surface a composition can decline, a re-emission-equality verification path, and one
+type that maps a page and arms it readable-and-executable. **Six of the ten stages now own code, and
+each carries a State bullet naming which clauses of its own gate that code meets and which it does
+not.** The ledger carries the same facts as observed repository state, in its own second category,
+satisfying no gate. **Section 7's conditional half-holds and is rewritten to say which half**: a
+profile in this repository does map a page executable, and it does not do so past every automated
+gate, because the core half of JSB-2's enforcement is written — rule B5 widened to every assembly a
+published image can contain, a rule over the platform-invoke declarations no member reference names,
+a rule pinning the single arming site and its protections, and a rule reading the composition
+register's native-execution column against the tree.
+
+**What the ordering cost is recorded rather than smoothed over, and it is narrower than it first
+looked.** JSB-1 and JSB-2 were the two stages that needed nothing that did not exist. **JSB-2's core
+half arrived with the arming path rather than ahead of it**, which is weaker than the stage asked for
+— it asked for the enforcement to be true *before* a page in this family was mapped — and is not the
+failure it warned of. **JSB-2's profile half did not arrive at all**: this family's own release gate
+and stop condition still forbid *dynamic code* unqualified where the core narrowed its own to
+**undeclared** dynamic code, so this family publishes a stop condition a backend in it trips. **And
+JSB-1 was skipped outright.** The determinism it exists to establish is asserted for the slice front
+end and not for the wide one, which is the front end that lowers the numeric manifest and therefore
+the one that produced every artifact a backend has consumed. **No rule catches that and nothing
+measured it**, which is why the finding is written into the stages rather than left to be inferred
+from a green suite.
+
+**What this entry does not record.** It records no acceptance and no evidence. **No bundle has been
+retained for any of this work, no human has read a line of it, and no milestone row moved because of
+it**: the rows that own the format, the lowering and the executor were already `In progress`, and
+none of their exit gates asks for a second output form.
+
+**Authority and date.** The checkout of 2026-09-07 and the stage-by-stage reading of it recorded in
+section 6 of that document. 2026-09-07.
+
+### JSC-201
+
+**Where:** [`docs/compositions.md`](../../../docs/compositions.md) section 3 — the native-execution
+column, for the five composition roots that compose `broiler.javascript`.
+
+**What the plan said.** That all nine cells of the native-execution column read `none`, and that none
+of them was arrived at by inspection: no project in either solution named a native-memory API, so the
+cells were `none` because there was nothing in the graph that register governs that could be anything
+else. The register's own schema defines `none` as **a claim of incapability and not of restraint** — a
+composition declaring it must be *unable* to map artifact bytes executable, as a property of its
+closure rather than of a code path somebody read.
+
+**What replaced it.** The five JavaScript rows read **`x86-64`**, verified by reading each root's
+project file rather than by assumption: every one of them references
+`Broiler.VM.Profile.JavaScript`, which carries the arming type, so every one of them has the
+capability the column declares. `x86-64` and nothing beside it, because the arming path admits two
+calling conventions of one architecture and answers with a refusal for every other process
+architecture — including on an arm64 machine, where an arm64 artifact is refused rather than run. The
+Android head's cell was checked separately and is the same for a different reason, which the register
+states in prose: it can arm on its `android-x64` identifier and can arm nothing on its
+`android-arm64` one, and a cell is a property of a composition rather than of one of its runtime
+identifiers. The two WebAssembly rows and the two core fixture rows keep `none`, and for the
+WebAssembly pair it is now a checked fact — that profile's reference set is the two core assemblies,
+and no source in any of the three names a reserve, protect or map entry point.
+
+**When the cells went false, which is the finding rather than the edit.** **They went false the moment
+the arming path landed, and not on the day anybody noticed.** For the whole of that interval the
+register carried five declarations of a permission nobody granted, and **nothing failed while it did**
+— because in that interval no rule read the column, which the register itself said in the same section
+that defines it. **A column added to prevent an untruthful declaration carried one before anything
+read it.** What has changed since, in the same day's work and not by this entry, is that the VM-7
+action widening rule B5 to the mapping and arming surface has been taken and a rule now holds every
+cell of that column against the tree in both directions. **So the gap was real, was open for a whole
+change, and was closed by somebody writing the rule rather than by anybody noticing the cells** — and
+the record keeps the episode rather than letting the rule's arrival read as though the cells had never
+been wrong.
+
+**Authority and date.** The reference graph of the five composition roots and the host-architecture
+test in the profile's own execution path, both read on 2026-09-07. 2026-09-07.
+
+### JSC-202
+
+**Where:** [`docs/compositions.md`](../../../docs/compositions.md) section 3's paragraph on the two
+WebAssembly rows, and [section 5b](../../../docs/compositions.md#5b-compositions-this-programme-plans-which-this-register-does-not-have).
+
+**What the plan said.** Two things that stopped being true on different days. Section 3 said that the
+two WebAssembly rows **describe a verifier and not an execution** — that the profile they compose
+carries a decoder and a validator, carries no interpreter, and that its executor refuses every step
+including a step on a handle that profile really did mint. And section 5b carried planned rows for
+`Broiler.VM.Composition.WebAssembly.Execution` and `Broiler.VM.Composition.WebAssembly.Harness`
+reading **PLANNED. Does not exist** — no project, no source, no catalog baseline, no closure report,
+no bundle — beside a third planned row for a JavaScript root that would arm a page for one
+architecture.
+
+**What replaced it.** The profile instantiates a module, runs it and answers a completed step carrying
+results, and the harness root drives that loop from catalog to invocation, so section 3's paragraph is
+rewritten to say what those roots compose now and to keep the sentence that did not change: **neither
+row is a support claim of any kind.** The two planned rows are gone from section 5b, because both
+roots exist and both are in section 3 — **a reader meeting the two sections would have been told in one
+that the roots do not exist and shown in the other that they do**. The JavaScript row is marked
+**withdrawn and never created**: what it described, an execution-only image holding a verifier and an
+executor and no code generator and permitted to arm one architecture, is what the execution-only
+JavaScript row of section 3 now declares, so no new root is owed and moving the row would have put a
+second row in section 3 for one project, which rule K1 fails on.
+
+**Authority and date.** The checkout of 2026-09-07: the two composition roots under
+`src/compositions/`, their rows in section 3, their retained catalog and closure files, and the
+interpreter in the profile they compose. 2026-09-07.
+
+### JSC-203
+
+**Where:** [`docs/support.md`](../../../docs/support.md) section 3a's output-form table, section 3b's
+input-profile table, and section 7.
+
+**What the plan said.** That **no native artifact form exists**, on any architecture — no format
+carrying a machine-code section, no backend emitting one, no verifier answering for one, no
+composition able to map a page executable — and therefore no deterministic refusal anywhere either,
+which that table recorded as *a gap rather than a property*. That the arm64 row was *further from
+existing than the row above*. And that the WebAssembly input profile was **planned, with no code**: a
+documentation directory with no project file, no source file, no descriptor, no composition root, no
+rule-register group, no evidence tree and no entry in either solution.
+
+**What replaced it.** Two forms exist beyond bytecode. **x86-64 is emitted and executed**, on
+`win-x64`, in a working tree, answering what the interpreter answered for the same source — and
+`win-x64` is `Not claimed` in that document's own runtime-identifier table for want of a retained
+collection, so the form's row claims no identifier either; the System V convention is emitted and has
+been executed nowhere. **arm64 is emitting-only**, in that word and in the cell rather than in a
+footnote, having run nowhere and claiming no runtime identifier. The deterministic-refusal column is
+filled for both rows, because an artifact whose architecture the running process is not refuses to
+instantiate by name, and a composition that declines the native surface refuses the artifact at
+verification. The WebAssembly row says the profile exists and says nothing else about it, pointing at
+that profile's own ledger. **And every one of those cells is written under the rule at the head of
+that document — what has been demonstrated on retained evidence — so each says in its own words that
+no bundle has been retained for any of it.**
+
+**Authority and date.** The checkout of 2026-09-07, the runs of the end-user host on `win-x64` that
+day, and the ledgers of the two profiles, which remain the authority for everything that table does
+not read. 2026-09-07.
+
+### JSC-204
+
+**Where:** [`docs/mvp.md`](../../../docs/mvp.md) section 5, the route register — its table, and the
+paragraph that follows the table about MVP-3.
+
+**What the plan said.** That the register held six rows, none of them about the shape of the native
+form, and that MVP-3 — the emitted frame carrying no managed reference — bought its answer by
+refusing a capability, so that **every guest value the emitted code cannot represent without a managed
+reference becomes a bail-out to the interpreter rather than a faster path**.
+
+**What replaced it.** A seventh row, **MVP-7**, records the route this MVP actually took: the native
+output form is a whole-artifact form under a restricted feature manifest, with no per-unit choice, no
+entry guard, no bailout and no fallback. The alternative it names is **a mixed-form artifact with
+per-unit compilation and an interpreter fallback**, which is what a production engine would build and
+what the published rules currently forbid; what would settle it is an amendment to those rules or a
+recorded refusal of one; and the cost is stated in the row rather than under it — **the compilable
+language is small and it is not JavaScript**. MVP-3's paragraph is corrected in place: there is no
+bail-out, and a value the emitted code could not represent is not encountered at run time at all,
+because the manifest refuses the program that would produce it at compile time.
+
+**And the row was filed after the route was taken rather than before it**, which section 5's own rules
+make a failure of a kind: adding the row is what makes a route visible, so taking a route and not
+adding one is what that section exists to prevent. The row was late rather than absent, which is
+smaller and is not nothing, and it is recorded in the register's own commentary.
+
+**Authority and date.** The design taken in the implementation of 2026-09-07, read against this
+profile's amended non-goals and the core's risk row. 2026-09-07.
+
+### JSC-205
+
+**Where:** [the evidence ledger](roadmap.status.md#2-current-milestone-status), the
+*what this component is not claiming* subsection — the composition bullet and the product-code bullet.
+
+**What the plan said.** That **three** JavaScript composition roots exist, naming the slice compiler,
+the execution-only image and the Android head. And, in the product-code bullet, that **there is still
+no suspension and no guest-initiated load**.
+
+**What replaced it.** The composition bullet no longer counts: it points at the register, which names
+them, and adds that each of them declares `x86-64` in that register's native-execution column. The
+count had been wrong since the conformance and CLI roots were added, and it is exactly the failure
+[update rule 10](roadmap.status.md#5-update-rules) forbids — a number transcribed into a sentence goes
+stale silently. The suspension clause is withdrawn: the `JS-7` and `JS-8` rows above the bullet have
+recorded since 2026-09-05 that suspension exists and is exercised by a third-party corpus and that all
+four guest-load shapes exist, and those rows are the authority. **Both were understatements rather
+than overstatements**, and an understatement is a defect on the same footing here: the repository's own
+README carries a dated correction of exactly this shape — a sentence that said no language existed,
+still standing in front of a component that had one — recorded there rather than fixed silently
+because the stale half was the half a reader quotes.
+
+**Authority and date.** The `src/compositions/` tree and the `JS-7` and `JS-8` rows of this ledger,
+both read on 2026-09-07. 2026-09-07.
+
+### JSC-206
+
+**Where:** [Bundle JSW-10-001](evidence/jsw-10-001/README.md)'s Octane row and its retained
+`octane.log`, and every sentence anywhere in this component that reads them as current.
+
+**What the record said.** That fifteen of fifteen Octane benchmarks reported a score and exited
+zero, collected 2026-09-05 on `linux-x64`. **Nothing about that record was wrong when it was
+written and no byte of it is edited here**, because a bundle is a dated, immutable statement about
+one run and a run does not stop having happened.
+
+**What replaced it.** **Nine of fifteen score today, and the six that do not are refused by this
+component rather than failing.** Observed 2026-09-08 on `win-x64` from this working tree, by
+`eng/run-octane.py` over the same pinned checkout: `pdfjs`, `mandreel`, `gbemu`, `box2d` and
+`typescript` each meet `2103:NestingTooDeep` — *the source builds a tree deeper than the 10000
+levels this compiler walks* — and `zlib` raises `SyntaxError: the evaluated source is not a program
+this profile admits` from inside its own `eval`.
+
+**And the cause is a bound this component chose, on the day after the run.**
+`SliceParseOptions.MaximumTreeDepth` is 10,000, landed 2026-09-06 in commit `72b12c3`, *Bound both
+resources the front end spends: its own recursion, and its trees* — one day after the retained
+Octane log was collected. So the bundle and the checkout disagree because the checkout moved, which
+is the ordinary way a retained figure stops describing a tree, and it is the reason a bundle is
+dated. **No command line reaches that bound**: the constant's own comment records that it is
+deliberately not reachable from a flag, so this is not a driver's allowance to raise and
+`--max-depth` does not touch it. Whether 10,000 is the right number is a product decision this entry
+does not take and does not prejudge — the bound bought a real property, and five benchmarks is what
+it cost.
+
+**What this entry is careful not to say.** It does not say the bound is wrong, it does not say the
+benchmarks are, and it retains no figure: the nine scores and the partial aggregate this run printed
+are a measurement on one machine under no predeclared rule, with no control, no repetition and no
+register row, and [section 17](roadmap.md#17-baselines-and-what-a-figure-here-may-mean) forbids this
+document family to carry one. What it says is narrower and is the whole point: **a retained claim
+and the checkout disagree, the disagreement has a named cause with a commit behind it, and it was
+found by running the workload rather than by reading the log.**
+
+**Authority and date.** `eng/run-octane.py` over
+`src/tests/octane/pins/octane-570ad1ccfe86e3eecba0636c8f932ac08edec517.tar.gz`, run 2026-09-08 on
+`win-x64`; commit `72b12c3`; `SliceParseOptions.MaximumTreeDepth`. 2026-09-08.
+
+### JSC-207
+
+**Where:** [the parity roadmap](roadmap.parity.md)'s
+[section 4.2](roadmap.parity.md#42-the-refusal-that-was-lost), *The refusal that was lost*, and with
+it [section 1](roadmap.parity.md#1-the-target-and-the-word-parity-is-doing-work)'s closing sentence,
+the `BigInt` bullet of [section 4.3](roadmap.parity.md#43-the-types-and-surfaces-that-are-absent),
+the front-end bullet of [section 4.7](roadmap.parity.md#47-where-the-profile-contradicts-itself),
+[JSP-2](roadmap.parity.md#jsp-2--the-refusal-that-was-lost-a-bigint-literal-is-not-a-number)'s gate
+and [section 7](roadmap.parity.md#7-order-and-what-is-schedulable-today)'s schedulable list.
+
+**What the plan said.** That **a BigInt literal is admitted by the wide front end and evaluated as a
+Number** — `typeof 1n` answering `"number"`, `1n === 1` answering `true`, `9007199254740993n`
+answering a different integer, `1n + 1` producing `2` where the language requires a `TypeError` —
+and that this is *"the one finding in this document that breaks a property the profile has rather
+than missing one it never had"*. Section 1's own closing clause said the distinction between a
+refusal and a plausible wrong value *has been lost* in exactly one place, and section 4.7 recorded
+the shape of it precisely: **the machinery for the refusal already exists and is not reached**,
+because the slice parser names the construct and the wide parser reads the same token and drops the
+suffix.
+
+**What replaced it.** **The refusal is restored, and the value kind is not implemented.** In
+`src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs`, at the `NumericLiteral` arm of the
+primary-expression parser, the wide front end now reads the `n` the tokenizer already consumes and
+leaves on the token's raw text — `SliceTokenizer.FinishNumeric`'s own comment says it does so *so
+that a parser can notice it* — and answers `OutsideExpression(span, "a BigInt literal")`. Observed
+in this working tree on 2026-09-08, `print(typeof 1n)` answers `2104:ConstructOutsideManifest at
+1:14: a BigInt literal is not admitted by the declared feature manifest`, and ordinary numerics are
+untouched: `1 + 2` answers 3, `9007199254740992` answers itself, `1e3` answers 1000, and both output
+forms still agree on the numeric kernels. **What did not change is as load-bearing as what did**:
+there is no BigInt in this realm, `1n + 1` raises no `TypeError` because it produces no program at
+all, and BigInt arithmetic remains a manifest widening nothing has scheduled. JSP-2's gate was split
+in two so that the half needing no type, no manifest identity and no decision could be taken alone;
+that half's first clause is taken and **the rest of the gate is untouched** — no retained corpus
+entry carries the refusal, no negative control has been watched failing and watched passing after a
+revert, and the host's usage text still describes a manifest it does not run.
+
+**Why the previous behaviour was worse than an absence, which is the reason this was worth taking
+before anything that waits on it.** An absent binding is a supported answer here: roadmap
+[section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted) makes a refusal
+first-class, the ledger's absent-globals block declares `BigInt` and rule N17 checks the
+declaration against the realm. **None of that reached the literal.** A program doing big-integer
+arithmetic was handed a double that looked like an answer, and the defect reached the armed native
+path: `--numeric --native x86-64-win64` emitted machine code returning the same wrong integer.
+`--slice` alone refused it by name. A wrong value that is plausible is the one outcome this
+component's whole method has nothing to catch, because there is no exit code, no diagnostic and no
+column of any report in which it appears.
+
+**And this document family had already found it and not acted on it.** [JSC-188](#jsc-188), dated
+2026-09-06, states it in as many words — *the property the section protects has been spent once, in
+a place the list could not name* — and hands it to JSP-2. Section 4.2 stated every reading above,
+including the silently wrong integer, on the same date. **Two days passed between a defect being
+written down with its cause, its blast radius and its one-line repair, and the repair**; that is not
+a failure of the record and it is a fact about this one, and it is stated here because a family of
+documents that finds defects and files them is only worth what acting on them is worth.
+
+**The conformance consequence, which is the half of this entry a careless one would omit.** Over
+`test/language/literals/bigint` the answer moved from **118 variants: pass 101, fail 17,
+unsupported 0** to **118 variants: pass 58, fail 0, unsupported 60**, measured either side of the
+change on this checkout. So **the whole-suite `passed` total falls**, and **the wide run's
+`unsupported` column stops being empty** — forty-three variants that passed by accident and
+seventeen that failed silently are now sixty variants meeting a refusal that names the construct.
+**Every sentence anywhere in this component that says the wide run names no unsupported family, or
+that its unsupported column is empty, became false on 2026-09-08**, and the ledger's two such
+sentences carry dated corrections beside them from that date. [Bundle JSW-10-001](evidence/jsw-10-001/README.md)'s
+figures are a dated, immutable statement about a run taken on 2026-09-05 and no byte of it is
+edited: the bundle did not stop being true, the checkout moved under it, which is the ordinary way a
+retained figure stops describing a tree and is the reason a bundle is dated —
+[JSC-206](#jsc-206) is the same shape one day earlier. **That trade is the one this profile's rules
+ask for.** [The parity roadmap's section 1](roadmap.parity.md#1-the-target-and-the-word-parity-is-doing-work)
+makes a refusal a supported answer and a plausible wrong value an unsupported one, and
+[JSC-54](#jsc-54)'s rule and [JSC-66](#jsc-66)'s measurement already record what a pass total scored
+without its `unsupported` column beside it is worth. **A smaller pass total that is honest beats a
+larger one that is not.**
+
+**What this entry does not say.** It does not carry a whole-suite figure. A fresh whole-suite run
+was being taken when this was written and its totals were not known, so no number for the run after
+this change appears here, in the ledger, or in the parity roadmap — which carries no figure of any
+kind by its own header, and states the movement above by naming the subtree and the command instead.
+It advances no milestone, moves no row, and nothing about it has been reviewed by a human.
+
+**Amended 2026-09-08: the run finished and this entry now carries its totals, because the paragraph
+above is otherwise a promissory note left standing after its answer arrived.** The clause that
+needs reading with a date on it is the one that said *“A fresh whole-suite run was being taken when
+this was written and its totals were not known”*: that was true of the hours in which this entry was
+written and is not true now, and everything else the paragraph says still holds. **The run**:
+`eng/run-test262.py --suite <pinned checkout> --manifest broiler.javascript.wide --jobs 14
+--shards 56 --digest-cache <cache>` against the pinned revision
+`46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93`, taken 2026-09-08 on `win-x64`
+from this working tree, coverage `whole`, and the report's own line records that it may be
+retained — pinned, whole, and its verdicts account for it. **53,469 files, 94,545 variants: pass
+70,834, fail 13,315, unsupported 1,990, exhausted 60, skipped 8,346.** Against the run of 2026-09-07
+taken before this refusal was restored — pass 71,153, fail 14,986, unsupported 0 — that is **319
+fewer passes, 1,671 fewer failures and 1,990 newly unsupported**, and **every one of the 1,990 is the
+BigInt literal meeting a refusal that names it**. The 319 is larger than the 43 the subtree above
+accounts for, because BigInt literals sit in files that are about something else; the two movements
+sum to exactly 1,990, which is consistent with one change and nothing else moving without being a
+proof of it. The remaining BigInt-tagged failures — 1,030 of them, one of the largest
+declared-feature rows beside TypedArray, iterator-helpers, regexp-unicode-property-escapes,
+resizable-arraybuffer, SharedArrayBuffer, Symbol and Atomics — are tests that **use** a BigInt value
+reaching them from elsewhere rather than tests carrying a literal, which is the residue a refusal at
+the literal leaves behind. **The floor was re-based by hand at
+[`test262-wide.floor`](../../tests/conformance/floors/test262-wide.floor)**, and that `--admit`
+refused to do it is the design working: `--admit` re-bases only when the suite revision or the
+manifest moved, neither moved here — the engine did — so the ratchet answered `Regressed`. The new
+floor holds against the new run, the retired rows keep their reason in the file, and the header
+states in writing that a lower `passed` row is not a regression here and why; Contract 207/207 and
+Architecture 221/221 are green at the same commit. **What this amendment still does not say is the
+half that matters**: this is a working-tree run and **no bundle has been collected from it**, so
+under [the ledger's section 4](roadmap.status.md#4-required-evidence-bundle) no row's evidence column
+may cite it, none does, nothing here is reviewed, and no row reaches `Accepted`.
+
+**Authority and date.** The parser change in
+`src/Broiler.VM.Profile.JavaScript.Compiler/JsParser.cs`, read against
+[the parity roadmap's section 4.2](roadmap.parity.md#42-the-refusal-that-was-lost) and
+[JSC-188](#jsc-188); the subtree measurement above, taken either side of the change on `win-x64`
+from this working tree by `eng/run-test262.py` over
+`test/language/literals/bigint`; the contract and architecture suites green at the same commit.
+2026-09-08. **For the amendment**: the whole-suite run of 2026-09-08 on `win-x64` from this working
+tree, by `eng/run-test262.py` under `broiler.javascript.wide` against the same pinned revision, read
+beside the run of 2026-09-07 that preceded the restored refusal, and the hand re-based floor at
+`src/tests/conformance/floors/test262-wide.floor` verified holding. No bundle. 2026-09-08.
+
+### JSC-208
+
+**Where:** [the retained corpus](../../tests/corpus/js-1/corpus.manifest) row
+`wide-a-native-payload-that-verifies`, and the producer that wrote it in
+`src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/WideCorpus.cs`.
+
+**What the plan said.** That the corpus held a native payload which verified, instantiated, ran and
+completed with `1`. The row was added on 2026-09-07 in the change that opened the native output
+form, and it was green on the machine that wrote it.
+
+**What replaced it, and the first half is worse than the defect the lane reported.** The payload
+was **four zero bytes**, declared as `x86-64-Win64` because the producer hard-coded that
+architecture. On a host whose convention matched — the one the corpus was generated on — those four
+bytes were **mapped, armed and jumped into**, and the process died of an access violation inside the
+emitted frame (`0xC0000005`, in `JsNativeExecution.Invoke`). **A corpus is the one artefact in this
+component whose whole subject is input nobody should trust**, so a corpus row that hands arbitrary
+bytes to an armed page is the shape of defect this file exists to catch rather than the shape it is
+supposed to contain. It was never observed locally because the execution-only root's corpus mode was
+not among the lanes run before the change was pushed.
+
+**The second half is what the lane actually reported, and it is why the first half was found at
+all.** On every host whose convention did *not* match, the artifact was refused at instantiation
+with `ProfileFault/UnsatisfiedHostAssumption` — so the row's expected answer was **a property of the
+machine that generated the corpus rather than of the artifact**, and a retained row pins one answer
+or it pins nothing. `linux-x64` and `linux-arm64` both failed it on the first continuous-integration
+run, with the hash matching in both: the bytes were never in question, the expectation was.
+
+**What the row is now.** `wide-a-native-payload-for-an-architecture-no-host-arms`, carrying an
+`arm64` payload and pinning `ProfileFault/UnsatisfiedHostAssumption`.
+`JsNativeExecution.HostArchitecture` answers `X64Windows`, `X64SystemV` or `None` and never
+`Arm64`, so **every host refuses it identically, and refuses it before a page is mapped** — which
+makes the row host-independent and makes the bytes unreachable in the same stroke. Its payload is a
+real A64 `ret` rather than zeros, because a row declaring an architecture should carry something
+that architecture could execute even where nothing will. The three sibling native rows moved to the
+same default and their answers are unchanged, because all three are refused during verification
+before an architecture is consulted.
+
+**What the row stopped covering, named rather than left to be noticed.** A native payload that
+verifies, arms and *runs* is no longer in the corpus. That property is host-dependent by nature and
+belongs to `NativeAbiChecks`, which selects `JsX64Abi.Host` and compiles through the backend, so it
+exercises the run path with **real emitted code** on whichever convention the machine has. That is
+where a host-dependent property should have been written in the first place.
+
+**And the standing risk this exposed, which no part of this entry closes.** The verifier accepted
+four zero bytes as a native payload. It checks framing, length, alignment, symbol range and the
+declared architecture, and where a backend is in the image it re-emits and compares — but an
+execution-only image holds no backend, so nothing there distinguishes emitted code from arbitrary
+bytes. [The backend roadmap](roadmap.backends.md) already records that an execution-only image's
+trust in a native payload rests on provenance rather than on verification; this is that sentence
+arriving as a dead process rather than as a paragraph. **The architecture check is now the only
+thing between a malformed native payload and execution in such an image**, and it is a check about
+the wrong subject: it asks which machine the bytes are for, not whether they are code.
+
+**Authority and date.** The failing lane on both Linux runtime identifiers; the crash reproduced on
+`win-x64` from this working tree; `JsNativeExecution.HostArchitecture` and `Instantiate`;
+`WideCorpus.cs`. The regenerated corpus replays 22 of 22 on `win-x64` and the mutation control
+detects both of its injections. 2026-09-08.
+
+### JSC-209
+
+**Where:** [the backend roadmap](roadmap.backends.md)'s
+[JSB-5](roadmap.backends.md#jsb-5--verification-of-a-payload-that-is-code-and-what-it-cannot-catch) —
+its State bullet, and two clauses of its exit gate — and, through it,
+[the support table](../../../docs/support.md)'s x86-64 row and
+[the evidence ledger](roadmap.status.md)'s record of what this profile owns.
+
+**What the plan said.** That **the third of JSB-5's three verification layers did not exist**, and
+that the consequence had to be stated plainly rather than left to be discovered: *"an execution-only
+composition's trust in an emitted payload rests on provenance and on nothing this build can check"*,
+with re-emission equality named as the only layer that says otherwise and available only to an image
+carrying the lowering. The exit gate said the same thing twice more — it specified the third layer as
+a **template-closure scan, *where no backend is in the image***, and it required the stage's bundle to
+state *"that an execution-only composition's trust in an emitted payload rests on provenance and not
+on verification"*.
+
+**What replaced it, and it is the layer that sentence was about.** A **template-closure scan** exists
+in `src/Broiler.VM.Profile.JavaScript.Format/JsNativeScan.cs`, decoding an emitted payload against a
+closed table in `JsNativeTemplates.cs` of every instruction template this build's backends emit, per
+architecture and calling convention, each carrying its fixed bytes and, for each variable field, the
+closed set of values that field admits rather than its width. Both files are in the **format**
+assembly, which is the pivot the lowering and the profile already depend on and neither may depend
+past: put the table beside the encoders and an execution-only image cannot reach it, put it in the
+profile and the encoders cannot. `JsVerifier.LinkNative` calls it after the symbol-table checks and
+before re-emission and a payload that fails it is refused as `InvalidArtifact`/`InconsistentStructure`
+under `1625 NativePayloadNotTemplateClosed`, naming the blob-relative offset of the byte that failed;
+the diagnostic registry moved to revision 12 and gained a fourth reachability kind, `check`, for a
+code reached from a composition root's checks lane rather than from a retained corpus entry.
+
+**And it runs ALWAYS, which is where the gate's own words were replaced rather than met.** The gate
+asked for the scan *where no backend is in the image*, and that is the arrangement the design refused:
+every lane in this repository that compiles a native artifact carries a backend, so a scan skipped in
+that configuration would be a scan with no test behind it, and the first time it ran for real would be
+inside the composition that has no other check. It therefore runs in every image, and re-emission
+equality — strictly stronger, because it reaches the generator — runs after it where an emitter is
+present. **The clause was strengthened rather than relaxed**, which is the only direction in which a
+gate may be met by something other than what it asked for, and it is recorded here because a reader
+who planned around *where no backend is in the image* would otherwise find a scan running somewhere
+the plan did not put one.
+
+**Its relationship to [JSC-208](#jsc-208), which is the reason this entry exists at all.** That entry
+records a retained corpus row carrying **four zero bytes** as an `x86-64-Win64` native payload which
+verified, was armed, was jumped into, and killed the process with an access violation
+(`0xC0000005`, in `JsNativeExecution.Invoke`). Its closing paragraph named the standing risk and
+closed none of it: *"The architecture check is now the only thing between a malformed native payload
+and execution in such an image"*, and it is *"a check about the wrong subject: it asks which machine
+the bytes are for, not whether they are code."* **That is the sentence this change answers.** Four
+zero bytes match no template of any table here, and the check now runs before anything is armed: on
+2026-09-08, from this working tree on `win-x64`, a whole artifact of the retained corpus's own shape —
+native surface declared, an emitted-code section, one symbol row — carrying four zero bytes as an
+x86-64 payload and again as an arm64 one was refused at verification by a runtime built from the
+**ordinary** descriptor, which carries no emitter and is the execution-only position exactly, with
+`InvalidArtifact/InconsistentStructure` code 1625 in both cases.
+
+**And the corpus took the four zero bytes back, which is the shape of the answer JSC-208's own
+argument asks for.** That entry removed a row whose bytes reached an armed page and said, in as many
+words, that the property it stopped covering had to be written somewhere a machine could not be the
+authority. The retained corpus now carries **five entries binding code 1625** —
+`wide-a-native-payload-of-four-zero-bytes`, the row whose bytes killed the process, restored as a
+**refusal at verification** rather than as an armed page; and beside it an emitted unit that ends
+without a return, a branch that leaves its code unit, a return code no backend materialises, and a
+word after an emitted unit's return — together with a passing control,
+`wide-an-emitted-payload-every-word-of-which-is-a-template`, which the scan accepts and which is
+refused afterwards at instantiation as an architecture no host arms. Every one of them is
+host-independent for the reason JSC-208 fixed on: a refusal at verification is the same refusal on
+every machine, and the bytes are unreachable in the same stroke. Observed 2026-09-08 from this working
+tree on `win-x64`, the execution-only root — the image with no backend in it — replays **128 entries
+to their recorded answers, twice, with no residue**, and the row JSC-208 left behind,
+`wide-a-native-payload-for-an-architecture-no-host-arms`, still answers what it recorded. **That is
+the lane JSC-208 records as not having been run before the change that produced the crash.**
+
+*(This paragraph was rewritten within the day it was first written. It said, in its first form, that
+the corpus row was unchanged and that the retained corpus replayed **22 of 22** — the first clause
+was overtaken by the corpus entries above landing in the same working tree hours later, and the
+second was a check count read as an entry count: the lane reports twenty-two named checks, one of
+which replays every entry. Both are corrected here rather than edited away, because a number
+transcribed from a lane's summary line into prose is exactly the failure the ledger's update rule 10
+is written against, and a corrections file is the last place entitled to commit it quietly.)*
+
+**What it does not close, stated as fully as what it closes, because the half a careless entry omits
+is this one.** The scan reaches the **payload** and not the **generator**. A well-formed sequence of
+the *wrong* templates is well formed: a backend that emitted a multiply where the bytecode said add
+writes a payload every clause of the scan accepts. **It would not have caught the accident the core
+retains as a fixture as VM-7** — a caller using the wrong calling convention against a callee that was
+correct, returning the right answer every time and leaking stack until the process died millions of
+calls later — and JSB-5's exit gate still carries that clause unweakened. The checks lane does carry a
+row in which an image emitted for System V is refused when it is offered as Windows, and **that row is
+not VM-7's defect**: the two conventions differ in three constants that sit in the fixed bytes of the
+table, so a mislabelled artifact is one whose prologue matches no template — an artifact claiming a
+machine it was not built for, which is a property of a payload, where VM-7's is a property of a call
+site that no scan of a payload can see. **Re-emission equality remains the only layer that reaches the
+generator**, and it remains available only to an image carrying the lowering. So what an
+execution-only image's trust now rests on is that **the bytes are closed under a table the emitter
+answers to** — strictly more than provenance, which nothing inside the image can check, and strictly
+less than a correct generator, which only re-emission equality or a differential oracle reaches. And
+the table is a **restatement** of what the encoders emit rather than a derivation from them: its own
+falsification line says a template differing from the bytes the encoder method it names emits is what
+falsifies it, so the two can drift, and the lane's closure and coverage rows are a run rather than a
+proof that they have not.
+
+**One thing this entry recorded without closing, and it was closed later the same day.** The
+paragraph here read: *"The diagnostic registry still classifies row 1625 as `check` — the kind minted
+for a code a producer composition's lane reaches **and no retained corpus entry does** — while five
+retained corpus entries reach it … **nothing fails and the row understates its own reachability** …
+That promotion is owed and is not this entry's to make."* It was made on **2026-09-08**, in a third
+commit of the same day, and it is recorded here rather than substituted for the sentence above,
+because a ledger that edited its own open items into closed ones would be a ledger nobody could date.
+Row 1625 is a `corpus` row naming `wide-a-native-payload-of-four-zero-bytes` — the entry recording the
+bytes [JSC-208](#jsc-208) is about — and the rejecting clause it is now held to is the one every other
+`corpus` row is held to: a case the retained manifest does not record against that code fails, and so
+does a case the manifest records against a *different* code, which the lane clause could not have
+seen. **The `check` kind was withdrawn with the promotion**, because a kind minted for one row whose
+defining second half became false of that row leaves behind a branch of rule N7 nothing can reach and
+a list nothing may join; the registry header, rule N7's own remarks and the composition constant that
+the rule used to read each record what the word said and where it went. **The revision did not move**:
+`since` and `registry-revision` date the *meaning* of a code, 1625 means exactly what it meant when it
+was minted, and a revision minted for a change in what *reaches* a code would mis-date every retained
+entry that records one.
+
+**What this entry is not.** It advances no milestone and moves no row: `JS-1` owns the format, `JS-3b`
+the lowering and `JS-5` the executor, and no exit gate of any of the three asks for a verification
+layer. **No bundle retains a byte of it** — no publish-and-run under any mode, no corpus replay
+collected as evidence, no negative control watched failing and watched passing after revert — nothing
+in it has been reviewed by a human, and no row reaches `Accepted`. It carries no performance figure
+and none was taken.
+
+**Authority and date.** `src/Broiler.VM.Profile.JavaScript.Format/JsNativeTemplates.cs` and
+`JsNativeScan.cs`; `JsVerifier.LinkNative`; registry row 1625 at revision 12, which this entry read
+under rule N7's `check` branch and which is `corpus` under the amendment above; the slice compiler's
+`--checks` lane, run from this working tree on `win-x64` on 2026-09-08
+and reporting every closure, coverage, drift, refusal, mutation and whole-verifier row above as
+passing; the execution-only root replaying all 128 retained corpus entries to their recorded answers,
+twice and with no residue, on the same tree and date, five of those entries binding this code;
+Contract 207/207 and Architecture 221/221 green at the same commit; read against
+[JSC-208](#jsc-208) and [JSB-5](roadmap.backends.md#jsb-5--verification-of-a-payload-that-is-code-and-what-it-cannot-catch).
+No bundle. 2026-09-08. *(Amended the same day: row 1625 is `corpus` and rule N7 has no `check`
+branch — Contract 207/207 and Architecture 221/221 green after the withdrawal, the execution-only
+root replaying 128 entries with the five that bind 1625 among them, and the slice compiler's
+`--checks` lane reporting 135 checks passed.)*

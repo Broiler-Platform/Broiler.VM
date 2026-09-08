@@ -1,0 +1,9 @@
+# broiler-vm-composition core-contract-version=1
+composition Broiler.VM.Composition.WebAssembly.Execution
+label execution-only
+carries-lowering no
+profiles 1
+profile broiler.webassembly Broiler.VM.Profile.WebAssembly 1 0
+manifest broiler.webassembly.slice
+format-versions 1 1
+decoder no

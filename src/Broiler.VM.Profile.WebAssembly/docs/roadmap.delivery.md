@@ -329,13 +329,20 @@ scope control a copied codebase gets for free from the shape of what it copied.
 - **Dependencies:** WA-3. The ABI decision is a **gate on entry**, not this milestone's first task.
   And **the refusable retention member of
   [section 20](roadmap.md#20-amendments-and-this-profiles-duty-as-the-counterweight)**, which is
-  the one amendment this profile opens rather than files: no local resolution exists, and the
-  memory representation cannot be chosen until it is answered *(corrected: WAC-03)*. **It is an
+  the one amendment this profile opens rather than files: no local resolution exists, and no
+  representation this profile could choose answers the specification on the arm a core budget
+  refuses *(corrected: WAC-03)*. **It is an
   external dependency and is recorded as one**: the holder is the core's contract and release
   owners, and the unblock condition is a minted amendment carrying a co-signature, or a recorded
-  refusal. **An unanswered row makes this milestone `Blocked` rather than merely late at the
-  moment WA-3 would otherwise let it start**, recorded with its blocker, its holder and its unblock
-  condition; and the fallback — if it is refused or
+  refusal. **An unanswered row would make this milestone `Blocked` rather than merely late at the
+  moment WA-3 would otherwise let it start, and under
+  [the MVP programme](../../../docs/mvp.md) it does not** *(corrected: WAC-28)*: that programme
+  defers the co-signing this row waits on, roadmap
+  [section 13](roadmap.md#13-memories-tables-globals-and-the-host-boundary) names the route this
+  milestone takes in its absence, and the route is recorded as **taken without a decision** rather
+  than treated as one. The row stays recorded with its blocker, its holder and its unblock
+  condition, and **this milestone's exit gate is unchanged by any of it**; and the fallback — if
+  it is refused or
   never answered — is **a release decision taken at WA-10 with the deviation named in the
   support table**, never one taken quietly here to keep the milestone moving
   *(corrected: WAC-16)*.
@@ -677,6 +684,50 @@ What this ordering does and does not imply:
   [section 6](roadmap.md#6-feature-manifests-how-the-language-surface-is-admitted)'s allocation
   table, not a judgement made per commit, and in particular **not the fact that the specification
   ships its features in one version.**
+
+### The MVP path through this order, and the one thing it does not touch
+
+**[The MVP programme](../../../docs/mvp.md) walks WA-0, WA-1, WA-2, WA-3 and WA-5 of the order
+above, in that order, and stops** *(added 2026-09-07)*. It reorders nothing, it adds no milestone,
+and it removes none: WA-4 and WA-6 through WA-10 keep every clause of their exit gates and simply
+go unattempted, which the [ledger](roadmap.status.md#2-current-milestone-status) records as the
+scope rule it is rather than as a state. WA-4's absence is the expensive part and is stated there
+rather than here.
+
+**An exit gate is not relaxed by an MVP.** What an MVP changes is which gates are attempted; what a
+gate demands is fixed by the milestone that owns it and by nothing about the programme that reaches
+it. So no clause of section 21 is narrowed, none is carried to a later milestone, and a clause an MVP
+cannot close is a clause that stays open with the milestone `In progress` — the ledger's status
+vocabulary has a word for that and the word is not `Accepted`.
+
+**What the MVP path adds is one thing only: which milestone owns which piece of the first working
+profile.** The table is read as an ownership map and not as a schedule, and a cell naming two
+milestones means the piece is landed twice at two scopes rather than that its owner is unsettled.
+
+| Piece of the first working profile | Owned by |
+|---|---|
+| The three projects of [section 5](roadmap.md#5-package-boundaries-and-the-dependency-graph) and their solution entries | WA-0 draws the shell graph and the rule group; **WA-1 stands the first roots**, because the composition rule admits no root that composes nothing |
+| The profile identity, the manifest allocation, the fifteen hard maxima and the fifteen defaults | WA-0 decides and records all four |
+| The full-arity descriptor, with the rows [section 9](roadmap.md#9-the-value-store-and-frame-model) owns marked provisional | WA-1 |
+| The variable-length integer layer and its bounded count reader, over the core's byte primitives | WA-1 at slice scope; **WA-2 completes it** and runs the scan that proves no call to the core's canonical readers survives |
+| The format vocabulary — magic, version field, section identifiers, value types, limits — and the section-order table | WA-1 for the slice's subset; **WA-2 for the order table**, which is derived from the pinned revision and not from the identifiers |
+| The decoder | WA-1 at slice scope; WA-2 over the whole grammar |
+| The verified module, and every bound the interpreter will size itself from | WA-1, which is where a case first proves the operand-stack bound is computed at validation and stored on the verified state; extended at WA-2, WA-3 and WA-5 |
+| The validator — the value, control and initialization stacks, and polymorphic unreachable code | WA-1 at slice scope; **WA-3 for the specification's algorithm** and the diagnostic registry |
+| The instruction set the MVP admits | WA-2 and WA-3 decode and validate it; **WA-5 executes it**, and WA-5 is where `broiler.webassembly.numeric1` is minted |
+| The nine-row value, store and frame decision | **WA-5, on entry**, before the interpreter's first line — [section 9](roadmap.md#9-the-value-store-and-frame-model) makes it a gate on entry rather than a first task, and the MVP does not move it |
+| The interpreter, the store, and the executor's four members including the two refusals | WA-5 |
+| The allocation-meter adapter, the bounds projection, and the payload projections | WA-1, with the other five core-facing types |
+| The verifier, total from its first line | WA-1; WA-2 and WA-3 widen what it answers and never widen how it answers |
+| The entry-point encoding, including an export name carrying the encoding's own separator | **WA-1** — [section 10](roadmap.md#10-execution-mapping-webassembly-onto-the-core-lifecycle) fixes that it is decided there or decided by accident later, and the MVP's route through it is row MVP-6 of [the MVP programme record](../../../docs/mvp.md) rather than a decision this milestone takes |
+| The malformed corpus, its hashes, its expected triples, and its replay across three publish modes | WA-1 at slice scope; WA-2 at grammar scope; **WA-3 for the entries whose recorded triple is an exhaustion** rather than an invalid artifact |
+| The memory-growth route of [section 13](roadmap.md#13-memories-tables-globals-and-the-host-boundary) | WA-5 takes the route; **WA-10 publishes the deviation**, which is a release decision and stays one |
+
+**One row of that table is not a piece of work, and it is the one worth ending on.** The last row
+splits a route from a decision, and the split is the shape every MVP row here has: the programme
+buys the right to build and merge, and it buys nothing about what may be claimed. A piece landed
+under this path is landed unreviewed, unaccepted and unpublished until a named human reads it, and
+the [ledger](roadmap.status.md) is where that stops being a sentence and starts being a state.
 
 ---
 

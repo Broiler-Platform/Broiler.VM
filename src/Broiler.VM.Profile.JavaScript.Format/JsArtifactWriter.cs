@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   29
-// Annotated:        29/29
+// Relevant units:   32
+// Annotated:        32/32
 // Exempt:           0
-// Human-reviewed:   0/29
+// Human-reviewed:   0/32
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       29
+// Unverified:       32
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -140,6 +140,18 @@ public sealed record JsModuleRow(
     JsLocalExportRow[] LocalExports,
     JsIndirectExportRow[] IndirectExports,
     uint[] StarExportRequests);
+
+/// <summary>Where one code unit's emitted machine code starts in the emitted-code section.</summary>
+/// <param name="FunctionIndex">The code unit these bytes are the emitted form of.</param>
+/// <param name="Offset">
+/// Where the unit's emitted code starts, counted from the first byte AFTER the emitted-code
+/// section's own four header fields. It is relative to the blob and not to the section, so a
+/// reader that has copied the blob out into a mapping does not have to remember to subtract
+/// sixteen.
+/// </param>
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=874575
+// Broiler-Human:        PENDING
+public readonly record struct JsNativeSymbolRow(uint FunctionIndex, uint Offset);
 
 /// <summary>
 /// Writes the byte layout of a format-version-2 artifact.
@@ -364,6 +376,74 @@ public static class JsArtifactWriter
         }
 
         return buffer.ToArray();
+    }
+
+    /// <summary>Encodes the emitted-code section body.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THE FOUR HEADER FIELDS ARE FIXED-WIDTH LITTLE-ENDIAN <c>u32</c>S AND EVERY OTHER SECTION
+    /// OF THIS FORMAT USES A VARIABLE-LENGTH INTEGER.</b> The difference is deliberate and it is
+    /// about who writes the bytes. Every other section is written once by a lowering that knows all
+    /// of its own figures before it starts; this one is written by a backend that emits code and
+    /// then knows how long it turned out to be, so the length is a field to be PATCHED rather than
+    /// appended. A variable-length length cannot be patched without moving everything after it,
+    /// which is how an encoder acquires a second pass and a second pass is where a length and its
+    /// payload part company.
+    /// </para>
+    /// <para>
+    /// <b>The declared byte length is written even though the section frame already carries a
+    /// length, and the redundancy is the check.</b> The frame's length is the artifact's statement
+    /// about the section; this one is the backend's statement about its own output, and a verifier
+    /// that compares them catches a truncation that reframed cleanly. One length would have been
+    /// one number nobody could disagree with.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=B2E43D
+    // Broiler-Human:        PENDING
+    public static byte[] NativeCode(
+        uint architecture,
+        uint backendSemanticVersion,
+        uint codeAlignment,
+        byte[] code,
+        uint? declaredByteLength = null)
+    {
+        var body = new byte[16 + code.Length];
+        var span = System.MemoryExtensions.AsSpan(body);
+        System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(span, architecture);
+        System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(span[4..], backendSemanticVersion);
+        System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(span[8..], codeAlignment);
+        System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(
+            span[12..], declaredByteLength ?? (uint)code.Length);
+        System.Array.Copy(code, 0, body, 16, code.Length);
+        return body;
+    }
+
+    /// <summary>Encodes the emitted-code symbol section body.</summary>
+    /// <remarks>
+    /// <b>A symbol is a code unit and an offset and nothing else.</b> There is no length, because
+    /// the runs tile the blob in ascending order and the next symbol's offset is this one's end;
+    /// there is no name, because a code unit's name is already a constant the function row points
+    /// at and a second copy is a second thing that can disagree.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=1; Fingerprint=9FADE2
+    // Broiler-Human:        PENDING
+    public static byte[] NativeSymbols(JsNativeSymbolRow[] rows, uint? declaredCount = null)
+    {
+        var body = new byte[4 + (rows.Length * 8)];
+        var span = System.MemoryExtensions.AsSpan(body);
+        System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(
+            span, declaredCount ?? (uint)rows.Length);
+
+        for (var index = 0; index < rows.Length; index++)
+        {
+            var at = 4 + (index * 8);
+            System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(
+                span[at..], rows[index].FunctionIndex);
+            System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(
+                span[(at + 4)..], rows[index].Offset);
+        }
+
+        return body;
     }
 
     /// <summary>Encodes the position-table section body.</summary>
