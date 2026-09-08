@@ -313,31 +313,44 @@ internal static class NativeAbiChecks
                 "caller for shadow space");
     }
 
-    private static (string, bool, string) FrameOffsetsMatchTheRuntime()
+    private static unsafe (string, bool, string) FrameOffsetsMatchTheRuntime()
     {
         // The emitter computes with numbers and the two structures state a layout; this is the
         // check that the two agree, made against the layout the RUNTIME gives rather than against
-        // the comment that describes it. Nothing here is a pointer: the runtime is asked where it
-        // put each field, which is the same question an encoder needs answered and is the only
-        // form of the question that cannot be wrong in the same direction as the encoder.
-        var frame = typeof(JsNativeFrame);
-        var probe = typeof(JsNativeAbiProbe);
+        // the comment that describes it. The runtime is asked where it put each field, which is the
+        // same question an encoder needs answered and is the only form of the question that cannot
+        // be wrong in the same direction as the encoder.
+        //
+        // IT ASKS WITH ADDRESSES AND NOT WITH `Marshal`, and the difference is the whole reason
+        // this method is `unsafe` *(2026-09-08)*. It used `Marshal.OffsetOf` and `Marshal.SizeOf`,
+        // which answer where a field would sit AFTER MARSHALLING and need interop data the ILC
+        // generates only for structures it sees crossing a marshalling boundary. Neither of these
+        // ever does - both are handed to emitted code as a raw address - so the published Native
+        // AOT image threw `NotSupportedException: StructMarshalling_MissingInteropData` on the one
+        // configuration the lane publishes, while every JIT build passed. Two structures that are
+        // blittable and sequentially laid out have one layout rather than two, so subtracting
+        // addresses asks the same question of the same runtime, needs no interop data, and is the
+        // form of the question that matches what the emitted code will actually see.
+        var frame = default(JsNativeFrame);
+        var probe = default(JsNativeAbiProbe);
+
+        var frameBase = (byte*)&frame;
+        var probeBase = (byte*)&probe;
 
         var held =
-            Offset(frame, "Operands") == JsX64Frame.OperandsOffset &&
-            Offset(frame, "OperandCount") == JsX64Frame.OperandCountOffset &&
-            Offset(frame, "Locals") == JsX64Frame.LocalsOffset &&
-            Offset(frame, "LocalCount") == JsX64Frame.LocalCountOffset &&
-            Offset(frame, "Constants") == JsX64Frame.ConstantsOffset &&
-            Offset(frame, "Fuel") == JsX64Frame.FuelOffset &&
-            Offset(probe, "Target") == JsNativeAbiProbeLayout.TargetOffset &&
-            Offset(probe, "Frame") == JsNativeAbiProbeLayout.FrameOffset &&
-            Offset(probe, "StackBefore") == JsNativeAbiProbeLayout.StackBeforeOffset &&
-            Offset(probe, "StackAfter") == JsNativeAbiProbeLayout.StackAfterOffset &&
-            Offset(probe, "Answer") == JsNativeAbiProbeLayout.AnswerOffset &&
-            Offset(probe, "Saved") == JsNativeAbiProbeLayout.SavedOffset &&
-            System.Runtime.InteropServices.Marshal.SizeOf<JsNativeAbiProbe>() ==
-                JsNativeAbiProbeLayout.Bytes;
+            (int)((byte*)&frame.Operands - frameBase) == JsX64Frame.OperandsOffset &&
+            (int)((byte*)&frame.OperandCount - frameBase) == JsX64Frame.OperandCountOffset &&
+            (int)((byte*)&frame.Locals - frameBase) == JsX64Frame.LocalsOffset &&
+            (int)((byte*)&frame.LocalCount - frameBase) == JsX64Frame.LocalCountOffset &&
+            (int)((byte*)&frame.Constants - frameBase) == JsX64Frame.ConstantsOffset &&
+            (int)((byte*)&frame.Fuel - frameBase) == JsX64Frame.FuelOffset &&
+            (int)((byte*)&probe.Target - probeBase) == JsNativeAbiProbeLayout.TargetOffset &&
+            (int)((byte*)&probe.Frame - probeBase) == JsNativeAbiProbeLayout.FrameOffset &&
+            (int)((byte*)&probe.StackBefore - probeBase) == JsNativeAbiProbeLayout.StackBeforeOffset &&
+            (int)((byte*)&probe.StackAfter - probeBase) == JsNativeAbiProbeLayout.StackAfterOffset &&
+            (int)((byte*)&probe.Answer - probeBase) == JsNativeAbiProbeLayout.AnswerOffset &&
+            (int)((byte*)probe.Saved - probeBase) == JsNativeAbiProbeLayout.SavedOffset &&
+            sizeof(JsNativeAbiProbe) == JsNativeAbiProbeLayout.Bytes;
 
         return (
             "native/abi/frame-offsets-match-the-runtime",
@@ -345,10 +358,6 @@ internal static class NativeAbiChecks
             "the offsets an encoder computes with are the offsets the runtime gives the " +
                 "structures they describe");
     }
-
-    /// <summary>Where the runtime put one field of a sequentially laid-out structure.</summary>
-    private static int Offset(Type type, string field) =>
-        (int)System.Runtime.InteropServices.Marshal.OffsetOf(type, field);
 
     private static (string, bool, string) EmittedEntryPointsSurviveAMillionCalls(JsX64Abi abi)
     {

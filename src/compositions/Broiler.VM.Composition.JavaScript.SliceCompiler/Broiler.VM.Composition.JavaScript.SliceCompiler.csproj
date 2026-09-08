@@ -9,6 +9,18 @@
     <!-- Not advertised, for the same reason as its execution-only sibling. -->
     <IsPackable>false</IsPackable>
 
+    <!-- POINTER ARITHMETIC, FOR ONE CHECK, BECAUSE THE MARSHALLING ROUTE DOES NOT SURVIVE NATIVE
+         AOT. `native/abi/frame-offsets-match-the-runtime` asks where the runtime actually put each
+         field of the two structures an encoder computes offsets into. It asked with
+         `Marshal.OffsetOf` and `Marshal.SizeOf` until 2026-09-08, which are MARSHALLING APIs: they
+         need interop data the ILC generates only for structures it sees crossing a marshalling
+         boundary, and these two never do - they are passed as raw addresses. The published image
+         therefore threw `NotSupportedException: StructMarshalling_MissingInteropData` on the one
+         configuration the lane publishes, while the JIT build passed, which is how it reached a
+         push. Taking the addresses directly asks the same question of the same runtime and needs
+         no interop data at all. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
     <PublishTrimmed>true</PublishTrimmed>
     <TrimMode>full</TrimMode>
     <InvariantGlobalization>true</InvariantGlobalization>
