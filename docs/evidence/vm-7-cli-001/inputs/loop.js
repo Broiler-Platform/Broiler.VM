@@ -1,0 +1,3 @@
+let s = 0;
+for (let i = 0; i < 1000; i = i + 1) { s = s + i * 2; }
+s;

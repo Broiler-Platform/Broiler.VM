@@ -241,6 +241,106 @@ public sealed class CompositionRegisterTests
     }
 
     /// <summary>
+    /// K5: the native-execution column and the images it describes say the same thing.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>This is the rule that makes the register's ninth column load-bearing.</b> Every other
+    /// column is an inventory - which profiles, which assemblies, which bundle - and this one is a
+    /// permission. The core's closing stop condition was narrowed on 2026-09-07 from "a product
+    /// closure reaches dynamic code" to "reaches UNDECLARED dynamic code", and what replaces an
+    /// absolute is not a weaker rule but a rule with an enforcement problem: an absolute
+    /// prohibition needs no allowlist and admits no mistake in one, and a declaration needs both.
+    /// </para>
+    /// <para>
+    /// <b>The set of assemblies that can map memory is read from the tree and not from the
+    /// register</b>, twice over and unioned - the ImplMap table of every built shipping assembly,
+    /// and the source of every project in the checkout. A rule that took the register's word for
+    /// which assemblies arm would be a rule that checked the register against itself.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void K5_Each_Register_Row_Declares_What_Its_Image_Can_Arm()
+    {
+        // Non-vacuous before anything is asserted about a row: this rule decides an allowlist, and
+        // an allowlist over an empty set of arming assemblies would pass every register ever
+        // written, including one whose every cell said the wrong thing.
+        Assert.Contains(NativeMappingRules.ArmingAssembly, MapsMemory);
+
+        foreach (var row in Registered)
+        {
+            Assert.Empty(NativeMappingRules.K5(row, MapsMemory));
+        }
+
+        var calculator = Rows.Single(row =>
+            string.Equals(row.Composition, "Broiler.VM.Composition.Calculator", StringComparison.Ordinal));
+
+        // A composition that maps executable memory with no register row for it: the first of the
+        // negative controls the roadmap's exit gate names. The row is the real one with an arming
+        // profile added to its image and its cell left at `none`.
+        Assert.Contains(
+            NativeMappingRules.K5(
+                calculator with
+                {
+                    ProfileAssemblies = [.. calculator.ProfileAssemblies, NativeMappingRules.ArmingAssembly],
+                    NativeExecution = "none",
+                },
+                MapsMemory),
+            message => message.Contains("a permission nobody granted", StringComparison.Ordinal));
+
+        // And the other direction, which is the half a subset check would miss: a cell claiming an
+        // architecture over an image that contains no arming path at all. A register that
+        // overstates is the failure this component treats as a stop condition, and it overstates
+        // in both directions.
+        Assert.Contains(
+            NativeMappingRules.K5(calculator with { NativeExecution = "x86-64" }, MapsMemory),
+            message => message.Contains(
+                "a permission nothing in the image can exercise", StringComparison.Ordinal));
+
+        Assert.Contains(
+            NativeMappingRules.K5(calculator with { NativeExecution = "x86-64, none" }, MapsMemory),
+            message => message.Contains("none beside an architecture", StringComparison.Ordinal));
+
+        Assert.Contains(
+            NativeMappingRules.K5(calculator with { NativeExecution = "amd64" }, MapsMemory),
+            message => message.Contains("which is not one of", StringComparison.Ordinal));
+
+        // A row with no cell at all. The column can be deleted from the register in one edit, and
+        // an absence read as `none` would be a permission nobody wrote and nobody withdrew.
+        Assert.Contains(
+            NativeMappingRules.K5(calculator with { NativeExecution = string.Empty }, MapsMemory),
+            message => message.Contains(
+                "declares nothing in the native-execution column", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void K5_Holds_Its_Own_Register_Row_To_What_It_Proves()
+    {
+        var row = RuleRegisterTests.Loaded.Rules.Single(
+            rule => string.Equals(rule.Id, "K5", StringComparison.Ordinal));
+
+        Assert.Equal("Active", row.Status);
+        Assert.Null(row.ActivationMilestone);
+
+        // The row must state that it reads the tree rather than the register for which assemblies
+        // arm, because a rule that read the register twice would prove nothing at all.
+        Assert.Contains("ImplMap", row.Statement, StringComparison.Ordinal);
+
+        // And that it fails in both directions, which is the clause a reader would otherwise have
+        // to take from the implementation.
+        Assert.Contains("both directions", row.NonVacuousWhen, StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>Every assembly of this checkout that can map memory executable.</summary>
+    /// <remarks>
+    /// Computed once. Both the rule and its report ask the same question of the same answer, so a
+    /// second computation would be a second chance to disagree about the tree.
+    /// </remarks>
+    private static readonly IReadOnlyList<string> MapsMemory =
+        NativeMappingRules.AssembliesThatMapMemory(
+            AssemblyFacts.Shipping, NativeMappingRules.Tree());
+
+    /// <summary>
     /// The single-profile and two-profile closures differ by exactly one assembly.
     /// </summary>
     /// <remarks>
@@ -303,6 +403,8 @@ public sealed class CompositionRegisterTests
                 RetainedFor(row, $"catalog-{Slug(row.Composition)}.txt")))),
             ("K4", () => Registered.SelectMany(row =>
                 CompositionRules.K4(row, ClosureModesFor(row)))),
+            ("K5", () => Registered.SelectMany(row =>
+                NativeMappingRules.K5(row, MapsMemory))),
         ]);
 
         if (RuleReport.Destination is { } destination)
@@ -509,7 +611,13 @@ public sealed class CompositionRegisterTests
                 cells.Length > 4 && !string.Equals(cells[4], "none", StringComparison.Ordinal)
                     ? Names(cells[4])
                     : [],
-                cells.Length > 7 ? Unquote(cells[7]) : string.Empty));
+                cells.Length > 7 ? Unquote(cells[7]) : string.Empty,
+
+                // The native-execution cell, read as written rather than defaulted. A row that
+                // carries no such cell declares neither a permission nor an incapability, and rule
+                // K5 says so instead of reading the absence as `none` - which is the reading that
+                // would let the column be deleted without a rule noticing.
+                cells.Length > 8 ? cells[8] : string.Empty));
         }
 
         return rows;

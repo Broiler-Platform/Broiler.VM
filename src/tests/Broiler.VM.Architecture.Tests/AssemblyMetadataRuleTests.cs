@@ -69,10 +69,32 @@ public sealed class AssemblyMetadataRuleTests
         Assert.NotEmpty(ArchitectureRules.B4(typeof(RuleRegisterTests).Assembly));
     }
 
+    /// <summary>
+    /// B5 over every assembly a published image can contain, which is not where it started.
+    /// </summary>
+    /// <remarks>
+    /// <b>THE SCOPE WIDENED ON 2026-09-07 AND THE OLD ONE WAS THE WRONG THREE.</b> This ran over
+    /// the core three while the register row said "the product graph": the three assemblies least
+    /// able to reach a dynamic-loading API were the only ones swept, and every profile, lowering
+    /// and composition root - the assemblies that could - was outside it. A profile could have
+    /// referenced <c>System.Reflection.Emit</c> and this rule would have stayed green while the
+    /// register published the prohibition. The sweep is now the graph the row already claimed.
+    /// </remarks>
     [Fact]
     public void B5_No_Assembly_Reaches_A_Dynamic_Loading_Api()
     {
-        foreach (var assembly in AssemblyFacts.Product)
+        // Non-vacuous before the empty answers are read: the widened sweep has to have found the
+        // profile families and the composition roots, or an empty result is a statement about a
+        // path expression rather than about the graph.
+        Assert.Contains(
+            AssemblyFacts.Shipping,
+            assembly => assembly.Name.StartsWith("Broiler.VM.Profile.", StringComparison.Ordinal));
+
+        Assert.Contains(
+            AssemblyFacts.Shipping,
+            assembly => assembly.Name.StartsWith("Broiler.VM.Composition.", StringComparison.Ordinal));
+
+        foreach (var assembly in AssemblyFacts.Shipping)
         {
             Assert.Empty(ArchitectureRules.B5(assembly));
         }
@@ -84,13 +106,51 @@ public sealed class AssemblyMetadataRuleTests
     [Fact]
     public void B5b_No_Assembly_Applies_A_Module_Initializer()
     {
-        foreach (var assembly in AssemblyFacts.Product)
+        // The same widening, for the same reason: the row says "the product graph" and a module
+        // initializer in a profile is exactly the ordering dependency invariant 2 forbids.
+        foreach (var assembly in AssemblyFacts.Shipping)
         {
             Assert.Empty(ArchitectureRules.B5b(assembly));
         }
 
         // The witness: ModuleInitializerWitness carries the attribute.
         Assert.NotEmpty(ArchitectureRules.B5b(AssemblyFacts.TestAssembly));
+    }
+
+    /// <summary>
+    /// A shipping assembly neither B5 nor B5b could read is one a plain build does not produce.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Both rows say "every shipping assembly", and this is the clause that makes the sentence
+    /// mean every one a plain <c>dotnet test</c> can open.</b> The mobile head needs a workload the
+    /// main solution deliberately does not require, so on a machine without it there is no build
+    /// output and neither rule can read that assembly's tables. That is a real limit, it is stated
+    /// in both register rows from 2026-09-08, and it is asserted here rather than described: every
+    /// assembly the sweep could not read is one <c>Broiler.VM.slnx</c> does not list. An assembly
+    /// that went unread for any other reason - a head added to the main solution and then not
+    /// built, say - fails here instead of quietly narrowing two rules.
+    /// </para>
+    /// <para>
+    /// It stops one step short of rule B5c's version on purpose. B5c can go on to assert that the
+    /// unread assembly's SOURCE is in the tree rule X1 sweeps, because X1 reads for the mapping and
+    /// protection entry points B5c is about. No source rule reads for a dynamic-loading member or
+    /// for <c>ModuleInitializerAttribute</c>, so there is nothing for these two rows to hand the
+    /// unread assembly to, and the rows say that rather than implying a cover that does not exist.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void B5_And_B5b_Name_Every_Shipping_Assembly_They_Could_Not_Read()
+    {
+        var main = File.ReadAllText(Path.Combine(ComponentGraph.Root, "Broiler.VM.slnx"));
+
+        foreach (var name in AssemblyFacts.Unread)
+        {
+            var project = ComponentGraph.Projects.Single(candidate =>
+                string.Equals(candidate.AssemblyName, name, StringComparison.Ordinal));
+
+            Assert.DoesNotContain(project.RelativePath, main, StringComparison.Ordinal);
+        }
     }
 
     [Fact]

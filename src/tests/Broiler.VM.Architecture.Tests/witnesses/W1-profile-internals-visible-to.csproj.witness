@@ -1,0 +1,14 @@
+<!-- Violates W1: the WebAssembly profile assembly opening its internals. ADR 0011's obligation
+     P2 says there is no privileged surface; a profile written through a friend assembly is a
+     profile no consumer outside this repository could write. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Profile.WebAssembly</AssemblyName>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <InternalsVisibleTo Include="Broiler.VM.Composition.WebAssembly.Harness" />
+  </ItemGroup>
+</Project>

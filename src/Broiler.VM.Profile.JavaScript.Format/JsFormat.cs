@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   28
-// Annotated:        28/28
-// Exempt:           31
-// Human-reviewed:   0/28
+// Relevant units:   31
+// Annotated:        31/31
+// Exempt:           33
+// Human-reviewed:   0/31
 // IP risk:          None
 // Security risk:    Medium
 // Criteria:         0/0
 // Resource impact:  1/10 max
-// Unverified:       28
+// Unverified:       31
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -63,7 +63,7 @@ public static class JsFormat
     /// version-1 meanings; their bodies are read under version 2's rules where those differ, and
     /// the two places they differ - the limits body and the exception-region body - say so.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=913500
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=96DA0B
     // Broiler-Human:        PENDING
     public enum SectionKind : uint
     {
@@ -111,6 +111,43 @@ public static class JsFormat
         /// able to decline module resolution separately from admitting objects and closures.
         /// </remarks>
         Modules = 10,
+
+        /// <summary>
+        /// The emitted machine code: an architecture, a backend version, an alignment, a length,
+        /// and the bytes.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// <b>THE ORDINARY CODE SECTION STAYS IN THE SAME ARTIFACT AND IS NOT REPLACED BY THIS
+        /// ONE.</b> Three separate things need it and none of them is a fallback: the differential
+        /// oracle runs the same source under both forms and compares the transcripts, which is the
+        /// compensating control a backend may not ship without; re-emission-equality verification
+        /// recompiles the carried bytecode with the same deterministic backend and compares the
+        /// result to these bytes, which is the only sense in which machine code can be verified at
+        /// all; and a reader who cannot see the bytecode cannot check either claim. An artifact
+        /// that dropped the bytecode would be asking to be trusted rather than read.
+        /// </para>
+        /// <para>
+        /// <b>It is NOT an interpreter fallback, and the distinction is the whole of this
+        /// profile's non-goal.</b> A verified handle has one form, fixed when the artifact was
+        /// compiled; the presence of both sections does not make the form a run-time choice, and a
+        /// code path that picked between them by observing a run would be the second execution arm
+        /// that paragraph refuses.
+        /// </para>
+        /// </remarks>
+        NativeCode = 11,
+
+        /// <summary>
+        /// Which code unit each run of emitted code belongs to: a count, then a function index and
+        /// an offset per unit.
+        /// </summary>
+        /// <remarks>
+        /// It is a section of its own rather than a column on the function rows, because a function
+        /// row is read by every artifact of this format version and a native offset means nothing
+        /// to the overwhelming majority of them. A column that was zero in every artifact but a
+        /// handful would be a field readers learn to skip.
+        /// </remarks>
+        NativeSymbols = 12,
     }
 
     /// <summary>What one import entry binds its local name to.</summary>
@@ -370,6 +407,40 @@ public static class JsFormat
     // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=394835
     // Broiler-Human:        PENDING
     public const uint CeilingExportEntries = 65_536;
+
+    /// <summary>The most bytes of emitted machine code one artifact may carry.</summary>
+    /// <remarks>
+    /// <b>It is the code section's own ceiling and not a larger one, and the equality is a
+    /// decision rather than a coincidence.</b> An emitter for the numeric manifest turns one
+    /// instruction into a fixed short sequence, so its output is bounded by a small multiple of the
+    /// bytecode it was given; a ceiling above the bytecode ceiling would be reserving room for a
+    /// payload no such emitter could produce. <b>NO EMITTER EXISTS AT THIS BUILD</b>, so this bound
+    /// is what a payload may DECLARE and not a measurement of anything - and it is stated at the
+    /// code section's figure so that the first emitter is written against a bound rather than
+    /// choosing one.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=9A9EA9
+    // Broiler-Human:        PENDING
+    public const uint CeilingNativeCodeBytes = CeilingCodeBytes;
+
+    /// <summary>The most emitted-code symbols one artifact may declare.</summary>
+    /// <remarks>
+    /// One per code unit at most, so the bound is the function ceiling. It is stated separately
+    /// anyway, because a bound that happens to equal another bound is a bound nobody checked.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B21D28
+    // Broiler-Human:        PENDING
+    public const uint CeilingNativeSymbols = CeilingFunctions;
+
+    /// <summary>The coarsest code alignment an emitted code section may declare.</summary>
+    /// <remarks>
+    /// A page. An alignment larger than the granularity a mapping is made at would be an alignment
+    /// nothing could honour, and one that is not a power of two is not an alignment at all - the
+    /// verifier refuses both rather than rounding.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=E10CCD
+    // Broiler-Human:        PENDING
+    public const uint CeilingNativeCodeAlignment = 4_096;
 
     /// <summary>Encodes a JavaScript String for the constant and name tables.</summary>
     /// <remarks>

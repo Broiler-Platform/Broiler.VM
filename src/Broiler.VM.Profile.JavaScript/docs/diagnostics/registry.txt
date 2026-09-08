@@ -1,11 +1,12 @@
 # broiler.javascript.slice diagnostic-code registry
 #
-# registry-revision: 10
+# registry-revision: 11
 # published-at-milestone: JS-3a (revision 1), JS-3b (revision 2), JS-4 (revision 3), JSW-2 (revision 4),
-#                         JSW-5 (revisions 5, 6, 7 and 9), JSW-8 (revisions 8 and 10)
+#                         JSW-5 (revisions 5, 6, 7 and 9), JSW-8 (revisions 8 and 10),
+#                         JSN-1 (revision 11)
 # owning-decision: JSD-0009
 # format-version: 1, 2
-# feature-manifest: broiler.javascript.slice, broiler.javascript.wide
+# feature-manifest: broiler.javascript.slice, broiler.javascript.wide, broiler.javascript.numeric
 #
 # code|name|half|reason|stage|reachability|case|since
 #
@@ -33,6 +34,11 @@
 #                function table. `modules` arrived with revision 8: it is the LINK, which runs
 #                after every other structural pass and before the artifact is accepted, and it is
 #                the only pass whose answer depends on the composition as well as on the bytes.
+#                `native` arrived with revision 11: it is the pass over the two sections that carry
+#                emitted machine code, and it is the one pass that rules on FRAMING alone - the
+#                verifier decodes no instruction of any architecture, because the core's fourth
+#                invariant keeps it ignorant of every instruction set and a profile verifier that
+#                read machine code would be a second disassembler with a second opinion.
 # reachability   corpus     a named entry of the retained corpus produces this code.
 #                source     a named entry of the retained SOURCE corpus is refused with this code.
 #                           The source corpus is src/tests/corpus/js-1/source/source.manifest, and
@@ -114,6 +120,8 @@
 1620|ModuleSectionMissing|core-result|InconsistentStructure|modules|corpus|modules-the-module-surface-with-no-module-records|8
 1621|ClassElementFlagsInconsistent|core-result|InconsistentStructure|code|corpus|wide-a-class-element-whose-flags-contradict|7
 1622|ImportCallOutsideManifest|core-result|UnknownFeature|code|corpus|wide-an-import-call-with-no-surface-declared|10
+1623|NativeSectionOutsideManifest|core-result|UnknownFeature|native|corpus|wide-a-native-payload-no-surface-declares|11
+1624|MalformedNativeSection|core-result|InconsistentStructure|native|corpus|wide-a-native-code-section-that-disagrees-with-itself|11
 1630|AsyncIterationOutsideAsync|core-result|SemanticValidationFailed|code|corpus|wide-an-async-iteration-step-outside-an-async-function|9
 1901|Truncated|core-result|Truncated|reader|corpus|a-truncated-payload|1
 1902|MalformedEncoding|core-result|MalformedEncoding|reader|corpus|an-overlong-variable-length-integer|1

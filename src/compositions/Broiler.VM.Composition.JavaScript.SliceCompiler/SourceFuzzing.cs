@@ -310,7 +310,7 @@ internal static class SourceFuzzing
 {
     /// <summary>How many sources the pool may hold before it stops growing.</summary>
     /// <remarks>
-    /// The sibling's ceiling and for the sibling's reason. The seam vocabulary is 22 codes, so a
+    /// The sibling's ceiling and for the sibling's reason. The seam vocabulary is 29 codes, so a
     /// pool that reaches this has kept far more distinct answers than the vocabulary has members
     /// and is drawing from findings rather than from seeds.
     /// </remarks>
@@ -590,11 +590,21 @@ internal static class SourceFuzzing
     /// <remarks>
     /// <b>The corpus and not the files beside its manifest, and the difference is not
     /// cosmetic.</b> The first draft of this session enumerated `*.js` under the corpus directory,
-    /// which is 55 of the corpus's 57 entries: two are retained as `generated` because they are a
-    /// program of 65,536 declarations and one of 65,536 distinct constants, and a file of either
-    /// is not a reviewable thing. Those two are the only sources that reach `TooManyLocals` and
-    /// `TooManyConstants`, so a session seeded from the directory could not prime them and eight
-    /// sessions over 200,000 mutants reached 21 of the 24 seam codes rather than 23.
+    /// which is every entry the manifest does NOT retain as `generated` or under the module
+    /// extension - 59 of its 62 entries at this checkout, and the manifest at
+    /// `src/tests/corpus/js-1/source/source.manifest` rather than this comment is the authority
+    /// for that split. Two are retained as `generated` because they are a program of 65,536
+    /// declarations and one of 65,536 distinct constants, and a file of either is not a reviewable
+    /// thing; one more is a `.mjs`. Those two generated entries are the only sources that reach
+    /// `TooManyLocals` and `TooManyConstants`, so a session seeded from the directory could not
+    /// prime them, and eight sessions over 200,000 mutants reached 21 of the seam codes then in
+    /// the vocabulary rather than 23.
+    /// <i>(Corrected 2026-09-08. This read "which is 55 of the corpus's 57 entries" and "reached
+    /// 21 of the 24 seam codes rather than 23". Both counts were readings of a corpus and a
+    /// vocabulary that have grown since - 62 entries and 29 seam codes today, the second asserted
+    /// by `DiagnosticRegistryRuleTests` at registry revision 11 - so the figures that were
+    /// measurements of a past session are kept as such and the ones that drift now name where they
+    /// are read from instead.)</i>
     /// </remarks>
     private static IReadOnlyList<string> Seeds() =>
     [

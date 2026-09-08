@@ -510,7 +510,16 @@ the act that would turn a stage into a milestone with a ledger row.
   that `osx-x64` scores fourteen of the fifteen. The set is scored WHOLE on five identifiers**:
   `linux-x64`, `linux-arm64`, `osx-arm64`, `win-arm64` and `win-x64`, the last two having reached
   the step for the first time on 2026-09-05 once [JSC-181](roadmap.corrections.md#jsc-181)'s defect
-  was fixed. **No headroom figure here is a standing margin.** A second full lane the same day left
+  was fixed. **That whole-set statement was true of the 2026-09-05 lane and is not true of this
+  checkout** *(corrected: [JSC-206](roadmap.corrections.md#jsc-206))*.
+  `SliceParseOptions.MaximumTreeDepth` — 10,000, landed 2026-09-06 in commit `72b12c3`, the day
+  after the lane ran — refuses `pdfjs`, `mandreel`, `gbemu`, `box2d` and `typescript` with
+  `2103:NestingTooDeep` before a manifest is consulted, and `zlib` raises a `SyntaxError` from
+  inside its own `eval`. The lane's selection is unchanged and the run is not withdrawn; what
+  changed is the tree the published image is built from, which is why a bundle is dated. **No
+  figure is stated here and none is retained**: JSC-206 carries the finding, the cause and what it
+  declines to conclude. **No headroom figure here is a standing margin.** A second full lane the
+  same day left
   `linux-arm64` and `osx-arm64` within 0.2 per cent of their first `zlib` durations while moving
   `linux-x64` by 21.8 per cent and `osx-x64`'s remaining benchmarks by 31.8 per cent
   *([JSC-184](roadmap.corrections.md#jsc-184))*, so a single duration is one sample and not a
@@ -524,6 +533,48 @@ the act that would turn a stage into a milestone with a ledger row.
   the one outcome a reader can act on by raising a number. **Every family the `unsupported` column
   names is named in the bundle**, and for `broiler.javascript.wide` there are none to name: the
   column is empty, which is what section 1 asked for and the form it asked for it in.
+- **That last clause described the run of 2026-09-05 and stopped describing this checkout on
+  2026-09-08** *(corrected 2026-09-08; [JSC-207](roadmap.corrections.md#jsc-207))*. The sentence
+  above said that for `broiler.javascript.wide` there are no `unsupported` families to name and *“the
+  column is empty”*, and that remains an exact statement about the retained run and about no other:
+  the wide front end now refuses a BigInt literal by name, so a wide run over the whole suite names a
+  family and the column is not empty. The bundle is unedited; the checkout moved under it, which is
+  why a bundle is dated.
+- **A whole run under the wide manifest exists again, in a working tree, and this stage may say so
+  without being any closer to its gate.** Taken 2026-09-08 on `win-x64` by
+  `eng/run-test262.py --suite <pinned checkout> --manifest broiler.javascript.wide --jobs 14
+  --shards 56 --digest-cache <cache>` against the pinned revision
+  `46d54f57ae3a4803c6ebc5f4625dd4b417254ed65058836732f182801e1cfe93`, with the report's coverage
+  field reading `whole` and the report's own line recording that the run may be retained because it
+  is pinned, whole, and its verdicts account for it. **All five verdicts are reported**, which is the
+  form this stage asks for, and **the `unsupported` column is no longer empty**: everything in it is
+  the BigInt literal meeting a refusal that names it, and no other construct of the surface is named
+  there. **This document states none of the totals, and that is its own rule rather than an
+  omission** — its header carries no figure of any kind, and under the ledger's update rule 10 a
+  number belongs beside the record that reads it: the totals, the movement against the run of
+  2026-09-07 that preceded the restored refusal, the date and the runtime identifier are written in
+  [the ledger's preamble](roadmap.status.md) and in [JSC-207](roadmap.corrections.md#jsc-207), and a
+  reader who wants them should read them there. **A floor now holds this run**, re-based by hand at
+  [`test262-wide.floor`](../../tests/conformance/floors/test262-wide.floor) because `--admit`
+  re-bases only on a moved suite revision or a moved manifest and neither moved — the engine did —
+  so the ratchet answered `Regressed` and refused, which is the ratchet doing its job rather than a
+  tool falling short; the new floor is verified holding, the superseded rows are retired in the file
+  with their reason, and the file's header states in writing that a lower `passed` row is not a
+  regression here and why.
+- **What JSW-10 still owes is the whole of its gate, and the run above is not a down payment on it.**
+  The gate asks for a whole-suite run **retained under
+  [section 4's evidence contract](roadmap.status.md#4-required-evidence-bundle)**, and what exists is
+  a **working-tree run**: no collection timestamp, no environment or procedure record beyond the
+  command line quoted above, no retained raw outputs, no negative controls, no exclusions section,
+  no owner and no reviewer. **A result a reader cannot re-derive from a retained bundle is a fact
+  about a tree on one afternoon**, and this stage exists precisely because a manifest's run should
+  mean something the next reader can check. It owes, additionally, **a claimed runtime identifier to
+  run on**: this was one machine, no support table claims any RID, and the gate's lane clause asks
+  for both workloads on **every** claimed identifier — a workload that has only ever run on one
+  machine under a JIT is what let a failing Native AOT run reach two retained bundles before
+  anything noticed. Until a bundle is collected and a named human has read it, what exists is
+  observed repository state, no row in the ledger cites it, **nothing here is accepted, and this
+  stage moves no row.**
 
 ---
 

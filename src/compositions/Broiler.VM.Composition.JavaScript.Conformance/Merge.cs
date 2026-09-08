@@ -147,6 +147,8 @@ internal static class Merge
         {
             return new Test262Report(
                 new SuiteRevision("unnamed", string.Empty),
+                string.Empty,
+                string.Empty,
                 Test262Manifest.Default,
                 0,
                 LoadsHarness: false,
@@ -230,6 +232,8 @@ internal static class Merge
 
         return new Test262Report(
             first.Suite,
+            first.Upstream,
+            first.UpstreamRevision,
             first.ManifestId,
             first.FormatVersion,
             first.LoadsHarness,
@@ -253,6 +257,13 @@ internal static class Merge
     {
         yield return ("suite", Distinct(shards, static shard => shard.Suite.Name));
         yield return ("suiteRevision", Distinct(shards, static shard => shard.Suite.ToString()));
+
+        // THE UPSTREAM PROJECT AND COMMIT, which are the pin's words rather than the digest's. Two
+        // shards that hashed to the same content while naming two upstream revisions are a pin file
+        // that changed under a running fan-out, and a merged report that carried one of the two
+        // names would be a document asserting a provenance half its shards did not read.
+        yield return ("upstream", Distinct(shards, static shard => shard.Upstream));
+        yield return ("upstreamRevision", Distinct(shards, static shard => shard.UpstreamRevision));
         yield return ("manifest", Distinct(shards, static shard => shard.ManifestId));
         yield return ("formatVersion", Distinct(shards, static shard => shard.FormatVersion.ToString()));
         yield return ("harness", Distinct(shards, static shard => shard.LoadsHarness.ToString()));

@@ -589,7 +589,8 @@ internal static class Program
                 ' ',
                 "manifest",
                 JavaScriptProfile.SliceManifest,
-                JavaScriptProfile.WideManifest));
+                JavaScriptProfile.WideManifest,
+                JavaScriptProfile.NumericManifest));
         Console.WriteLine(
             string.Join(
                 ' ',

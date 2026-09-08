@@ -1,0 +1,14 @@
+<!-- Violates W1: the WebAssembly profile assembly declaring a PackageReference. A package can
+     reintroduce an edge no project reference spells out, which is what makes a published
+     closure grow without anything in the graph changing. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Profile.WebAssembly</AssemblyName>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <PackageReference Include="System.Text.Json" Version="10.0.0" />
+  </ItemGroup>
+</Project>

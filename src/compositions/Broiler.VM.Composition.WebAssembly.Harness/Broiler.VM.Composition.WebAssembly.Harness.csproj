@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Broiler.VM.Composition.WebAssembly.Harness</RootNamespace>
+    <AssemblyName>Broiler.VM.Composition.WebAssembly.Harness</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- NEVER ADVERTISED AND NEVER PACKABLE, and both halves are asserted rather than promised.
+         This root is where the binary corpus encoder and the retained corpus store will live: code
+         that must never appear in a shipped image and must never be reachable from one. -->
+    <IsPackable>false</IsPackable>
+
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <!--
+    WHY THIS IS A COMPOSITION ROOT AND NOT A TEST PROJECT.
+
+    A corpus encoder writes the bytes a verifier is then asked to refuse, and a conformance host
+    reads a suite and scores it; both have to name the profile assembly to do either. Rule A11
+    forbids a project outside src/compositions/ to reference a Broiler.VM.Profile.* assembly, and
+    that prohibition is one of the properties this repository exists to demonstrate - so the
+    encoder cannot live under src/tests/ and must live here.
+
+    Its reference set is the execution root's, so the two publish identical closures. What differs
+    is the register: this one is never advertised, and the rule that asserts non-advertisement is
+    what keeps that a fact rather than an intention.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Runtime\Broiler.VM.Runtime.csproj" />
+    <ProjectReference Include="..\..\Broiler.VM.Profile.WebAssembly\Broiler.VM.Profile.WebAssembly.csproj" />
+  </ItemGroup>
+
+</Project>

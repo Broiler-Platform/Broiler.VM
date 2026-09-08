@@ -427,6 +427,8 @@ internal static class Program
             .Concat(ProportionalityChecks.Run())
             .Concat(SuspensionChecks.Run())
             .Concat(FinallyMatrixChecks.Run())
+            .Concat(NativeAbiChecks.Run())
+            .Concat(JsArm64GoldenChecks.Run())
             .ToArray();
         var failed = 0;
 

@@ -41,8 +41,14 @@ internal static class WideHost
         ulong? wallClock,
         int? maximumDepth,
         ulong? callDepth = null,
-        ulong? liveBytes = null)
+        ulong? liveBytes = null,
+        JsCompileRequest? request = null)
     {
+        // THE FORM AND THE MANIFEST ARE INPUTS AND THEY DEFAULT TO WHAT THIS HOST ALWAYS DID.
+        // A caller that names neither gets the wide surface in bytecode, byte for byte the artifact
+        // it got before either could be chosen.
+        var asked = request ?? new JsCompileRequest();
+
         foreach (var file in files)
         {
             if (file.Unreadable.Length != 0)
@@ -92,7 +98,7 @@ internal static class WideHost
                 Path.GetFullPath(files[index].Path).Replace('\\', '/')));
         }
 
-        var compiled = JsCompiler.Compile(scripts, modules);
+        var compiled = JsCompiler.Compile(scripts, modules, asked);
 
         if (!compiled.Succeeded || compiled.Artifact is null)
         {
@@ -126,19 +132,35 @@ internal static class WideHost
         using (runtime)
         {
             return Run(
-                runtime, compiled.Artifact, scripts.Count, modules.Count != 0, checkOnly);
+                runtime,
+                compiled.Artifact,
+                scripts.Count,
+                modules.Count != 0,
+                checkOnly,
+                asked.Manifest);
         }
     }
 
     private static RunResult Run(
-        VmRuntime runtime, byte[] artifact, int scripts, bool hasModules, bool checkOnly)
+        VmRuntime runtime,
+        byte[] artifact,
+        int scripts,
+        bool hasModules,
+        bool checkOnly,
+        JsFeatureManifest manifest)
     {
         var count = scripts + (hasModules ? 1 : 0);
 
+        // THE DESCRIPTOR NAMES THE MANIFEST THE ARTIFACT NAMES, and the verifier compares the two
+        // rather than trusting either. A host that always said `wide` would be mislabelling a
+        // numeric artifact, which the verifier answers as the caller's mistake - correctly, since
+        // it would be one.
         var descriptor = new VmArtifactDescriptor(
             JavaScriptProfile.Id,
             Broiler.VM.Profile.JavaScript.Format.JsFormat.FormatVersion,
-            JavaScriptProfile.WideManifest,
+            manifest == JsFeatureManifest.Numeric
+                ? JavaScriptProfile.NumericManifest
+                : JavaScriptProfile.WideManifest,
             default,
             VmCallerIdentity.FromCanonicalIdentity(Caller));
 

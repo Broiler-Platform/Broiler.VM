@@ -1606,9 +1606,26 @@ internal static class ArchitectureRules
     }
 
     /// <summary>
-    /// B5: no assembly reaches a dynamic-loading, reflection-invocation or IL-emit API.
-    /// Invariant 2 requires registration to be static and typed.
+    /// B5: no assembly reaches a dynamic-loading, reflection-invocation, IL-emit or
+    /// native-code-preparation API. Invariant 2 requires registration to be static and typed.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The list gained its native half on 2026-09-07, and the half that matters is not
+    /// here.</b> A managed member that hands out or prepares a code pointer -
+    /// <c>Marshal.GetDelegateForFunctionPointer</c>, <c>NativeLibrary.GetExport</c>,
+    /// <c>RuntimeHelpers.PrepareMethod</c> - is named in the MemberRef table like every other
+    /// entry below, so it belongs on this list. The calls that actually make a page executable
+    /// name no member of any referenced assembly at all: they are platform invokes into
+    /// <c>kernel32</c> or <c>libc</c>, reached through this assembly's own ImplMap. Rule B5c reads
+    /// that table, and the two rules together are what the roadmap's widening asks for.
+    /// </para>
+    /// <para>
+    /// <b>The scope widened on the same date.</b> This ran over the three core assemblies while
+    /// the register row said "the product graph"; it now runs over every assembly a published
+    /// image can contain, which is where an arming path would actually be.
+    /// </para>
+    /// </remarks>
     internal static IEnumerable<string> B5(AssemblyFacts assembly)
     {
         // Matched by exact member name rather than by prefix: a prefix test reads
@@ -1629,6 +1646,15 @@ internal static class ArchitectureRules
             "System.Linq.Expressions.LambdaExpression.Compile",
             "System.Runtime.InteropServices.NativeLibrary.Load",
             "System.Runtime.InteropServices.NativeLibrary.TryLoad",
+
+            // The native half: the managed members by which a caller acquires, prepares or hands
+            // out a pointer to code. None of them maps a page - that is B5c's table - and each of
+            // them is how emitted code would be reached once a page existed.
+            "System.Runtime.InteropServices.NativeLibrary.GetExport",
+            "System.Runtime.InteropServices.NativeLibrary.TryGetExport",
+            "System.Runtime.InteropServices.Marshal.GetDelegateForFunctionPointer",
+            "System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate",
+            "System.Runtime.CompilerServices.RuntimeHelpers.PrepareMethod",
         ];
 
         // Whole namespaces and types where naming the thing at all is the violation.

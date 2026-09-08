@@ -1615,3 +1615,92 @@ that does not is retained by one.
 
 **What is not edited.** Every revision above stands as written - including the
 sentence this one corrects, which was true of the lane it described.
+
+### 2026-09-07 - the WebAssembly profile's boundary: three projects and no format sibling
+
+**What changes.** Three projects are authorised, and they are the whole of the
+WebAssembly profile's boundary milestone. `Broiler.VM.Profile.WebAssembly` is a
+product project under `src/`, referencing `Broiler.VM.Abstractions` and
+`Broiler.VM.Binary` and nothing else. `Broiler.VM.Composition.WebAssembly.Execution`
+is a composition root: the three core projects plus that profile. And
+`Broiler.VM.Composition.WebAssembly.Harness` has the same reference set and a
+different purpose - it is where a binary corpus encoder and a retained corpus
+store must live, and it is never advertised.
+
+**Why the profile has no format sibling, stated because the JavaScript family
+has one and the difference is not an oversight.** A format assembly is a pivot:
+it exists so that a lowering and an executor can agree on a bytecode without
+either depending on the other. This profile has no lowering. Its payload is a
+bare WebAssembly module produced by an external toolchain, verbatim, with no
+Broiler framing around it, so there is nothing on the other side of the pivot and
+a third project would be a boundary with one wall. The reference set is therefore
+exactly two, which is what obligation P1 of ADR 0011 states for a profile with no
+siblings, and a rule asserts it rather than leaving it to review.
+
+**Why the harness is a composition root and not a test project.** Rule A11
+forbids a project outside `src/compositions/` to reference a
+`Broiler.VM.Profile.*` assembly, and a corpus encoder has to name the profile it
+writes bytes for. That prohibition is one of the properties this component exists
+to demonstrate, so the encoder moves rather than the rule. Rule A12 is what bounds
+the root instead: three core projects plus one or more profiles and nothing else,
+which is exactly what it has.
+
+**What is deliberately not authorised here.** No native-backend project. A
+code-generation target is a choice inside a profile's own lowering rather than a
+project of its own, so the architecture emitters this repository may later grow
+belong to the JavaScript family's compiler and to the arming path in its profile
+- and neither is added by this revision.
+
+**What is now true.** The graph goes from 22 projects and 69 edges to 25 and 79.
+The packable set is unchanged and still holds exactly three: the profile declares
+`IsPackable false` and no package identity, and neither root is advertised or
+packable.
+
+**What is not edited.** Every revision above stands as written.
+
+### 2026-09-07 - the end-user host, and the first image composing two product profiles
+
+**What changes.** One project is authorised:
+`Broiler.VM.Composition.PolyglotCli`, a composition root whose reference set is
+the three core projects, `Broiler.VM.Profile.JavaScript`, that profile's
+lowering, and `Broiler.VM.Profile.WebAssembly`. It is the command-line host a
+person runs: it routes a `.js` or `.mjs` file to one profile and a `.wasm` file
+to the other, compiles the first and verifies the second, and runs both out of
+one catalog in one process.
+
+**Why this is a topology revision and not a feature.** Every composition in this
+repository until now has composed profiles of ONE family, or two fixtures. The
+two-profile composition that existed - `Broiler.VM.Composition.Workbench` -
+composes `Com.Example.Calculator` and `Com.Example.Ledger`, which this repository
+wrote in order to be composed and which were designed beside each other. This
+root composes two PRODUCT profiles that were not: different payload formats, one
+with a lowering and one with none, one with a format sibling and one without,
+two diagnostic vocabularies, two execution models. `docs/roadmap.md` section 14
+has asked since VM-3 for a catalog test over two profiles, and section 16 records
+that a composition hosting two of them closes no gate until that test exists.
+
+**Why the edge is legal, stated because rule N2 reads as forbidding it.** N2
+says no project in one `Broiler.VM.Profile.<Language>` family may reference a
+project in another and no project outside every family may reference into one -
+"except a composition root, which A12 bounds instead". A12's bound is the three
+core projects plus one or more profile assemblies and nothing else, which is
+exactly this reference set. So the two families still cannot see each other; the
+exception is composition and it is the only one.
+
+**What is deliberately not authorised here.** No shared library between
+composition roots. This root duplicates the file reader, the module resolution,
+the artifact provider and the JavaScript run loop of
+`Broiler.VM.Composition.JavaScript.Cli`, and every copied file says at its top
+that it is a copy and why. A project holding that code in common would be a
+project outside `src/compositions/` referencing a profile assembly, which rule
+A11 forbids, and a root referencing another root is not the reference set A12
+admits. The duplication is the shape those two rules leave, and it is recorded
+rather than removed by weakening either of them.
+
+**What is now true.** The graph goes from 25 projects and 79 edges to 26 and 85.
+The packable set is unchanged and still holds exactly three: this root declares
+`IsPackable false`, carries no package identity, and is a demonstration -
+section 1 of the composition register advertises nothing and this root is not the
+exception.
+
+**What is not edited.** Every revision above stands as written.

@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   16
 // Annotated:        16/16
-// Exempt:           28
+// Exempt:           34
 // Human-reviewed:   0/16
 // IP risk:          Low
 // Security risk:    Medium
@@ -224,7 +224,7 @@ internal readonly struct JsEntry(string name, uint unit)
 internal sealed class JsProgram : IVmVerifiedState
 {
     /// <summary>Creates a verified program.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3DCF7E
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=E3F2C3
     // Broiler-Human:        PENDING
     internal JsProgram(
         JsValue[] constants,
@@ -236,7 +236,13 @@ internal sealed class JsProgram : IVmVerifiedState
         int positionRowCount,
         System.Collections.Immutable.ImmutableArray<string> admittedSurfaces,
         JsModuleRecord[]? modules = null,
-        JsBinding[]? importBindings = null)
+        JsBinding[]? importBindings = null,
+        string? manifestId = null,
+        Format.JsNativeArchitecture nativeArchitecture = Format.JsNativeArchitecture.None,
+        uint nativeBackendVersion = 0,
+        uint nativeCodeAlignment = 0,
+        byte[]? nativeCode = null,
+        Format.JsNativeSymbolRow[]? nativeSymbols = null)
     {
         Constants = constants;
         Names = names;
@@ -249,7 +255,63 @@ internal sealed class JsProgram : IVmVerifiedState
         Modules = modules ?? [];
         ImportBindings = importBindings ?? [];
         ModuleOfUnit = MapUnits(Modules, functions.Length);
+        ManifestId = manifestId ?? Format.JsFormat.ManifestId;
+        NativeArchitecture = nativeArchitecture;
+        NativeBackendVersion = nativeBackendVersion;
+        NativeCodeAlignment = nativeCodeAlignment;
+        NativeCode = nativeCode ?? [];
+        NativeSymbols = nativeSymbols ?? [];
     }
+
+    /// <summary>The feature manifest the artifact named in its header.</summary>
+    /// <remarks>
+    /// <b>It is carried because the manifest is the artifact's FORM and the form of a verified
+    /// handle never changes.</b> Two manifests are read at this format version - the wide surface
+    /// and its numeric narrowing - and which of them an artifact named is a fact about the artifact
+    /// that nothing later may re-decide.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=3D8852
+    // Broiler-Human:        PENDING
+    internal string ManifestId { get; }
+
+    /// <summary>The instruction set the emitted code was written for, or none.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=9EAAF2
+    // Broiler-Human:        PENDING
+    internal Format.JsNativeArchitecture NativeArchitecture { get; }
+
+    /// <summary>The version of the backend that emitted the code.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=5A0CC0
+    // Broiler-Human:        PENDING
+    internal uint NativeBackendVersion { get; }
+
+    /// <summary>The alignment the emitted code was written at.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=1C1391
+    // Broiler-Human:        PENDING
+    internal uint NativeCodeAlignment { get; }
+
+    /// <summary>
+    /// The emitted machine code, empty when the artifact carries none.
+    /// </summary>
+    /// <remarks>
+    /// <b>THIS BUILD CARRIES THESE BYTES AND RUNS NONE OF THEM.</b> No page is mapped, no page is
+    /// armed and nothing calls into the blob; it is retained because a verified handle must hold
+    /// everything its artifact declared, and because re-emission equality - recompiling the
+    /// bytecode this handle also carries and comparing - is a claim nobody can check about bytes
+    /// that were discarded at verification.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=0ADB4A
+    // Broiler-Human:        PENDING
+    internal byte[] NativeCode { get; }
+
+    /// <summary>Where each code unit's emitted code starts in <see cref="NativeCode"/>.</summary>
+    /// <remarks>
+    /// It has one row per code unit or none at all. A table naming some units and not others is
+    /// refused at verification, because an artifact whose units do not share one form is the
+    /// per-unit executor choice this profile's non-goals refuse.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=6FC5E6
+    // Broiler-Human:        PENDING
+    internal Format.JsNativeSymbolRow[] NativeSymbols { get; }
 
     /// <summary>The module records, empty when the artifact carries none.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=68CF90

@@ -1,6 +1,6 @@
 # Broiler.VM.Profile.WebAssembly roadmap — corrections and rejections
 
-**Last updated:** 2026-09-01
+**Last updated:** 2026-09-07
 
 **This file is part of the [Broiler.VM.Profile.WebAssembly roadmap](roadmap.md)**, which
 [names every file](roadmap.md#how-this-roadmap-is-split). It carries no numbered section of the
@@ -31,6 +31,12 @@ are easy to miss:
 3. **The document corrected itself.** Three of the readings below were caught by reading this plan
    against itself rather than against anything outside it, and each retraction was written inline
    where the reading had been — which is the practice this file exists to end.
+4. **The owner instructed an MVP** *(added 2026-09-07)*. An instruction that defers decisions and
+   reviews changes which sentences of a plan are load-bearing without changing one fact the plan
+   was written from, and the last two entries below come from nowhere else. It is the only source in
+   this list that is neither a discovery nor the repair of an error, and it is the one most likely
+   to be mistaken for permission: **the plan was not wrong, and it says something different now
+   anyway**, which is exactly the pair this file was built to keep visible.
 
 A plan with no implementation is not a plan with no history. **It is the one most likely to be
 read as though every sentence in it were still load-bearing.**
@@ -99,6 +105,9 @@ Ordered by the roadmap section they land in, so this file can be read beside the
 | [WAC-24](#wac-24) | delivery §21, §27; gates §24, §25; ledger §3 | Two halves of section 7's third obligation were called gate clauses and written into no gate: the dimension that changes side, and the core record this profile falsifies | roadmap §7; the core's metering-split record |
 | [WAC-25](#wac-25) | delivery §21, WA-0 and WA-1; delivery §27; ledger §2 | Three clauses of WA-0's gate need a descriptor or a composition root that WA-0's own scope lands neither of; each is carried to WA-1 | WA-0's scope line; rules A11 and A12 |
 | [WAC-26](#wac-26) | roadmap §20; ledger §3 | The other intended profile has recorded its position on the refusable retention member — unaffected — so the row's counterweight field is no longer empty | the other intended profile's dated grading, addendum of 2026-09-01; ADR 0003's counterweight row |
+| [WAC-27](#wac-27) | roadmap §7; ledger §2 | The core's `DeclaredCountExceeded` status is unreachable in this profile, so the count-ceiling refusal is manufactured here rather than mapped from a core answer | the core's bounded reader, read against section 7's resolution |
+| [WAC-28](#wac-28) | roadmap §13; ledger §2, §3 | The memory-growth route is taken without the decision that would have chosen it, and the core-budget arm is published as a named deviation | the MVP programme record; [WAC-03](#wac-03), [WAC-16](#wac-16) |
+| [WAC-29](#wac-29) | ledger §2, §3; delivery §21 | The unaccepted core contract blocks acceptance and publication; it does not block writing the code | ledger update rule 8; the MVP programme record |
 
 ### WAC-01
 
@@ -494,7 +503,9 @@ answer never comes.
 core's contract and release owners. **Unblock condition:** a minted amendment carrying a
 co-signature, or a recorded refusal. **An unanswered row makes WA-5 `Blocked` rather than merely
 late** at the moment WA-3 would otherwise let it start, recorded with its blocker in the ledger like
-any other. And the fallback — a memory whose growth
+any other *(superseded 2026-09-07 by [WAC-28](#wac-28): under the MVP programme it does not, because
+the route WA-5 takes needs no amendment; the row stays open with the same holder and the same
+unblock condition)*. And the fallback — a memory whose growth
 refusal is not guest-observable — is **WA-10's release decision**, published in the support table
 as a named deviation from what the specification says `memory.grow` answers, rather than WA-5's to
 take quietly in order to keep moving.
@@ -815,6 +826,125 @@ WAC-03's sentence was true when written and is overtaken rather than edited.
 against ADR 0003's counterweight row, which asks whether the other intended profile could use a
 capability, is unaffected, or records a refusal; 2026-09-01.
 
+### WAC-27
+
+**Where:** roadmap
+[section 7](roadmap.md#7-the-artifact-the-decoder-and-one-disagreement-with-the-core), the
+resolution and the first of the three obligations that follow it; the
+[ledger](roadmap.status.md#2-current-milestone-status)'s record of the finding as observed
+repository state.
+
+**What the plan said.** That declining the core's guarded count reader left this profile with one
+property to re-derive — the bound-before-use ordering — and one budget dimension to move.
+On that reading the core's bounded-read status set still described this decoder's failures, and the
+count-ceiling refusal was an answer the core produced and this profile translated: the status
+existed, the profile mapped it onto `ResourceExhaustion` naming `DeclaredCount` and one scope, and
+the re-derivation was a matter of not losing an ordering the core had already got right.
+
+**What replaced it.** The core raises `DeclaredCountExceeded` on exactly one path, and that path is
+inside the member this decoder does not call. **A decoder that declines the guarded count reader
+can never observe that status**, so nothing is being translated: the count-ceiling refusal is
+manufactured by this profile's own reader and exists only if this profile writes it. Section 7 now
+carries the layer concretely rather than as a principle — six readers over `TryReadByte`, the byte
+budget derived from the width, the terminal byte's unused bits distinguished from an over-long
+encoding, padding accepted inside the budget, and one bounded count reader that decodes, compares
+against the effective ceiling, and only then returns a value at all.
+
+**Why this is more than a mapping detail.** [WAC-04](#wac-04) fixed that an over-ceiling vector
+length is `ResourceExhaustion` and not `InvalidArtifact`, and every corpus entry pins its observed
+⟨outcome, reason, diagnostic code⟩ triple and replays it across three publish modes. **A refusal
+that nothing raises produces no triple at all** — the failure is not a wrong answer recorded and
+frozen, it is an answer that never arrives — and the decoder that omitted the comparison does not
+report a smaller number, it loops or sizes a buffer from the count. So the first obligation is not
+a tidy restatement of what a core member already provided. It is the only thing standing between an
+attacker-chosen count and an allocation.
+
+**What it does not change.** The resolution itself, the three obligations, WA-2's scan for calls to
+the canonical readers, and the dimension that migrates. No milestone moved and no state changed.
+
+**Authority and date.** The core's bounded reader, read against section 7's resolution:
+`DeclaredCountExceeded` is raised on one path and that path is inside the member this profile
+declines to call; 2026-09-07.
+
+### WAC-28
+
+**Where:** roadmap
+[section 13](roadmap.md#13-memories-tables-globals-and-the-host-boundary), the memories
+subsection; the [ledger](roadmap.status.md#2-current-milestone-status)'s section 2 and its
+[section 3](roadmap.status.md#3-open-external-dependencies).
+
+**What the plan said.** That WA-5 cannot choose a memory representation until the refusable
+retention member is answered, and that an unanswered row makes WA-5 `Blocked` rather than merely
+late at the moment WA-3 would otherwise let it start ([WAC-16](#wac-16)). On that reading the
+amendment was a precondition of the *work* and not only of the claim, and the only alternative the
+plan named was a fallback that WA-10 publishes.
+
+**What replaced it.** The MVP programme defers exactly the co-signing step the amendment waits on,
+so the row does not close while the MVP runs, and a plan that waits for it delivers no interpreter
+at all. **A deferred decision is a decision nobody took, not a decision that went a particular
+way**, so the plan may neither wait for it nor assume it. What section 13 now records is the route
+taken in its absence, named as taken without a decision: growth is refused against **this profile's
+own declared memory maximum**, which is a profile limit rather than a core budget refusal, so on
+that arm the specification's answer is produced exactly — the module observes `-1`, the operation
+completes normally, and no core allowance is spent. On the arm where a **core** budget would
+refuse, no such answer is available on the shipped contract, the step becomes `ResourceExhaustion`,
+and that is a deviation from what the specification says `memory.grow` answers.
+
+**What it does not change, and this is the load-bearing half.** [WAC-16](#wac-16) stands:
+publishing the deviation is WA-10's release decision and never WA-5's. The blocker in the ledger's
+section 3 stands, with the same holder and the same unblock condition. Roadmap
+[section 12](roadmap.md#12-traps-exhaustion-and-why-neither-is-a-process-failure)'s requirement is
+not weakened — the deviation is measured against it rather than replacing it — and an amendment
+minted later closes the deviation rather than ratifying it. **What changed is only that WA-5 is not
+prevented from starting**, because a route exists that does not need the amendment, and the
+ledger's own definition of `Blocked` is a dependency that prevents the next action.
+
+**Why it is recorded where its consequence is.** The MVP programme's cost clause requires a route
+taken where a deferred decision would have chosen to be named at the point the consequence lands,
+and not only in the record that defers it. A reader of section 13 who never opens that record still
+has to meet this, because section 13 is where a memory representation gets chosen and the route is
+the thing that constrains the choice.
+
+**Authority and date.** The MVP programme record at `docs/mvp.md`, section 5 and its row MVP-1, on
+the repository owner's instruction dated 2026-09-07, read against [WAC-03](#wac-03) and
+[WAC-16](#wac-16); 2026-09-07.
+
+### WAC-29
+
+**Where:** the [ledger](roadmap.status.md#2-current-milestone-status)'s WA-2 row and the first row
+of its [section 3](roadmap.status.md#3-open-external-dependencies); delivery
+[section 21](roadmap.delivery.md#21-milestones), WA-2's dependency line as a reading rather than as
+a sentence.
+
+**What the plan said.** That the core contract not being accepted "blocks WA-2 onward" — stated
+without a qualifier, beside a status vocabulary that defines `Blocked` as a dependency preventing
+the next action. The natural reading, and the one a scheduler takes, is that no line of WA-2's
+decoder may be written until the core's review record is signed.
+
+**What replaced it.** It blocks WA-2 onward from **acceptance**, and it blocks this component from
+**publishing**. It does not block writing the code. Update rule 8 already ruled that human review
+gates a release rather than a development step, and the MVP programme defers acceptance on that
+same shape. So WA-2's decoder, WA-3's validator and WA-5's interpreter may be written and merged
+against the core contract as *implemented*; and while the dependency stands, no row moves to
+`Accepted`, no package is published, no runtime identifier is claimed and no support table is
+issued.
+
+**What it does not change.** The blocker, its holder and its unblock condition are unchanged, and
+the WA-2 row's state is unchanged — nothing here moves a row, and a correction never could. The two
+other things standing against WA-2 are untouched, because neither is a review and neither is an
+acceptance: **the specification revision is still unretrieved**, and no programme defers a human
+action into existence; and the correction this profile owes the core's metering-split record is
+still unopened.
+
+**Why the qualifier is worth adding rather than assuming.** The delivery order already says the
+acceptance gate binds WA-2 and not WA-0 or WA-1, which invites the reading that WA-2 is where
+building stops. Under an MVP that reading would halt the programme at its second milestone while
+the record described the work as merely late — and **a component idle on a dependency it was never
+required to wait for looks exactly like a component making progress it has not made.**
+
+**Authority and date.** The ledger's own update rule 8, read against the MVP programme record at
+`docs/mvp.md` and the repository owner's instruction dated 2026-09-07; 2026-09-07.
+
 ---
 
 ## 3. Rejections
@@ -884,11 +1014,13 @@ that publishes a question truthfully has not closed it.
   between the other two.
 - **The guest-observable `memory.grow` refusal** — [WAC-03](#wac-03) establishes that no spelling
   exists on the shipped contract. What is open is the amendment, which is **opened as blocking
-  rather than filed and held** — the one row in this plan that is. It now carries a holder and an
-  unblock condition, an unanswered row makes WA-5 **`Blocked`** rather than merely late once WA-3
-  would otherwise let it start, and **the
-  fallback is WA-10's release decision** published as a named deviation — see
-  [WAC-16](#wac-16). None of that answers it.
+  rather than filed and held** — the one row in this plan that is. It carries a holder and an
+  unblock condition, and **the fallback is WA-10's release decision** published as a named
+  deviation — see [WAC-16](#wac-16). The MVP programme defers the co-signing this row waits on, and
+  the plan names the route it takes in that absence, so **WA-5 is not prevented from starting** and
+  the row binds what this profile may claim rather than what it may commit — see
+  [WAC-28](#wac-28). **None of that answers it**, and naming a route taken without a decision is
+  the most answer-shaped thing in this list that is not one.
 - **The argument channel, and every other row of section 20** — reconciled with the other profile
   and filed, not scheduled. The amendment procedure is currently unexecutable. **State recorded at
   WA-10**, which publishes the register row by row with the deterministic failure or exclusion each

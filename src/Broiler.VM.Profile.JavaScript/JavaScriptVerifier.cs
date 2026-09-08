@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   32
-// Annotated:        32/32
-// Exempt:           28
-// Human-reviewed:   0/32
+// Relevant units:   33
+// Annotated:        33/33
+// Exempt:           29
+// Human-reviewed:   0/33
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         12/12
+// Criteria:         14/14
 // Resource impact:  7/10 max
-// Unverified:       32
+// Unverified:       33
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -206,17 +206,57 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
     private readonly System.Collections.Immutable.ImmutableArray<string> surfaces;
 
     /// <summary>Creates the verifier for one profile identity and its one accepted manifest.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=2C702C
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=21A2BC
     // Broiler-Human:        PENDING
     public JavaScriptVerifier(
         VmProfileId profileId,
         VmFeatureManifestId manifest,
         System.Collections.Immutable.ImmutableArray<string> admittedSurfaces)
+        : this(profileId, manifest, admittedSurfaces, null)
+    {
+    }
+
+    /// <summary>
+    /// Creates the verifier with an emitter it may use to re-emit a native payload and compare.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>AN EMITTER IS OPTIONAL AND WHAT ITS ABSENCE COSTS IS STATED RATHER THAN HIDDEN.</b> With
+    /// one, a native payload is verified in the only sense machine code admits: the artifact's own
+    /// bytecode is recompiled by the same deterministic backend and the result must be byte-equal
+    /// to the bytes carried. Without one, the structural checks still run - framing, length,
+    /// alignment, every symbol offset inside and aligned, an architecture this build names, a
+    /// backend version this image is - and NOTHING WHATEVER IS CHECKED ABOUT THE INSTRUCTIONS. An
+    /// image in that position is trusting PROVENANCE and not verification, and a composition that
+    /// runs emitted code without an emitter in its own closure is asking its users to trust
+    /// whoever produced the artifact.
+    /// </para>
+    /// <para>
+    /// <b>It is held on the verifier object rather than passed to the pass</b>, for the same reason
+    /// the admitted surfaces are: a composition's answer is fixed when it registers its descriptor,
+    /// and a verifier that could be asked twice could be given two answers.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=8BF62C
+    // Broiler-Falsified-If: a native payload is admitted whose bytes this emitter, where there is one, does not reproduce
+    // Broiler-Human:        PENDING
+    public JavaScriptVerifier(
+        VmProfileId profileId,
+        VmFeatureManifestId manifest,
+        System.Collections.Immutable.ImmutableArray<string> admittedSurfaces,
+        Format.IJsNativeEmitter? emitter)
     {
         ProfileId = profileId;
         acceptedManifest = manifest;
         surfaces = admittedSurfaces;
+        reEmitter = emitter;
     }
+
+    /// <summary>The emitter this image can re-emit a native payload with, or null when it has none.</summary>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=1; Fingerprint=A13BA0
+    // Broiler-Falsified-If: this is non-null in an image whose closure carries no code generator
+    // Broiler-Human:        PENDING
+    private readonly Format.IJsNativeEmitter? reEmitter;
 
     /// <inheritdoc/>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=1; Fingerprint=CCA6CF
@@ -245,7 +285,7 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
     /// examining a payload byte. That ordering is asserted by a named case rather than left to be
     /// read off this file.
     /// </remarks>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=1557EA
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=6; Fingerprint=2B5921
     // Broiler-Falsified-If: a payload byte is read on a path that answers UnsupportedProfile
     // Broiler-Human:        PENDING
     public VmVerifierOutcome Verify(
@@ -267,7 +307,8 @@ public sealed class JavaScriptVerifier : IVmProfileVerifier
         // this component refuses to have.
         if (descriptor.FormatVersion == Format.JsFormat.FormatVersion)
         {
-            return JsVerifier.Verify(in descriptor, payload, context, surfaces, cancellationToken);
+            return JsVerifier.Verify(
+                in descriptor, payload, context, surfaces, reEmitter, cancellationToken);
         }
 
         var adapter = new JavaScriptReadAdapter(context.Meter);

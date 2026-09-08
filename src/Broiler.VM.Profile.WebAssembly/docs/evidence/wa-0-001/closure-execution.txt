@@ -1,0 +1,18 @@
+# closure Broiler.VM.Composition.WebAssembly.Execution rid=win-x64
+#
+# ONE MODE IS RETAINED AND THE OTHER TWO ARE NOT, and the reason is recorded here rather
+# than left to be inferred from an absence. A framework-dependent publish was taken and its
+# non-framework assemblies are listed below. A trimmed self-contained publish on win-x64 was
+# also taken, and it dropped Broiler.VM.Binary: this build calls into no type of that
+# assembly, because it has no decoder, so the trimmer removes it. That is a true statement
+# about a build with no decoder and it would be a false statement about the closure this
+# composition is FOR, so the trimmed mode is not retained as a closure claim at this
+# milestone. Native AOT was not published at all. Both modes belong to the milestone that
+# lands a decoder, which is the first build whose trimmed closure means anything.
+
+[jit] 5 non-framework assemblies
+Broiler.VM.Abstractions
+Broiler.VM.Binary
+Broiler.VM.Composition.WebAssembly.Execution
+Broiler.VM.Profile.WebAssembly
+Broiler.VM.Runtime

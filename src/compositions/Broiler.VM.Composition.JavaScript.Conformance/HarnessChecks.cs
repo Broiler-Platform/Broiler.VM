@@ -4,7 +4,7 @@ using System.Globalization;
 namespace Broiler.VM.Composition.JavaScript.Conformance;
 
 /// <summary>
-/// The harness's own regression suite, run before any shard.
+/// The harness's own regression suite, run before any <c>--run</c> shard and before no other.
 /// </summary>
 /// <remarks>
 /// <para>

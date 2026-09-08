@@ -37,7 +37,7 @@ still reports `MissingSuiteRevision`.
 | `archive` / `archive-sha256` | Where the retrieval came from and what those bytes hashed to |
 | `content-sha256` | The digest the harness computes over every path and content the checkout produces, its own pin excepted |
 | `files` | The count, checked beside the digest: a digest says two things differ, a count says how |
-| `archived` | Whether anybody holds the material. **`no` today** |
+| `archived` | Whether anybody holds the material. **`yes` since 2026-09-03**, with `archived-at` naming the file *(corrected 2026-09-08: this cell read "**`no` today**", which the paragraph immediately below it already contradicted and which `test262.pin`'s own last two lines contradict outright)* |
 
 **The suite is here, as the archive it was retrieved as.** One file of 9,487,173 bytes whose
 SHA-256 is the pin's `archive-sha256`, which extracts to the 56,560 files `content-sha256` is over.

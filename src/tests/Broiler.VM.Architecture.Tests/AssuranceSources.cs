@@ -59,6 +59,7 @@ internal static class AssuranceSources
         "Broiler.VM.Profile.JavaScript",
         "Broiler.VM.Profile.JavaScript.Compiler",
         "Broiler.VM.Profile.JavaScript.Format",
+        "Broiler.VM.Profile.WebAssembly",
         "Broiler.VM.Runtime",
     ];
 

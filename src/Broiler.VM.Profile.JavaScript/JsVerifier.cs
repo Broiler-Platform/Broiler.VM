@@ -3,15 +3,15 @@
 //
 // Broiler Code Assurance
 // ----------------------
-// Relevant units:   41
-// Annotated:        41/41
-// Exempt:           32
-// Human-reviewed:   0/41
+// Relevant units:   47
+// Annotated:        47/47
+// Exempt:           38
+// Human-reviewed:   0/47
 // IP risk:          Low
 // Security risk:    High
-// Criteria:         1/1
+// Criteria:         6/6
 // Resource impact:  3/10 max
-// Unverified:       41
+// Unverified:       47
 //
 // GENERATED - DO NOT EDIT MANUALLY
 
@@ -68,13 +68,14 @@ internal sealed class JsVerifier
 
 
     /// <summary>Verifies a version-2 payload and produces the program the executor runs.</summary>
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=80B643
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=911381
     // Broiler-Human:        PENDING
     internal static VmVerifierOutcome Verify(
         in VmArtifactDescriptor descriptor,
         System.ReadOnlySpan<byte> payload,
         IVmVerificationContext context,
         System.Collections.Immutable.ImmutableArray<string> admittedSurfaces,
+        IJsNativeEmitter? emitter,
         System.Threading.CancellationToken cancellationToken)
     {
         var adapter = new JavaScriptReadAdapter(context.Meter);
@@ -120,7 +121,7 @@ internal sealed class JsVerifier
                 reader.Position);
         }
 
-        var manifest = ReadManifest(in descriptor, ref reader);
+        var manifest = ReadManifest(in descriptor, ref reader, state);
 
         if (manifest.Category != VmOutcome.Normal)
         {
@@ -160,13 +161,37 @@ internal sealed class JsVerifier
             return VmVerifierOutcome.Cancellation();
         }
 
-        return Link(state, adapter, context, admittedSurfaces, cancellationToken);
+        return Link(state, adapter, context, admittedSurfaces, emitter, cancellationToken);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=BB9BC8
+    /// <summary>Reads the artifact's own manifest identity and rules on it.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>TWO MANIFESTS ARE READ AT THIS FORMAT VERSION AND ONE OF THEM IS A NARROWING OF THE
+    /// OTHER.</b> <c>broiler.javascript.wide</c> is the surface this format version was defined
+    /// against; <c>broiler.javascript.numeric</c> is the numeric subset a whole artifact can be
+    /// compiled from, and it is the same bytecode in the same sections with a smaller language
+    /// behind it. One format version, two manifests, and no second verifier - which is the rule
+    /// this profile already holds for its two format versions.
+    /// </para>
+    /// <para>
+    /// <b>WHAT THIS PASS DOES NOT DO IS RE-DERIVE THE NUMERIC RESTRICTION, AND A READER IS OWED
+    /// THAT PLAINLY.</b> The numeric manifest's exclusions are refusals of SOURCE: every construct
+    /// outside it is refused by the front end, at compile time, by name, which roadmap section 6
+    /// makes a first-class answer for a construct a front end can see. So an artifact naming this
+    /// manifest and carrying an instruction the manifest excludes is not refused HERE; it is
+    /// refused by the lowering that would have had to write it, and a payload that reached this
+    /// verifier by another route is verified as the version-2 artifact it is. That is a real limit
+    /// of this build and it is the reason the emitted-code sections carry the ordinary bytecode
+    /// beside them: what a reader of a native payload is entitled to is re-emission equality
+    /// against bytecode this verifier did check, not a promise about a manifest nothing recomputed.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=7CFF0B
+    // Broiler-Falsified-If: an artifact naming a manifest this build does not accept is admitted, or the descriptor and the payload are allowed to name different ones
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome ReadManifest(
-        in VmArtifactDescriptor descriptor, ref VmBoundedReader reader)
+        in VmArtifactDescriptor descriptor, ref VmBoundedReader reader, Sections state)
     {
         if (!reader.TryReadVarUInt32(out var length))
         {
@@ -200,7 +225,8 @@ internal sealed class JsVerifier
                 reader.Position);
         }
 
-        if (!string.Equals(text, JsFormat.ManifestId, System.StringComparison.Ordinal))
+        if (!string.Equals(text, JsFormat.ManifestId, System.StringComparison.Ordinal) &&
+            !string.Equals(text, JsNumericManifest.ManifestId, System.StringComparison.Ordinal))
         {
             return Invalid(
                 VmReason.UnsupportedFeatureManifest,
@@ -208,10 +234,11 @@ internal sealed class JsVerifier
                 reader.Position);
         }
 
+        state.ManifestId = text;
         return VmVerifierOutcome.Verified(EmptyState.Instance, VmArtifactSharing.Shareable);
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=D4A382
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=95A818
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome ReadSection(
         ref VmBoundedReader reader,
@@ -232,7 +259,7 @@ internal sealed class JsVerifier
             return FromReader(ref reader, reader.Position);
         }
 
-        if (kind is < 1 or > 10)
+        if (kind is < 1 or > 12)
         {
             return Invalid(
                 VmReason.UnknownFeature, JavaScriptDiagnosticCode.UnknownSectionKind, at);
@@ -261,6 +288,8 @@ internal sealed class JsVerifier
             JsFormat.SectionKind.Functions => ReadFunctions(ref reader, state),
             JsFormat.SectionKind.Surfaces => ReadSurfaces(ref reader, state, admittedSurfaces),
             JsFormat.SectionKind.Modules => ReadModules(ref reader, adapter, state),
+            JsFormat.SectionKind.NativeCode => ReadNativeCode(ref reader, length, state),
+            JsFormat.SectionKind.NativeSymbols => ReadNativeSymbols(ref reader, state),
             _ => Invalid(
                 VmReason.UnknownFeature,
                 JavaScriptDiagnosticCode.SuspensionTargetOutsideManifest,
@@ -968,6 +997,151 @@ internal sealed class JsVerifier
         return Ok;
     }
 
+    /// <summary>
+    /// Reads the emitted-code section: an architecture, a backend version, an alignment, a declared
+    /// length, and the bytes.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>NOTHING HERE DECODES AN INSTRUCTION AND NOTHING HERE EVER WILL.</b> The core's fourth
+    /// invariant keeps it ignorant of any instruction set, and a profile verifier that read machine
+    /// code would be a second disassembler with a second opinion. What this pass rules on is
+    /// framing: whether the architecture is one this build names, whether the alignment is an
+    /// alignment, and whether the length the backend declared is the length the section carries.
+    /// </para>
+    /// <para>
+    /// <b>So a well-framed sequence of the WRONG instructions is accepted here, and that is stated
+    /// rather than left to be discovered.</b> The answer to a wrong backend is re-emission equality
+    /// against the bytecode the artifact also carries and a differential run of the two forms, and
+    /// neither of those is a verification pass. A composition that runs emitted code is trusting a
+    /// producer, not this method.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=FA7FCC
+    // Broiler-Falsified-If: a declared length that disagrees with the bytes present is accepted, or an architecture value this build cannot name is
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome ReadNativeCode(
+        ref VmBoundedReader reader, ulong length, Sections state)
+    {
+        if (length < 16 || length - 16 > JsFormat.CeilingNativeCodeBytes)
+        {
+            return Invalid(
+                VmReason.InconsistentStructure,
+                JavaScriptDiagnosticCode.MalformedNativeSection,
+                reader.Position);
+        }
+
+        if (!TryReadFixedU32(ref reader, out var architecture) ||
+            !TryReadFixedU32(ref reader, out var backendVersion) ||
+            !TryReadFixedU32(ref reader, out var alignment) ||
+            !TryReadFixedU32(ref reader, out var declared))
+        {
+            return FromReader(ref reader, reader.Position);
+        }
+
+        // AN ALIGNMENT OF ZERO IS NOT "NO ALIGNMENT" AND ONE THAT IS NOT A POWER OF TWO IS NOT AN
+        // ALIGNMENT AT ALL. Both would be rounded silently by anything that used them, and a
+        // rounding a producer did not ask for is a producer and a consumer disagreeing about where
+        // a code unit begins.
+        if (architecture == (uint)JsNativeArchitecture.None ||
+            architecture > (uint)JsNativeArchitecture.Arm64 ||
+            alignment == 0 ||
+            alignment > JsFormat.CeilingNativeCodeAlignment ||
+            (alignment & (alignment - 1)) != 0 ||
+            declared != length - 16)
+        {
+            return Invalid(
+                VmReason.InconsistentStructure,
+                JavaScriptDiagnosticCode.MalformedNativeSection,
+                reader.Position);
+        }
+
+        if (!ReadRun(ref reader, declared, out var body))
+        {
+            return FromReader(ref reader, reader.Position);
+        }
+
+        state.NativeArchitecture = (JsNativeArchitecture)architecture;
+        state.NativeBackendVersion = backendVersion;
+        state.NativeCodeAlignment = alignment;
+        state.NativeCode = body;
+        return Ok;
+    }
+
+    /// <summary>Reads the emitted-code symbol section: which code unit each run of bytes is.</summary>
+    /// <remarks>
+    /// <b>The rows must ascend by code unit and each offset must be inside the blob, and the
+    /// ascent is what makes the runs tile it.</b> A symbol carries no length, so a run ends where
+    /// the next one begins and the last ends at the blob; rows in any other order would leave the
+    /// extent of a unit's code a question of which row a reader happened to look at next.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=F1C392
+    // Broiler-Falsified-If: an offset outside the emitted blob is accepted, or two rows naming one code unit are
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome ReadNativeSymbols(ref VmBoundedReader reader, Sections state)
+    {
+        if (!TryReadFixedU32(ref reader, out var count))
+        {
+            return FromReader(ref reader, reader.Position);
+        }
+
+        if (count > JsFormat.CeilingNativeSymbols)
+        {
+            return Invalid(
+                VmReason.InconsistentStructure,
+                JavaScriptDiagnosticCode.DeclaredMaximumTooLarge,
+                reader.Position);
+        }
+
+        var rows = new JsNativeSymbolRow[count];
+        var previousUnit = -1L;
+
+        for (var index = 0u; index < count; index++)
+        {
+            if (!TryReadFixedU32(ref reader, out var unit) ||
+                !TryReadFixedU32(ref reader, out var offset))
+            {
+                return FromReader(ref reader, reader.Position);
+            }
+
+            if (unit <= previousUnit)
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.MalformedNativeSection,
+                    reader.Position);
+            }
+
+            previousUnit = unit;
+            rows[index] = new JsNativeSymbolRow(unit, offset);
+        }
+
+        state.NativeSymbols = rows;
+        return Ok;
+    }
+
+    /// <summary>Reads one fixed-width little-endian <c>u32</c>.</summary>
+    /// <remarks>
+    /// <b>The emitted sections are the only ones of this format that use a fixed width, and the
+    /// reason is on the writer.</b> A backend learns how long its output is only after it has
+    /// written it, so the length is a field to be patched in place; a variable-length field cannot
+    /// be patched without moving what follows it.
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0EEC3C
+    // Broiler-Human:        PENDING
+    private static bool TryReadFixedU32(ref VmBoundedReader reader, out uint value)
+    {
+        value = 0;
+
+        if (!reader.TryReadBytes(4, out var bytes))
+        {
+            return false;
+        }
+
+        value = System.Buffers.Binary.BinaryPrimitives.ReadUInt32LittleEndian(bytes);
+        return true;
+    }
+
     /// <summary>Reads a counted run of unsigned integers, refusing one past a ceiling.</summary>
     // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=38BC95
     // Broiler-Human:        PENDING
@@ -1000,13 +1174,14 @@ internal sealed class JsVerifier
         return true;
     }
 
-    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6008E4
+    // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=2672BD
     // Broiler-Human:        PENDING
     private static VmVerifierOutcome Link(
         Sections state,
         JavaScriptReadAdapter adapter,
         IVmVerificationContext context,
         System.Collections.Immutable.ImmutableArray<string> admittedSurfaces,
+        IJsNativeEmitter? emitter,
         System.Threading.CancellationToken cancellationToken)
     {
         if (!state.SawLimits || !state.SawConstants || !state.SawCode ||
@@ -1221,6 +1396,13 @@ internal sealed class JsVerifier
                 0);
         }
 
+        var native = LinkNative(state, units, emitter);
+
+        if (native.Category != VmOutcome.Normal)
+        {
+            return native;
+        }
+
         var program = new JsProgram(
             state.Constants!,
             state.Names!,
@@ -1231,9 +1413,194 @@ internal sealed class JsVerifier
             state.PositionRows,
             admittedSurfaces,
             modules,
-            bindings);
+            bindings,
+            state.ManifestId,
+            state.NativeArchitecture,
+            state.NativeBackendVersion,
+            state.NativeCodeAlignment,
+            state.NativeCode ?? [],
+            state.NativeSymbols ?? []);
 
         return VmVerifierOutcome.Verified(program, VmArtifactSharing.Shareable);
+    }
+
+    /// <summary>
+    /// Holds the emitted-code sections, the native surface and the function table to each other.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THE SYMBOL TABLE MUST NAME EVERY CODE UNIT, AND THAT CLAUSE IS THE WHOLE OF "ONE FORM PER
+    /// HANDLE" WRITTEN AS A STRUCTURAL CHECK.</b> A symbol table shorter than the function table
+    /// would be an artifact in which some units have an emitted form and the rest do not - which is
+    /// a per-unit choice of executor, made once at compile time rather than once per call but a
+    /// per-unit choice all the same, and it is exactly what this profile's non-goal refuses. The
+    /// numeric manifest exists so that a program admitted by it is compilable IN WHOLE; an artifact
+    /// that emitted part of itself is an artifact whose producer did not believe that, and there is
+    /// no honest thing for a verifier to do with it.
+    /// </para>
+    /// <para>
+    /// <b>Three declarations and each without the others is an artifact contradicting itself.</b>
+    /// The surface says the composition was asked whether it admits executable memory; the code
+    /// section says the bytes are here; the symbol section says which unit each run belongs to. A
+    /// surface with no bytes declares a capability nothing uses, bytes with no surface skip the
+    /// question, and bytes with no symbols are a blob nothing can enter.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=282F69
+    // Broiler-Falsified-If: an artifact whose symbol table names fewer units than the function table is admitted, or a symbol offset outside the emitted blob is
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome LinkNative(
+        Sections state, JsCodeUnit[] units, IJsNativeEmitter? emitter)
+    {
+        var declared = state.DeclaresNative();
+        var carries = state.NativeCode is not null || state.NativeSymbols is not null;
+
+        if (carries && !declared)
+        {
+            return Invalid(
+                VmReason.UnknownFeature,
+                JavaScriptDiagnosticCode.NativeSectionOutsideManifest,
+                0);
+        }
+
+        if (!declared)
+        {
+            return Ok;
+        }
+
+        if (state.NativeCode is not { Length: > 0 } blob || state.NativeSymbols is not { } symbols)
+        {
+            return Invalid(
+                VmReason.InconsistentStructure,
+                JavaScriptDiagnosticCode.MalformedNativeSection,
+                0);
+        }
+
+        if (symbols.Length != units.Length)
+        {
+            return Invalid(
+                VmReason.InconsistentStructure,
+                JavaScriptDiagnosticCode.MalformedNativeSection,
+                0);
+        }
+
+        for (var index = 0; index < symbols.Length; index++)
+        {
+            var row = symbols[index];
+
+            // THE OFFSETS TILE THE BLOB IN THE FUNCTION TABLE'S OWN ORDER, which is the same shape
+            // the bytecode ranges are already held to: a run carries no length of its own, so the
+            // only thing that makes its extent a fact rather than an inference is that the next run
+            // starts where it ends and the last ends at the blob. The first therefore starts at
+            // zero, each is strictly past the one before it, and every one of them is inside.
+            var expectedStart = index == 0 ? 0u : symbols[index - 1].Offset + 1;
+
+            if (row.FunctionIndex != (uint)index ||
+                row.Offset < expectedStart ||
+                row.Offset >= (uint)blob.Length ||
+                (row.Offset % state.NativeCodeAlignment) != 0)
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.MalformedNativeSection,
+                    (ulong)index);
+            }
+        }
+
+        return ReEmit(state, blob, symbols, emitter);
+    }
+
+    /// <summary>
+    /// Recompiles the artifact's own bytecode and requires the emitted bytes to match, where this
+    /// image has an emitter at all.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>THIS IS THE ONLY SENSE IN WHICH MACHINE CODE IS VERIFIABLE, AND EVERY OTHER CHECK IN THIS
+    /// FILE IS ABOUT FRAMING.</b> A wrong backend produces a well-framed sequence of the WRONG
+    /// instructions: the length agrees, the alignment agrees, every symbol is inside the blob, and
+    /// the artifact answers a different number from the one the language says. No structural check
+    /// ever written catches that, and this profile's verifier is not going to become a second
+    /// disassembler with a second opinion. What it can do is run the SAME deterministic emitter over
+    /// the SAME bytecode the artifact carries and require the same bytes, which reduces trusting the
+    /// payload to trusting this image's own backend.
+    /// </para>
+    /// <para>
+    /// <b>WHERE THERE IS NO EMITTER IN THE IMAGE, NOTHING WHATEVER IS CHECKED ABOUT THE
+    /// INSTRUCTIONS, AND THAT IS SAID HERE RATHER THAN LEFT TO BE DISCOVERED.</b> An
+    /// execution-only image carries a verifier and an interpreter and no code generator by
+    /// construction - that absence is what makes it the composition it is - so it cannot re-emit
+    /// anything. Such an image admits a native payload on its FRAMING alone, and what it is
+    /// trusting is PROVENANCE: that whoever produced the artifact ran a backend it has no way to
+    /// re-run. That is a weaker thing than verification, it is the honest description of what is
+    /// happening, and a composition that runs emitted code in that position owes its users the
+    /// sentence rather than a footnote.
+    /// </para>
+    /// <para>
+    /// <b>The emitter's own version must be the one the artifact names, and the version check comes
+    /// first.</b> Comparing bytes emitted by version two against bytes written by version one
+    /// answers "not equal" for a payload that was correct when it was written, which is a refusal
+    /// with the wrong reason attached; refusing on the version says the true thing.
+    /// </para>
+    /// </remarks>
+    // Broiler-AI:           Origin=AI; IP=Low; Security=High; Resources=3; Fingerprint=001336
+    // Broiler-Falsified-If: an artifact whose emitted bytes differ from this image's own emission of its bytecode is admitted while an emitter is present
+    // Broiler-Human:        PENDING
+    private static VmVerifierOutcome ReEmit(
+        Sections state, byte[] blob, JsNativeSymbolRow[] symbols, IJsNativeEmitter? emitter)
+    {
+        if (emitter is null)
+        {
+            return Ok;
+        }
+
+        if (emitter.Architecture != state.NativeArchitecture ||
+            emitter.SemanticVersion != state.NativeBackendVersion ||
+            emitter.CodeAlignment != state.NativeCodeAlignment)
+        {
+            return Invalid(
+                VmReason.InconsistentStructure,
+                JavaScriptDiagnosticCode.MalformedNativeSection,
+                0);
+        }
+
+        var pool = state.Constants!;
+        var values = new double[pool.Length];
+        var numbers = new bool[pool.Length];
+
+        for (var index = 0; index < pool.Length; index++)
+        {
+            numbers[index] = pool[index].IsNumber;
+            values[index] = pool[index].IsNumber ? pool[index].AsNumber() : 0;
+        }
+
+        var image = new JsNativeProgramImage(
+            state.Code!, state.FunctionRows!, values, numbers, state.DeclaredOperandStack);
+
+        if (!emitter.TryEmit(image, out var emitted, out var table, out _) ||
+            !System.MemoryExtensions.SequenceEqual(
+                System.MemoryExtensions.AsSpan(emitted),
+                System.MemoryExtensions.AsSpan(blob)) ||
+            table.Length != symbols.Length)
+        {
+            return Invalid(
+                VmReason.InconsistentStructure,
+                JavaScriptDiagnosticCode.MalformedNativeSection,
+                0);
+        }
+
+        for (var index = 0; index < table.Length; index++)
+        {
+            if (table[index] != symbols[index])
+            {
+                return Invalid(
+                    VmReason.InconsistentStructure,
+                    JavaScriptDiagnosticCode.MalformedNativeSection,
+                    (ulong)index);
+            }
+        }
+
+        return Ok;
     }
 
     /// <summary>
@@ -1970,6 +2337,36 @@ internal sealed class JsVerifier
         // Broiler-Human:        PENDING
         internal string[] Surfaces { get; set; } = [];
 
+        /// <summary>The feature manifest the payload's own header names.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=86259C
+        // Broiler-Human:        PENDING
+        internal string ManifestId { get; set; } = JsFormat.ManifestId;
+
+        /// <summary>The instruction set and convention the emitted code section named.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=6E316D
+        // Broiler-Human:        PENDING
+        internal JsNativeArchitecture NativeArchitecture { get; set; }
+
+        /// <summary>The backend version the emitted code section named.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=68AC35
+        // Broiler-Human:        PENDING
+        internal uint NativeBackendVersion { get; set; }
+
+        /// <summary>The alignment the emitted code section named.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=F49964
+        // Broiler-Human:        PENDING
+        internal uint NativeCodeAlignment { get; set; }
+
+        /// <summary>The emitted machine code, or null when the artifact carries none.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=4D540B
+        // Broiler-Human:        PENDING
+        internal byte[]? NativeCode { get; set; }
+
+        /// <summary>The emitted-code symbols, or null when the artifact carries none.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=494397
+        // Broiler-Human:        PENDING
+        internal JsNativeSymbolRow[]? NativeSymbols { get; set; }
+
         /// <summary>The module rows as the payload declares them, before any resolution.</summary>
         // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=67DA18
         // Broiler-Human:        PENDING
@@ -1988,6 +2385,22 @@ internal sealed class JsVerifier
             foreach (var surface in Surfaces)
             {
                 if (string.Equals(surface, JsSurfaces.Modules, System.StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>Whether the artifact declared the native surface beside its manifest.</summary>
+        // Broiler-AI:           Origin=AI; IP=Low; Security=Medium; Resources=3; Fingerprint=0F78ED
+        // Broiler-Human:        PENDING
+        internal bool DeclaresNative()
+        {
+            foreach (var surface in Surfaces)
+            {
+                if (string.Equals(surface, JsSurfaces.Native, System.StringComparison.Ordinal))
                 {
                     return true;
                 }

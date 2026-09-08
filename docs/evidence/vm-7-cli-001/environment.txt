@@ -1,0 +1,12 @@
+# The machine this collection was taken on, 2026-09-07.
+#
+# ONE MACHINE, ONE RUNTIME IDENTIFIER, ONE COLLECTOR. Nothing below is a supported
+# configuration and no runtime identifier is claimed by this bundle or by the register row
+# it belongs to.
+
+dotnet-sdk        10.0.400
+runtime-identifier win-x64
+platform          Windows 11 AMD64
+OS Name:     Windows
+OS Version:  10.0.26200
+RID:         win-x64

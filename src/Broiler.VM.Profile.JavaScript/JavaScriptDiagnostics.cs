@@ -5,7 +5,7 @@
 // ----------------------
 // Relevant units:   8
 // Annotated:        8/8
-// Exempt:           64
+// Exempt:           66
 // Human-reviewed:   0/8
 // IP risk:          Low
 // Security risk:    High
@@ -48,7 +48,7 @@ namespace Broiler.VM.Profile.JavaScript;
 /// predicate's own record calls a worse record than one block on the vocabulary.
 /// </para>
 /// </remarks>
-// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=B91296
+// Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=0; Fingerprint=E5F04D
 // Broiler-Human:        PENDING
 public enum JavaScriptDiagnosticCode
 {
@@ -384,6 +384,50 @@ public enum JavaScriptDiagnosticCode
     /// of the lowering that happens to produce one.
     /// </remarks>
     AsyncIterationOutsideAsync = 1630,
+
+    /// <summary>
+    /// The artifact carries an emitted-code or emitted-symbol section and declared no native
+    /// surface.
+    /// </summary>
+    /// <remarks>
+    /// <b>Emitted machine code is the one payload whose presence is a request to make memory
+    /// executable, and a composition must be able to answer that question before the bytes are
+    /// anywhere near a page.</b> An artifact that carried the bytes without declaring the surface
+    /// would have skipped the question entirely: the surfaces section is read before the emitted
+    /// sections are, so a composition that declined the surface refuses such an artifact where the
+    /// surfaces are read and never reaches this code. This one is for the artifact that declared
+    /// nothing at all, which is a producer defect rather than a policy answer, and it is the same
+    /// shape and the same reason as <see cref="ModuleSectionOutsideManifest"/>.
+    /// </remarks>
+    NativeSectionOutsideManifest = 1623,
+
+    /// <summary>
+    /// An emitted-code or emitted-symbol section disagrees with itself, with the section frame, or
+    /// with the function table.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>One code for every structural disagreement about the emitted sections, and the reason is
+    /// that the verifier does not read machine code.</b> Invariant 4 keeps the core ignorant of any
+    /// instruction set and this profile's verifier is not going to become a second disassembler, so
+    /// every question the verifier CAN answer here is a question about framing - an architecture
+    /// this build does not name, an alignment that is zero or not a power of two, a declared length
+    /// that disagrees with the bytes present, a symbol naming no code unit, an offset outside the
+    /// blob, symbols that do not ascend, a symbol table that does not name every code unit, and any
+    /// of the three declarations - the surface, the bytes, the symbols - without the other two.
+    /// Splitting those into a code each would suggest that the verifier is making finer
+    /// distinctions about the payload than it is.
+    /// </para>
+    /// <para>
+    /// <b>WHAT THIS CODE CANNOT SAY IS THAT THE CODE IS WRONG.</b> A backend that emitted a
+    /// well-framed sequence of the wrong instructions produces an artifact every clause above
+    /// accepts. That is a property of the design and not a gap in it - the answer to a wrong
+    /// backend is re-emission equality and a differential oracle, not a verifier that reads
+    /// machine code - and it belongs in what a composition tells its users rather than in a
+    /// footnote.
+    /// </para>
+    /// </remarks>
+    MalformedNativeSection = 1624,
 
     // ---- 1900: the bounded reader's own statuses, mapped -----------------------------------
 

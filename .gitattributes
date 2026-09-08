@@ -59,6 +59,16 @@ src/tests/corpus/**/*.bjsb binary
 # the same reason the line above was: git's heuristic calls them binary today by accident.
 src/tests/conformance/**/*.bjsb binary
 
+# THE WEBASSEMBLY RETAINED CORPUS, and it needs this declaration more than anything above it. Two
+# hundred and ninety modules pinned by SHA-256, and one of the families is a BYTE-INVERSION SWEEP -
+# ninety-nine copies of one module with a different byte flipped in each. A sweep is exactly the
+# thing that eventually produces a file whose bytes are a lone CR followed by an LF, and an
+# end-of-line filter that rewrote one of them would break a recorded digest on one platform and
+# leave the corpus passing on every other. Git's NUL-byte heuristic calls these binary today by
+# accident, which is the same accident this file's own opening comment says is not a bound.
+# Declared 2026-09-07 with the corpus itself.
+src/tests/wasm/corpus/*.wasm binary
+
 # THE END-USER HOST'S ENCODING FIXTURES ARE BYTES AND NOTHING ELSE, and unlike everything above
 # they are .js files, so `text=auto` would take them for source and hand them to end-of-line
 # conversion. One of them opens with a UTF-8 byte-order mark and the other carries a lone

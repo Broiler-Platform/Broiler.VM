@@ -1,0 +1,17 @@
+<!-- Violates W1: the WebAssembly profile assembly growing a format sibling. This is the clause
+     no rule in group A or N reaches, and that is the whole reason it exists: rules A11 and N2
+     both EXEMPT a sibling in the same profile family, keyed on the language segment, because
+     the JavaScript family needs that exemption to have a format pivot at all. So this edge is
+     legal everywhere else and is refused here, where the decision that this family has no
+     sibling is recorded as a property of the checkout rather than as a paragraph. -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Broiler.VM.Profile.WebAssembly</AssemblyName>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Broiler.VM.Abstractions\Broiler.VM.Abstractions.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Binary\Broiler.VM.Binary.csproj" />
+    <ProjectReference Include="..\Broiler.VM.Profile.WebAssembly.Format\Broiler.VM.Profile.WebAssembly.Format.csproj" />
+  </ItemGroup>
+</Project>

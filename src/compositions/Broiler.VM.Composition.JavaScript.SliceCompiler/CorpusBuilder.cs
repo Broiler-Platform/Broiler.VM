@@ -1119,6 +1119,12 @@ internal static class JavaScriptDiagnosticCodes
     /// <summary>An asynchronous iteration step appears in a code unit that may not await.</summary>
     internal const int AsyncIterationOutsideAsync = 1630;
 
+    /// <summary>The artifact carries emitted machine code and declared no native surface.</summary>
+    internal const int NativeSectionOutsideManifest = 1623;
+
+    /// <summary>An emitted-code section disagrees with itself, its frame or the function table.</summary>
+    internal const int MalformedNativeSection = 1624;
+
     internal const int WrongMagic = 1001;
     internal const int UnsupportedFormatVersion = 1002;
     internal const int ManifestIdTooLong = 1005;

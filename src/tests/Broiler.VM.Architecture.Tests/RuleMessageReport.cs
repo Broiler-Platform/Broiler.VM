@@ -104,8 +104,19 @@ internal static class RuleReport
 /// <c>LegacyBoundaryTests</c>, <c>ApiSurfaceTests</c> and <c>ProfileApiSurfaceTests</c>.
 /// </para>
 /// <para>
-/// <b>Seventy-five of the register's seventy-six rules are reported. The one that is not is
-/// named rather than left as an absence a reader has to notice.</b>
+/// <b>Every rule in the register is reported except one, and that one is named rather than left
+/// as an absence a reader has to notice.</b> <i>(Corrected 2026-09-07. This paragraph used to
+/// state both figures - how many rules are reported and how many the register holds - and both had
+/// been wrong since the register last grew, because a figure a human typed is current until the
+/// tree moves and silent when it does. Rule J12 forbids exactly that shape in a register row; the
+/// same reasoning applies to a comment about the register, so the figures are gone rather than
+/// restated, and nothing here goes stale when a row is added.)</i>
+/// </para>
+/// <para>
+/// <b>Groups K and X gained a rule on 2026-09-07 and both are reported</b>: K5 beside the rest of
+/// group K in <c>CompositionRegisterTests</c>, and X1 in <c>NativeMappingRuleTests</c>, which is
+/// also where the new group letter's report lives. Rule B5c is reported here, in group B, because
+/// it reads compiled metadata like the rest of that group.
 /// </para>
 /// <list type="bullet">
 /// <item><b>E5</b> is <b>Deferred</b> and superseded at VM-1 by V1 and V2. No test asserts it,
@@ -182,8 +193,11 @@ public sealed class RuleMessageReportTests
                 .SelectMany(ArchitectureRules.B3)),
             ("B4", () => new[] { typeof(VmCoreContract).Assembly, typeof(VmBoundedReader).Assembly,
                 typeof(VmRuntime).Assembly }.SelectMany(ArchitectureRules.B4)),
-            ("B5", () => RuleReport.Sweep(ArchitectureRules.B5)),
-            ("B5b", () => RuleReport.Sweep(ArchitectureRules.B5b)),
+            // B5, B5b and B5c sweep every shipping assembly rather than the core three, which is
+            // what their tests do and what their register rows say.
+            ("B5", () => AssemblyFacts.Shipping.SelectMany(ArchitectureRules.B5)),
+            ("B5b", () => AssemblyFacts.Shipping.SelectMany(ArchitectureRules.B5b)),
+            ("B5c", () => AssemblyFacts.Shipping.SelectMany(NativeMappingRules.B5c)),
             ("B6", () => RuleReport.Sweep(ArchitectureRules.B6)),
             ("B7", () => RuleReport.Sweep(ArchitectureRules.B7)),
         ]);

@@ -68,6 +68,11 @@ internal static class CompositionRules
     /// The repository-relative bundle directory holding this composition's retained catalog table
     /// and closure report.
     /// </param>
+    /// <param name="NativeExecution">
+    /// Whether this composition may map artifact bytes executable: `none`, or the architectures it
+    /// arms. Empty where the row carries no such cell at all, which rule K5 reports rather than
+    /// reads as `none`.
+    /// </param>
     /// <remarks>
     /// <b>The evidence column exists because this repository now has two milestone series.</b>
     /// Rules K3 and K4 used to read one bundle - the core's current one - which was correct while
@@ -83,7 +88,8 @@ internal static class CompositionRules
         IReadOnlyList<string> ProfileIds,
         IReadOnlyList<string> ProfileAssemblies,
         IReadOnlyList<string>? SiblingAssemblies = null,
-        string Evidence = "")
+        string Evidence = "",
+        string NativeExecution = "")
     {
         /// <summary>The sibling assemblies, never null.</summary>
         internal IReadOnlyList<string> Siblings => SiblingAssemblies ?? [];

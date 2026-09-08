@@ -209,6 +209,68 @@ internal static class WideCorpus
             "UnknownFeature",
             JavaScriptDiagnosticCodes.ImportCallOutsideManifest),
 
+        // ---- four rows about the sections that carry emitted machine code ----------------------
+        //
+        // A NATIVE PAYLOAD IS THE ONE PAYLOAD WHOSE PRESENCE IS A REQUEST TO MAKE MEMORY
+        // EXECUTABLE, so the first of the three is the artifact that carries the bytes and never
+        // asks: the surfaces section is where a composition's answer about executable memory is
+        // read, and an artifact declaring nothing has skipped the question rather than been
+        // refused it. The second is the framing refusal, and one entry stands for the whole family
+        // because one code does: the verifier decodes no instruction of any architecture, so every
+        // question it can answer about these sections is a question about framing. This one
+        // declares an emitted length that disagrees with the bytes the section actually carries.
+        //
+        // THE THIRD VERIFIES, AND IT IS THE ONE THAT MAKES THE OTHER TWO WORTH HAVING. Two
+        // malformed entries are satisfied by a verifier that refuses every artifact carrying these
+        // sections at all, which would be the easiest wrong implementation to write. This one is a
+        // well-formed program declaring the native surface and carrying a symbol for its one code
+        // unit, and its completion value is what such a verifier could never produce. THE BYTES IT
+        // CARRIES ARE NOT MACHINE CODE AND NOTHING RUNS THEM: this build maps no page and arms
+        // none, the ordinary bytecode is what the executor runs, and the entry is a claim about
+        // framing rather than about any instruction set.
+        //
+        // THE FOURTH IS THE SAME BYTES UNDER A DIFFERENT HOST, and it is the one the surface exists
+        // for: a composition that admits no optional surface refuses the artifact where the
+        // surfaces are read, before the emitted sections are reached at all. That is what declining
+        // executable memory looks like from the outside, and it is the same answer the declined
+        // binary surface gets - which is the point, because a refusal that needed a mechanism of
+        // its own would be a refusal a new surface could forget to have.
+        Entry(
+            "wide-a-native-payload-no-surface-declares",
+            Artifact(nativeCode: [0x00, 0x00, 0x00, 0x00], nativeSymbolOffset: 0),
+            "UnknownFeature",
+            JavaScriptDiagnosticCodes.NativeSectionOutsideManifest),
+        Entry(
+            "wide-a-native-code-section-that-disagrees-with-itself",
+            Artifact(
+                surfaces: [JsSurfaces.Native],
+                nativeCode: [0x00, 0x00, 0x00, 0x00],
+                nativeSymbolOffset: 0,
+                nativeDeclaredLength: 3),
+            "InconsistentStructure",
+            JavaScriptDiagnosticCodes.MalformedNativeSection),
+        new CorpusEntry(
+            "wide-the-native-surface-a-composition-declined",
+            DecliningMode,
+            "InvalidArtifact",
+            "UnsupportedFeatureManifest",
+            JavaScriptDiagnosticCodes.SurfaceOutsideComposition,
+            "-",
+            "-",
+            "-",
+            "-",
+            Artifact(
+                surfaces: [JsSurfaces.Native],
+                nativeCode: [0x00, 0x00, 0x00, 0x00],
+                nativeSymbolOffset: 0)),
+        Ok(
+            "wide-a-native-payload-that-verifies",
+            Artifact(
+                surfaces: [JsSurfaces.Native],
+                nativeCode: [0x00, 0x00, 0x00, 0x00],
+                nativeSymbolOffset: 0),
+            "1"),
+
         // ---- two rows that were unreachable while one version was registered ------------------
         //
         // Both are the CALLER mislabelling the bytes, and neither could happen while the profile
@@ -289,7 +351,10 @@ internal static class WideCorpus
         bool regionHandlerOutsideUnit = false,
         string? manifest = null,
         string[]? surfaces = null,
-        JsFormat.FunctionFlags flags = JsFormat.FunctionFlags.ProgramBody)
+        JsFormat.FunctionFlags flags = JsFormat.FunctionFlags.ProgramBody,
+        byte[]? nativeCode = null,
+        uint? nativeSymbolOffset = null,
+        uint? nativeDeclaredLength = null)
     {
         var body = code ?? [(byte)JsOpcode.LoadConstant, 0x00, 0x00, (byte)JsOpcode.Return];
 
@@ -342,6 +407,25 @@ internal static class WideCorpus
             sections.Add(new JavaScriptArtifactWriter.Section(
                 (JavaScriptFormat.SectionKind)JsFormat.SectionKind.Surfaces,
                 JsArtifactWriter.Surfaces(surfaces)));
+        }
+
+        if (nativeCode is not null)
+        {
+            sections.Add(new JavaScriptArtifactWriter.Section(
+                (JavaScriptFormat.SectionKind)JsFormat.SectionKind.NativeCode,
+                JsArtifactWriter.NativeCode(
+                    (uint)JsNativeArchitecture.X64Windows,
+                    backendSemanticVersion: 0,
+                    codeAlignment: 1,
+                    nativeCode,
+                    nativeDeclaredLength)));
+        }
+
+        if (nativeSymbolOffset is { } offset)
+        {
+            sections.Add(new JavaScriptArtifactWriter.Section(
+                (JavaScriptFormat.SectionKind)JsFormat.SectionKind.NativeSymbols,
+                JsArtifactWriter.NativeSymbols([new JsNativeSymbolRow(0, offset)])));
         }
 
         return JsArtifactWriter.Write(manifest ?? JsFormat.ManifestId, sections.ToArray());

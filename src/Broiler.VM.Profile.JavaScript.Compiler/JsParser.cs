@@ -4904,7 +4904,7 @@ internal sealed class JsParser
         return arguments;
     }
 
-    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=098BA5
+    // Broiler-AI:           Origin=AI; IP=None; Security=Medium; Resources=2; Fingerprint=FE0F45
     // Broiler-Human:        PENDING
     private JsExpression ParsePrimary()
     {
@@ -4915,6 +4915,28 @@ internal sealed class JsParser
         {
             case SliceTokenKind.NumericLiteral:
                 Advance();
+
+                // A BIGINT IS A DISTINCT VALUE KIND AND NOT A NUMBER THAT HAPPENS TO END IN `n`,
+                // AND ADMITTING ONE HERE PRODUCED A SILENTLY WRONG ANSWER RATHER THAN AN ABSENCE.
+                // The tokenizer consumes the suffix and leaves it on the raw text precisely so a
+                // parser can notice it - `FinishNumeric` says so in as many words - and the slice
+                // front end does notice it, folding the literal into its own `BigInt` construct so
+                // that a program using one meets a refusal naming the construct. This front end
+                // read the same token and dropped the suffix, so `9007199254740993n` evaluated to
+                // `9007199254740992`, `typeof 1n` answered `"number"` and `1n === 1` was `true`.
+                //
+                // THAT IS THE ONE OUTCOME THIS PROFILE TREATS AS WORSE THAN AN ABSENCE. Section 1
+                // of the parity roadmap makes a refusal a supported answer and a plausible wrong
+                // value an unsupported one, and section 4.2 - "The refusal that was lost" -
+                // recorded this exact reading as the single place where this profile had lost a
+                // property it has everywhere else. The refusal is restored here rather than the
+                // value kind implemented: BigInt arithmetic is a manifest widening that nothing
+                // has scheduled, and a program that asks for it is entitled to be told so by name
+                // instead of being handed a double.
+                if (token.RawText.EndsWith('n'))
+                {
+                    return OutsideExpression(span, "a BigInt literal");
+                }
 
                 if (strict && token.IsLegacyOctal)
                 {

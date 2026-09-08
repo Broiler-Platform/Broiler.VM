@@ -1,0 +1,15 @@
+# Build output
+bin/
+obj/
+artifacts/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Guest images produced by the samples
+*.bin
+!samples/**/*.bin

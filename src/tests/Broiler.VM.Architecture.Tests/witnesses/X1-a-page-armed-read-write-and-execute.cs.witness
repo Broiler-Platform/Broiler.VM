@@ -1,0 +1,52 @@
+// A WITNESS INPUT AND NOT A SOURCE FILE. It is stored with a .witness extension so that no
+// compilation includes it and no build ever sees it, and rule X1 is pointed at it in place of the
+// arming path's Windows half so that a reader can watch the rule reject a page armed writable and
+// executable at once.
+//
+// THIS FILE IS THE ONLY PLACE IN THIS REPOSITORY WHERE THE WRITE-AND-EXECUTE PROTECTION VALUE IS
+// WRITTEN DOWN, and it is written here because a negative control that does not contain the defect
+// is a control that has never been watched failing. The arming path itself declares two protection
+// constants, a writable non-executable one and an executable non-writable one, and there is no
+// third.
+//
+// It carries the defect twice, because the rule has two ways of being wrong about it: once as a
+// named constant of the arming path whose value admits both permissions, and once as a bare
+// literal passed straight into the protection argument, which is what an author writes when the
+// named constants do not have the value they wanted.
+
+namespace Broiler.VM.Profile.JavaScript;
+
+internal sealed unsafe partial class JsNativePage
+{
+    private const uint MemCommitAndReserve = 0x3000;
+
+    private const uint PageReadWrite = 0x04;
+
+    private const uint PageExecuteReadWrite = 0x40;
+
+    private static byte* MapWindows(nuint bytes) =>
+        (byte*)VirtualAlloc(null, bytes, MemCommitAndReserve, PageReadWrite);
+
+    private static bool ArmWindows(byte* at, nuint bytes)
+    {
+        uint previous;
+
+        return VirtualProtect(at, bytes, PageExecuteReadWrite, &previous);
+    }
+
+    private static bool ArmWindowsWithoutNamingIt(byte* at, nuint bytes)
+    {
+        uint previous;
+
+        return VirtualProtect(at, bytes, 0x40, &previous);
+    }
+
+    [System.Runtime.InteropServices.LibraryImport("kernel32.dll", SetLastError = true)]
+    private static partial void* VirtualAlloc(void* address, nuint size, uint type, uint protect);
+
+    [System.Runtime.InteropServices.LibraryImport("kernel32.dll", SetLastError = true)]
+    [return: System.Runtime.InteropServices.MarshalAs(
+        System.Runtime.InteropServices.UnmanagedType.Bool)]
+    private static partial bool VirtualProtect(
+        void* address, nuint size, uint protect, uint* previous);
+}
