@@ -8757,3 +8757,61 @@ from this working tree by `eng/run-test262.py` over
 tree, by `eng/run-test262.py` under `broiler.javascript.wide` against the same pinned revision, read
 beside the run of 2026-09-07 that preceded the restored refusal, and the hand re-based floor at
 `src/tests/conformance/floors/test262-wide.floor` verified holding. No bundle. 2026-09-08.
+
+### JSC-208
+
+**Where:** [the retained corpus](../../tests/corpus/js-1/corpus.manifest) row
+`wide-a-native-payload-that-verifies`, and the producer that wrote it in
+`src/compositions/Broiler.VM.Composition.JavaScript.SliceCompiler/WideCorpus.cs`.
+
+**What the plan said.** That the corpus held a native payload which verified, instantiated, ran and
+completed with `1`. The row was added on 2026-09-07 in the change that opened the native output
+form, and it was green on the machine that wrote it.
+
+**What replaced it, and the first half is worse than the defect the lane reported.** The payload
+was **four zero bytes**, declared as `x86-64-Win64` because the producer hard-coded that
+architecture. On a host whose convention matched — the one the corpus was generated on — those four
+bytes were **mapped, armed and jumped into**, and the process died of an access violation inside the
+emitted frame (`0xC0000005`, in `JsNativeExecution.Invoke`). **A corpus is the one artefact in this
+component whose whole subject is input nobody should trust**, so a corpus row that hands arbitrary
+bytes to an armed page is the shape of defect this file exists to catch rather than the shape it is
+supposed to contain. It was never observed locally because the execution-only root's corpus mode was
+not among the lanes run before the change was pushed.
+
+**The second half is what the lane actually reported, and it is why the first half was found at
+all.** On every host whose convention did *not* match, the artifact was refused at instantiation
+with `ProfileFault/UnsatisfiedHostAssumption` — so the row's expected answer was **a property of the
+machine that generated the corpus rather than of the artifact**, and a retained row pins one answer
+or it pins nothing. `linux-x64` and `linux-arm64` both failed it on the first continuous-integration
+run, with the hash matching in both: the bytes were never in question, the expectation was.
+
+**What the row is now.** `wide-a-native-payload-for-an-architecture-no-host-arms`, carrying an
+`arm64` payload and pinning `ProfileFault/UnsatisfiedHostAssumption`.
+`JsNativeExecution.HostArchitecture` answers `X64Windows`, `X64SystemV` or `None` and never
+`Arm64`, so **every host refuses it identically, and refuses it before a page is mapped** — which
+makes the row host-independent and makes the bytes unreachable in the same stroke. Its payload is a
+real A64 `ret` rather than zeros, because a row declaring an architecture should carry something
+that architecture could execute even where nothing will. The three sibling native rows moved to the
+same default and their answers are unchanged, because all three are refused during verification
+before an architecture is consulted.
+
+**What the row stopped covering, named rather than left to be noticed.** A native payload that
+verifies, arms and *runs* is no longer in the corpus. That property is host-dependent by nature and
+belongs to `NativeAbiChecks`, which selects `JsX64Abi.Host` and compiles through the backend, so it
+exercises the run path with **real emitted code** on whichever convention the machine has. That is
+where a host-dependent property should have been written in the first place.
+
+**And the standing risk this exposed, which no part of this entry closes.** The verifier accepted
+four zero bytes as a native payload. It checks framing, length, alignment, symbol range and the
+declared architecture, and where a backend is in the image it re-emits and compares — but an
+execution-only image holds no backend, so nothing there distinguishes emitted code from arbitrary
+bytes. [The backend roadmap](roadmap.backends.md) already records that an execution-only image's
+trust in a native payload rests on provenance rather than on verification; this is that sentence
+arriving as a dead process rather than as a paragraph. **The architecture check is now the only
+thing between a malformed native payload and execution in such an image**, and it is a check about
+the wrong subject: it asks which machine the bytes are for, not whether they are code.
+
+**Authority and date.** The failing lane on both Linux runtime identifiers; the crash reproduced on
+`win-x64` from this working tree; `JsNativeExecution.HostArchitecture` and `Instantiate`;
+`WideCorpus.cs`. The regenerated corpus replays 22 of 22 on `win-x64` and the mutation control
+detects both of its injections. 2026-09-08.

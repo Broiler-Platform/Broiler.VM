@@ -263,13 +263,56 @@ internal static class WideCorpus
                 surfaces: [JsSurfaces.Native],
                 nativeCode: [0x00, 0x00, 0x00, 0x00],
                 nativeSymbolOffset: 0)),
-        Ok(
-            "wide-a-native-payload-that-verifies",
+        // THIS ROW PINS THE REFUSAL AND NOT A RUN, AND THE REASON IS THE WHOLE OF WHAT A RETAINED
+        // CORPUS IS FOR. It read `Ok(..., "1")` until 2026-09-08 - a native payload that verified,
+        // instantiated, ran and completed with `1` - and the payload it carried was four zero bytes
+        // declared as `X64Windows`. Two things were wrong with that and each is worse than the
+        // other on a different machine.
+        //
+        // ON A HOST WHOSE CONVENTION MATCHED, THE FOUR ZERO BYTES WERE ARMED AND JUMPED INTO, and
+        // the process died of an access violation inside the emitted frame. A corpus is the one
+        // place in this component whose entire subject is input nobody should trust, so a corpus
+        // entry that hands arbitrary bytes to an armed page is the shape of defect this file exists
+        // to catch rather than to contain.
+        //
+        // ON EVERY OTHER HOST IT WAS REFUSED, so the row's expected answer was a property of the
+        // machine that generated the corpus rather than of the artifact. A retained row pins ONE
+        // answer; a row that answers differently on `win-x64` and on `linux-x64` pins nothing, and
+        // the continuous-integration lane found it on the first Linux run.
+        //
+        // WHAT REPLACES IT IS A PAYLOAD NO HOST WILL EVER ARM. `JsNativeExecution.HostArchitecture`
+        // answers `X64Windows`, `X64SystemV` or `None` and never `Arm64`, so an `arm64` payload is
+        // refused at instantiation on every machine this component runs on - deterministically, and
+        // before a page is mapped. That makes the row host-independent AND makes the four bytes
+        // unreachable, and it pins the more valuable of the two properties: that an artifact
+        // emitted for another architecture is REFUSED rather than quietly run through the bytecode
+        // sitting beside it in the same artifact, which is the guard on this profile's no-fallback
+        // rule and the falsification criterion `Instantiate` carries.
+        //
+        // The bytes are a real A64 instruction - `ret`, 0xD65F03C0 little-endian - rather than
+        // zeros, because a corpus entry declaring an architecture should carry something that
+        // architecture could execute even when nothing here will.
+        //
+        // WHAT THIS ROW NO LONGER COVERS is a native payload that verifies, arms and RUNS. That
+        // belongs to `NativeAbiChecks`, which selects `JsX64Abi.Host` and compiles through the
+        // backend, so it exercises the run path with real emitted code on whichever convention the
+        // machine actually has - which is where a host-dependent property should have been all
+        // along.
+        new CorpusEntry(
+            "wide-a-native-payload-for-an-architecture-no-host-arms",
+            Mode,
+            "ProfileFault",
+            "UnsatisfiedHostAssumption",
+            0,
+            "-",
+            "-",
+            "-",
+            "-",
             Artifact(
                 surfaces: [JsSurfaces.Native],
-                nativeCode: [0x00, 0x00, 0x00, 0x00],
-                nativeSymbolOffset: 0),
-            "1"),
+                nativeCode: [0xC0, 0x03, 0x5F, 0xD6],
+                nativeSymbolOffset: 0,
+                nativeArchitecture: JsNativeArchitecture.Arm64)),
 
         // ---- two rows that were unreachable while one version was registered ------------------
         //
@@ -354,7 +397,8 @@ internal static class WideCorpus
         JsFormat.FunctionFlags flags = JsFormat.FunctionFlags.ProgramBody,
         byte[]? nativeCode = null,
         uint? nativeSymbolOffset = null,
-        uint? nativeDeclaredLength = null)
+        uint? nativeDeclaredLength = null,
+        JsNativeArchitecture nativeArchitecture = JsNativeArchitecture.Arm64)
     {
         var body = code ?? [(byte)JsOpcode.LoadConstant, 0x00, 0x00, (byte)JsOpcode.Return];
 
@@ -414,7 +458,7 @@ internal static class WideCorpus
             sections.Add(new JavaScriptArtifactWriter.Section(
                 (JavaScriptFormat.SectionKind)JsFormat.SectionKind.NativeCode,
                 JsArtifactWriter.NativeCode(
-                    (uint)JsNativeArchitecture.X64Windows,
+                    (uint)nativeArchitecture,
                     backendSemanticVersion: 0,
                     codeAlignment: 1,
                     nativeCode,

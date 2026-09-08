@@ -108,10 +108,10 @@ wide-an-async-function-that-is-also-the-program-body|7f9564b887e57c33b22ccab00e9
 wide-an-async-iteration-step-outside-an-async-function|a4f3965c1bfa60fa0286add86ec7c667f113828be2d69e20928e48c2c38218e3|wide|InvalidArtifact|SemanticValidationFailed|1630|-|-|-|-
 wide-a-class-element-whose-flags-contradict|f73139f5f9f3970bc0ab9adc978a56990497ed61eac7980fc97b9078cf184e17|wide|InvalidArtifact|InconsistentStructure|1621|-|-|-|-
 wide-an-import-call-with-no-surface-declared|648a353256c2d33dc6346c3a3cd747967d036e70277f2b479ef2ca38ccf82af2|wide|InvalidArtifact|UnknownFeature|1622|-|-|-|-
-wide-a-native-payload-no-surface-declares|096026dc637e7920dd5e745065204b563b170cc544e7cb2dd669d2abbf0bf314|wide|InvalidArtifact|UnknownFeature|1623|-|-|-|-
-wide-a-native-code-section-that-disagrees-with-itself|9bd19588f26d8f13f324aa13232e077938ded656b8cabf5de3ca6597dc3f9d20|wide|InvalidArtifact|InconsistentStructure|1624|-|-|-|-
-wide-the-native-surface-a-composition-declined|947163565602db6001c0b5da51f28cbeea4cb02bc9a955c5cd6df053357e93d2|wide-declining|InvalidArtifact|UnsupportedFeatureManifest|1608|-|-|-|-
-wide-a-native-payload-that-verifies|947163565602db6001c0b5da51f28cbeea4cb02bc9a955c5cd6df053357e93d2|wide|Normal|NormalCompleted|0|1|-|-|-
+wide-a-native-payload-no-surface-declares|daab9766b67b61b92917b431c2b9b067d17ab831d72392ff1da2f44e6b50e428|wide|InvalidArtifact|UnknownFeature|1623|-|-|-|-
+wide-a-native-code-section-that-disagrees-with-itself|2e7274b287e04969ae5f1c855195bc4868388efe1aef9f589b7eb05e128eb047|wide|InvalidArtifact|InconsistentStructure|1624|-|-|-|-
+wide-the-native-surface-a-composition-declined|cf4fc5e442254906f2d49bc635748811e11463517aa7fe291b63929e38ddbba9|wide-declining|InvalidArtifact|UnsupportedFeatureManifest|1608|-|-|-|-
+wide-a-native-payload-for-an-architecture-no-host-arms|1d0d788c90688333a9ffb24ef21ff58a02db41d7e0b04b8b8a56e821a6ae664f|wide|ProfileFault|UnsatisfiedHostAssumption|0|-|-|-|-
 wide-a-version-1-artifact-announced-as-version-2|4a871c79683bcd1c0192ed7cfd50d4d8a9caf59d62f8071e9776188fee5d8156|wide|InvalidArtifact|DescriptorMismatch|1003|-|-|-|-
 wide-a-slice-manifest-announced-as-the-wide-one|820f00f2877b8bebc95b8ec462f6fa6c9aade306bf7de8eb32b9d48f065fcd2d|wide|InvalidArtifact|DescriptorMismatch|1006|-|-|-|-
 wide-a-method-called-through-a-property|f7bde8e8fc2b93608fe40962a7abb3e33ff28ea5d01dcb20d41635e698db4bcd|wide|Normal|NormalCompleted|0|7|-|-|-
