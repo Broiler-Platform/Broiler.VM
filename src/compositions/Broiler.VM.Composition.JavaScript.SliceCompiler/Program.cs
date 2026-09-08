@@ -431,24 +431,51 @@ internal static class Program
             .Concat(JsArm64GoldenChecks.Run())
             .ToArray();
         var failed = 0;
+        var notRun = 0;
 
         foreach (var (name, passed, detail) in checks)
         {
-            if (!passed)
+            // A THIRD VERDICT, BECAUSE TWO CANNOT SAY THIS *(added 2026-09-08)*. A row whose name
+            // begins `not-run/` reports work this machine could not do: the x86-64 obligation table
+            // on a machine that is not x86-64, for instance. Folding that into either of the other
+            // two verdicts loses something in both directions - called a pass it becomes a green
+            // tick for evidence nobody collected, which is the shape this repository exists to
+            // refuse, and called a failure it makes every lane on every other architecture
+            // permanently red, which teaches a reader to ignore the colour. It is its own word, it
+            // is counted separately, and it is printed WHETHER OR NOT `--verbose` was asked for,
+            // because an absence nobody sees is the failure mode this verdict exists against.
+            //
+            // THE ROW'S OWN BOOLEAN IS LEFT `false` BY ITS AUTHOR AND THAT IS DELIBERATE. The
+            // classification is this prefix and nothing else; a reader who removed the convention
+            // and kept the boolean would get a red lane rather than a silent green one, which is
+            // the direction a mistake here should fall.
+            var skipped = name.StartsWith("not-run/", StringComparison.Ordinal);
+
+            if (skipped)
+            {
+                notRun++;
+            }
+            else if (!passed)
             {
                 failed++;
             }
 
-            if (verbose || !passed)
+            if (verbose || skipped || !passed)
             {
-                Console.WriteLine($"{(passed ? "ok  " : "FAIL")} {name}: {detail}");
+                Console.WriteLine(
+                    $"{(skipped ? "SKIP" : passed ? "ok  " : "FAIL")} {name}: {detail}");
             }
         }
 
+        var ran = checks.Length - notRun;
+        var tail = notRun == 0
+            ? string.Empty
+            : $", {notRun} not run on this machine and claimed by nothing";
+
         Console.WriteLine(
             failed == 0
-                ? $"broiler-js-slice-compiler: {checks.Length} checks passed"
-                : $"broiler-js-slice-compiler: {failed} of {checks.Length} checks FAILED");
+                ? $"broiler-js-slice-compiler: {ran} checks passed{tail}"
+                : $"broiler-js-slice-compiler: {failed} of {ran} checks FAILED{tail}");
 
         return failed == 0 ? 0 : 1;
     }

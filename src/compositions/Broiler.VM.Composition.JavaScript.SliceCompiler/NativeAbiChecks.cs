@@ -99,14 +99,25 @@ internal static class NativeAbiChecks
         if (System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture !=
             System.Runtime.InteropServices.Architecture.X64)
         {
-            // A REFUSAL AND NOT A SKIP THAT LOOKS LIKE A PASS. A row reported green on a machine
-            // that cannot run the code it is about is the shape of evidence this repository exists
-            // to refuse.
+            // NOT A PASS, AND SINCE 2026-09-08 NOT A FAILURE EITHER. A row reported green on a
+            // machine that cannot run the code it is about is the shape of evidence this
+            // repository exists to refuse, and that is why this was written as a refusal. But a
+            // refusal is the wrong word too: it made the lane on every non-x86-64 runtime
+            // identifier permanently red for a machine doing nothing wrong, and a colour that can
+            // never be green is a colour nobody reads. The `not-run/` prefix is the third verdict
+            // the reporter grew for exactly this row - counted on its own, printed whether or not
+            // verbosity was asked for, and folded into neither of the other two.
+            //
+            // WHAT IS TRUE HERE AND WHAT IS THEREFORE CLAIMED: this machine is not x86-64, the
+            // obligation table was not run, and NOTHING in it is held. The boolean stays `false`
+            // so that a reader who removed the prefix convention would get a red lane rather than
+            // a silent green one.
             checks.Add((
-                "native/abi/architecture",
+                "not-run/native/abi/x86-64-obligation-table",
                 false,
                 "this machine is not x86-64, so no row of the x86-64 obligation table was run and " +
-                "none of them may be reported as held"));
+                "none of them is claimed - the arm64 encoder's golden rows below are unaffected, " +
+                "because an encoding is checked by comparing bytes rather than by running them"));
 
             return checks;
         }
